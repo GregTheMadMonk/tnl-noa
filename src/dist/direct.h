@@ -2,7 +2,7 @@
                           direct.h  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 

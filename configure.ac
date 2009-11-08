@@ -175,14 +175,14 @@ then
          rm -f libtnl-mpi-0.1.pc;
       fi
       echo "prefix=$prefix" > libtnl-mpi-0.1.pc
-      echo "exec_prefix=\${preix}/bin" >> libtnl-mpi-0.1.pc
+      echo "exec_prefix=\${prefix}/bin" >> libtnl-mpi-0.1.pc
       echo "libdir=\${prefix}/lib" >> libtnl-mpi-0.1.pc
       echo "includedir=\${prefix}/include" >> libtnl-mpi-0.1.pc
       echo >> libtnl-mpi-0.1.pc
       echo "Name: TNL" >> libtnl-mpi-0.1.pc
       echo "Description: The core of the system for numerical computation with MPI support." >> libtnl-mpi-0.1.pc
       echo "Requires:" >> libtnl-mpi-0.1.pc
-      echo "Version: 0.3.0" >> libtnl-mpi-0.1.pc
+      echo "Version: 0.1.0" >> libtnl-mpi-0.1.pc
       echo "Libs: $MPILDFLAGS  -L\${libdir}  -ltnldebug-mpi-0.1 -ltnlcore-mpi-0.1 -ltnldiff-mpi-0.1 -ltnldist-mpi-0.1 -ltnlmatrix-mpi-0.1" >> libtnl-mpi-0.1.pc
       echo "Cflags: $MPICXXFLAGS -I\${includedir}  -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-mpi-0.1.pc
    fi
@@ -197,7 +197,7 @@ echo "" >> sdf-restore-def.h
 echo "#define CPP_COMPILER_NAME \"$CXX\"" >> sdf-restore-def.h
 
 
-CXXFLAGS="$CXXFLAGS $OPENMPFLAGS"
+CXXFLAGS="$CXXFLAGS $OPENMPFLAGS -I../src/debug -I../src/core -I../src/diff"
 
 AC_OUTPUT(Makefile
           src/Makefile

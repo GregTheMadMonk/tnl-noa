@@ -6,6 +6,10 @@
 #SUBDIRS = 
 #endif
 
+EXTRA_DIST = mConfigDescriptionParser.y \
+	     mConfigDescriptionScanner.l \
+	     FlexLexer.h
+
 headers = mcore.h \
 	  mConfigDescription.h \
 	  mCurve.h \
@@ -50,9 +54,18 @@ sources = mConfigDescription.cpp \
 libmcoreincludedir = $(includedir)/tnlcore-0.1
 libmcoreinclude_HEADERS = $(headers)
 
+
+if BUILDMPI
+
+lib_LTLIBRARIES = libtnlcore-0.1.la libtnlcore-mpi-0.1.la
+libtnlcore_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnlcore_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+
+else
+
 lib_LTLIBRARIES = libtnlcore-0.1.la
 libtnlcore_0_1_la_SOURCES = $(sources) $(headers) debug.h
 
-EXTRA_DIST = mConfigDescriptionParser.y \
-	     mConfigDescriptionScanner.l \
-	     FlexLexer.h
+endif

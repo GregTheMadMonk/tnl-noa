@@ -381,7 +381,6 @@ void tnlDebugfree (void *  );
 
 /* %% [1.0] yytext/yyin/yyout/yy_state_type/yylineno etc. def's & init go here */
 /* Begin user sect3 */
-#define YY_SKIP_YYWRAP
 
 #define FLEX_DEBUG
 
@@ -391,8 +390,6 @@ typedef unsigned char YY_CHAR;
 #define YY_INTERACTIVE
 
 #include <FlexLexer.h>
-
-int yywrap() { return 1; }
 
 /* %if-c-only Standard (non-C++) definition */
 /* %endif */
@@ -530,7 +527,7 @@ static yyconst flex_int16_t yy_chk[123] =
 
 static yyconst flex_int16_t yy_rule_linenum[11] =
     {   0,
-       17,   19,   21,   23,   28,   32,   36,   37,   38,   39
+       19,   21,   23,   25,   30,   34,   38,   39,   40,   41
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -547,7 +544,9 @@ static yyconst flex_int16_t yy_rule_linenum[11] =
    
    #include "tnlDebugParser.h"
    #include <iostream.h>
-#line 551 "tnlDebugScanner.cpp"
+
+   int yywrap();
+#line 550 "tnlDebugScanner.cpp"
 
 #define INITIAL 0
 
@@ -709,9 +708,9 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 16 "tnlDebugScanner.l"
+#line 18 "tnlDebugScanner.l"
 
-#line 715 "tnlDebugScanner.cpp"
+#line 714 "tnlDebugScanner.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -826,25 +825,25 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 17 "tnlDebugScanner.l"
+#line 19 "tnlDebugScanner.l"
 { //cout << "CLASS" << endl; 
                                                 return tnlDebugParser :: __CLASS__; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "tnlDebugScanner.l"
+#line 21 "tnlDebugScanner.l"
 { //cout << "DEBUG" << endl;
                                                 return tnlDebugParser :: __DEBUG__; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "tnlDebugScanner.l"
+#line 23 "tnlDebugScanner.l"
 { //cout << "DEFAULT" << endl;
                                                 return tnlDebugParser :: __DEFAULT__; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 23 "tnlDebugScanner.l"
+#line 25 "tnlDebugScanner.l"
 { // cout << "BOOL TRUE" << endl;
                                                 tnlDebugParser :: current_parser -> 
                                                    setBVal( true );
@@ -852,7 +851,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 28 "tnlDebugScanner.l"
+#line 30 "tnlDebugScanner.l"
 { //cout << "BOOL FALSE" << endl;
                                                 tnlDebugParser :: current_parser ->
                                                    setBVal( false );
@@ -860,7 +859,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 32 "tnlDebugScanner.l"
+#line 34 "tnlDebugScanner.l"
 { //cout << "IDENTIFIER " << yytext <<  endl;
                                                 tnlDebugParser :: current_parser -> 
                                                    setSVal( yytext );
@@ -869,31 +868,31 @@ YY_RULE_SETUP
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 36 "tnlDebugScanner.l"
+#line 38 "tnlDebugScanner.l"
 { tnlDebugParser :: current_parser -> newLine(); }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 37 "tnlDebugScanner.l"
+#line 39 "tnlDebugScanner.l"
 { tnlDebugParser :: current_parser -> newLine(); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 38 "tnlDebugScanner.l"
+#line 40 "tnlDebugScanner.l"
 
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 39 "tnlDebugScanner.l"
+#line 41 "tnlDebugScanner.l"
 { return yytext[ 0 ]; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 40 "tnlDebugScanner.l"
+#line 42 "tnlDebugScanner.l"
 ECHO;
 	YY_BREAK
-#line 897 "tnlDebugScanner.cpp"
+#line 896 "tnlDebugScanner.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1941,8 +1940,17 @@ void tnlDebugfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 40 "tnlDebugScanner.l"
+#line 42 "tnlDebugScanner.l"
 
 
 
+//int tnlDebugFlexLexer::yywrap()
+//{
+//   return 1;
+//}
+
+int yywrap()
+{
+   return 1;
+}
 

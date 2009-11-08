@@ -261,7 +261,6 @@ void tnlDebugfree (void *  );
 
 /* %% [1.0] yytext/yyin/yyout/yy_state_type/yylineno etc. def's & init go here */
 /* Begin user sect3 */
-#define YY_SKIP_YYWRAP
 
 #define FLEX_DEBUG
 
@@ -269,8 +268,6 @@ void tnlDebugfree (void *  );
 #define YY_INTERACTIVE
 
 #include <FlexLexer.h>
-
-//int yyFlexLexer::yywrap() { return 1; }
 
 /* %if-c-only Standard (non-C++) definition */
 /* %endif */
@@ -383,9 +380,9 @@ static int yy_flex_strlen (yyconst char * );
 #undef YY_DECL
 #endif
 
-#line 40 "tnlDebugScanner.l"
+#line 42 "tnlDebugScanner.l"
 
 
-#line 390 "tnlDebugScanner.h"
+#line 387 "tnlDebugScanner.h"
 #undef tnlDebugIN_HEADER
 #endif /* tnlDebugHEADER_H */

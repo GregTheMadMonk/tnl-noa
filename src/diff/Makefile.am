@@ -25,12 +25,22 @@ headers = \
    curve-ident.h \
    norms.h
 
+libtnldiffincludedir = $(includedir)/tnldiff-0.1
+libtnldiffinclude_HEADERS = $(headers)
 
-libmdiffincludedir = $(includedir)/tnldiff-0.1
-libmdiffinclude_HEADERS = $(headers)
+if BUILDMPI
+
+lib_LTLIBRARIES = libtnldiff-0.1.la  libtnldiff-mpi-0.1.la 
+libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS)
+libtnldiff_0_1_la_LDFLAGS = $(LDFLAGS)
+libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
+libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldiff_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+libtnldiff_mpi_0_1_la_SOURCES = $(sources) $(headers)
+
+else
+
 lib_LTLIBRARIES = libtnldiff-0.1.la
-libtnldiff_0_1_la_CXXFLAGS = $(mCore_CFLAGS)
-libtnldiff_0_1_la_LDFLAGS = $(mCore_LIBS)
 libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
 
-
+endif

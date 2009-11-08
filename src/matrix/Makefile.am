@@ -19,11 +19,23 @@ headers = \
 sources = mBaseMatrix.cpp 
 
 libtnlmatrixincludedir = $(includedir)/tnlmatrix-0.1
+
 libtnlmatrixinclude_HEADERS = $(headers) mmatrix.h
-lib_LTLIBRARIES = libtnlmatrix-0.1.la
-libtnlmatrix_0_1_la_CXXFLAGS = $(MCORE_CFLAGS)
-libtnlmatrix_0_1_la_LDFLAGS = $(MCORE_LIBS)
+if BUILDMPI
+
+lib_LTLIBRARIES = libtnlmatrix-0.1.la libtnlmatrix-mpi-0.1.la
 libtnlmatrix_0_1_la_SOURCES = $(sources) $(headers)
+libtnlmatrix_mpi_0_1_la_SOURCES = $(sources) $(headers)
+libtnlmatrix_mpi_0_1_la_CXXFLAGS = $(MPICXXFLAGS)
+libtnlmatrix_mpi_0_1_la_LDFLAGS = $(MPILDFLAGS)
+
+else
+
+lib_LTLIBRARIES = libtnlmatrix-0.1.la
+libtnlmatrix_0_1_la_SOURCES = $(sources) $(headers)
+
+endif
+
 
 EXTRA_DIST = Doxyfile
 

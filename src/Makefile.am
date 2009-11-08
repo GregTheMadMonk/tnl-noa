@@ -4,7 +4,7 @@ SUBDIRS = core \
           debug \
           diff \
           dist \
-	  matrix
+	      matrix
            
 
 

@@ -20,7 +20,8 @@
 
 #include "mGrid2D.h"
 #include "mpi-supp.h"
-#include "mdiff-debug.h"
+#include "tnlDebug.h"
+
 
 template< class T > class mMPIMesh2D
 {
@@ -485,7 +486,7 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u
                                                            int dest_node,
                                                            int root ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "ScatterToNode" );
+   dbgFunctionName( "mMPIMesh2D", "ScatterToNode" );
 #ifdef HAVE_MPI
    if( MPIGetRank( original_comm ) == root )
    {
@@ -499,13 +500,13 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u
 
       int dest_left_overlap( 0 ), dest_right_overlap( 0 ),
           dest_bottom_overlap( 0 ), dest_top_overlap( 0 );
-      DBG_EXPR( dest_node );
+      dbgExpr( dest_node );
       if( dest_x_pos > 0 ) dest_left_overlap = overlap_width;
       if( dest_x_pos < mesh_x_size - 1 ) dest_right_overlap = overlap_width;
       if( dest_y_pos > 0 ) dest_bottom_overlap = overlap_width;
       if( dest_y_pos < mesh_y_size - 1 ) dest_top_overlap = overlap_width;
      
-      DBG_COUT( "dest edges LRLU " << 
+      dbgCout( "dest edges LRLU " << 
                dest_left_overlap << dest_right_overlap <<
                dest_bottom_overlap << dest_top_overlap );
 
@@ -515,7 +516,7 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u
       else mpi_buff = new mGrid2D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
                                          subdomain_y_size + dest_bottom_overlap + dest_top_overlap,
                                          0.0, 1.0, 0.0, 1.0 );
-      DBG_COUT( "mpi buff < " <<
+      dbgCout( "mpi buff < " <<
                   dest_x_pos * subdomain_x_size - dest_left_overlap << ", " <<
                   ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap << " > x < " <<
                   dest_y_pos * subdomain_y_size - dest_bottom_overlap << ", " <<
@@ -582,11 +583,11 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
                                                     const mGrid2D< T >& sub_u,
                                                     int root ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Gather" );
+   dbgFunctionName( "mMPIMesh2D", "Gather" );
 #ifdef HAVE_MPI
    
-   DBG_MPI_BARRIER;
-   DBG_EXPR( MPIGetRank( original_comm ) );
+   dbgMPIBarrier;
+   dbgExpr( MPIGetRank( original_comm ) );
    if( MPIGetRank( original_comm ) == root )
    {
       int src, mesh_size = mesh_x_size * mesh_y_size;
@@ -599,9 +600,9 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
          int src_x_pos = coords[ 0 ];
          int src_y_pos = coords[ 1 ];
 
-         DBG_EXPR( src );
-         DBG_EXPR( src_x_pos );
-         DBG_EXPR( src_y_pos );
+         dbgExpr( src );
+         dbgExpr( src_x_pos );
+         dbgExpr( src_y_pos );
 
          int src_left_overlap( 0 ), src_right_overlap( 0 ),
              src_bottom_overlap( 0 ), src_top_overlap( 0 );
@@ -612,7 +613,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
          if( src != root )
          {
             
-            DBG_COUT( "Allocating supporting buffer < " <<
+            dbgCout( "Allocating supporting buffer < " <<
                       src_x_pos * subdomain_x_size - src_left_overlap <<
                       ", " << ( src_x_pos + 1 ) * subdomain_x_size + src_right_overlap <<
                       " >x< " << src_y_pos * subdomain_y_size - src_bottom_overlap <<
@@ -625,9 +626,9 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
             long int buf_size = 
                ( subdomain_x_size + src_left_overlap + src_right_overlap ) *
                ( subdomain_y_size + src_bottom_overlap + src_top_overlap );
-            DBG_EXPR( buf_size );
+            dbgExpr( buf_size );
             
-            DBG_COUT( "RECEIVING data from node " << src  );
+            dbgCout( "RECEIVING data from node " << src  );
             MPI_Recv( mpi_buff. Data(),
                       buf_size * sizeof( T ),
                       MPI_BYTE,
@@ -635,7 +636,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
                       0,
                       mesh_comm,
                       &status );
-            DBG_COUT( "Receiving data done." );
+            dbgCout( "Receiving data done." );
             const long int i1 = src_x_pos * subdomain_x_size;
             const long int i2 = i1 + subdomain_x_size;
             const long int j1 = src_y_pos * subdomain_y_size;
@@ -664,7 +665,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
    }
    else
    {
-      DBG_COUT( "node rank " << MPIGetRank( original_comm ) << " SENDING data" );
+      dbgCout( "node rank " << MPIGetRank( original_comm ) << " SENDING data" );
       long int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
                           ( subdomain_y_size + bottom_overlap + top_overlap );
       MPI_Send( const_cast< T* >( sub_u. Data() ),
@@ -673,9 +674,9 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
                 root,
                 0,
                 mesh_comm );
-      DBG_COUT( "sending data done." );
+      dbgCout( "sending data done." );
    }
-   DBG_COUT( "Gathering data done." );
+   dbgCout( "Gathering data done." );
 #else
    if( &u == &sub_u ) return;
    Copy( sub_u, u );
@@ -684,7 +685,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
 
 template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Synchronize" );
+   dbgFunctionName( "mMPIMesh2D", "Synchronize" );
 #ifdef HAVE_MPI
   long int i, j;
   int min_x = left_overlap;
@@ -702,12 +703,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
               uppr_lft_rcv_rqst, uppr_rght_rcv_rqst;
   
   
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   //starting communication with the left neighbour
   if( left_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LEFT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LEFT neighbour" );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < subdomain_y_size; j ++ )
            left_send_buff[ i * subdomain_y_size + j ] =
@@ -720,7 +721,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm ,
                 &lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LEFT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LEFT neighbour" );
      MPI_Irecv( left_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
                 MPI_CHAR,
@@ -729,12 +730,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lft_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // starting communication with the right neighbour
   if( right_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the RIGHT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the RIGHT neighbour" );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < subdomain_y_size; j ++ )
            right_send_buff[ i * subdomain_y_size + j ] =
@@ -747,7 +748,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the RIGHT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the RIGHT neighbour" );
      MPI_Irecv( right_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
                 MPI_BYTE,
@@ -756,12 +757,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &rght_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // starting communication with the bottom neighbour
   if( bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the BOTTOM neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the BOTTOM neighbour" );
      for( i = 0; i < subdomain_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
            bottom_send_buff[ j * subdomain_x_size + i ] =
@@ -774,7 +775,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the BOTTOM neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the BOTTOM neighbour" );
      MPI_Irecv( bottom_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
                 MPI_BYTE,
@@ -783,12 +784,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
 
   // starting communication with the uppper neighbour
   if( top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the TOP neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the TOP neighbour" );
      for( i = 0; i < subdomain_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
            top_send_buff[ j * subdomain_x_size + i ] =
@@ -801,7 +802,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the TOP neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the TOP neighbour" );
      MPI_Irecv( top_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
                 MPI_BYTE,
@@ -810,14 +811,14 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   int wdth_2 = wdth * wdth;
   
   // starting communication with lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM LEFT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            bottom_left_send_buff[ j * wdth + i ] =
@@ -830,7 +831,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM LEFT neighbour." );
      MPI_Irecv( bottom_left_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -839,12 +840,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_lft_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // starting communication with lower right neighbour
   if( right_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM RIGHT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            bottom_right_send_buff[ j * wdth + i ] =
@@ -857,7 +858,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM RIGHT neighbour." );
      MPI_Irecv( bottom_right_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -866,12 +867,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &lwr_rght_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
 
   // starting communication with upper left neighbour
   if( left_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP LEFT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            top_left_send_buff[ j * wdth + i ] =
@@ -884,7 +885,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP LEFT neighbour." );
      MPI_Irecv( top_left_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -893,12 +894,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_lft_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
 
   // starting communication with upper right neighbour
   if( right_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP RIGHT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            top_right_send_buff[ j * wdth + i ] =
@@ -911,7 +912,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP RIGHT neighbour." );
      MPI_Irecv( top_right_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -920,12 +921,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
                 mesh_comm,
                 &uppr_rght_rcv_rqst );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
 
   // finishing communication with the left neighbour
   if( left_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LEFT neighbour." );
      MPI_Wait( &lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < subdomain_y_size; j ++ )
@@ -933,12 +934,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            left_recieve_buff[ i * subdomain_y_size + j ];
      MPI_Wait( &lft_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // finishing communication with the right neighbour
   if( right_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from RIGHT neighbour." );
      MPI_Wait( &rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < subdomain_y_size; j ++ )
@@ -946,12 +947,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            right_recieve_buff[ i * subdomain_y_size + j ];
      MPI_Wait( &rght_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // finishing communication with the lower neighbour
   if( bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM neighbour." );
      MPI_Wait( &lwr_rcv_rqst, &status );
      for( i = 0; i < subdomain_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -959,12 +960,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            bottom_recieve_buff[ j * subdomain_x_size + i ];
      MPI_Wait( &lwr_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // finishing communication with the upper neighbour
   if( top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP neighbour." );
      MPI_Wait( &uppr_rcv_rqst, &status );
      for( i = 0; i < subdomain_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -972,13 +973,13 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            top_recieve_buff[ j * subdomain_x_size + i ];
      MPI_Wait( &uppr_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   
   // finishing communication with the lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL  )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM LEFT neighbour." );
      MPI_Wait( &lwr_lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -986,12 +987,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            bottom_left_recieve_buff[ j * wdth + i ];
      MPI_Wait( &lwr_lft_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
  
   // finishing communication with the lower right neighbour
   if( right_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM RIGHT neighbour." );
      MPI_Wait( &lwr_rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -999,12 +1000,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            bottom_right_recieve_buff[ j * wdth + i ];
      MPI_Wait( &lwr_rght_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
 
   // finishing communication with the upper right neighbour
   if( right_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP RIGHT neighbour." );
      MPI_Wait( &uppr_rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -1012,12 +1013,12 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
            top_right_recieve_buff[ j * wdth + i ];
      MPI_Wait( &uppr_rght_snd_rqst, &status );
   }
-  DBG_MPI_BARRIER;
+  dbgMPIBarrier;
   
   // finishing communication with the upper left neighbour
   if( left_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP LEFT neighbour." );
      MPI_Wait( &uppr_lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -1026,8 +1027,8 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
      MPI_Wait( &uppr_lft_snd_rqst, &status );
   }
   
-  DBG_COUT( "Synchronisation done..." );
-  DBG_MPI_BARRIER;
+  dbgCout( "Synchronisation done..." );
+  dbgMPIBarrier;
 #endif
 }
 template< class T > void mMPIMesh2D< T > :: FreeBuffers()

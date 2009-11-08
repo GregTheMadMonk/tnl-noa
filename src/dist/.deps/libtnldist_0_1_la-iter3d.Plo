@@ -1,4 +1,0 @@
-libtnldist_0_1_la-iter3d.lo libtnldist_0_1_la-iter3d.o: iter3d.cpp \
-  iter3d.h
-
-iter3d.h:

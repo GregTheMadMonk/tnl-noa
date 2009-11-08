@@ -30,11 +30,22 @@ sources = \
    msdfIterBase.cpp
 
 libtnldistincludedir = $(includedir)/tnldist-0.1
+
 libtnldistinclude_HEADERS = $(headers)
+if BUILDMPI
+
+lib_LTLIBRARIES = libtnldist-0.1.la libtnldist-mpi-0.1.la
+libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnldist_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnldist_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldist_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+
+else
+
 lib_LTLIBRARIES = libtnldist-0.1.la
 libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnldist_0_1_la_CXXFLAGS = $(MDIFF_CFLAGS)
-libtnldist_0_1_la_LDFLAGS = $(MDIFF_LIBS)
+
+endif
 
 #bin_PROGRAMS = sdf-restore
 

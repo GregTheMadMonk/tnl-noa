@@ -1,3 +1,0 @@
-libmdist_0_3_la-iter3d.lo libmdist_0_3_la-iter3d.o: iter3d.cpp iter3d.h
-
-iter3d.h:
