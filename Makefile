@@ -34,6 +34,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
+am__append_1 = libtnl-mpi-dbg-$(VERSION).pc
+am__append_2 = libtnl-mpi-$(VERSION).pc
+am__append_3 = libtnl-dbg-$(VERSION).pc
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -140,8 +143,9 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
+CXXFLAGS = -g -O2 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
+DBGCXXFLAGS = -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DSYMUTIL = 
@@ -176,6 +180,7 @@ NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
+OPTIMISECXXFLAGS = -O3
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libtnl
@@ -247,8 +252,8 @@ top_builddir = .
 top_srcdir = .
 SUBDIRS = src
 pkgconfigdir = $(libdir)/pkgconfig
-#pkgconfig_DATA = libtnl-0.1.pc
-pkgconfig_DATA = libtnl-0.1.pc libtnl-mpi-0.1.pc
+pkgconfig_DATA = libtnl-$(VERSION).pc $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 EXTRA_DIST = TODO create-config-description-parser
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

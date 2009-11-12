@@ -739,10 +739,16 @@ ac_includes_default="\
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+BUILD_MPI_NODBG_FALSE
+BUILD_MPI_NODBG_TRUE
+BUILD_MPI_DBG_FALSE
+BUILD_MPI_DBG_TRUE
+BUILD_DBG_FALSE
+BUILD_DBG_TRUE
+BUILD_MPI_FALSE
+BUILD_MPI_TRUE
 MPILDFLAGS
 MPICXXFLAGS
-BUILDMPI_FALSE
-BUILDMPI_TRUE
 MPICC
 MPICXX
 LIB@&t@OBJS
@@ -753,6 +759,8 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+OPTIMISECXXFLAGS
+DBGCXXFLAGS
 CPP
 OTOOL64
 OTOOL
@@ -2992,7 +3000,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=libtnl
- VERSION=0.1 
+ VERSION=0.1
 
 
 cat >>confdefs.h <<_ACEOF
@@ -10625,10 +10633,16 @@ if test "${enable_debug+set}" = set; then :
 fi
 
 if test x"$enable_debug" = xyes; then
-   CXXFLAGS="$CXXFLAGS -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused"
+   DBGCXXFLAGS="-O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused"
+   DBGSTATUS="yes"
 else
-   CXXFLAGS="$CXXFLAGS -O3"
+   DBGSTATUS="no"
 fi
+
+
+
+OPTIMISECXXFLAGS="-O3"
+
 
 
 @%:@ Check whether --with-gprof was given.
@@ -15110,25 +15124,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
    CXXFLAGS="$STORE_CXXFLAGS"
-    if test x"$MPISTATUS" = xyes ; then
-  BUILDMPI_TRUE=
-  BUILDMPI_FALSE='#'
-else
-  BUILDMPI_TRUE='#'
-  BUILDMPI_FALSE=
-fi
-
    
    
-else
-    if test xno = xyes ; then
-  BUILDMPI_TRUE=
-  BUILDMPI_FALSE='#'
-else
-  BUILDMPI_TRUE='#'
-  BUILDMPI_FALSE=
-fi
-
 fi
 
 
@@ -15152,6 +15149,39 @@ fi
 
 CXXFLAGS="$CXXFLAGS -I../core -I../debug -I../diff -I../dist"
 
+ if test x"$MPISTATUS" = xyes ; then
+  BUILD_MPI_TRUE=
+  BUILD_MPI_FALSE='#'
+else
+  BUILD_MPI_TRUE='#'
+  BUILD_MPI_FALSE=
+fi
+
+ if test x"$DBGSTATUS" = xyes ; then
+  BUILD_DBG_TRUE=
+  BUILD_DBG_FALSE='#'
+else
+  BUILD_DBG_TRUE='#'
+  BUILD_DBG_FALSE=
+fi
+
+ if test x"$DBGSTATUS" = xyes -a x"$MPISTATUS" = xyes ; then
+  BUILD_MPI_DBG_TRUE=
+  BUILD_MPI_DBG_FALSE='#'
+else
+  BUILD_MPI_DBG_TRUE='#'
+  BUILD_MPI_DBG_FALSE=
+fi
+
+ if test x"$DBGSTATUS" = xno -a x"$MPISTATUS" = xyes ; then
+  BUILD_MPI_NODBG_TRUE=
+  BUILD_MPI_NODBG_FALSE='#'
+else
+  BUILD_MPI_NODBG_TRUE='#'
+  BUILD_MPI_NODBG_FALSE=
+fi
+
+
 
 echo "Generating file libtnl-0.1.pc ..."
 
@@ -15171,6 +15201,27 @@ echo "Version: 0.1.0" >> libtnl-0.1.pc
 echo "Libs: -L\${libdir} -ltnldebug-0.1 -ltnlcore-0.1 -ltnldiff-0.1 -ltnldist-0.1 -ltnlmatrix-0.1 " >> libtnl-0.1.pc
 echo "Cflags: -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-0.1.pc
 
+if test x"$enable_debug" == xyes
+then
+   echo "Generating file libtnl-dbg-0.1.pc ..."
+
+   if  test libtnl-dbg-0.1.pc 
+   then
+      rm -f libtnl-dbg-0.1.pc;
+   fi
+   echo "prefix=$prefix" > libtnl-dbg-0.1.pc
+   echo "exec_prefix=\${prefix}/bin" >> libtnl-dbg-0.1.pc
+   echo "libdir=\${prefix}/lib" >> libtnl-dbg-0.1.pc
+   echo "includedir=\${prefix}/include" >> libtnl-dbg-0.1.pc
+   echo >> libtnl-dbg-0.1.pc
+   echo "Name: TNL" >> libtnl-dbg-0.1.pc
+   echo "Description: Template Numerical Library (with debuging information)." >> libtnl-dbg-0.1.pc
+   echo "Requires:" >> libtnl-dbg-0.1.pc
+   echo "Version: 0.1.0" >> libtnl-dbg-0.1.pc
+   echo "Libs: -L\${libdir} -ltnldebug-dbg-0.1 -ltnlcore-dbg-0.1 -ltnldiff-dbg-0.1 -ltnldist-dbg-0.1 -ltnlmatrix-dbg-0.1 " >> libtnl-dbg-0.1.pc
+   echo "Cflags: -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-dbg-0.1.pc
+fi
+
 if test x"$with_mpi" == xyes;
 then
    if test x"$MPISTATUS" = xyes;
@@ -15187,13 +15238,33 @@ then
       echo "includedir=\${prefix}/include" >> libtnl-mpi-0.1.pc
       echo >> libtnl-mpi-0.1.pc
       echo "Name: TNL" >> libtnl-mpi-0.1.pc
-      echo "Description: The core of the system for numerical computation with MPI support." >> libtnl-mpi-0.1.pc
+      echo "Description:  Template Numerical Library with MPI support." >> libtnl-mpi-0.1.pc
       echo "Requires:" >> libtnl-mpi-0.1.pc
       echo "Version: 0.1.0" >> libtnl-mpi-0.1.pc
       echo "Libs: $MPILDFLAGS  -L\${libdir}  -ltnldebug-mpi-0.1 -ltnlcore-mpi-0.1 -ltnldiff-mpi-0.1 -ltnldist-mpi-0.1 -ltnlmatrix-mpi-0.1" >> libtnl-mpi-0.1.pc
       echo "Cflags: $MPICXXFLAGS -I\${includedir}  -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-mpi-0.1.pc
-   fi
-fi
+      if test x"$enable_debug" == xyes
+      then
+         echo "Generating file libtnl-mpi-dbg-0.1.pc ..."
+
+         if  test libtnl-mpi-dbg-0.1.pc 
+         then
+            rm -f libtnl-mpi-dbg-0.1.pc;
+         fi
+         echo "prefix=$prefix" > libtnl-mpi-dbg-0.1.pc
+         echo "exec_prefix=\${prefix}/bin" >> libtnl-mpi-dbg-0.1.pc
+         echo "libdir=\${prefix}/lib" >> libtnl-mpi-dbg-0.1.pc
+         echo "includedir=\${prefix}/include" >> libtnl-mpi-dbg-0.1.pc
+         echo >> libtnl-mpi-dbg-0.1.pc
+         echo "Name: TNL" >> libtnl-mpi-dbg-0.1.pc
+         echo "Description: Template Numerical Library with MPI support (and with debuging information). " >> libtnl-mpi-dbg-0.1.pc
+         echo "Requires:" >> libtnl-mpi-dbg-0.1.pc
+         echo "Version: 0.1.0" >> libtnl-mpi-dbg-0.1.pc
+         echo "Libs: $MPILDFLAGS  -L\${libdir}  -ltnldebug-mpi-dbg-0.1 -ltnlcore-mpi-dbg-0.1 -ltnldiff-mpi-dbg-0.1 -ltnldist-mpi-dbg-0.1 -ltnlmatrix-mpi-dbg-0.1" >> libtnl-mpi-dbg-0.1.pc
+         echo "Cflags: $MPICXXFLAGS -I\${includedir}  -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-mpi-dbg-0.1.pc
+      fi #enable_debug == yes
+   fi  #MPISTATUS == yes
+fi #with_mpi == yes
 
 echo "Generating sdf-restore-def.h"
 
@@ -15206,7 +15277,9 @@ echo "#define CPP_COMPILER_NAME \"$CXX\"" >> sdf-restore-def.h
 
 CXXFLAGS="$CXXFLAGS $OPENMPFLAGS -I../src/debug -I../src/core -I../src/diff"
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/core/Makefile src/debug/Makefile src/diff/Makefile src/dist/Makefile src/matrix/Makefile"
+
+
+ac_config_files="$ac_config_files Makefile src/core/Makefile src/debug/Makefile src/diff/Makefile src/dist/Makefile src/matrix/Makefile src/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15329,12 +15402,20 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error "conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${BUILDMPI_TRUE}" && test -z "${BUILDMPI_FALSE}"; then
-  as_fn_error "conditional \"BUILDMPI\" was never defined.
+if test -z "${BUILD_MPI_TRUE}" && test -z "${BUILD_MPI_FALSE}"; then
+  as_fn_error "conditional \"BUILD_MPI\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${BUILDMPI_TRUE}" && test -z "${BUILDMPI_FALSE}"; then
-  as_fn_error "conditional \"BUILDMPI\" was never defined.
+if test -z "${BUILD_DBG_TRUE}" && test -z "${BUILD_DBG_FALSE}"; then
+  as_fn_error "conditional \"BUILD_DBG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_MPI_DBG_TRUE}" && test -z "${BUILD_MPI_DBG_FALSE}"; then
+  as_fn_error "conditional \"BUILD_MPI_DBG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_MPI_NODBG_TRUE}" && test -z "${BUILD_MPI_NODBG_FALSE}"; then
+  as_fn_error "conditional \"BUILD_MPI_NODBG\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -16285,12 +16366,12 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/core/Makefile") CONFIG_FILES="$CONFIG_FILES src/core/Makefile" ;;
     "src/debug/Makefile") CONFIG_FILES="$CONFIG_FILES src/debug/Makefile" ;;
     "src/diff/Makefile") CONFIG_FILES="$CONFIG_FILES src/diff/Makefile" ;;
     "src/dist/Makefile") CONFIG_FILES="$CONFIG_FILES src/dist/Makefile" ;;
     "src/matrix/Makefile") CONFIG_FILES="$CONFIG_FILES src/matrix/Makefile" ;;
+    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -17821,6 +17902,8 @@ echo "*"
 echo "* Compiler:" $CXX
 echo "* Compiler flags:" $CXXFLAGS
 echo "* Linker flags: " $LDFLAGS
+echo "* Debug flags: " $DBGCXXFLAGS
+echo "* Optimising flags: " $OPTIMISECXXFLAGS
 echo "* MPI compiler flags:" $MPICXXFLAGS
 echo "* MPI linker flags:" $MPILDFLAGS
 

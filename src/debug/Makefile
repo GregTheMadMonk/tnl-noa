@@ -37,8 +37,11 @@ POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = tnl-debug-test$(EXEEXT)
+am__append_1 = libtnldebug-mpi-0.1.la
+am__append_2 = libtnldebug-dbg-0.1.la
+am__append_3 = libtnldebug-mpi-dbg-0.1.la
 subdir = src/debug
-DIST_COMMON = $(am__libtnldebug_0_1_la_include_HEADERS_DIST) \
+DIST_COMMON = $(libtnldebug_0_1_la_include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -73,33 +76,72 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(libtnldebug_0_1_la_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnldebug_0_1_la_LIBADD =
-am__libtnldebug_0_1_la_SOURCES_DIST = tnlDebug.cpp tnlDebugGroup.cpp \
-	tnlDebugStructure.cpp tnlDebugParser.cpp tnlDebugScanner.cpp \
-	parse.cc
-am__objects_1 = tnlDebug.lo tnlDebugGroup.lo tnlDebugStructure.lo \
-	tnlDebugParser.lo tnlDebugScanner.lo parse.lo
-#am_libtnldebug_0_1_la_OBJECTS = $(am__objects_1)
+am__objects_1 = libtnldebug_0_1_la-tnlDebug.lo \
+	libtnldebug_0_1_la-tnlDebugGroup.lo \
+	libtnldebug_0_1_la-tnlDebugStructure.lo \
+	libtnldebug_0_1_la-tnlDebugParser.lo \
+	libtnldebug_0_1_la-tnlDebugScanner.lo \
+	libtnldebug_0_1_la-parse.lo
 am_libtnldebug_0_1_la_OBJECTS = $(am__objects_1)
 libtnldebug_0_1_la_OBJECTS = $(am_libtnldebug_0_1_la_OBJECTS)
-#am_libtnldebug_0_1_la_rpath = -rpath $(libdir)
-am_libtnldebug_0_1_la_rpath = -rpath $(libdir)
+libtnldebug_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+libtnldebug_dbg_0_1_la_LIBADD =
+am__libtnldebug_dbg_0_1_la_SOURCES_DIST = tnlDebug.cpp \
+	tnlDebugGroup.cpp tnlDebugStructure.cpp tnlDebugParser.cpp \
+	tnlDebugScanner.cpp parse.cc
+am__objects_2 = libtnldebug_dbg_0_1_la-tnlDebug.lo \
+	libtnldebug_dbg_0_1_la-tnlDebugGroup.lo \
+	libtnldebug_dbg_0_1_la-tnlDebugStructure.lo \
+	libtnldebug_dbg_0_1_la-tnlDebugParser.lo \
+	libtnldebug_dbg_0_1_la-tnlDebugScanner.lo \
+	libtnldebug_dbg_0_1_la-parse.lo
+am_libtnldebug_dbg_0_1_la_OBJECTS = $(am__objects_2)
+libtnldebug_dbg_0_1_la_OBJECTS = $(am_libtnldebug_dbg_0_1_la_OBJECTS)
+libtnldebug_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_libtnldebug_dbg_0_1_la_rpath = -rpath $(libdir)
 libtnldebug_mpi_0_1_la_LIBADD =
 am__libtnldebug_mpi_0_1_la_SOURCES_DIST = tnlDebug.cpp \
 	tnlDebugGroup.cpp tnlDebugStructure.cpp tnlDebugParser.cpp \
 	tnlDebugScanner.cpp parse.cc
-am__objects_2 = libtnldebug_mpi_0_1_la-tnlDebug.lo \
+am__objects_3 = libtnldebug_mpi_0_1_la-tnlDebug.lo \
 	libtnldebug_mpi_0_1_la-tnlDebugGroup.lo \
 	libtnldebug_mpi_0_1_la-tnlDebugStructure.lo \
 	libtnldebug_mpi_0_1_la-tnlDebugParser.lo \
 	libtnldebug_mpi_0_1_la-tnlDebugScanner.lo \
 	libtnldebug_mpi_0_1_la-parse.lo
-am_libtnldebug_mpi_0_1_la_OBJECTS = $(am__objects_2)
+am_libtnldebug_mpi_0_1_la_OBJECTS = $(am__objects_3)
 libtnldebug_mpi_0_1_la_OBJECTS = $(am_libtnldebug_mpi_0_1_la_OBJECTS)
 libtnldebug_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(libtnldebug_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) \
 	$(libtnldebug_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
 am_libtnldebug_mpi_0_1_la_rpath = -rpath $(libdir)
+libtnldebug_mpi_dbg_0_1_la_LIBADD =
+am__libtnldebug_mpi_dbg_0_1_la_SOURCES_DIST = tnlDebug.cpp \
+	tnlDebugGroup.cpp tnlDebugStructure.cpp tnlDebugParser.cpp \
+	tnlDebugScanner.cpp parse.cc
+am__objects_4 = libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo \
+	libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo \
+	libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo \
+	libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo \
+	libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo \
+	libtnldebug_mpi_dbg_0_1_la-parse.lo
+am_libtnldebug_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am__objects_4)
+libtnldebug_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am_libtnldebug_mpi_dbg_0_1_la_OBJECTS)
+libtnldebug_mpi_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) \
+	$(libtnldebug_mpi_dbg_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnldebug_mpi_dbg_0_1_la_rpath = -rpath \
+	$(libdir)
 PROGRAMS = $(bin_PROGRAMS)
 am_tnl_debug_test_OBJECTS = tnl-debug-test.$(OBJEXT)
 tnl_debug_test_OBJECTS = $(am_tnl_debug_test_OBJECTS)
@@ -118,14 +160,15 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libtnldebug_0_1_la_SOURCES) \
-	$(libtnldebug_mpi_0_1_la_SOURCES) $(tnl_debug_test_SOURCES)
-DIST_SOURCES = $(am__libtnldebug_0_1_la_SOURCES_DIST) \
-	$(am__libtnldebug_mpi_0_1_la_SOURCES_DIST) \
+	$(libtnldebug_dbg_0_1_la_SOURCES) \
+	$(libtnldebug_mpi_0_1_la_SOURCES) \
+	$(libtnldebug_mpi_dbg_0_1_la_SOURCES) \
 	$(tnl_debug_test_SOURCES)
-am__libtnldebug_0_1_la_include_HEADERS_DIST = tnlDbgDataElement.h \
-	tnlDebugEntry.h tnlDebugGroup.h tnlDebugParserbase.h \
-	tnlDebugParser.h tnlDebug.h tnlDebugScanner.h \
-	tnlDebugStructure.h
+DIST_SOURCES = $(libtnldebug_0_1_la_SOURCES) \
+	$(am__libtnldebug_dbg_0_1_la_SOURCES_DIST) \
+	$(am__libtnldebug_mpi_0_1_la_SOURCES_DIST) \
+	$(am__libtnldebug_mpi_dbg_0_1_la_SOURCES_DIST) \
+	$(tnl_debug_test_SOURCES)
 HEADERS = $(libtnldebug_0_1_la_include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -145,8 +188,9 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
+CXXFLAGS = -g -O2 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
+DBGCXXFLAGS = -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DSYMUTIL = 
@@ -181,6 +225,7 @@ NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
+OPTIMISECXXFLAGS = -O3
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libtnl
@@ -272,17 +317,20 @@ headers = tnlDbgDataElement.h \
 
 tnl_debug_test_SOURCES = tnl-debug-test.cpp
 tnl_debug_test_LDADD = libtnldebug-0.1.la 
-#lib_LTLIBRARIES = libtnldebug-0.1.la
-lib_LTLIBRARIES = libtnldebug-0.1.la libtnldebug-mpi-0.1.la
-#libtnldebug_0_1_la_includedir = $(includedir)/tnldebug-0.1
+lib_LTLIBRARIES = libtnldebug-0.1.la $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 libtnldebug_0_1_la_includedir = $(includedir)/tnldebug-0.1
-#libtnldebug_0_1_la_include_HEADERS = $(headers)
 libtnldebug_0_1_la_include_HEADERS = $(headers)
-#libtnldebug_0_1_la_SOURCES = $(sources)
 libtnldebug_0_1_la_SOURCES = $(sources)
+libtnldebug_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
 libtnldebug_mpi_0_1_la_SOURCES = $(sources)
 libtnldebug_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
 libtnldebug_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+libtnldebug_dbg_0_1_la_SOURCES = $(sources)
+libtnldebug_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+libtnldebug_mpi_dbg_0_1_la_SOURCES = $(sources)
+libtnldebug_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnldebug_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -349,9 +397,13 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnldebug-0.1.la: $(libtnldebug_0_1_la_OBJECTS) $(libtnldebug_0_1_la_DEPENDENCIES) 
-	$(CXXLINK) $(am_libtnldebug_0_1_la_rpath) $(libtnldebug_0_1_la_OBJECTS) $(libtnldebug_0_1_la_LIBADD) $(LIBS)
+	$(libtnldebug_0_1_la_LINK) -rpath $(libdir) $(libtnldebug_0_1_la_OBJECTS) $(libtnldebug_0_1_la_LIBADD) $(LIBS)
+libtnldebug-dbg-0.1.la: $(libtnldebug_dbg_0_1_la_OBJECTS) $(libtnldebug_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldebug_dbg_0_1_la_LINK) $(am_libtnldebug_dbg_0_1_la_rpath) $(libtnldebug_dbg_0_1_la_OBJECTS) $(libtnldebug_dbg_0_1_la_LIBADD) $(LIBS)
 libtnldebug-mpi-0.1.la: $(libtnldebug_mpi_0_1_la_OBJECTS) $(libtnldebug_mpi_0_1_la_DEPENDENCIES) 
 	$(libtnldebug_mpi_0_1_la_LINK) $(am_libtnldebug_mpi_0_1_la_rpath) $(libtnldebug_mpi_0_1_la_OBJECTS) $(libtnldebug_mpi_0_1_la_LIBADD) $(LIBS)
+libtnldebug-mpi-dbg-0.1.la: $(libtnldebug_mpi_dbg_0_1_la_OBJECTS) $(libtnldebug_mpi_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldebug_mpi_dbg_0_1_la_LINK) $(am_libtnldebug_mpi_dbg_0_1_la_rpath) $(libtnldebug_mpi_dbg_0_1_la_OBJECTS) $(libtnldebug_mpi_dbg_0_1_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -405,19 +457,31 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/libtnldebug_0_1_la-parse.Plo
+include ./$(DEPDIR)/libtnldebug_0_1_la-tnlDebug.Plo
+include ./$(DEPDIR)/libtnldebug_0_1_la-tnlDebugGroup.Plo
+include ./$(DEPDIR)/libtnldebug_0_1_la-tnlDebugParser.Plo
+include ./$(DEPDIR)/libtnldebug_0_1_la-tnlDebugScanner.Plo
+include ./$(DEPDIR)/libtnldebug_0_1_la-tnlDebugStructure.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-parse.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebug.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugGroup.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugParser.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugScanner.Plo
+include ./$(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugStructure.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-parse.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebug.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebugGroup.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebugParser.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebugScanner.Plo
 include ./$(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebugStructure.Plo
-include ./$(DEPDIR)/parse.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-parse.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebug.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.Plo
+include ./$(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.Plo
 include ./$(DEPDIR)/tnl-debug-test.Po
-include ./$(DEPDIR)/tnlDebug.Plo
-include ./$(DEPDIR)/tnlDebugGroup.Plo
-include ./$(DEPDIR)/tnlDebugParser.Plo
-include ./$(DEPDIR)/tnlDebugScanner.Plo
-include ./$(DEPDIR)/tnlDebugStructure.Plo
 
 .cc.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -439,6 +503,90 @@ include ./$(DEPDIR)/tnlDebugStructure.Plo
 #	source='$<' object='$@' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LTCXXCOMPILE) -c -o $@ $<
+
+libtnldebug_0_1_la-tnlDebug.lo: tnlDebug.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-tnlDebug.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-tnlDebug.Tpo -c -o libtnldebug_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-tnlDebug.Tpo $(DEPDIR)/libtnldebug_0_1_la-tnlDebug.Plo
+#	source='tnlDebug.cpp' object='libtnldebug_0_1_la-tnlDebug.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+
+libtnldebug_0_1_la-tnlDebugGroup.lo: tnlDebugGroup.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-tnlDebugGroup.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-tnlDebugGroup.Tpo -c -o libtnldebug_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-tnlDebugGroup.Tpo $(DEPDIR)/libtnldebug_0_1_la-tnlDebugGroup.Plo
+#	source='tnlDebugGroup.cpp' object='libtnldebug_0_1_la-tnlDebugGroup.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+
+libtnldebug_0_1_la-tnlDebugStructure.lo: tnlDebugStructure.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-tnlDebugStructure.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-tnlDebugStructure.Tpo -c -o libtnldebug_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-tnlDebugStructure.Tpo $(DEPDIR)/libtnldebug_0_1_la-tnlDebugStructure.Plo
+#	source='tnlDebugStructure.cpp' object='libtnldebug_0_1_la-tnlDebugStructure.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+
+libtnldebug_0_1_la-tnlDebugParser.lo: tnlDebugParser.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-tnlDebugParser.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-tnlDebugParser.Tpo -c -o libtnldebug_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-tnlDebugParser.Tpo $(DEPDIR)/libtnldebug_0_1_la-tnlDebugParser.Plo
+#	source='tnlDebugParser.cpp' object='libtnldebug_0_1_la-tnlDebugParser.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+
+libtnldebug_0_1_la-tnlDebugScanner.lo: tnlDebugScanner.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-tnlDebugScanner.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-tnlDebugScanner.Tpo -c -o libtnldebug_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-tnlDebugScanner.Tpo $(DEPDIR)/libtnldebug_0_1_la-tnlDebugScanner.Plo
+#	source='tnlDebugScanner.cpp' object='libtnldebug_0_1_la-tnlDebugScanner.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+
+libtnldebug_0_1_la-parse.lo: parse.cc
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_0_1_la-parse.lo -MD -MP -MF $(DEPDIR)/libtnldebug_0_1_la-parse.Tpo -c -o libtnldebug_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
+	$(am__mv) $(DEPDIR)/libtnldebug_0_1_la-parse.Tpo $(DEPDIR)/libtnldebug_0_1_la-parse.Plo
+#	source='parse.cc' object='libtnldebug_0_1_la-parse.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
+
+libtnldebug_dbg_0_1_la-tnlDebug.lo: tnlDebug.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-tnlDebug.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebug.Tpo -c -o libtnldebug_dbg_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebug.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebug.Plo
+#	source='tnlDebug.cpp' object='libtnldebug_dbg_0_1_la-tnlDebug.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+
+libtnldebug_dbg_0_1_la-tnlDebugGroup.lo: tnlDebugGroup.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-tnlDebugGroup.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugGroup.Tpo -c -o libtnldebug_dbg_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugGroup.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugGroup.Plo
+#	source='tnlDebugGroup.cpp' object='libtnldebug_dbg_0_1_la-tnlDebugGroup.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+
+libtnldebug_dbg_0_1_la-tnlDebugStructure.lo: tnlDebugStructure.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-tnlDebugStructure.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugStructure.Tpo -c -o libtnldebug_dbg_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugStructure.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugStructure.Plo
+#	source='tnlDebugStructure.cpp' object='libtnldebug_dbg_0_1_la-tnlDebugStructure.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+
+libtnldebug_dbg_0_1_la-tnlDebugParser.lo: tnlDebugParser.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-tnlDebugParser.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugParser.Tpo -c -o libtnldebug_dbg_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugParser.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugParser.Plo
+#	source='tnlDebugParser.cpp' object='libtnldebug_dbg_0_1_la-tnlDebugParser.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+
+libtnldebug_dbg_0_1_la-tnlDebugScanner.lo: tnlDebugScanner.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-tnlDebugScanner.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugScanner.Tpo -c -o libtnldebug_dbg_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugScanner.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-tnlDebugScanner.Plo
+#	source='tnlDebugScanner.cpp' object='libtnldebug_dbg_0_1_la-tnlDebugScanner.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+
+libtnldebug_dbg_0_1_la-parse.lo: parse.cc
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_dbg_0_1_la-parse.lo -MD -MP -MF $(DEPDIR)/libtnldebug_dbg_0_1_la-parse.Tpo -c -o libtnldebug_dbg_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
+	$(am__mv) $(DEPDIR)/libtnldebug_dbg_0_1_la-parse.Tpo $(DEPDIR)/libtnldebug_dbg_0_1_la-parse.Plo
+#	source='parse.cc' object='libtnldebug_dbg_0_1_la-parse.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_dbg_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
 
 libtnldebug_mpi_0_1_la-tnlDebug.lo: tnlDebug.cpp
 	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_0_1_la-tnlDebug.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_0_1_la-tnlDebug.Tpo -c -o libtnldebug_mpi_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
@@ -481,6 +629,48 @@ libtnldebug_mpi_0_1_la-parse.lo: parse.cc
 #	source='parse.cc' object='libtnldebug_mpi_0_1_la-parse.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
+
+libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo: tnlDebug.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebug.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebug.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebug.Plo
+#	source='tnlDebug.cpp' object='libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebug.lo `test -f 'tnlDebug.cpp' || echo '$(srcdir)/'`tnlDebug.cpp
+
+libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo: tnlDebugGroup.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.Plo
+#	source='tnlDebugGroup.cpp' object='libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugGroup.lo `test -f 'tnlDebugGroup.cpp' || echo '$(srcdir)/'`tnlDebugGroup.cpp
+
+libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo: tnlDebugStructure.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.Plo
+#	source='tnlDebugStructure.cpp' object='libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugStructure.lo `test -f 'tnlDebugStructure.cpp' || echo '$(srcdir)/'`tnlDebugStructure.cpp
+
+libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo: tnlDebugParser.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.Plo
+#	source='tnlDebugParser.cpp' object='libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugParser.lo `test -f 'tnlDebugParser.cpp' || echo '$(srcdir)/'`tnlDebugParser.cpp
+
+libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo: tnlDebugScanner.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.Plo
+#	source='tnlDebugScanner.cpp' object='libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-tnlDebugScanner.lo `test -f 'tnlDebugScanner.cpp' || echo '$(srcdir)/'`tnlDebugScanner.cpp
+
+libtnldebug_mpi_dbg_0_1_la-parse.lo: parse.cc
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldebug_mpi_dbg_0_1_la-parse.lo -MD -MP -MF $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-parse.Tpo -c -o libtnldebug_mpi_dbg_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
+	$(am__mv) $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-parse.Tpo $(DEPDIR)/libtnldebug_mpi_dbg_0_1_la-parse.Plo
+#	source='parse.cc' object='libtnldebug_mpi_dbg_0_1_la-parse.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldebug_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldebug_mpi_dbg_0_1_la-parse.lo `test -f 'parse.cc' || echo '$(srcdir)/'`parse.cc
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

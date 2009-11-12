@@ -41,6 +41,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
+am__append_1 = libtnldiff-dbg-0.1.la 
+am__append_2 = libtnldiff-mpi-0.1.la 
+am__append_3 = libtnldiff-mpi-dbg-0.1.la 
 subdir = src/diff
 DIST_COMMON = $(libtnldiffinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -77,20 +80,21 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libtnldiffincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnldiff_0_1_la_LIBADD =
-am__libtnldiff_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+am__objects_1 =
+am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
+libtnldiff_0_1_la_OBJECTS = $(am_libtnldiff_0_1_la_OBJECTS)
+libtnldiff_dbg_0_1_la_LIBADD =
+am__libtnldiff_dbg_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
 	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
 	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
 	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
 	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
-am__objects_1 =
-#am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
-am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
-libtnldiff_0_1_la_OBJECTS = $(am_libtnldiff_0_1_la_OBJECTS)
-libtnldiff_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+am_libtnldiff_dbg_0_1_la_OBJECTS = $(am__objects_1)
+libtnldiff_dbg_0_1_la_OBJECTS = $(am_libtnldiff_dbg_0_1_la_OBJECTS)
+libtnldiff_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libtnldiff_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
-#am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
-am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
+	$(libtnldiff_dbg_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnldiff_dbg_0_1_la_rpath = -rpath $(libdir)
 libtnldiff_mpi_0_1_la_LIBADD =
 am__libtnldiff_mpi_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
 	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
@@ -103,6 +107,22 @@ libtnldiff_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libtnldiff_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
 am_libtnldiff_mpi_0_1_la_rpath = -rpath $(libdir)
+libtnldiff_mpi_dbg_0_1_la_LIBADD =
+am__libtnldiff_mpi_dbg_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
+	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
+	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
+	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
+am_libtnldiff_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am__objects_1)
+libtnldiff_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am_libtnldiff_mpi_dbg_0_1_la_OBJECTS)
+libtnldiff_mpi_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(libtnldiff_mpi_dbg_0_1_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_libtnldiff_mpi_dbg_0_1_la_rpath = -rpath \
+	$(libdir)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -114,9 +134,13 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libtnldiff_0_1_la_SOURCES) \
-	$(libtnldiff_mpi_0_1_la_SOURCES)
-DIST_SOURCES = $(am__libtnldiff_0_1_la_SOURCES_DIST) \
-	$(am__libtnldiff_mpi_0_1_la_SOURCES_DIST)
+	$(libtnldiff_dbg_0_1_la_SOURCES) \
+	$(libtnldiff_mpi_0_1_la_SOURCES) \
+	$(libtnldiff_mpi_dbg_0_1_la_SOURCES)
+DIST_SOURCES = $(libtnldiff_0_1_la_SOURCES) \
+	$(am__libtnldiff_dbg_0_1_la_SOURCES_DIST) \
+	$(am__libtnldiff_mpi_0_1_la_SOURCES_DIST) \
+	$(am__libtnldiff_mpi_dbg_0_1_la_SOURCES_DIST)
 HEADERS = $(libtnldiffinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -136,8 +160,9 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
+CXXFLAGS = -g -O2 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
+DBGCXXFLAGS = -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DSYMUTIL = 
@@ -172,6 +197,7 @@ NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
+OPTIMISECXXFLAGS = -O3
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libtnl
@@ -262,15 +288,19 @@ headers = \
 
 libtnldiffincludedir = $(includedir)/tnldiff-0.1
 libtnldiffinclude_HEADERS = $(headers)
-#lib_LTLIBRARIES = libtnldiff-0.1.la
-lib_LTLIBRARIES = libtnldiff-0.1.la  libtnldiff-mpi-0.1.la 
-libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS)
-libtnldiff_0_1_la_LDFLAGS = $(LDFLAGS)
-#libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
+lib_LTLIBRARIES = libtnldiff-0.1.la $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
-libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
+libtnldiff_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+libtnldiff_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
+libtnldiff_dbg_0_1_la_SOURCES = $(sources) $(headers)
+libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMISECXXFLAGS)
 libtnldiff_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 libtnldiff_mpi_0_1_la_SOURCES = $(sources) $(headers)
+libtnldiff_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnldiff_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
+libtnldiff_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)
 all: all-am
 
 .SUFFIXES:
@@ -336,9 +366,13 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnldiff-0.1.la: $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_DEPENDENCIES) 
-	$(libtnldiff_0_1_la_LINK) $(am_libtnldiff_0_1_la_rpath) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+	$(LINK) -rpath $(libdir) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+libtnldiff-dbg-0.1.la: $(libtnldiff_dbg_0_1_la_OBJECTS) $(libtnldiff_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldiff_dbg_0_1_la_LINK) $(am_libtnldiff_dbg_0_1_la_rpath) $(libtnldiff_dbg_0_1_la_OBJECTS) $(libtnldiff_dbg_0_1_la_LIBADD) $(LIBS)
 libtnldiff-mpi-0.1.la: $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_DEPENDENCIES) 
 	$(libtnldiff_mpi_0_1_la_LINK) $(am_libtnldiff_mpi_0_1_la_rpath) $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_LIBADD) $(LIBS)
+libtnldiff-mpi-dbg-0.1.la: $(libtnldiff_mpi_dbg_0_1_la_OBJECTS) $(libtnldiff_mpi_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldiff_mpi_dbg_0_1_la_LINK) $(am_libtnldiff_mpi_dbg_0_1_la_rpath) $(libtnldiff_mpi_dbg_0_1_la_OBJECTS) $(libtnldiff_mpi_dbg_0_1_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

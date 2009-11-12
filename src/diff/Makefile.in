@@ -41,6 +41,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@BUILD_DBG_TRUE@am__append_1 = libtnldiff-dbg-0.1.la 
+@BUILD_MPI_TRUE@am__append_2 = libtnldiff-mpi-0.1.la 
+@BUILD_MPI_DBG_TRUE@am__append_3 = libtnldiff-mpi-dbg-0.1.la 
 subdir = src/diff
 DIST_COMMON = $(libtnldiffinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -77,32 +80,49 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libtnldiffincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnldiff_0_1_la_LIBADD =
-am__libtnldiff_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+am__objects_1 =
+am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
+libtnldiff_0_1_la_OBJECTS = $(am_libtnldiff_0_1_la_OBJECTS)
+libtnldiff_dbg_0_1_la_LIBADD =
+am__libtnldiff_dbg_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
 	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
 	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
 	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
 	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
-am__objects_1 =
-@BUILDMPI_FALSE@am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
-@BUILDMPI_TRUE@am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
-libtnldiff_0_1_la_OBJECTS = $(am_libtnldiff_0_1_la_OBJECTS)
-libtnldiff_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+@BUILD_DBG_TRUE@am_libtnldiff_dbg_0_1_la_OBJECTS = $(am__objects_1)
+libtnldiff_dbg_0_1_la_OBJECTS = $(am_libtnldiff_dbg_0_1_la_OBJECTS)
+libtnldiff_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libtnldiff_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
-@BUILDMPI_FALSE@am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
-@BUILDMPI_TRUE@am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
+	$(libtnldiff_dbg_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+@BUILD_DBG_TRUE@am_libtnldiff_dbg_0_1_la_rpath = -rpath $(libdir)
 libtnldiff_mpi_0_1_la_LIBADD =
 am__libtnldiff_mpi_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
 	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
 	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
 	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
 	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
-@BUILDMPI_TRUE@am_libtnldiff_mpi_0_1_la_OBJECTS = $(am__objects_1)
+@BUILD_MPI_TRUE@am_libtnldiff_mpi_0_1_la_OBJECTS = $(am__objects_1)
 libtnldiff_mpi_0_1_la_OBJECTS = $(am_libtnldiff_mpi_0_1_la_OBJECTS)
 libtnldiff_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libtnldiff_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
-@BUILDMPI_TRUE@am_libtnldiff_mpi_0_1_la_rpath = -rpath $(libdir)
+@BUILD_MPI_TRUE@am_libtnldiff_mpi_0_1_la_rpath = -rpath $(libdir)
+libtnldiff_mpi_dbg_0_1_la_LIBADD =
+am__libtnldiff_mpi_dbg_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
+	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
+	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
+	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
+@BUILD_MPI_DBG_TRUE@am_libtnldiff_mpi_dbg_0_1_la_OBJECTS =  \
+@BUILD_MPI_DBG_TRUE@	$(am__objects_1)
+libtnldiff_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am_libtnldiff_mpi_dbg_0_1_la_OBJECTS)
+libtnldiff_mpi_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(libtnldiff_mpi_dbg_0_1_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
+@BUILD_MPI_DBG_TRUE@am_libtnldiff_mpi_dbg_0_1_la_rpath = -rpath \
+@BUILD_MPI_DBG_TRUE@	$(libdir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -114,9 +134,13 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libtnldiff_0_1_la_SOURCES) \
-	$(libtnldiff_mpi_0_1_la_SOURCES)
-DIST_SOURCES = $(am__libtnldiff_0_1_la_SOURCES_DIST) \
-	$(am__libtnldiff_mpi_0_1_la_SOURCES_DIST)
+	$(libtnldiff_dbg_0_1_la_SOURCES) \
+	$(libtnldiff_mpi_0_1_la_SOURCES) \
+	$(libtnldiff_mpi_dbg_0_1_la_SOURCES)
+DIST_SOURCES = $(libtnldiff_0_1_la_SOURCES) \
+	$(am__libtnldiff_dbg_0_1_la_SOURCES_DIST) \
+	$(am__libtnldiff_mpi_0_1_la_SOURCES_DIST) \
+	$(am__libtnldiff_mpi_dbg_0_1_la_SOURCES_DIST)
 HEADERS = $(libtnldiffinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -138,6 +162,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DBGCXXFLAGS = @DBGCXXFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DSYMUTIL = @DSYMUTIL@
@@ -172,6 +197,7 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPTIMISECXXFLAGS = @OPTIMISECXXFLAGS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -262,15 +288,19 @@ headers = \
 
 libtnldiffincludedir = $(includedir)/tnldiff-0.1
 libtnldiffinclude_HEADERS = $(headers)
-@BUILDMPI_FALSE@lib_LTLIBRARIES = libtnldiff-0.1.la
-@BUILDMPI_TRUE@lib_LTLIBRARIES = libtnldiff-0.1.la  libtnldiff-mpi-0.1.la 
-@BUILDMPI_TRUE@libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS)
-@BUILDMPI_TRUE@libtnldiff_0_1_la_LDFLAGS = $(LDFLAGS)
-@BUILDMPI_FALSE@libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
-@BUILDMPI_TRUE@libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
-@BUILDMPI_TRUE@libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
-@BUILDMPI_TRUE@libtnldiff_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
-@BUILDMPI_TRUE@libtnldiff_mpi_0_1_la_SOURCES = $(sources) $(headers)
+lib_LTLIBRARIES = libtnldiff-0.1.la $(am__append_1) $(am__append_2) \
+	$(am__append_3)
+libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
+libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
+@BUILD_DBG_TRUE@libtnldiff_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+@BUILD_DBG_TRUE@libtnldiff_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
+@BUILD_DBG_TRUE@libtnldiff_dbg_0_1_la_SOURCES = $(sources) $(headers)
+@BUILD_MPI_TRUE@libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMISECXXFLAGS)
+@BUILD_MPI_TRUE@libtnldiff_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+@BUILD_MPI_TRUE@libtnldiff_mpi_0_1_la_SOURCES = $(sources) $(headers)
+@BUILD_MPI_DBG_TRUE@libtnldiff_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+@BUILD_MPI_DBG_TRUE@libtnldiff_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
+@BUILD_MPI_DBG_TRUE@libtnldiff_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)
 all: all-am
 
 .SUFFIXES:
@@ -336,9 +366,13 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnldiff-0.1.la: $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_DEPENDENCIES) 
-	$(libtnldiff_0_1_la_LINK) $(am_libtnldiff_0_1_la_rpath) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+	$(LINK) -rpath $(libdir) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+libtnldiff-dbg-0.1.la: $(libtnldiff_dbg_0_1_la_OBJECTS) $(libtnldiff_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldiff_dbg_0_1_la_LINK) $(am_libtnldiff_dbg_0_1_la_rpath) $(libtnldiff_dbg_0_1_la_OBJECTS) $(libtnldiff_dbg_0_1_la_LIBADD) $(LIBS)
 libtnldiff-mpi-0.1.la: $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_DEPENDENCIES) 
 	$(libtnldiff_mpi_0_1_la_LINK) $(am_libtnldiff_mpi_0_1_la_rpath) $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_LIBADD) $(LIBS)
+libtnldiff-mpi-dbg-0.1.la: $(libtnldiff_mpi_dbg_0_1_la_OBJECTS) $(libtnldiff_mpi_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnldiff_mpi_dbg_0_1_la_LINK) $(am_libtnldiff_mpi_dbg_0_1_la_rpath) $(libtnldiff_mpi_dbg_0_1_la_OBJECTS) $(libtnldiff_mpi_dbg_0_1_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

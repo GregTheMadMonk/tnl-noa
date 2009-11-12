@@ -24,22 +24,30 @@ bin_PROGRAMS = tnl-debug-test
 tnl_debug_test_SOURCES = tnl-debug-test.cpp
 tnl_debug_test_LDADD = libtnldebug-0.1.la 
 
-if BUILDMPI
-
-lib_LTLIBRARIES = libtnldebug-0.1.la libtnldebug-mpi-0.1.la
-libtnldebug_0_1_la_includedir = $(includedir)/tnldebug-0.1
-libtnldebug_0_1_la_include_HEADERS = $(headers)
-libtnldebug_0_1_la_SOURCES = $(sources)
-libtnldebug_mpi_0_1_la_SOURCES = $(sources)
-libtnldebug_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
-libtnldebug_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
-
-else
-
 lib_LTLIBRARIES = libtnldebug-0.1.la
 libtnldebug_0_1_la_includedir = $(includedir)/tnldebug-0.1
 libtnldebug_0_1_la_include_HEADERS = $(headers)
 libtnldebug_0_1_la_SOURCES = $(sources)
+libtnldebug_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
 
+if BUILD_MPI
+lib_LTLIBRARIES += libtnldebug-mpi-0.1.la
+libtnldebug_mpi_0_1_la_SOURCES = $(sources)
+libtnldebug_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldebug_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
+
+if BUILD_DBG
+lib_LTLIBRARIES += libtnldebug-dbg-0.1.la
+libtnldebug_dbg_0_1_la_SOURCES = $(sources)
+libtnldebug_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+endif
+
+if BUILD_MPI_DBG
+lib_LTLIBRARIES += libtnldebug-mpi-dbg-0.1.la
+libtnldebug_mpi_dbg_0_1_la_SOURCES = $(sources)
+libtnldebug_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnldebug_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+endif
+
 

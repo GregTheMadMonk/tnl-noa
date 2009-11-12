@@ -4,8 +4,8 @@ libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: TNL
-Description:  Template Numerical Library with MPI support.
+Description: Template Numerical Library with MPI support (and with debuging information). 
 Requires:
 Version: 0.1.0
-Libs: -pthread -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -Wl,--export-dynamic -lnsl -lutil -lm -ldl  -L${libdir}  -ltnldebug-mpi-0.1 -ltnlcore-mpi-0.1 -ltnldiff-mpi-0.1 -ltnldist-mpi-0.1 -ltnlmatrix-mpi-0.1
+Libs: -pthread -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -Wl,--export-dynamic -lnsl -lutil -lm -ldl  -L${libdir}  -ltnldebug-mpi-dbg-0.1 -ltnlcore-mpi-dbg-0.1 -ltnldiff-mpi-dbg-0.1 -ltnldist-mpi-dbg-0.1 -ltnlmatrix-mpi-dbg-0.1
 Cflags: -I/usr/lib/openmpi/include -I/usr/lib/openmpi/include/openmpi -pthread -DHAVE_MPI -I${includedir}  -I${includedir}/tnldebug-0.1 -I${includedir}/tnlcore-0.1 -I${includedir}/tnldiff-0.1 -I${includedir}/tnldist-0.1 -I${includedir}/tnlmatrix-0.1 

@@ -34,6 +34,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@BUILD_MPI_DBG_TRUE@am__append_1 = libtnl-mpi-dbg-$(VERSION).pc
+@BUILD_MPI_TRUE@am__append_2 = libtnl-mpi-$(VERSION).pc
+@BUILD_DBG_TRUE@am__append_3 = libtnl-dbg-$(VERSION).pc
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -142,6 +145,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DBGCXXFLAGS = @DBGCXXFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DSYMUTIL = @DSYMUTIL@
@@ -176,6 +180,7 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPTIMISECXXFLAGS = @OPTIMISECXXFLAGS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -247,8 +252,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
 pkgconfigdir = $(libdir)/pkgconfig
-@BUILDMPI_FALSE@pkgconfig_DATA = libtnl-0.1.pc
-@BUILDMPI_TRUE@pkgconfig_DATA = libtnl-0.1.pc libtnl-mpi-0.1.pc
+pkgconfig_DATA = libtnl-$(VERSION).pc $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 EXTRA_DIST = TODO create-config-description-parser
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

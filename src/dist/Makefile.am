@@ -32,20 +32,34 @@ sources = \
 libtnldistincludedir = $(includedir)/tnldist-0.1
 
 libtnldistinclude_HEADERS = $(headers)
-if BUILDMPI
 
-lib_LTLIBRARIES = libtnldist-0.1.la libtnldist-mpi-0.1.la
-libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnldist_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnldist_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
-libtnldist_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
-
-else
 
 lib_LTLIBRARIES = libtnldist-0.1.la
 libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnldist_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
+
+if BUILD_DBG
+   lib_LTLIBRARIES += libtnldist-dbg-0.1.la
+   libtnldist_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
+   libtnldist_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+   libtnldist_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
+endif
+
+if BUILD_MPI
+   lib_LTLIBRARIES += libtnldist-mpi-0.1.la
+   libtnldist_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
+   libtnldist_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+   libtnldist_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+endif
+
+if BUILD_MPI_DBG
+   lib_LTLIBRARIES += libtnldist-mpi-dbg-0.1.la
+   libtnldist_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
+   libtnldist_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+   libtnldist_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
 
 endif
+
 
 #bin_PROGRAMS = sdf-restore
 

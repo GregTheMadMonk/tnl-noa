@@ -3,10 +3,20 @@
 SUBDIRS = src
 
 pkgconfigdir = $(libdir)/pkgconfig
-if BUILDMPI
-pkgconfig_DATA = libtnl-0.1.pc libtnl-mpi-0.1.pc
-else
-pkgconfig_DATA = libtnl-0.1.pc
+
+pkgconfig_DATA = libtnl-$(VERSION).pc
+
+if BUILD_MPI_DBG
+  pkgconfig_DATA += libtnl-mpi-dbg-$(VERSION).pc
 endif
+
+if BUILD_MPI
+  pkgconfig_DATA += libtnl-mpi-$(VERSION).pc
+endif
+
+if BUILD_DBG
+   pkgconfig_DATA += libtnl-dbg-$(VERSION).pc
+endif
+
 
 EXTRA_DIST = TODO create-config-description-parser

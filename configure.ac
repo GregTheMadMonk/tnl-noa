@@ -1,10 +1,11 @@
 dnl Process this file with autoconf to produce a configure script
+VERSION="0.1"
 AC_INIT(tnl,0.1)
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl automake init
-AM_INIT_AUTOMAKE( libtnl, 0.1 )
-AM_CONFIG_HEADER( config.h )
+AM_INIT_AUTOMAKE(libtnl,0.1)
+AM_CONFIG_HEADER(config.h)
 AM_PROG_LIBTOOL
 
 dnl -----------------------------------------
@@ -20,10 +21,16 @@ dnl ----------- check for debug--------------
 dnl -----------------------------------------
 AC_ARG_ENABLE(debug,[  --enable-debug=[no/yes]	turn on debugging [default=no]] )
 if test x"$enable_debug" = xyes; then
-   CXXFLAGS="$CXXFLAGS -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused"
+   DBGCXXFLAGS="-O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused"
+   DBGSTATUS="yes"
 else
-   CXXFLAGS="$CXXFLAGS -O3"
+   DBGSTATUS="no"
 fi
+
+AC_SUBST(DBGCXXFLAGS)
+
+OPTIMISECXXFLAGS="-O3"
+AC_SUBST(OPTIMISECXXFLAGS)
 
 dnl -----------------------------------------
 dnl ----------- check for gprof -------------
@@ -120,11 +127,8 @@ then
    AC_CHECK_HEADERS(mpi.h, MPICXXFLAGS="$MPICXXFLAGS -DHAVE_MPI")
    AC_LANG_RESTORE
    CXXFLAGS="$STORE_CXXFLAGS"
-   AM_CONDITIONAL(BUILDMPI,test x"$MPISTATUS" = xyes )
    AC_SUBST(MPICXXFLAGS)
    AC_SUBST(MPILDFLAGS)
-else
-   AM_CONDITIONAL(BUILDMPI,test xno = xyes )
 fi
 
 dnl -----------------------------------------
@@ -142,10 +146,11 @@ fi
 
 CXXFLAGS="$CXXFLAGS -I../core -I../debug -I../diff -I../dist"
 
-dnl cd src/mpi
-dnl rm -rf *.cpp *.h *.ih *.cc
-dnl ln -s ../*.cpp ../*.h ../*.ih ../*.cc .
-dnl cd ../..
+AM_CONDITIONAL([BUILD_MPI],[test x"$MPISTATUS" = xyes] )
+AM_CONDITIONAL([BUILD_DBG],[test x"$DBGSTATUS" = xyes] )
+AM_CONDITIONAL([BUILD_MPI_DBG],[test x"$DBGSTATUS" = xyes -a x"$MPISTATUS" = xyes] )
+AM_CONDITIONAL([BUILD_MPI_NODBG],[test x"$DBGSTATUS" = xno -a x"$MPISTATUS" = xyes] )
+
 
 echo "Generating file libtnl-0.1.pc ..."
 
@@ -165,6 +170,27 @@ echo "Version: 0.1.0" >> libtnl-0.1.pc
 echo "Libs: -L\${libdir} -ltnldebug-0.1 -ltnlcore-0.1 -ltnldiff-0.1 -ltnldist-0.1 -ltnlmatrix-0.1 " >> libtnl-0.1.pc
 echo "Cflags: -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-0.1.pc
 
+if test x"$enable_debug" == xyes
+then
+   echo "Generating file libtnl-dbg-0.1.pc ..."
+
+   if [ test libtnl-dbg-0.1.pc ]
+   then
+      rm -f libtnl-dbg-0.1.pc;
+   fi
+   echo "prefix=$prefix" > libtnl-dbg-0.1.pc
+   echo "exec_prefix=\${prefix}/bin" >> libtnl-dbg-0.1.pc
+   echo "libdir=\${prefix}/lib" >> libtnl-dbg-0.1.pc
+   echo "includedir=\${prefix}/include" >> libtnl-dbg-0.1.pc
+   echo >> libtnl-dbg-0.1.pc
+   echo "Name: TNL" >> libtnl-dbg-0.1.pc
+   echo "Description: Template Numerical Library (with debuging information)." >> libtnl-dbg-0.1.pc
+   echo "Requires:" >> libtnl-dbg-0.1.pc
+   echo "Version: 0.1.0" >> libtnl-dbg-0.1.pc
+   echo "Libs: -L\${libdir} -ltnldebug-dbg-0.1 -ltnlcore-dbg-0.1 -ltnldiff-dbg-0.1 -ltnldist-dbg-0.1 -ltnlmatrix-dbg-0.1 " >> libtnl-dbg-0.1.pc
+   echo "Cflags: -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-dbg-0.1.pc
+fi
+
 if test x"$with_mpi" == xyes;
 then
    if test x"$MPISTATUS" = xyes;
@@ -181,13 +207,33 @@ then
       echo "includedir=\${prefix}/include" >> libtnl-mpi-0.1.pc
       echo >> libtnl-mpi-0.1.pc
       echo "Name: TNL" >> libtnl-mpi-0.1.pc
-      echo "Description: The core of the system for numerical computation with MPI support." >> libtnl-mpi-0.1.pc
+      echo "Description:  Template Numerical Library with MPI support." >> libtnl-mpi-0.1.pc
       echo "Requires:" >> libtnl-mpi-0.1.pc
       echo "Version: 0.1.0" >> libtnl-mpi-0.1.pc
       echo "Libs: $MPILDFLAGS  -L\${libdir}  -ltnldebug-mpi-0.1 -ltnlcore-mpi-0.1 -ltnldiff-mpi-0.1 -ltnldist-mpi-0.1 -ltnlmatrix-mpi-0.1" >> libtnl-mpi-0.1.pc
       echo "Cflags: $MPICXXFLAGS -I\${includedir}  -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-mpi-0.1.pc
-   fi
-fi
+      if test x"$enable_debug" == xyes
+      then
+         echo "Generating file libtnl-mpi-dbg-0.1.pc ..."
+
+         if [ test libtnl-mpi-dbg-0.1.pc ]
+         then
+            rm -f libtnl-mpi-dbg-0.1.pc;
+         fi
+         echo "prefix=$prefix" > libtnl-mpi-dbg-0.1.pc
+         echo "exec_prefix=\${prefix}/bin" >> libtnl-mpi-dbg-0.1.pc
+         echo "libdir=\${prefix}/lib" >> libtnl-mpi-dbg-0.1.pc
+         echo "includedir=\${prefix}/include" >> libtnl-mpi-dbg-0.1.pc
+         echo >> libtnl-mpi-dbg-0.1.pc
+         echo "Name: TNL" >> libtnl-mpi-dbg-0.1.pc
+         echo "Description: Template Numerical Library with MPI support (and with debuging information). " >> libtnl-mpi-dbg-0.1.pc
+         echo "Requires:" >> libtnl-mpi-dbg-0.1.pc
+         echo "Version: 0.1.0" >> libtnl-mpi-dbg-0.1.pc
+         echo "Libs: $MPILDFLAGS  -L\${libdir}  -ltnldebug-mpi-dbg-0.1 -ltnlcore-mpi-dbg-0.1 -ltnldiff-mpi-dbg-0.1 -ltnldist-mpi-dbg-0.1 -ltnlmatrix-mpi-dbg-0.1" >> libtnl-mpi-dbg-0.1.pc
+         echo "Cflags: $MPICXXFLAGS -I\${includedir}  -I\${includedir}/tnldebug-0.1 -I\${includedir}/tnlcore-0.1 -I\${includedir}/tnldiff-0.1 -I\${includedir}/tnldist-0.1 -I\${includedir}/tnlmatrix-0.1 " >> libtnl-mpi-dbg-0.1.pc
+      fi #enable_debug == yes
+   fi  #MPISTATUS == yes
+fi #with_mpi == yes
 
 echo "Generating sdf-restore-def.h"
 
@@ -200,14 +246,15 @@ echo "#define CPP_COMPILER_NAME \"$CXX\"" >> sdf-restore-def.h
 
 CXXFLAGS="$CXXFLAGS $OPENMPFLAGS -I../src/debug -I../src/core -I../src/diff"
 
+
+
 AC_OUTPUT(Makefile
-          src/Makefile
           src/core/Makefile
           src/debug/Makefile
           src/diff/Makefile
           src/dist/Makefile
           src/matrix/Makefile
-          )
+          src/Makefile)
 
 echo
 echo "**************************************************"
@@ -219,6 +266,8 @@ echo "*"
 echo "* Compiler:" $CXX
 echo "* Compiler flags:" $CXXFLAGS
 echo "* Linker flags: " $LDFLAGS
+echo "* Debug flags: " $DBGCXXFLAGS
+echo "* Optimising flags: " $OPTIMISECXXFLAGS
 echo "* MPI compiler flags:" $MPICXXFLAGS
 echo "* MPI linker flags:" $MPILDFLAGS
 

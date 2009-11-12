@@ -35,6 +35,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
+am__append_1 = libtnlmatrix-dbg-0.1.la
+am__append_2 = libtnlmatrix-mpi-0.1.la
+am__append_3 = libtnlmatrix-mpi-dbg-0.1.la
 subdir = src/matrix
 DIST_COMMON = $(libtnlmatrixinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -71,28 +74,38 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libtnlmatrixincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnlmatrix_0_1_la_LIBADD =
-am__libtnlmatrix_0_1_la_SOURCES_DIST = mBaseMatrix.cpp mCSRMatrix.h \
-	mFullMatrix.h mBaseMatrix.h mMatrixSolver.h mPETSCMatrix.h \
-	mPETSCSolver.h mSORSolver.h mCGSolver.h mBICGSolver.h \
-	mBICGStabSolver.h mGMRESSolver.h mPreconditioner.h \
-	mILUPreconditioner.h mPETSCPreconditioner.h
-am__objects_1 = mBaseMatrix.lo
+am__objects_1 = libtnlmatrix_0_1_la-mBaseMatrix.lo
 am__objects_2 =
-#am_libtnlmatrix_0_1_la_OBJECTS = $(am__objects_1) \
-#	$(am__objects_2)
-am_libtnlmatrix_0_1_la_OBJECTS = $(am__objects_1) \
-	$(am__objects_2)
+am_libtnlmatrix_0_1_la_OBJECTS = $(am__objects_1) $(am__objects_2)
 libtnlmatrix_0_1_la_OBJECTS = $(am_libtnlmatrix_0_1_la_OBJECTS)
-#am_libtnlmatrix_0_1_la_rpath = -rpath $(libdir)
-am_libtnlmatrix_0_1_la_rpath = -rpath $(libdir)
+libtnlmatrix_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnlmatrix_0_1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+libtnlmatrix_dbg_0_1_la_LIBADD =
+am__libtnlmatrix_dbg_0_1_la_SOURCES_DIST = mBaseMatrix.cpp \
+	mCSRMatrix.h mFullMatrix.h mBaseMatrix.h mMatrixSolver.h \
+	mPETSCMatrix.h mPETSCSolver.h mSORSolver.h mCGSolver.h \
+	mBICGSolver.h mBICGStabSolver.h mGMRESSolver.h \
+	mPreconditioner.h mILUPreconditioner.h mPETSCPreconditioner.h
+am__objects_3 = libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo
+am_libtnlmatrix_dbg_0_1_la_OBJECTS = $(am__objects_3) \
+	$(am__objects_2)
+libtnlmatrix_dbg_0_1_la_OBJECTS =  \
+	$(am_libtnlmatrix_dbg_0_1_la_OBJECTS)
+libtnlmatrix_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnlmatrix_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) \
+	$(libtnlmatrix_dbg_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnlmatrix_dbg_0_1_la_rpath = -rpath $(libdir)
 libtnlmatrix_mpi_0_1_la_LIBADD =
 am__libtnlmatrix_mpi_0_1_la_SOURCES_DIST = mBaseMatrix.cpp \
 	mCSRMatrix.h mFullMatrix.h mBaseMatrix.h mMatrixSolver.h \
 	mPETSCMatrix.h mPETSCSolver.h mSORSolver.h mCGSolver.h \
 	mBICGSolver.h mBICGStabSolver.h mGMRESSolver.h \
 	mPreconditioner.h mILUPreconditioner.h mPETSCPreconditioner.h
-am__objects_3 = libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo
-am_libtnlmatrix_mpi_0_1_la_OBJECTS = $(am__objects_3) \
+am__objects_4 = libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo
+am_libtnlmatrix_mpi_0_1_la_OBJECTS = $(am__objects_4) \
 	$(am__objects_2)
 libtnlmatrix_mpi_0_1_la_OBJECTS =  \
 	$(am_libtnlmatrix_mpi_0_1_la_OBJECTS)
@@ -101,6 +114,23 @@ libtnlmatrix_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(libtnlmatrix_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) \
 	$(libtnlmatrix_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
 am_libtnlmatrix_mpi_0_1_la_rpath = -rpath $(libdir)
+libtnlmatrix_mpi_dbg_0_1_la_LIBADD =
+am__libtnlmatrix_mpi_dbg_0_1_la_SOURCES_DIST = mBaseMatrix.cpp \
+	mCSRMatrix.h mFullMatrix.h mBaseMatrix.h mMatrixSolver.h \
+	mPETSCMatrix.h mPETSCSolver.h mSORSolver.h mCGSolver.h \
+	mBICGSolver.h mBICGStabSolver.h mGMRESSolver.h \
+	mPreconditioner.h mILUPreconditioner.h mPETSCPreconditioner.h
+am__objects_5 = libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo
+am_libtnlmatrix_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am__objects_5) $(am__objects_2)
+libtnlmatrix_mpi_dbg_0_1_la_OBJECTS =  \
+	$(am_libtnlmatrix_mpi_dbg_0_1_la_OBJECTS)
+libtnlmatrix_mpi_dbg_0_1_la_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libtnlmatrix_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) \
+	$(libtnlmatrix_mpi_dbg_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnlmatrix_mpi_dbg_0_1_la_rpath = -rpath \
+	$(libdir)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -124,9 +154,13 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libtnlmatrix_0_1_la_SOURCES) \
-	$(libtnlmatrix_mpi_0_1_la_SOURCES)
-DIST_SOURCES = $(am__libtnlmatrix_0_1_la_SOURCES_DIST) \
-	$(am__libtnlmatrix_mpi_0_1_la_SOURCES_DIST)
+	$(libtnlmatrix_dbg_0_1_la_SOURCES) \
+	$(libtnlmatrix_mpi_0_1_la_SOURCES) \
+	$(libtnlmatrix_mpi_dbg_0_1_la_SOURCES)
+DIST_SOURCES = $(libtnlmatrix_0_1_la_SOURCES) \
+	$(am__libtnlmatrix_dbg_0_1_la_SOURCES_DIST) \
+	$(am__libtnlmatrix_mpi_0_1_la_SOURCES_DIST) \
+	$(am__libtnlmatrix_mpi_dbg_0_1_la_SOURCES_DIST)
 HEADERS = $(libtnlmatrixinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -146,8 +180,9 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
+CXXFLAGS = -g -O2 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
+DBGCXXFLAGS = -O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DSYMUTIL = 
@@ -182,6 +217,7 @@ NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
+OPTIMISECXXFLAGS = -O3
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libtnl
@@ -270,13 +306,19 @@ headers = \
 sources = mBaseMatrix.cpp 
 libtnlmatrixincludedir = $(includedir)/tnlmatrix-0.1
 libtnlmatrixinclude_HEADERS = $(headers) mmatrix.h
-#lib_LTLIBRARIES = libtnlmatrix-0.1.la
-lib_LTLIBRARIES = libtnlmatrix-0.1.la libtnlmatrix-mpi-0.1.la
-#libtnlmatrix_0_1_la_SOURCES = $(sources) $(headers)
+lib_LTLIBRARIES = libtnlmatrix-0.1.la $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 libtnlmatrix_0_1_la_SOURCES = $(sources) $(headers)
+libtnlmatrix_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
+libtnlmatrix_dbg_0_1_la_SOURCES = $(sources) $(headers)
+libtnlmatrix_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+libtnlmatrix_dbg_0_1_la_LDFLAGS = $(LDFLAGS)    $(DBGLDFLAGS)
 libtnlmatrix_mpi_0_1_la_SOURCES = $(sources) $(headers)
-libtnlmatrix_mpi_0_1_la_CXXFLAGS = $(MPICXXFLAGS)
-libtnlmatrix_mpi_0_1_la_LDFLAGS = $(MPILDFLAGS)
+libtnlmatrix_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMISECXXFLAGS)
+libtnlmatrix_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+libtnlmatrix_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)
+libtnlmatrix_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnlmatrix_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
 EXTRA_DIST = Doxyfile
 all: all-am
 
@@ -344,9 +386,13 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnlmatrix-0.1.la: $(libtnlmatrix_0_1_la_OBJECTS) $(libtnlmatrix_0_1_la_DEPENDENCIES) 
-	$(CXXLINK) $(am_libtnlmatrix_0_1_la_rpath) $(libtnlmatrix_0_1_la_OBJECTS) $(libtnlmatrix_0_1_la_LIBADD) $(LIBS)
+	$(libtnlmatrix_0_1_la_LINK) -rpath $(libdir) $(libtnlmatrix_0_1_la_OBJECTS) $(libtnlmatrix_0_1_la_LIBADD) $(LIBS)
+libtnlmatrix-dbg-0.1.la: $(libtnlmatrix_dbg_0_1_la_OBJECTS) $(libtnlmatrix_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnlmatrix_dbg_0_1_la_LINK) $(am_libtnlmatrix_dbg_0_1_la_rpath) $(libtnlmatrix_dbg_0_1_la_OBJECTS) $(libtnlmatrix_dbg_0_1_la_LIBADD) $(LIBS)
 libtnlmatrix-mpi-0.1.la: $(libtnlmatrix_mpi_0_1_la_OBJECTS) $(libtnlmatrix_mpi_0_1_la_DEPENDENCIES) 
 	$(libtnlmatrix_mpi_0_1_la_LINK) $(am_libtnlmatrix_mpi_0_1_la_rpath) $(libtnlmatrix_mpi_0_1_la_OBJECTS) $(libtnlmatrix_mpi_0_1_la_LIBADD) $(LIBS)
+libtnlmatrix-mpi-dbg-0.1.la: $(libtnlmatrix_mpi_dbg_0_1_la_OBJECTS) $(libtnlmatrix_mpi_dbg_0_1_la_DEPENDENCIES) 
+	$(libtnlmatrix_mpi_dbg_0_1_la_LINK) $(am_libtnlmatrix_mpi_dbg_0_1_la_rpath) $(libtnlmatrix_mpi_dbg_0_1_la_OBJECTS) $(libtnlmatrix_mpi_dbg_0_1_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -354,8 +400,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/libtnlmatrix_0_1_la-mBaseMatrix.Plo
+include ./$(DEPDIR)/libtnlmatrix_dbg_0_1_la-mBaseMatrix.Plo
 include ./$(DEPDIR)/libtnlmatrix_mpi_0_1_la-mBaseMatrix.Plo
-include ./$(DEPDIR)/mBaseMatrix.Plo
+include ./$(DEPDIR)/libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -378,12 +426,33 @@ include ./$(DEPDIR)/mBaseMatrix.Plo
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LTCXXCOMPILE) -c -o $@ $<
 
+libtnlmatrix_0_1_la-mBaseMatrix.lo: mBaseMatrix.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlmatrix_0_1_la-mBaseMatrix.lo -MD -MP -MF $(DEPDIR)/libtnlmatrix_0_1_la-mBaseMatrix.Tpo -c -o libtnlmatrix_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+	$(am__mv) $(DEPDIR)/libtnlmatrix_0_1_la-mBaseMatrix.Tpo $(DEPDIR)/libtnlmatrix_0_1_la-mBaseMatrix.Plo
+#	source='mBaseMatrix.cpp' object='libtnlmatrix_0_1_la-mBaseMatrix.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlmatrix_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+
+libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo: mBaseMatrix.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo -MD -MP -MF $(DEPDIR)/libtnlmatrix_dbg_0_1_la-mBaseMatrix.Tpo -c -o libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+	$(am__mv) $(DEPDIR)/libtnlmatrix_dbg_0_1_la-mBaseMatrix.Tpo $(DEPDIR)/libtnlmatrix_dbg_0_1_la-mBaseMatrix.Plo
+#	source='mBaseMatrix.cpp' object='libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlmatrix_dbg_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+
 libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo: mBaseMatrix.cpp
 	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo -MD -MP -MF $(DEPDIR)/libtnlmatrix_mpi_0_1_la-mBaseMatrix.Tpo -c -o libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
 	$(am__mv) $(DEPDIR)/libtnlmatrix_mpi_0_1_la-mBaseMatrix.Tpo $(DEPDIR)/libtnlmatrix_mpi_0_1_la-mBaseMatrix.Plo
 #	source='mBaseMatrix.cpp' object='libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlmatrix_mpi_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+
+libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo: mBaseMatrix.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo -MD -MP -MF $(DEPDIR)/libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.Tpo -c -o libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
+	$(am__mv) $(DEPDIR)/libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.Tpo $(DEPDIR)/libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.Plo
+#	source='mBaseMatrix.cpp' object='libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlmatrix_mpi_dbg_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlmatrix_mpi_dbg_0_1_la-mBaseMatrix.lo `test -f 'mBaseMatrix.cpp' || echo '$(srcdir)/'`mBaseMatrix.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
