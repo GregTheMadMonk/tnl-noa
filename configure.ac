@@ -149,7 +149,6 @@ CXXFLAGS="$CXXFLAGS -I../core -I../debug -I../diff -I../dist"
 AM_CONDITIONAL([BUILD_MPI],[test x"$MPISTATUS" = xyes] )
 AM_CONDITIONAL([BUILD_DBG],[test x"$DBGSTATUS" = xyes] )
 AM_CONDITIONAL([BUILD_MPI_DBG],[test x"$DBGSTATUS" = xyes -a x"$MPISTATUS" = xyes] )
-AM_CONDITIONAL([BUILD_MPI_NODBG],[test x"$DBGSTATUS" = xno -a x"$MPISTATUS" = xyes] )
 
 
 echo "Generating file libtnl-0.1.pc ..."
@@ -196,7 +195,6 @@ then
    if test x"$MPISTATUS" = xyes;
    then
       echo "Generating file libtnl-mpi-0.1.pc ..."
-
       if [ test libtnl-mpi-0.1.pc ]
       then
          rm -f libtnl-mpi-0.1.pc;
