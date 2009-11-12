@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT(configure.ac)
+AC_INIT(tnl,0.1)
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl automake init
@@ -10,6 +10,7 @@ AM_PROG_LIBTOOL
 dnl -----------------------------------------
 dnl ----------- check for icpc --------------
 dnl -----------------------------------------
+
 if test x"$CXX" = xicpc; then
    CXXFLAGS="$CXXFLAGS -DHAVE_ICPC"
 fi

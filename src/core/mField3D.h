@@ -19,7 +19,7 @@
 #define mField3DH
 
 #include <string.h>
-#include "mObject.h"
+#include "tnlObject.h"
 #include "mLongVector.h"
 
 template< class T > class mField3D : public mLongVector< T >

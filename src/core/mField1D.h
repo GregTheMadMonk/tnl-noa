@@ -19,7 +19,7 @@
 #define mField1DH
 
 #include <string.h>
-#include "mObject.h"
+#include "tnlObject.h"
 #include "mLongVector.h"
 
 template< class T > class mField1D : public mLongVector< T >

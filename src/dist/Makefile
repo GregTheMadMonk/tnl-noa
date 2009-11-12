@@ -71,20 +71,48 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libtnldistincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnldist_0_1_la_LIBADD =
-am__objects_1 = libtnldist_0_1_la-direct.lo libtnldist_0_1_la-fmm2d.lo \
-	libtnldist_0_1_la-fsm2d.lo libtnldist_0_1_la-ftm2d.lo \
-	libtnldist_0_1_la-init_band.lo libtnldist_0_1_la-iter1d.lo \
-	libtnldist_0_1_la-iter2d.lo libtnldist_0_1_la-iter3d.lo \
-	libtnldist_0_1_la-param-crv-dst.lo \
-	libtnldist_0_1_la-msdfSussmanFatemi.lo \
-	libtnldist_0_1_la-msdfIterBase.lo
+am__libtnldist_0_1_la_SOURCES_DIST = direct.cpp fmm2d.cpp fsm2d.cpp \
+	ftm2d.cpp init_band.cpp iter1d.cpp iter2d.cpp iter3d.cpp \
+	param-crv-dst.cpp msdfSussmanFatemi.cpp msdfIterBase.cpp \
+	debug.h direct.h fmm2d.h fsm2d.h ftm2d.h init_band.h iter1d.h \
+	iter2d.h iter3d.h mdist.h mDistAux.h param-crv-dst.h \
+	msdfSussmanFatemi.h msdfIterBase.h
+am__objects_1 = direct.lo fmm2d.lo fsm2d.lo ftm2d.lo init_band.lo \
+	iter1d.lo iter2d.lo iter3d.lo param-crv-dst.lo \
+	msdfSussmanFatemi.lo msdfIterBase.lo
 am__objects_2 =
-am_libtnldist_0_1_la_OBJECTS = $(am__objects_1) $(am__objects_2)
+#am_libtnldist_0_1_la_OBJECTS = $(am__objects_1) \
+#	$(am__objects_2)
+am_libtnldist_0_1_la_OBJECTS = $(am__objects_1) \
+	$(am__objects_2)
 libtnldist_0_1_la_OBJECTS = $(am_libtnldist_0_1_la_OBJECTS)
-libtnldist_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+#am_libtnldist_0_1_la_rpath = -rpath $(libdir)
+am_libtnldist_0_1_la_rpath = -rpath $(libdir)
+libtnldist_mpi_0_1_la_LIBADD =
+am__libtnldist_mpi_0_1_la_SOURCES_DIST = direct.cpp fmm2d.cpp \
+	fsm2d.cpp ftm2d.cpp init_band.cpp iter1d.cpp iter2d.cpp \
+	iter3d.cpp param-crv-dst.cpp msdfSussmanFatemi.cpp \
+	msdfIterBase.cpp debug.h direct.h fmm2d.h fsm2d.h ftm2d.h \
+	init_band.h iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h \
+	param-crv-dst.h msdfSussmanFatemi.h msdfIterBase.h
+am__objects_3 = libtnldist_mpi_0_1_la-direct.lo \
+	libtnldist_mpi_0_1_la-fmm2d.lo libtnldist_mpi_0_1_la-fsm2d.lo \
+	libtnldist_mpi_0_1_la-ftm2d.lo \
+	libtnldist_mpi_0_1_la-init_band.lo \
+	libtnldist_mpi_0_1_la-iter1d.lo \
+	libtnldist_mpi_0_1_la-iter2d.lo \
+	libtnldist_mpi_0_1_la-iter3d.lo \
+	libtnldist_mpi_0_1_la-param-crv-dst.lo \
+	libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo \
+	libtnldist_mpi_0_1_la-msdfIterBase.lo
+am_libtnldist_mpi_0_1_la_OBJECTS = $(am__objects_3) \
+	$(am__objects_2)
+libtnldist_mpi_0_1_la_OBJECTS = $(am_libtnldist_mpi_0_1_la_OBJECTS)
+libtnldist_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) \
-	$(libtnldist_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) \
+	$(libtnldist_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnldist_mpi_0_1_la_rpath = -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -107,18 +135,20 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libtnldist_0_1_la_SOURCES)
-DIST_SOURCES = $(libtnldist_0_1_la_SOURCES)
+SOURCES = $(libtnldist_0_1_la_SOURCES) \
+	$(libtnldist_mpi_0_1_la_SOURCES)
+DIST_SOURCES = $(am__libtnldist_0_1_la_SOURCES_DIST) \
+	$(am__libtnldist_mpi_0_1_la_SOURCES_DIST)
 HEADERS = $(libtnldistinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run tar
+ACLOCAL = ${SHELL} /home/oberhuber/workspace/tnl/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/oberhuber/workspace/tnl/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/oberhuber/workspace/tnl/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -128,7 +158,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist 
+CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -154,7 +184,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/oberhuber/workspace/tnl/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 MPICC = 
 MPICXX = yes
@@ -168,11 +198,11 @@ OTOOL =
 OTOOL64 = 
 PACKAGE = libtnl
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = 
-PACKAGE_STRING = 
-PACKAGE_TARNAME = 
+PACKAGE_NAME = tnl
+PACKAGE_STRING = tnl 0.1
+PACKAGE_TARNAME = tnl
 PACKAGE_URL = 
-PACKAGE_VERSION = 
+PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SED = /bin/sed
@@ -180,10 +210,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /home/oberhuber/num/tnl-0.1/src/dist
-abs_srcdir = /home/oberhuber/num/tnl-0.1/src/dist
-abs_top_builddir = /home/oberhuber/num/tnl-0.1
-abs_top_srcdir = /home/oberhuber/num/tnl-0.1
+abs_builddir = /home/oberhuber/workspace/tnl/src/dist
+abs_srcdir = /home/oberhuber/workspace/tnl/src/dist
+abs_top_builddir = /home/oberhuber/workspace/tnl
+abs_top_srcdir = /home/oberhuber/workspace/tnl
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_DUMPBIN = 
@@ -201,7 +231,7 @@ build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE}
+docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-unknown-linux-gnu
@@ -212,7 +242,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/oberhuber/num/tnl-0.1/install-sh
+install_sh = ${SHELL} /home/oberhuber/workspace/tnl/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -264,10 +294,13 @@ sources = \
 
 libtnldistincludedir = $(includedir)/tnldist-0.1
 libtnldistinclude_HEADERS = $(headers)
-lib_LTLIBRARIES = libtnldist-0.1.la
+#lib_LTLIBRARIES = libtnldist-0.1.la
+lib_LTLIBRARIES = libtnldist-0.1.la libtnldist-mpi-0.1.la
+#libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnldist_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnldist_0_1_la_CXXFLAGS = $(MDIFF_CFLAGS)
-libtnldist_0_1_la_LDFLAGS = $(MDIFF_LIBS)
+libtnldist_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnldist_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldist_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -334,7 +367,9 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnldist-0.1.la: $(libtnldist_0_1_la_OBJECTS) $(libtnldist_0_1_la_DEPENDENCIES) 
-	$(libtnldist_0_1_la_LINK) -rpath $(libdir) $(libtnldist_0_1_la_OBJECTS) $(libtnldist_0_1_la_LIBADD) $(LIBS)
+	$(CXXLINK) $(am_libtnldist_0_1_la_rpath) $(libtnldist_0_1_la_OBJECTS) $(libtnldist_0_1_la_LIBADD) $(LIBS)
+libtnldist-mpi-0.1.la: $(libtnldist_mpi_0_1_la_OBJECTS) $(libtnldist_mpi_0_1_la_DEPENDENCIES) 
+	$(libtnldist_mpi_0_1_la_LINK) $(am_libtnldist_mpi_0_1_la_rpath) $(libtnldist_mpi_0_1_la_OBJECTS) $(libtnldist_mpi_0_1_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -342,17 +377,28 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/libtnldist_0_1_la-direct.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-fmm2d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-fsm2d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-ftm2d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-init_band.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-iter1d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-iter2d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-iter3d.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-msdfIterBase.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-msdfSussmanFatemi.Plo
-include ./$(DEPDIR)/libtnldist_0_1_la-param-crv-dst.Plo
+include ./$(DEPDIR)/direct.Plo
+include ./$(DEPDIR)/fmm2d.Plo
+include ./$(DEPDIR)/fsm2d.Plo
+include ./$(DEPDIR)/ftm2d.Plo
+include ./$(DEPDIR)/init_band.Plo
+include ./$(DEPDIR)/iter1d.Plo
+include ./$(DEPDIR)/iter2d.Plo
+include ./$(DEPDIR)/iter3d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-direct.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-fmm2d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-fsm2d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-ftm2d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-init_band.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-iter1d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-iter2d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-iter3d.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-msdfIterBase.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-msdfSussmanFatemi.Plo
+include ./$(DEPDIR)/libtnldist_mpi_0_1_la-param-crv-dst.Plo
+include ./$(DEPDIR)/msdfIterBase.Plo
+include ./$(DEPDIR)/msdfSussmanFatemi.Plo
+include ./$(DEPDIR)/param-crv-dst.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -375,82 +421,82 @@ include ./$(DEPDIR)/libtnldist_0_1_la-param-crv-dst.Plo
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LTCXXCOMPILE) -c -o $@ $<
 
-libtnldist_0_1_la-direct.lo: direct.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-direct.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-direct.Tpo -c -o libtnldist_0_1_la-direct.lo `test -f 'direct.cpp' || echo '$(srcdir)/'`direct.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-direct.Tpo $(DEPDIR)/libtnldist_0_1_la-direct.Plo
-#	source='direct.cpp' object='libtnldist_0_1_la-direct.lo' libtool=yes \
+libtnldist_mpi_0_1_la-direct.lo: direct.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-direct.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-direct.Tpo -c -o libtnldist_mpi_0_1_la-direct.lo `test -f 'direct.cpp' || echo '$(srcdir)/'`direct.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-direct.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-direct.Plo
+#	source='direct.cpp' object='libtnldist_mpi_0_1_la-direct.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-direct.lo `test -f 'direct.cpp' || echo '$(srcdir)/'`direct.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-direct.lo `test -f 'direct.cpp' || echo '$(srcdir)/'`direct.cpp
 
-libtnldist_0_1_la-fmm2d.lo: fmm2d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-fmm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-fmm2d.Tpo -c -o libtnldist_0_1_la-fmm2d.lo `test -f 'fmm2d.cpp' || echo '$(srcdir)/'`fmm2d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-fmm2d.Tpo $(DEPDIR)/libtnldist_0_1_la-fmm2d.Plo
-#	source='fmm2d.cpp' object='libtnldist_0_1_la-fmm2d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-fmm2d.lo: fmm2d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-fmm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-fmm2d.Tpo -c -o libtnldist_mpi_0_1_la-fmm2d.lo `test -f 'fmm2d.cpp' || echo '$(srcdir)/'`fmm2d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-fmm2d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-fmm2d.Plo
+#	source='fmm2d.cpp' object='libtnldist_mpi_0_1_la-fmm2d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-fmm2d.lo `test -f 'fmm2d.cpp' || echo '$(srcdir)/'`fmm2d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-fmm2d.lo `test -f 'fmm2d.cpp' || echo '$(srcdir)/'`fmm2d.cpp
 
-libtnldist_0_1_la-fsm2d.lo: fsm2d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-fsm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-fsm2d.Tpo -c -o libtnldist_0_1_la-fsm2d.lo `test -f 'fsm2d.cpp' || echo '$(srcdir)/'`fsm2d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-fsm2d.Tpo $(DEPDIR)/libtnldist_0_1_la-fsm2d.Plo
-#	source='fsm2d.cpp' object='libtnldist_0_1_la-fsm2d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-fsm2d.lo: fsm2d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-fsm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-fsm2d.Tpo -c -o libtnldist_mpi_0_1_la-fsm2d.lo `test -f 'fsm2d.cpp' || echo '$(srcdir)/'`fsm2d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-fsm2d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-fsm2d.Plo
+#	source='fsm2d.cpp' object='libtnldist_mpi_0_1_la-fsm2d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-fsm2d.lo `test -f 'fsm2d.cpp' || echo '$(srcdir)/'`fsm2d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-fsm2d.lo `test -f 'fsm2d.cpp' || echo '$(srcdir)/'`fsm2d.cpp
 
-libtnldist_0_1_la-ftm2d.lo: ftm2d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-ftm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-ftm2d.Tpo -c -o libtnldist_0_1_la-ftm2d.lo `test -f 'ftm2d.cpp' || echo '$(srcdir)/'`ftm2d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-ftm2d.Tpo $(DEPDIR)/libtnldist_0_1_la-ftm2d.Plo
-#	source='ftm2d.cpp' object='libtnldist_0_1_la-ftm2d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-ftm2d.lo: ftm2d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-ftm2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-ftm2d.Tpo -c -o libtnldist_mpi_0_1_la-ftm2d.lo `test -f 'ftm2d.cpp' || echo '$(srcdir)/'`ftm2d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-ftm2d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-ftm2d.Plo
+#	source='ftm2d.cpp' object='libtnldist_mpi_0_1_la-ftm2d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-ftm2d.lo `test -f 'ftm2d.cpp' || echo '$(srcdir)/'`ftm2d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-ftm2d.lo `test -f 'ftm2d.cpp' || echo '$(srcdir)/'`ftm2d.cpp
 
-libtnldist_0_1_la-init_band.lo: init_band.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-init_band.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-init_band.Tpo -c -o libtnldist_0_1_la-init_band.lo `test -f 'init_band.cpp' || echo '$(srcdir)/'`init_band.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-init_band.Tpo $(DEPDIR)/libtnldist_0_1_la-init_band.Plo
-#	source='init_band.cpp' object='libtnldist_0_1_la-init_band.lo' libtool=yes \
+libtnldist_mpi_0_1_la-init_band.lo: init_band.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-init_band.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-init_band.Tpo -c -o libtnldist_mpi_0_1_la-init_band.lo `test -f 'init_band.cpp' || echo '$(srcdir)/'`init_band.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-init_band.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-init_band.Plo
+#	source='init_band.cpp' object='libtnldist_mpi_0_1_la-init_band.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-init_band.lo `test -f 'init_band.cpp' || echo '$(srcdir)/'`init_band.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-init_band.lo `test -f 'init_band.cpp' || echo '$(srcdir)/'`init_band.cpp
 
-libtnldist_0_1_la-iter1d.lo: iter1d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-iter1d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-iter1d.Tpo -c -o libtnldist_0_1_la-iter1d.lo `test -f 'iter1d.cpp' || echo '$(srcdir)/'`iter1d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-iter1d.Tpo $(DEPDIR)/libtnldist_0_1_la-iter1d.Plo
-#	source='iter1d.cpp' object='libtnldist_0_1_la-iter1d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-iter1d.lo: iter1d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-iter1d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-iter1d.Tpo -c -o libtnldist_mpi_0_1_la-iter1d.lo `test -f 'iter1d.cpp' || echo '$(srcdir)/'`iter1d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-iter1d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-iter1d.Plo
+#	source='iter1d.cpp' object='libtnldist_mpi_0_1_la-iter1d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-iter1d.lo `test -f 'iter1d.cpp' || echo '$(srcdir)/'`iter1d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-iter1d.lo `test -f 'iter1d.cpp' || echo '$(srcdir)/'`iter1d.cpp
 
-libtnldist_0_1_la-iter2d.lo: iter2d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-iter2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-iter2d.Tpo -c -o libtnldist_0_1_la-iter2d.lo `test -f 'iter2d.cpp' || echo '$(srcdir)/'`iter2d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-iter2d.Tpo $(DEPDIR)/libtnldist_0_1_la-iter2d.Plo
-#	source='iter2d.cpp' object='libtnldist_0_1_la-iter2d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-iter2d.lo: iter2d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-iter2d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-iter2d.Tpo -c -o libtnldist_mpi_0_1_la-iter2d.lo `test -f 'iter2d.cpp' || echo '$(srcdir)/'`iter2d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-iter2d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-iter2d.Plo
+#	source='iter2d.cpp' object='libtnldist_mpi_0_1_la-iter2d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-iter2d.lo `test -f 'iter2d.cpp' || echo '$(srcdir)/'`iter2d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-iter2d.lo `test -f 'iter2d.cpp' || echo '$(srcdir)/'`iter2d.cpp
 
-libtnldist_0_1_la-iter3d.lo: iter3d.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-iter3d.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-iter3d.Tpo -c -o libtnldist_0_1_la-iter3d.lo `test -f 'iter3d.cpp' || echo '$(srcdir)/'`iter3d.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-iter3d.Tpo $(DEPDIR)/libtnldist_0_1_la-iter3d.Plo
-#	source='iter3d.cpp' object='libtnldist_0_1_la-iter3d.lo' libtool=yes \
+libtnldist_mpi_0_1_la-iter3d.lo: iter3d.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-iter3d.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-iter3d.Tpo -c -o libtnldist_mpi_0_1_la-iter3d.lo `test -f 'iter3d.cpp' || echo '$(srcdir)/'`iter3d.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-iter3d.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-iter3d.Plo
+#	source='iter3d.cpp' object='libtnldist_mpi_0_1_la-iter3d.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-iter3d.lo `test -f 'iter3d.cpp' || echo '$(srcdir)/'`iter3d.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-iter3d.lo `test -f 'iter3d.cpp' || echo '$(srcdir)/'`iter3d.cpp
 
-libtnldist_0_1_la-param-crv-dst.lo: param-crv-dst.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-param-crv-dst.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-param-crv-dst.Tpo -c -o libtnldist_0_1_la-param-crv-dst.lo `test -f 'param-crv-dst.cpp' || echo '$(srcdir)/'`param-crv-dst.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-param-crv-dst.Tpo $(DEPDIR)/libtnldist_0_1_la-param-crv-dst.Plo
-#	source='param-crv-dst.cpp' object='libtnldist_0_1_la-param-crv-dst.lo' libtool=yes \
+libtnldist_mpi_0_1_la-param-crv-dst.lo: param-crv-dst.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-param-crv-dst.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-param-crv-dst.Tpo -c -o libtnldist_mpi_0_1_la-param-crv-dst.lo `test -f 'param-crv-dst.cpp' || echo '$(srcdir)/'`param-crv-dst.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-param-crv-dst.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-param-crv-dst.Plo
+#	source='param-crv-dst.cpp' object='libtnldist_mpi_0_1_la-param-crv-dst.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-param-crv-dst.lo `test -f 'param-crv-dst.cpp' || echo '$(srcdir)/'`param-crv-dst.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-param-crv-dst.lo `test -f 'param-crv-dst.cpp' || echo '$(srcdir)/'`param-crv-dst.cpp
 
-libtnldist_0_1_la-msdfSussmanFatemi.lo: msdfSussmanFatemi.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-msdfSussmanFatemi.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-msdfSussmanFatemi.Tpo -c -o libtnldist_0_1_la-msdfSussmanFatemi.lo `test -f 'msdfSussmanFatemi.cpp' || echo '$(srcdir)/'`msdfSussmanFatemi.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-msdfSussmanFatemi.Tpo $(DEPDIR)/libtnldist_0_1_la-msdfSussmanFatemi.Plo
-#	source='msdfSussmanFatemi.cpp' object='libtnldist_0_1_la-msdfSussmanFatemi.lo' libtool=yes \
+libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo: msdfSussmanFatemi.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-msdfSussmanFatemi.Tpo -c -o libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo `test -f 'msdfSussmanFatemi.cpp' || echo '$(srcdir)/'`msdfSussmanFatemi.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-msdfSussmanFatemi.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-msdfSussmanFatemi.Plo
+#	source='msdfSussmanFatemi.cpp' object='libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-msdfSussmanFatemi.lo `test -f 'msdfSussmanFatemi.cpp' || echo '$(srcdir)/'`msdfSussmanFatemi.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-msdfSussmanFatemi.lo `test -f 'msdfSussmanFatemi.cpp' || echo '$(srcdir)/'`msdfSussmanFatemi.cpp
 
-libtnldist_0_1_la-msdfIterBase.lo: msdfIterBase.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_0_1_la-msdfIterBase.lo -MD -MP -MF $(DEPDIR)/libtnldist_0_1_la-msdfIterBase.Tpo -c -o libtnldist_0_1_la-msdfIterBase.lo `test -f 'msdfIterBase.cpp' || echo '$(srcdir)/'`msdfIterBase.cpp
-	$(am__mv) $(DEPDIR)/libtnldist_0_1_la-msdfIterBase.Tpo $(DEPDIR)/libtnldist_0_1_la-msdfIterBase.Plo
-#	source='msdfIterBase.cpp' object='libtnldist_0_1_la-msdfIterBase.lo' libtool=yes \
+libtnldist_mpi_0_1_la-msdfIterBase.lo: msdfIterBase.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnldist_mpi_0_1_la-msdfIterBase.lo -MD -MP -MF $(DEPDIR)/libtnldist_mpi_0_1_la-msdfIterBase.Tpo -c -o libtnldist_mpi_0_1_la-msdfIterBase.lo `test -f 'msdfIterBase.cpp' || echo '$(srcdir)/'`msdfIterBase.cpp
+	$(am__mv) $(DEPDIR)/libtnldist_mpi_0_1_la-msdfIterBase.Tpo $(DEPDIR)/libtnldist_mpi_0_1_la-msdfIterBase.Plo
+#	source='msdfIterBase.cpp' object='libtnldist_mpi_0_1_la-msdfIterBase.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_0_1_la-msdfIterBase.lo `test -f 'msdfIterBase.cpp' || echo '$(srcdir)/'`msdfIterBase.cpp
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnldist_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnldist_mpi_0_1_la-msdfIterBase.lo `test -f 'msdfIterBase.cpp' || echo '$(srcdir)/'`msdfIterBase.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

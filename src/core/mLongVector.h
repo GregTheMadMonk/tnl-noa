@@ -19,10 +19,10 @@
 #define mLongVectorH
 
 #include <assert.h>
-#include "mObject.h"
+#include "tnlObject.h"
 #include "param-types.h"
 
-template< class T > class mLongVector : public mObject
+template< class T > class mLongVector : public tnlObject
 {
 
    public:
@@ -42,7 +42,7 @@ template< class T > class mLongVector : public mObject
 
    //! Constructor with another long vector as template
    mLongVector( const mLongVector& v )
-   : mObject( v ), size( v. size ), shared_data( false )
+   : tnlObject( v ), size( v. size ), shared_data( false )
    {
       data = new T[ size + 1 ];
       if( ! data )
@@ -144,7 +144,7 @@ template< class T > class mLongVector : public mObject
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mObject :: Save( file ) ) return false;
+      if( ! tnlObject :: Save( file ) ) return false;
       file. write( ( char* ) &size, sizeof( int ) );
       if( file. bad() ) return false;
       file. write( ( char* ) data, size * sizeof( T ) );
@@ -155,7 +155,7 @@ template< class T > class mLongVector : public mObject
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mObject :: Load( file ) ) return false;
+      if( ! tnlObject :: Load( file ) ) return false;
       int _size;
       file. read( ( char* ) &_size, sizeof( int ) );
       if( _size <= 0 )

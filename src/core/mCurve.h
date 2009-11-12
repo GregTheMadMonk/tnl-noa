@@ -21,7 +21,7 @@
 #include <iomanip>
 #include <fstream>
 #include "mList.h"
-#include "mObject.h"
+#include "tnlObject.h"
 #include "mfuncs.h"
 #include "compress-file.h"
 #include "mVector.h"
@@ -59,7 +59,7 @@ template< class T > class mCurveElement
    bool separator;
 };
 
-template< class T > class mCurve : public mObject, public mList< mCurveElement< T > >
+template< class T > class mCurve : public tnlObject, public mList< mCurveElement< T > >
 {
    public:
    //! Basic contructor
@@ -91,7 +91,7 @@ template< class T > class mCurve : public mObject, public mList< mCurveElement< 
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mObject :: Save( file ) ) return false;
+      if( ! tnlObject :: Save( file ) ) return false;
       if( ! mList< mCurveElement< T > > :: DeepSave( file ) ) return false;
       if( file. bad() ) return false;
       return true;
@@ -100,7 +100,7 @@ template< class T > class mCurve : public mObject, public mList< mCurveElement< 
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mObject :: Load( file ) ) return false;
+      if( ! tnlObject :: Load( file ) ) return false;
       if( ! mList< mCurveElement< T > > :: DeepLoad( file ) ) return false;
       if( file. bad() ) return false;
       return true;

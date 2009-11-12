@@ -20,7 +20,7 @@
 
 #include <ostream>
 #include <iomanip>
-#include <mObject.h>
+#include <tnlObject.h>
 #include <mString.h>
 
 class mMatrixClass
@@ -34,7 +34,7 @@ class mMatrixClass
    static const mString petsc;
 };
 
-template< typename T > class mBaseMatrix : public mObject
+template< typename T > class mBaseMatrix : public tnlObject
 {
    public:
 

@@ -86,12 +86,12 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run tar
+ACLOCAL = ${SHELL} /home/oberhuber/workspace/tnl/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/oberhuber/workspace/tnl/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/oberhuber/workspace/tnl/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -101,7 +101,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist 
+CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -127,7 +127,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/oberhuber/workspace/tnl/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 MPICC = 
 MPICXX = yes
@@ -141,11 +141,11 @@ OTOOL =
 OTOOL64 = 
 PACKAGE = libtnl
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = 
-PACKAGE_STRING = 
-PACKAGE_TARNAME = 
+PACKAGE_NAME = tnl
+PACKAGE_STRING = tnl 0.1
+PACKAGE_TARNAME = tnl
 PACKAGE_URL = 
-PACKAGE_VERSION = 
+PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SED = /bin/sed
@@ -153,10 +153,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /home/oberhuber/num/tnl-0.1/src
-abs_srcdir = /home/oberhuber/num/tnl-0.1/src
-abs_top_builddir = /home/oberhuber/num/tnl-0.1
-abs_top_srcdir = /home/oberhuber/num/tnl-0.1
+abs_builddir = /home/oberhuber/workspace/tnl/src
+abs_srcdir = /home/oberhuber/workspace/tnl/src
+abs_top_builddir = /home/oberhuber/workspace/tnl
+abs_top_srcdir = /home/oberhuber/workspace/tnl
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_DUMPBIN = 
@@ -174,7 +174,7 @@ build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE}
+docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-unknown-linux-gnu
@@ -185,7 +185,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/oberhuber/num/tnl-0.1/install-sh
+install_sh = ${SHELL} /home/oberhuber/workspace/tnl/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -210,7 +210,7 @@ SUBDIRS = core \
           debug \
           diff \
           dist \
-	  matrix
+	      matrix
 
 all: all-recursive
 

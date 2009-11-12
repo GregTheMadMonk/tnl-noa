@@ -42,7 +42,7 @@ POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 subdir = src/diff
-DIST_COMMON = $(libmdiffinclude_HEADERS) $(srcdir)/Makefile.am \
+DIST_COMMON = $(libtnldiffinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -74,15 +74,35 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(libdir)" \
-	"$(DESTDIR)$(libmdiffincludedir)"
+	"$(DESTDIR)$(libtnldiffincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnldiff_0_1_la_LIBADD =
+am__libtnldiff_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
+	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
+	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
+	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
 am__objects_1 =
+#am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
 am_libtnldiff_0_1_la_OBJECTS = $(am__objects_1)
 libtnldiff_0_1_la_OBJECTS = $(am_libtnldiff_0_1_la_OBJECTS)
 libtnldiff_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libtnldiff_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+#am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
+am_libtnldiff_0_1_la_rpath = -rpath $(libdir)
+libtnldiff_mpi_0_1_la_LIBADD =
+am__libtnldiff_mpi_0_1_la_SOURCES_DIST = mdiff.h mdiff-debug.h \
+	drawGrid1D.h drawGrid2D.h drawGrid3D.h mExplicitSolver.h \
+	mGrid1D.h mGrid2D.h mGrid3D.h mGridSystem1D.h mEulerSolver.h \
+	mMersonSolver.h mMPIMesh2D.h mMPIMesh3D.h \
+	mNonlinearRungeKuttaSolver.h curve-ident.h norms.h
+am_libtnldiff_mpi_0_1_la_OBJECTS = $(am__objects_1)
+libtnldiff_mpi_0_1_la_OBJECTS = $(am_libtnldiff_mpi_0_1_la_OBJECTS)
+libtnldiff_mpi_0_1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libtnldiff_mpi_0_1_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libtnldiff_mpi_0_1_la_rpath = -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -93,18 +113,20 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libtnldiff_0_1_la_SOURCES)
-DIST_SOURCES = $(libtnldiff_0_1_la_SOURCES)
-HEADERS = $(libmdiffinclude_HEADERS)
+SOURCES = $(libtnldiff_0_1_la_SOURCES) \
+	$(libtnldiff_mpi_0_1_la_SOURCES)
+DIST_SOURCES = $(am__libtnldiff_0_1_la_SOURCES_DIST) \
+	$(am__libtnldiff_mpi_0_1_la_SOURCES_DIST)
+HEADERS = $(libtnldiffinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run tar
+ACLOCAL = ${SHELL} /home/oberhuber/workspace/tnl/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/oberhuber/workspace/tnl/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/oberhuber/workspace/tnl/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/oberhuber/workspace/tnl/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -114,7 +136,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist 
+CXXFLAGS =  -O3 -I../core -I../debug -I../diff -I../dist  -I../src/debug -I../src/core -I../src/diff
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -140,7 +162,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/oberhuber/num/tnl-0.1/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/oberhuber/workspace/tnl/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 MPICC = 
 MPICXX = yes
@@ -154,11 +176,11 @@ OTOOL =
 OTOOL64 = 
 PACKAGE = libtnl
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = 
-PACKAGE_STRING = 
-PACKAGE_TARNAME = 
+PACKAGE_NAME = tnl
+PACKAGE_STRING = tnl 0.1
+PACKAGE_TARNAME = tnl
 PACKAGE_URL = 
-PACKAGE_VERSION = 
+PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SED = /bin/sed
@@ -166,10 +188,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /home/oberhuber/num/tnl-0.1/src/diff
-abs_srcdir = /home/oberhuber/num/tnl-0.1/src/diff
-abs_top_builddir = /home/oberhuber/num/tnl-0.1
-abs_top_srcdir = /home/oberhuber/num/tnl-0.1
+abs_builddir = /home/oberhuber/workspace/tnl/src/diff
+abs_srcdir = /home/oberhuber/workspace/tnl/src/diff
+abs_top_builddir = /home/oberhuber/workspace/tnl
+abs_top_srcdir = /home/oberhuber/workspace/tnl
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_DUMPBIN = 
@@ -187,7 +209,7 @@ build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE}
+docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-unknown-linux-gnu
@@ -198,7 +220,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/oberhuber/num/tnl-0.1/install-sh
+install_sh = ${SHELL} /home/oberhuber/workspace/tnl/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -238,12 +260,17 @@ headers = \
    curve-ident.h \
    norms.h
 
-libmdiffincludedir = $(includedir)/tnldiff-0.1
-libmdiffinclude_HEADERS = $(headers)
-lib_LTLIBRARIES = libtnldiff-0.1.la
-libtnldiff_0_1_la_CXXFLAGS = $(mCore_CFLAGS)
-libtnldiff_0_1_la_LDFLAGS = $(mCore_LIBS)
+libtnldiffincludedir = $(includedir)/tnldiff-0.1
+libtnldiffinclude_HEADERS = $(headers)
+#lib_LTLIBRARIES = libtnldiff-0.1.la
+lib_LTLIBRARIES = libtnldiff-0.1.la  libtnldiff-mpi-0.1.la 
+libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS)
+libtnldiff_0_1_la_LDFLAGS = $(LDFLAGS)
+#libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
 libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
+libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldiff_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
+libtnldiff_mpi_0_1_la_SOURCES = $(sources) $(headers)
 all: all-am
 
 .SUFFIXES:
@@ -309,7 +336,9 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libtnldiff-0.1.la: $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_DEPENDENCIES) 
-	$(libtnldiff_0_1_la_LINK) -rpath $(libdir) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+	$(libtnldiff_0_1_la_LINK) $(am_libtnldiff_0_1_la_rpath) $(libtnldiff_0_1_la_OBJECTS) $(libtnldiff_0_1_la_LIBADD) $(LIBS)
+libtnldiff-mpi-0.1.la: $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_DEPENDENCIES) 
+	$(libtnldiff_mpi_0_1_la_LINK) $(am_libtnldiff_mpi_0_1_la_rpath) $(libtnldiff_mpi_0_1_la_OBJECTS) $(libtnldiff_mpi_0_1_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -322,26 +351,26 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-libmdiffincludeHEADERS: $(libmdiffinclude_HEADERS)
+install-libtnldiffincludeHEADERS: $(libtnldiffinclude_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(libmdiffincludedir)" || $(MKDIR_P) "$(DESTDIR)$(libmdiffincludedir)"
-	@list='$(libmdiffinclude_HEADERS)'; test -n "$(libmdiffincludedir)" || list=; \
+	test -z "$(libtnldiffincludedir)" || $(MKDIR_P) "$(DESTDIR)$(libtnldiffincludedir)"
+	@list='$(libtnldiffinclude_HEADERS)'; test -n "$(libtnldiffincludedir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libmdiffincludedir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libmdiffincludedir)" || exit $$?; \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libtnldiffincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libtnldiffincludedir)" || exit $$?; \
 	done
 
-uninstall-libmdiffincludeHEADERS:
+uninstall-libtnldiffincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(libmdiffinclude_HEADERS)'; test -n "$(libmdiffincludedir)" || list=; \
+	@list='$(libtnldiffinclude_HEADERS)'; test -n "$(libtnldiffincludedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(libmdiffincludedir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(libmdiffincludedir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(libtnldiffincludedir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(libtnldiffincludedir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -429,7 +458,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libmdiffincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libtnldiffincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -479,7 +508,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-libmdiffincludeHEADERS
+install-data-am: install-libtnldiffincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -525,7 +554,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-libLTLIBRARIES \
-	uninstall-libmdiffincludeHEADERS
+	uninstall-libtnldiffincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -536,14 +565,14 @@ uninstall-am: uninstall-libLTLIBRARIES \
 	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-libmdiffincludeHEADERS \
+	install-libLTLIBRARIES install-libtnldiffincludeHEADERS \
 	install-man install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-libmdiffincludeHEADERS
+	uninstall-libtnldiffincludeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

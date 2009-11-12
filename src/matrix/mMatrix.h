@@ -22,7 +22,7 @@
 #include <iomanip.h>
 #include <mObject.h>
 
-template< typename T > class mMatrix : public mObject
+template< typename T > class mMatrix : public tnlObject
 {
    public:
 

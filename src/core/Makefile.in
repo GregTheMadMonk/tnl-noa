@@ -78,21 +78,22 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnlcore_0_1_la_LIBADD =
 am__libtnlcore_0_1_la_SOURCES_DIST = mConfigDescription.cpp \
-	mLogger.cpp mObject.cpp mString.cpp \
+	mLogger.cpp tnlObject.cpp mString.cpp \
 	mConfigDescriptionScanner.cpp mConfigDescriptionParser.cpp \
 	mParameterContainer.cpp mTimerCPU.cpp mTimerRT.cpp \
 	compress-file.cpp mfilename.cpp mpi-supp.cpp parse.cc mcore.h \
 	mConfigDescription.h mCurve.h mDataElement.h mField1D.h \
 	mField2D.h mField3D.h mFieldSystem1D.h mList.h mLongVector.h \
-	mLogger.h mObject.h mString.h mConfigDescriptionParser.h \
+	mLogger.h tnlObject.h mString.h mConfigDescriptionParser.h \
 	mConfigDescriptionParserbase.h mConfigDescriptionParser.ih \
 	mConfigDescriptionScanner.h mParameterContainer.h mTimerCPU.h \
 	mTimerRT.h mVector.h compress-file.h mfilename.h mfuncs.h \
 	mpi-supp.h param-types.h debug.h
-am__objects_1 = mConfigDescription.lo mLogger.lo mObject.lo mString.lo \
-	mConfigDescriptionScanner.lo mConfigDescriptionParser.lo \
-	mParameterContainer.lo mTimerCPU.lo mTimerRT.lo \
-	compress-file.lo mfilename.lo mpi-supp.lo parse.lo
+am__objects_1 = mConfigDescription.lo mLogger.lo tnlObject.lo \
+	mString.lo mConfigDescriptionScanner.lo \
+	mConfigDescriptionParser.lo mParameterContainer.lo \
+	mTimerCPU.lo mTimerRT.lo compress-file.lo mfilename.lo \
+	mpi-supp.lo parse.lo
 am__objects_2 =
 @BUILDMPI_FALSE@am_libtnlcore_0_1_la_OBJECTS = $(am__objects_1) \
 @BUILDMPI_FALSE@	$(am__objects_2)
@@ -103,20 +104,20 @@ libtnlcore_0_1_la_OBJECTS = $(am_libtnlcore_0_1_la_OBJECTS)
 @BUILDMPI_TRUE@am_libtnlcore_0_1_la_rpath = -rpath $(libdir)
 libtnlcore_mpi_0_1_la_LIBADD =
 am__libtnlcore_mpi_0_1_la_SOURCES_DIST = mConfigDescription.cpp \
-	mLogger.cpp mObject.cpp mString.cpp \
+	mLogger.cpp tnlObject.cpp mString.cpp \
 	mConfigDescriptionScanner.cpp mConfigDescriptionParser.cpp \
 	mParameterContainer.cpp mTimerCPU.cpp mTimerRT.cpp \
 	compress-file.cpp mfilename.cpp mpi-supp.cpp parse.cc mcore.h \
 	mConfigDescription.h mCurve.h mDataElement.h mField1D.h \
 	mField2D.h mField3D.h mFieldSystem1D.h mList.h mLongVector.h \
-	mLogger.h mObject.h mString.h mConfigDescriptionParser.h \
+	mLogger.h tnlObject.h mString.h mConfigDescriptionParser.h \
 	mConfigDescriptionParserbase.h mConfigDescriptionParser.ih \
 	mConfigDescriptionScanner.h mParameterContainer.h mTimerCPU.h \
 	mTimerRT.h mVector.h compress-file.h mfilename.h mfuncs.h \
 	mpi-supp.h param-types.h debug.h
 am__objects_3 = libtnlcore_mpi_0_1_la-mConfigDescription.lo \
 	libtnlcore_mpi_0_1_la-mLogger.lo \
-	libtnlcore_mpi_0_1_la-mObject.lo \
+	libtnlcore_mpi_0_1_la-tnlObject.lo \
 	libtnlcore_mpi_0_1_la-mString.lo \
 	libtnlcore_mpi_0_1_la-mConfigDescriptionScanner.lo \
 	libtnlcore_mpi_0_1_la-mConfigDescriptionParser.lo \
@@ -300,7 +301,7 @@ headers = mcore.h \
 	  mList.h \
 	  mLongVector.h \
 	  mLogger.h \
-	  mObject.h \
+	  tnlObject.h \
 	  mString.h \
 	  mConfigDescriptionParser.h \
 	  mConfigDescriptionParserbase.h \
@@ -318,7 +319,7 @@ headers = mcore.h \
 
 sources = mConfigDescription.cpp \
 	  mLogger.cpp \
-	  mObject.cpp \
+	  tnlObject.cpp \
 	  mString.cpp \
 	  mConfigDescriptionScanner.cpp \
 	  mConfigDescriptionParser.cpp \
@@ -421,7 +422,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mConfigDescriptionParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mConfigDescriptionScanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mLogger.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mObject.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mParameterContainer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mTimerCPU.Plo@am__quote@
@@ -429,11 +429,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mfilename.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-mpi-supp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-parse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtnlcore_mpi_0_1_la-tnlObject.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mConfigDescription.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mConfigDescriptionParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mConfigDescriptionScanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mLogger.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mObject.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mParameterContainer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mTimerCPU.Plo@am__quote@
@@ -441,6 +441,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mfilename.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpi-supp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnlObject.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -477,12 +478,12 @@ libtnlcore_mpi_0_1_la-mLogger.lo: mLogger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlcore_mpi_0_1_la-mLogger.lo `test -f 'mLogger.cpp' || echo '$(srcdir)/'`mLogger.cpp
 
-libtnlcore_mpi_0_1_la-mObject.lo: mObject.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlcore_mpi_0_1_la-mObject.lo -MD -MP -MF $(DEPDIR)/libtnlcore_mpi_0_1_la-mObject.Tpo -c -o libtnlcore_mpi_0_1_la-mObject.lo `test -f 'mObject.cpp' || echo '$(srcdir)/'`mObject.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtnlcore_mpi_0_1_la-mObject.Tpo $(DEPDIR)/libtnlcore_mpi_0_1_la-mObject.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='mObject.cpp' object='libtnlcore_mpi_0_1_la-mObject.lo' libtool=yes @AMDEPBACKSLASH@
+libtnlcore_mpi_0_1_la-tnlObject.lo: tnlObject.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlcore_mpi_0_1_la-tnlObject.lo -MD -MP -MF $(DEPDIR)/libtnlcore_mpi_0_1_la-tnlObject.Tpo -c -o libtnlcore_mpi_0_1_la-tnlObject.lo `test -f 'tnlObject.cpp' || echo '$(srcdir)/'`tnlObject.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtnlcore_mpi_0_1_la-tnlObject.Tpo $(DEPDIR)/libtnlcore_mpi_0_1_la-tnlObject.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnlObject.cpp' object='libtnlcore_mpi_0_1_la-tnlObject.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlcore_mpi_0_1_la-mObject.lo `test -f 'mObject.cpp' || echo '$(srcdir)/'`mObject.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -c -o libtnlcore_mpi_0_1_la-tnlObject.lo `test -f 'tnlObject.cpp' || echo '$(srcdir)/'`tnlObject.cpp
 
 libtnlcore_mpi_0_1_la-mString.lo: mString.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtnlcore_mpi_0_1_la_CXXFLAGS) $(CXXFLAGS) -MT libtnlcore_mpi_0_1_la-mString.lo -MD -MP -MF $(DEPDIR)/libtnlcore_mpi_0_1_la-mString.Tpo -c -o libtnlcore_mpi_0_1_la-mString.lo `test -f 'mString.cpp' || echo '$(srcdir)/'`mString.cpp

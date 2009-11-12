@@ -27,7 +27,7 @@
 #include "mList.h"
 #include "mLogger.h"
 #include "mLongVector.h"
-#include "mObject.h"
+#include "tnlObject.h"
 #include "mParameterContainer.h"
 #include "mString.h"
 #include "mTimerCPU.h"

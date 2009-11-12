@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mObject.cpp  -  description
+                          tnlObject.cpp  -  description
                              -------------------
     begin                : 2005/10/15
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mObject.h"
+#include "tnlObject.h"
 #include <assert.h>
 #include <iostream>
 #include <fstream>
@@ -24,30 +24,30 @@
 
 const char magic_number[] = "SIM33";
 //--------------------------------------------------------------------------
-mObject :: mObject( )
+tnlObject :: tnlObject( )
 {
 }
 //--------------------------------------------------------------------------
-mObject :: mObject( const mObject& object )
+tnlObject :: tnlObject( const tnlObject& object )
 {
 }
 //--------------------------------------------------------------------------
-mString mObject :: GetType() const
+mString tnlObject :: GetType() const
 {
    return mString( "mObject" );
 }
 //--------------------------------------------------------------------------
-void mObject :: SetName( const char* _name )
+void tnlObject :: SetName( const char* _name )
 {
    name. SetString( _name );
 }
 //--------------------------------------------------------------------------
-const mString& mObject :: GetName() const
+const mString& tnlObject :: GetName() const
 {
    return name;
 }
 //--------------------------------------------------------------------------
-bool mObject :: Save( ostream& file ) const
+bool tnlObject :: Save( ostream& file ) const
 {
    DBG_FUNCTION_NAME( "mObject", "Save" );
    DBG_COUT( "Writing magic number." );
@@ -58,7 +58,7 @@ bool mObject :: Save( ostream& file ) const
    return true;
 }
 //--------------------------------------------------------------------------
-bool mObject :: Load( istream& file )
+bool tnlObject :: Load( istream& file )
 {
    DBG_FUNCTION_NAME( "mObject", "Load" );
    DBG_COUT( "Reading object type " );

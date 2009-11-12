@@ -2,7 +2,7 @@
                           mMPIMesh2D.cpp  -  description
                              -------------------
     begin                : 2005/07/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -1238,7 +1238,7 @@ m_bool CreateMesh( const mMPIMesh2D& mpi_mesh,
       mGrid2D* phi( 0 );
       if( mpi_mesh. NodeRank() == 0 )
       {
-         mObject* obj = ( *phi_cont )[ i ];
+         tnlObject* obj = ( *phi_cont )[ i ];
          assert( obj -> GetType() == "mGrid2D" );
          phi = ( mGrid2D* ) obj;
       }
@@ -1260,7 +1260,7 @@ void CreateGlobalGrid( const mMPIMesh2D* mpi_mesh,
    for( i = 0; i < size; i ++ )
    {
       mGrid2D *phi( 0 ), *sub_phi( 0 );
-      mObject* obj = ( *sub_phi_cont )[ i ];
+      tnlObject* obj = ( *sub_phi_cont )[ i ];
       assert( obj -> GetType() == "mGrid2D" );
       sub_phi = ( mGrid2D* ) obj;
       mpi_mesh -> CreateGlobalGrid( phi, sub_phi );
@@ -1283,14 +1283,14 @@ void Scatter( const mMPIMesh2D* mpi_mesh,
       mString name;
       if( mpi_mesh -> NodeRank() == 0 )
       {
-         mObject* obj;
+         tnlObject* obj;
          obj = ( * phi_cont )[ i ];
          assert( obj -> GetType() == "mGrid2D" );
          phi = ( mGrid2D* ) obj;
          name = phi -> GetName();
       }
       name. MPIBcast( 0 );
-      mObject* obj = sub_phi_cont -> GetObject( name. Data() );
+      tnlObject* obj = sub_phi_cont -> GetObject( name. Data() );
       assert( obj );
       assert( obj -> GetType() == "mGrid2D" );
       mGrid2D* sub_phi = ( mGrid2D* ) obj;
@@ -1315,14 +1315,14 @@ void Gather( const mMPIMesh2D* mpi_mesh,
       mString name;
       if( mpi_mesh -> NodeRank() == 0 )
       {
-         mObject* obj;
+         tnlObject* obj;
          obj = ( * phi_cont )[ i ];
          assert( obj -> GetType() == "mGrid2D" );
          phi = ( mGrid2D* ) obj;
          name = phi -> GetName();
       }
       name. MPIBcast( 0 );
-      const mObject* obj = sub_phi_cont -> GetObject( name. Data() );
+      const tnlObject* obj = sub_phi_cont -> GetObject( name. Data() );
       assert( obj );
       assert( obj -> GetType() == "mGrid2D" );
       const mGrid2D* sub_phi = ( mGrid2D* ) obj;

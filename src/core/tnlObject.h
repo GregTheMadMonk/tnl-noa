@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mObject.h  -  description
+                          tnlObject.h  -  description
                              -------------------
     begin                : 2005/10/15
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mObjectH
-#define mObjectH
+#ifndef tnlObjectH
+#define tnlObjectH
 
 #include "mString.h"
 
@@ -28,17 +28,17 @@
     or program halt. Name is useful for debuging and for referencing objects
     during the restoring. 
 */
-class mObject
+class tnlObject
 {
    public:
 
    //! Basic constructor
-   mObject();
+   tnlObject();
    
    //! Copy constructor 
    /*! It does not copy name - name should be unique
     */
-   mObject( const mObject& object );
+   tnlObject( const tnlObject& object );
 
    //! Type getter
    virtual mString GetType() const = 0;
@@ -56,7 +56,7 @@ class mObject
    virtual bool Load( istream& file );   
 
    //! Destructor
-   virtual ~mObject(){};
+   virtual ~tnlObject(){};
 
    protected:
 

@@ -1,0 +1,45 @@
+2009-11-10  oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* config.h: Removed.
+	* config.log: Removed.
+	* config.status: Removed.
+	* libtool: Removed.
+	* Makefile: Removed.
+	* src/core/Makefile: Removed.
+	* src/debug/Makefile: Removed.
+	* src/debug/tnl-debug-test: Removed.
+	* src/diff/Makefile: Removed.
+	* src/dist/Makefile: Removed.
+	* src/Makefile: Removed.
+	* src/matrix/Makefile: Removed.
+	* stamp-h1: Removed.
+	* tnl-autotools: Removed.
+	* .cproject: New file.
+	* .project: New file.
+	* autom4te.cache/output.0: 
+	* autom4te.cache/output.1: 
+	* autom4te.cache/requests: 
+	* autom4te.cache/traces.0: 
+	* autom4te.cache/traces.1: 
+	* configure.ac: 
+	
+	* src/core/mCurve.h (Load): 
+	(Save): 
+	* src/core/mLongVector.h (mLongVector): 
+	(Load): 
+	(Save): 
+	* src/core/mObject.cpp (tnlObject::GetName): 
+	(tnlObject::Load): 
+	(tnlObject::SetName): 
+	(tnlObject::GetType): 
+	(tnlObject::tnlObject): 
+	(tnlObject::Save): 
+	* src/core/mObject.h (tnlObject): 
+	(tnlObject.~tnlObject): 
+	* src/diff/mExplicitSolver.h: 
+	* src/diff/mMPIMesh2D.cpp (Gather): 
+	(CreateGlobalGrid): 
+	(Scatter): 
+	(CreateMesh): 
+	* src/matrix/mBaseMatrix.h: 
+	* src/matrix/mMatrix.h: 

@@ -2,7 +2,7 @@
                           mField2D.h  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -19,7 +19,7 @@
 #define mField2DH
 
 #include <string.h>
-#include "mObject.h"
+#include "tnlObject.h"
 #include "mLongVector.h"
 
 template< class T > class mField2D : public mLongVector< T >

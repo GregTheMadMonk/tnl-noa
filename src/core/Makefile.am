@@ -21,7 +21,7 @@ headers = mcore.h \
 	  mList.h \
 	  mLongVector.h \
 	  mLogger.h \
-	  mObject.h \
+	  tnlObject.h \
 	  mString.h \
 	  mConfigDescriptionParser.h \
 	  mConfigDescriptionParserbase.h \
@@ -39,7 +39,7 @@ headers = mcore.h \
 
 sources = mConfigDescription.cpp \
 	  mLogger.cpp \
-	  mObject.cpp \
+	  tnlObject.cpp \
 	  mString.cpp \
 	  mConfigDescriptionScanner.cpp \
 	  mConfigDescriptionParser.cpp \
