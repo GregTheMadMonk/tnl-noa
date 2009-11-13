@@ -22,11 +22,11 @@
 <folderInfo id="org.eclipse.linuxtools.cdt.autotools.configuration.build.1902170740." name="/" resourcePath="">
 <toolChain id="org.eclipse.linuxtools.cdt.autotools.toolChain.1288116166" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.toolChain">
 <targetPlatform id="org.eclipse.linuxtools.cdt.autotools.toolchain.targetPlatform.1947158758" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.targetPlatform"/>
-<builder buildPath="${workspace_loc:/tnl}" enableAutoBuild="true" enableCleanBuild="false" id="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.212780712" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Autotools Makefile Generator.Build (GNU)" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.212780712"/>
+<builder arguments="-j2" buildPath="${workspace_loc:/tnl}" command="make" enableAutoBuild="true" enableCleanBuild="false" id="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.212780712" keepEnvironmentInBuildfile="false" name="Autotools Makefile Generator.Build (GNU)" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.212780712"/>
 <tool id="org.eclipse.linuxtools.cdt.autotools.gnu.toolchain.tool.configure.141790725" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.gnu.toolchain.tool.configure">
 <option id="org.eclipse.linuxtools.cdt.autotools.option.configure.builddir.269985246" name="Build directory" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.builddir" value="" valueType="string"/>
 <option id="org.eclipse.linuxtools.cdt.autotools.option.configure.prefix.180395393" name="Arch-independent install directory (--prefix)" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.prefix" value="/home/oberhuber/local" valueType="string"/>
-<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.version.904933857" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.version" value="true" valueType="boolean"/>
+<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.version.904933857" name="Display version of autotools used to create configuration (--version)" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.version" value="true" valueType="boolean"/>
 <inputType id="org.eclipse.linuxtools.cdt.autotools.inputType.configure.1862846218" superClass="org.eclipse.linuxtools.cdt.autotools.inputType.configure"/>
 <inputType id="org.eclipse.linuxtools.cdt.autotools.inputType.configure1.1020168171" superClass="org.eclipse.linuxtools.cdt.autotools.inputType.configure1"/>
 </tool>

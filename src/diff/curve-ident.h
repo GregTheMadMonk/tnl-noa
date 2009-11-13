@@ -18,8 +18,8 @@
 #ifndef curve_identH
 #define curve_identH
 
-#include <mcore.h>
-#include <mGrid2D.h>
+#include "mcore.h"
+#include "mGrid2D.h"
 #include "mdiff-debug.h"
 
 //! Supporting structure for a curve identification

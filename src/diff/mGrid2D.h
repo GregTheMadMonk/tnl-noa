@@ -20,7 +20,8 @@
 
 #include <mcore.h>
 
-template< typename T = double > class mGrid2D : public mField2D< T >
+template< class T = double > class mGrid2D :
+	                         public mField2D< T >
 {
    public:
 

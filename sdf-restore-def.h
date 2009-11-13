@@ -2,4 +2,4 @@
 
 #define CONFIG_DESCRIPTION_FILE "/home/oberhuber/local/share/tnldist-0.2/sdf-restore.cfg.desc"
 
-#define CPP_COMPILER_NAME "ccache g++"
+#define CPP_COMPILER_NAME "g++"
