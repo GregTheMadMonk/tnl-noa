@@ -2,7 +2,7 @@
                           iter1d.cpp  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "iter1d.h"
 #include "mDistAux.h"
@@ -26,7 +26,7 @@
                  void* _aux,
                  const mESolverInfo1D& info )
 {
-   DBG_FUNCTION_NAME( "", "f_1D" );
+   dbgFunctionName( "", "f_1D" );
          
    assert( _aux );
    
@@ -90,7 +90,7 @@
 //--------------------------------------------------------------------------
 void IterDist1D( mGrid1D* phi, mConfig& config )
 {
-   DBG_FUNCTION_NAME( "", "IterDist1D" );
+   dbgFunctionName( "", "IterDist1D" );
 
    mESolver1D solver;
    

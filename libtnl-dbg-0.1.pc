@@ -1,11 +1,11 @@
 prefix=/home/oberhuber/local
 exec_prefix=${prefix}/bin
 libdir=${prefix}/lib
-includedir=${prefix}/include
+includedir=${prefix}/include/tnl-0.1
 
 Name: TNL
 Description: Template Numerical Library (with debuging information).
 Requires:
 Version: 0.1.0
 Libs: -L${libdir} -ltnldebug-dbg-0.1 -ltnlcore-dbg-0.1 -ltnldiff-dbg-0.1 -ltnldist-dbg-0.1 -ltnlmatrix-dbg-0.1 
-Cflags: -I${includedir}/tnldebug-0.1 -I${includedir}/tnlcore-0.1 -I${includedir}/tnldiff-0.1 -I${includedir}/tnldist-0.1 -I${includedir}/tnlmatrix-0.1 
+Cflags: -I${includedir}

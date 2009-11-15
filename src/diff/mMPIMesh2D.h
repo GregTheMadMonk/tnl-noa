@@ -2,7 +2,7 @@
                           mMPIMesh2D.h  -  description
                              -------------------
     begin                : 2005/07/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,9 +18,9 @@
 #ifndef mMPIMesh2DH
 #define mMPIMesh2DH
 
-#include "mGrid2D.h"
-#include "mpi-supp.h"
-#include "tnlDebug.h"
+#include <diff/mGrid2D.h>
+#include <core/mpi-supp.h>
+#include <debug/tnlDebug.h>
 
 
 template< class T > class mMPIMesh2D
@@ -431,7 +431,8 @@ template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( mGrid2D< T >& globa
    if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size ) )
       return false;
    
-   global_u. SetNewDomain( Ax, Bx, Ay, By );    
+   global_u. SetNewDomain( Ax, Bx, Ay, By );
+   return true;
 }
    
 template< class T > bool mMPIMesh2D< T > :: CreateMesh( const mGrid2D< T >& u,

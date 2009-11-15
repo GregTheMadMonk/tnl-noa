@@ -2,7 +2,7 @@
                           iter2d.cpp  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "iter1d.h"
 #include "mDistAux.h"
@@ -25,7 +25,7 @@
                  mGrid2D** _f_phi,
                  void* _aux )
 {
-   DBG_FUNCTION_NAME( "", "f_2D" );
+   dbgFunctionName( "", "f_2D" );
          
    assert( _aux );
    
@@ -116,7 +116,7 @@
 //--------------------------------------------------------------------------
 void IterDist2D( mGrid2D* phi, mConfig& config )
 {
-   DBG_FUNCTION_NAME( "", "IterDist1D" );
+   dbgFunctionName( "", "IterDist1D" );
 
    mESolver2D solver;
    

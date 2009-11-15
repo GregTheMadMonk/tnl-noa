@@ -51,30 +51,30 @@ sources = mConfigDescription.cpp \
 	  mpi-supp.cpp \
 	  parse.cc
 
-libmcoreincludedir = $(includedir)/tnlcore-0.1
+libmcoreincludedir = $(TNL_INCLUDE_DIR)/core
 libmcoreinclude_HEADERS = $(headers)
 
 
-lib_LTLIBRARIES = libtnlcore-0.1.la
+noinst_LTLIBRARIES = libtnlcore-0.1.la
 libtnlcore_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnlcore_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMSECXXFLAGS)
 
 if BUILD_MPI
-lib_LTLIBRARIES += libtnlcore-mpi-0.1.la
+noinst_LTLIBRARIES += libtnlcore-mpi-0.1.la
 libtnlcore_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnlcore_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMSECXXFLAGS)
 libtnlcore_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
 
 if BUILD_DBG
-lib_LTLIBRARIES += libtnlcore-dbg-0.1.la
+noinst_LTLIBRARIES += libtnlcore-dbg-0.1.la
 libtnlcore_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnlcore_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
 endif
 
 if BUILD_MPI_DBG
-lib_LTLIBRARIES += libtnlcore-mpi-dbg-0.1.la
+noinst_LTLIBRARIES += libtnlcore-mpi-dbg-0.1.la
 libtnlcore_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPICXXFLAGS) $(DBGLDFLAGS)

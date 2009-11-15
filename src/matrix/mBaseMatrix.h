@@ -20,8 +20,8 @@
 
 #include <ostream>
 #include <iomanip>
-#include <tnlObject.h>
-#include <mString.h>
+#include <core/tnlObject.h>
+#include <core/mString.h>
 
 class mMatrixClass
 {

@@ -18,7 +18,7 @@
 #ifndef mPETSCPreconditionerH
 #define mPETSCPreconditionerH
 
-#include "mPreconditioner.h"
+#include <matrix/mPreconditioner.h>
 
 #ifdef HAVE_PETSC
 #include <petscksp.h>

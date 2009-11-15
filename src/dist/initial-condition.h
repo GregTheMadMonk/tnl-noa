@@ -18,7 +18,7 @@
 #ifndef initial_conditionH
 #define initial_conditionH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 bool GetInitialCondition( const mParameterContainer& parameters,
                           mGrid2D< double >*& u );

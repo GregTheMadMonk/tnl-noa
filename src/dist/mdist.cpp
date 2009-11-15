@@ -2,7 +2,7 @@
                           mdist.cpp  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "lib/iter1d.h"
 #include "lib/iter2d.h"
 #include "lib/iter3d.h"
@@ -52,11 +52,11 @@ m_bool CheckParameters( mConfig& config )
 
    for( i = 0; i < 5; i ++ )
    {
-      DBG_EXPR( param_data[ i ][ 1 ] );
+      dbgExpr( param_data[ i ][ 1 ] );
       if( config. TestParam( param_data[ i ][ 1 ] ) )
          for( j = 2; j < 5; j ++ )
          {
-            DBG_EXPR( param_data[ i ][ j ] );
+            dbgExpr( param_data[ i ][ j ] );
             if( ! config. TestParam( param_data[ i ][ j ] ) )
                config. SetParam( param_data[ i ][ j ],
                                  param_data[ i ][ 0 ],
@@ -264,8 +264,8 @@ m_bool SetProblem2D( mGrid2D& phi, const mConfig& config )
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-   DBG_FUNCTION_NAME( "", "main" );
-   DBG_INIT( "debug.xml" );
+   dbgFunctionName( "", "main" );
+   dbgInit( "debug.xml" );
 
    mConfig config;
    
@@ -285,7 +285,7 @@ int main( int argc, char* argv[] )
       return 0;
    }*/
    
-   DBG_COUT( "Checking parameters ..." );
+   dbgCout( "Checking parameters ..." );
    if( ! config. TestParam( "dim", WITH_MESSAGE ) )
       return -1;
    m_int dim = config. Get< m_int >( "dim" );
@@ -304,7 +304,7 @@ int main( int argc, char* argv[] )
    if( missing ) return -1;
 
    const m_char* method = config. Get< mString >( "method-name" ). Data();
-   DBG_COUT( "Gettin parameter values ..." );
+   dbgCout( "Gettin parameter values ..." );
    if( dim == 1 )
    {
       m_real a = config. Get< m_real >( "Ax" );

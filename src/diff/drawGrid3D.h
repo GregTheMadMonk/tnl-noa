@@ -21,7 +21,7 @@
 #include <ostream>
 #include <fstream>
 #include <iomanip>
-#include <mcore.h>
+#include <core/mcore.h>
 #include <float.h>
 #include "mGrid3D.h"
 

@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "../diff/mdiff.h"
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "direct.h"
 
@@ -25,14 +25,14 @@ static double SolvePoint( const double& a,
                           const double& h,
                           const double& smallest )
 {
-   DBG_FUNCTION_NAME( "", "SolvePoint" );
-   DBG_EXPR( a );
-   DBG_EXPR( b );
-   DBG_EXPR( h );
+   dbgFunctionName( "", "SolvePoint" );
+   dbgExpr( a );
+   dbgExpr( b );
+   dbgExpr( h );
  
    double sgn = Sign( smallest );
-   DBG_EXPR( smallest - a );
-   DBG_EXPR( smallest - b );
+   dbgExpr( smallest - a );
+   dbgExpr( smallest - b );
    if( fabs( smallest - a ) >= h || fabs( smallest - b ) >= h )
    {
       return  smallest + sgn * h ;
@@ -46,7 +46,7 @@ static double SolvePoint( const double& a,
    double B = - 2.0 * ( a + b );
    double C = a * a + b * b - h * h;
    double D = B * B - 8.0 * C;
-   DBG_EXPR( D );
+   dbgExpr( D );
    
    assert( D >= 0.0 );
    double x1 = ( -B + sqrt( D ) ) / 4.0;

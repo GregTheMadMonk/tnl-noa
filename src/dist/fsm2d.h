@@ -2,7 +2,7 @@
                           fsm2d.h  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #ifndef fsm2dH
 #define fsm2dH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 #define MDST_VERBOSE_ON true
 #define MDST_VERBOSE_OFF false

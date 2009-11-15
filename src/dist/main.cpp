@@ -2,7 +2,7 @@
                           mdist.cpp  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 //--------------------------------------------------------------------------
 m_bool GetConfiguration( mConfig& config, 
@@ -54,8 +54,8 @@ m_bool GetConfiguration( mConfig& config,
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-   DBG_FUNCTION_NAME( "", "main" );
-   DBG_INIT( "debug.xml" );
+   dbgFunctionName( "", "main" );
+   dbgInit( "debug.xml" );
 
    mConfig config;
    
@@ -75,7 +75,7 @@ int main( int argc, char* argv[] )
       return 0;
    }
    
-   DBG_COUT( "Checking parameters ..." );
+   dbgCout( "Checking parameters ..." );
    if( ! config. TestParam( "dim", WITH_MESSAGE ) )
       return -1;
    m_int dim = config. Get< m_int >( "dim" );
@@ -93,7 +93,7 @@ int main( int argc, char* argv[] )
                    ! config. TestParam( "z-size", WITH_MESSAGE ) + 
    if( missing ) return -1;
 
-   DBG_COUT( "Gettin parameter values ..." );
+   dbgCout( "Gettin parameter values ..." );
    if( dim == 1 )
    {
       m_real a = config. Get< m_real >( "Ax" );

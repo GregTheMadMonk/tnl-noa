@@ -19,7 +19,7 @@
 #define mBICGSolverH
 
 #include <math.h>
-#include "mMatrixSolver.h"
+#include <matrix/mMatrixSolver.h>
 
 template< typename T > class mBICGSolver : public mMatrixSolver< T >
 {
@@ -61,10 +61,10 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
       // r_0 = b - A x_0, p_0 = r_0
       // r^ast_0 = r_0, p^ast_0 = r^ast_0
       
-      //DBG_COUT( "Computing Ax" );
+      //dbgCout( "Computing Ax" );
       A. VectorProduct( x, r );
       
-      //DBG_COUT( "Computing r_0, r_ast_0, p_0 and p_ast_0..." );
+      //dbgCout( "Computing r_0, r_ast_0, p_0 and p_ast_0..." );
       for( i = 0; i < size; i ++ )
          r[ i ] = r_ast[ i ] = 
          p[ i ] = p_ast[ i ] = b[ i ] - r[ i ];
@@ -73,13 +73,13 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
       while( mMatrixSolver< T > :: iteration < max_iterations && 
              mMatrixSolver< T > :: residue > max_residue )
       {
-         //DBG_COUT( "Starting BiCG iteration " << iter + 1 );
+         //dbgCout( "Starting BiCG iteration " << iter + 1 );
 
          // alpha_j = ( r_j, r^ast_j ) / ( A * p_j, p^ast_j )
-         //DBG_COUT( "Computing Ap" );
+         //dbgCout( "Computing Ap" );
          A. VectorProduct( p, tmp );
 
-         //DBG_COUT( "Computing alpha" );
+         //dbgCout( "Computing alpha" );
          s1 = s2 = 0.0;
          for( i = 0; i < size; i ++ )
          {
@@ -91,20 +91,20 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
          
          // x_{j+1} = x_j + alpha_j * p_j
          // r_{j+1} = r_j - alpha_j * A * p_j
-         //DBG_COUT( "Computing new x and new r." );
+         //dbgCout( "Computing new x and new r." );
          for( i = 0; i < size; i ++ )
          {
             x[ i ] += alpha * p[ i ];
             r_new[ i ] = r[ i ] - alpha * tmp[ i ];
          }
          
-         //DBG_COUT( "Computing (A^T)p." );
+         //dbgCout( "Computing (A^T)p." );
          A_T -> VectorProduct( p_ast, tmp );
 
          s1 = s2 = 0.0;
          // r^ast_{j+1} = r^ats_j - alpha_j * A^T * p^ast_j
          // beta_j = ( r_{j+1}, r^ast_{j+1} ) / ( r_j, r^ast_j )
-         //DBG_COUT( "Computing beta." );
+         //dbgCout( "Computing beta." );
          for( i = 0; i < size; i ++ )
          {
             r_ast_new[ i ] = r_ast[ i ] - alpha * tmp[ i ];

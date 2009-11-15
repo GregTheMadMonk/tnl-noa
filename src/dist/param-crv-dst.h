@@ -18,7 +18,7 @@
 #ifndef param_crv_dstH
 #define param_crv_dstH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 class mLevelSetCreator
 {

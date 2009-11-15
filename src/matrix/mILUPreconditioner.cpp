@@ -2,7 +2,7 @@
                           mILUPreconditioner.cpp  -  description
                              -------------------
     begin                : 2007/02/01
-    copyright            : (C) 2007 by Tomá¹ Oberhuber
+    copyright            : (C) 2007 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -72,7 +72,7 @@ const mCSRMatrix* mILUPreconditioner :: Data() const
 //--------------------------------------------------------------------------  
 m_int mILUPreconditioner :: Init( const mCSRMatrix& A, const m_real& threshold )
 {
-   DBG_FUNCTION_NAME( "mILUPreconditioner", "Init" );
+   dbgFunctionName( "mILUPreconditioner", "Init" );
    assert( A. Size() == M -> Size() );
    long int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
@@ -152,11 +152,11 @@ m_int mILUPreconditioner :: Init( const mCSRMatrix& A, const m_real& threshold )
          }
       }
      cout << "Computing ILUT ... " << 100.0 * ( m_real ) ( i + 1 ) / ( m_real ) ( size ) << "%    \r" << flush; 
-      DBG_EXPR( i );
-      //DBG_EXPR( * M );
+      dbgExpr( i );
+      //dbgExpr( * M );
    }
    cout << non_zero_elements / size << " elems. per line in average " <<  endl;
-   //DBG_EXPR( * M );
+   //dbgExpr( * M );
 
 #ifdef ILU_DEBUG
    fstream file;
@@ -284,14 +284,14 @@ cout << "LU: " << ( m_real ) i / ( m_real ) size * 100.0 << " % done   \r" << fl
 //--------------------------------------------------------------------------     
 void mILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
 {
-   DBG_FUNCTION_NAME( "mILUPreconditioner", "Solve" );
+   dbgFunctionName( "mILUPreconditioner", "Solve" );
    const m_int size = M -> Size();
    const mCSRMatrixElement* M_data;
    const mCSRMatrixRowInfo *M_rows_info;
    M -> Data( M_data, M_rows_info );
    m_int i, j;
    
-   DBG_COUT( "Solving Ly = b" );
+   dbgCout( "Solving Ly = b" );
    // L is unit lower triangular
    for( i = 0; i < size; i ++ )
    {
@@ -307,7 +307,7 @@ void mILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
       //   y[ i ] -= y[ j ] * ( * M )( i, j );
    }
    
-   DBG_COUT( "Solving Ux = y" );
+   dbgCout( "Solving Ux = y" );
    for( i = size - 1; i >=0 ; i -- )
    {
       x[ i ] = y[ i ];
@@ -334,7 +334,7 @@ void mILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
          y[ i ] -= y[ j ] * full_M[ i * size + j ];
    }
    
-   DBG_COUT( "Solving Ux = y" );
+   dbgCout( "Solving Ux = y" );
    for( i = size - 1; i >=0 ; i -- )
    {
       x[ i ] = y[ i ];

@@ -18,7 +18,7 @@
 //--------------------------------------------------------------------------
 #include <sys/utsname.h>
 #include <time.h>
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "mdist.h"
 #include "sdf-restore-def.h"
@@ -220,8 +220,8 @@ void WriteEpilog( ostream& str )
 //-------------------------------------------------------------------------- 
 int main( int argc, char* argv[] )
 {
-   DBG_FUNCTION_NAME( "", "main" );
-   DBG_INIT( "debug.xml" );
+   dbgFunctionName( "", "main" );
+   dbgInit( "debug.xml" );
    
    mParameterContainer parameters;
    mConfigDescription conf_desc;

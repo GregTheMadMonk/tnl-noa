@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mcore.h>
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "mgrid-view-def.h"
 
 bool ProcessmGrid2D( const mString& file_name, 

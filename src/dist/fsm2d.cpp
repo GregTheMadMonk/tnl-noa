@@ -2,7 +2,7 @@
                           fsm2d.cpp  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -28,7 +28,7 @@ bool DstFastSweeping2D( mGrid2D< double >& phi,
                         mGrid2D< double >* extend_velocity,
                         bool verbose )
 {
-   DBG_FUNCTION_NAME( "", "DstFastSweeping" );
+   dbgFunctionName( "", "DstFastSweeping" );
    if( phi. GetHx() != phi. GetHy() )
    {
       cerr << "The FAST SWEEPING METHOD does not support different space steps along different axis. i.e. phi. GetHx() == phi. GetHy() must hold." << endl;
@@ -86,7 +86,7 @@ bool DstFastSweeping2D( mGrid2D< double >& phi,
                for( j = ( s2 < 0 ? y_size - 1 : 0 ); ( s2 < 0 ? j >= 0 : j < y_size ); j += s2 )
                {
                   err = 0.0;
-                  DBG_COUT( "Updating point: " << i << " " << j );
+                  dbgCout( "Updating point: " << i << " " << j );
                   double c = phi( i, j );
                   if( ( *fixed )( i, j ) == false )
                   {

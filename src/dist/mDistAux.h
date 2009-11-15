@@ -2,7 +2,7 @@
                           mDistAux.h  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #ifndef mDistAuxH
 #define mDistAuxH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 enum mDistIterMethod { mDstNone = 0,
                        mDstRegularisedScheme,

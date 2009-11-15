@@ -2,7 +2,7 @@
                           fmm2d.cpp  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "direct.h"
 #include "fmm2d.h"
@@ -30,9 +30,9 @@ static void Recompute( mGrid2D< double >& phi,
                        mList< mVector< 2, int > >& band,
                        mField2D< mDstState >& state_field )
 {
-   DBG_FUNCTION_NAME( "", "Recompute" );
+   dbgFunctionName( "", "Recompute" );
    if( state_field( i, j ) == mDstFixed ) return;
-   DBG_COUT( "Recomputing point: " << i << " " << j << " -> " << phi( i, j ) );
+   dbgCout( "Recomputing point: " << i << " " << j << " -> " << phi( i, j ) );
    
    double sgn;
    if( state_field( i, j ) == mDstFar )
@@ -56,7 +56,7 @@ static void Recompute( mGrid2D< double >& phi,
    if( j < phi. GetYSize() - 1 ) n = state_field( i, j + 1 );
    if( j > 0 ) s = state_field( i, j - 1 );
 
-   DBG_COUT( " e = " << e << " w = " << w <<
+   dbgCout( " e = " << e << " w = " << w <<
              " s = " << s << " n = " << n );
    assert( e != mDstFar || w != mDstFar || n != mDstFar || s != mDstFar );
    
@@ -66,7 +66,7 @@ static void Recompute( mGrid2D< double >& phi,
                                 smallest_direction,
                                 e, w, s, n );
 
-   DBG_EXPR( phi( i, j ) );
+   dbgExpr( phi( i, j ) );
    return;
 }
 //--------------------------------------------------------------------------
@@ -74,9 +74,9 @@ void DstFastMarching2D( mGrid2D< double >& phi,
                         const double& band_width,
                         const double& delta )
 {
-   DBG_FUNCTION_NAME( "", "FastMarching2D" );
-   DBG_EXPR( delta );
-   DBG_EXPR( band_width );
+   dbgFunctionName( "", "FastMarching2D" );
+   dbgExpr( delta );
+   dbgExpr( band_width );
  
    mList< mVector< 2, int > > band;
    
@@ -120,9 +120,9 @@ void DstFastMarching2D( mGrid2D< double >& phi,
       int smallest_pos( 0 );
       for( i = 0; i < band. Size(); i ++ )
       {
-         //DBG_EXPR( band[ i ] );
+         //dbgExpr( band[ i ] );
          double val = phi( band[ i ][ 0 ], band[ i ][ 1 ] );
-         DBG_EXPR( val );
+         dbgExpr( val );
          
          if( fabs( val ) < fabs( phi( smallest[ 0 ], smallest[ 1 ] ) ) )
          {
@@ -146,8 +146,8 @@ void DstFastMarching2D( mGrid2D< double >& phi,
             }
          }
       }
-      //DBG_EXPR( smallest );
-      DBG_EXPR( phi( smallest. i, smallest. j ) );
+      //dbgExpr( smallest );
+      dbgExpr( phi( smallest. i, smallest. j ) );
       
       //Add( alive_points, smallest -> data );
       int s_i = smallest[ 0 ];

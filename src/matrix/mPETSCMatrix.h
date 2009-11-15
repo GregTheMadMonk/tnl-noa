@@ -25,7 +25,7 @@
 struct Mat;
 #endif
 
-#include "mBaseMatrix.h"
+#include <matrix/mBaseMatrix.h>
 
 //! Wrapper for the PETSC matrices
 template< typename T > class mPETSCMatrix : public mBaseMatrix< T >

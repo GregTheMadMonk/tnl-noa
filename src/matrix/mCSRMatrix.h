@@ -21,9 +21,9 @@
 #include <ostream>
 #include <iomanip>
 #include <assert.h>
-#include <mfuncs.h>
-#include "mBaseMatrix.h"
-#include "debug.h"
+#include <core/mfuncs.h>
+#include <matrix/mBaseMatrix.h>
+#include <debug/tnlDebug.h>
 
 //! Structure for keeping single element of the CSR matrix
 /*! This structure stores the element value and its column index.
@@ -112,7 +112,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
    : size( _size ),
      allocation_segment_size( _allocation_segment_size )
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "mCSRMatrix" );
+      dbgFunctionName( "mCSRMatrix", "mCSRMatrix" );
       
       data = ( mCSRMatrixElement< T >* ) calloc( _initial_allocation + 1, sizeof( mCSRMatrixElement< T >) );
       rows_info = ( mCSRMatrixRowInfo* ) calloc( size + 2, sizeof( mCSRMatrixRowInfo ) );
@@ -133,12 +133,12 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
          abort();
       }
       
-      DBG_COUT( "Setting rows size to " << _initial_row_size << "( and pointers to diagonal to -1 )" );
+      dbgCout( "Setting rows size to " << _initial_row_size << "( and pointers to diagonal to -1 )" );
       assert( size * _initial_row_size <= allocated_elements );
       long int i;
       for( i = 0; i <= size; i ++ )
       {
-         DBG_COUT( "Setting row " << i << " first and last to " << i * _initial_row_size );
+         dbgCout( "Setting row " << i << " first and last to " << i * _initial_row_size );
          rows_info[ i ]. first = rows_info[ i ]. last = i * _initial_row_size;
          rows_info[ i ]. diagonal = -1;
       }
@@ -200,8 +200,8 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
     */
    T GetElement( long int row, long int column ) const
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "operator()" );
-      DBG_COUT( "row = " << row << " col = " << column );
+      dbgFunctionName( "mCSRMatrix", "operator()" );
+      dbgCout( "row = " << row << " col = " << column );
 
       assert( row < size );
       long int row_beg = -1;
@@ -210,14 +210,14 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       long int row_end = rows_info[ row ]. last;
       assert( row_end <= allocated_elements );
       
-      DBG_COUT( "row_beg = " << row_beg << " row_end = " << row_end );
+      dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
 
       long int i = row_beg;
       while( i < row_end && data[ i ]. column < column ) i ++;
 #ifdef CSR_MATRIX_TUNING
       const_cast< mCSRMatrix* >( this ) -> data_seeks += i - row_beg;
 #endif
-      DBG_COUT( " i = " << i << " i-th column = " << data[ i ]. column << " value = " << data[ i ]. value );
+      dbgCout( " i = " << i << " i-th column = " << data[ i ]. column << " value = " << data[ i ]. value );
       if( i < row_end && data[ i ]. column == column ) 
          return data[ i ]. value;
       return 0.0;
@@ -230,8 +230,8 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
                     const long int col,
                     const T& v )
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "SetElement" );
-      DBG_COUT( "row = " << row << " col = " << col << " value = " << v );
+      dbgFunctionName( "mCSRMatrix", "SetElement" );
+      dbgCout( "row = " << row << " col = " << col << " value = " << v );
    
       return ChangeElement( row, col, v, set );  
    };
@@ -252,24 +252,24 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
                 const long int first_non_zero,
                 const long int last_non_zero )
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "SetSparseRow" );
+      dbgFunctionName( "mCSRMatrix", "SetSparseRow" );
 
       long int row_beg = rows_info[ row ]. first;
       long int row_end = rows_info[ row ]. last;
       const long int current_row_size = row_beg - row_end;
 
-      DBG_EXPR( row_beg );
-      DBG_EXPR( row_end );
-      DBG_EXPR( current_row_size );
+      dbgExpr( row_beg );
+      dbgExpr( row_end );
+      dbgExpr( current_row_size );
 
       if( current_row_size < non_zero_elems )
       {
-         DBG_COUT( "Shifting the rest of the data" );
+         dbgCout( "Shifting the rest of the data" );
          long int shift = non_zero_elems - current_row_size;
-         DBG_EXPR( shift );
-         DBG_EXPR( allocated_elements );
-         DBG_EXPR( rows_info[ size ]. last );
-         DBG_EXPR( size );
+         dbgExpr( shift );
+         dbgExpr( allocated_elements );
+         dbgExpr( rows_info[ size ]. last );
+         dbgExpr( size );
          long int new_alloc = shift - ( allocated_elements - rows_info[ size ]. last );
          if( new_alloc > 0 && ! AllocateNewMemory( new_alloc ) ) return false;
          long int j = last_non_zero_element - 1;
@@ -283,9 +283,9 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
             rows_info[ j ++ ]. last += shift;
          }
       }
-      DBG_COUT( "Setting row end to " << row_beg + non_zero_elems );
+      dbgCout( "Setting row end to " << row_beg + non_zero_elems );
       rows_info[ row ]. last = row_beg + non_zero_elems;
-      DBG_COUT( "Reseting diagonal entry pionter." );
+      dbgCout( "Reseting diagonal entry pionter." );
       rows_info[ row ]. diagonal = -1;
       long int i( 0 ), j( first_non_zero ), row_pos( row_beg );
       while( i < non_zero_elems && j <= last_non_zero )
@@ -297,11 +297,11 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
          }
          data[ row_pos ]. value = row_data[ j ];
          data[ row_pos ]. column = j;
-         //DBG_COUT( "Setting row " << row << " col " << row_pos << " to " << row_data[ j ] );
+         //dbgCout( "Setting row " << row << " col " << row_pos << " to " << row_data[ j ] );
          if( j == row )
          {
             rows_info[ row ]. diagonal = row_pos;
-            //DBG_COUT( "Seting diagonal entry pointer to " << row_pos );
+            //dbgCout( "Seting diagonal entry pointer to " << row_pos );
          }
          i ++;
          row_pos ++;
@@ -320,7 +320,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
                long int new_allocation_segment_size = 0,
                long int new_initial_row_size = 0 )
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "Reset" );
+      dbgFunctionName( "mCSRMatrix", "Reset" );
       if( new_size && size != new_size )
       {
          rows_info = ( mCSRMatrixRowInfo* ) realloc( --rows_info, ( new_size + 1 ) * sizeof( mCSRMatrixRowInfo ) );
@@ -348,11 +348,11 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       long int i;
       if( new_initial_row_size )
       {
-         DBG_COUT( "Setting rows size to " << new_initial_row_size );
+         dbgCout( "Setting rows size to " << new_initial_row_size );
          assert( size * new_initial_row_size <= allocated_elements );
          for( i = 0; i <= size; i ++ )
          {
-            DBG_COUT( "Setting row " << i << " beginning to " << i * new_initial_row_size );
+            dbgCout( "Setting row " << i << " beginning to " << i * new_initial_row_size );
             rows_info[ i ]. first = rows_info[ i ]. last = i * new_initial_row_size;
             rows_info[ i ]. diagonal = -1;
          }
@@ -361,7 +361,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       {
          for( i = 0; i <= size; i ++ )
          {
-            DBG_COUT( "Setting row " << i << " beginning to " << i * new_initial_row_size );
+            dbgCout( "Setting row " << i << " beginning to " << i * new_initial_row_size );
             rows_info[ i ]. last = rows_info[ i ]. first;
             rows_info[ i ]. diagonal = -1;
          }
@@ -402,10 +402,10 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
     */
    T RowProduct( const long int row, const T* vec ) const
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "RowProduct" );
+      dbgFunctionName( "mCSRMatrix", "RowProduct" );
       long int row_beg = rows_info[ row ]. first;
       long int row_end = rows_info[ row ]. last;
-      DBG_COUT( "row_beg = " << row_beg << " row_end = " << row_end );
+      dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
       
       long int col;
       T res( 0.0 );
@@ -421,7 +421,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
    //! Vector product
    void VectorProduct( const T* vec, T* result ) const
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "VectorProduct" );
+      dbgFunctionName( "mCSRMatrix", "VectorProduct" );
       long int row, i;
       T res;
 #ifdef HAVE_OPENMP
@@ -431,7 +431,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       {
          const long int row_beg = rows_info[ row ]. first;
          const long int row_end = rows_info[ row ]. last;
-         DBG_COUT( "row = " << row << " row_beg = " << row_beg << " row_end = " << row_end );
+         dbgCout( "row = " << row << " row_beg = " << row_beg << " row_end = " << row_end );
          
          res = 0.0;
          i = row_beg;
@@ -440,7 +440,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
          
          result[ row ] = res;
       }
-      DBG_COUT( "VectorProduct done." );
+      dbgCout( "VectorProduct done." );
    };
    
    //! Add matrix
@@ -522,12 +522,12 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
    bool AllocateNewMemory( long int amount )
    {
       assert( amount > 0 );
-      DBG_FUNCTION_NAME( "mCSRMatrix", "AllocateNewMemory" );
+      dbgFunctionName( "mCSRMatrix", "AllocateNewMemory" );
 #ifdef CSR_MATRIX_TUNING
       re_allocs ++;
 #endif
-      DBG_COUT( "Data array is full! Need to reallocate a new one." );
-      DBG_COUT( "Old data array pointer is " << data );
+      dbgCout( "Data array is full! Need to reallocate a new one." );
+      dbgCout( "Old data array pointer is " << data );
       if( ! allocation_segment_size )
          allocated_elements += amount;
       else
@@ -552,8 +552,8 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
                        const T& v,
                        csr_operation operation )
    {
-      DBG_FUNCTION_NAME( "mCSRMatrix", "ChangeElement" );
-      DBG_COUT( "row = " << row << " col = " << col << " value = " << v );
+      dbgFunctionName( "mCSRMatrix", "ChangeElement" );
+      dbgCout( "row = " << row << " col = " << col << " value = " << v );
       //cout <<  "row = " << row << " col = " << col << " value = " << v << endl;
      
       // check whether the input parameters are correct
@@ -569,7 +569,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
          abort();
       }
 
-      DBG_COUT( "Check if given element is already set" );
+      dbgCout( "Check if given element is already set" );
       long int _row_beg = -1;
       if( col >= row ) _row_beg = rows_info[ row ]. diagonal; //diagonal might be also -1
       if( _row_beg == -1 ) _row_beg = rows_info[ row ]. first;
@@ -584,7 +584,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
 
       if( i < row_end && data[ i ]. column == col ) // given element was found 
       {
-         DBG_COUT( "Element " << row << ", " << col << " was found." );
+         dbgCout( "Element " << row << ", " << col << " was found." );
          assert( i < allocated_elements );
          if( operation == set )
             data[ i ]. value = v;
@@ -597,14 +597,14 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       if( v == 0.0 ) return true;
 
       // otherwise we must set the new element
-      DBG_COUT( "Element was not set yet" );
+      dbgCout( "Element was not set yet" );
       //cout <<  "Element was not set yet" << endl;
       const long int next_row_beg = rows_info[ row + 1 ]. first;
       if( row_end < next_row_beg ) // we can insert the element in this row without shifting the rest
       {
-         DBG_COUT( "Free space in the row " << row << " found - inserting new element." );
+         dbgCout( "Free space in the row " << row << " found - inserting new element." );
          //cout <<  "Free space in the row " << row << " found - inserting new element." << endl;
-         DBG_EXPR( row_end );
+         dbgExpr( row_end );
          long int j = row_end;
 #ifdef CSR_MATRIX_TUNING
          data_shifts += j - i;
@@ -619,17 +619,17 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
          if( col < row && rows_info[ row ]. diagonal != -1 ) rows_info[ row ]. diagonal ++;
          if( row == col )
          {
-            DBG_COUT( "Setting pointer to diagonal element on row " << row << " to " << i );
+            dbgCout( "Setting pointer to diagonal element on row " << row << " to " << i );
             rows_info[ row ]. diagonal = i;
          }
          if( last_non_zero_element <= row_end )
             last_non_zero_element = row_end + 1;
          rows_info[ row ]. last ++;
-         DBG_EXPR( last_non_zero_element );
+         dbgExpr( last_non_zero_element );
          return true; 
       }
 
-      DBG_EXPR( "No free space in row " << row );
+      dbgExpr( "No free space in row " << row );
       // there is no space for adding the new element into the row
       // we must shift all data behind up to the last-non-zero-element
 
@@ -652,7 +652,7 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       if( col < row && rows_info[ row ]. diagonal != -1 ) rows_info[ row ]. diagonal ++;
       if( row == col )
       {
-         DBG_COUT( "Setting pointer to diagonal element on row " << row << " to " << i );
+         dbgCout( "Setting pointer to diagonal element on row " << row << " to " << i );
          rows_info[ row ]. diagonal = i;
       }
       rows_info[ row ]. last ++;

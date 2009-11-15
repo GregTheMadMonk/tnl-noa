@@ -25,22 +25,22 @@ headers = \
    curve-ident.h \
    norms.h
 
-libtnldiffincludedir = $(includedir)/tnldiff-0.1
+libtnldiffincludedir = $(TNL_INCLUDE_DIR)/diff
 libtnldiffinclude_HEADERS = $(headers)
 
-lib_LTLIBRARIES = libtnldiff-0.1.la
+noinst_LTLIBRARIES = libtnldiff-0.1.la
 libtnldiff_0_1_la_SOURCES = $(sources) $(headers)
 libtnldiff_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
 
 if BUILD_DBG
-   lib_LTLIBRARIES += libtnldiff-dbg-0.1.la 
+   noinst_LTLIBRARIES += libtnldiff-dbg-0.1.la 
    libtnldiff_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
    libtnldiff_dbg_0_1_la_LDFLAGS =  $(LDFLAGS) $(DBGLDFLAGS)
    libtnldiff_dbg_0_1_la_SOURCES =  $(sources) $(headers)
 endif
 
 if BUILD_MPI
-   lib_LTLIBRARIES += libtnldiff-mpi-0.1.la 
+   noinst_LTLIBRARIES += libtnldiff-mpi-0.1.la 
    libtnldiff_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMISECXXFLAGS)
    libtnldiff_mpi_0_1_la_LDFLAGS =  $(LDFLAGS) $(MPILDFLAGS)
    libtnldiff_mpi_0_1_la_SOURCES =  $(sources) $(headers)
@@ -48,7 +48,7 @@ endif
 
 
 if BUILD_MPI_DBG
-   lib_LTLIBRARIES += libtnldiff-mpi-dbg-0.1.la 
+   noinst_LTLIBRARIES += libtnldiff-mpi-dbg-0.1.la 
    libtnldiff_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
    libtnldiff_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
    libtnldiff_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)

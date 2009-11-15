@@ -18,7 +18,7 @@
 #ifndef compare_objetsH
 #define compare_objetsH
 
-#include "src/diff/mdiff.h"
+#include <diff/mdiff.h>
 
 bool Compare( const mGrid2D< double >& u1,
               const mGrid2D< double >& u2,

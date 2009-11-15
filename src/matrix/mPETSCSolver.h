@@ -23,7 +23,7 @@
 #include <petsc.h>
 #endif
 
-#include "mMatrixSolver.h"
+#include <matrix/mMatrixSolver.h>
 
 #ifdef HAVE_PETSC
 template< typename T > inline PetscErrorCode PETSCSolverMonitorCallback( KSP petsc_solver, PetscInt iter, PetscReal rnorm, void* ctx );

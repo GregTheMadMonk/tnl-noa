@@ -15,8 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <iostream.h>
 #include <stdlib.h>
-#include <mcore.h>
+#include <mString.h>
 #include "compress-file.h"
 
 

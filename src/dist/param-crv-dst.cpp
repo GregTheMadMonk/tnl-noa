@@ -67,7 +67,7 @@ void mLevelSetCreator :: DrawCurve( mGrid2D< double >& u,
                                     const double& t2,
                                     const double quality )
 {
-   DBG_FUNCTION_NAME( "mLevelSetCreator", "DrawCurve" );
+   dbgFunctionName( "mLevelSetCreator", "DrawCurve" );
 
    const double& h_x = u. GetHx();
    const double& h_y = u. GetHy();
@@ -268,7 +268,7 @@ void GetParametrisedCurveSDF( mGrid2D< double >& u,
                               const int sweepings,
                               const double quality )
 {
-   DBG_FUNCTION_NAME( "", "GetParametrisedCurveSDF" );
+   dbgFunctionName( "", "GetParametrisedCurveSDF" );
 
    const double& h_x = u. GetHx();
    const double& h_y = u. GetHy();

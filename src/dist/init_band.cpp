@@ -2,7 +2,7 @@
                           init_band.cpp  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "init_band.h"
 #include "debug.h"
 
@@ -27,7 +27,7 @@ static void AddCubes( int i, int j,
                       mField2D< char >& in_stack,
                       mField2D< bool >& visited_cubes )
 {
-   DBG_FUNCTION_NAME( "", "AddCubes" );
+   dbgFunctionName( "", "AddCubes" );
    int x_size = phi. GetXSize();
    int y_size = phi. GetYSize();
    
@@ -67,7 +67,7 @@ static void AddCubes( int i, int j,
       int i_array[ 2 ] = { i, j };
       stack[ stack_end ++ ] = mVector< 2, int >( i_array );
       in_stack( i, j ) = 1;
-      DBG_COUT( "Adding to stack: "  << i << " " << j );
+      dbgCout( "Adding to stack: "  << i << " " << j );
    }
    
    if( ! instck1 && ( cross0 || cross1 ) )
@@ -75,7 +75,7 @@ static void AddCubes( int i, int j,
       int i_array[ 2 ] = { i + 1, j };
       stack[ stack_end ++ ] = mVector< 2, int >( i_array );
       in_stack( i + 1, j ) = 1;
-      DBG_COUT( "Adding to stack: "  << i + 1 << " " << j );
+      dbgCout( "Adding to stack: "  << i + 1 << " " << j );
    }
    
    if( ! instck2 && ( cross1 || cross2 ) )
@@ -83,7 +83,7 @@ static void AddCubes( int i, int j,
       int i_array[ 2 ] = { i + 1, j + 1 };
       stack[ stack_end ++ ] = mVector< 2, int >( i_array );
       in_stack( i + 1, j + 1 ) = 1;
-      DBG_COUT( "Adding to stack: "  << i + 1 << " " << j + 1 );
+      dbgCout( "Adding to stack: "  << i + 1 << " " << j + 1 );
    }
    
    if( ! instck3 && ( cross2 || cross3 ) )
@@ -91,7 +91,7 @@ static void AddCubes( int i, int j,
       int i_array[ 2 ] = { i, j + 1 };
       stack[ stack_end ++ ] = mVector< 2, int >( i_array );
       in_stack( i, j + 1 ) = 1;
-      DBG_COUT( "Adding to stack: "  << i << " " << j + 1 );
+      dbgCout( "Adding to stack: "  << i << " " << j + 1 );
    }
 
    /*if( cross0 || cross1 || cross2 || cross3 )
@@ -162,7 +162,7 @@ void RedistanceBand( mGrid2D< double >& phi,
                      int stack_end,
                      mField2D< char >& in_stack )
 {
-   DBG_FUNCTION_NAME( "", "RedistanceBand" );
+   dbgFunctionName( "", "RedistanceBand" );
    mGrid2D< double > tmp_phi( phi );
    int x_size = phi. GetXSize();
    int y_size = phi. GetYSize();
@@ -180,7 +180,7 @@ void RedistanceBand( mGrid2D< double >& phi,
       int i = stack[ k ][ 0 ];
       int j = stack[ k ][ 1 ];
 
-      DBG_COUT( "i = " << i << " j = " << j
+      dbgCout( "i = " << i << " j = " << j
            << " f( i, j ) = " << phi( i, j ) );
       
       if( phi( i, j ) == 0.0 )
@@ -203,7 +203,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = h * GetRoot( phi( i, j ), phi( i + 1, j ) );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from east: " << root );
+            dbgCout( "Smaller value comes from east: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -212,7 +212,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = h * GetRoot( phi( i, j ), phi( i - 1, j ) );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from west: " << root );
+            dbgCout( "Smaller value comes from west: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -221,7 +221,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = h * GetRoot( phi( i, j ), phi( i, j + 1 ) );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from north: " << root );
+            dbgCout( "Smaller value comes from north: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -230,7 +230,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = h * GetRoot( phi( i, j ), phi( i, j - 1 ) );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from south: " << root );
+            dbgCout( "Smaller value comes from south: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -239,7 +239,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = GetRoot2( phi( i, j ), phi( i, j + 1 ), phi( i + 1, j ), h );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from north-east: " << root );
+            dbgCout( "Smaller value comes from north-east: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -248,7 +248,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = GetRoot2( phi( i, j ), phi( i + 1, j ), phi( i, j - 1 ), h );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from east-south: " << root );
+            dbgCout( "Smaller value comes from east-south: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -257,7 +257,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = GetRoot2( phi( i, j ), phi( i, j - 1 ), phi( i - 1, j ), h );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from south-west: " << root );
+            dbgCout( "Smaller value comes from south-west: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }
@@ -266,7 +266,7 @@ void RedistanceBand( mGrid2D< double >& phi,
          root = GetRoot2( phi( i, j ), phi( i - 1, j ), phi( i, j + 1 ), h );
          if( fabs( root ) < fabs( tmp_phi( i, j ) ) )
          {
-            DBG_COUT( "Smaller value comes from north-west: " << root );
+            dbgCout( "Smaller value comes from north-west: " << root );
             tmp_phi( i, j ) = fabs( root ) * Sign( phi( i, j ) );
          }
       }

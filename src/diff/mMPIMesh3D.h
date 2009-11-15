@@ -18,10 +18,10 @@
 #ifndef mMPIMesh3DH
 #define mMPIMesh3DH
 
-#include <tnlDebug.h>
-#include "mGrid3D.h"
-#include "mpi-supp.h"
-#include "mdiff-debug.h"
+#include <debug/tnlDebug.h>
+#include <diff/mGrid3D.h>
+#include <core/mpi-supp.h>
+#include <debug/tnlDebug.h>
 
 template< class T > class mMPIMesh3D
 {
@@ -172,7 +172,8 @@ template< class T > class mMPIMesh3D
       if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size, domain_z_size ) )
          return false;
       
-      global_u. SetNewDomain( Ax, Bx, Ay, By, Az, Bz );    
+      global_u. SetNewDomain( Ax, Bx, Ay, By, Az, Bz );
+      return true;
    }
 
    //! Create subdomains
@@ -803,7 +804,7 @@ template< class T > void mMPIMesh3D< T > :: Gather( mGrid3D< T >& u,
          if( src != root )
          {
             
-            DBG_COUT( "Allocating supporting buffer < " <<
+            dbgCout( "Allocating supporting buffer < " <<
                       src_x_pos * subdomain_x_size - src_left_overlap <<
                       ", " << ( src_x_pos + 1 ) * subdomain_x_size + src_right_overlap <<
                       " >x< " << src_y_pos * subdomain_y_size - src_bottom_overlap <<
@@ -877,7 +878,7 @@ template< class T > void mMPIMesh3D< T > :: Gather( mGrid3D< T >& u,
                 mesh_comm );
       dbgCout( "Sending succesfuly data done." );
    }
-   DBG_COUT( "Gathering data done." );
+   dbgCout( "Gathering data done." );
 #else
    if( &u == &sub_u ) return;
    Copy( sub_u, u );
@@ -1086,7 +1087,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // starting communication with lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM LEFT neighbour." );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
      //     bottom_left_send_buff[ j * wdth + i ] =
@@ -1099,7 +1100,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
                 mesh_comm,
                 &lwr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM LEFT neighbour." );
      MPI_Irecv( bottom_left_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -1113,7 +1114,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // starting communication with lower right neighbour
   if( right_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the BOTTOM RIGHT neighbour." );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
      //      bottom_right_send_buff[ j * wdth + i ] =
@@ -1126,7 +1127,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
                 mesh_comm,
                 &lwr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM RIGHT neighbour." );
      MPI_Irecv( bottom_right_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -1140,7 +1141,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // starting communication with upper left neighbour
   if( left_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP LEFT neighbour." );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
      //      top_left_send_buff[ j * wdth + i ] =
@@ -1153,7 +1154,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
                 mesh_comm,
                 &uppr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP LEFT neighbour." );
      MPI_Irecv( top_left_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -1167,7 +1168,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // starting communication with upper right neighbour
   if( right_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the TOP RIGHT neighbour." );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
      //      top_right_send_buff[ j * wdth + i ] =
@@ -1180,7 +1181,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
                 mesh_comm,
                 &uppr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP RIGHT neighbour." );
      MPI_Irecv( top_right_recieve_buff,
                 wdth_2 * sizeof( T ),
                 MPI_BYTE,
@@ -1281,7 +1282,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // finishing communication with the lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL  )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM LEFT neighbour." );
      MPI_Wait( &lwr_lft_rcv_rqst, &status );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
@@ -1294,7 +1295,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // finishing communication with the lower right neighbour
   if( right_bottom_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from BOTTOM RIGHT neighbour." );
      MPI_Wait( &lwr_rght_rcv_rqst, &status );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
@@ -1307,7 +1308,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // finishing communication with the upper right neighbour
   if( right_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP RIGHT neighbour." );
      MPI_Wait( &uppr_rght_rcv_rqst, &status );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )
@@ -1320,7 +1321,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
   // finishing communication with the upper left neighbour
   if( left_top_neighbour != MPI_PROC_NULL )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from TOP LEFT neighbour." );
      MPI_Wait( &uppr_lft_rcv_rqst, &status );
      //for( i = 0; i < wdth; i ++ )
      //   for( j = 0; j < wdth; j ++ )

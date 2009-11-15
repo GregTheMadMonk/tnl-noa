@@ -2,7 +2,7 @@
                           fmm2d.h  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #ifndef fmm2dH
 #define fmm2dH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 void DstFastMarching2D( mGrid2D< double >& phi, 
                         const double& band_width,

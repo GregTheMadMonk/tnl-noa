@@ -19,7 +19,7 @@
 #define mCGSolverH
 
 #include <math.h>
-#include "mMatrixSolver.h"
+#include <matrix/mMatrixSolver.h>
 
 template< typename T > class mCGSolver : public mMatrixSolver< T >
 {

@@ -18,11 +18,11 @@
 #ifndef mMatrixSolverH
 #define mMatrixSolverH
 
-#include <mTimerCPU.h>
-#include <mTimerRT.h>
-#include <mpi-supp.h>
-#include "mBaseMatrix.h"
-#include "mPreconditioner.h"
+#include <core/mTimerCPU.h>
+#include <core/mTimerRT.h>
+#include <core/mpi-supp.h>
+#include <matrix/mBaseMatrix.h>
+#include <matrix/mPreconditioner.h>
 
 template< typename T > class mMatrixSolver 
 {

@@ -18,19 +18,19 @@
 #ifndef mmatrixH
 #define mmatrixH
 
-#include "mBaseMatrix.h"
-#include "mFullMatrix.h"
-#include "mCSRMatrix.h"
-#include "mMatrixSolver.h"
-#include "mPETSCMatrix.h"
-#include "mPETSCSolver.h"
-#include "mSORSolver.h"
-#include "mCGSolver.h"
-#include "mBICGSolver.h"
-#include "mBICGStabSolver.h"
-#include "mGMRESSolver.h"
-#include "mPreconditioner.h"
-#include "mILUPreconditioner.h"
-#include "mPETSCPreconditioner.h"
+#include <matrix/mBaseMatrix.h>
+#include <matrix/mFullMatrix.h>
+#include <matrix/mCSRMatrix.h>
+#include <matrix/mMatrixSolver.h>
+#include <matrix/mPETSCMatrix.h>
+#include <matrix/mPETSCSolver.h>
+#include <matrix/mSORSolver.h>
+#include <matrix/mCGSolver.h>
+#include <matrix/mBICGSolver.h>
+#include <matrix/mBICGStabSolver.h>
+#include <matrix/mGMRESSolver.h>
+#include <matrix/mPreconditioner.h>
+#include <matrix/mILUPreconditioner.h>
+#include <matrix/mPETSCPreconditioner.h>
 
 #endif

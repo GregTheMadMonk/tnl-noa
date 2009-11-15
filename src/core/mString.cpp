@@ -69,8 +69,8 @@ void mString :: SetString( const char* c, int prefix_cut_off, int sufix_cut_off 
    int c_len = ( int ) strlen( c );
    int _length = Max( 0, c_len - prefix_cut_off - sufix_cut_off );
    //assert( _length );
-   //DBG_EXPR( _length );
-   //DBG_EXPR( string );
+   //dbgExpr( _length );
+   //dbgExpr( string );
 
    if( length < _length || length == 0 )
    {
@@ -79,7 +79,7 @@ void mString :: SetString( const char* c, int prefix_cut_off, int sufix_cut_off 
       string = new char[ length ];
    }
    assert( string );
-   //DBG_EXPR( length );
+   //dbgExpr( length );
    memcpy( string, c + Min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
@@ -177,9 +177,9 @@ const char* mString :: Data() const
 //---------------------------------------------------------------------------
 bool mString :: Save( ostream& file ) const
 {
-   DBG_FUNCTION_NAME( "mString", "Write" );
+   dbgFunctionName( "mString", "Write" );
    assert( string );
-   DBG_EXPR( string );
+   dbgExpr( string );
 
    int len = strlen( string );
    file. write( ( char* ) &len, sizeof( int ) );
@@ -206,7 +206,7 @@ bool mString :: Load( istream& file )
    }
    if( ! string ) 
    {
-      //DBG_COUT( "Reallocating string..." );
+      //dbgCout( "Reallocating string..." );
       length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
       string = new char[ length ];
    }
@@ -220,14 +220,14 @@ bool mString :: Load( istream& file )
 void mString :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef HAVE_MPI
-   DBG_FUNCTION_NAME( "mString", "MPIBcast" );
+   dbgFunctionName( "mString", "MPIBcast" );
    int iproc;
    MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
    assert( string );
    int len = strlen( string );
    MPI_Bcast( &len, 1, MPI_INT, root, comm );
-   DBG_EXPR( iproc );
-   DBG_EXPR( len );
+   dbgExpr( iproc );
+   dbgExpr( len );
    if( iproc != root )
    {
       if( length < len )
@@ -239,8 +239,8 @@ void mString :: MPIBcast( int root, MPI_Comm comm )
    }
    
    MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );  
-   DBG_EXPR( iproc );
-   DBG_EXPR( string );
+   dbgExpr( iproc );
+   dbgExpr( string );
 #endif
 }
 //---------------------------------------------------------------------------

@@ -18,7 +18,7 @@
 #ifndef mGrid3DH
 #define mGrid3DH
 
-#include <mcore.h>
+#include <core/mcore.h>
 
 template< typename T = double > class mGrid3D : public mField3D< T >
 {

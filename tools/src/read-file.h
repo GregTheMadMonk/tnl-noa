@@ -18,8 +18,8 @@
 #ifndef read_fileH
 #define read_fileH
 
-#include "src/core/mcore.h"
-#include "src/diff/mdiff.h"
+
+#include <diff/mdiff.h>
 
 template< class T > bool ReadFile( const char* input_file, T& u )
 {

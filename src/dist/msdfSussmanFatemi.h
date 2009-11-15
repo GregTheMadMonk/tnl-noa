@@ -18,7 +18,7 @@
 #ifndef msdfSussmanFatemiH
 #define msdfSussmanFatemiH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "msdfIterBase.h"
 
 class msdfSussmanFatemi : public msdfIterBase

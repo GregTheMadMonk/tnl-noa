@@ -2,7 +2,7 @@
                           ftm2d.cpp  -  description
                              -------------------
     begin                : 2005/08/12
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <float.h>
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "direct.h"
 #include "ftm2d.h"
@@ -53,7 +53,7 @@ double UpdatePoint( mGrid2D< double >& phi,
                     int i, int j,
                     mField2D< char >& in_stack )
 {
-   DBG_FUNCTION_NAME( "", "UpdateNeighbour" );
+   dbgFunctionName( "", "UpdateNeighbour" );
    // Here we have a position of a point to update so
    // we look for its neigbbours to figure out which
    // can be used and we look for the one with the smallest
@@ -108,9 +108,9 @@ double UpdatePoint( mGrid2D< double >& phi,
       smallest = phi( i, j - 1 );
       smallest_direction = mDstSouth;
    }
-   DBG_EXPR( smallest );
-   DBG_EXPR( smallest_direction );
-   DBG_EXPR( phi( i, j ) );
+   dbgExpr( smallest );
+   dbgExpr( smallest_direction );
+   dbgExpr( phi( i, j ) );
 
    return UpdatePoint2D( phi,
                          i, j,
@@ -129,14 +129,14 @@ void UpdateNeighbour( mGrid2D< double >& phi,
                       bool correct,
                       char pass )
 {
-   DBG_FUNCTION_NAME( "", "UpdateNeighbour" );
+   dbgFunctionName( "", "UpdateNeighbour" );
    int x_size = phi. GetXSize();
    int y_size = phi. GetYSize();
    double v;
   
-   DBG_EXPR( i );
-   DBG_EXPR( j );
-   DBG_EXPR( ( int ) pass );
+   dbgExpr( i );
+   dbgExpr( j );
+   dbgExpr( ( int ) pass );
 
    // Here we have a point and direction of a neighbour that
    // we may update. We check whether this point is inside the grid
@@ -145,7 +145,7 @@ void UpdateNeighbour( mGrid2D< double >& phi,
        i > 0 && 
        in_stack( i - 1, j ) < pass )
    {
-      DBG_EXPR( phi( i - 1, j ) );
+      dbgExpr( phi( i - 1, j ) );
       if( correct == 0 )
       {
          phi( i - 1, j ) = UpdatePoint( phi, i - 1, j, in_stack );
@@ -176,7 +176,7 @@ void UpdateNeighbour( mGrid2D< double >& phi,
        j > 0 && 
        in_stack( i, j - 1 ) < pass )
    {
-      DBG_EXPR( phi( i, j -1 ) );
+      dbgExpr( phi( i, j -1 ) );
       if( correct == 0 )
       {
          phi( i, j - 1 ) = UpdatePoint( phi, i, j - 1, in_stack );
@@ -207,7 +207,7 @@ void UpdateNeighbour( mGrid2D< double >& phi,
        i < x_size - 1 && 
        in_stack( i + 1, j ) < pass )
    {
-      DBG_EXPR( phi( i + 1, j ) );
+      dbgExpr( phi( i + 1, j ) );
       if( correct == 0 )
       {
          phi( i + 1, j ) = UpdatePoint( phi, i + 1, j, in_stack );
@@ -238,7 +238,7 @@ void UpdateNeighbour( mGrid2D< double >& phi,
        j < y_size - 1 &&
        in_stack( i, j + 1 ) < pass )
    {
-      DBG_EXPR( phi( i, j + 1 ) );
+      dbgExpr( phi( i, j + 1 ) );
       if( correct == 0 )
       {
          phi( i, j + 1 ) = UpdatePoint( phi, i, j + 1, in_stack );
@@ -351,7 +351,7 @@ static void FrontTracing( mGrid2D< double >& phi,
                           mField2D< char >& in_stack,
                           const double& band_width )
 {
-   DBG_FUNCTION_NAME( "", "FrontTracing" );
+   dbgFunctionName( "", "FrontTracing" );
    int x_size = phi. GetXSize();
    int y_size = phi. GetYSize();
    
@@ -439,7 +439,7 @@ static void FrontTracing( mGrid2D< double >& phi,
 void DstFrontTracing2D( mGrid2D< double >& phi, 
                         const double& band_width )
 {
-   DBG_FUNCTION_NAME( "", "DstFrontTracing2D" );
+   dbgFunctionName( "", "DstFrontTracing2D" );
    // this function finds initial narrow band ( just the points
    // of the grids having a neighbour with oposite sign compute 
    // distance function in the grid and then starts front tracing

@@ -18,8 +18,8 @@
 #ifndef mFullMatrixH
 #define mFullMatrixH
 
-#include <mField2D.h>
-#include "mBaseMatrix.h"
+#include <core/mField2D.h>
+#include <matrix/mBaseMatrix.h>
 
 
 template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mField2D< T >

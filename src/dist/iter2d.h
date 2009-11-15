@@ -2,7 +2,7 @@
                           iter2d.h  -  description
                              -------------------
     begin                : 2005/08/09
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #ifndef iter2dH
 #define iter2dH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 //! Function computing right-hand side of the evolutionary equation
 /*void mDstIter2D( const m_real& t,

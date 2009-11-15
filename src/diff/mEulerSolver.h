@@ -19,7 +19,7 @@
 #define mEulerSolverH
 
 #include <math.h>
-#include <mcore.h>
+#include <core/mcore.h>
 #include "mExplicitSolver.h"
 
 template< class GRID, class SCHEME, typename T = double > class mEulerSolver : public mExplicitSolver< GRID, SCHEME, T >

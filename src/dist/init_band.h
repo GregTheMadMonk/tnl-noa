@@ -2,7 +2,7 @@
                           init_band.h  -  description
                              -------------------
     begin                : 2005/08/10
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #ifndef init_bandH
 #define init_bandH
 
-#include <mdiff.h>
+#include <diff/mdiff.h>
 
 //! Cretes initial band along the curve given as a zero level set
 /*! Only points having a neighbour with different sign will be

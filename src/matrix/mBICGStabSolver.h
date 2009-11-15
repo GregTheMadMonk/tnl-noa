@@ -20,7 +20,7 @@
 
 
 #include <math.h>
-#include "mMatrixSolver.h"
+#include <matrix/mMatrixSolver.h>
 
 template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
 {
@@ -39,7 +39,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
                const long int max_iterations,
                mPreconditioner< T >* precond = 0 )
    {
-      DBG_FUNCTION_NAME( "mBICGStabSolver", "Solve" );
+      dbgFunctionName( "mBICGStabSolver", "Solve" );
       if( ! SetSize( A. GetSize() ) ) return false;
 
       mMatrixSolver< T > :: residue =  max_residue + 1.0;
@@ -50,10 +50,10 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
       // r_0 = b - A x_0, p_0 = r_0
       // r^ast_0 = r_0
       
-      DBG_COUT( "Computing Ax" );
+      dbgCout( "Computing Ax" );
       A. VectorProduct( x, r );
       
-      DBG_COUT( "Computing r_0, r_ast_0, p_0 and b_norm ..." );
+      dbgCout( "Computing r_0, r_ast_0, p_0 and b_norm ..." );
       /*if( M )
       {
          M -> Solve( b, M_tmp );
@@ -77,16 +77,16 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
             b_norm += b[ i ] * b[ i ];
          }
       if( b_norm == 0.0 ) b_norm = 1.0;
-      //DBG_EXPR( b_norm );
+      //dbgExpr( b_norm );
       
 
       while( mMatrixSolver< T > :: iteration < max_iterations && 
              mMatrixSolver< T > :: residue > max_residue )
       {
-         //DBG_COUT( "Starting BiCGStab iteration " << iter + 1 );
+         //dbgCout( "Starting BiCGStab iteration " << iter + 1 );
 
          // alpha_j = ( r_j, r^ast_0 ) / ( A * p_j, r^ast_0 )
-         //DBG_COUT( "Computing Ap" );
+         //dbgCout( "Computing Ap" );
          /*if( M ) // preconditioner
          {
             A. VectorProduct( p, M_tmp );
@@ -97,7 +97,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
          else*/
              A. VectorProduct( p, Ap );
       
-         //DBG_COUT( "Computing alpha" );
+         //dbgCout( "Computing alpha" );
          s2 = 0.0;
          for( i = 0; i < size; i ++ )
          {
@@ -105,19 +105,19 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
          }
          if( s2 == 0.0 ) alpha = 0.0;
          else alpha = rho / s2;
-         //DBG_EXPR( alpha );
+         //dbgExpr( alpha );
 
          // s_j = r_j - alpha_j * A p_j
          for( i = 0; i < size; i ++ )
          {
-            //DBG_EXPR( r[ i ] );
-            //DBG_EXPR( alpha * Ap[ i ] );
+            //dbgExpr( r[ i ] );
+            //dbgExpr( alpha * Ap[ i ] );
             s[ i ] = r[ i ] - alpha * Ap[ i ];
          }
          //DrawVector( "s", s, ( m_int ) sqrt( ( m_real ) size ) );
 
          // omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
-         //DBG_COUT( "Computing As" );
+         //dbgCout( "Computing As" );
          /*if( M ) // preconditioner
          {
             A. VectorProduct( s, M_tmp );
@@ -134,13 +134,13 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
          }
          if( s2 == 0.0 ) omega = 0.0;
          else omega = s1 / s2;
-         //DBG_EXPR( omega );
+         //dbgExpr( omega );
          
          //DrawVector( "p", p, ( m_int ) sqrt( ( m_real ) size ) );
          //DrawVector( "s", s, ( m_int ) sqrt( ( m_real ) size ) );
          // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
          // r_{j+1} = s_j - omega_j * A * s_j
-         //DBG_COUT( "Computing new x and new r." );
+         //dbgCout( "Computing new x and new r." );
          for( i = 0; i < size; i ++ )
          {
             x[ i ] += alpha * p[ i ] + omega * s[ i ];
@@ -163,8 +163,8 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
          {
             p[ i ] = r[ i ] + beta * ( p[ i ] - omega * Ap[ i ] );
             mMatrixSolver< T > :: residue += r[ i ] * r[ i ];
-            //DBG_EXPR( r[ i ] );
-            //DBG_EXPR( res );
+            //dbgExpr( r[ i ] );
+            //dbgExpr( res );
          }
          mMatrixSolver< T > :: residue = sqrt( mMatrixSolver< T > :: residue / b_norm );
          

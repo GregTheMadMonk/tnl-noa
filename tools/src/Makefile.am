@@ -17,8 +17,8 @@ bin_PROGRAMS = tnl-err-norms \
 	           tnlgrid-view \
 	           tnlcurve2gnuplot
 
-tnl_err_norms_SOURCES = $(tnlerrnormssources) 
-tnl_err_norms_LDADD = libtnl-0.1.la
+tnl_err_norms_SOURCES = $(tnlerrnormssources)
+tnl_err_norms_LDADD = ../../src/libtnl-0.1.la
 
 tnlgrid_view_SOURCES = $(tnlgridviewsources) 
 tnlgrid_view_LDADD = libtnl-0.1.la

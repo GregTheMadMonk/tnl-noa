@@ -132,23 +132,23 @@ mMPIMesh2D :: mMPIMesh2D( const mMPIMesh2D& mpi_mesh,
 //--------------------------------------------------------------------------
 void mMPIMesh2D :: FreeBuffers()
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "FreeBuffers" );
-   DBG_EXPR( lft_snd_buf );
-   DBG_EXPR( rght_snd_buf );
-   DBG_EXPR( uppr_snd_buf );
-   DBG_EXPR( lwr_snd_buf );
-   DBG_EXPR( uppr_lft_snd_buf );
-   DBG_EXPR( uppr_rght_snd_buf );
-   DBG_EXPR( lwr_lft_snd_buf );
-   DBG_EXPR( lwr_rght_snd_buf );
-   DBG_EXPR( lft_rcv_buf );
-   DBG_EXPR( rght_rcv_buf );
-   DBG_EXPR( uppr_rcv_buf );
-   DBG_EXPR( lwr_rcv_buf );
-   DBG_EXPR( uppr_lft_rcv_buf );
-   DBG_EXPR( uppr_rght_rcv_buf );
-   DBG_EXPR( lwr_lft_rcv_buf );
-   DBG_EXPR( lwr_rght_rcv_buf );
+   dbgFunctionName( "mMPIMesh2D", "FreeBuffers" );
+   dbgExpr( lft_snd_buf );
+   dbgExpr( rght_snd_buf );
+   dbgExpr( uppr_snd_buf );
+   dbgExpr( lwr_snd_buf );
+   dbgExpr( uppr_lft_snd_buf );
+   dbgExpr( uppr_rght_snd_buf );
+   dbgExpr( lwr_lft_snd_buf );
+   dbgExpr( lwr_rght_snd_buf );
+   dbgExpr( lft_rcv_buf );
+   dbgExpr( rght_rcv_buf );
+   dbgExpr( uppr_rcv_buf );
+   dbgExpr( lwr_rcv_buf );
+   dbgExpr( uppr_lft_rcv_buf );
+   dbgExpr( uppr_rght_rcv_buf );
+   dbgExpr( lwr_lft_rcv_buf );
+   dbgExpr( lwr_rght_rcv_buf );
 
    if( lft_snd_buf ) delete[] lft_snd_buf;
    if( rght_snd_buf ) delete[] rght_snd_buf;
@@ -185,11 +185,11 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
                           m_int _mesh_y_size,
                           m_int _overlap_width )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Init" );
+   dbgFunctionName( "mMPIMesh2D", "Init" );
    
    // for consistency we want to have global dimensions set even
    // if we do not use mpi at all
-   DBG_EXPR( node_rank );
+   dbgExpr( node_rank );
    if( node_rank == 0 )
    {
       assert( phi );
@@ -207,12 +207,12 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
    if( nproc == 0 && _mesh_x_size == 0 && _mesh_y_size == 0 ) return true;
 
 
-   DBG_EXPR( node_rank );
+   dbgExpr( node_rank );
    m_int dims[ 2 ] = { 0, 0 };
    m_int periods[ 2 ] = { 0, 0 };
    if( ! _mesh_x_size && ! _mesh_y_size )
    {
-      DBG_COUT( "Finding mesh dimensions..." );
+      dbgCout( "Finding mesh dimensions..." );
       m_int nproc;
       MPI_Comm_size( MPI_COMM_WORLD, &nproc );
       MPI_Dims_create( nproc, 2, dims );
@@ -224,8 +224,8 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
       dims[ 0 ] = mesh_x_size = _mesh_x_size;
       dims[ 1 ] = mesh_y_size = _mesh_y_size;
    }
-   DBG_EXPR( mesh_x_size );
-   DBG_EXPR( mesh_y_size );
+   dbgExpr( mesh_x_size );
+   dbgExpr( mesh_y_size );
        
 
    MPI_Cart_create( MPI_COMM_WORLD, 
@@ -241,7 +241,7 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
       return 0;
    }
    DBG_MPI_BARRIER;
-   DBG_EXPR( mesh_comm );
+   dbgExpr( mesh_comm );
 
    overlap_width = _overlap_width;
    if( node_rank == 0 )
@@ -279,10 +279,10 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
    m_int nb_node;
    left_overlap = right_overlap = upper_overlap = lower_overlap = 0;
    
-   DBG_COUT( "Freeing buffers..." );
+   dbgCout( "Freeing buffers..." );
    FreeBuffers();
    DBG_MPI_BARRIER;
-   DBG_COUT( "Freeing buffers...done." );
+   dbgCout( "Freeing buffers...done." );
    
    if( LeftNeighbour( nb_node ) )
    {
@@ -335,14 +335,14 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
       uppr_rght_nb = FindNodeByCoord( mesh_comm, node_x_pos + 1, node_y_pos + 1 );
    }
 
-   DBG_COUT( " node rank " << node_rank << 
+   dbgCout( " node rank " << node_rank << 
              " ( " << node_x_pos << ", " << node_y_pos << " ), LRLU nb " <<
              left_overlap << right_overlap <<
              lower_overlap << upper_overlap );
-   DBG_EXPR( lwr_lft_nb );
-   DBG_EXPR( uppr_rght_nb );
-   DBG_EXPR( uppr_lft_nb );
-   DBG_EXPR( lwr_rght_nb );
+   dbgExpr( lwr_lft_nb );
+   dbgExpr( uppr_rght_nb );
+   dbgExpr( uppr_lft_nb );
+   dbgExpr( lwr_rght_nb );
    
 
 
@@ -355,7 +355,7 @@ m_int mMPIMesh2D :: Init( const mGrid2D* phi,
 m_bool mMPIMesh2D :: CreateMesh( const mGrid2D* phi,
                                  mGrid2D*& sub_phi ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "CreateMesh" );
+   dbgFunctionName( "mMPIMesh2D", "CreateMesh" );
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return true;
    mVector2D a, h;
@@ -380,7 +380,7 @@ m_bool mMPIMesh2D :: CreateMesh( const mGrid2D* phi,
                           name. Data()
          );
 
-   DBG_COUT( "( Rank " << node_rank << " ) - creating subdomain < " <<
+   dbgCout( "( Rank " << node_rank << " ) - creating subdomain < " <<
                node_x_pos * local_x_size - left_overlap << ", " <<
                ( node_x_pos + 1 ) * local_x_size + right_overlap << " > x < " <<
                node_y_pos * local_y_size - lower_overlap << ", " <<
@@ -428,10 +428,10 @@ m_bool mMPIMesh2D :: CreateMeshAtBoundaries( const mGrid2D* phi,
 void mMPIMesh2D :: CreateGlobalGrid( mGrid2D*& phi,
                                      const mGrid2D* sub_phi ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "CreateGlobalGrid" );
-   DBG_EXPR( node_rank );
-   DBG_EXPR( global_x_size );
-   DBG_EXPR( global_y_size );
+   dbgFunctionName( "mMPIMesh2D", "CreateGlobalGrid" );
+   dbgExpr( node_rank );
+   dbgExpr( global_x_size );
+   dbgExpr( global_y_size );
    phi = new mGrid2D( sub_phi -> A(),
                       mVector2D( 0.0, 0.0 ),
                       sub_phi -> H(),
@@ -446,7 +446,7 @@ void mMPIMesh2D :: ScatterToNode( const mGrid2D* phi,
                                   mGrid2D* sub_phi,
                                   m_int dest_node ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "ScatterToNode" );
+   dbgFunctionName( "mMPIMesh2D", "ScatterToNode" );
 #ifdef HAVE_MPI_H
    if( node_rank == 0 )
    {
@@ -460,13 +460,13 @@ void mMPIMesh2D :: ScatterToNode( const mGrid2D* phi,
       m_int dest_left_overlap( 0 ), dest_right_overlap( 0 ),
             dest_lower_overlap( 0 ), dest_upper_overlap( 0 );
       m_int nb_node;
-      DBG_EXPR( dest_node );
+      dbgExpr( dest_node );
       if( dest_x_pos > 0 ) dest_left_overlap = overlap_width;
       if( dest_x_pos < mesh_x_size - 1 ) dest_right_overlap = overlap_width;
       if( dest_y_pos > 0 ) dest_lower_overlap = overlap_width;
       if( dest_y_pos < mesh_y_size - 1 ) dest_upper_overlap = overlap_width;
      
-      DBG_COUT( "dest edges LRLU " << 
+      dbgCout( "dest edges LRLU " << 
                dest_left_overlap << dest_right_overlap <<
                dest_lower_overlap << dest_upper_overlap );
       mGrid2D mpi_buff( mVector2D( 0.0, 0.0 ), // a
@@ -477,7 +477,7 @@ void mMPIMesh2D :: ScatterToNode( const mGrid2D* phi,
                         dest_x_pos * local_x_size - dest_left_overlap, // x-offset
                         dest_y_pos * local_y_size - dest_lower_overlap // y-offset
                         );
-      DBG_COUT( "mpi buff < " <<
+      dbgCout( "mpi buff < " <<
                   dest_x_pos * local_x_size - dest_left_overlap << ", " <<
                   ( dest_x_pos + 1 ) * local_x_size + dest_right_overlap << " > x < " <<
                   dest_y_pos * local_y_size - dest_lower_overlap << ", " <<
@@ -541,11 +541,11 @@ void mMPIMesh2D :: Scatter( const mGrid2D* phi, mGrid2D* sub_phi ) const
 void mMPIMesh2D :: ScatterAtBoundaries( const mGrid2D* phi,
                                         mGrid2D* sub_phi )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "ScatterAtBoundaries" );
+   dbgFunctionName( "mMPIMesh2D", "ScatterAtBoundaries" );
    if( MeshSize() == 1 ) return;
    if( ! sub_phi ) return;
 #ifdef HAVE_MPI_H
-   DBG_EXPR( node_rank );
+   dbgExpr( node_rank );
    if( node_rank == 0 )
    {
       m_int dest, coords[ 2 ];
@@ -575,12 +575,12 @@ void mMPIMesh2D :: ScatterAtBoundaries( const mGrid2D* phi,
 void mMPIMesh2D :: Gather( mGrid2D* phi,
                            const mGrid2D* sub_phi ) const
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Gather" );
+   dbgFunctionName( "mMPIMesh2D", "Gather" );
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return;
    
    DBG_MPI_BARRIER;
-   DBG_EXPR( node_rank );
+   dbgExpr( node_rank );
    if( node_rank == 0 )
    {
       m_int nproc, src;
@@ -593,9 +593,9 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
          m_int src_x_pos = coords[ 0 ];
          m_int src_y_pos = coords[ 1 ];
 
-         DBG_EXPR( src );
-         DBG_EXPR( src_x_pos );
-         DBG_EXPR( src_y_pos );
+         dbgExpr( src );
+         dbgExpr( src_x_pos );
+         dbgExpr( src_y_pos );
 
          m_int src_left_overlap, src_right_overlap,
              src_lower_overlap, src_upper_overlap;
@@ -607,7 +607,7 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
          else src_lower_overlap = overlap_width;
          if( src_y_pos == mesh_y_size - 1 ) src_upper_overlap = 0;
          else src_upper_overlap = overlap_width;
-         DBG_COUT( "Allocating supporting buffer < " <<
+         dbgCout( "Allocating supporting buffer < " <<
                    src_x_pos * local_x_size - src_left_overlap <<
                    ", " << ( src_x_pos + 1 ) * local_x_size + src_right_overlap <<
                    " >x< " << src_y_pos * local_y_size - src_lower_overlap <<
@@ -625,8 +625,8 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
          m_int buf_size = 
             ( local_x_size + src_left_overlap + src_right_overlap ) *
             ( local_y_size + src_lower_overlap + src_upper_overlap );
-         DBG_EXPR( buf_size );
-         DBG_COUT( "RECEIVING data from node " << src  );
+         dbgExpr( buf_size );
+         dbgCout( "RECEIVING data from node " << src  );
          MPI_Recv( mpi_buff. Data(),
                    buf_size * sizeof( m_real ),
                    MPI_BYTE,
@@ -634,7 +634,7 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
                    0,
                    mesh_comm,
                    &status );
-         DBG_COUT( "Receiving data done." );
+         dbgCout( "Receiving data done." );
          for( i = src_x_pos * local_x_size; 
               i < ( src_x_pos + 1 ) * local_x_size;
               i ++ )
@@ -649,7 +649,7 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
    }
    else
    {
-      DBG_COUT( "node rank " << node_rank << " SENDING data" );
+      dbgCout( "node rank " << node_rank << " SENDING data" );
       m_int buf_size = ( local_x_size + left_overlap + right_overlap ) *
                        ( local_y_size + lower_overlap + upper_overlap );
       MPI_Send( const_cast< m_real* >( sub_phi -> Data() ),
@@ -658,15 +658,15 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
                 0,
                 0,
                 mesh_comm );
-      DBG_COUT( "sending data done." );
+      dbgCout( "sending data done." );
    }
-   DBG_COUT( "Gathering data done." );
+   dbgCout( "Gathering data done." );
 #endif
 }
 //--------------------------------------------------------------------------
 void mMPIMesh2D :: Synchronize( mGrid2D* phi )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Synchronize" );
+   dbgFunctionName( "mMPIMesh2D", "Synchronize" );
    //return;
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return;
@@ -694,7 +694,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   //starting communication with the left neighbour
   if( node_x_pos > 0 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LEFT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LEFT neighbour" );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < local_y_size; j ++ )
            lft_snd_buf[ i * local_y_size + j ] =
@@ -709,7 +709,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm ,
                 &lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LEFT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LEFT neighbour" );
      MPI_Irecv( lft_rcv_buf,
                 wdth * local_y_size * sizeof( m_real ),
                 MPI_CHAR,
@@ -723,7 +723,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with the right neighbour
   if( node_x_pos < mesh_x_size - 1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the RIGHT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the RIGHT neighbour" );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < local_y_size; j ++ )
            rght_snd_buf[ i * local_y_size + j ] =
@@ -738,7 +738,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                mesh_comm,
                &rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the RIGHT neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the RIGHT neighbour" );
      MPI_Irecv( rght_rcv_buf,
                 wdth * local_y_size * sizeof( m_real ),
                 MPI_CHAR,
@@ -752,7 +752,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with the lower neighbour
   if( node_y_pos > 0 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LOWER neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the LOWER neighbour" );
      for( i = 0; i < local_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
            lwr_snd_buf[ j * local_x_size + i ] =
@@ -767,7 +767,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                mesh_comm,
                &lwr_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LOWER neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LOWER neighbour" );
      MPI_Irecv( lwr_rcv_buf,
                wdth * local_y_size * sizeof( m_real ),
                MPI_CHAR,
@@ -781,7 +781,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with the uppper neighbour
   if( node_y_pos < mesh_y_size - 1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the UPPER neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING data to the UPPER neighbour" );
      for( i = 0; i < local_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
            uppr_snd_buf[ j * local_x_size + i ] =
@@ -796,7 +796,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm,
                 &uppr_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the UPPER neighbour" );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the UPPER neighbour" );
      MPI_Irecv( uppr_rcv_buf,
                 wdth * local_y_size * sizeof( m_real ),
                 MPI_CHAR,
@@ -813,7 +813,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with lower left neighbour
   if( lwr_lft_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the LOWER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the LOWER LEFT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            lwr_lft_snd_buf[ j * wdth + i ] =
@@ -826,7 +826,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm,
                 &lwr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the LOWER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the LOWER LEFT neighbour." );
      MPI_Irecv( lwr_lft_rcv_buf,
                 wdth_2 * sizeof( m_real ),
                 MPI_CHAR,
@@ -840,7 +840,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with lower right neighbour
   if( lwr_rght_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the LOWER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the LOWER RIGHT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            lwr_rght_snd_buf[ j * wdth + i ] =
@@ -853,7 +853,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm,
                 &lwr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the LOWER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the LOWER RIGHT neighbour." );
      MPI_Irecv( lwr_rght_rcv_buf,
                 wdth_2 * sizeof( m_real ),
                 MPI_CHAR,
@@ -867,7 +867,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with upper left neighbour
   if( uppr_lft_nb != - 1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the UPPER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the UPPER LEFT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            uppr_lft_snd_buf[ j * wdth + i ] =
@@ -880,7 +880,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm,
                 &uppr_lft_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the UPPER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the UPPER LEFT neighbour." );
      MPI_Irecv( uppr_lft_rcv_buf,
                 wdth_2 * sizeof( m_real ),
                 MPI_CHAR,
@@ -894,7 +894,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // starting communication with upper right neighbour
   if( uppr_rght_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the UPPER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - SENDING small square to the UPPER RIGHT neighbour." );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
            uppr_rght_snd_buf[ j * wdth + i ] =
@@ -907,7 +907,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
                 mesh_comm,
                 &uppr_rght_snd_rqst );
      
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the UPPER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the UPPER RIGHT neighbour." );
      MPI_Irecv( uppr_rght_rcv_buf,
                 wdth_2 * sizeof( m_real ),
                 MPI_CHAR,
@@ -921,7 +921,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the left neighbour
   if( node_x_pos > 0 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LEFT neighbour." );
      MPI_Wait( &lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < local_y_size; j ++ )
@@ -934,7 +934,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the right neighbour
   if( node_x_pos < mesh_x_size - 1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from RIGHT neighbour." );
      MPI_Wait( &rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < local_y_size; j ++ )
@@ -947,7 +947,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the lower neighbour
   if( node_y_pos > 0 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER neighbour." );
      MPI_Wait( &lwr_rcv_rqst, &status );
      for( i = 0; i < local_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -960,7 +960,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the upper neighbour
   if( node_y_pos < mesh_y_size - 1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER neighbour." );
      MPI_Wait( &uppr_rcv_rqst, &status );
      for( i = 0; i < local_x_size; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -974,7 +974,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the lower left neighbour
   if( lwr_lft_nb != -1  )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER LEFT neighbour." );
      MPI_Wait( &lwr_lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -987,7 +987,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the lower right neighbour
   if( lwr_rght_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from LOWER RIGHT neighbour." );
      MPI_Wait( &lwr_rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -1000,7 +1000,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the upper right neighbour
   if( uppr_rght_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER RIGHT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER RIGHT neighbour." );
      MPI_Wait( &uppr_rght_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -1013,7 +1013,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
   // finishing communication with the upper left neighbour
   if( uppr_lft_nb != -1 )
   {
-     DBG_COUT( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER LEFT neighbour." );
+     dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - WAITING for data from UPPER LEFT neighbour." );
      MPI_Wait( &uppr_lft_rcv_rqst, &status );
      for( i = 0; i < wdth; i ++ )
         for( j = 0; j < wdth; j ++ )
@@ -1022,7 +1022,7 @@ void mMPIMesh2D :: Synchronize( mGrid2D* phi )
      MPI_Wait( &uppr_lft_snd_rqst, &status );
   }
   
-  DBG_COUT( "Synchronisation done..." );
+  dbgCout( "Synchronisation done..." );
   DBG_MPI_BARRIER;
 #endif
 }
@@ -1227,7 +1227,7 @@ m_bool CreateMesh( const mMPIMesh2D& mpi_mesh,
                    const mObjectContainer* phi_cont,
                    mObjectContainer* sub_phi_cont )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "CreateMesh" );
+   dbgFunctionName( "mMPIMesh2D", "CreateMesh" );
    if( mpi_mesh. MeshSize() == 1 ) return true;
    m_int size;
    if( mpi_mesh. NodeRank() == 0 ) size = phi_cont -> Size();
@@ -1253,7 +1253,7 @@ void CreateGlobalGrid( const mMPIMesh2D* mpi_mesh,
                        mObjectContainer* phi_cont,
                        const mObjectContainer* sub_phi_cont )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "CreateGlobalGrid" );
+   dbgFunctionName( "mMPIMesh2D", "CreateGlobalGrid" );
    if( mpi_mesh -> MeshSize() == 1 ) return;
    m_int size = sub_phi_cont -> Size();
    m_int i;
@@ -1302,8 +1302,8 @@ void Gather( const mMPIMesh2D* mpi_mesh,
              mObjectContainer* phi_cont,
              const mObjectContainer* sub_phi_cont )
 {
-   DBG_FUNCTION_NAME( "mMPIMesh2D", "Gather" );
-   DBG_EXPR( mpi_mesh -> NodeRank() );
+   dbgFunctionName( "mMPIMesh2D", "Gather" );
+   dbgExpr( mpi_mesh -> NodeRank() );
    if( mpi_mesh -> MeshSize() == 1 ) return;
    m_int size;
    if( mpi_mesh -> NodeRank() == 0 ) size = phi_cont -> Size();

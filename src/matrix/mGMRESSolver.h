@@ -20,7 +20,7 @@
 
 
 #include <math.h>
-#include "mMatrixSolver.h"
+#include <matrix/mMatrixSolver.h>
 
 template< typename T > class mGMRESSolver : public mMatrixSolver< T >
 {
@@ -102,8 +102,8 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
       normb =sqrt( normb );
       beta = sqrt( beta );
       
-      //DBG_COUT_ARRAY( r, size );
-      //DBG_COUT_ARRAY( x, size );
+      //dbgCout_ARRAY( r, size );
+      //dbgCout_ARRAY( x, size );
      
       if( normb == 0.0 ) normb = 1.0;
     
@@ -132,8 +132,8 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
          for( i = 0; i < _size * ( m + 1 ); i ++ )
             v[ i ] = 0;
          
-         //DBG_EXPR( beta );
-         //DBG_COUT_ARRAY( r, size );
+         //dbgExpr( beta );
+         //dbgCout_ARRAY( r, size );
          // v_0 = r / |r|
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private( i ) firstprivate( beta, _size, v, r )
@@ -149,7 +149,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
          s[ 0 ] = beta;
 
          
-         //DBG_COUT( " ----------- Starting m-loop -----------------" );
+         //dbgCout( " ----------- Starting m-loop -----------------" );
          for( i = 0; i < m && mMatrixSolver< T > :: iteration <= max_iterations; i++ )
          {
 
@@ -161,8 +161,8 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
             }
             else
                 A. VectorProduct( &v[ i * size ], w );
-            //DBG_COUT_ARRAY( s, m );
-            //DBG_COUT_ARRAY( w, size );
+            //dbgCout_ARRAY( s, m );
+            //dbgCout_ARRAY( w, size );
             for( k = 0; k <= i; k++ )
             {
                // H_{k,i} = ( w, v_k )
@@ -190,9 +190,9 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
             normw = sqrt( normw );
             H[ i + 1 + i * ( m + 1 ) ] = normw;
 
-            //DBG_COUT_ARRAY( w, size );
-            //DBG_EXPR( normw );
-            //DBG_COUT_MATRIX_CW( H, m + 1, m, 12  );
+            //dbgCout_ARRAY( w, size );
+            //dbgExpr( normw );
+            //dbgCout_MATRIX_CW( H, m + 1, m, 12  );
             
             // v_{i+1} = w / |w|
 #ifdef HAVE_OPENMP
@@ -200,10 +200,10 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
 #endif
             for( l = 0; l < _size; l ++ )
                v[ ( i + 1 ) * _size + l ] = w[ l ] / normw;
-            //DBG_COUT_MATRIX_CW( v, size, m + 1, 12 );
+            //dbgCout_MATRIX_CW( v, size, m + 1, 12 );
 
 
-            //DBG_COUT( "Applying rotations" );
+            //dbgCout( "Applying rotations" );
             for( k = 0; k < i; k++ )
                ApplyPlaneRotation( H[ k + i * ( m + 1 )],
                                    H[ k + 1 + i * ( m + 1 ) ],
@@ -223,17 +223,17 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
                                 cs[ i ],
                                 sn[ i ] );
             
-            //DBG_COUT_MATRIX_CW( H, m + 1, m, 12 );
-            //DBG_COUT_ARRAY( s, i + 2 );
-            //DBG_COUT_ARRAY( cs, m + 1 );
-            //DBG_COUT_ARRAY( sn, m + 1 );
+            //dbgCout_MATRIX_CW( H, m + 1, m, 12 );
+            //dbgCout_ARRAY( s, i + 2 );
+            //dbgCout_ARRAY( cs, m + 1 );
+            //dbgCout_ARRAY( sn, m + 1 );
             
             mMatrixSolver< T > :: residue = fabs( s[ i + 1 ] ) / normb;
 
-            //DBG_EXPR( resid );
-            //DBG_EXPR( normb );
-            //DBG_EXPR( resid / normb );
-            //DBG_EXPR( tol );
+            //dbgExpr( resid );
+            //dbgExpr( normb );
+            //dbgExpr( resid / normb );
+            //dbgExpr( tol );
 
             if( mMatrixSolver< T > :: iteration % 10 == 0 &&
                 mMatrixSolver< T > :: verbosity > 1 ) 
@@ -249,7 +249,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
             mMatrixSolver< T > :: iteration ++;
          }
          Update( x, m - 1, m, H, s, v);
-         //DBG_COUT_ARRAY( x, size );
+         //dbgCout_ARRAY( x, size );
          
          // r = M.solve(b - A * x);
          beta = 0.0;
@@ -281,9 +281,9 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
             }
          }
          beta = sqrt( beta );
-         //DBG_COUT_ARRAY( r, size );
-         //DBG_EXPR( beta );
-         //DBG_EXPR( beta / normb );
+         //dbgCout_ARRAY( r, size );
+         //dbgExpr( beta );
+         //dbgExpr( beta / normb );
          mMatrixSolver< T > :: residue = beta / normb;
          mMatrixSolver< T > :: iteration ++;
       }
@@ -307,7 +307,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
                 const T* s,
                 const T* v )
    {
-      //DBG_FUNCTION_NAME( "mGMRESSolver", "Update" );
+      //dbgFunctionName( "mGMRESSolver", "Update" );
       T* y = new T[ m + 1 ];
       long int i, j;
 #ifdef HAVE_OPENMP
@@ -316,7 +316,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
       for( i = 0; i <= m ; i ++ )
          y[ i ] = s[ i ];
 
-      //DBG_COUT_ARRAY( y, m + 1 );
+      //dbgCout_ARRAY( y, m + 1 );
       // Backsolve:  
       for( i = k; i >= 0; i--)
       {
@@ -327,7 +327,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
          for( j = i - 1; j >= 0; j--)
             y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
       }
-      //DBG_COUT_ARRAY( y, m + 1 );
+      //dbgCout_ARRAY( y, m + 1 );
 
 
       const long int _size = size;
@@ -338,7 +338,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
          for( j = 0; j < _size; j ++ )
             x[ j ] += v[ i * _size + j ] * y[ i ];
       
-      //DBG_COUT_ARRAY( x, size );
+      //dbgCout_ARRAY( x, size );
 
       delete[] y;
    };

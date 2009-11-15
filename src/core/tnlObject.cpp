@@ -49,19 +49,19 @@ const mString& tnlObject :: GetName() const
 //--------------------------------------------------------------------------
 bool tnlObject :: Save( ostream& file ) const
 {
-   DBG_FUNCTION_NAME( "mObject", "Save" );
-   DBG_COUT( "Writing magic number." );
+   dbgFunctionName( "mObject", "Save" );
+   dbgCout( "Writing magic number." );
    file. write( magic_number, strlen( magic_number ) * sizeof( char ) ); 
    if( file. bad() ) return false;
-   DBG_COUT( "Writing object name " << name );
+   dbgCout( "Writing object name " << name );
    if( ! GetType(). Save( file ) || ! name. Save( file ) ) return false;
    return true;
 }
 //--------------------------------------------------------------------------
 bool tnlObject :: Load( istream& file )
 {
-   DBG_FUNCTION_NAME( "mObject", "Load" );
-   DBG_COUT( "Reading object type " );
+   dbgFunctionName( "mObject", "Load" );
+   dbgCout( "Reading object type " );
    mString load_type;
    if( ! GetObjectType( file, load_type ) )
       return false;
@@ -70,15 +70,15 @@ bool tnlObject :: Load( istream& file )
       cerr << "Given file contains instance of " << load_type << " but " << GetType() << " is expected." << endl;
       return false;
    }
-   DBG_COUT( "Reading object name " );
+   dbgCout( "Reading object name " );
    if( ! name. Load( file ) ) return false;
    return true;
 }
 //--------------------------------------------------------------------------
 bool GetObjectType( istream& file, mString& type )
 {
-   DBG_FUNCTION_NAME( "", "GetObjectType" );
-   DBG_COUT( "Chacking magic number." );
+   dbgFunctionName( "", "GetObjectType" );
+   dbgCout( "Chacking magic number." );
    char mn[ 10 ];
    file. read( mn, strlen( magic_number ) * sizeof( char ) );
    if( strncmp( mn, magic_number, 5 ) != 0 ) return false;

@@ -18,7 +18,7 @@
 #ifndef mGrid1DH
 #define mGrid1DH
 
-#include <mcore.h>
+#include <core/mcore.h>
 
 template< typename T = double > class mGrid1D : public mField1D< T >
 {

@@ -21,7 +21,7 @@
 #include <ostream>
 #include <fstream>
 #include <iomanip>
-#include <mcore.h>
+#include <core/mcore.h>
 #include "mGrid1D.h"
 #include "mGridSystem1D.h"
 

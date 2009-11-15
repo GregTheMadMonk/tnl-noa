@@ -18,8 +18,7 @@
 #ifndef msdfIterBaseH
 #define msdfIterBaseH
 
-#include<mcore.h>
-#include<mdiff.h>
+#include<diff/mdiff.h>
 
 class msdfIterBase 
 {

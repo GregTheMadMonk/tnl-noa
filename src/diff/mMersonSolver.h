@@ -19,7 +19,7 @@
 #define mMersonSolverH
 
 #include <math.h>
-#include <mcore.h>
+#include <core/mcore.h>
 #include "mExplicitSolver.h"
 
 template< class GRID, class SCHEME, typename T = double > class mMersonSolver : public mExplicitSolver< GRID, SCHEME, T >

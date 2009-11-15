@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "src/debug/tnlDebug.h"
-#include "src/diff/mdiff.h"
+#include <debug/tnlDebug.h>
+#include <diff/mdiff.h>
 #include <fstream>
 #include <stdio.h>
 #include "../../mdiff-err-norms-def.h"

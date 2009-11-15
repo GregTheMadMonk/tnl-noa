@@ -18,9 +18,9 @@
 #ifndef curve_identH
 #define curve_identH
 
-#include "mcore.h"
-#include "mGrid2D.h"
-#include "mdiff-debug.h"
+#include <core/mcore.h>
+#include <diff/mGrid2D.h>
+#include <debug/tnlDebug.h>
 
 //! Supporting structure for a curve identification
 // TODO replace it with mVector< 2, long int > 
@@ -36,7 +36,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
                                            mCurve< mVector< 2, T > >& crv,
                                            const double level = 0.0 )
 {
-   DBG_FUNCTION_NAME( "", "GetLevelSetCurve" );
+   dbgFunctionName( "", "GetLevelSetCurve" );
    long int i, j, k;
    const long int x_size = u. GetXSize();
    const long int y_size = u. GetYSize();
@@ -58,7 +58,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
          // There is a curve going through the mesh.
          // Find if it is adjacent to begining or end of
          // some of already traced curves (or just curve fragment).
-         DBG_COUT( "Curve detected at ( " << i << ", " << j << ")" );
+         dbgCout( "Curve detected at ( " << i << ", " << j << ")" );
          bool added( false );
          for( k = 0; k < curves. Size(); k ++ )
          {
@@ -71,7 +71,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             {
                curves[ k ] -> Append( MeshIndex( i, j ) );
                added = true;
-               DBG_COUT( "Appending to list no. " << k << "; list size -> " <<
+               dbgCout( "Appending to list no. " << k << "; list size -> " <<
                          curves[ k ] -> Size() );
                break;
             }
@@ -83,7 +83,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             {
                curves[ k ] -> Prepend( MeshIndex( i, j ) );
                added = true;
-               DBG_COUT( "Prepending to list no. " << k << "; list size ->  " << 
+               dbgCout( "Prepending to list no. " << k << "; list size ->  " << 
                      curves[ k ] -> Size() );
                break;
             }
@@ -94,14 +94,14 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             mList< MeshIndex >* new_list = new mList< MeshIndex >;
             new_list -> Append( MeshIndex( i, j ) );
             curves. Append( new_list );
-            DBG_COUT( "Adding new list." );
+            dbgCout( "Adding new list." );
          }
       }
    
    // Now defragment all curves as much as it is possible.
    // It means - check if there are two curves whose begening and end
    // match, connect the together and erase the appended (or prepended) one.
-   DBG_COUT( "Defragmenting lists ... ");
+   dbgCout( "Defragmenting lists ... ");
    bool fragmented( true );
    while( fragmented )
    {
@@ -124,7 +124,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               DBG_COUT( "Prepending the list no. " << j << 
+               dbgCout( "Prepending the list no. " << j << 
                          " (" << c2. Size() <<") to the list no. " << i <<
                          " (" << c1. Size() <<").");
                c1. PrependList( c2 );
@@ -132,7 +132,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
                if( i > j ) i --;
                j --;
                c1_start = c2_start;
-               DBG_COUT( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. Size() );
                fragmented = true;
                continue;
             }
@@ -141,7 +141,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               DBG_COUT( "Appending the list no. " << j <<
+               dbgCout( "Appending the list no. " << j <<
                          " (" << c2. Size() <<") to the list no. " << i <<
                          " (" << c1. Size() <<").");
                c1. AppendList( c2 );
@@ -149,7 +149,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
                if( i > j ) i --;
                j --;
                c1_end = c2_end;
-               DBG_COUT( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. Size() );
                fragmented = true;
                continue;
             }
@@ -158,7 +158,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               DBG_COUT( "Prepending (reversaly) the list no. " << j <<
+               dbgCout( "Prepending (reversaly) the list no. " << j <<
                          " (" << c2. Size() <<" ) to the list no. " << i <<
                          " (" << c1. Size() <<" ).");
                for( k = 0; k < c2. Size(); k ++ )
@@ -167,7 +167,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
                if( i > j ) i --;
                j --;
                c1_start = c2_end;
-               DBG_COUT( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. Size() );
                fragmented = true;
                continue;
             }
@@ -176,7 +176,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               DBG_COUT( "Appending (reversaly) the list no. " << j <<
+               dbgCout( "Appending (reversaly) the list no. " << j <<
                          " (" << c2. Size() <<" ) to the list no. " << i <<
                          " (" << c1. Size() <<" ).");
                for( k = c2.Size(); k > 0; k -- )
@@ -185,14 +185,14 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
                if( i > j ) i --;
                j --;
                c1_end = c2_start;
-               DBG_COUT( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. Size() );
                fragmented = true;
                continue;
             }
          }
       }
    }
-   DBG_COUT( "There are " << curves. Size() << " curves now." );
+   dbgCout( "There are " << curves. Size() << " curves now." );
    // Now check if the curves are closed ( the begining and
    // the end match).
    for( i = 0; i < curves. Size(); i ++ )
@@ -206,7 +206,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
       if( ( n1 == 1 && n2 == 0 ) ||
           ( n1 == 0 && n2 == 1 ) )
       {
-         DBG_COUT( "Closing curve no. " << i );
+         dbgCout( "Closing curve no. " << i );
          c. Append( m1 );
       }
    }

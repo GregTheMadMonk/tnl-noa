@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 //--------------------------------------------------------------------------
-#include <mdiff.h>
+#include <diff/mdiff.h>
 #include "debug.h"
 #include "mdist.h"
 
@@ -35,8 +35,8 @@ void Batman(  const double& t, void* crv_data, double& x, double& y )
 
 int main( int argc, char* argv[] )
 {
-   DBG_FUNCTION_NAME( "", "main" );
-   DBG_INIT( "debug.xml" );
+   dbgFunctionName( "", "main" );
+   dbgInit( "debug.xml" );
 
    const int N = 100;
    mGrid2D< double > u( N, N, -2.0, 2.0, -2.0, 2.0 );

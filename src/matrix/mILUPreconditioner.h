@@ -2,7 +2,7 @@
                           mILUPreconditioner.h  -  description
                              -------------------
     begin                : 2007/02/01
-    copyright            : (C) 2007 by Tomá¹ Oberhuber
+    copyright            : (C) 2007 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -18,8 +18,9 @@
 #ifndef mILUPreconditionerH
 #define mILUPreconditionerH
 
-#include "mPreconditioner.h"
-#include "mCSRMatrix.h"
+#include <matrix/mPreconditioner.h>
+#include <matrix/mCSRMatrix.h>
+#include <debug/tnlDebug.h>
 
 //#define ILU_DEBUG
 
@@ -55,7 +56,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
 
    bool Init( const mCSRMatrix< T >& A, const T& threshold )
    {
-      //DBG_FUNCTION_NAME( "mILUPreconditioner", "Init" );
+      dbgFunctionName( "mILUPreconditioner", "Init" );
       assert( A. GetSize() == M -> GetSize() );
       long int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
@@ -135,11 +136,11 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
             }
          }
         cout << "Computing ILUT ... " << 100.0 * ( float ) ( i + 1 ) / ( float ) ( size ) << "%    \r" << flush; 
-         DBG_EXPR( i );
-         //DBG_EXPR( * M );
+         dbgExpr( i );
+         //dbgExpr( * M );
       }
       cout << non_zero_elements / size << " elems. per line in average ";
-      //DBG_EXPR( * M );
+      //dbgExpr( * M );
 
 #ifdef ILU_DEBUG
       fstream file;
@@ -268,14 +269,14 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
    
    bool Solve( const T* b, T* x ) const
    {
-      //DBG_FUNCTION_NAME( "mILUPreconditioner", "Solve" );
+      dbgFunctionName( "mILUPreconditioner", "Solve" );
       const long int size = M -> GetSize();
       const mCSRMatrixElement< T >* M_data;
       const mCSRMatrixRowInfo *M_rows_info;
       M -> Data( M_data, M_rows_info );
       long int i, j;
       
-      //DBG_COUT( "Solving Ly = b" );
+      dbgCout( "Solving Ly = b" );
       // L is unit lower triangular
       for( i = 0; i < size; i ++ )
       {
@@ -291,7 +292,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
          //   y[ i ] -= y[ j ] * ( * M )( i, j );
       }
       
-      DBG_COUT( "Solving Ux = y" );
+      dbgCout( "Solving Ux = y" );
       for( i = size - 1; i >=0 ; i -- )
       {
          x[ i ] = y[ i ];
@@ -318,7 +319,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
             y[ i ] -= y[ j ] * full_M[ i * size + j ];
       }
       
-      DBG_COUT( "Solving Ux = y" );
+      dbgCout( "Solving Ux = y" );
       for( i = size - 1; i >=0 ; i -- )
       {
          x[ i ] = y[ i ];

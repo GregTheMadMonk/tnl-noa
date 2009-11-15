@@ -2,7 +2,7 @@
                           debug.h  -  description
                              -------------------
     begin                : 2005/07/02
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -23,11 +23,11 @@
 #ifdef HAVE_POUND_H
 #include <pound.h>
 #else
-   #define DBG_INIT( file_name )
-   #define DBG_FUNCTION_NAME( _class, _func )
-   #define DBG_COUT( args )
+   #define dbgInit( file_name )
+   #define dbgFunctionName( _class, _func )
+   #define dbgCout( args )
    #define DBG_PRINTF( expr )
-   #define DBG_EXPR( expr )
+   #define dbgExpr( expr )
    #define DBG_CALL( expr )
    #define DBG_WAIT( )
    #define DBG_COND_COUT( condition, args )
