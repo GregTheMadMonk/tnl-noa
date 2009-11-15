@@ -18,7 +18,7 @@
 #ifndef mGrid2DH
 #define mGrid2DH
 
-#include <core/mcore.h>
+#include <diff/mField2D.h>
 
 template< class T = double > class mGrid2D :
 	                         public mField2D< T >

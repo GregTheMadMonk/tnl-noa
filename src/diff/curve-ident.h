@@ -18,7 +18,6 @@
 #ifndef curve_identH
 #define curve_identH
 
-#include <core/mcore.h>
 #include <diff/mGrid2D.h>
 #include <debug/tnlDebug.h>
 

@@ -22,8 +22,7 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-#include <core/mcore.h>
-#include "mGrid2D.h"
+#include <diff/mGrid2D.h>
 
 template< class T > bool Draw( const mGrid2D< T >& u,
                                ostream& str,

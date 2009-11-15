@@ -21,9 +21,8 @@
 #include <ostream>
 #include <fstream>
 #include <iomanip>
-#include <core/mcore.h>
 #include <float.h>
-#include "mGrid3D.h"
+#include <diff/mGrid3D.h>
 
 template< class T > bool Draw( const mGrid3D< T >& u,
                                ostream& str,

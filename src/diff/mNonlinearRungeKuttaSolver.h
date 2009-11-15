@@ -19,8 +19,7 @@
 #define mNonlinearRungeKuttaSolverH
 
 #include <math.h>
-#include <core/mcore.h>
-#include "mExplicitSolver.h"
+#include <diff/mExplicitSolver.h>
 
 template< class GRID, class SCHEME, typename T = double > class mNonlinearRungeKuttaSolver : public mExplicitSolver< GRID, SCHEME, T >
 {

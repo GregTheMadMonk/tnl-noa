@@ -19,7 +19,6 @@
 #define mExplicitSolverH
 
 #include <iomanip>
-#include <core/mcore.h>
 
 template< class GRID, class SCHEME, typename T = double > class mExplicitSolver : public tnlObject
 {
