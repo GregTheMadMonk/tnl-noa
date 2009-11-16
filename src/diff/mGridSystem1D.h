@@ -18,7 +18,7 @@
 #ifndef mGridSystem1DH
 #define mGridSystem1DH
 
-#include <diff/mFieldSystem1D.h>
+#include <core/mFieldSystem1D.h>
 
 template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem1D : public mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >
 {

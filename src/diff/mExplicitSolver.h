@@ -19,6 +19,8 @@
 #define mExplicitSolverH
 
 #include <iomanip>
+#include <core/mTimerCPU.h>
+#include <core/mTimerRT.h>
 
 template< class GRID, class SCHEME, typename T = double > class mExplicitSolver : public tnlObject
 {

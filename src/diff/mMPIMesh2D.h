@@ -19,8 +19,10 @@
 #define mMPIMesh2DH
 
 #include <diff/mGrid2D.h>
+#include <core/mParameterContainer.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
+#include <core/mfilename.h>
 
 
 template< class T > class mMPIMesh2D

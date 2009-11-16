@@ -18,11 +18,15 @@
 #ifndef drawGrid1DH
 #define drawGrid1DH
 
-#include <ostream>
+#include <iostream>
 #include <fstream>
 #include <iomanip>
-#include "mGrid1D.h"
-#include "mGridSystem1D.h"
+#include <diff/mGrid1D.h>
+#include <diff/mGridSystem1D.h>
+#include <core/mfuncs.h>
+#include <core/compress-file.h>
+
+using namespace std;
 
 template< class T > bool Draw( const mGrid1D< T >& u,
                                ostream& str,

@@ -10,32 +10,32 @@ EXTRA_DIST = mConfigDescriptionParser.y \
 	     mConfigDescriptionScanner.l \
 	     FlexLexer.h
 
-headers = mcore.h \
-	  mConfigDescription.h \
-	  mCurve.h \
-	  mDataElement.h \
-	  mField1D.h \
-	  mField2D.h \
-	  mField3D.h \
-	  mFieldSystem1D.h \
-	  mList.h \
-	  mLongVector.h \
-	  mLogger.h \
-	  tnlObject.h \
-	  mString.h \
-	  mConfigDescriptionParser.h \
-	  mConfigDescriptionParserbase.h \
-	  mConfigDescriptionParser.ih \
-	  mConfigDescriptionScanner.h \
-	  mParameterContainer.h \
-	  mTimerCPU.h \
-	  mTimerRT.h \
-	  mVector.h \
-	  compress-file.h \
-	  mfilename.h \
-	  mfuncs.h \
-	  mpi-supp.h \
-	  param-types.h
+headers =  \
+		  mConfigDescription.h \
+		  mCurve.h \
+		  mDataElement.h \
+		  mField1D.h \
+		  mField2D.h \
+		  mField3D.h \
+		  mFieldSystem1D.h \
+		  mList.h \
+		  mLongVector.h \
+		  mLogger.h \
+		  tnlObject.h \
+		  mString.h \
+		  mConfigDescriptionParser.h \
+		  mConfigDescriptionParserbase.h \
+		  mConfigDescriptionParser.ih \
+		  mConfigDescriptionScanner.h \
+		  mParameterContainer.h \
+		  mTimerCPU.h \
+		  mTimerRT.h \
+		  mVector.h \
+		  compress-file.h \
+		  mfilename.h \
+		  mfuncs.h \
+		  mpi-supp.h \
+		  param-types.h
 
 sources = mConfigDescription.cpp \
 	  mLogger.cpp \

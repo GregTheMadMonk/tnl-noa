@@ -7,5 +7,5 @@ Name: TNL
 Description: Template Numerical Library.
 Requires:
 Version: 0.1.0
-Libs: -L${libdir} -ltnldebug-0.1 -ltnlcore-0.1 -ltnldiff-0.1 -ltnldist-0.1 -ltnlmatrix-0.1 
+Libs: -L${libdir} -ltnl-0.1
 Cflags: -I${includedir}
