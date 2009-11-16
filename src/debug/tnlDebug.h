@@ -2,7 +2,7 @@
                           tnlDebug.h  -  description
                              -------------------
     begin                : 2004/09/05
-    copyright            : (C) 2004 by Tomá¹ Oberhuber
+    copyright            : (C) 2004 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -63,6 +63,16 @@ extern int __tnldbg_mpi_i_proc;
       << _tnldbg_debug_func_name << " @ "                     \
       << __LINE__ << " | " << #expr << " -> "                 \
       << expr << endl << flush;
+
+#define dbgCondExpr( condition, expr )         \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
+                       _tnldbg_debug_func_name ) )  \
+      if( condition )                            \
+         cout << "# MPI proc. " << __tnldbg_mpi_i_proc << " | "  \
+         << _tnldbg_debug_class_name << " :: " \
+         << _tnldbg_debug_func_name << " @ "        \
+         << __LINE__ << " | "                    \
+      << #expr << " -> " << expr << flush << endl;
 
 #else   // now non-MPI definitions
 

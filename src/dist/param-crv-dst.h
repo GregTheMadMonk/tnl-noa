@@ -18,7 +18,7 @@
 #ifndef param_crv_dstH
 #define param_crv_dstH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
 
 class mLevelSetCreator
 {

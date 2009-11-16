@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
-#include "debug.h"
+#include <diff/mGrid2D.h>
+#include <debug/tnlDebug.h>
 #include "iter1d.h"
 #include "mDistAux.h"
 

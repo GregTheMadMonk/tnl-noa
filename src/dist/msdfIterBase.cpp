@@ -16,6 +16,13 @@
  ***************************************************************************/
 
 #include "msdfIterBase.h"
+#include <core/mCurve.h>
+#include <core/mfuncs.h>
+#include <core/mfilename.h>
+#include <diff/drawGrid2D.h>
+#include <diff/mExplicitSolver.h>
+#include <diff/curve-ident.h>
+
 
 //--------------------------------------------------------------------------
 msdfIterBase :: msdfIterBase()

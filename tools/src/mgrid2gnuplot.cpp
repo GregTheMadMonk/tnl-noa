@@ -15,8 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
 #include "mgrid2gnuplot-def.h"
+
+#include <diff/mGrid2D.h>
+#include <core/mParameterContainer.h>
+
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )

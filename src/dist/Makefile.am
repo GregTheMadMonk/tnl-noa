@@ -1,7 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
 headers = \
-   debug.h \
    direct.h \
    fmm2d.h \
    fsm2d.h \

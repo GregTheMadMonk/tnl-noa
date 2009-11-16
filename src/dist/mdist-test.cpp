@@ -15,9 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-//--------------------------------------------------------------------------
-#include <diff/mdiff.h>
-#include "debug.h"
+#include <core/mCurve.h>
+#include <diff/mGrid2D.h>
+#include <debug/tnlDebug.h>
 #include "mdist.h"
 
 void ParamCircle( const double& t, void* crv_data, double& x, double& y )

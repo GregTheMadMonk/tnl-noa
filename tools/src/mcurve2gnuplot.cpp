@@ -15,8 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
 #include "mcurve2gnuplot-def.h"
+#include <core/mParameterContainer.h>
+#include <core/compress-file.h>
+#include <core/mCurve.h>
+#include <core/mVector.h>
+
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )

@@ -18,7 +18,10 @@
 #ifndef msdfIterBaseH
 #define msdfIterBaseH
 
-#include<diff/mdiff.h>
+#include <diff/mGrid2D.h>
+#include <core/mParameterContainer.h>
+
+template< class GRID, class SCHEME, typename T > class mExplicitSolver;
 
 class msdfIterBase 
 {

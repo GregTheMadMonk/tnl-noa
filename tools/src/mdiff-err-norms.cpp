@@ -15,10 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <debug/tnlDebug.h>
-#include <diff/mdiff.h>
 #include <fstream>
 #include <stdio.h>
+#include <math.h>
+
+#include <debug/tnlDebug.h>
+#include <diff/mGrid1D.h>
+#include <diff/mGrid2D.h>
+#include <diff/drawGrid1D.h>
+#include <diff/drawGrid2D.h>
+#include <core/mConfigDescription.h>
+#include <core/mParameterContainer.h>
+#include <core/mCurve.h>
+
 #include "../../mdiff-err-norms-def.h"
 #include "read-file.h"
 #include "compare-objects.h"
@@ -129,6 +138,7 @@ bool TryCompressFile( const char* file_name,
       cerr << "Unable to compress back the file " << file_name << "." << endl;
       return false;
    }
+   return true;
 }
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )

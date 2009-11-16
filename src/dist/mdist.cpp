@@ -15,14 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
-#include "lib/iter1d.h"
-#include "lib/iter2d.h"
-#include "lib/iter3d.h"
-#include "lib/fmm2d.h"
-#include "lib/fsm2d.h"
-#include "lib/ftm2d.h"
-#include "lib/debug.h"
+#include <debug/tnlDebug.h>
 
 m_bool CheckParameters( mConfig& config )
 {

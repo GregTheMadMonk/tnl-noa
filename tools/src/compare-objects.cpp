@@ -17,6 +17,9 @@
 
 #include "compare-objects.h"
 
+#include <math.h>
+#include <core/mfuncs.h>
+
 //--------------------------------------------------------------------------
 bool Compare( const mGrid2D< double >& u1,
               const mGrid2D< double >& u2,

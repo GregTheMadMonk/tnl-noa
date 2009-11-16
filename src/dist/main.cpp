@@ -15,7 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
+#include <core/mConfig.h>
+#include <debug/tnlDebug.h>
 
 //--------------------------------------------------------------------------
 m_bool GetConfiguration( mConfig& config, 

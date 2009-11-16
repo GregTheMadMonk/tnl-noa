@@ -69,9 +69,9 @@ libtnldist_dbg_0_1_la_LIBADD =
 am__libtnldist_dbg_0_1_la_SOURCES_DIST = direct.cpp fmm2d.cpp \
 	fsm2d.cpp ftm2d.cpp init_band.cpp iter1d.cpp iter2d.cpp \
 	iter3d.cpp param-crv-dst.cpp msdfSussmanFatemi.cpp \
-	msdfIterBase.cpp debug.h direct.h fmm2d.h fsm2d.h ftm2d.h \
-	init_band.h iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h \
-	param-crv-dst.h msdfSussmanFatemi.h msdfIterBase.h
+	msdfIterBase.cpp direct.h fmm2d.h fsm2d.h ftm2d.h init_band.h \
+	iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h param-crv-dst.h \
+	msdfSussmanFatemi.h msdfIterBase.h debug.h
 am__objects_3 = libtnldist_dbg_0_1_la-direct.lo \
 	libtnldist_dbg_0_1_la-fmm2d.lo libtnldist_dbg_0_1_la-fsm2d.lo \
 	libtnldist_dbg_0_1_la-ftm2d.lo \
@@ -94,9 +94,9 @@ libtnldist_mpi_0_1_la_LIBADD =
 am__libtnldist_mpi_0_1_la_SOURCES_DIST = direct.cpp fmm2d.cpp \
 	fsm2d.cpp ftm2d.cpp init_band.cpp iter1d.cpp iter2d.cpp \
 	iter3d.cpp param-crv-dst.cpp msdfSussmanFatemi.cpp \
-	msdfIterBase.cpp debug.h direct.h fmm2d.h fsm2d.h ftm2d.h \
-	init_band.h iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h \
-	param-crv-dst.h msdfSussmanFatemi.h msdfIterBase.h
+	msdfIterBase.cpp direct.h fmm2d.h fsm2d.h ftm2d.h init_band.h \
+	iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h param-crv-dst.h \
+	msdfSussmanFatemi.h msdfIterBase.h debug.h
 am__objects_4 = libtnldist_mpi_0_1_la-direct.lo \
 	libtnldist_mpi_0_1_la-fmm2d.lo libtnldist_mpi_0_1_la-fsm2d.lo \
 	libtnldist_mpi_0_1_la-ftm2d.lo \
@@ -119,9 +119,9 @@ libtnldist_mpi_dbg_0_1_la_LIBADD =
 am__libtnldist_mpi_dbg_0_1_la_SOURCES_DIST = direct.cpp fmm2d.cpp \
 	fsm2d.cpp ftm2d.cpp init_band.cpp iter1d.cpp iter2d.cpp \
 	iter3d.cpp param-crv-dst.cpp msdfSussmanFatemi.cpp \
-	msdfIterBase.cpp debug.h direct.h fmm2d.h fsm2d.h ftm2d.h \
-	init_band.h iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h \
-	param-crv-dst.h msdfSussmanFatemi.h msdfIterBase.h
+	msdfIterBase.cpp direct.h fmm2d.h fsm2d.h ftm2d.h init_band.h \
+	iter1d.h iter2d.h iter3d.h mdist.h mDistAux.h param-crv-dst.h \
+	msdfSussmanFatemi.h msdfIterBase.h debug.h
 am__objects_5 = libtnldist_mpi_dbg_0_1_la-direct.lo \
 	libtnldist_mpi_dbg_0_1_la-fmm2d.lo \
 	libtnldist_mpi_dbg_0_1_la-fsm2d.lo \
@@ -322,7 +322,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 headers = \
-   debug.h \
    direct.h \
    fmm2d.h \
    fsm2d.h \

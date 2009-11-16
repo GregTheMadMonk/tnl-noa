@@ -18,7 +18,8 @@
 #ifndef msdfSussmanFatemiH
 #define msdfSussmanFatemiH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
+#include <core/mParameterContainer.h>
 #include "msdfIterBase.h"
 
 class msdfSussmanFatemi : public msdfIterBase

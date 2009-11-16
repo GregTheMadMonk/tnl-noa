@@ -18,7 +18,7 @@
 #ifndef fsm2dH
 #define fsm2dH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
 
 #define MDST_VERBOSE_ON true
 #define MDST_VERBOSE_OFF false

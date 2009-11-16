@@ -15,8 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
-#include "debug.h"
+#include <debug/tnlDebug.h>
+#include <diff/mGrid2D.h>
+#include <core/mList.h>
+#include <core/mVector.h>
+#include <debug/tnlDebug.h>
 #include "direct.h"
 #include "fmm2d.h"
 #include "init_band.h"
@@ -147,7 +150,7 @@ void DstFastMarching2D( mGrid2D< double >& phi,
          }
       }
       //dbgExpr( smallest );
-      dbgExpr( phi( smallest. i, smallest. j ) );
+      dbgExpr( phi( smallest[ 0 ], smallest[ 1 ] ) );
       
       //Add( alive_points, smallest -> data );
       int s_i = smallest[ 0 ];

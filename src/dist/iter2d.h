@@ -18,7 +18,7 @@
 #ifndef iter2dH
 #define iter2dH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
 
 //! Function computing right-hand side of the evolutionary equation
 /*void mDstIter2D( const m_real& t,

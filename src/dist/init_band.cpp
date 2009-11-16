@@ -15,9 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
+#include <core/mVector.h>
+#include <debug/tnlDebug.h>
 #include "init_band.h"
-#include "debug.h"
+
 
 //--------------------------------------------------------------------------
 static void AddCubes( int i, int j,

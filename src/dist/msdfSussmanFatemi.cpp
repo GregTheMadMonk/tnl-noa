@@ -15,10 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <config.h>
 #include "msdfSussmanFatemi.h"
 
+#include <config.h>
 #include <float.h>
+#include <math.h>
+#include <core/mfuncs.h>
+#include <diff/mEulerSolver.h>
+#include <diff/mMersonSolver.h>
+#include <diff/mNonlinearRungeKuttaSolver.h>
 
 //--------------------------------------------------------------------------
 msdfSussmanFatemi :: msdfSussmanFatemi()

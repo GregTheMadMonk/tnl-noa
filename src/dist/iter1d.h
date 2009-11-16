@@ -18,7 +18,7 @@
 #ifndef iter1dH
 #define iter1dH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid1D.h>
 
 
 //! Function computing right-hand side of the evolutionary equation

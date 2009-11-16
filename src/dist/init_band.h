@@ -18,7 +18,11 @@
 #ifndef init_bandH
 #define init_bandH
 
-#include <diff/mdiff.h>
+#include <math.h>
+
+#include <diff/mGrid2D.h>
+#include <core/mVector.h>
+#include <core/mfuncs.h>
 
 //! Cretes initial band along the curve given as a zero level set
 /*! Only points having a neighbour with different sign will be

@@ -15,9 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
-#include "debug.h"
+#include <math.h>
+
+#include <core/mfuncs.h>
+#include <debug/tnlDebug.h>
+
 #include "direct.h"
+
 
 //--------------------------------------------------------------------------
 static double SolvePoint( const double& a,

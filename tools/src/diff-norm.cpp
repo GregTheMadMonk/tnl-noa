@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <fstream>
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
 #include <stdio.h>
 
 bool ReadInputFile( const char* file_name, 

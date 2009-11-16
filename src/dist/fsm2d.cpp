@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <float.h>
-#include "debug.h"
+#include <debug/tnlDebug.h>
 #include "direct.h"
 #include "fsm2d.h"
 #include "init_band.h"

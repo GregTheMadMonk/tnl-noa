@@ -15,8 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <diff/mdiff.h>
 #include "mgrid-view-def.h"
+
+#include <core/compress-file.h>
+#include <core/mCurve.h>
+#include <core/mConfigDescription.h>
+#include <core/mParameterContainer.h>
+#include <diff/curve-ident.h>
+#include <diff/drawGrid2D.h>
+#include <diff/drawGrid3D.h>
 
 bool ProcessmGrid2D( const mString& file_name, 
                      const mParameterContainer& parameters,

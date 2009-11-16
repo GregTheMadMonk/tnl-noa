@@ -18,8 +18,6 @@
 #ifndef mDistAuxH
 #define mDistAuxH
 
-#include <diff/mdiff.h>
-
 enum mDistIterMethod { mDstNone = 0,
                        mDstRegularisedScheme,
                        mDstUpwindScheme,

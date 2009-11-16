@@ -19,7 +19,7 @@
 #define read_fileH
 
 
-#include <diff/mdiff.h>
+#include <core/compress-file.h>
 
 template< class T > bool ReadFile( const char* input_file, T& u )
 {

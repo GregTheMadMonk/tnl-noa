@@ -15,11 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "param-crv-dst.h"
+
 #include <math.h>
 #include <float.h>
-#include "debug.h"
+
+#include <debug/tnlDebug.h>
+#include <core/mfuncs.h>
 #include "fsm2d.h"
-#include "param-crv-dst.h"
+
 
 //--------------------------------------------------------------------------
 mLevelSetCreator :: mLevelSetCreator()

@@ -18,7 +18,10 @@
 //--------------------------------------------------------------------------
 #include <sys/utsname.h>
 #include <time.h>
-#include <diff/mdiff.h>
+#include <core/mParameterContainer.h>
+#include <core/mLogger.h>
+
+
 #include "debug.h"
 #include "mdist.h"
 #include "sdf-restore-def.h"

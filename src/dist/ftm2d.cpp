@@ -16,11 +16,16 @@
  ***************************************************************************/
 
 #include <float.h>
-#include <diff/mdiff.h>
-#include "debug.h"
+#include <fstream>
+
+#include <diff/mGrid2D.h>
+#include <core/mVector.h>
+#include <debug/tnlDebug.h>
 #include "direct.h"
 #include "ftm2d.h"
 #include "init_band.h"
+
+using namespace std;
 
 //--------------------------------------------------------------------------
 void DrawStack( const mGrid2D< double >& phi, 
@@ -69,18 +74,18 @@ double UpdatePoint( mGrid2D< double >& phi,
       s = mDstTentative;
    if( j < y_size - 1 && in_stack( i, j + 1 ) != 0 )
       n = mDstTentative;
-   DBG_COND_EXPR( e == mDstTentative, e );
-   DBG_COND_EXPR( e == mDstTentative, phi( i + 1, j ) );
-   DBG_COND_EXPR( e == mDstTentative, in_stack( i + 1, j ) );
-   DBG_COND_EXPR( w == mDstTentative, w );
-   DBG_COND_EXPR( w == mDstTentative, phi( i - 1, j ) );
-   DBG_COND_EXPR( w == mDstTentative, in_stack( i - 1, j ) );
-   DBG_COND_EXPR( s == mDstTentative, s );
-   DBG_COND_EXPR( s == mDstTentative, phi( i, j - 1 ) );
-   DBG_COND_EXPR( s == mDstTentative, in_stack( i, j - 1 ) );
-   DBG_COND_EXPR( n == mDstTentative, n );
-   DBG_COND_EXPR( n == mDstTentative, phi( i, j + 1 ) );
-   DBG_COND_EXPR( n == mDstTentative, in_stack( i, j + 1 ) );
+   dbgCondExpr( e == mDstTentative, e );
+   dbgCondExpr( e == mDstTentative, phi( i + 1, j ) );
+   dbgCondExpr( e == mDstTentative, in_stack( i + 1, j ) );
+   dbgCondExpr( w == mDstTentative, w );
+   dbgCondExpr( w == mDstTentative, phi( i - 1, j ) );
+   dbgCondExpr( w == mDstTentative, in_stack( i - 1, j ) );
+   dbgCondExpr( s == mDstTentative, s );
+   dbgCondExpr( s == mDstTentative, phi( i, j - 1 ) );
+   dbgCondExpr( s == mDstTentative, in_stack( i, j - 1 ) );
+   dbgCondExpr( n == mDstTentative, n );
+   dbgCondExpr( n == mDstTentative, phi( i, j + 1 ) );
+   dbgCondExpr( n == mDstTentative, in_stack( i, j + 1 ) );
 
    double smallest( DBL_MAX );
    mDstDirection smallest_direction;

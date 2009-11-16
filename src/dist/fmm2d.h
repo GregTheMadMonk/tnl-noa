@@ -18,7 +18,7 @@
 #ifndef fmm2dH
 #define fmm2dH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
 
 void DstFastMarching2D( mGrid2D< double >& phi, 
                         const double& band_width,

@@ -1,0 +1,13 @@
+TODO: implementovat tridu tnlFileName pro generovani jmen souboru
+
+TODO: implementovat tridu tnlParabolicSolver pro odvozovani resicu k casove promennym uloham
+
+TODO: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze
+
+TODO: zavets iteratory pres uzle site misto for cyklu
+
+TODO: implementovat Mersona v CUDA
+
+TODO: metoda Test do tnlObject
+
+TODO: trida tnlTester pro rizeni testu   

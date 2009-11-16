@@ -18,7 +18,8 @@
 #ifndef directH
 #define directH
 
-#include <diff/mdiff.h>
+#include <diff/mGrid2D.h>
+
 
 enum mDstDirection { mDstSouth,
                      mDstNorth,
