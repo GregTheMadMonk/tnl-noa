@@ -21,10 +21,10 @@ tnl_err_norms_SOURCES = $(tnlerrnormssources)
 tnl_err_norms_LDADD = ../../src/libtnl-0.1.la
 
 tnlgrid_view_SOURCES = $(tnlgridviewsources) 
-tnlgrid_view_LDADD = libtnl-0.1.la
+tnlgrid_view_LDADD = ../../src/libtnl-0.1.la
 
 tnlcurve2gnuplot_SOURCES = $(tnlcurve2gnuplotsources)
-tnlcurve2gnuplot_LDADD = libtnl-0.1.la
+tnlcurve2gnuplot_LDADD = ../../src/libtnl-0.1.la
 
 if BUILD_DBG
 bin_PROGRAMS += tnl-err-norms-dbg \
@@ -33,15 +33,15 @@ bin_PROGRAMS += tnl-err-norms-dbg \
 
 tnl_err_norms_dbg_SOURCES = $(tnlerrnormssources) 
 tnl_err_norms_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-tnl_err_norms_dbg_LDADD = libtnl-dbg-0.1.la
+tnl_err_norms_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 
 tnlgrid_view_dbg_SOURCES = $(tnlgridviewsources) 
 tnlgrid_view_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-tnlgrid_view_dbg_LDADD = libtnl-dbg-0.1.la
+tnlgrid_view_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 
 tnlcurve2gnuplot_dbg_SOURCES = $(tnlcurve2gnuplotsources) 
 tnlcurve2gnuplot_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-tnlcurve2gnuplot_dbg_LDADD = libtnl-dbg-0.1.la
+tnlcurve2gnuplot_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 endif
 
 bin_SCRIPTS = mdiff-err2eoc.py

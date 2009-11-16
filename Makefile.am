@@ -1,6 +1,7 @@
 ## Process this file witj automake to produce Makefile.in
 
-SUBDIRS = src #tools
+SUBDIRS = src \
+          tools
 
 pkgconfigdir = $(libdir)/pkgconfig
 

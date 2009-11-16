@@ -68,7 +68,8 @@ am__objects_3 = tnl_err_norms_dbg-mdiff-err-norms.$(OBJEXT) \
 	tnl_err_norms_dbg-compare-objects.$(OBJEXT) $(am__objects_1)
 @BUILD_DBG_TRUE@am_tnl_err_norms_dbg_OBJECTS = $(am__objects_3)
 tnl_err_norms_dbg_OBJECTS = $(am_tnl_err_norms_dbg_OBJECTS)
-@BUILD_DBG_TRUE@tnl_err_norms_dbg_DEPENDENCIES = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnl_err_norms_dbg_DEPENDENCIES =  \
+@BUILD_DBG_TRUE@	../../src/libtnl-dbg-0.1.la
 tnl_err_norms_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(tnl_err_norms_dbg_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
@@ -76,13 +77,14 @@ tnl_err_norms_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 am__objects_4 = mcurve2gnuplot.$(OBJEXT) $(am__objects_1)
 am_tnlcurve2gnuplot_OBJECTS = $(am__objects_4)
 tnlcurve2gnuplot_OBJECTS = $(am_tnlcurve2gnuplot_OBJECTS)
-tnlcurve2gnuplot_DEPENDENCIES = libtnl-0.1.la
+tnlcurve2gnuplot_DEPENDENCIES = ../../src/libtnl-0.1.la
 am__tnlcurve2gnuplot_dbg_SOURCES_DIST = mcurve2gnuplot.cpp read-file.h
 am__objects_5 = tnlcurve2gnuplot_dbg-mcurve2gnuplot.$(OBJEXT) \
 	$(am__objects_1)
 @BUILD_DBG_TRUE@am_tnlcurve2gnuplot_dbg_OBJECTS = $(am__objects_5)
 tnlcurve2gnuplot_dbg_OBJECTS = $(am_tnlcurve2gnuplot_dbg_OBJECTS)
-@BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_DEPENDENCIES = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_DEPENDENCIES =  \
+@BUILD_DBG_TRUE@	../../src/libtnl-dbg-0.1.la
 tnlcurve2gnuplot_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(tnlcurve2gnuplot_dbg_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
@@ -90,12 +92,13 @@ tnlcurve2gnuplot_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 am__objects_6 = mgrid-view.$(OBJEXT) $(am__objects_1)
 am_tnlgrid_view_OBJECTS = $(am__objects_6)
 tnlgrid_view_OBJECTS = $(am_tnlgrid_view_OBJECTS)
-tnlgrid_view_DEPENDENCIES = libtnl-0.1.la
+tnlgrid_view_DEPENDENCIES = ../../src/libtnl-0.1.la
 am__tnlgrid_view_dbg_SOURCES_DIST = mgrid-view.cpp read-file.h
 am__objects_7 = tnlgrid_view_dbg-mgrid-view.$(OBJEXT) $(am__objects_1)
 @BUILD_DBG_TRUE@am_tnlgrid_view_dbg_OBJECTS = $(am__objects_7)
 tnlgrid_view_dbg_OBJECTS = $(am_tnlgrid_view_dbg_OBJECTS)
-@BUILD_DBG_TRUE@tnlgrid_view_dbg_DEPENDENCIES = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnlgrid_view_dbg_DEPENDENCIES =  \
+@BUILD_DBG_TRUE@	../../src/libtnl-dbg-0.1.la
 tnlgrid_view_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(tnlgrid_view_dbg_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
@@ -293,18 +296,18 @@ tnlcurve2gnuplotsources = mcurve2gnuplot.cpp \
 tnl_err_norms_SOURCES = $(tnlerrnormssources)
 tnl_err_norms_LDADD = ../../src/libtnl-0.1.la
 tnlgrid_view_SOURCES = $(tnlgridviewsources) 
-tnlgrid_view_LDADD = libtnl-0.1.la
+tnlgrid_view_LDADD = ../../src/libtnl-0.1.la
 tnlcurve2gnuplot_SOURCES = $(tnlcurve2gnuplotsources)
-tnlcurve2gnuplot_LDADD = libtnl-0.1.la
+tnlcurve2gnuplot_LDADD = ../../src/libtnl-0.1.la
 @BUILD_DBG_TRUE@tnl_err_norms_dbg_SOURCES = $(tnlerrnormssources) 
 @BUILD_DBG_TRUE@tnl_err_norms_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-@BUILD_DBG_TRUE@tnl_err_norms_dbg_LDADD = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnl_err_norms_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 @BUILD_DBG_TRUE@tnlgrid_view_dbg_SOURCES = $(tnlgridviewsources) 
 @BUILD_DBG_TRUE@tnlgrid_view_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-@BUILD_DBG_TRUE@tnlgrid_view_dbg_LDADD = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnlgrid_view_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 @BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_SOURCES = $(tnlcurve2gnuplotsources) 
 @BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
-@BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_LDADD = libtnl-dbg-0.1.la
+@BUILD_DBG_TRUE@tnlcurve2gnuplot_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 bin_SCRIPTS = mdiff-err2eoc.py
 EXTRA_DIST = debug.h \
 	         mdiff-err2eoc.py
