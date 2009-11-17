@@ -23,6 +23,8 @@
 #include <iomanip>
 #include <string>
 #include <diff/mGrid2D.h>
+#include <core/compress-file.h>
+#include <core/mfuncs.h>
 
 template< class T > bool Draw( const mGrid2D< T >& u,
                                ostream& str,
