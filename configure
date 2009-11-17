@@ -22861,7 +22861,7 @@ CXXFLAGS="$CXXFLAGS $OPENMPFLAGS -I../src/debug -I../src/core -I../src/diff -I..
 
 
 
-ac_config_files="$ac_config_files Makefile src/core/Makefile src/debug/Makefile src/diff/Makefile src/dist/Makefile src/matrix/Makefile src/Makefile tools/Makefile tools/share/Makefile tools/src/Makefile"
+ac_config_files="$ac_config_files Makefile src/core/Makefile src/debug/Makefile src/diff/Makefile src/matrix/Makefile src/Makefile tools/Makefile tools/share/Makefile tools/src/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -23480,7 +23480,6 @@ do
     "src/core/Makefile") CONFIG_FILES="$CONFIG_FILES src/core/Makefile" ;;
     "src/debug/Makefile") CONFIG_FILES="$CONFIG_FILES src/debug/Makefile" ;;
     "src/diff/Makefile") CONFIG_FILES="$CONFIG_FILES src/diff/Makefile" ;;
-    "src/dist/Makefile") CONFIG_FILES="$CONFIG_FILES src/dist/Makefile" ;;
     "src/matrix/Makefile") CONFIG_FILES="$CONFIG_FILES src/matrix/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;

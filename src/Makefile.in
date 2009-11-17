@@ -59,14 +59,13 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtnl_0_1_la_DEPENDENCIES = debug/libtnldebug-0.1.la \
 	core/libtnlcore-0.1.la diff/libtnldiff-0.1.la \
-	dist/libtnldist-0.1.la matrix/libtnlmatrix-0.1.la
+	matrix/libtnlmatrix-0.1.la
 am_libtnl_0_1_la_OBJECTS =
 libtnl_0_1_la_OBJECTS = $(am_libtnl_0_1_la_OBJECTS)
 @BUILD_DBG_TRUE@libtnl_dbg_0_1_la_DEPENDENCIES =  \
 @BUILD_DBG_TRUE@	debug/libtnldebug-dbg-0.1.la \
 @BUILD_DBG_TRUE@	core/libtnlcore-dbg-0.1.la \
 @BUILD_DBG_TRUE@	diff/libtnldiff-dbg-0.1.la \
-@BUILD_DBG_TRUE@	dist/libtnldist-dbg-0.1.la \
 @BUILD_DBG_TRUE@	matrix/libtnlmatrix-dbg-0.1.la
 am_libtnl_dbg_0_1_la_OBJECTS =
 libtnl_dbg_0_1_la_OBJECTS = $(am_libtnl_dbg_0_1_la_OBJECTS)
@@ -75,7 +74,6 @@ libtnl_dbg_0_1_la_OBJECTS = $(am_libtnl_dbg_0_1_la_OBJECTS)
 @BUILD_MPI_TRUE@	debug/libtnldebug-mpi-0.1.la \
 @BUILD_MPI_TRUE@	core/libtnlcore-mpi-0.1.la \
 @BUILD_MPI_TRUE@	diff/libtnldiff-mpi-0.1.la \
-@BUILD_MPI_TRUE@	dist/libtnldist-mpi-0.1.la \
 @BUILD_MPI_TRUE@	matrix/libtnlmatrix-mpi-0.1.la
 am_libtnl_mpi_0_1_la_OBJECTS =
 libtnl_mpi_0_1_la_OBJECTS = $(am_libtnl_mpi_0_1_la_OBJECTS)
@@ -84,7 +82,6 @@ libtnl_mpi_0_1_la_OBJECTS = $(am_libtnl_mpi_0_1_la_OBJECTS)
 @BUILD_MPI_DBG_TRUE@	debug/libtnldebug-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@	core/libtnlcore-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@	diff/libtnldiff-mpi-dbg-0.1.la \
-@BUILD_MPI_DBG_TRUE@	dist/libtnldist-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@	matrix/libtnlmatrix-mpi-dbg-0.1.la
 am_libtnl_mpi_dbg_0_1_la_OBJECTS =
 libtnl_mpi_dbg_0_1_la_OBJECTS = $(am_libtnl_mpi_dbg_0_1_la_OBJECTS)
@@ -240,7 +237,6 @@ target_alias = @target_alias@
 SUBDIRS = core \
           debug \
           diff \
-          dist \
 	      matrix
 
 lib_LTLIBRARIES = libtnl-0.1.la $(am__append_1) $(am__append_2) \
@@ -251,7 +247,6 @@ nodist_EXTRA_libtnl_0_1_la_SOURCES = dummy.cpp
 libtnl_0_1_la_LIBADD = debug/libtnldebug-0.1.la \
                        core/libtnlcore-0.1.la \
                        diff/libtnldiff-0.1.la \
-                       dist/libtnldist-0.1.la \
                        matrix/libtnlmatrix-0.1.la
 
 @BUILD_DBG_TRUE@libtnl_dbg_0_1_la_SOURCES = 
@@ -260,7 +255,6 @@ libtnl_0_1_la_LIBADD = debug/libtnldebug-0.1.la \
 @BUILD_DBG_TRUE@libtnl_dbg_0_1_la_LIBADD = debug/libtnldebug-dbg-0.1.la \
 @BUILD_DBG_TRUE@                       core/libtnlcore-dbg-0.1.la \
 @BUILD_DBG_TRUE@                       diff/libtnldiff-dbg-0.1.la \
-@BUILD_DBG_TRUE@                       dist/libtnldist-dbg-0.1.la \
 @BUILD_DBG_TRUE@                       matrix/libtnlmatrix-dbg-0.1.la
 
 @BUILD_MPI_TRUE@libtnl_mpi_0_1_la_SOURCES = 
@@ -269,7 +263,6 @@ libtnl_0_1_la_LIBADD = debug/libtnldebug-0.1.la \
 @BUILD_MPI_TRUE@libtnl_mpi_0_1_la_LIBADD = debug/libtnldebug-mpi-0.1.la \
 @BUILD_MPI_TRUE@                       core/libtnlcore-mpi-0.1.la \
 @BUILD_MPI_TRUE@                       diff/libtnldiff-mpi-0.1.la \
-@BUILD_MPI_TRUE@                       dist/libtnldist-mpi-0.1.la \
 @BUILD_MPI_TRUE@                       matrix/libtnlmatrix-mpi-0.1.la
 
 @BUILD_MPI_DBG_TRUE@libtnl_mpi_dbg_0_1_la_SOURCES = 
@@ -278,7 +271,6 @@ libtnl_0_1_la_LIBADD = debug/libtnldebug-0.1.la \
 @BUILD_MPI_DBG_TRUE@libtnl_mpi_dbg_0_1_la_LIBADD = debug/libtnldebug-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@                       core/libtnlcore-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@                       diff/libtnldiff-mpi-dbg-0.1.la \
-@BUILD_MPI_DBG_TRUE@                       dist/libtnldist-mpi-dbg-0.1.la \
 @BUILD_MPI_DBG_TRUE@                       matrix/libtnlmatrix-mpi-dbg-0.1.la
 
 all: all-recursive

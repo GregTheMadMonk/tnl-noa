@@ -270,7 +270,6 @@ AC_OUTPUT(Makefile \
           src/core/Makefile \
           src/debug/Makefile \
           src/diff/Makefile \
-          src/dist/Makefile \
           src/matrix/Makefile \
           src/Makefile \
           tools/Makefile \
