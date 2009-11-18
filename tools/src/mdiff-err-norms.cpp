@@ -24,7 +24,7 @@
 #include <diff/mGrid2D.h>
 #include <diff/drawGrid1D.h>
 #include <diff/drawGrid2D.h>
-#include <core/mConfigDescription.h>
+#include <core/tnlConfigDescription.h>
 #include <core/mParameterContainer.h>
 #include <core/mCurve.h>
 
@@ -146,7 +146,7 @@ int main( int argc, char* argv[] )
    dbgFunctionName( "", "main" );
    dbgInit( "mdiff-err-norms.dbg" );
    mParameterContainer parameters;
-   mConfigDescription conf_desc;
+   tnlConfigDescription conf_desc;
 
    dbgCout( "Parsing config description file ... " );
    if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )

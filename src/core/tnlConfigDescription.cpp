@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mConfigDescription.cpp  -  description
+                          tnlConfigDescription.cpp  -  description
                              -------------------
     begin                : 2007/06/09
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -17,38 +17,38 @@
 
 #include <fstream>
 #include <iomanip>
-#include "mConfigDescriptionParser.h"
-#include "mConfigDescription.h"
+#include "tnlConfigDescriptionParser.h"
+#include "tnlConfigDescription.h"
 #include "mParameterContainer.h"
 #include "mfuncs.h"
 
 //--------------------------------------------------------------------------
-mConfigDescription :: mConfigDescription()
+tnlConfigDescription :: tnlConfigDescription()
 {
 }
 //--------------------------------------------------------------------------
-mConfigDescription :: ~mConfigDescription()
+tnlConfigDescription :: ~tnlConfigDescription()
 {
    groups. DeepEraseAll();
    entries. DeepEraseAll();
 }
 //--------------------------------------------------------------------------
-void mConfigDescription :: AddGroup( const char* name,
+void tnlConfigDescription :: AddGroup( const char* name,
                                      const char* description )
 {
-   groups. Append( new mConfigGroup( name, description ) );
+   groups. Append( new tnlConfigGroup( name, description ) );
 }
 //--------------------------------------------------------------------------
-void mConfigDescription :: AddEntry( const char* name,
-                                     const mConfigEntryType& type,
+void tnlConfigDescription :: AddEntry( const char* name,
+                                     const tnlConfigEntryType& type,
                                      const char* group,
                                      const char* comment,
                                      bool required )
 {
-   entries. Append( new mConfigEntryBase( name, type, group, comment, required ) );
+   entries. Append( new tnlConfigEntryBase( name, type, group, comment, required ) );
 }
 //--------------------------------------------------------------------------
-const mConfigEntryType* mConfigDescription :: GetEntryType( const char* name ) const
+const tnlConfigEntryType* tnlConfigDescription :: GetEntryType( const char* name ) const
 {
    int i;
    const int size = entries. Size();
@@ -58,7 +58,7 @@ const mConfigEntryType* mConfigDescription :: GetEntryType( const char* name ) c
    return NULL;
 }
 //--------------------------------------------------------------------------
-void mConfigDescription :: PrintUsage( const char* program_name )
+void tnlConfigDescription :: PrintUsage( const char* program_name )
 {
    cout << "Usage of: " << program_name << endl << endl;
    int i, j;
@@ -90,13 +90,13 @@ void mConfigDescription :: PrintUsage( const char* program_name )
             {
                cout << " DEFAULT VALUE IS: ";
                if( entries[ j ] -> type. basic_type == "string" )
-                  cout << ( ( mConfigEntry< tnlString >* ) entries[ j ] ) -> default_value;
+                  cout << ( ( tnlConfigEntry< tnlString >* ) entries[ j ] ) -> default_value;
                if( entries[ j ] -> type. basic_type == "integer" )
-                  cout << ( ( mConfigEntry< int >* ) entries[ j ] ) -> default_value;
+                  cout << ( ( tnlConfigEntry< int >* ) entries[ j ] ) -> default_value;
                if( entries[ j ] -> type. basic_type == "real" )
-                  cout << ( ( mConfigEntry< double >* ) entries[ j ] ) -> default_value;
+                  cout << ( ( tnlConfigEntry< double >* ) entries[ j ] ) -> default_value;
                if( entries[ j ] -> type. basic_type == "bool" )
-                  if( ( ( mConfigEntry< bool >* ) entries[ j ] ) -> default_value )
+                  if( ( ( tnlConfigEntry< bool >* ) entries[ j ] ) -> default_value )
                      cout << "yes";
                   else cout << "no";
             }
@@ -109,9 +109,9 @@ void mConfigDescription :: PrintUsage( const char* program_name )
    }
 }
 //--------------------------------------------------------------------------
-bool mConfigDescription :: ParseConfigDescription( const char* file_name )
+bool tnlConfigDescription :: ParseConfigDescription( const char* file_name )
 {
-   mConfigDescriptionParser parser;
+   tnlConfigDescriptionParser parser;
    fstream in_file;
    in_file. open( file_name, ios :: in );
    if( ! in_file )
@@ -124,7 +124,7 @@ bool mConfigDescription :: ParseConfigDescription( const char* file_name )
    return true;
 }
 //--------------------------------------------------------------------------
-void mConfigDescription :: AddMissingEntries( mParameterContainer& parameter_container ) const
+void tnlConfigDescription :: AddMissingEntries( mParameterContainer& parameter_container ) const
 {
    int i;
    const int size = entries. Size();
@@ -138,35 +138,35 @@ void mConfigDescription :: AddMissingEntries( mParameterContainer& parameter_con
          {
             parameter_container. AddParameter< tnlString >(
                entry_name,
-               ( ( mConfigEntry< tnlString >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< tnlString >* ) entries[ i ] ) -> default_value );
             continue;
          }
          if( entries[ i ] -> type. basic_type == "bool" )
          {
             parameter_container. AddParameter< bool >(
                entry_name,
-               ( ( mConfigEntry< bool >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< bool >* ) entries[ i ] ) -> default_value );
             continue;
          }
          if( entries[ i ] -> type. basic_type == "integer" )
          {
             parameter_container. AddParameter< int >(
                entry_name,
-               ( ( mConfigEntry< int >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< int >* ) entries[ i ] ) -> default_value );
             continue;
          }
          if( entries[ i ] -> type. basic_type == "real" )
          {
             parameter_container. AddParameter< double >(
                entry_name,
-               ( ( mConfigEntry< double >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< double >* ) entries[ i ] ) -> default_value );
             continue;
          }
       }
    }
 }
 //--------------------------------------------------------------------------
-bool mConfigDescription :: CheckMissingEntries( mParameterContainer& parameter_container ) const
+bool tnlConfigDescription :: CheckMissingEntries( mParameterContainer& parameter_container ) const
 {
    int i;
    const int size = entries. Size();

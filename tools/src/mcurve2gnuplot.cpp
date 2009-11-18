@@ -26,7 +26,7 @@
 int main( int argc, char* argv[] )
 {
    mParameterContainer parameters;
-   mConfigDescription conf_desc;
+   tnlConfigDescription conf_desc;
    if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )

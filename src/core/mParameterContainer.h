@@ -19,7 +19,7 @@
 #define mParameterContainerH
 
 #include "tnlList.h"
-#include "mConfigDescription.h"
+#include "tnlConfigDescription.h"
 #include "mpi-supp.h"
 #include "param-types.h"
 
@@ -113,7 +113,7 @@ class mParameterContainer
 };
 
 bool ParseCommandLine( int argc, char* argv[], 
-                       const mConfigDescription& config_description,
+                       const tnlConfigDescription& config_description,
                        mParameterContainer& parameters );
 
 template< class T > bool mParameterContainer :: AddParameter( const char* name,

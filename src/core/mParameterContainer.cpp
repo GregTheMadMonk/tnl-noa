@@ -157,7 +157,7 @@ void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 }
 //--------------------------------------------------------------------------
 bool ParseCommandLine( int argc, char* argv[], 
-                       const mConfigDescription& config_description,
+                       const tnlConfigDescription& config_description,
                        mParameterContainer& parameters )
 {
    int i;
@@ -173,7 +173,7 @@ bool ParseCommandLine( int argc, char* argv[],
       }
       
       const char* option = _option + 2;
-      const mConfigEntryType* entry_type;
+      const tnlConfigEntryType* entry_type;
       if( ! ( entry_type = config_description. GetEntryType( option ) ) )
       {
          cerr << "Unknown parameter " << option << "." << endl;

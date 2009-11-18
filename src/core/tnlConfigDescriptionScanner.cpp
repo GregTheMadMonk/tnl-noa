@@ -1,6 +1,6 @@
-#line 2 "mConfigDescriptionScanner.cpp"
+#line 2 "tnlConfigDescriptionScanner.cpp"
 
-#line 4 "mConfigDescriptionScanner.cpp"
+#line 4 "tnlConfigDescriptionScanner.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -552,15 +552,15 @@ static yyconst flex_int16_t yy_rule_linenum[19] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "mConfigDescriptionScanner.l"
-#line 2 "mConfigDescriptionScanner.l"
+#line 1 "tnlConfigDescriptionScanner.l"
+#line 2 "tnlConfigDescriptionScanner.l"
    //#define _SKIP_YYFLEXLEXER_
    //#include "scanner.ih"
    
-   #include "mConfigDescriptionParser.h"
+   #include "tnlConfigDescriptionParser.h"
    #include <iostream>
    int yywrap();
-#line 564 "mConfigDescriptionScanner.cpp"
+#line 564 "tnlConfigDescriptionScanner.cpp"
 
 #define INITIAL 0
 
@@ -722,9 +722,9 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 22 "mConfigDescriptionScanner.l"
+#line 22 "tnlConfigDescriptionScanner.l"
 
-#line 728 "mConfigDescriptionScanner.cpp"
+#line 728 "tnlConfigDescriptionScanner.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -839,126 +839,126 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 23 "mConfigDescriptionScanner.l"
+#line 23 "tnlConfigDescriptionScanner.l"
 { //cout << "GROUP" << endl; 
-                                                return mConfigDescriptionParser :: GROUP; }
+                                                return tnlConfigDescriptionParser :: GROUP; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 25 "mConfigDescriptionScanner.l"
+#line 25 "tnlConfigDescriptionScanner.l"
 { //cout << "STRING_KEYWORD" << endl;
-                                                return mConfigDescriptionParser :: STRING_KEYWORD; }
+                                                return tnlConfigDescriptionParser :: STRING_KEYWORD; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 27 "mConfigDescriptionScanner.l"
+#line 27 "tnlConfigDescriptionScanner.l"
 { //cout << "INTEGER_KEYWORD" << endl;
-                                                return mConfigDescriptionParser :: INTEGER_KEYWORD; }
+                                                return tnlConfigDescriptionParser :: INTEGER_KEYWORD; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 29 "mConfigDescriptionScanner.l"
+#line 29 "tnlConfigDescriptionScanner.l"
 { //cout << "REAL_KEYWORD" << endl;
-                                                return mConfigDescriptionParser :: REAL_KEYWORD; }
+                                                return tnlConfigDescriptionParser :: REAL_KEYWORD; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 31 "mConfigDescriptionScanner.l"
+#line 31 "tnlConfigDescriptionScanner.l"
 { //cout << "REAL_KEYWORD" << endl;
-                                                return mConfigDescriptionParser :: BOOLEAN_KEYWORD; }
+                                                return tnlConfigDescriptionParser :: BOOLEAN_KEYWORD; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 33 "mConfigDescriptionScanner.l"
-{ return mConfigDescriptionParser :: LIST_OF_KEYWORD; }
+#line 33 "tnlConfigDescriptionScanner.l"
+{ return tnlConfigDescriptionParser :: LIST_OF_KEYWORD; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "mConfigDescriptionScanner.l"
-{ mConfigDescriptionParser :: current_parser -> setBVal( true );
-                                                return mConfigDescriptionParser :: BOOLEAN; }
+#line 34 "tnlConfigDescriptionScanner.l"
+{ tnlConfigDescriptionParser :: current_parser -> setBVal( true );
+                                                return tnlConfigDescriptionParser :: BOOLEAN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 36 "mConfigDescriptionScanner.l"
-{ mConfigDescriptionParser :: current_parser -> setBVal( false );
-                                                return mConfigDescriptionParser :: BOOLEAN; }
+#line 36 "tnlConfigDescriptionScanner.l"
+{ tnlConfigDescriptionParser :: current_parser -> setBVal( false );
+                                                return tnlConfigDescriptionParser :: BOOLEAN; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 38 "mConfigDescriptionScanner.l"
+#line 38 "tnlConfigDescriptionScanner.l"
 { //cout << "STRING " << yytext << endl;
-                                                mConfigDescriptionParser :: current_parser -> setSVal( yytext );
-                                                return mConfigDescriptionParser :: STRING; }
+                                                tnlConfigDescriptionParser :: current_parser -> setSVal( yytext );
+                                                return tnlConfigDescriptionParser :: STRING; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 41 "mConfigDescriptionScanner.l"
+#line 41 "tnlConfigDescriptionScanner.l"
 { //cout << "COMMENT " << yytext << endl;
-                                                mConfigDescriptionParser :: current_parser -> 
+                                                tnlConfigDescriptionParser :: current_parser -> 
                                                    setSVal( yytext );
-                                                return mConfigDescriptionParser :: COMMENT; }
+                                                return tnlConfigDescriptionParser :: COMMENT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 45 "mConfigDescriptionScanner.l"
+#line 45 "tnlConfigDescriptionScanner.l"
 { //cout << "IDENTIFIER " << yytext <<  endl;
-                                                mConfigDescriptionParser :: current_parser -> 
+                                                tnlConfigDescriptionParser :: current_parser -> 
                                                    setSVal( yytext );
-                                                return mConfigDescriptionParser :: IDENTIFIER; }
+                                                return tnlConfigDescriptionParser :: IDENTIFIER; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 49 "mConfigDescriptionScanner.l"
+#line 49 "tnlConfigDescriptionScanner.l"
 { //cout << "INTEGER " << yytext << endl;
-                                                mConfigDescriptionParser :: current_parser -> 
+                                                tnlConfigDescriptionParser :: current_parser -> 
                                                    setIVal( yytext ); 
-                                                return mConfigDescriptionParser :: INTEGER; }
+                                                return tnlConfigDescriptionParser :: INTEGER; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 53 "mConfigDescriptionScanner.l"
+#line 53 "tnlConfigDescriptionScanner.l"
 { //cout << "REAL " << yytext << endl;
-                                                mConfigDescriptionParser :: current_parser -> 
+                                                tnlConfigDescriptionParser :: current_parser -> 
                                                    setDVal( yytext );
-                                                return mConfigDescriptionParser :: REAL; }
+                                                return tnlConfigDescriptionParser :: REAL; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "mConfigDescriptionScanner.l"
+#line 57 "tnlConfigDescriptionScanner.l"
 { //cout << "REAL " << yytext << endl;
-                                                mConfigDescriptionParser :: current_parser -> 
+                                                tnlConfigDescriptionParser :: current_parser -> 
                                                    setDVal( yytext );
-                                                return mConfigDescriptionParser :: REAL; }
+                                                return tnlConfigDescriptionParser :: REAL; }
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 61 "mConfigDescriptionScanner.l"
-{ mConfigDescriptionParser :: current_parser -> newLine(); }
+#line 61 "tnlConfigDescriptionScanner.l"
+{ tnlConfigDescriptionParser :: current_parser -> newLine(); }
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 62 "mConfigDescriptionScanner.l"
-{ mConfigDescriptionParser :: current_parser -> newLine(); }
+#line 62 "tnlConfigDescriptionScanner.l"
+{ tnlConfigDescriptionParser :: current_parser -> newLine(); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "mConfigDescriptionScanner.l"
+#line 63 "tnlConfigDescriptionScanner.l"
 
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 64 "mConfigDescriptionScanner.l"
+#line 64 "tnlConfigDescriptionScanner.l"
 { return yytext[ 0 ]; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 65 "mConfigDescriptionScanner.l"
+#line 65 "tnlConfigDescriptionScanner.l"
 ECHO;
 	YY_BREAK
-#line 962 "mConfigDescriptionScanner.cpp"
+#line 962 "tnlConfigDescriptionScanner.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2006,7 +2006,7 @@ void mCDSfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 65 "mConfigDescriptionScanner.l"
+#line 65 "tnlConfigDescriptionScanner.l"
 
 
 

@@ -1,5 +1,5 @@
-%filenames mConfigDescriptionParser
-%class-name mConfigDescriptionParser
+%filenames tnlConfigDescriptionParser
+%class-name tnlConfigDescriptionParser
 
 %union{
    char* s_val;

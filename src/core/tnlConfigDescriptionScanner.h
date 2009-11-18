@@ -2,9 +2,9 @@
 #define mCDSHEADER_H 1
 #define mCDSIN_HEADER 1
 
-#line 6 "mConfigDescriptionScanner.h"
+#line 6 "tnlConfigDescriptionScanner.h"
 
-#line 8 "mConfigDescriptionScanner.h"
+#line 8 "tnlConfigDescriptionScanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -380,9 +380,9 @@ static int yy_flex_strlen (yyconst char * );
 #undef YY_DECL
 #endif
 
-#line 65 "mConfigDescriptionScanner.l"
+#line 65 "tnlConfigDescriptionScanner.l"
 
 
-#line 387 "mConfigDescriptionScanner.h"
+#line 387 "tnlConfigDescriptionScanner.h"
 #undef mCDSIN_HEADER
 #endif /* mCDSHEADER_H */

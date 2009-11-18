@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mConfigDescriptionParser.cpp  -  description
+                          tnlConfigDescriptionParser.cpp  -  description
                              -------------------
     begin                : 2007/06/13
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,31 +15,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mConfigDescriptionParser.h"
-#include "mConfigDescriptionScanner.h"
+#include "tnlConfigDescriptionParser.h"
+#include "tnlConfigDescriptionScanner.h"
 #include "debug.h"
 #include <assert.h>
 
-mConfigDescriptionParser* mConfigDescriptionParser :: current_parser;
+tnlConfigDescriptionParser* tnlConfigDescriptionParser :: current_parser;
 
 //--------------------------------------------------------------------------
-mConfigDescriptionParser :: mConfigDescriptionParser()
+tnlConfigDescriptionParser :: tnlConfigDescriptionParser()
 {
    scanner = new mCDSFlexLexer();
 }
 //--------------------------------------------------------------------------
-mConfigDescriptionParser :: ~mConfigDescriptionParser()
+tnlConfigDescriptionParser :: ~tnlConfigDescriptionParser()
 {
    assert( scanner );
    delete scanner;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: setScanner( istream* in_stream )
+void tnlConfigDescriptionParser :: setScanner( istream* in_stream )
 {
    scanner -> switch_streams( in_stream, 0 );
 }
 //--------------------------------------------------------------------------
-int mConfigDescriptionParser :: runParsing( mConfigDescription* conf_desc )
+int tnlConfigDescriptionParser :: runParsing( tnlConfigDescription* conf_desc )
 {
    config_description = conf_desc;
    current_parser = this;
@@ -48,47 +48,47 @@ int mConfigDescriptionParser :: runParsing( mConfigDescription* conf_desc )
    return parse();
 }
 //--------------------------------------------------------------------------
-int mConfigDescriptionParser :: lex()
+int tnlConfigDescriptionParser :: lex()
 {
    return scanner -> yylex();
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: newLine()
+void tnlConfigDescriptionParser :: newLine()
 {
    line ++;
    //cout << "New line " << line << endl;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: setSVal( char* s )
+void tnlConfigDescriptionParser :: setSVal( char* s )
 {
    d_val__. s_val = s;
    //cout << " d_val. s_val is " << d_val. s_val << endl;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: setIVal( char* s )
+void tnlConfigDescriptionParser :: setIVal( char* s )
 {
    d_val__. i_val = atoi( s );
    //cout << " d_val. i_val is " << d_val. i_val << endl;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: setDVal( char* s )
+void tnlConfigDescriptionParser :: setDVal( char* s )
 {
    d_val__. d_val = atof( s );
    //cout << " d_val. d_val is " << d_val. d_val << endl;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: setBVal( bool b  )
+void tnlConfigDescriptionParser :: setBVal( bool b  )
 {
    d_val__. b_val = b;
    //cout << " d_val. d_val is " << d_val. d_val << endl;
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentGroupId( const char* id )
+void tnlConfigDescriptionParser :: SetCurrentGroupId( const char* id )
 {
     current_group_name. SetString( id );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentGroupComment( const char* comment )
+void tnlConfigDescriptionParser :: SetCurrentGroupComment( const char* comment )
 {
     current_group_comment. SetString( comment,
                                       1, // prefix cut off for '['
@@ -96,7 +96,7 @@ void mConfigDescriptionParser :: SetCurrentGroupComment( const char* comment )
                                       );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: AddCurrentGroup()
+void tnlConfigDescriptionParser :: AddCurrentGroup()
 {
    //cout << "Adding group with ID " << current_group_name << 
    //        " and comment " << current_group_comment << endl;
@@ -106,22 +106,22 @@ void mConfigDescriptionParser :: AddCurrentGroup()
    current_group_comment. SetString( 0 );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentEntryTypeName( const char* _basic_type )
+void tnlConfigDescriptionParser :: SetCurrentEntryTypeName( const char* _basic_type )
 {
    current_entry_type. basic_type. SetString( _basic_type );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentEntryTypeIsList( const bool _list_entry )
+void tnlConfigDescriptionParser :: SetCurrentEntryTypeIsList( const bool _list_entry )
 {
    current_entry_type. list_entry = _list_entry; 
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentEntryId( const char* id )
+void tnlConfigDescriptionParser :: SetCurrentEntryId( const char* id )
 {
    current_entry_name. SetString( id );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: SetCurrentEntryComment( const char* comment )
+void tnlConfigDescriptionParser :: SetCurrentEntryComment( const char* comment )
 {
    current_entry_comment. SetString( comment,
                                      1, // prefix cut off for '['
@@ -129,7 +129,7 @@ void mConfigDescriptionParser :: SetCurrentEntryComment( const char* comment )
                                      );
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: AddCurrentEntry( bool required )
+void tnlConfigDescriptionParser :: AddCurrentEntry( bool required )
 {
    config_description -> AddEntry( current_entry_name. Data(),
                                    current_entry_type,
@@ -139,7 +139,7 @@ void mConfigDescriptionParser :: AddCurrentEntry( bool required )
    current_entry_type. Reset();
 }
 //--------------------------------------------------------------------------
-void mConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
+void tnlConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
 {
    if( current_entry_type. basic_type == "string" )
    {

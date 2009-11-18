@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mConfigDescription.h  -  description
+                          tnlConfigDescription.h  -  description
                              -------------------
     begin                : 2007/06/09
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,35 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mConfigDescriptionH
-#define mConfigDescriptionH
+#ifndef tnlConfigDescriptionH
+#define tnlConfigDescriptionH
 
 #include "tnlString.h"
 #include "tnlList.h"
 
 class mParameterContainer;
 
-struct mConfigGroup
+struct tnlConfigGroup
 {
    tnlString name;
 
    tnlString comment;
 
-   mConfigGroup( const char* _name, 
+   tnlConfigGroup( const char* _name, 
                  const char* _comment )
       : name( _name ),
         comment( _comment ){};
 };
 
-struct mConfigEntryType
+struct tnlConfigEntryType
 {
    tnlString basic_type;
 
    bool list_entry;
 
-   mConfigEntryType(){};
+   tnlConfigEntryType(){};
    
-   mConfigEntryType( const tnlString& _basic_type,
+   tnlConfigEntryType( const tnlString& _basic_type,
                      const bool _list_entry )
    : basic_type( _basic_type ),
      list_entry( _list_entry ){}
@@ -55,11 +55,11 @@ struct mConfigEntryType
    };
 };
 
-struct mConfigEntryBase
+struct tnlConfigEntryBase
 {
    tnlString name;
 
-   mConfigEntryType type;
+   tnlConfigEntryType type;
 
    tnlString group;
 
@@ -69,8 +69,8 @@ struct mConfigEntryBase
 
    bool has_default_value;
 
-   mConfigEntryBase( const char* _name,
-                     const mConfigEntryType& _type,
+   tnlConfigEntryBase( const char* _name,
+                     const tnlConfigEntryType& _type,
                      const char* _group,
                      const char* _comment,
                      bool _required )
@@ -83,17 +83,17 @@ struct mConfigEntryBase
 
 };
 
-template< class T > struct mConfigEntry : public mConfigEntryBase
+template< class T > struct tnlConfigEntry : public tnlConfigEntryBase
 {
    T default_value;
 
    public:
-   mConfigEntry( const char* _name,
-                 const mConfigEntryType& _type,
+   tnlConfigEntry( const char* _name,
+                 const tnlConfigEntryType& _type,
                  const char* _group,
                  const char* _description,
                  const T& _default_value )
-      : mConfigEntryBase( _name,
+      : tnlConfigEntryBase( _name,
                           _type,
                           _group,
                           _description,
@@ -106,28 +106,28 @@ template< class T > struct mConfigEntry : public mConfigEntryBase
 };
 
 //! Class containing description of the configuration parameters
-class mConfigDescription
+class tnlConfigDescription
 {
    public:
 
-   mConfigDescription();
+   tnlConfigDescription();
 
    void AddGroup( const char* name,
                   const char* description );
 
    void AddEntry( const char* name,
-                  const mConfigEntryType& type,
+                  const tnlConfigEntryType& type,
                   const char* group,
                   const char* comment,
                   bool required );
    
    template< class T > void AddEntryWithDefaultValue( const char* name,
-                                                      const mConfigEntryType& type,
+                                                      const tnlConfigEntryType& type,
                                                       const char* group,
                                                       const char* comment,
                                                       const T& default_value )
    {
-      entries. Append( new mConfigEntry< T >( name,
+      entries. Append( new tnlConfigEntry< T >( name,
                                               type,
                                               group,
                                               comment,
@@ -136,7 +136,7 @@ class mConfigDescription
 
    
    //! Returns zero if given entry does not exist
-   const mConfigEntryType* GetEntryType( const char* name ) const;
+   const tnlConfigEntryType* GetEntryType( const char* name ) const;
 
    //! Returns zero pointer if there is no default value
    template< class T > const T* GetDefaultValue( const char* name ) const
@@ -146,7 +146,7 @@ class mConfigDescription
       for( i = 0; i < entries_num; i ++ )
          if( entries[ i ] -> name == name )
             if( entries[ i ] -> has_default_value )
-               return ( ( mConfigEntry< T > * ) entries[ i ] ) -> default_value;
+               return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
       cerr << "Asking for the default value of uknown parameter." << endl;
       return NULL;
@@ -160,7 +160,7 @@ class mConfigDescription
       for( i = 0; i < entries_num; i ++ )
          if( entries[ i ] -> name == name )
             if( entries[ i ] -> has_default_value )
-               return ( ( mConfigEntry< T > * ) entries[ i ] ) -> default_value;
+               return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
       cerr << "Asking for the default value of uknown parameter." << endl;
       return NULL;
@@ -178,13 +178,13 @@ class mConfigDescription
 
    bool ParseConfigDescription( const char* file_name );
 
-   ~mConfigDescription();
+   ~tnlConfigDescription();
 
    protected:
 
-   tnlList< mConfigGroup* > groups;
+   tnlList< tnlConfigGroup* > groups;
 
-   tnlList< mConfigEntryBase* > entries;
+   tnlList< tnlConfigEntryBase* > entries;
 
 
 };

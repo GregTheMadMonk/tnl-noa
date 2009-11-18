@@ -19,7 +19,7 @@
 
 #include <core/compress-file.h>
 #include <core/mCurve.h>
-#include <core/mConfigDescription.h>
+#include <core/tnlConfigDescription.h>
 #include <core/mParameterContainer.h>
 #include <diff/curve-ident.h>
 #include <diff/drawGrid2D.h>
@@ -171,7 +171,7 @@ bool ProcessmGrid3D( const tnlString& file_name,
 int main( int argc, char* argv[] )
 {
    mParameterContainer parameters;
-   mConfigDescription conf_desc;
+   tnlConfigDescription conf_desc;
    if( conf_desc. ParseConfigDescription( MGRID_VIEW_CONFIG_DESCRIPTION_FILE ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )

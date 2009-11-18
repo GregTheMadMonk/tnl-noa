@@ -1,27 +1,27 @@
-#ifndef mConfigDescriptionParser_h_included
-#define mConfigDescriptionParser_h_included
+#ifndef tnlConfigDescriptionParser_h_included
+#define tnlConfigDescriptionParser_h_included
 
 // for error()'s inline implementation
 #include <iostream>
 
 // $insert baseclass
-#include "mConfigDescriptionParserbase.h"
-#include "mConfigDescription.h"
+#include "tnlConfigDescriptionParserbase.h"
+#include "tnlConfigDescription.h"
 
-#undef mConfigDescriptionParser
+#undef tnlConfigDescriptionParser
 
 class mCDSFlexLexer;
 
 using namespace std;
 
-class mConfigDescriptionParser: public mConfigDescriptionParserBase
+class tnlConfigDescriptionParser: public tnlConfigDescriptionParserBase
 {
     public:
-    mConfigDescriptionParser();
+    tnlConfigDescriptionParser();
 
     void setScanner( istream* in_stream );
 
-    int runParsing( mConfigDescription* conf_desc );
+    int runParsing( tnlConfigDescription* conf_desc );
         
     int parse();
 
@@ -36,7 +36,7 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
     
     void setBVal( bool b );
       
-    static mConfigDescriptionParser* current_parser;
+    static tnlConfigDescriptionParser* current_parser;
 
     //Methods for the parsing
     void SetCurrentGroupId( const char* id );
@@ -57,13 +57,13 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
     
     void AddCurrentEntryWithDefaultValue();
 
-    ~mConfigDescriptionParser();
+    ~tnlConfigDescriptionParser();
 
     protected:
     
     mCDSFlexLexer* scanner;
 
-    mConfigDescription* config_description;
+    tnlConfigDescription* config_description;
     
     int line;
 
@@ -73,7 +73,7 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
 
     tnlString current_entry_name;
 
-    mConfigEntryType current_entry_type;
+    tnlConfigEntryType current_entry_type;
     
     tnlString current_entry_comment;
     
@@ -102,14 +102,14 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
         void nextToken();
 };
 
-inline void mConfigDescriptionParser :: error(char const *msg)
+inline void tnlConfigDescriptionParser :: error(char const *msg)
 {
     std::cerr << msg << " at line " << line << std::endl;
 }
 
 // $insert lex
 
-inline void mConfigDescriptionParser :: print()      // use d_token, d_loc
+inline void tnlConfigDescriptionParser :: print()      // use d_token, d_loc
 {}
 
 

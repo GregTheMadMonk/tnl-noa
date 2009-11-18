@@ -1,10 +1,10 @@
-    // Include this file in the sources of the class mConfigDescriptionParser.
+    // Include this file in the sources of the class tnlConfigDescriptionParser.
 
 // $insert class.h
-#include "mConfigDescriptionParser.h"
+#include "tnlConfigDescriptionParser.h"
 
     // Add below here any includes etc. that are only 
-    // required for the compilation of mConfigDescriptionParser's sources.
+    // required for the compilation of tnlConfigDescriptionParser's sources.
 
 
 

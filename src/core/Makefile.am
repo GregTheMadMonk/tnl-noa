@@ -6,12 +6,12 @@
 #SUBDIRS = 
 #endif
 
-EXTRA_DIST = mConfigDescriptionParser.y \
-	     mConfigDescriptionScanner.l \
-	     FlexLexer.h
+EXTRA_DIST = tnlConfigDescriptionParser.y \
+	         tnlConfigDescriptionScanner.l \
+	         FlexLexer.h
 
 headers =  \
-		  mConfigDescription.h \
+		  tnlConfigDescription.h \
 		  mCurve.h \
 		  mDataElement.h \
 		  mField1D.h \
@@ -23,10 +23,10 @@ headers =  \
 		  mLogger.h \
 		  tnlObject.h \
 		  tnlString.h \
-		  mConfigDescriptionParser.h \
-		  mConfigDescriptionParserbase.h \
-		  mConfigDescriptionParser.ih \
-		  mConfigDescriptionScanner.h \
+		  tnlConfigDescriptionParser.h \
+		  tnlConfigDescriptionParserbase.h \
+		  tnlConfigDescriptionParser.ih \
+		  tnlConfigDescriptionScanner.h \
 		  mParameterContainer.h \
 		  mTimerCPU.h \
 		  mTimerRT.h \
@@ -37,12 +37,12 @@ headers =  \
 		  mpi-supp.h \
 		  param-types.h
 
-sources = mConfigDescription.cpp \
+sources = tnlConfigDescription.cpp \
 	  mLogger.cpp \
 	  tnlObject.cpp \
 	  tnlString.cpp \
-	  mConfigDescriptionScanner.cpp \
-	  mConfigDescriptionParser.cpp \
+	  tnlConfigDescriptionScanner.cpp \
+	  tnlConfigDescriptionParser.cpp \
 	  mParameterContainer.cpp \
 	  mTimerCPU.cpp \
 	  mTimerRT.cpp \
