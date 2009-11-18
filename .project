@@ -3,6 +3,8 @@
 	<name>tnl</name>
 	<comment></comment>
 	<projects>
+		<project>geom-flow</project>
+		<project>image-flow</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

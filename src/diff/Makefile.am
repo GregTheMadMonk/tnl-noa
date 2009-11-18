@@ -7,7 +7,6 @@
 #endif
 
 headers = \
-   mdiff.h \
    mdiff-debug.h \
    drawGrid1D.h \
    drawGrid2D.h \

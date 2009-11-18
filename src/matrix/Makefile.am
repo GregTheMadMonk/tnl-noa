@@ -19,7 +19,7 @@ headers = \
 sources = mBaseMatrix.cpp 
 
 libtnlmatrixincludedir = $(TNL_INCLUDE_DIR)/matrix
-libtnlmatrixinclude_HEADERS = $(headers) mmatrix.h
+libtnlmatrixinclude_HEADERS = $(headers)
 
 noinst_LTLIBRARIES = libtnlmatrix-0.1.la
 libtnlmatrix_0_1_la_SOURCES = $(sources) $(headers)
