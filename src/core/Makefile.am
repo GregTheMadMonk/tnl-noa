@@ -18,7 +18,7 @@ headers =  \
 		  mField2D.h \
 		  mField3D.h \
 		  mFieldSystem1D.h \
-		  mList.h \
+		  tnlList.h \
 		  mLongVector.h \
 		  mLogger.h \
 		  tnlObject.h \

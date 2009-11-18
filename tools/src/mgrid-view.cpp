@@ -75,8 +75,8 @@ bool ProcessmGrid2D( const tnlString& file_name,
 
    cout << " writing ... " << output_file_name;
 
-   mList< double > level_lines;
-   parameters. GetParameter< mList< double > >( "level-lines", level_lines );
+   tnlList< double > level_lines;
+   parameters. GetParameter< tnlList< double > >( "level-lines", level_lines );
    if( ! level_lines. IsEmpty() )
    {
       mCurve< mVector< 2, double > > crv;
@@ -180,12 +180,12 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   mList< tnlString > input_files = parameters. GetParameter< mList< tnlString > >( "input-files" );
+   tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
 
    long int size = input_files. Size();
    tnlString output_file_name;
-   mList< tnlString > output_files;
-   if( ! parameters. GetParameter< mList< tnlString > >( "output-files", output_files ) )
+   tnlList< tnlString > output_files;
+   if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
    long int i;
    for( i = 0; i < size; i ++ )

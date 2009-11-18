@@ -34,12 +34,12 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   mList< tnlString > input_files = parameters. GetParameter< mList< tnlString > >( "input-files" );
-   mList< tnlString > output_files;
-   if( ! parameters. GetParameter< mList< tnlString > >( "output-files", output_files ) )
+   tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   tnlList< tnlString > output_files;
+   if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
-   mList< double > level_lines;
-   if( ! parameters. GetParameter< mList< double > >( "level-lines", level_lines ) )
+   tnlList< double > level_lines;
+   if( ! parameters. GetParameter< tnlList< double > >( "level-lines", level_lines ) )
       cout << "No level lines were given." << endl;
    int output_x_size( 0 ), output_y_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );

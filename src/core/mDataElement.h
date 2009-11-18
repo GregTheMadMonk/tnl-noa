@@ -18,7 +18,7 @@
 #ifndef __mDATAELEMENT_H__
 #define __mDATAELEMENT_H__
 
-//! Data element for mList and mStack
+//! Data element for tnlList and mStack
 template< class T > class mDataElement
 {
    //! Main data

@@ -18,7 +18,7 @@
 #ifndef mParameterContainerH
 #define mParameterContainerH
 
-#include "mList.h"
+#include "tnlList.h"
 #include "mConfigDescription.h"
 #include "mpi-supp.h"
 #include "param-types.h"
@@ -108,7 +108,7 @@ class mParameterContainer
 
    protected:
 
-   mList< mParameterBase* > parameters;
+   tnlList< mParameterBase* > parameters;
 
 };
 

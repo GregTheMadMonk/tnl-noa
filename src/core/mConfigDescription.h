@@ -19,7 +19,7 @@
 #define mConfigDescriptionH
 
 #include "tnlString.h"
-#include "mList.h"
+#include "tnlList.h"
 
 class mParameterContainer;
 
@@ -182,9 +182,9 @@ class mConfigDescription
 
    protected:
 
-   mList< mConfigGroup* > groups;
+   tnlList< mConfigGroup* > groups;
 
-   mList< mConfigEntryBase* > entries;
+   tnlList< mConfigEntryBase* > entries;
 
 
 };

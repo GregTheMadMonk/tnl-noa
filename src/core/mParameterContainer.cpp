@@ -190,19 +190,19 @@ bool ParseCommandLine( int argc, char* argv[],
          const tnlString& basic_type_name = entry_type -> basic_type;
          if( entry_type -> list_entry )
          {
-            mList< tnlString >* string_list( 0 );
-            mList< bool >* bool_list( 0 );
-            mList< int >* integer_list( 0 );
-            mList< double >* real_list( 0 );
+            tnlList< tnlString >* string_list( 0 );
+            tnlList< bool >* bool_list( 0 );
+            tnlList< int >* integer_list( 0 );
+            tnlList< double >* real_list( 0 );
 
             if( basic_type_name == "string" )
-               string_list = new mList< tnlString >;
+               string_list = new tnlList< tnlString >;
             if( basic_type_name == "bool" )
-               bool_list = new mList< bool >;
+               bool_list = new tnlList< bool >;
             if( basic_type_name == "integer" )
-               integer_list = new mList< int >;
+               integer_list = new tnlList< int >;
             if( basic_type_name == "real" )
-               real_list = new mList< double >;
+               real_list = new tnlList< double >;
             
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
@@ -223,22 +223,22 @@ bool ParseCommandLine( int argc, char* argv[],
             }
             if( string_list )
             {
-               parameters. AddParameter< mList< tnlString > >( option, *string_list );
+               parameters. AddParameter< tnlList< tnlString > >( option, *string_list );
                delete string_list;
             }
             if( bool_list )
             {
-               parameters. AddParameter< mList< bool > >( option, *bool_list );
+               parameters. AddParameter< tnlList< bool > >( option, *bool_list );
                delete bool_list;
             }
             if( integer_list )
             {
-               parameters. AddParameter< mList< int > >( option, *integer_list );
+               parameters. AddParameter< tnlList< int > >( option, *integer_list );
                delete integer_list;
             }
             if( real_list )
             {
-               parameters. AddParameter< mList< double > >( option, *real_list );
+               parameters. AddParameter< tnlList< double > >( option, *real_list );
                delete real_list;
             }
             if( i < argc ) i --;

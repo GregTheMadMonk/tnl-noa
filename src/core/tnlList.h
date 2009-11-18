@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mList.h  -  description
+                          tnlList.h  -  description
                              -------------------
     begin                : Sat, 10 Apr 2004 15:58:51 +0100
     copyright            : (C) 2004 by Tom� Oberhuber
@@ -47,7 +47,7 @@ using namespace :: std;
     of the list. So with common use one does not need to worry about
     efficiency :-)
  */
-template< class T > class mList
+template< class T > class tnlList
 {
    protected:
 
@@ -70,7 +70,7 @@ template< class T > class mList
 
    public:
    //! Basic constructor
-   mList() 
+   tnlList() 
       : first( 0 ),
         last( 0 ),
         size( 0 ),
@@ -78,7 +78,7 @@ template< class T > class mList
         index( 0 ){};
 
    //! Copy constructor
-   mList( const mList& list )
+   tnlList( const tnlList& list )
       : first( 0 ),
         last( 0 ),
         size( 0 ),
@@ -89,7 +89,7 @@ template< class T > class mList
    };
 
    //! Destructor
-   ~mList() { EraseAll(); };
+   ~tnlList() { EraseAll(); };
 
    //! If the list is empty return 'true'
    bool IsEmpty() const { return ! size; };
@@ -151,7 +151,7 @@ template< class T > class mList
    //! Indexing operator for constant instances
    const T& operator[] ( long int ind ) const
    {
-      return const_cast< mList< T >* >( this ) -> operator[]( ind );
+      return const_cast< tnlList< T >* >( this ) -> operator[]( ind );
    }
 
    //! Append new data element
@@ -214,7 +214,7 @@ template< class T > class mList
    };
 
    //! Append copy of another list
-   bool AppendList( const mList< T >& lst )
+   bool AppendList( const tnlList< T >& lst )
    {
       long int i;
       for( i = 0; i < lst. Size(); i ++ )
@@ -225,7 +225,7 @@ template< class T > class mList
    };
    
    //! Prepend copy of another list
-   bool PrependList( const mList< T >& lst )
+   bool PrependList( const tnlList< T >& lst )
    
    {
       long int i;
@@ -362,13 +362,13 @@ template< class T > class mList
    
 };
 
-template< typename T > tnlString GetParameterType( const mList< T >& )
+template< typename T > tnlString GetParameterType( const tnlList< T >& )
 {
    T t;
    return tnlString( "mList< " ) + GetParameterType( t ) +  tnlString( " >" ); 
 };
 
-template< typename T > ostream& operator << ( ostream& str, const mList< T >& list )
+template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list )
 {
    long int i, size( list. Size() );
    for( i = 0; i < size; i ++ )

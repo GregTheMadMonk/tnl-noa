@@ -18,7 +18,7 @@
 #ifndef param_typesH
 #define param_typesH
 
-#include "mList.h"
+#include "tnlList.h"
 #include "tnlString.h"
 
 inline tnlString GetParameterType( bool ) { return tnlString( "bool" ); };

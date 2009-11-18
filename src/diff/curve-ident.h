@@ -42,7 +42,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
    const long int y_size = u. GetYSize();
 
    // this list stores curves or just curve fargments
-   mList< mList< MeshIndex>* > curves;
+   tnlList< tnlList< MeshIndex>* > curves;
 
    // generating curves or fragments
    for( i = 0; i < x_size - 1; i ++ )
@@ -91,7 +91,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
          // If it is not create new curve fragment.
          if( ! added )
          {
-            mList< MeshIndex >* new_list = new mList< MeshIndex >;
+            tnlList< MeshIndex >* new_list = new tnlList< MeshIndex >;
             new_list -> Append( MeshIndex( i, j ) );
             curves. Append( new_list );
             dbgCout( "Adding new list." );
@@ -108,13 +108,13 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
       fragmented = false;
       for( i = 0; i < curves. Size(); i ++ )
       {
-         mList< MeshIndex >& c1 = * curves[ i ];
+         tnlList< MeshIndex >& c1 = * curves[ i ];
          MeshIndex c1_start = c1[ 0 ];
          MeshIndex c1_end = c1[ c1. Size() - 1 ];
          for( j = 0 ; j < curves. Size(); j ++ )
          {
             if( i == j ) continue;
-            mList< MeshIndex >& c2 = * curves[ j ];
+            tnlList< MeshIndex >& c2 = * curves[ j ];
             assert( &c2 != &c1 );
             MeshIndex c2_start = c2[ 0 ];
             MeshIndex c2_end = c2[ c2. Size() - 1 ];
@@ -197,7 +197,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
    // the end match).
    for( i = 0; i < curves. Size(); i ++ )
    {
-      mList< MeshIndex >& c = * curves[ i ];
+      tnlList< MeshIndex >& c = * curves[ i ];
       long int l = c. Size();
       MeshIndex m1 = c[ 0 ];
       MeshIndex m2 = c[ l - 1 ];
@@ -222,7 +222,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
    for( i = 0; i < curves. Size(); i ++ )
    {
       if( i > 0 ) crv. Append( null_vector, true );  //separator
-      mList< MeshIndex >& c = * curves[ i ];
+      tnlList< MeshIndex >& c = * curves[ i ];
       long int l = c. Size();
       mVector< 2, T > first;
       for( j = 0; j < l - 1; j ++ )

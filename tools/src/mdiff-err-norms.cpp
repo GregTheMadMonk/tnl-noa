@@ -164,8 +164,8 @@ int main( int argc, char* argv[] )
    cout << "************************************************************************" << endl;
 
    tnlString test = parameters. GetParameter< tnlString >( "test" );
-   mList< tnlString > first_files = parameters. GetParameter< mList< tnlString > >( "first-set" );
-   mList< tnlString > second_files;
+   tnlList< tnlString > first_files = parameters. GetParameter< tnlList< tnlString > >( "first-set" );
+   tnlList< tnlString > second_files;
    if( test == "function" )
    {
       if( ! parameters. CheckParameter( "second-set" ) )
@@ -173,7 +173,7 @@ int main( int argc, char* argv[] )
          cerr << "Missing parameter second-set." << endl;
          return 1;
       }
-      second_files = parameters. GetParameter< mList< tnlString > >( "second-set" );
+      second_files = parameters. GetParameter< tnlList< tnlString > >( "second-set" );
    }
    long int size = first_files. Size();
    cout << "Processing " << size << " files. " << endl;
