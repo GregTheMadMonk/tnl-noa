@@ -443,7 +443,7 @@ template< class T > bool mMPIMesh2D< T > :: CreateMesh( const mGrid2D< T >& u,
 {
 #ifdef HAVE_MPI
    double ax, ay, hx, hy;
-   mString name;
+   tnlString name;
    int rank;
    if( MPIGetRank( original_comm ) == root )
    {
@@ -1076,7 +1076,7 @@ template< class T > void DrawSubdomains( const mMPIMesh2D< T >& mpi_mesh,
                                          const char* format )
 {
    int num = mpi_mesh. GetXPos() * 10 + mpi_mesh. GetYPos();
-   mString file_name;
+   tnlString file_name;
    FileNameBaseNumberEnding( file_name_base,
                              num,
                              2,

@@ -34,13 +34,13 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
    mFullMatrix( const long int size )
    : mField2D< T >( size, size ){};
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mFullMatrix< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mFullMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   const mString& GetMatrixClass() const
+   const tnlString& GetMatrixClass() const
    {
       return mMatrixClass :: main;
    };

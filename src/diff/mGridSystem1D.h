@@ -47,12 +47,12 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
      Hx( g. Hx )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
       stringstream str;
       str << "mGridSystem1D< " << GetParameterType( t ) << ", " << SYSTEM_SIZE << " >";
-      return mString( str. str(). data() );
+      return tnlString( str. str(). data() );
    };
 
    void SetNewDomain( const double& A_x,

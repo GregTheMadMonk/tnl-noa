@@ -18,14 +18,14 @@
 #ifndef mfilenameH
 #define mfilenameH
 
-class mString;
+class tnlString;
 
 void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
-                               mString& file_name );
+                               tnlString& file_name );
 
-void RemoveFileExtension( mString& file_name );
+void RemoveFileExtension( tnlString& file_name );
 
 #endif

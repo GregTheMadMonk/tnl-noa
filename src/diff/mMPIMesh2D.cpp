@@ -359,7 +359,7 @@ m_bool mMPIMesh2D :: CreateMesh( const mGrid2D* phi,
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return true;
    mVector2D a, h;
-   mString name;
+   tnlString name;
    if( node_rank == 0 )
    {
       assert( phi );
@@ -1280,7 +1280,7 @@ void Scatter( const mMPIMesh2D* mpi_mesh,
    for( i = 0; i < size; i ++ )
    {
       mGrid2D* phi;
-      mString name;
+      tnlString name;
       if( mpi_mesh -> NodeRank() == 0 )
       {
          tnlObject* obj;
@@ -1312,7 +1312,7 @@ void Gather( const mMPIMesh2D* mpi_mesh,
    for( i = 0; i < size; i ++ )
    {
       mGrid2D* phi;
-      mString name;
+      tnlString name;
       if( mpi_mesh -> NodeRank() == 0 )
       {
          tnlObject* obj;

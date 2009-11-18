@@ -32,9 +32,9 @@ tnlObject :: tnlObject( const tnlObject& object )
 {
 }
 //--------------------------------------------------------------------------
-mString tnlObject :: GetType() const
+tnlString tnlObject :: GetType() const
 {
-   return mString( "mObject" );
+   return tnlString( "mObject" );
 }
 //--------------------------------------------------------------------------
 void tnlObject :: SetName( const char* _name )
@@ -42,7 +42,7 @@ void tnlObject :: SetName( const char* _name )
    name. SetString( _name );
 }
 //--------------------------------------------------------------------------
-const mString& tnlObject :: GetName() const
+const tnlString& tnlObject :: GetName() const
 {
    return name;
 }
@@ -62,7 +62,7 @@ bool tnlObject :: Load( istream& file )
 {
    dbgFunctionName( "mObject", "Load" );
    dbgCout( "Reading object type " );
-   mString load_type;
+   tnlString load_type;
    if( ! GetObjectType( file, load_type ) )
       return false;
    if( load_type != GetType() )
@@ -75,7 +75,7 @@ bool tnlObject :: Load( istream& file )
    return true;
 }
 //--------------------------------------------------------------------------
-bool GetObjectType( istream& file, mString& type )
+bool GetObjectType( istream& file, tnlString& type )
 {
    dbgFunctionName( "", "GetObjectType" );
    dbgCout( "Chacking magic number." );
@@ -86,7 +86,7 @@ bool GetObjectType( istream& file, mString& type )
    return true;
 }
 //--------------------------------------------------------------------------
-bool GetObjectType( const char* file_name, mString& type )
+bool GetObjectType( const char* file_name, tnlString& type )
 {
    fstream file;
    file. open( file_name, ios :: in | ios :: binary );

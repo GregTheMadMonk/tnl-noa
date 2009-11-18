@@ -41,10 +41,10 @@ template< class T > class mField2D : public mLongVector< T >
      x_size( f. x_size ), y_size( f. y_size )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mField2D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mField2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const

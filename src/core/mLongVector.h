@@ -53,10 +53,10 @@ template< class T > class mLongVector : public tnlObject
       data ++;
    };
    
-   mString GetType()
+   tnlString GetType()
    {
       T t;
-      return mString( "mLongVector< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    bool SetNewSize( int _size )

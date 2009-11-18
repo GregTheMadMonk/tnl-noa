@@ -53,13 +53,13 @@ template< typename T > class mPETSCMatrix : public mBaseMatrix< T >
 #endif
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mPETSCMatrix< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mPETSCMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   const mString& GetMatrixClass() const
+   const tnlString& GetMatrixClass() const
    {
       return mMatrixClass :: petsc;
    };

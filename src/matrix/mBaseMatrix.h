@@ -21,7 +21,7 @@
 #include <ostream>
 #include <iomanip>
 #include <core/tnlObject.h>
-#include <core/mString.h>
+#include <core/tnlString.h>
 
 class mMatrixClass
 {
@@ -30,8 +30,8 @@ class mMatrixClass
    mMatrixClass() {};
 
    public:
-   static const mString main;
-   static const mString petsc;
+   static const tnlString main;
+   static const tnlString petsc;
 };
 
 template< typename T > class mBaseMatrix : public tnlObject
@@ -41,7 +41,7 @@ template< typename T > class mBaseMatrix : public tnlObject
    //! Matrix class tells what implementation of matrix we want.
    /*! Matrix class can be main, PETSC, CUDA etc.
     */
-   virtual const mString& GetMatrixClass() const = 0;
+   virtual const tnlString& GetMatrixClass() const = 0;
 
    virtual long int GetSize() const = 0;
 

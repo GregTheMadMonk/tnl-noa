@@ -44,7 +44,7 @@ mParameterContainer :: mParameterContainer()
 bool mParameterContainer :: AddParameter( const char* name,
                                           const char* value )
 {
-   return parameters. Append( new mParameter< mString >( name, GetParameterType( mString() ). Data(), mString( value ) ) );
+   return parameters. Append( new mParameter< tnlString >( name, GetParameterType( tnlString() ). Data(), tnlString( value ) ) );
 }
 //--------------------------------------------------------------------------
 bool mParameterContainer :: SetParameter( const char* name,
@@ -55,9 +55,9 @@ bool mParameterContainer :: SetParameter( const char* name,
    {
       if( parameters[ i ] -> name == name )
       {
-         if( GetParameterType( parameters[ i ] ) == GetParameterType( mString() ) ) 
+         if( GetParameterType( parameters[ i ] ) == GetParameterType( tnlString() ) ) 
          {
-            ( ( mParameter< mString > * ) parameters[ i ] ) -> value. SetString( value );
+            ( ( mParameter< tnlString > * ) parameters[ i ] ) -> value. SetString( value );
             return true;
          }
          else
@@ -102,7 +102,7 @@ void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
          param -> name. MPIBcast( root, MPI_COMM_WORLD );
          if( param -> type == "mString" )
          {
-            ( ( mParameter< mString >* ) param ) -> value. MPIBcast( root, mpi_comm );
+            ( ( mParameter< tnlString >* ) param ) -> value. MPIBcast( root, mpi_comm );
          }
          if( param -> type == "bool" )
          {
@@ -119,14 +119,14 @@ void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
       }
       else
       {
-         mString param_type, param_name;
+         tnlString param_type, param_name;
          param_type. MPIBcast( root, MPI_COMM_WORLD );
          param_name. MPIBcast( root, MPI_COMM_WORLD );
          if( param_type == "mString" )
          {
-            mString val;
+            tnlString val;
             val. MPIBcast( root, mpi_comm );
-            AddParameter< mString >( param_name. Data(),
+            AddParameter< tnlString >( param_name. Data(),
                                      val );           
          }
          if( param_type == "bool" )
@@ -187,16 +187,16 @@ bool ParseCommandLine( int argc, char* argv[],
             cerr << "Missing value for the parameter " << option << "." << endl;
             return false;
          }
-         const mString& basic_type_name = entry_type -> basic_type;
+         const tnlString& basic_type_name = entry_type -> basic_type;
          if( entry_type -> list_entry )
          {
-            mList< mString >* string_list( 0 );
+            mList< tnlString >* string_list( 0 );
             mList< bool >* bool_list( 0 );
             mList< int >* integer_list( 0 );
             mList< double >* real_list( 0 );
 
             if( basic_type_name == "string" )
-               string_list = new mList< mString >;
+               string_list = new mList< tnlString >;
             if( basic_type_name == "bool" )
                bool_list = new mList< bool >;
             if( basic_type_name == "integer" )
@@ -207,7 +207,7 @@ bool ParseCommandLine( int argc, char* argv[],
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
                const char* value = argv[ i ++ ];
-               if( string_list ) string_list -> Append( mString( value ) );
+               if( string_list ) string_list -> Append( tnlString( value ) );
                if( bool_list )
                {
                   bool bool_val;
@@ -223,7 +223,7 @@ bool ParseCommandLine( int argc, char* argv[],
             }
             if( string_list )
             {
-               parameters. AddParameter< mList< mString > >( option, *string_list );
+               parameters. AddParameter< mList< tnlString > >( option, *string_list );
                delete string_list;
             }
             if( bool_list )
@@ -248,7 +248,7 @@ bool ParseCommandLine( int argc, char* argv[],
          {
             if( basic_type_name == "string" )
             {
-                parameters. AddParameter< mString >( option, value );
+                parameters. AddParameter< tnlString >( option, value );
                 continue;
             }
             if( basic_type_name == "bool" )

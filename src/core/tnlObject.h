@@ -18,7 +18,7 @@
 #ifndef tnlObjectH
 #define tnlObjectH
 
-#include "mString.h"
+#include "tnlString.h"
 
 //! This is basic class for many other more complex objects.
 /*! Objects like numerical grids, meshes, matrices large vectors etc.
@@ -41,13 +41,13 @@ class tnlObject
    tnlObject( const tnlObject& object );
 
    //! Type getter
-   virtual mString GetType() const = 0;
+   virtual tnlString GetType() const = 0;
 
    //! Name setter
    void SetName( const char* _name );
 
    //! Name getter
-   const mString& GetName() const;
+   const tnlString& GetName() const;
 
    //! Method for saving the object to a file as a binary data
    virtual bool Save( ostream& file ) const;   
@@ -61,12 +61,12 @@ class tnlObject
    protected:
 
    //! Object name
-   mString name;
+   tnlString name;
 
 };
 
-bool GetObjectType( istream& file, mString& type );
+bool GetObjectType( istream& file, tnlString& type );
 
-bool GetObjectType( const char* file_name, mString& type );
+bool GetObjectType( const char* file_name, tnlString& type );
 
 #endif

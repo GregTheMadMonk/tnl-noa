@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-cd src
-bisonc++ mConfigDescriptionParser.y
-flex++ mConfigDescriptionScanner.l
-cd ..

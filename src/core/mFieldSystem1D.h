@@ -39,10 +39,10 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
      x_size( f. x_size )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mFieldSystem1D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mFieldSystem1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const

@@ -90,7 +90,7 @@ void mConfigDescription :: PrintUsage( const char* program_name )
             {
                cout << " DEFAULT VALUE IS: ";
                if( entries[ j ] -> type. basic_type == "string" )
-                  cout << ( ( mConfigEntry< mString >* ) entries[ j ] ) -> default_value;
+                  cout << ( ( mConfigEntry< tnlString >* ) entries[ j ] ) -> default_value;
                if( entries[ j ] -> type. basic_type == "integer" )
                   cout << ( ( mConfigEntry< int >* ) entries[ j ] ) -> default_value;
                if( entries[ j ] -> type. basic_type == "real" )
@@ -136,9 +136,9 @@ void mConfigDescription :: AddMissingEntries( mParameterContainer& parameter_con
       {
          if( entries[ i ] -> type. basic_type == "string" )
          {
-            parameter_container. AddParameter< mString >(
+            parameter_container. AddParameter< tnlString >(
                entry_name,
-               ( ( mConfigEntry< mString >* ) entries[ i ] ) -> default_value );
+               ( ( mConfigEntry< tnlString >* ) entries[ i ] ) -> default_value );
             continue;
          }
          if( entries[ i ] -> type. basic_type == "bool" )

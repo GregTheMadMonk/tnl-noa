@@ -560,7 +560,7 @@ template< class T > bool mMPIMesh3D< T > :: CreateMesh( const mGrid3D< T >& u,
    dbgMPIBarrier;
    dbgCout( "Creating subdomains ... " );
    double ax, ay, az, hx, hy, hz;
-   mString name;
+   tnlString name;
    int rank;
    if( MPIGetRank( original_comm ) == root )
    {
@@ -1384,7 +1384,7 @@ template< class T > void DrawSubdomains( const mMPIMesh3D< T >& mpi_mesh,
                                          const char* format )
 {
    int num = mpi_mesh. GetXPos() * 100 + mpi_mesh. GetYPos() * 10 + mpi_mesh. GetZPos();
-   mString file_name;
+   tnlString file_name;
    FileNameBaseNumberEnding( file_name_base,
                              num,
                              3,

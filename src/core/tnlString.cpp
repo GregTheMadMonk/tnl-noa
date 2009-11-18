@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mString.cpp  -  description
+                          tnlString.cpp  -  description
                              -------------------
     begin                : 2004/04/10 16:36
     copyright            : (C) 2004 by Tomas Oberhuber
@@ -18,7 +18,7 @@
 #include <string.h>
 #include <config.h>
 #include <assert.h>
-#include "mString.h"
+#include "tnlString.h"
 #include "debug.h"
 #include "mfuncs.h"
 #ifdef HAVE_MPI
@@ -28,20 +28,20 @@
 const unsigned int STRING_PAGE = 256;
 
 //---------------------------------------------------------------------------
-mString :: mString()
+tnlString :: tnlString()
 {
    string = new char[ STRING_PAGE ];
    string[ 0 ] = 0;
    length = STRING_PAGE;
 }
 //---------------------------------------------------------------------------
-mString :: mString( const char* c, int prefix_cut_off, int sufix_cut_off )
+tnlString :: tnlString( const char* c, int prefix_cut_off, int sufix_cut_off )
    : string( 0 ), length( 0 )
 {
    SetString( c, prefix_cut_off, sufix_cut_off );
 }
 //---------------------------------------------------------------------------
-mString :: mString( const mString& str ) : length( str. length )
+tnlString :: tnlString( const tnlString& str ) : length( str. length )
 {
    string = new char[ length ];
    unsigned int _length = strlen( str. string );
@@ -49,12 +49,12 @@ mString :: mString( const mString& str ) : length( str. length )
    string[ _length ] = 0;
 }
 //---------------------------------------------------------------------------
-mString :: ~mString()
+tnlString :: ~tnlString()
 {
    if( string ) delete[] string;
 }
 //---------------------------------------------------------------------------
-void mString :: SetString( const char* c, int prefix_cut_off, int sufix_cut_off )
+void tnlString :: SetString( const char* c, int prefix_cut_off, int sufix_cut_off )
 {
    if( ! c )
    {
@@ -84,13 +84,13 @@ void mString :: SetString( const char* c, int prefix_cut_off, int sufix_cut_off 
    string[ _length ] = 0;
 }
 //---------------------------------------------------------------------------
-mString& mString :: operator = ( const mString& str )
+tnlString& tnlString :: operator = ( const tnlString& str )
 {
    SetString( str. Data() );
    return * this;
 }
 //---------------------------------------------------------------------------
-mString& mString :: operator += ( const char* str )
+tnlString& tnlString :: operator += ( const char* str )
 {
    if( str )
    {
@@ -110,7 +110,7 @@ mString& mString :: operator += ( const char* str )
    return * this;
 }
 //---------------------------------------------------------------------------
-mString& mString :: operator += ( const mString& str )
+tnlString& tnlString :: operator += ( const tnlString& str )
 {
    return operator += ( str. Data() );
    /*int len1 = strlen( string );
@@ -128,12 +128,12 @@ mString& mString :: operator += ( const mString& str )
    return * this;*/
 }
 //---------------------------------------------------------------------------
-mString mString :: operator + ( const mString& str )
+tnlString tnlString :: operator + ( const tnlString& str )
 {
-   return mString( *this ) += str;
+   return tnlString( *this ) += str;
 }
 //---------------------------------------------------------------------------
-bool mString :: operator == ( const mString& str ) const
+bool tnlString :: operator == ( const tnlString& str ) const
 {
    assert( string && str. string );
    if( strcmp( string, str. string ) == 0 )
@@ -141,12 +141,12 @@ bool mString :: operator == ( const mString& str ) const
    return false;
 }
 //---------------------------------------------------------------------------
-bool mString :: operator != ( const mString& str ) const
+bool tnlString :: operator != ( const tnlString& str ) const
 {
    return ! operator == ( str );
 }
 //---------------------------------------------------------------------------
-bool mString :: operator == ( const char* str ) const
+bool tnlString :: operator == ( const char* str ) const
 {
    //cout << ( void* ) string << " " << ( void* ) str << endl;
    assert( string && str );
@@ -154,28 +154,28 @@ bool mString :: operator == ( const char* str ) const
    return false;
 }
 //---------------------------------------------------------------------------
-mString :: operator bool () const
+tnlString :: operator bool () const
 {
    if( string[ 0 ] ) return true;
    return false;
 }
 //---------------------------------------------------------------------------
-bool mString :: operator != ( const char* str ) const
+bool tnlString :: operator != ( const char* str ) const
 {
    return ! operator == ( str );
 }
 //---------------------------------------------------------------------------
-int mString :: Length() const
+int tnlString :: Length() const
 {
    return strlen( string );
 }
 //---------------------------------------------------------------------------
-const char* mString :: Data() const
+const char* tnlString :: Data() const
 {
    return string;
 }
 //---------------------------------------------------------------------------
-bool mString :: Save( ostream& file ) const
+bool tnlString :: Save( ostream& file ) const
 {
    dbgFunctionName( "mString", "Write" );
    assert( string );
@@ -188,7 +188,7 @@ bool mString :: Save( ostream& file ) const
    return true;
 }
 //---------------------------------------------------------------------------
-bool mString :: Load( istream& file )
+bool tnlString :: Load( istream& file )
 {
    int _length;
    file. read( ( char* ) &_length, sizeof( int ) );
@@ -217,7 +217,7 @@ bool mString :: Load( istream& file )
    return true;
 }
 //---------------------------------------------------------------------------
-void mString :: MPIBcast( int root, MPI_Comm comm )
+void tnlString :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef HAVE_MPI
    dbgFunctionName( "mString", "MPIBcast" );
@@ -244,7 +244,7 @@ void mString :: MPIBcast( int root, MPI_Comm comm )
 #endif
 }
 //---------------------------------------------------------------------------
-ostream& operator << ( ostream& stream, const mString& str )
+ostream& operator << ( ostream& stream, const tnlString& str )
 {
    stream << str. Data();
    return stream;

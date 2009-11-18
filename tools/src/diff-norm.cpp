@@ -24,7 +24,7 @@ bool ReadInputFile( const char* file_name,
 {
    cout << "I am processing the file..." << file_name << " ... " << flush;
    int strln = strlen( file_name );
-   mString uncompressed_file_name( file_name );
+   tnlString uncompressed_file_name( file_name );
    if( strcmp( file_name + strln - 3, ".gz" ) == 0 )
       if( ! UnCompressFile( file_name, "gz" ) )
       {

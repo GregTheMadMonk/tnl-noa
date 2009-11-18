@@ -67,15 +67,15 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
     
     int line;
 
-    mString current_group_name;
+    tnlString current_group_name;
     
-    mString current_group_comment;
+    tnlString current_group_comment;
 
-    mString current_entry_name;
+    tnlString current_entry_name;
 
     mConfigEntryType current_entry_type;
     
-    mString current_entry_comment;
+    tnlString current_entry_comment;
     
     bool current_entry_is_list;
 
@@ -85,7 +85,7 @@ class mConfigDescriptionParser: public mConfigDescriptionParserBase
 
     int integer_default_value;
 
-    mString string_default_value;
+    tnlString string_default_value;
 
     bool parse_error;
 

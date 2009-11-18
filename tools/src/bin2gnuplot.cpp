@@ -29,7 +29,7 @@ int main( int argc, char* argv[] )
       const char* file_name = argv[ i ];
       cout << "Processing file " << file_name << " ... " << flush;
       int strln = strlen( file_name );
-      mString uncompressed_file_name;
+      tnlString uncompressed_file_name;
       if( strcmp( file_name + strln - 3, ".gz" ) == 0 )
          if( ! UnCompressFile( file_name, "gz" ) )
          {
@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
          return -1;
       }
 
-      mString output_file_name;
+      tnlString output_file_name;
       output_file_name. SetString( uncompressed_file_name. Data(), 0, 4 );
       cout << " writing... " << output_file_name;
       if( ! Draw( u, output_file_name. Data(), "gnuplot" ) )

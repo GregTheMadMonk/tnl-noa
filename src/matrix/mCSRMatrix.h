@@ -150,13 +150,13 @@ template< typename T > class mCSRMatrix : public mBaseMatrix< T >
       last_non_zero_element = 0;
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mCSRMatrix< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mCSRMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   const mString& GetMatrixClass() const
+   const tnlString& GetMatrixClass() const
    {
       return mMatrixClass :: main;
    };

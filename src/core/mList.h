@@ -2,7 +2,7 @@
                           mList.h  -  description
                              -------------------
     begin                : Sat, 10 Apr 2004 15:58:51 +0100
-    copyright            : (C) 2004 by Tomá¹ Oberhuber
+    copyright            : (C) 2004 by Tomï¿½ Oberhuber
     email                : tomasoberhuber@seznam.cz
  ***************************************************************************/
 
@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 /**
-  *@author Tomá¹ Oberhuber
+  *@author Tomï¿½ Oberhuber
   */
 
 #ifndef mListH
@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "mDataElement.h"
-#include "mString.h"
+#include "tnlString.h"
 #include "param-types.h"
 
 using namespace :: std;
@@ -362,10 +362,10 @@ template< class T > class mList
    
 };
 
-template< typename T > mString GetParameterType( const mList< T >& )
+template< typename T > tnlString GetParameterType( const mList< T >& )
 {
    T t;
-   return mString( "mList< " ) + GetParameterType( t ) +  mString( " >" ); 
+   return tnlString( "mList< " ) + GetParameterType( t ) +  tnlString( " >" ); 
 };
 
 template< typename T > ostream& operator << ( ostream& str, const mList< T >& list )

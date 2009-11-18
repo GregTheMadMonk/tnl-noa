@@ -17,6 +17,6 @@
 
 #include "mBaseMatrix.h"
 
-const mString mMatrixClass :: main( "main" );
-const mString mMatrixClass :: petsc( "petsc" );
+const tnlString mMatrixClass :: main( "main" );
+const tnlString mMatrixClass :: petsc( "petsc" );
 //--------------------------------------------------------------------------

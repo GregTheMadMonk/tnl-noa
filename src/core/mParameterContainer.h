@@ -28,7 +28,7 @@ struct mParameterBase
    mParameterBase( const char* _name, const char* _type )
    : name( _name ), type( _type ){};
  
-   mString name, type;
+   tnlString name, type;
 
 };
 

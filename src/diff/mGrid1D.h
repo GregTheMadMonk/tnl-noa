@@ -49,10 +49,10 @@ template< typename T = double > class mGrid1D : public mField1D< T >
      Hx( g. Hx )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mGrid1D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mGrid1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,

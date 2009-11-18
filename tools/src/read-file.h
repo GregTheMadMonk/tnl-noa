@@ -24,7 +24,7 @@
 template< class T > bool ReadFile( const char* input_file, T& u )
 {
    int strln = strlen( input_file );
-   mString uncompressed_file_name( input_file );
+   tnlString uncompressed_file_name( input_file );
    if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
       if( ! UnCompressFile( input_file, "gz" ) )
       {

@@ -18,16 +18,16 @@
 #ifndef mConfigDescriptionH
 #define mConfigDescriptionH
 
-#include "mString.h"
+#include "tnlString.h"
 #include "mList.h"
 
 class mParameterContainer;
 
 struct mConfigGroup
 {
-   mString name;
+   tnlString name;
 
-   mString comment;
+   tnlString comment;
 
    mConfigGroup( const char* _name, 
                  const char* _comment )
@@ -37,13 +37,13 @@ struct mConfigGroup
 
 struct mConfigEntryType
 {
-   mString basic_type;
+   tnlString basic_type;
 
    bool list_entry;
 
    mConfigEntryType(){};
    
-   mConfigEntryType( const mString& _basic_type,
+   mConfigEntryType( const tnlString& _basic_type,
                      const bool _list_entry )
    : basic_type( _basic_type ),
      list_entry( _list_entry ){}
@@ -57,13 +57,13 @@ struct mConfigEntryType
 
 struct mConfigEntryBase
 {
-   mString name;
+   tnlString name;
 
    mConfigEntryType type;
 
-   mString group;
+   tnlString group;
 
-   mString comment;
+   tnlString comment;
 
    bool required;
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mString.h  -  description
+                          tnlString.h  -  description
                              -------------------
     begin                : 2004/04/10 16:35
     copyright            : (C) 2004 by Tomas Oberhuber
@@ -26,7 +26,7 @@ using namespace :: std;
 
 
 //! Class for managing strings
-class mString
+class tnlString
 {
    //! Pointer to char ended with zero
    char* string;
@@ -37,21 +37,21 @@ class mString
    public:
 
    //! Basic constructor
-   mString();
+   tnlString();
 
    //! Constructor with char pointer
    /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
        @param sufix_cut_off says the same about sufix.
     */
-   mString( const char* c,
+   tnlString( const char* c,
             int prefix_cut_off = 0,
             int sufix_cut_off = 0 );
 
    //! Copy constructor
-   mString( const mString& str );
+   tnlString( const tnlString& str );
 
    //! Destructor
-   ~mString();
+   ~tnlString();
 
    //! Set string from given char pointer
    /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
@@ -62,22 +62,22 @@ class mString
                    int sufix_cut_off = 0 );
 
    //! Operator =
-   mString& operator = ( const mString& str );
+   tnlString& operator = ( const tnlString& str );
 
    //! Operator +=
-   mString& operator += ( const char* str );
+   tnlString& operator += ( const char* str );
 
    //! Operator +=
-   mString& operator += ( const mString& str );
+   tnlString& operator += ( const tnlString& str );
  
    //! Operator +
-   mString operator + ( const mString& str );
+   tnlString operator + ( const tnlString& str );
 
    //! Comparison operator 
-   bool operator == ( const mString& str ) const;
+   bool operator == ( const tnlString& str ) const;
 
    //! Comparison operator 
-   bool operator != ( const mString& str ) const;
+   bool operator != ( const tnlString& str ) const;
 
    //! Comparison operator
    bool operator == ( const char* ) const;
@@ -103,11 +103,11 @@ class mString
    //! Broadcast to other nodes in MPI cluster
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-   friend ostream& operator << ( ostream& stream, const mString& str );
+   friend ostream& operator << ( ostream& stream, const tnlString& str );
 };
 
-inline mString GetParameterType( const mString& ) { return mString( "mString" ); };
+inline tnlString GetParameterType( const tnlString& ) { return tnlString( "mString" ); };
 
-ostream& operator << ( ostream& stream, const mString& str );
+ostream& operator << ( ostream& stream, const tnlString& str );
 
 #endif

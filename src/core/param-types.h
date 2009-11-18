@@ -19,12 +19,12 @@
 #define param_typesH
 
 #include "mList.h"
-#include "mString.h"
+#include "tnlString.h"
 
-inline mString GetParameterType( bool ) { return mString( "bool" ); };
-inline mString GetParameterType( int ) { return mString( "int" ); };
-inline mString GetParameterType( char ) { return mString( "char" ); };
-inline mString GetParameterType( const float& ) { return mString( "float" ); };
-inline mString GetParameterType( const double& ) { return mString( "double" ); };
+inline tnlString GetParameterType( bool ) { return tnlString( "bool" ); };
+inline tnlString GetParameterType( int ) { return tnlString( "int" ); };
+inline tnlString GetParameterType( char ) { return tnlString( "char" ); };
+inline tnlString GetParameterType( const float& ) { return tnlString( "float" ); };
+inline tnlString GetParameterType( const double& ) { return tnlString( "double" ); };
 
 #endif

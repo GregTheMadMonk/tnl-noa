@@ -153,7 +153,7 @@ template< class T > bool Read( mGrid3D< T >& u,
                                const char* input_file )
 {
    int strln = strlen( input_file );
-   mString uncompressed_file_name( input_file );
+   tnlString uncompressed_file_name( input_file );
    if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
       if( ! UnCompressFile( input_file, "gz" ) )
       {

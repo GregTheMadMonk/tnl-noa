@@ -46,12 +46,12 @@ template< class GRID, class SCHEME, typename T = double > class mNonlinearRungeK
       k_tmp -> Zeros();
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
       GRID grid;
-      return mString( "mNonLinearRungeKuttaSolver< " ) + grid. GetType() + 
-             mString( ", " ) + GetParameterType( t ) + mString( " >" );
+      return tnlString( "mNonLinearRungeKuttaSolver< " ) + grid. GetType() + 
+             tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
    void SetAdaptivity( const double& a )

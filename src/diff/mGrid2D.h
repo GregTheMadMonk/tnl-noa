@@ -57,10 +57,10 @@ template< class T = double > class mGrid2D :
    {
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mGrid2D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mGrid2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,

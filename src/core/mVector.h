@@ -2,7 +2,7 @@
                           mVector.h  -  description
                              -------------------
     begin                : 2006/03/04
-    copyright            : (C) 2006 by Tomá¹ Oberhuber
+    copyright            : (C) 2006 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -182,12 +182,12 @@ template< int SIZE, typename T > ostream& operator << ( ostream& str, mVector< S
    return str;
 };
 
-template< int SIZE, typename T > mString GetParameterType( const mVector< SIZE, T >& )
+template< int SIZE, typename T > tnlString GetParameterType( const mVector< SIZE, T >& )
 { 
    T t;
    stringstream str;
    str << "mVector< " << SIZE << ", " << GetParameterType( t ) << " >";
-   return mString( str. str(). data() ); 
+   return tnlString( str. str(). data() ); 
 };
 
 #endif

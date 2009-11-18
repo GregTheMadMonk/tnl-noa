@@ -18,7 +18,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "mfilename.h"
-#include "mString.h" 
+#include "tnlString.h"
 #include "mfuncs.h" 
 
 //--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
-                               mString& file_name )
+                               tnlString& file_name )
 {
    file_name. SetString( base_name );
    char snumber[ 1024 ], zeros[ 1024 ];;
@@ -43,7 +43,7 @@ void FileNameBaseNumberEnding( const char* base_name,
    file_name += ending;
 }
 //--------------------------------------------------------------------------
-void RemoveFileExtension( mString& file_name )
+void RemoveFileExtension( tnlString& file_name )
 {
    int size = file_name. Length();
    int i = 1;

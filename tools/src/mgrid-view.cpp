@@ -25,11 +25,11 @@
 #include <diff/drawGrid2D.h>
 #include <diff/drawGrid3D.h>
 
-bool ProcessmGrid2D( const mString& file_name, 
+bool ProcessmGrid2D( const tnlString& file_name, 
                      const mParameterContainer& parameters,
                      int file_index,
-                     const mString& output_file_name,
-                     const mString& output_file_format )
+                     const tnlString& output_file_name,
+                     const tnlString& output_file_format )
 {
    mGrid2D< double > u;
    fstream file;
@@ -102,11 +102,11 @@ bool ProcessmGrid2D( const mString& file_name,
    cout << " OK " << endl;
 }
 //--------------------------------------------------------------------------
-bool ProcessmGrid3D( const mString& file_name,
+bool ProcessmGrid3D( const tnlString& file_name,
                      const mParameterContainer& parameters,
                      int file_index,
-                     const mString& output_file_name,
-                     const mString& output_file_format )
+                     const tnlString& output_file_name,
+                     const tnlString& output_file_format )
 {
    mGrid3D< double > u;
    fstream file;
@@ -180,12 +180,12 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   mList< mString > input_files = parameters. GetParameter< mList< mString > >( "input-files" );
+   mList< tnlString > input_files = parameters. GetParameter< mList< tnlString > >( "input-files" );
 
    long int size = input_files. Size();
-   mString output_file_name;
-   mList< mString > output_files;
-   if( ! parameters. GetParameter< mList< mString > >( "output-files", output_files ) )
+   tnlString output_file_name;
+   mList< tnlString > output_files;
+   if( ! parameters. GetParameter< mList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
    long int i;
    for( i = 0; i < size; i ++ )
@@ -194,7 +194,7 @@ int main( int argc, char* argv[] )
       cout << "Processing file " << input_file << " ... " << flush;
 
       int strln = strlen( input_file );
-      mString uncompressed_file_name( input_file );
+      tnlString uncompressed_file_name( input_file );
       if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
          if( ! UnCompressFile( input_file, "gz" ) )
          {
@@ -211,14 +211,14 @@ int main( int argc, char* argv[] )
          else uncompressed_file_name. SetString( input_file, 0, 4 );
 
        
-       mString object_type;
+       tnlString object_type;
        if( ! GetObjectType( uncompressed_file_name. Data(), object_type ) )
           cerr << "unknown object ... SKIPPING!" << endl;
        else
        {
          cout << object_type << " detected ... ";
 
-         mString output_file_format = parameters. GetParameter< mString >( "output-file-format" );
+         tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
          if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];
          else
          {

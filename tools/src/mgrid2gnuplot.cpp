@@ -34,9 +34,9 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   mList< mString > input_files = parameters. GetParameter< mList< mString > >( "input-files" );
-   mList< mString > output_files;
-   if( ! parameters. GetParameter< mList< mString > >( "output-files", output_files ) )
+   mList< tnlString > input_files = parameters. GetParameter< mList< tnlString > >( "input-files" );
+   mList< tnlString > output_files;
+   if( ! parameters. GetParameter< mList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
    mList< double > level_lines;
    if( ! parameters. GetParameter< mList< double > >( "level-lines", level_lines ) )
@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
    parameters. GetParameter< int >( "output-x-size", output_x_size );
    parameters. GetParameter< int >( "output-y-size", output_y_size );
    double scale = parameters. GetParameter< double >( "scale" );
-   mString output_file_format = parameters. GetParameter< mString >( "output-file-format" );
+   tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
 
    long int size = input_files. Size();
    /*if( size != output_files. Size() )
@@ -60,7 +60,7 @@ int main( int argc, char* argv[] )
       const char* input_file = input_files[ i ]. Data();
       cout << "Processing file " << input_file << " ... " << flush;
       int strln = strlen( input_file );
-      mString uncompressed_file_name( input_file );
+      tnlString uncompressed_file_name( input_file );
       if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
          if( ! UnCompressFile( input_file, "gz" ) )
          {
@@ -129,7 +129,7 @@ int main( int argc, char* argv[] )
             }
       }
 
-      mString output_file_name;
+      tnlString output_file_name;
       if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];
       else
       {

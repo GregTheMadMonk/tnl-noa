@@ -62,10 +62,10 @@ template< typename T = double > class mGrid3D : public mField3D< T >
    {
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mGrid3D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mGrid3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,

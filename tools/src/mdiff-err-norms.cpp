@@ -101,7 +101,7 @@ void WriteLogGraphLine( ostream& stream,
 }
 //--------------------------------------------------------------------------
 bool TryUncompressFile( const char* file_name, 
-                        mString& uncompressed_file_name )
+                        tnlString& uncompressed_file_name )
 {
    int strln = strlen( file_name );
    uncompressed_file_name. SetString( file_name );
@@ -123,7 +123,7 @@ bool TryUncompressFile( const char* file_name,
 }
 //--------------------------------------------------------------------------
 bool TryCompressFile( const char* file_name, 
-                      const mString& uncompressed_file_name )
+                      const tnlString& uncompressed_file_name )
 {
    int strln = strlen( file_name );
    if( strcmp( file_name + strln - 3, ".gz" ) == 0 &&
@@ -163,9 +163,9 @@ int main( int argc, char* argv[] )
    cout << "*                                                                      *" << endl;
    cout << "************************************************************************" << endl;
 
-   mString test = parameters. GetParameter< mString >( "test" );
-   mList< mString > first_files = parameters. GetParameter< mList< mString > >( "first-set" );
-   mList< mString > second_files;
+   tnlString test = parameters. GetParameter< tnlString >( "test" );
+   mList< tnlString > first_files = parameters. GetParameter< mList< tnlString > >( "first-set" );
+   mList< tnlString > second_files;
    if( test == "function" )
    {
       if( ! parameters. CheckParameter( "second-set" ) )
@@ -173,7 +173,7 @@ int main( int argc, char* argv[] )
          cerr << "Missing parameter second-set." << endl;
          return 1;
       }
-      second_files = parameters. GetParameter< mList< mString > >( "second-set" );
+      second_files = parameters. GetParameter< mList< tnlString > >( "second-set" );
    }
    long int size = first_files. Size();
    cout << "Processing " << size << " files. " << endl;
@@ -187,9 +187,9 @@ int main( int argc, char* argv[] )
    double space_step = parameters. GetParameter< double >( "space-step" );
    double tau( 0.0 );
    parameters. GetParameter< double >( "tau", tau );
-   mString output_file_name;
+   tnlString output_file_name;
    fstream output_file;
-   if( parameters. GetParameter< mString >( "output-file", output_file_name ) )
+   if( parameters. GetParameter< tnlString >( "output-file", output_file_name ) )
    {
       // Open the output file
       output_file. open( output_file_name. Data(), ios :: out );
@@ -234,7 +234,7 @@ int main( int argc, char* argv[] )
          return 1;
       }
       const char* second_file = second_files[ 0 ]. Data();
-      mString first_file_uncompressed, first_object_type,
+      tnlString first_file_uncompressed, first_object_type,
               second_file_uncompressed, second_object_type;
       for( i = 0; i < size; i ++ )
       {
@@ -246,7 +246,7 @@ int main( int argc, char* argv[] )
             cerr << "SKIPPING ... " << endl;
             continue;
          }
-         mString first_object_type;
+         tnlString first_object_type;
          if( ! GetObjectType( first_file_uncompressed. Data(), first_object_type ) )
          {
             cerr << "unknown object ... SKIPPING!" << endl;
@@ -418,7 +418,7 @@ int main( int argc, char* argv[] )
          }
          if( write_exact_curve )
          {
-            mString file_name = mString( first_file ) + mString( ".exact.crv.gplt" );
+            tnlString file_name = tnlString( first_file ) + tnlString( ".exact.crv.gplt" );
             cout << "Writing file " << file_name << endl;
             fstream file;
             file. open( file_name. Data(), ios :: out );
@@ -452,7 +452,7 @@ int main( int argc, char* argv[] )
          }
          if( write_difference )
          {
-            mString file_name( first_file );
+            tnlString file_name( first_file );
             int strln = strlen( first_file );
             if( strcmp( file_name. Data() + strln - 3, ".gz" ) == 0 )
                file_name. SetString( first_file, 0, 3 );
@@ -460,7 +460,7 @@ int main( int argc, char* argv[] )
                if( strcmp( file_name. Data() + strln - 4, ".bz2" ) == 0 )
                   file_name. SetString( first_file, 0, 4 );
             file_name += ".diff";   
-            mString file_format;
+            tnlString file_format;
             if( strcmp( first_file + strln - 3, ".gz" ) == 0 )
                file_format. SetString( "bin-gz" );
             else

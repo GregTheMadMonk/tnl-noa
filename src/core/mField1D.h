@@ -40,10 +40,10 @@ template< class T > class mField1D : public mLongVector< T >
      x_size( f. x_size )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mField1D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mField1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const

@@ -42,10 +42,10 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
       M = new mCSRMatrix< T >( size, initial_size, segment_size, init_row_elements );
    }
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mILUPreconditioner< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mILUPreconditioner< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
 

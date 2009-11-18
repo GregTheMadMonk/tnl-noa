@@ -17,7 +17,7 @@
 
 #include <iostream.h>
 #include <stdlib.h>
-#include <mString.h>
+#include <tnlString.h>
 #include "compress-file.h"
 
 
@@ -25,7 +25,7 @@
 bool CompressFile( const char* file_name, const char* format )
 {
    //cout << "Compressing file " << file_name << endl;
-   mString command;
+   tnlString command;
    if( strcmp( format, "gz" ) == 0 )
       command. SetString( "gzip " );
    if( strcmp( format, "bz2" ) == 0 )
@@ -42,7 +42,7 @@ bool CompressFile( const char* file_name, const char* format )
 //--------------------------------------------------------------------------
 bool UnCompressFile( const char* file_name, const char* format )
 {
-   mString command;
+   tnlString command;
    if( strcmp( format, "gz" ) == 0 )
       command. SetString( "gunzip " );
    if( strcmp( format, "bz2" ) == 0 )

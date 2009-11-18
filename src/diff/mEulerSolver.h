@@ -36,12 +36,12 @@ template< class GRID, class SCHEME, typename T = double > class mEulerSolver : p
       k1 -> Zeros();
    };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
       GRID grid;
-      return mString( "mEulerSolver< " ) + grid. GetType() + 
-             mString( ", " ) + GetParameterType( t ) + mString( " >" );
+      return tnlString( "mEulerSolver< " ) + grid. GetType() + 
+             tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
    bool Solve( SCHEME& scheme,

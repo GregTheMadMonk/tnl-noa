@@ -70,10 +70,10 @@ template< class T > class mCurve : public tnlObject, public mList< mCurveElement
    ~mCurve()
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mCurve< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mCurve< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    //! Append new point
@@ -183,7 +183,7 @@ template< class T > bool Read( mCurve< T >& crv,
                                const char* input_file )
 {
    int strln = strlen( input_file );
-   mString uncompressed_file_name( input_file );
+   tnlString uncompressed_file_name( input_file );
    if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
       if( ! UnCompressFile( input_file, "gz" ) )
       {

@@ -42,10 +42,10 @@ template< class T > class mField3D : public mLongVector< T >
      x_size( f. x_size ), y_size( f. y_size ), z_size( f.z_size )
    { };
 
-   mString GetType() const
+   tnlString GetType() const
    {
       T t;
-      return mString( "mField3D< " ) + mString( GetParameterType( t ) ) + mString( " >" );
+      return tnlString( "mField3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const

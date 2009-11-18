@@ -2,7 +2,7 @@
                           mpi-supp.h  -  description
                              -------------------
     begin                : 2005/04/23
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
+    copyright            : (C) 2005 by Tomï¿½ Oberhuber
     email                : oberhuber@seznam.cz
  ***************************************************************************/
 
@@ -33,7 +33,7 @@ using namespace std;
    #define MPI_SUM 0
 #endif
 
-class mString;
+class tnlString;
 
 #ifdef HAVE_MPI
 inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
@@ -105,7 +105,7 @@ template< class T > void MPIBcast( T& data,
    MPI_Bcast( &data, count, MPIDataType( data ), root, comm );
 };
 
-inline void MPIBcast( mString& data, int cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
+inline void MPIBcast( tnlString& data, int cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
 {
    cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << endl;
    abort();    
