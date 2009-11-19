@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mTimerCPU.h  -  description
+                          tnlTimerCPU.cpp  -  description
                              -------------------
     begin                : 2007/06/23
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,26 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mTimerCPUH
-#define mTimerCPUH
-
-#include "mpi-supp.h"
-
-class mTimerCPU
-{
-   public:
-
-   mTimerCPU();
-
-   void Reset();
-   
-   int GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD ) const;
-      
-   protected:
-
-   int initial_time;   
-};
-
-extern mTimerCPU default_mcore_cpu_timer;
-
+#include "config.h"
+#ifdef HAVE_SYS_RESOURCE_H
+   #include <sys/resource.h>
 #endif
+#include "tnlTimerCPU.h"
+
+tnlTimerCPU default_mcore_cpu_timer;
+
+tnlTimerCPU :: tnlTimerCPU()
+{
+   Reset();
+}
+//--------------------------------------------------------------------------
+void tnlTimerCPU :: Reset()
+{
+#ifdef HAVE_SYS_RESOURCE_H
+   rusage init_usage;
+   getrusage(  RUSAGE_SELF, &init_usage );
+   initial_time = init_usage. ru_utime. tv_sec;
+#else
+   initial_time = 0;
+#endif
+}
+//--------------------------------------------------------------------------  
+int tnlTimerCPU :: GetTime( int root, MPI_Comm comm ) const
+{
+#ifdef HAVE_SYS_RESOURCE_H
+   rusage cur_usage;
+   getrusage( RUSAGE_SELF, &cur_usage );
+   int time = cur_usage. ru_utime. tv_sec - initial_time;
+   int total_time;
+   MPIReduce( time, total_time, 1, MPI_SUM, root, comm ); 
+   return total_time;
+#else
+   return -1;
+#endif
+}

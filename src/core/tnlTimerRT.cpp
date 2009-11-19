@@ -1,7 +1,7 @@
 /***************************************************************************
-                          mTimerCPU.cpp  -  description
+                          tnlTimerRT.cpp  -  description
                              -------------------
-    begin                : 2007/06/23
+    begin                : 2007/06/26
     copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,40 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "tnlTimerRT.h"
 #include "config.h"
-#ifdef HAVE_SYS_RESOURCE_H
-   #include <sys/resource.h>
+#ifdef HAVE_STDDEF_H
+   #ifdef HAVE_SYS_TIME_H 
+      #include <stddef.h>
+      #include <sys/time.h>
+      #define HAVE_TIME
+   #endif
 #endif
-#include "mTimerCPU.h"
 
-mTimerCPU default_mcore_cpu_timer;
-
-mTimerCPU :: mTimerCPU()
+tnlTimerRT default_mcore_rt_timer;
+//--------------------------------------------------------------------------
+tnlTimerRT :: tnlTimerRT()
 {
    Reset();
 }
 //--------------------------------------------------------------------------
-void mTimerCPU :: Reset()
+void tnlTimerRT :: Reset()
 {
-#ifdef HAVE_SYS_RESOURCE_H
-   rusage init_usage;
-   getrusage(  RUSAGE_SELF, &init_usage );
-   initial_time = init_usage. ru_utime. tv_sec;
-#else
-   initial_time = 0;
+#ifdef HAVE_TIME
+   struct timeval tp;
+   int rtn = gettimeofday( &tp, NULL );
+   initial_time = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;   
+   return;
 #endif
+   initial_time = 0.0;
 }
-//--------------------------------------------------------------------------  
-int mTimerCPU :: GetTime( int root, MPI_Comm comm ) const
+//--------------------------------------------------------------------------
+double tnlTimerRT :: GetTime() const
 {
-#ifdef HAVE_SYS_RESOURCE_H
-   rusage cur_usage;
-   getrusage( RUSAGE_SELF, &cur_usage );
-   int time = cur_usage. ru_utime. tv_sec - initial_time;
-   int total_time;
-   MPIReduce( time, total_time, 1, MPI_SUM, root, comm ); 
-   return total_time;
-#else
-   return -1;
+#ifdef HAVE_TIME
+   struct timeval tp;
+   int rtn = gettimeofday( &tp, NULL );
+   return ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec - initial_time;   
 #endif
+ return -1;
 }

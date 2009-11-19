@@ -28,8 +28,8 @@ headers =  \
 		  tnlConfigDescriptionParser.ih \
 		  tnlConfigDescriptionScanner.h \
 		  tnlParameterContainer.h \
-		  mTimerCPU.h \
-		  mTimerRT.h \
+		  tnlTimerCPU.h \
+		  tnlTimerRT.h \
 		  mVector.h \
 		  compress-file.h \
 		  mfilename.h \
@@ -44,8 +44,8 @@ sources = tnlConfigDescription.cpp \
 	  tnlConfigDescriptionScanner.cpp \
 	  tnlConfigDescriptionParser.cpp \
 	  tnlParameterContainer.cpp \
-	  mTimerCPU.cpp \
-	  mTimerRT.cpp \
+	  tnlTimerCPU.cpp \
+	  tnlTimerRT.cpp \
 	  compress-file.cpp \
 	  mfilename.cpp \
 	  mpi-supp.cpp \

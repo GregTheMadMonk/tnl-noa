@@ -1,7 +1,7 @@
 /***************************************************************************
-                          mTimerRT.h  -  description
+                          tnlTimerCPU.h  -  description
                              -------------------
-    begin                : 2007/06/26
+    begin                : 2007/06/23
     copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,25 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mTimerRTH
-#define mTimerRTH
+#ifndef tnlTimerCPUH
+#define tnlTimerCPUH
 
 #include "mpi-supp.h"
 
-class mTimerRT
+class tnlTimerCPU
 {
    public:
 
-   mTimerRT();
+   tnlTimerCPU();
 
    void Reset();
-
-   double GetTime() const;
-
+   
+   int GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD ) const;
+      
    protected:
 
-   double initial_time;
+   int initial_time;   
 };
 
-extern mTimerRT default_mcore_rt_timer;
+extern tnlTimerCPU default_mcore_cpu_timer;
+
 #endif

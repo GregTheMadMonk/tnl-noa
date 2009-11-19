@@ -19,8 +19,8 @@
 #define mExplicitSolverH
 
 #include <iomanip>
-#include <core/mTimerCPU.h>
-#include <core/mTimerRT.h>
+#include <core/tnlTimerCPU.h>
+#include <core/tnlTimerRT.h>
 
 template< class GRID, class SCHEME, typename T = double > class mExplicitSolver : public tnlObject
 {
@@ -81,12 +81,12 @@ template< class GRID, class SCHEME, typename T = double > class mExplicitSolver 
       verbosity = v;
    };
 
-   void SetTimerCPU( const mTimerCPU* timer )
+   void SetTimerCPU( const tnlTimerCPU* timer )
    {
       cpu_timer = timer;
    };
 
-   void SetTimerRT( const mTimerRT* timer )
+   void SetTimerRT( const tnlTimerRT* timer )
    {
       rt_timer = timer;
    };
@@ -134,9 +134,9 @@ template< class GRID, class SCHEME, typename T = double > class mExplicitSolver 
 
    int verbosity;
 
-   const mTimerCPU* cpu_timer;
+   const tnlTimerCPU* cpu_timer;
    
-   const mTimerRT* rt_timer;
+   const tnlTimerRT* rt_timer;
 };
 
 #endif

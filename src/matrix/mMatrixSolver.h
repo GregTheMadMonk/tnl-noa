@@ -18,8 +18,8 @@
 #ifndef mMatrixSolverH
 #define mMatrixSolverH
 
-#include <core/mTimerCPU.h>
-#include <core/mTimerRT.h>
+#include <core/tnlTimerCPU.h>
+#include <core/tnlTimerRT.h>
 #include <core/mpi-supp.h>
 #include <matrix/mBaseMatrix.h>
 #include <matrix/mPreconditioner.h>
@@ -53,12 +53,12 @@ template< typename T > class mMatrixSolver
       verbosity = verbose;
    };
 
-   void SetTimerCPU( const mTimerCPU* timer )
+   void SetTimerCPU( const tnlTimerCPU* timer )
    {
       cpu_timer = timer;
    };
 
-   void SetTimerRT( const mTimerRT* timer )
+   void SetTimerRT( const tnlTimerRT* timer )
    {
       rt_timer = timer;
    };
@@ -101,9 +101,9 @@ template< typename T > class mMatrixSolver
    
    int verbosity;
 
-   const mTimerCPU* cpu_timer;
+   const tnlTimerCPU* cpu_timer;
    
-   const mTimerRT* rt_timer;
+   const tnlTimerRT* rt_timer;
 
 };
 
