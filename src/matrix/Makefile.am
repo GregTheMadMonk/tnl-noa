@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 headers = \
+      mMatrix.h \
 	  mCSRMatrix.h \
 	  mFullMatrix.h \
 	  mBaseMatrix.h \
@@ -29,7 +30,7 @@ if BUILD_DBG
    noinst_LTLIBRARIES += libtnlmatrix-dbg-0.1.la
    libtnlmatrix_dbg_0_1_la_SOURCES = $(sources) $(headers)
    libtnlmatrix_dbg_0_1_la_CXXFLAGS =  $(CXXFLAGS) $(DBGCXXFLAGS)
-   libtnlmatrix_dbg_0_1_la_LDFLAGS = $(LDFLAGS)    $(DBGLDFLAGS)
+   libtnlmatrix_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
 endif
 
 if BUILD_MPI

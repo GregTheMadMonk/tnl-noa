@@ -20,7 +20,7 @@
 
 #include <ostream>
 #include <iomanip.h>
-#include <core/mObject.h>
+#include <core/tnlObject.h>
 
 template< typename T > class mMatrix : public tnlObject
 {
