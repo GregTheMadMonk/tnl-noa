@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mParameterContainer.h  -  description
+                          tnlParameterContainer.h  -  description
                              -------------------
     begin                : 2007/06/15
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,40 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mParameterContainerH
-#define mParameterContainerH
+#ifndef tnlParameterContainerH
+#define tnlParameterContainerH
 
 #include "tnlList.h"
 #include "tnlConfigDescription.h"
 #include "mpi-supp.h"
 #include "param-types.h"
 
-struct mParameterBase
+struct tnlParameterBase
 {
-   mParameterBase( const char* _name, const char* _type )
+   tnlParameterBase( const char* _name, const char* _type )
    : name( _name ), type( _type ){};
  
    tnlString name, type;
 
 };
 
-template< class T > struct mParameter : public mParameterBase
+template< class T > struct tnlParameter : public tnlParameterBase
 {
-   mParameter( const char* _name,
+   tnlParameter( const char* _name,
                const char* _type,
                const T& val )
-   : mParameterBase( _name, _type ), value( val ){};
+   : tnlParameterBase( _name, _type ), value( val ){};
 
    T value;
 };
 
 //template< class T > const char* GetParameterType( const T& val );
 
-class mParameterContainer
+class tnlParameterContainer
 {
    public:
 
-   mParameterContainer();
+   tnlParameterContainer();
 
    template< class T > bool AddParameter( const char* name,
                                           const T& value );
@@ -71,7 +71,7 @@ class mParameterContainer
       for( i = 0; i < size; i ++ )
          if( parameters[ i ] -> name == name )
          {
-            value = ( ( mParameter< T >* ) parameters[ i ] ) -> value;
+            value = ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
             return true;
          }
       if( verbose )
@@ -85,7 +85,7 @@ class mParameterContainer
       const int size = parameters. Size();
       for( i = 0; i < size; i ++ )
          if( parameters[ i ] -> name == name )
-            return ( ( mParameter< T >* ) parameters[ i ] ) -> value;
+            return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
       cerr << "Unknown parameter " << name << endl;
       abort();
    };
@@ -96,7 +96,7 @@ class mParameterContainer
       const int size = parameters. Size();
       for( i = 0; i < size; i ++ )
          if( parameters[ i ] -> name == name )
-            return ( ( mParameter< T >* ) parameters[ i ] ) -> value;
+            return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
       cerr << "Unknown parameter " << name << endl;
       abort();
    };
@@ -104,26 +104,26 @@ class mParameterContainer
    //! Broadcast to other nodes in MPI cluster
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-   ~mParameterContainer();
+   ~tnlParameterContainer();
 
    protected:
 
-   tnlList< mParameterBase* > parameters;
+   tnlList< tnlParameterBase* > parameters;
 
 };
 
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       mParameterContainer& parameters );
+                       tnlParameterContainer& parameters );
 
-template< class T > bool mParameterContainer :: AddParameter( const char* name,
+template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
                                                               const T& value )
 {
-   return parameters. Append( new mParameter< T >( name, GetParameterType( value ). Data(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, GetParameterType( value ). Data(), value ) );
 };
 
-template< class T > bool mParameterContainer :: SetParameter( const char* name,
-                                                              const T& value )
+template< class T > bool tnlParameterContainer :: SetParameter( const char* name,
+                                                                const T& value )
 {
    long int i;
    for( i = 0; i < parameters. Size(); i ++ )
@@ -132,7 +132,7 @@ template< class T > bool mParameterContainer :: SetParameter( const char* name,
       {
          if( GetParameterType( parameters[ i ] ) == GetParameterType( value ) ) 
          {
-            ( ( mParameter< T > * ) parameters[ i ] ) -> value = value;
+            ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
          }
          else

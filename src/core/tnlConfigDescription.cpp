@@ -19,7 +19,7 @@
 #include <iomanip>
 #include "tnlConfigDescriptionParser.h"
 #include "tnlConfigDescription.h"
-#include "mParameterContainer.h"
+#include "tnlParameterContainer.h"
 #include "mfuncs.h"
 
 //--------------------------------------------------------------------------
@@ -124,7 +124,7 @@ bool tnlConfigDescription :: ParseConfigDescription( const char* file_name )
    return true;
 }
 //--------------------------------------------------------------------------
-void tnlConfigDescription :: AddMissingEntries( mParameterContainer& parameter_container ) const
+void tnlConfigDescription :: AddMissingEntries( tnlParameterContainer& parameter_container ) const
 {
    int i;
    const int size = entries. Size();
@@ -166,7 +166,7 @@ void tnlConfigDescription :: AddMissingEntries( mParameterContainer& parameter_c
    }
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription :: CheckMissingEntries( mParameterContainer& parameter_container ) const
+bool tnlConfigDescription :: CheckMissingEntries( tnlParameterContainer& parameter_container ) const
 {
    int i;
    const int size = entries. Size();

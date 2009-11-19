@@ -20,13 +20,13 @@
 #include <core/compress-file.h>
 #include <core/tnlCurve.h>
 #include <core/tnlConfigDescription.h>
-#include <core/mParameterContainer.h>
+#include <core/tnlParameterContainer.h>
 #include <diff/curve-ident.h>
 #include <diff/drawGrid2D.h>
 #include <diff/drawGrid3D.h>
 
 bool ProcessmGrid2D( const tnlString& file_name, 
-                     const mParameterContainer& parameters,
+                     const tnlParameterContainer& parameters,
                      int file_index,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
@@ -103,7 +103,7 @@ bool ProcessmGrid2D( const tnlString& file_name,
 }
 //--------------------------------------------------------------------------
 bool ProcessmGrid3D( const tnlString& file_name,
-                     const mParameterContainer& parameters,
+                     const tnlParameterContainer& parameters,
                      int file_index,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
@@ -170,7 +170,7 @@ bool ProcessmGrid3D( const tnlString& file_name,
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-   mParameterContainer parameters;
+   tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
    if( conf_desc. ParseConfigDescription( MGRID_VIEW_CONFIG_DESCRIPTION_FILE ) != 0 )
       return 1;

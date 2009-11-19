@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mParameterContainer.cpp  -  description
+                          tnlParameterContainer.cpp  -  description
                              -------------------
     begin                : 2007/06/15
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -18,7 +18,7 @@
 #include <ctype.h>
 #include <cstring>
 #include <stdio.h>
-#include "mParameterContainer.h"
+#include "tnlParameterContainer.h"
 
 bool matob( const char* value, bool& ret_val )
 {
@@ -37,17 +37,17 @@ bool matob( const char* value, bool& ret_val )
    return false;
 }
 //--------------------------------------------------------------------------
-mParameterContainer :: mParameterContainer()
+tnlParameterContainer :: tnlParameterContainer()
 {
 }
 //--------------------------------------------------------------------------
-bool mParameterContainer :: AddParameter( const char* name,
+bool tnlParameterContainer :: AddParameter( const char* name,
                                           const char* value )
 {
-   return parameters. Append( new mParameter< tnlString >( name, GetParameterType( tnlString() ). Data(), tnlString( value ) ) );
+   return parameters. Append( new tnlParameter< tnlString >( name, GetParameterType( tnlString() ). Data(), tnlString( value ) ) );
 }
 //--------------------------------------------------------------------------
-bool mParameterContainer :: SetParameter( const char* name,
+bool tnlParameterContainer :: SetParameter( const char* name,
                                           const char* value )
 {
    long int i;
@@ -57,7 +57,7 @@ bool mParameterContainer :: SetParameter( const char* name,
       {
          if( GetParameterType( parameters[ i ] ) == GetParameterType( tnlString() ) ) 
          {
-            ( ( mParameter< tnlString > * ) parameters[ i ] ) -> value. SetString( value );
+            ( ( tnlParameter< tnlString > * ) parameters[ i ] ) -> value. SetString( value );
             return true;
          }
          else
@@ -73,7 +73,7 @@ bool mParameterContainer :: SetParameter( const char* name,
    return AddParameter( name, value );
 };
 //--------------------------------------------------------------------------
-bool mParameterContainer :: CheckParameter( const char* name ) const
+bool tnlParameterContainer :: CheckParameter( const char* name ) const
 {
    int i;
    const int parameters_num = parameters. Size();
@@ -82,12 +82,12 @@ bool mParameterContainer :: CheckParameter( const char* name ) const
    return false;
 }
 //--------------------------------------------------------------------------
-mParameterContainer :: ~mParameterContainer()
+tnlParameterContainer :: ~tnlParameterContainer()
 {
    parameters. DeepEraseAll();
 }
 //--------------------------------------------------------------------------
-void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
+void tnlParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 {
 #ifdef HAVE_MPI
    int i;
@@ -97,24 +97,24 @@ void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
    {
       if( MPIGetRank() == root )
       {
-         mParameterBase* param = parameters[ i ];
+         tnlParameterBase* param = parameters[ i ];
          param -> type. MPIBcast( root, MPI_COMM_WORLD );
          param -> name. MPIBcast( root, MPI_COMM_WORLD );
          if( param -> type == "mString" )
          {
-            ( ( mParameter< tnlString >* ) param ) -> value. MPIBcast( root, mpi_comm );
+            ( ( tnlParameter< tnlString >* ) param ) -> value. MPIBcast( root, mpi_comm );
          }
          if( param -> type == "bool" )
          {
-            :: MPIBcast( ( ( mParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
+            :: MPIBcast( ( ( tnlParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
          }
          if( param -> type == "int" )
          {
-            :: MPIBcast( ( ( mParameter< int >* ) param ) -> value, 1, root, mpi_comm );
+            :: MPIBcast( ( ( tnlParameter< int >* ) param ) -> value, 1, root, mpi_comm );
          }
          if( param -> type == "double" )
          {
-            :: MPIBcast( ( ( mParameter< double >* ) param ) -> value, 1, root, mpi_comm );
+            :: MPIBcast( ( ( tnlParameter< double >* ) param ) -> value, 1, root, mpi_comm );
          }
       }
       else
@@ -158,7 +158,7 @@ void mParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 //--------------------------------------------------------------------------
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       mParameterContainer& parameters )
+                       tnlParameterContainer& parameters )
 {
    int i;
    bool parse_error( false );

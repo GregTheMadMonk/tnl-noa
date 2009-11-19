@@ -21,7 +21,7 @@
 #include "tnlString.h"
 #include "tnlList.h"
 
-class mParameterContainer;
+class tnlParameterContainer;
 
 struct tnlConfigGroup
 {
@@ -166,13 +166,13 @@ class tnlConfigDescription
       return NULL;
    };
 
-   //! If there is missing entry with defined default value in the mParameterContainer it is going to be added
-   void AddMissingEntries( mParameterContainer& parameter_container ) const;
+   //! If there is missing entry with defined default value in the tnlParameterContainer it is going to be added
+   void AddMissingEntries( tnlParameterContainer& parameter_container ) const;
 
    //! Check for all entries with the flag 'required'.
    /*! Returns false if any parameter is missing.
     */
-   bool CheckMissingEntries( mParameterContainer& parameter_container ) const;
+   bool CheckMissingEntries( tnlParameterContainer& parameter_container ) const;
 
    void PrintUsage( const char* program_name );
 

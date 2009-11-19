@@ -27,7 +27,7 @@ headers =  \
 		  tnlConfigDescriptionParserbase.h \
 		  tnlConfigDescriptionParser.ih \
 		  tnlConfigDescriptionScanner.h \
-		  mParameterContainer.h \
+		  tnlParameterContainer.h \
 		  mTimerCPU.h \
 		  mTimerRT.h \
 		  mVector.h \
@@ -43,7 +43,7 @@ sources = tnlConfigDescription.cpp \
 	  tnlString.cpp \
 	  tnlConfigDescriptionScanner.cpp \
 	  tnlConfigDescriptionParser.cpp \
-	  mParameterContainer.cpp \
+	  tnlParameterContainer.cpp \
 	  mTimerCPU.cpp \
 	  mTimerRT.cpp \
 	  compress-file.cpp \

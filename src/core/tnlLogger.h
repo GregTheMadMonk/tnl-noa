@@ -21,7 +21,7 @@
 #include <cstring>
 #include <ostream>
 #include <iomanip>
-#include <core/mParameterContainer.h>
+#include <core/tnlParameterContainer.h>
 
 class tnlLogger
 {
@@ -38,7 +38,7 @@ class tnlLogger
 
    template< typename T > void WriteParameter( const char* label,
                                                const char* parameter_name,
-                                               const mParameterContainer& parameters,
+                                               const tnlParameterContainer& parameters,
                                                int parameter_level = 0 )
    {
       stream << "| ";

@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "tnlcurve2gnuplot-def.h"
-#include <core/mParameterContainer.h>
+#include <core/tnlParameterContainer.h>
 #include <core/compress-file.h>
 #include <core/tnlCurve.h>
 #include <core/mVector.h>
@@ -25,7 +25,7 @@
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-   mParameterContainer parameters;
+   tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
    if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
       return 1;

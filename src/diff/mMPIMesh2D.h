@@ -19,7 +19,7 @@
 #define mMPIMesh2DH
 
 #include <diff/mGrid2D.h>
-#include <core/mParameterContainer.h>
+#include <core/tnlParameterContainer.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
 #include <core/mfilename.h>
@@ -48,7 +48,7 @@ template< class T > class mMPIMesh2D
    
    //! Initiation by parametr container
    bool Init( const mGrid2D< T >& u,
-              const mParameterContainer& parameters,
+              const tnlParameterContainer& parameters,
               int _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
@@ -417,7 +417,7 @@ template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
    };
    
 template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
-                                                  const mParameterContainer& parameters,
+                                                  const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
                                                   MPI_Comm comm )

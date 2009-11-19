@@ -46,7 +46,7 @@ template< class T > class mMPIMesh3D
               MPI_Comm comm = MPI_COMM_WORLD );
 
    bool Init( const mGrid3D< T >& u,
-              const mParameterContainer& parameters,
+              const tnlParameterContainer& parameters,
               int _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
@@ -532,7 +532,7 @@ template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
    };
 
 template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
-                                                  const mParameterContainer& parameters,
+                                                  const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
                                                   MPI_Comm comm )

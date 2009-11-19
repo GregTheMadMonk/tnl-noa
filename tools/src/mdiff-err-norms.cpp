@@ -25,7 +25,7 @@
 #include <diff/drawGrid1D.h>
 #include <diff/drawGrid2D.h>
 #include <core/tnlConfigDescription.h>
-#include <core/mParameterContainer.h>
+#include <core/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
 
 #include "../../mdiff-err-norms-def.h"
@@ -145,7 +145,7 @@ int main( int argc, char* argv[] )
 {
    dbgFunctionName( "", "main" );
    dbgInit( "mdiff-err-norms.dbg" );
-   mParameterContainer parameters;
+   tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
    dbgCout( "Parsing config description file ... " );
