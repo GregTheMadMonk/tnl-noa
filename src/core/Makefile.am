@@ -12,7 +12,7 @@ EXTRA_DIST = tnlConfigDescriptionParser.y \
 
 headers =  \
 		  tnlConfigDescription.h \
-		  mCurve.h \
+		  tnlCurve.h \
 		  mDataElement.h \
 		  mField1D.h \
 		  mField2D.h \

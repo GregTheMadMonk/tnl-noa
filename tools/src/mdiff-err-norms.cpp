@@ -26,7 +26,7 @@
 #include <diff/drawGrid2D.h>
 #include <core/tnlConfigDescription.h>
 #include <core/mParameterContainer.h>
-#include <core/mCurve.h>
+#include <core/tnlCurve.h>
 
 #include "../../mdiff-err-norms-def.h"
 #include "read-file.h"
@@ -395,7 +395,7 @@ int main( int argc, char* argv[] )
          //cout << setw( 85 ) << " ";
          const char* first_file = first_files[ i ]. Data();
          cout << "Processing file " << first_file << " ...          \r" << flush << endl;
-         mCurve< mVector< 2, double > > curve;
+         tnlCurve< mVector< 2, double > > curve;
          if( ! ReadFile( first_file, curve ) ) return 1;
          if( space_step ) h = space_step;
          else h = 1.0 / ( double ) curve. Size();

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mcurve2gnuplot.cpp  -  description
+                          tnlCurve2gnuplot.cpp  -  description
                              -------------------
     begin                : 2007/12/16
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mcurve2gnuplot-def.h"
+#include "tnlcurve2gnuplot-def.h"
 #include <core/mParameterContainer.h>
 #include <core/compress-file.h>
-#include <core/mCurve.h>
+#include <core/tnlCurve.h>
 #include <core/mVector.h>
 
 
@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    long int i;
-   mCurve< mVector< 2, double > > crv;
+   tnlCurve< mVector< 2, double > > crv;
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. Data();
@@ -99,7 +99,7 @@ int main( int argc, char* argv[] )
          return -1;
       }
 
-      mCurve< mVector< 2, double > > out_crv;
+      tnlCurve< mVector< 2, double > > out_crv;
       const long int size = crv. Size();
       long int i;
       for( i = 0; i < size; i += output_step )

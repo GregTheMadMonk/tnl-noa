@@ -18,7 +18,7 @@
 #include "mgrid-view-def.h"
 
 #include <core/compress-file.h>
-#include <core/mCurve.h>
+#include <core/tnlCurve.h>
 #include <core/tnlConfigDescription.h>
 #include <core/mParameterContainer.h>
 #include <diff/curve-ident.h>
@@ -79,7 +79,7 @@ bool ProcessmGrid2D( const tnlString& file_name,
    parameters. GetParameter< tnlList< double > >( "level-lines", level_lines );
    if( ! level_lines. IsEmpty() )
    {
-      mCurve< mVector< 2, double > > crv;
+      tnlCurve< mVector< 2, double > > crv;
       long int j;
       for( j = 0; j < level_lines. Size(); j ++ )
          if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )

@@ -144,7 +144,7 @@ int main( int argc, char* argv[] )
       cout << " writing ... " << output_file_name;
       if( ! level_lines. IsEmpty() )
       {
-         mCurve< mVector< 2, double > > crv;
+         tnlCurve< mVector< 2, double > > crv;
          long int j;
          for( j = 0; j < level_lines. Size(); j ++ )
             if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )

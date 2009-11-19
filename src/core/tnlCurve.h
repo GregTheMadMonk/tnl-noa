@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mCurve.h  -  description
+                          tnlCurve.h  -  description
                              -------------------
     begin                : 2007/06/27
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mCurveH
-#define mCurveH
+#ifndef tnlCurveH
+#define tnlCurveH
 
 #include <iomanip>
 #include <fstream>
@@ -28,12 +28,12 @@
 #include "param-types.h"
 
 //! Basic structure for curves
-template< class T > class mCurveElement
+template< class T > class tnlCurveElement
 {
    public:
-   mCurveElement() {};
+   tnlCurveElement() {};
 
-   mCurveElement( const T& pos, 
+   tnlCurveElement( const T& pos, 
                   bool _speparator = false )
       : position( pos ),
         separator( _speparator ) {};
@@ -59,40 +59,40 @@ template< class T > class mCurveElement
    bool separator;
 };
 
-template< class T > class mCurve : public tnlObject, public tnlList< mCurveElement< T > >
+template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveElement< T > >
 {
    public:
    //! Basic contructor
-   mCurve()
+   tnlCurve()
    { };
 
    //! Destructor
-   ~mCurve()
+   ~tnlCurve()
    { };
 
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mCurve< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlCurve< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    //! Append new point
    void Append( const T& vec, bool separator = false )
    {
-      tnlList< mCurveElement< T > > :: Append( mCurveElement< T >( vec, separator ) );
+      tnlList< tnlCurveElement< T > > :: Append( tnlCurveElement< T >( vec, separator ) );
    };
 
    //! Erase the curve
    void Erase()
    {
-      tnlList< mCurveElement< T > > :: EraseAll();
+      tnlList< tnlCurveElement< T > > :: EraseAll();
    };
    
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
       if( ! tnlObject :: Save( file ) ) return false;
-      if( ! tnlList< mCurveElement< T > > :: DeepSave( file ) ) return false;
+      if( ! tnlList< tnlCurveElement< T > > :: DeepSave( file ) ) return false;
       if( file. bad() ) return false;
       return true;
    };
@@ -101,13 +101,13 @@ template< class T > class mCurve : public tnlObject, public tnlList< mCurveEleme
    bool Load( istream& file )
    {
       if( ! tnlObject :: Load( file ) ) return false;
-      if( ! tnlList< mCurveElement< T > > :: DeepLoad( file ) ) return false;
+      if( ! tnlList< tnlCurveElement< T > > :: DeepLoad( file ) ) return false;
       if( file. bad() ) return false;
       return true;
    };   
 };
 
-template< class T > bool Write( const mCurve< T >& curve,
+template< class T > bool Write( const tnlCurve< T >& curve,
                                 ostream& str,
                                 const char* format,
                                 const long int step = 1 )
@@ -148,7 +148,7 @@ template< class T > bool Write( const mCurve< T >& curve,
    return false;
 };
 
-template< class T > bool Write( const mCurve< T >& curve,
+template< class T > bool Write( const tnlCurve< T >& curve,
                                 const char* file_name,
                                 const char* format,
                                 const long int step = 1 )
@@ -179,7 +179,7 @@ template< class T > bool Write( const mCurve< T >& curve,
    return true;
 };
 
-template< class T > bool Read( mCurve< T >& crv,
+template< class T > bool Read( tnlCurve< T >& crv,
                                const char* input_file )
 {
    int strln = strlen( input_file );
@@ -229,7 +229,7 @@ template< class T > bool Read( mCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class mCurve< mVector< 2, double > >;
+template class tnlCurve< mVector< 2, double > >;
 
 
 

@@ -18,7 +18,7 @@
 #ifndef curve_identH
 #define curve_identH
 
-#include <core/mCurve.h>
+#include <core/tnlCurve.h>
 #include <diff/mGrid2D.h>
 #include <debug/tnlDebug.h>
 
@@ -33,7 +33,7 @@ struct MeshIndex
 };
 
 template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
-                                           mCurve< mVector< 2, T > >& crv,
+                                           tnlCurve< mVector< 2, T > >& crv,
                                            const double level = 0.0 )
 {
    dbgFunctionName( "", "GetLevelSetCurve" );

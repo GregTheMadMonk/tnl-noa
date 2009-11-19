@@ -10,7 +10,7 @@ tnlerrnormssources = mdiff-err-norms.cpp \
 tnlgridviewsources = mgrid-view.cpp \
                      $(common)
                      
-tnlcurve2gnuplotsources = mcurve2gnuplot.cpp \
+tnlcurve2gnuplotsources = tnlcurve2gnuplot.cpp \
                           $(common) 
 
 bin_PROGRAMS = tnl-err-norms \
