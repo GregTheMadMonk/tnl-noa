@@ -16,7 +16,7 @@ headers =  \
 		  tnlDataElement.h \
 		  tnlField1D.h \
 		  tnlField2D.h \
-		  mField3D.h \
+		  tnlField3D.h \
 		  mFieldSystem1D.h \
 		  tnlList.h \
 		  mLongVector.h \

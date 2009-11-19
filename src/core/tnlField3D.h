@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mField3D.h  -  description
+                          tnlField3D.h  -  description
                              -------------------
     begin                : 2009/07/21
     copyright            : (C) 2009 by Tomas Oberhuber
@@ -15,29 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mField3DH
-#define mField3DH
+#ifndef tnlField3DH
+#define tnlField3DH
 
 #include <string.h>
 #include "tnlObject.h"
 #include "mLongVector.h"
 
-template< class T > class mField3D : public mLongVector< T >
+template< class T > class tnlField3D : public mLongVector< T >
 {
    public:
 
-   mField3D()
+   tnlField3D()
    : mLongVector< T >( 0 )
    { };
 
-   mField3D( long int _x_size,
+   tnlField3D( long int _x_size,
              long int _y_size,
              long int _z_size )
    : mLongVector< T >( _x_size * _y_size * _z_size ),
      x_size( _x_size ), y_size( _y_size ), z_size( _z_size )
    { };
 
-   mField3D( const mField3D& f )
+   tnlField3D( const tnlField3D& f )
    : mLongVector< T >( f ),
      x_size( f. x_size ), y_size( f. y_size ), z_size( f.z_size )
    { };
@@ -45,7 +45,7 @@ template< class T > class mField3D : public mLongVector< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mField3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlField3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const
@@ -73,7 +73,7 @@ template< class T > class mField3D : public mLongVector< T >
       return mLongVector< T > :: SetNewSize( x_size * y_size * z_size );
    };
 
-   bool SetNewDimensions( const mField3D< T >& f )
+   bool SetNewDimensions( const tnlField3D< T >& f )
    {
       return SetNewDimensions( f. GetXSize(), f. GetYSize(), f. GetZSize() );
    };
@@ -133,6 +133,6 @@ template< class T > class mField3D : public mLongVector< T >
 };
 
 // Explicit instatiation
-template class mField3D< double >;
+template class tnlField3D< double >;
 
 #endif

@@ -18,9 +18,9 @@
 #ifndef mGrid3DH
 #define mGrid3DH
 
-#include <core/mField3D.h>
+#include <core/tnlField3D.h>
 
-template< typename T = double > class mGrid3D : public mField3D< T >
+template< typename T = double > class mGrid3D : public tnlField3D< T >
 {
    public:
 
@@ -42,7 +42,7 @@ template< typename T = double > class mGrid3D : public mField3D< T >
             const double& B_y,
             const double& A_z,
             const double& B_z )
-   : mField3D< T >( x_size, y_size, z_size ),
+   : tnlField3D< T >( x_size, y_size, z_size ),
      Ax( A_x ), Bx( B_x ),
      Ay( A_y ), By( B_y ),  
      Az( A_z ), Bz( B_z )  
@@ -54,7 +54,7 @@ template< typename T = double > class mGrid3D : public mField3D< T >
    };
 
    mGrid3D( const mGrid3D& g )
-   : mField3D< T >( g ),
+   : tnlField3D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Ay( g. Ay ), By( g. By ),
      Az( g. Ay ), Bz( g. By ),
@@ -85,11 +85,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       Az = A_z;
       Bz = B_z;
       assert( Ax < Bx && Ay < By && Az < Bz );
-      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( mField3D< T > :: GetXSize() - 1 ); 
+      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( tnlField3D< T > :: GetXSize() - 1 ); 
       else Hx = hx;
-      if( ! hy ) Hy = ( By - Ay ) / ( double ) ( mField3D< T > :: GetYSize() - 1 );
+      if( ! hy ) Hy = ( By - Ay ) / ( double ) ( tnlField3D< T > :: GetYSize() - 1 );
       else Hy = hy;
-      if( ! hz ) Hz = ( Bz - Az ) / ( double ) ( mField3D< T > :: GetZSize() - 1 );
+      if( ! hz ) Hz = ( Bz - Az ) / ( double ) ( tnlField3D< T > :: GetZSize() - 1 );
       else Hz = hz;
    }
    
@@ -194,11 +194,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size - 1 );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size );
-      return ( mField3D< T > :: operator()( i + 1, j, k ) - 
-               mField3D< T > ::  operator()( i, j, k ) ) / Hx;
+      assert( i < tnlField3D< T > :: x_size - 1 );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size );
+      return ( tnlField3D< T > :: operator()( i + 1, j, k ) - 
+               tnlField3D< T > ::  operator()( i, j, k ) ) / Hx;
    };
    
    //! Backward difference w.r.t x
@@ -209,11 +209,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i > 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size );
-      return ( mField3D< T > :: operator()( i, j, k ) - 
-               mField3D< T > ::  operator()( i - 1, j, k ) ) / Hx;
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size );
+      return ( tnlField3D< T > :: operator()( i, j, k ) - 
+               tnlField3D< T > ::  operator()( i - 1, j, k ) ) / Hx;
    };
 
    //! Forward difference w.r.t y
@@ -224,11 +224,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size - 1 );
-      assert( k < mField3D< T > :: z_size );
-      return ( mField3D< T > :: operator()( i, j + 1, k ) - 
-               mField3D< T > :: operator()( i, j, k ) ) / Hy;
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size - 1 );
+      assert( k < tnlField3D< T > :: z_size );
+      return ( tnlField3D< T > :: operator()( i, j + 1, k ) - 
+               tnlField3D< T > :: operator()( i, j, k ) ) / Hy;
    };
    
    //! Backward difference w.r.t y
@@ -239,12 +239,12 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j > 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size );
 
-      return ( mField3D< T > :: operator()( i, j, k ) - 
-               mField3D< T > :: operator()( i, j - 1, k ) ) / Hy;
+      return ( tnlField3D< T > :: operator()( i, j, k ) - 
+               tnlField3D< T > :: operator()( i, j - 1, k ) ) / Hy;
    };
 
    //! Forward difference w.r.t z
@@ -255,11 +255,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size - 1 );
-      return ( mField3D< T > :: operator()( i, j, k + 1 ) - 
-               mField3D< T > :: operator()( i, j, k ) ) / Hz;
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size - 1 );
+      return ( tnlField3D< T > :: operator()( i, j, k + 1 ) - 
+               tnlField3D< T > :: operator()( i, j, k ) ) / Hz;
    };
    
    //! Backward difference w.r.t z
@@ -270,12 +270,12 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k > 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size );
 
-      return ( mField3D< T > :: operator()( i, j, k ) - 
-               mField3D< T > :: operator()( i, j, k - 1 ) ) / Hz;
+      return ( tnlField3D< T > :: operator()( i, j, k ) - 
+               tnlField3D< T > :: operator()( i, j, k - 1 ) ) / Hz;
    };
    
    //! Central difference w.r.t. x
@@ -286,12 +286,12 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i > 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size - 1 );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size );
+      assert( i < tnlField3D< T > :: x_size - 1 );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size );
 
-      return ( mField3D< T > :: operator()( i + 1, j, k ) - 
-               mField3D< T > :: operator()( i - 1, j, k ) ) / ( 2.0 * Hx );
+      return ( tnlField3D< T > :: operator()( i + 1, j, k ) - 
+               tnlField3D< T > :: operator()( i - 1, j, k ) ) / ( 2.0 * Hx );
    };
 
    //! Central difference w.r.t y
@@ -302,11 +302,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j > 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size - 1 );
-      assert( k < mField3D< T > :: z_size );
-      return ( mField3D< T > :: operator()( i, j + 1, k ) - 
-               mField3D< T > :: operator()( i, j - 1, k ) ) / ( 2.0 * Hy );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size - 1 );
+      assert( k < tnlField3D< T > :: z_size );
+      return ( tnlField3D< T > :: operator()( i, j + 1, k ) - 
+               tnlField3D< T > :: operator()( i, j - 1, k ) ) / ( 2.0 * Hy );
    };
 
    //! Central difference w.r.t z
@@ -317,11 +317,11 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k > 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size  );
-      assert( k < mField3D< T > :: z_size - 1 );
-      return ( mField3D< T > :: operator()( i, j, k + 1 ) - 
-               mField3D< T > :: operator()( i, j, k - 1 ) ) / ( 2.0 * Hz );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size  );
+      assert( k < tnlField3D< T > :: z_size - 1 );
+      return ( tnlField3D< T > :: operator()( i, j, k + 1 ) - 
+               tnlField3D< T > :: operator()( i, j, k - 1 ) ) / ( 2.0 * Hz );
    };
    
    //! Second order difference w.r.t. x
@@ -332,13 +332,13 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i > 0 );
       assert( j >= 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size - 1 );
-      assert( j < mField3D< T > :: y_size  );
-      assert( k < mField3D< T > :: z_size );
+      assert( i < tnlField3D< T > :: x_size - 1 );
+      assert( j < tnlField3D< T > :: y_size  );
+      assert( k < tnlField3D< T > :: z_size );
 
-      return ( mField3D< T > :: operator()( i + 1, j, k ) - 
-               2.0 * mField3D< T > :: operator()( i, j, k ) + 
-               mField3D< T > :: operator()( i - 1, j, k ) ) / ( Hx * Hx );   
+      return ( tnlField3D< T > :: operator()( i + 1, j, k ) - 
+               2.0 * tnlField3D< T > :: operator()( i, j, k ) + 
+               tnlField3D< T > :: operator()( i - 1, j, k ) ) / ( Hx * Hx );   
    };
    
    //! Second order difference w.r.t. y
@@ -349,13 +349,13 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j > 0 );
       assert( k >= 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size - 1 );
-      assert( k < mField3D< T > :: z_size );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size - 1 );
+      assert( k < tnlField3D< T > :: z_size );
 
-      return ( mField3D< T > :: operator()( i, j + 1, k ) - 
-               2.0 * mField3D< T > :: operator()( i, j, k ) + 
-               mField3D< T > :: operator()( i, j - 1, k ) ) / ( Hy * Hy ); 
+      return ( tnlField3D< T > :: operator()( i, j + 1, k ) - 
+               2.0 * tnlField3D< T > :: operator()( i, j, k ) + 
+               tnlField3D< T > :: operator()( i, j - 1, k ) ) / ( Hy * Hy ); 
    };
    
    //! Second order difference w.r.t. z
@@ -366,19 +366,19 @@ template< typename T = double > class mGrid3D : public mField3D< T >
       assert( i >= 0 );
       assert( j >= 0 );
       assert( k > 0 );
-      assert( i < mField3D< T > :: x_size );
-      assert( j < mField3D< T > :: y_size );
-      assert( k < mField3D< T > :: z_size - 1 );
+      assert( i < tnlField3D< T > :: x_size );
+      assert( j < tnlField3D< T > :: y_size );
+      assert( k < tnlField3D< T > :: z_size - 1 );
 
-      return ( mField3D< T > :: operator()( i, j, k + 1 ) - 
-               2.0 * mField3D< T > :: operator()( i, j, k ) + 
-               mField3D< T > :: operator()( i, j, k - 1 ) ) / ( Hz * Hz ); 
+      return ( tnlField3D< T > :: operator()( i, j, k + 1 ) - 
+               2.0 * tnlField3D< T > :: operator()( i, j, k ) + 
+               tnlField3D< T > :: operator()( i, j, k - 1 ) ) / ( Hz * Hz ); 
    };
 
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mField3D< T > :: Save( file ) ) return false;
+      if( ! tnlField3D< T > :: Save( file ) ) return false;
       file. write( ( char* ) &Ax, sizeof( double ) );
       file. write( ( char* ) &Ay, sizeof( double ) );
       file. write( ( char* ) &Az, sizeof( double ) );
@@ -395,7 +395,7 @@ template< typename T = double > class mGrid3D : public mField3D< T >
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mField3D< T > :: Load( file ) ) return false;
+      if( ! tnlField3D< T > :: Load( file ) ) return false;
       file. read( ( char* ) &Ax, sizeof( double ) );
       file. read( ( char* ) &Ay, sizeof( double ) );
       file. read( ( char* ) &Az, sizeof( double ) );
