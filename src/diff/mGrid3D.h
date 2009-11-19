@@ -161,27 +161,27 @@ template< typename T = double > class mGrid3D : public mField3D< T >
 
       //------------- FINISH IT FROM HERE ---------------------
       assert( 0 );
-      /*if( iy >= mField2D< T > :: y_size - 1 )
+      /*if( iy >= tnlField2D< T > :: y_size - 1 )
       {
-         if( ix >= mField2D< T > :: x_size - 1 )
-            return  mField2D< T > :: operator()( mField2D< T > :: x_size - 1, 
-                                                 mField2D< T > :: y_size - 1 );
-         return ( 1.0 - dx ) * mField2D< T > :: operator()( ix,
-                                                            mField2D< T > :: y_size - 1 ) +
-                          dx * mField2D< T > :: operator()( ix + 1, 
-                                                            mField2D< T > :: y_size - 1 );
+         if( ix >= tnlField2D< T > :: x_size - 1 )
+            return  tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1, 
+                                                 tnlField2D< T > :: y_size - 1 );
+         return ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix,
+                                                            tnlField2D< T > :: y_size - 1 ) +
+                          dx * tnlField2D< T > :: operator()( ix + 1, 
+                                                            tnlField2D< T > :: y_size - 1 );
       }
-      if( ix >= mField2D< T > :: x_size - 1 )
-         return ( 1.0 - dy ) * mField2D< T > :: operator()( mField2D< T > :: x_size - 1,
+      if( ix >= tnlField2D< T > :: x_size - 1 )
+         return ( 1.0 - dy ) * tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1,
                                                             iy ) +
-                          dy * mField2D< T > :: operator()( mField2D< T > :: x_size - 1,
+                          dy * tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1,
                                                             iy + 1 );
       N a1, a2;
-      a1 = ( 1.0 - dx ) * mField2D< T > :: operator()( ix, iy ) +
-                     dx * mField2D< T > :: operator()( ix + 1, iy );
+      a1 = ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix, iy ) +
+                     dx * tnlField2D< T > :: operator()( ix + 1, iy );
 
-      a2 = ( 1.0 - dx ) * mField2D< T > :: operator()( ix, iy + 1 ) +
-                     dx * mField2D< T > :: operator()( ix + 1, iy + 1 );
+      a2 = ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix, iy + 1 ) +
+                     dx * tnlField2D< T > :: operator()( ix + 1, iy + 1 );
       return ( 1.0 - dy ) * a1 + dy * a2;
       */
    }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mField2D.h  -  description
+                          tnlField2D.h  -  description
                              -------------------
     begin                : 2005/08/10
     copyright            : (C) 2005 by Tomas Oberhuber
@@ -15,28 +15,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mField2DH
-#define mField2DH
+#ifndef tnlField2DH
+#define tnlField2DH
 
 #include <string.h>
 #include "tnlObject.h"
 #include "mLongVector.h"
 
-template< class T > class mField2D : public mLongVector< T >
+template< class T > class tnlField2D : public mLongVector< T >
 {
    public:
 
-   mField2D()
+   tnlField2D()
    : mLongVector< T >( 0 )
    { };
 
-   mField2D( long int _x_size,
+   tnlField2D( long int _x_size,
              long int _y_size )
    : mLongVector< T >( _x_size * _y_size ),
      x_size( _x_size ), y_size( _y_size )
    { };
 
-   mField2D( const mField2D& f )
+   tnlField2D( const tnlField2D& f )
    : mLongVector< T >( f ),
      x_size( f. x_size ), y_size( f. y_size )
    { };
@@ -44,7 +44,7 @@ template< class T > class mField2D : public mLongVector< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mField2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlField2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const
@@ -65,7 +65,7 @@ template< class T > class mField2D : public mLongVector< T >
       return mLongVector< T > :: SetNewSize( x_size * y_size );
    };
 
-   bool SetNewDimensions( const mField2D< T >& f )
+   bool SetNewDimensions( const tnlField2D< T >& f )
    {
       return SetNewDimensions( f. GetXSize(), f. GetYSize() );
    };
@@ -122,6 +122,6 @@ template< class T > class mField2D : public mLongVector< T >
 };
 
 // Explicit instatiation
-template class mField2D< double >;
+template class tnlField2D< double >;
 
 #endif

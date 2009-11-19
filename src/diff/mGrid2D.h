@@ -18,10 +18,10 @@
 #ifndef mGrid2DH
 #define mGrid2DH
 
-#include <core/mField2D.h>
+#include <core/tnlField2D.h>
 
 template< class T = double > class mGrid2D :
-	                         public mField2D< T >
+	                         public tnlField2D< T >
 {
    public:
 
@@ -40,17 +40,17 @@ template< class T = double > class mGrid2D :
             const double& B_x,
             const double& A_y,
             const double& B_y )
-   : mField2D< T >( x_size, y_size ),
+   : tnlField2D< T >( x_size, y_size ),
      Ax( A_x ), Bx( B_x ),
      Ay( A_y ), By( B_y )  
    {
       assert( Ax < Bx && Ay < By );
-      Hx = ( Bx - Ax ) / ( double ) ( mField2D< T > :: GetXSize() - 1 ); 
-      Hy = ( By - Ay ) / ( double ) ( mField2D< T > :: GetYSize() - 1 );
+      Hx = ( Bx - Ax ) / ( double ) ( tnlField2D< T > :: GetXSize() - 1 ); 
+      Hy = ( By - Ay ) / ( double ) ( tnlField2D< T > :: GetYSize() - 1 );
    };
 
    mGrid2D( const mGrid2D& g )
-   : mField2D< T >( g ),
+   : tnlField2D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Ay( g. Ay ), By( g. By ),
      Hx( g. Hx ), Hy( g. Hy )
@@ -75,9 +75,9 @@ template< class T = double > class mGrid2D :
       Ay = A_y;
       By = B_y;
       assert( Ax < Bx && Ay < By );
-      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( mField2D< T > :: GetXSize() - 1 ); 
+      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( tnlField2D< T > :: GetXSize() - 1 ); 
       else Hx = hx;
-      if( ! hy ) Hy = ( By - Ay ) / ( double ) ( mField2D< T > :: GetYSize() - 1 );
+      if( ! hy ) Hy = ( By - Ay ) / ( double ) ( tnlField2D< T > :: GetYSize() - 1 );
       else Hy = hy;
    }
    
@@ -128,27 +128,27 @@ template< class T = double > class mGrid2D :
       int iy = ( int ) ( y );
       N dx = x - ( N ) ix;
       N dy = y - ( N ) iy;
-      if( iy >= mField2D< T > :: y_size - 1 )
+      if( iy >= tnlField2D< T > :: y_size - 1 )
       {
-         if( ix >= mField2D< T > :: x_size - 1 )
-            return  mField2D< T > :: operator()( mField2D< T > :: x_size - 1, 
-                                                 mField2D< T > :: y_size - 1 );
-         return ( 1.0 - dx ) * mField2D< T > :: operator()( ix,
-                                                            mField2D< T > :: y_size - 1 ) +
-                          dx * mField2D< T > :: operator()( ix + 1, 
-                                                            mField2D< T > :: y_size - 1 );
+         if( ix >= tnlField2D< T > :: x_size - 1 )
+            return  tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1, 
+                                                 tnlField2D< T > :: y_size - 1 );
+         return ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix,
+                                                            tnlField2D< T > :: y_size - 1 ) +
+                          dx * tnlField2D< T > :: operator()( ix + 1, 
+                                                            tnlField2D< T > :: y_size - 1 );
       }
-      if( ix >= mField2D< T > :: x_size - 1 )
-         return ( 1.0 - dy ) * mField2D< T > :: operator()( mField2D< T > :: x_size - 1,
+      if( ix >= tnlField2D< T > :: x_size - 1 )
+         return ( 1.0 - dy ) * tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1,
                                                             iy ) +
-                          dy * mField2D< T > :: operator()( mField2D< T > :: x_size - 1,
+                          dy * tnlField2D< T > :: operator()( tnlField2D< T > :: x_size - 1,
                                                             iy + 1 );
       N a1, a2;
-      a1 = ( 1.0 - dx ) * mField2D< T > :: operator()( ix, iy ) +
-                     dx * mField2D< T > :: operator()( ix + 1, iy );
+      a1 = ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix, iy ) +
+                     dx * tnlField2D< T > :: operator()( ix + 1, iy );
 
-      a2 = ( 1.0 - dx ) * mField2D< T > :: operator()( ix, iy + 1 ) +
-                     dx * mField2D< T > :: operator()( ix + 1, iy + 1 );
+      a2 = ( 1.0 - dx ) * tnlField2D< T > :: operator()( ix, iy + 1 ) +
+                     dx * tnlField2D< T > :: operator()( ix + 1, iy + 1 );
       return ( 1.0 - dy ) * a1 + dy * a2;
    }
    
@@ -157,9 +157,9 @@ template< class T = double > class mGrid2D :
                   const int j ) const
    {
       assert( i >= 0 && j >= 0 );
-      assert( i < mField2D< T > :: x_size - 1 && j < mField2D< T > :: y_size );
-      return ( mField2D< T > :: operator()( i + 1, j ) - 
-               mField2D< T > ::  operator()( i, j ) ) / Hx;
+      assert( i < tnlField2D< T > :: x_size - 1 && j < tnlField2D< T > :: y_size );
+      return ( tnlField2D< T > :: operator()( i + 1, j ) - 
+               tnlField2D< T > ::  operator()( i, j ) ) / Hx;
    };
    
    //! Backward difference w.r.t x
@@ -167,9 +167,9 @@ template< class T = double > class mGrid2D :
                   const int j ) const
    {
       assert( i > 0 && j >= 0 );
-      assert( i < mField2D< T > :: x_size && j < mField2D< T > :: y_size );
-      return ( mField2D< T > :: operator()( i, j ) - 
-               mField2D< T > :: operator()( i - 1, j ) ) / Hx;
+      assert( i < tnlField2D< T > :: x_size && j < tnlField2D< T > :: y_size );
+      return ( tnlField2D< T > :: operator()( i, j ) - 
+               tnlField2D< T > :: operator()( i - 1, j ) ) / Hx;
    };
 
    //! Forward difference w.r.t y
@@ -177,10 +177,10 @@ template< class T = double > class mGrid2D :
                   const int j ) const
    {
       assert( i >= 0 && j >= 0 );
-      assert( i < mField2D< T > :: x_size && 
-              j < mField2D< T > :: y_size - 1 );
-      return ( mField2D< T > :: operator()( i, j + 1 ) - 
-               mField2D< T > :: operator()( i, j ) ) / Hy;
+      assert( i < tnlField2D< T > :: x_size && 
+              j < tnlField2D< T > :: y_size - 1 );
+      return ( tnlField2D< T > :: operator()( i, j + 1 ) - 
+               tnlField2D< T > :: operator()( i, j ) ) / Hy;
    };
    
    //! Backward difference w.r.t y
@@ -188,10 +188,10 @@ template< class T = double > class mGrid2D :
                   const int j ) const
    {
       assert( i >= 0 && j > 0 );
-      assert( i < mField2D< T > :: x_size && 
-              j < mField2D< T > :: y_size );
-      return ( mField2D< T > :: operator()( i, j ) - 
-               mField2D< T > :: operator()( i, j - 1 ) ) / Hy;
+      assert( i < tnlField2D< T > :: x_size && 
+              j < tnlField2D< T > :: y_size );
+      return ( tnlField2D< T > :: operator()( i, j ) - 
+               tnlField2D< T > :: operator()( i, j - 1 ) ) / Hy;
    };
    
    //! Central difference w.r.t. x
@@ -199,10 +199,10 @@ template< class T = double > class mGrid2D :
                 const int j ) const
    {
       assert( i > 0 && j >= 0 );
-      assert( i < mField2D< T > :: x_size - 1 && 
-              j < mField2D< T > :: y_size );
-      return ( mField2D< T > :: operator()( i + 1, j ) - 
-               mField2D< T > :: operator()( i - 1, j ) ) / ( 2.0 * Hx );
+      assert( i < tnlField2D< T > :: x_size - 1 && 
+              j < tnlField2D< T > :: y_size );
+      return ( tnlField2D< T > :: operator()( i + 1, j ) - 
+               tnlField2D< T > :: operator()( i - 1, j ) ) / ( 2.0 * Hx );
    };
 
    //! Central difference w.r.t y
@@ -210,10 +210,10 @@ template< class T = double > class mGrid2D :
                 const int j ) const
    {
       assert( i >= 0 && j > 0 );
-      assert( i < mField2D< T > :: x_size && 
-              j < mField2D< T > :: y_size - 1 );
-      return ( mField2D< T > :: operator()( i, j + 1 ) - 
-               mField2D< T > :: operator()( i, j - 1 ) ) / ( 2.0 * Hy );
+      assert( i < tnlField2D< T > :: x_size && 
+              j < tnlField2D< T > :: y_size - 1 );
+      return ( tnlField2D< T > :: operator()( i, j + 1 ) - 
+               tnlField2D< T > :: operator()( i, j - 1 ) ) / ( 2.0 * Hy );
    };
    
    //! Second order difference w.r.t. x
@@ -221,11 +221,11 @@ template< class T = double > class mGrid2D :
                  const int j ) const
    {
       assert( i > 0 && j >= 0 );
-      assert( i < mField2D< T > :: x_size - 1 && 
-              j < mField2D< T > :: y_size );
-      return ( mField2D< T > :: operator()( i + 1, j ) - 
-               2.0 * mField2D< T > :: operator()( i, j ) + 
-               mField2D< T > :: operator()( i - 1, j ) ) / ( Hx * Hx );   
+      assert( i < tnlField2D< T > :: x_size - 1 && 
+              j < tnlField2D< T > :: y_size );
+      return ( tnlField2D< T > :: operator()( i + 1, j ) - 
+               2.0 * tnlField2D< T > :: operator()( i, j ) + 
+               tnlField2D< T > :: operator()( i - 1, j ) ) / ( Hx * Hx );   
    };
    
    //! Second order difference w.r.t. y
@@ -233,17 +233,17 @@ template< class T = double > class mGrid2D :
                  const int j ) const
    {
       assert( i >= 0 && j > 0 );
-      assert( i < mField2D< T > :: x_size && 
-              j < mField2D< T > :: y_size - 1 );
-      return ( mField2D< T > :: operator()( i, j + 1 ) - 
-               2.0 * mField2D< T > :: operator()( i, j ) + 
-               mField2D< T > :: operator()( i, j - 1 ) ) / ( Hy * Hy ); 
+      assert( i < tnlField2D< T > :: x_size && 
+              j < tnlField2D< T > :: y_size - 1 );
+      return ( tnlField2D< T > :: operator()( i, j + 1 ) - 
+               2.0 * tnlField2D< T > :: operator()( i, j ) + 
+               tnlField2D< T > :: operator()( i, j - 1 ) ) / ( Hy * Hy ); 
    };
 
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mField2D< T > :: Save( file ) ) return false;
+      if( ! tnlField2D< T > :: Save( file ) ) return false;
       file. write( ( char* ) &Ax, sizeof( double ) );
       file. write( ( char* ) &Ay, sizeof( double ) );
       file. write( ( char* ) &Bx, sizeof( double ) );
@@ -257,7 +257,7 @@ template< class T = double > class mGrid2D :
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mField2D< T > :: Load( file ) ) return false;
+      if( ! tnlField2D< T > :: Load( file ) ) return false;
       file. read( ( char* ) &Ax, sizeof( double ) );
       file. read( ( char* ) &Ay, sizeof( double ) );
       file. read( ( char* ) &Bx, sizeof( double ) );

@@ -18,11 +18,11 @@
 #ifndef mFullMatrixH
 #define mFullMatrixH
 
-#include <core/mField2D.h>
+#include <core/tnlField2D.h>
 #include <matrix/mBaseMatrix.h>
 
 
-template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mField2D< T >
+template< typename T > class mFullMatrix : public mBaseMatrix< T >, public tnlField2D< T >
 {
 
    public:
@@ -32,7 +32,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
 
    //! Constructor with matrix dimension
    mFullMatrix( const long int size )
-   : mField2D< T >( size, size ){};
+   : tnlField2D< T >( size, size ){};
 
    tnlString GetType() const
    {
@@ -47,7 +47,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
 
    long int GetSize() const
    {
-      return mField2D< T > :: GetXSize(); // it is the same as GetYSize()
+      return tnlField2D< T > :: GetXSize(); // it is the same as GetYSize()
    };
    
    T GetElement( long int i, long int j ) const
@@ -74,7 +74,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
    {
       const long int size = GetSize();
       long int pos = row * size;
-      const T* data = mField2D< T > :: Data();
+      const T* data = tnlField2D< T > :: Data();
       T res( 0.0 );
       long int i;
       for( i = 0; i < size; i ++ )
@@ -90,7 +90,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
    {
       const long int size = GetSize();
       long int pos( 0 );
-      const T* data = mField2D< T > :: Data();
+      const T* data = tnlField2D< T > :: Data();
       T res;
       long int i, j;
       for( i = 0; i < size; i ++ )
@@ -110,7 +110,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
    void MultiplyRow( const long int row, const T& c )
    {
       const long int size = GetSize();
-      T* data = mField2D< T > :: Data();
+      T* data = tnlField2D< T > :: Data();
       long int i;
       long int pos = row * size;
       for( i = 0; i < size; i ++ )
@@ -123,7 +123,7 @@ template< typename T > class mFullMatrix : public mBaseMatrix< T >, public mFiel
    T GetRowL1Norm( const long int row ) const
    {
       const long int size = GetSize();
-      const T* data = mField2D< T > :: Data();
+      const T* data = tnlField2D< T > :: Data();
       T res( 0.0 );
       long int i;
       long int pos = row * size;
