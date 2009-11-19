@@ -23,7 +23,7 @@
 #include <debug/tnlDebug.h>
 
 //! Supporting structure for a curve identification
-// TODO replace it with mVector< 2, long int > 
+// TODO replace it with tnlVector< 2, long int > 
 struct MeshIndex
 {
    long int i, j;
@@ -33,7 +33,7 @@ struct MeshIndex
 };
 
 template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
-                                           tnlCurve< mVector< 2, T > >& crv,
+                                           tnlCurve< tnlVector< 2, T > >& crv,
                                            const double level = 0.0 )
 {
    dbgFunctionName( "", "GetLevelSetCurve" );
@@ -216,7 +216,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
    const double a_y = u. GetAy();
    const double h_x = u. GetHx();
    const double h_y = u. GetHy();
-   mVector< 2, T > null_vector;
+   tnlVector< 2, T > null_vector;
    if( ! crv. IsEmpty() )
       crv. Append( null_vector, true ); //separator
    for( i = 0; i < curves. Size(); i ++ )
@@ -224,7 +224,7 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
       if( i > 0 ) crv. Append( null_vector, true );  //separator
       tnlList< MeshIndex >& c = * curves[ i ];
       long int l = c. Size();
-      mVector< 2, T > first;
+      tnlVector< 2, T > first;
       for( j = 0; j < l - 1; j ++ )
       {
          MeshIndex m1 = c[ j ];
@@ -270,8 +270,8 @@ template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
          T r = v[ 0 ] / ( v[ 1 ] - v[ 0 ] );
          p[ 0 ] += ( ( T ) n2  ) * r * h_x;
          p[ 1 ] += ( ( T ) -n1  ) * r * h_y;
-         crv. Append( mVector< 2, T >( p ) );
-         if( j == 0 ) first = mVector< 2, T >( p );
+         crv. Append( tnlVector< 2, T >( p ) );
+         if( j == 0 ) first = tnlVector< 2, T >( p );
       }
       MeshIndex m1 = c[ 0 ];
       MeshIndex m2 = c[ l - 1 ];

@@ -79,7 +79,7 @@ bool ProcessmGrid2D( const tnlString& file_name,
    parameters. GetParameter< tnlList< double > >( "level-lines", level_lines );
    if( ! level_lines. IsEmpty() )
    {
-      tnlCurve< mVector< 2, double > > crv;
+      tnlCurve< tnlVector< 2, double > > crv;
       long int j;
       for( j = 0; j < level_lines. Size(); j ++ )
          if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )

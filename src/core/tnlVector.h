@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mVector.h  -  description
+                          tnlVector.h  -  description
                              -------------------
     begin                : 2006/03/04
     copyright            : (C) 2006 by Tomas Oberhuber
@@ -15,24 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mVectorH
-#define mVectorH
+#ifndef tnlVectorH
+#define tnlVectorH
 
 #include <assert.h>
 #include <string.h>
 #include <sstream>
 #include "param-types.h"
 
-template< int SIZE, typename T > class mVector
+template< int SIZE, typename T > class tnlVector
 {
    public:
 
-   mVector()
+   tnlVector()
    {
       bzero( Data(), SIZE * sizeof( T ) );
    };
 
-   mVector( const T v[ SIZE ] )
+   tnlVector( const T v[ SIZE ] )
    {
       memcpy( &data[ 0 ], &v[ 0 ], SIZE * sizeof( T ) ); 
       /*int i;
@@ -40,7 +40,7 @@ template< int SIZE, typename T > class mVector
          data[ i ] = v[ i ];*/
    };
 
-   mVector( const T& v )
+   tnlVector( const T& v )
    {
       memcpy( &data[ 0 ], &v. data[ 0 ], SIZE * sizeof( T ) ); 
       /*int i;
@@ -71,7 +71,7 @@ template< int SIZE, typename T > class mVector
    };
    
    //! Adding operator
-   mVector& operator += ( const mVector& v )
+   tnlVector& operator += ( const tnlVector& v )
    {
       int i;
       for( i = 0; i < SIZE; i ++ )
@@ -79,7 +79,7 @@ template< int SIZE, typename T > class mVector
    };
 
    //! Subtracting operator
-   mVector& operator -= ( const mVector& v )
+   tnlVector& operator -= ( const tnlVector& v )
    {
       int i;
       for( i = 0; i < SIZE; i ++ )
@@ -87,7 +87,7 @@ template< int SIZE, typename T > class mVector
    };
 
    //! Multiplication with number
-   mVector& operator *= ( const T& c )
+   tnlVector& operator *= ( const T& c )
    {
       int i;
       for( i = 0; i < SIZE; i ++ )
@@ -95,27 +95,27 @@ template< int SIZE, typename T > class mVector
    };
 
    //! Adding operator
-   mVector operator + ( const mVector& u ) const
+   tnlVector operator + ( const tnlVector& u ) const
    {
       // TODO: Leads to sigsegv 
-      return mVector( * this ) += u;
+      return tnlVector( * this ) += u;
    };
 
    //! Subtracting operator
-   mVector operator - ( const mVector& u ) const
+   tnlVector operator - ( const tnlVector& u ) const
    {
       // TODO: Leads to sigsegv 
-      return mVector( * this ) -= u; 
+      return tnlVector( * this ) -= u; 
    };
 
    //! Multiplication with number
-   mVector operator * ( const T& c ) const
+   tnlVector operator * ( const T& c ) const
    { 
-      return mVector( * this ) *= c; 
+      return tnlVector( * this ) *= c; 
    };
 
    //! 
-   mVector& operator = ( const mVector& v )
+   tnlVector& operator = ( const tnlVector& v )
    {
       memcpy( &data[ 0 ], &v. data[ 0 ], SIZE * sizeof( T ) ); 
       /*int i;
@@ -125,7 +125,7 @@ template< int SIZE, typename T > class mVector
    };
 
    //! Scalar product
-   T operator * ( const mVector& u ) const
+   T operator * ( const tnlVector& u ) const
    { 
       int i;
       T res( 0.0 );
@@ -135,7 +135,7 @@ template< int SIZE, typename T > class mVector
    };
 
    //! Comparison operator
-   bool operator == ( const mVector& v ) const
+   bool operator == ( const tnlVector& v ) const
    { 
       int i;
       for( i = 0; i < SIZE; i ++ )
@@ -145,7 +145,7 @@ template< int SIZE, typename T > class mVector
    };
 
    //! 
-   bool operator!= ( const mVector& v ) const 
+   bool operator!= ( const tnlVector& v ) const 
    { 
       int i;
       for( i = 0; i < SIZE; i ++ )
@@ -159,21 +159,21 @@ template< int SIZE, typename T > class mVector
 
 };
 
-template< int SIZE, typename T > bool Save( ostream& file, const mVector< SIZE, T >& vec )
+template< int SIZE, typename T > bool Save( ostream& file, const tnlVector< SIZE, T >& vec )
 {
    file. write( ( char* ) vec. Data(), SIZE * sizeof( T ) );
    if( file. bad() ) return false;
    return true;
 };
    
-template< int SIZE, typename T > bool Load( istream& file, mVector< SIZE, T >& vec ) 
+template< int SIZE, typename T > bool Load( istream& file, tnlVector< SIZE, T >& vec ) 
 {
    file. read( ( char* ) vec. Data(), SIZE * sizeof( T ) );
    if( file. bad() ) return false;
    return true;
 };
 
-template< int SIZE, typename T > ostream& operator << ( ostream& str, mVector< SIZE, T > v )
+template< int SIZE, typename T > ostream& operator << ( ostream& str, tnlVector< SIZE, T > v )
 {
    int i;
    for( i = 0; i < SIZE - 1; i ++ )
@@ -182,11 +182,11 @@ template< int SIZE, typename T > ostream& operator << ( ostream& str, mVector< S
    return str;
 };
 
-template< int SIZE, typename T > tnlString GetParameterType( const mVector< SIZE, T >& )
+template< int SIZE, typename T > tnlString GetParameterType( const tnlVector< SIZE, T >& )
 { 
    T t;
    stringstream str;
-   str << "mVector< " << SIZE << ", " << GetParameterType( t ) << " >";
+   str << "tnlVector< " << SIZE << ", " << GetParameterType( t ) << " >";
    return tnlString( str. str(). data() ); 
 };
 

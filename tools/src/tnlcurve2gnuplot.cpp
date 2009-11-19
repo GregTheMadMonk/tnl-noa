@@ -19,7 +19,7 @@
 #include <core/tnlParameterContainer.h>
 #include <core/compress-file.h>
 #include <core/tnlCurve.h>
-#include <core/mVector.h>
+#include <core/tnlVector.h>
 
 
 //--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    long int i;
-   tnlCurve< mVector< 2, double > > crv;
+   tnlCurve< tnlVector< 2, double > > crv;
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. Data();
@@ -99,13 +99,13 @@ int main( int argc, char* argv[] )
          return -1;
       }
 
-      tnlCurve< mVector< 2, double > > out_crv;
+      tnlCurve< tnlVector< 2, double > > out_crv;
       const long int size = crv. Size();
       long int i;
       for( i = 0; i < size; i += output_step )
       {
          out_crv. Append( crv[ i ]. position, crv[ i ]. separator );
-         //mVector< 2, double > v = crv[ i ]. position;
+         //tnlVector< 2, double > v = crv[ i ]. position;
          //v[ 0 ] = u( i );
          //v[ 1 ] = u( i + 1 );
          //out_crv. Append( v );

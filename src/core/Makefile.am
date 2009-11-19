@@ -30,7 +30,7 @@ headers =  \
 		  tnlParameterContainer.h \
 		  tnlTimerCPU.h \
 		  tnlTimerRT.h \
-		  mVector.h \
+		  tnlVector.h \
 		  compress-file.h \
 		  mfilename.h \
 		  mfuncs.h \

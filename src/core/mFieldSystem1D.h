@@ -19,7 +19,7 @@
 #define mFieldSystem1DH
 
 #include "mLongVector.h"
-#include "mVector.h"
+#include "tnlVector.h"
 
 template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D : public mLongVector< T >
 {
@@ -73,10 +73,10 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
       return mLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
-   mVector< SYSTEM_SIZE, T > operator() ( const long int i ) const
+   tnlVector< SYSTEM_SIZE, T > operator() ( const long int i ) const
    {
       assert( i < x_size && i >= 0 );
-      mVector< SYSTEM_SIZE, T > v;
+      tnlVector< SYSTEM_SIZE, T > v;
       int j;
       for( j = 0; j < SYSTEM_SIZE; j ++ )
          v[ j ] = ( *this )( ( SYSTEM_INDEX ) j, i );

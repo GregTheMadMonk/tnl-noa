@@ -358,7 +358,7 @@ m_bool mMPIMesh2D :: CreateMesh( const mGrid2D* phi,
    dbgFunctionName( "mMPIMesh2D", "CreateMesh" );
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return true;
-   mVector2D a, h;
+   tnlVector2D a, h;
    tnlString name;
    if( node_rank == 0 )
    {
@@ -367,11 +367,11 @@ m_bool mMPIMesh2D :: CreateMesh( const mGrid2D* phi,
       a = phi -> A();
       name = phi -> GetName();
    }
-   MPIBcast< mVector2D >( &h, 0, 1, mesh_comm );
-   MPIBcast< mVector2D >( &a, 0, 1, mesh_comm );
+   MPIBcast< tnlVector2D >( &h, 0, 1, mesh_comm );
+   MPIBcast< tnlVector2D >( &a, 0, 1, mesh_comm );
    name. MPIBcast( 0, mesh_comm );
    sub_phi = new mGrid2D( a,
-                          mVector2D( 0.0, 0.0 ), // 'b' is not important now
+                          tnlVector2D( 0.0, 0.0 ), // 'b' is not important now
                           h,
                           local_x_size + left_overlap + right_overlap, // x-size
                           local_y_size + lower_overlap + upper_overlap, // y-size
@@ -433,7 +433,7 @@ void mMPIMesh2D :: CreateGlobalGrid( mGrid2D*& phi,
    dbgExpr( global_x_size );
    dbgExpr( global_y_size );
    phi = new mGrid2D( sub_phi -> A(),
-                      mVector2D( 0.0, 0.0 ),
+                      tnlVector2D( 0.0, 0.0 ),
                       sub_phi -> H(),
                       global_x_size,
                       global_y_size,
@@ -469,9 +469,9 @@ void mMPIMesh2D :: ScatterToNode( const mGrid2D* phi,
       dbgCout( "dest edges LRLU " << 
                dest_left_overlap << dest_right_overlap <<
                dest_lower_overlap << dest_upper_overlap );
-      mGrid2D mpi_buff( mVector2D( 0.0, 0.0 ), // a
-                        mVector2D( 0.0, 0.0 ), // b
-                        mVector2D( 1.0, 1.0 ), // h
+      mGrid2D mpi_buff( tnlVector2D( 0.0, 0.0 ), // a
+                        tnlVector2D( 0.0, 0.0 ), // b
+                        tnlVector2D( 1.0, 1.0 ), // h
                         local_x_size + dest_left_overlap + dest_right_overlap, // x-size
                         local_y_size + dest_lower_overlap + dest_upper_overlap, // y-size
                         dest_x_pos * local_x_size - dest_left_overlap, // x-offset
@@ -614,9 +614,9 @@ void mMPIMesh2D :: Gather( mGrid2D* phi,
                    ", " << ( src_y_pos + 1 ) * local_y_size + src_upper_overlap <<
                    " >" );
                
-         mGrid2D mpi_buff( mVector2D( 0.0, 0.0 ), // a
-                           mVector2D( 0.0, 0.0 ), // b
-                           mVector2D( 1.0, 1.0 ), // h
+         mGrid2D mpi_buff( tnlVector2D( 0.0, 0.0 ), // a
+                           tnlVector2D( 0.0, 0.0 ), // b
+                           tnlVector2D( 1.0, 1.0 ), // h
                            local_x_size + src_left_overlap + src_right_overlap, // x-size
                            local_y_size + src_lower_overlap + src_upper_overlap, // y-size
                            src_x_pos * local_x_size - src_left_overlap, // x-offset
@@ -1170,10 +1170,10 @@ void mMPIMesh2D :: DrawFunction( const mGrid2D* phi, const m_char* file_name )
    mGrid2D* f;
    if( NodeRank() == 0 )
    {
-      mVector2D a = phi -> A();
-      mVector2D h = phi -> H();
+      tnlVector2D a = phi -> A();
+      tnlVector2D h = phi -> H();
       f = new mGrid2D( a, // a
-                       mVector2D( 0.0, 0.0 ), //b
+                       tnlVector2D( 0.0, 0.0 ), //b
                        h, // h 
                        local_x_size * mesh_x_size, // x-size
                        local_y_size * mesh_y_size // y-size

@@ -24,7 +24,7 @@
 #include "tnlObject.h"
 #include "mfuncs.h"
 #include "compress-file.h"
-#include "mVector.h"
+#include "tnlVector.h"
 #include "param-types.h"
 
 //! Basic structure for curves
@@ -229,7 +229,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< mVector< 2, double > >;
+template class tnlCurve< tnlVector< 2, double > >;
 
 
 

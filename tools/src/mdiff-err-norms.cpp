@@ -395,7 +395,7 @@ int main( int argc, char* argv[] )
          //cout << setw( 85 ) << " ";
          const char* first_file = first_files[ i ]. Data();
          cout << "Processing file " << first_file << " ...          \r" << flush << endl;
-         tnlCurve< mVector< 2, double > > curve;
+         tnlCurve< tnlVector< 2, double > > curve;
          if( ! ReadFile( first_file, curve ) ) return 1;
          if( space_step ) h = space_step;
          else h = 1.0 / ( double ) curve. Size();
@@ -434,13 +434,13 @@ int main( int argc, char* argv[] )
          for( j = 0; j < curve. Size() - 1; j ++ )
          {
             if( curve[ j ]. separator ) continue;
-            mVector< 2, double > v1 = curve[ j ]. position;
-            mVector< 2, double > v2 = curve[ j + 1 ]. position;
+            tnlVector< 2, double > v1 = curve[ j ]. position;
+            tnlVector< 2, double > v2 = curve[ j + 1 ]. position;
             double approx_r = sqrt( v1[ 0 ] * v1[ 0 ] + v1[ 1 ] * v1[ 1 ] );
             double err = fabs( approx_r - exact_r );
             difference( j ) = err;
             //cout << err << endl;
-            mVector< 2, double > dv;
+            tnlVector< 2, double > dv;
             dv[ 0 ] = v1[ 0 ] - v2[ 0 ];
             dv[ 1 ] = v1[ 1 ] - v2[ 1 ];
             double h = sqrt( dv[ 0 ] * dv[ 0 ] + dv[ 1 ] * dv[ 1 ] );
