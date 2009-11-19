@@ -2,8 +2,8 @@
                           tnlDebug.h  -  description
                              -------------------
     begin                : 2004/09/05
-    copyright            : (C) 2004 by Tom� Oberhuber
-    email                : oberhuber@seznam.cz
+    copyright            : (C) 2004 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************

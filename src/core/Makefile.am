@@ -20,7 +20,7 @@ headers =  \
 		  mFieldSystem1D.h \
 		  tnlList.h \
 		  mLongVector.h \
-		  mLogger.h \
+		  tnlLogger.h \
 		  tnlObject.h \
 		  tnlString.h \
 		  tnlConfigDescriptionParser.h \
@@ -38,7 +38,7 @@ headers =  \
 		  param-types.h
 
 sources = tnlConfigDescription.cpp \
-	  mLogger.cpp \
+	  tnlLogger.cpp \
 	  tnlObject.cpp \
 	  tnlString.cpp \
 	  tnlConfigDescriptionScanner.cpp \

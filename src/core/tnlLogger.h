@@ -1,9 +1,9 @@
 /***************************************************************************
-                          mLogger.h  -  description
+                          tnlLogger.h  -  description
                              -------------------
     begin                : 2007/08/21
     copyright            : (C) 2007 by Tomá¹ Oberhuber
-    email                : oberhuber@seznam.cz
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,11 +23,11 @@
 #include <iomanip>
 #include <core/mParameterContainer.h>
 
-class mLogger
+class tnlLogger
 {
    public:
 
-   mLogger( long int _width,
+   tnlLogger( long int _width,
             ostream& _stream )
    : width( _width ), 
      stream( _stream ){};

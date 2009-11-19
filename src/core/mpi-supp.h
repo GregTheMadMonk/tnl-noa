@@ -2,8 +2,8 @@
                           mpi-supp.h  -  description
                              -------------------
     begin                : 2005/04/23
-    copyright            : (C) 2005 by Tom� Oberhuber
-    email                : oberhuber@seznam.cz
+    copyright            : (C) 2005 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************

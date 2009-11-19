@@ -2,8 +2,8 @@
                           tnlList.h  -  description
                              -------------------
     begin                : Sat, 10 Apr 2004 15:58:51 +0100
-    copyright            : (C) 2004 by Tom� Oberhuber
-    email                : tomasoberhuber@seznam.cz
+    copyright            : (C) 2004 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,10 +14,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-/**
-  *@author Tom� Oberhuber
-  */
 
 #ifndef mListH
 #define mListH

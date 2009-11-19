@@ -2,8 +2,8 @@
                           mVector.h  -  description
                              -------------------
     begin                : 2006/03/04
-    copyright            : (C) 2006 by Tom� Oberhuber
-    email                : oberhuber@seznam.cz
+    copyright            : (C) 2006 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************

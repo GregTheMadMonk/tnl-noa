@@ -2,8 +2,8 @@
                           polygonizer.cpp  -  description
                              -------------------
     begin                : Mon Feb 11 2002
-    copyright            : (C) 2002 by Tomá¹ Oberhuber
-    email                : oberhuber@seznam.cz
+    copyright            : (C) 2002 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************

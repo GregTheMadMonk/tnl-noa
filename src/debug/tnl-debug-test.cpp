@@ -2,8 +2,8 @@
                           tnl-debug-test.cpp  -  description
                              -------------------
     begin                : 2005/07/05
-    copyright            : (C) 2005 by Tomá¹ Oberhuber
-    email                : oberhuber@seznam.cz
+    copyright            : (C) 2005 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************

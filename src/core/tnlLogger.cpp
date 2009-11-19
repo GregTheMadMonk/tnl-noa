@@ -1,9 +1,9 @@
 /***************************************************************************
-                          mLogger.cpp  -  description
+                          tnlLogger.cpp  -  description
                              -------------------
     begin                : 2007/08/22
     copyright            : (C) 2007 by Tomá¹ Oberhuber
-    email                : oberhuber@seznam.cz
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -16,10 +16,10 @@
  ***************************************************************************/
 
 #include <iomanip>
-#include "mLogger.h"
+#include "tnlLogger.h"
 
 //--------------------------------------------------------------------------
-void mLogger :: WriteHeader( const char* title )
+void tnlLogger :: WriteHeader( const char* title )
 {
    int fill = stream. fill(); 
    int title_length = strlen( title );
@@ -32,7 +32,7 @@ void mLogger :: WriteHeader( const char* title )
    stream. fill( fill );
 }
 //--------------------------------------------------------------------------
-void mLogger :: WriteSeparator()
+void tnlLogger :: WriteSeparator()
 {
    int fill = stream. fill(); 
    stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
