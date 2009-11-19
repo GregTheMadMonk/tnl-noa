@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <iostream>
-#include "mDataElement.h"
+#include "tnlDataElement.h"
 #include "tnlString.h"
 #include "param-types.h"
 
@@ -52,18 +52,18 @@ template< class T > class tnlList
    protected:
 
    //! Pointer to the first element
-   mDataElement< T >* first;
+   tnlDataElement< T >* first;
 
    //! Pointer to the last element
    /*! We use pointer to last element while adding new element to keep order of elements
     */
-   mDataElement< T >* last;
+   tnlDataElement< T >* last;
    
    //! List size
    long int size;
 
    //! Iterator
-   mutable mDataElement< T >* iterator;
+   mutable tnlDataElement< T >* iterator;
 
    //! Iterator index
    mutable long int index;
@@ -160,12 +160,12 @@ template< class T > class tnlList
       if( ! first )
       {
          assert( ! last );
-         first = last = new mDataElement< T >( data );
+         first = last = new tnlDataElement< T >( data );
          if( ! first ) return false;
       }
       else 
       {
-         mDataElement< T >* new_element =  new mDataElement< T >( data, last, 0 );
+         tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, last, 0 );
          if( ! new_element ) return false;
          assert( last );
          last = last -> Next() = new_element;
@@ -180,12 +180,12 @@ template< class T > class tnlList
       if( ! first )
       {
          assert( ! last );
-         first = last = new mDataElement< T >( data );
+         first = last = new tnlDataElement< T >( data );
          if( ! first ) return false;
       }
       else
       {
-         mDataElement< T >* new_element =  new mDataElement< T >( data, 0, first );
+         tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, 0, first );
          if( ! new_element ) return false;
          first = first -> Previous() = new_element; 
       }
@@ -201,8 +201,8 @@ template< class T > class tnlList
       if( ind == 0 ) return Prepend( data );
       if( ind == size ) return Append( data );
       operator[]( ind );
-      mDataElement< T >* new_el = 
-         new mDataElement< T >( data,
+      tnlDataElement< T >* new_el = 
+         new tnlDataElement< T >( data,
                                 iterator -> Previous(),
                                 iterator );
       if( ! new_el ) return false;
@@ -238,7 +238,7 @@ template< class T > class tnlList
    void Erase( long int ind )
    {
       operator[]( ind );
-      mDataElement< T >* tmp_it = iterator;
+      tnlDataElement< T >* tmp_it = iterator;
       if( iterator -> Next() )
          iterator -> Next() -> Previous() = iterator -> Previous();
       if( iterator -> Previous() )
@@ -267,7 +267,7 @@ template< class T > class tnlList
    void EraseAll()
    {
       iterator = first;
-      mDataElement< T >* tmp_it;
+      tnlDataElement< T >* tmp_it;
       while( iterator )
       {
          tmp_it = iterator;
@@ -282,7 +282,7 @@ template< class T > class tnlList
    void DeepEraseAll()
    {
       iterator = first;
-      mDataElement< T >* tmp_it;
+      tnlDataElement< T >* tmp_it;
       while( iterator )
       {
          tmp_it = iterator;
