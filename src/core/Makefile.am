@@ -14,7 +14,7 @@ headers =  \
 		  tnlConfigDescription.h \
 		  tnlCurve.h \
 		  tnlDataElement.h \
-		  mField1D.h \
+		  tnlField1D.h \
 		  mField2D.h \
 		  mField3D.h \
 		  mFieldSystem1D.h \

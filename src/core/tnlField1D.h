@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mField1D.h  -  description
+                          tnlField1D.h  -  description
                              -------------------
     begin                : 2007/11/26
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,27 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mField1DH
-#define mField1DH
+#ifndef tnlField1DH
+#define tnlField1DH
 
 #include <string.h>
 #include "tnlObject.h"
 #include "mLongVector.h"
 
-template< class T > class mField1D : public mLongVector< T >
+template< class T > class tnlField1D : public mLongVector< T >
 {
    public:
 
-   mField1D()
+   tnlField1D()
    : mLongVector< T >( 0 )
    { };
 
-   mField1D( long int _x_size )
+   tnlField1D( long int _x_size )
    : mLongVector< T >( _x_size ),
      x_size( _x_size )
    { };
 
-   mField1D( const mField1D& f )
+   tnlField1D( const tnlField1D& f )
    : mLongVector< T >( f ),
      x_size( f. x_size )
    { };
@@ -43,7 +43,7 @@ template< class T > class mField1D : public mLongVector< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mField1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlField1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const
@@ -57,7 +57,7 @@ template< class T > class mField1D : public mLongVector< T >
       return mLongVector< T > :: SetNewSize( x_size );
    };
 
-   bool SetNewDimensions( const mField1D< T >& f )
+   bool SetNewDimensions( const tnlField1D< T >& f )
    {
       return SetNewDimensions( f. GetXSize() );
    };
@@ -105,6 +105,6 @@ template< class T > class mField1D : public mLongVector< T >
 };
 
 // Explicit instatiation
-template class mField1D< double >;
+template class tnlField1D< double >;
 
 #endif

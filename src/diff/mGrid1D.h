@@ -18,9 +18,9 @@
 #ifndef mGrid1DH
 #define mGrid1DH
 
-#include <core/mField1D.h>
+#include <core/tnlField1D.h>
 
-template< typename T = double > class mGrid1D : public mField1D< T >
+template< typename T = double > class mGrid1D : public tnlField1D< T >
 {
    public:
 
@@ -36,7 +36,7 @@ template< typename T = double > class mGrid1D : public mField1D< T >
    mGrid1D( int x_size,
             const double& A_x,
             const double& B_x )
-   : mField1D< T >( x_size ),
+   : tnlField1D< T >( x_size ),
      Ax( A_x ), Bx( B_x ) 
    {
       assert( Ax < Bx );
@@ -44,7 +44,7 @@ template< typename T = double > class mGrid1D : public mField1D< T >
    };
 
    mGrid1D( const mGrid1D& g )
-   : mField1D< T >( g ),
+   : tnlField1D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Hx( g. Hx )
    { };
@@ -62,7 +62,7 @@ template< typename T = double > class mGrid1D : public mField1D< T >
       Ax = A_x;
       Bx = B_x;
       assert( Ax < Bx );
-      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( mField1D< T > :: GetXSize() - 1 ); 
+      if( ! hx ) Hx = ( Bx - Ax ) / ( double ) ( tnlField1D< T > :: GetXSize() - 1 ); 
       else Hx = hx;
    }
    ;
@@ -100,43 +100,43 @@ template< typename T = double > class mGrid1D : public mField1D< T >
    T Partial_x_f( const int i ) const
    {
       assert( i >= 0 );
-      assert( i < mField1D< T > :: x_size - 1 );
-      return ( mField1D< T > :: operator()( i + 1 ) - 
-               mField1D< T > ::  operator()( i ) ) / Hx;
+      assert( i < tnlField1D< T > :: x_size - 1 );
+      return ( tnlField1D< T > :: operator()( i + 1 ) - 
+               tnlField1D< T > ::  operator()( i ) ) / Hx;
    };
    
    //! Backward difference w.r.t x
    T Partial_x_b( const int i ) const
    {
       assert( i > 0 );
-      assert( i < mField1D< T > :: x_size );
-      return ( mField1D< T > :: operator()( i ) - 
-               mField1D< T > :: operator()( i - 1 ) ) / Hx;
+      assert( i < tnlField1D< T > :: x_size );
+      return ( tnlField1D< T > :: operator()( i ) - 
+               tnlField1D< T > :: operator()( i - 1 ) ) / Hx;
    };
 
    //! Central difference w.r.t. x
    T Partial_x( const int i ) const
    {
       assert( i > 0 );
-      assert( i < mField1D< T > :: x_size - 1 );
-      return ( mField1D< T > :: operator()( i + 1 ) - 
-               mField1D< T > :: operator()( i - 1 ) ) / ( 2.0 * Hx );
+      assert( i < tnlField1D< T > :: x_size - 1 );
+      return ( tnlField1D< T > :: operator()( i + 1 ) - 
+               tnlField1D< T > :: operator()( i - 1 ) ) / ( 2.0 * Hx );
    };
    
    //! Second order difference w.r.t. x
    T Partial_xx( const int i ) const
    {
       assert( i > 0 );
-      assert( i < mField1D< T > :: x_size - 1 );
-      return ( mField1D< T > :: operator()( i + 1 ) - 
-               2.0 * mField1D< T > :: operator()( i ) + 
-               mField1D< T > :: operator()( i - 1 ) ) / ( Hx * Hx );   
+      assert( i < tnlField1D< T > :: x_size - 1 );
+      return ( tnlField1D< T > :: operator()( i + 1 ) - 
+               2.0 * tnlField1D< T > :: operator()( i ) + 
+               tnlField1D< T > :: operator()( i - 1 ) ) / ( Hx * Hx );   
    };
    
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mField1D< T > :: Save( file ) ) return false;
+      if( ! tnlField1D< T > :: Save( file ) ) return false;
       file. write( ( char* ) &Ax, sizeof( double ) );
       file. write( ( char* ) &Bx, sizeof( double ) );
       file. write( ( char* ) &Hx, sizeof( double ) );
@@ -147,7 +147,7 @@ template< typename T = double > class mGrid1D : public mField1D< T >
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mField1D< T > :: Load( file ) ) return false;
+      if( ! tnlField1D< T > :: Load( file ) ) return false;
       file. read( ( char* ) &Ax, sizeof( double ) );
       file. read( ( char* ) &Bx, sizeof( double ) );
       file. read( ( char* ) &Hx, sizeof( double ) );
