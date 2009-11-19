@@ -20,23 +20,23 @@
 
 #include <string.h>
 #include "tnlObject.h"
-#include "mLongVector.h"
+#include "tnlLongVector.h"
 
-template< class T > class tnlField1D : public mLongVector< T >
+template< class T > class tnlField1D : public tnlLongVector< T >
 {
    public:
 
    tnlField1D()
-   : mLongVector< T >( 0 )
+   : tnlLongVector< T >( 0 )
    { };
 
    tnlField1D( long int _x_size )
-   : mLongVector< T >( _x_size ),
+   : tnlLongVector< T >( _x_size ),
      x_size( _x_size )
    { };
 
    tnlField1D( const tnlField1D& f )
-   : mLongVector< T >( f ),
+   : tnlLongVector< T >( f ),
      x_size( f. x_size )
    { };
 
@@ -54,7 +54,7 @@ template< class T > class tnlField1D : public mLongVector< T >
    bool SetNewDimensions( long int new_x_size )
    {
       x_size = new_x_size;
-      return mLongVector< T > :: SetNewSize( x_size );
+      return tnlLongVector< T > :: SetNewSize( x_size );
    };
 
    bool SetNewDimensions( const tnlField1D< T >& f )
@@ -66,13 +66,13 @@ template< class T > class tnlField1D : public mLongVector< T >
    const T& operator() ( long int i ) const
    {
       assert( i < x_size && i >= 0 );
-      return mLongVector< T > :: data[ i ];
+      return tnlLongVector< T > :: data[ i ];
    };
 
    T& operator() ( long int i )
    {
       assert( i < x_size && i >= 0 );
-      return mLongVector< T > :: data[ i ];
+      return tnlLongVector< T > :: data[ i ];
    };
 
    long int GetLongVectorIndex( long int i ) const
@@ -84,7 +84,7 @@ template< class T > class tnlField1D : public mLongVector< T >
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mLongVector< T > :: Save( file ) ) return false;
+      if( ! tnlLongVector< T > :: Save( file ) ) return false;
       file. write( ( char* ) &x_size, sizeof( long int ) );
       if( file. bad() ) return false;
       return true;
@@ -93,7 +93,7 @@ template< class T > class tnlField1D : public mLongVector< T >
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mLongVector< T > :: Load( file ) ) return false;
+      if( ! tnlLongVector< T > :: Load( file ) ) return false;
       file. read( ( char* ) &x_size, sizeof( long int ) );
       if( file. bad() ) return false;
       return true;

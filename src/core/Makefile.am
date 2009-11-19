@@ -19,7 +19,7 @@ headers =  \
 		  tnlField3D.h \
 		  mFieldSystem1D.h \
 		  tnlList.h \
-		  mLongVector.h \
+		  tnlLongVector.h \
 		  tnlLogger.h \
 		  tnlObject.h \
 		  tnlString.h \

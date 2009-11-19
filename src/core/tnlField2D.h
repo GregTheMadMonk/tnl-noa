@@ -20,24 +20,24 @@
 
 #include <string.h>
 #include "tnlObject.h"
-#include "mLongVector.h"
+#include "tnlLongVector.h"
 
-template< class T > class tnlField2D : public mLongVector< T >
+template< class T > class tnlField2D : public tnlLongVector< T >
 {
    public:
 
    tnlField2D()
-   : mLongVector< T >( 0 )
+   : tnlLongVector< T >( 0 )
    { };
 
    tnlField2D( long int _x_size,
              long int _y_size )
-   : mLongVector< T >( _x_size * _y_size ),
+   : tnlLongVector< T >( _x_size * _y_size ),
      x_size( _x_size ), y_size( _y_size )
    { };
 
    tnlField2D( const tnlField2D& f )
-   : mLongVector< T >( f ),
+   : tnlLongVector< T >( f ),
      x_size( f. x_size ), y_size( f. y_size )
    { };
 
@@ -62,7 +62,7 @@ template< class T > class tnlField2D : public mLongVector< T >
    {
       x_size = new_x_size;
       y_size = new_y_size;
-      return mLongVector< T > :: SetNewSize( x_size * y_size );
+      return tnlLongVector< T > :: SetNewSize( x_size * y_size );
    };
 
    bool SetNewDimensions( const tnlField2D< T >& f )
@@ -72,7 +72,7 @@ template< class T > class tnlField2D : public mLongVector< T >
 
    void SetSharedData( T* _data, const long int _x_size, const long int _y_size )
    {
-      mLongVector< T > :: SetSharedData( _data, _x_size * _y_size );
+      tnlLongVector< T > :: SetSharedData( _data, _x_size * _y_size );
       x_size = _x_size;
       y_size = _y_size;
    };
@@ -80,13 +80,13 @@ template< class T > class tnlField2D : public mLongVector< T >
    const T& operator() ( long int i, long int j ) const
    {
       assert( i < x_size && j < y_size && i >= 0 && j >= 0 );
-      return mLongVector< T > :: data[ i * y_size + j ];
+      return tnlLongVector< T > :: data[ i * y_size + j ];
    };
 
    T& operator() ( long int i, long int j )
    {
       assert( i < x_size && j < y_size && i >= 0 && j >= 0 );
-      return mLongVector< T > :: data[ i * y_size + j ];
+      return tnlLongVector< T > :: data[ i * y_size + j ];
    };
 
    long int GetLongVectorIndex( long int i, long int j ) const
@@ -99,7 +99,7 @@ template< class T > class tnlField2D : public mLongVector< T >
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mLongVector< T > :: Save( file ) ) return false;
+      if( ! tnlLongVector< T > :: Save( file ) ) return false;
       file. write( ( char* ) &x_size, sizeof( long int ) );
       file. write( ( char* ) &y_size, sizeof( long int ) );
       if( file. bad() ) return false;
@@ -109,7 +109,7 @@ template< class T > class tnlField2D : public mLongVector< T >
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mLongVector< T > :: Load( file ) ) return false;
+      if( ! tnlLongVector< T > :: Load( file ) ) return false;
       file. read( ( char* ) &x_size, sizeof( long int ) );
       file. read( ( char* ) &y_size, sizeof( long int ) );
       if( file. bad() ) return false;

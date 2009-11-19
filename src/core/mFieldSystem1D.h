@@ -18,24 +18,24 @@
 #ifndef mFieldSystem1DH
 #define mFieldSystem1DH
 
-#include "mLongVector.h"
+#include "tnlLongVector.h"
 #include "tnlVector.h"
 
-template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D : public mLongVector< T >
+template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D : public tnlLongVector< T >
 {
    public:
 
    mFieldSystem1D()
-   : mLongVector< T >( 0 )
+   : tnlLongVector< T >( 0 )
    { };
 
    mFieldSystem1D( long int _x_size )
-   : mLongVector< T >( _x_size * SYSTEM_SIZE ),
+   : tnlLongVector< T >( _x_size * SYSTEM_SIZE ),
      x_size( _x_size )
    { };
 
    mFieldSystem1D( const mFieldSystem1D& f )
-   : mLongVector< T >( f ),
+   : tnlLongVector< T >( f ),
      x_size( f. x_size )
    { };
 
@@ -53,7 +53,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
    bool SetNewDimensions( long int new_x_size )
    {
       x_size = new_x_size;
-      return mLongVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
+      return tnlLongVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
    };
 
    bool SetNewDimensions( const mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& f )
@@ -64,13 +64,13 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
    const T& operator() ( const SYSTEM_INDEX ind, const long int i ) const
    {
       assert( i < x_size && i >= 0 && ( long int ) ind < SYSTEM_SIZE );
-      return mLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
+      return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
    T& operator() ( const SYSTEM_INDEX ind, const long int i )
    {
       assert( i < x_size && i >= 0 && ( long int ) ind < SYSTEM_SIZE );
-      return mLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
+      return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
    tnlVector< SYSTEM_SIZE, T > operator() ( const long int i ) const
@@ -92,7 +92,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mLongVector< T > :: Save( file ) ) return false;
+      if( ! tnlLongVector< T > :: Save( file ) ) return false;
       file. write( ( char* ) &x_size, sizeof( long int ) );
       if( file. bad() ) return false;
       return true;
@@ -101,7 +101,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mLongVector< T > :: Load( file ) ) return false;
+      if( ! tnlLongVector< T > :: Load( file ) ) return false;
       file. read( ( char* ) &x_size, sizeof( long int ) );
       if( file. bad() ) return false;
       return true;

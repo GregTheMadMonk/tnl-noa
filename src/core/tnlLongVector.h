@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mLongVector.h  -  description
+                          tnlLongVector.h  -  description
                              -------------------
     begin                : 2007/06/16
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,20 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mLongVectorH
-#define mLongVectorH
+#ifndef tnlLongVectorH
+#define tnlLongVectorH
 
 #include <assert.h>
 #include "tnlObject.h"
 #include "param-types.h"
 
-template< class T > class mLongVector : public tnlObject
+template< class T > class tnlLongVector : public tnlObject
 {
 
    public:
 
    //! Constructor with given size
-   mLongVector( int _size = 0 )
+   tnlLongVector( int _size = 0 )
    : size( _size ), shared_data( false )
    {
       data = new T[ size + 1 ];
@@ -41,7 +41,7 @@ template< class T > class mLongVector : public tnlObject
    };
 
    //! Constructor with another long vector as template
-   mLongVector( const mLongVector& v )
+   tnlLongVector( const tnlLongVector& v )
    : tnlObject( v ), size( v. size ), shared_data( false )
    {
       data = new T[ size + 1 ];
@@ -56,7 +56,7 @@ template< class T > class mLongVector : public tnlObject
    tnlString GetType()
    {
       T t;
-      return tnlString( "mLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    bool SetNewSize( int _size )
@@ -80,7 +80,7 @@ template< class T > class mLongVector : public tnlObject
       return true;
    };
 
-   bool SetNewSize( const mLongVector< T >& v )
+   bool SetNewSize( const tnlLongVector< T >& v )
    {
       return SetNewSize( v. GetSize() );
    };
@@ -136,7 +136,7 @@ template< class T > class mLongVector : public tnlObject
       for( i = 0; i < size; i ++ ) data[ i ] = ( T ) 0;
    };
 
-   ~mLongVector()
+   ~tnlLongVector()
    {
       if( data && ! shared_data ) delete -- data;
    };
@@ -190,7 +190,7 @@ template< class T > class mLongVector : public tnlObject
    bool shared_data;
 };
 
-template< typename T > ostream& operator << ( ostream& o, const mLongVector< T >& v )
+template< typename T > ostream& operator << ( ostream& o, const tnlLongVector< T >& v )
 {
    int size = v. GetSize();
    int i;
@@ -200,16 +200,16 @@ template< typename T > ostream& operator << ( ostream& o, const mLongVector< T >
    return o;
 };
 
-template< typename T > void Copy( const mLongVector< T >& v1,
-                                  mLongVector< T >& v2 )
+template< typename T > void Copy( const tnlLongVector< T >& v1,
+                                  tnlLongVector< T >& v2 )
 {
    assert( v1. GetSize() == v2. GetSize() );
    memcpy( v2. Data(), v1. Data(), v1. GetSize() * sizeof( T ) );
 };
 
 // Explicit instatiation
-template class mLongVector< double >;
-template ostream& operator << ( ostream& o, const mLongVector< double >& v );
+template class tnlLongVector< double >;
+template ostream& operator << ( ostream& o, const tnlLongVector< double >& v );
 
 
 #endif
