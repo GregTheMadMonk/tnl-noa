@@ -25,13 +25,13 @@
 #include <diff/drawGrid2D.h>
 #include <diff/drawGrid3D.h>
 
-bool ProcessmGrid2D( const tnlString& file_name, 
+bool ProcesstnlGrid2D( const tnlString& file_name, 
                      const tnlParameterContainer& parameters,
                      int file_index,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
-   mGrid2D< double > u;
+   tnlGrid2D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
    if( ! u. Load( file ) )
@@ -42,7 +42,7 @@ bool ProcessmGrid2D( const tnlString& file_name,
    }
    file. close();
 
-   mGrid2D< double >* output_u;
+   tnlGrid2D< double >* output_u;
    
    int output_x_size( 0 ), output_y_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );
@@ -55,7 +55,7 @@ bool ProcessmGrid2D( const tnlString& file_name,
       if( ! output_x_size ) output_x_size = u. GetXSize();
       if( ! output_y_size ) output_y_size = u. GetYSize();
 
-      output_u = new mGrid2D< double >( output_x_size,
+      output_u = new tnlGrid2D< double >( output_x_size,
                                   output_y_size,
                                   u. GetAx(),
                                   u. GetBx(),
@@ -234,9 +234,9 @@ int main( int argc, char* argv[] )
          }
 
          bool object_type_matched( false );
-         if( object_type == "mGrid2D< double >" )
+         if( object_type == "tnlGrid2D< double >" )
          {
-            ProcessmGrid2D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            ProcesstnlGrid2D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
          if( object_type == "mGrid3D< double >" )

@@ -16,14 +16,14 @@
  ***************************************************************************/
 
 #include <fstream>
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <stdio.h>
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
    int i;
-   mGrid2D< double > u;
+   tnlGrid2D< double > u;
    for( i = 1; i < argc; i ++ )
    {
       const char* file_name = argv[ i ];

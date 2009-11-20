@@ -13,7 +13,7 @@ headers = \
    drawGrid3D.h \
    tnlExplicitSolver.h \
    tnlGrid1D.h \
-   mGrid2D.h \
+   tnlGrid2D.h \
    mGrid3D.h \
    mGridSystem1D.h \
    tnlEulerSolver.h \

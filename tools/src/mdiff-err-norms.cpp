@@ -21,7 +21,7 @@
 
 #include <debug/tnlDebug.h>
 #include <diff/tnlGrid1D.h>
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <diff/drawGrid1D.h>
 #include <diff/drawGrid2D.h>
 #include <core/tnlConfigDescription.h>
@@ -224,7 +224,7 @@ int main( int argc, char* argv[] )
    
    
    long int i;
-   mGrid2D< double > u1, u2;
+   tnlGrid2D< double > u1, u2;
    double l1_int( 0.0 ), l2_int( 0.0 ), max_int( 0.0 ), h( 0.0 );
    if( test == "function" )
    {
@@ -275,12 +275,12 @@ int main( int argc, char* argv[] )
          
          double l1_norm( 0.0 ), l2_norm( 0.0 ), max_norm( 0.0 ), h( 0.0 );
          
-         if( first_object_type == "mGrid2D< double >" )
+         if( first_object_type == "tnlGrid2D< double >" )
          {
-            dbgCout( "Processing file with mGrid2D< double > ..." );
+            dbgCout( "Processing file with tnlGrid2D< double > ..." );
             dbgExpr( first_file_uncompressed );
             dbgExpr( second_file_uncompressed );
-            mGrid2D< double > u1, u2, difference;
+            tnlGrid2D< double > u1, u2, difference;
             fstream file;
             file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u1. Load( file ) )

@@ -19,7 +19,7 @@
 #define curve_identH
 
 #include <core/tnlCurve.h>
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <debug/tnlDebug.h>
 
 //! Supporting structure for a curve identification
@@ -32,7 +32,7 @@ struct MeshIndex
       : i( _i ), j( _j ){}
 };
 
-template< class T > bool GetLevelSetCurve( const mGrid2D< T >& u,
+template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                                            tnlCurve< tnlVector< 2, T > >& crv,
                                            const double level = 0.0 )
 {

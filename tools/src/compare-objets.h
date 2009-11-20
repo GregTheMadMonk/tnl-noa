@@ -18,12 +18,12 @@
 #ifndef compare-objetsH
 #define compare-objetsH
 
-bool Compare( const mGrid2D< double >& u1,
-              const mGrid2D< double >& u2,
+bool Compare( const tnlGrid2D< double >& u1,
+              const tnlGrid2D< double >& u2,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              mGrid2D< double >& difference );
+              tnlGrid2D< double >& difference );
 
 bool Compare( const mGrid3D< double >& u1,
               const mGrid3D< double >& u2,

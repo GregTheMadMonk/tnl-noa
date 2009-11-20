@@ -16,11 +16,11 @@
  ***************************************************************************/
 
 #include <fstream>
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <stdio.h>
 
 bool ReadInputFile( const char* file_name, 
-                    mGrid2D< double >& u )
+                    tnlGrid2D< double >& u )
 {
    cout << "I am processing the file..." << file_name << " ... " << flush;
    int strln = strlen( file_name );
@@ -71,7 +71,7 @@ bool ReadInputFile( const char* file_name,
 int main( int argc, char* argv[] )
 {
    int i;
-   mGrid2D< double > u1, u2;
+   tnlGrid2D< double > u1, u2;
    bool have_u2( false );
    if( argc == 1 )
    {

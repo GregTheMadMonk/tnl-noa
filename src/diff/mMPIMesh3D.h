@@ -187,8 +187,8 @@ template< class T > class mMPIMesh3D
                  int root = 0 ) const;
 
    //! Scatter the function but only at the domains at the boundaries
-   //void ScatterAtBoundaries( const mGrid2D* u,
-   //                          mGrid2D* sub_u ); 
+   //void ScatterAtBoundaries( const tnlGrid2D* u,
+   //                          tnlGrid2D* sub_u ); 
 
    //! Gather the function
    void Gather( mGrid3D< T >& u,

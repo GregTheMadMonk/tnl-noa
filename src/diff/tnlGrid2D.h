@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mGrid2D.h  -  description
+                          tnlGrid2D.h  -  description
                              -------------------
     begin                : 2007/06/17
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mGrid2DH
-#define mGrid2DH
+#ifndef tnlGrid2DH
+#define tnlGrid2DH
 
 #include <core/tnlField2D.h>
 
-template< class T = double > class mGrid2D :
+template< class T = double > class tnlGrid2D :
 	                         public tnlField2D< T >
 {
    public:
 
-   mGrid2D()
+   tnlGrid2D()
    {
    };
 
@@ -34,7 +34,7 @@ template< class T = double > class mGrid2D :
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   mGrid2D( int x_size,
+   tnlGrid2D( int x_size,
             int y_size,
             const double& A_x,
             const double& B_x,
@@ -49,7 +49,7 @@ template< class T = double > class mGrid2D :
       Hy = ( By - Ay ) / ( double ) ( tnlField2D< T > :: GetYSize() - 1 );
    };
 
-   mGrid2D( const mGrid2D& g )
+   tnlGrid2D( const tnlGrid2D& g )
    : tnlField2D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Ay( g. Ay ), By( g. By ),
@@ -60,7 +60,7 @@ template< class T = double > class mGrid2D :
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mGrid2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlGrid2D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,
@@ -81,7 +81,7 @@ template< class T = double > class mGrid2D :
       else Hy = hy;
    }
    
-   void SetNewDomain( const mGrid2D< T >& u )
+   void SetNewDomain( const tnlGrid2D< T >& u )
    {
       SetNewDomain( u. GetAx(),
                     u. GetBx(),
@@ -278,6 +278,6 @@ template< class T = double > class mGrid2D :
 };
 
 // Explicit instatiation
-template class mGrid2D< double >;
+template class tnlGrid2D< double >;
 
 #endif

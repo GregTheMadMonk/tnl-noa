@@ -17,7 +17,7 @@
 
 #include "mgrid2gnuplot-def.h"
 
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <core/tnlParameterContainer.h>
 
 
@@ -54,7 +54,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    long int i;
-   mGrid2D< double > u;
+   tnlGrid2D< double > u;
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. Data();
@@ -103,7 +103,7 @@ int main( int argc, char* argv[] )
          return -1;
       }
 
-      mGrid2D< double >* output_u;
+      tnlGrid2D< double >* output_u;
       if( ! output_x_size && ! output_y_size && scale == 1.0 )
          output_u = &u;
       else
@@ -111,7 +111,7 @@ int main( int argc, char* argv[] )
          if( ! output_x_size ) output_x_size = u. GetXSize();
          if( ! output_y_size ) output_y_size = u. GetYSize();
 
-         output_u = new mGrid2D< double >( output_x_size,
+         output_u = new tnlGrid2D< double >( output_x_size,
                                            output_y_size,
                                            u. GetAx(),
                                            u. GetBx(),

@@ -22,11 +22,11 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <core/compress-file.h>
 #include <core/mfuncs.h>
 
-template< class T > bool Draw( const mGrid2D< T >& u,
+template< class T > bool Draw( const tnlGrid2D< T >& u,
                                ostream& str,
                                const char* format,
                                const long int i_step = 1,
@@ -86,7 +86,7 @@ template< class T > bool Draw( const mGrid2D< T >& u,
    return false;
 };
 
-template< class T > bool Draw( const mGrid2D< T >& u,
+template< class T > bool Draw( const tnlGrid2D< T >& u,
                                const char* file_name,
                                const char* format,
                                const long int i_step = 1,
@@ -114,7 +114,7 @@ template< class T > bool Draw( const mGrid2D< T >& u,
    return true;
 };
 
-template< class T > bool Read( mGrid2D< T >& u,
+template< class T > bool Read( tnlGrid2D< T >& u,
                                const char* input_file )
 {
    int strln = strlen( input_file );

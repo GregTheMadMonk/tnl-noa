@@ -18,9 +18,9 @@
 #ifndef normsH
 #define normsH
 
-#include "mGrid2D.h"
+#include "tnlGrid2D.h"
 
-template< class T > T GetL1Norm( const mGrid2D< T >& u )
+template< class T > T GetL1Norm( const tnlGrid2D< T >& u )
 {
    long int size = u. GetSize();
    const T* _u = u. Data(); 
@@ -32,7 +32,7 @@ template< class T > T GetL1Norm( const mGrid2D< T >& u )
    return result;
 };
 
-template< class T > T GetL2Norm( const mGrid2D< T >& u )
+template< class T > T GetL2Norm( const tnlGrid2D< T >& u )
 {
    long int size = u. GetSize();
    const T* _u = u. Data(); 
@@ -44,7 +44,7 @@ template< class T > T GetL2Norm( const mGrid2D< T >& u )
    return sqrt( result );
 };
 
-template< class T > T GetMaxNorm( const mGrid2D< T >& u )
+template< class T > T GetMaxNorm( const tnlGrid2D< T >& u )
 {
    long int size = u. GetSize();
    const T* _u = u. Data(); 
@@ -55,8 +55,8 @@ template< class T > T GetMaxNorm( const mGrid2D< T >& u )
    return result;
 };
 
-template< class T > T GetDiffL1Norm( const mGrid2D< T >& u1,
-                                     const mGrid2D< T >& u2 )
+template< class T > T GetDiffL1Norm( const tnlGrid2D< T >& u1,
+                                     const tnlGrid2D< T >& u2 )
 {
    assert( u1. GetSize() == u2. GetSize() );
    assert( u1. GetHx() == u2. GetHx() );
@@ -75,8 +75,8 @@ template< class T > T GetDiffL1Norm( const mGrid2D< T >& u1,
    return result;
 };
 
-template< class T > T GetDiffL2Norm( const mGrid2D< T >& u1,
-                                     const mGrid2D< T >& u2 )
+template< class T > T GetDiffL2Norm( const tnlGrid2D< T >& u1,
+                                     const tnlGrid2D< T >& u2 )
 {
    assert( u1. GetSize() == u2. GetSize() );
    assert( u1. GetHx() == u2. GetHx() );
@@ -95,8 +95,8 @@ template< class T > T GetDiffL2Norm( const mGrid2D< T >& u1,
    return sqrt( result );
 };
 
-template< class T > T GetDiffMaxNorm( const mGrid2D< T >& u1,
-                                     const mGrid2D< T >& u2 )
+template< class T > T GetDiffMaxNorm( const tnlGrid2D< T >& u1,
+                                     const tnlGrid2D< T >& u2 )
 {
    assert( u1. GetSize() == u2. GetSize() );
    long int size = u1. GetSize();

@@ -21,12 +21,12 @@
 #include <core/mfuncs.h>
 
 //--------------------------------------------------------------------------
-bool Compare( const mGrid2D< double >& u1,
-              const mGrid2D< double >& u2,
+bool Compare( const tnlGrid2D< double >& u1,
+              const tnlGrid2D< double >& u2,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              mGrid2D< double >& difference )
+              tnlGrid2D< double >& difference )
 {
    if( u1. GetXSize() != u2. GetXSize() ||
        u1. GetYSize() != u2. GetYSize() ||

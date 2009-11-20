@@ -18,7 +18,7 @@
 #ifndef mMPIMesh2DH
 #define mMPIMesh2DH
 
-#include <diff/mGrid2D.h>
+#include <diff/tnlGrid2D.h>
 #include <core/tnlParameterContainer.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
@@ -39,7 +39,7 @@ template< class T > class mMPIMesh2D
    };
 
    //! Initiation
-   bool Init( const mGrid2D< T >& u,
+   bool Init( const tnlGrid2D< T >& u,
               int& _mesh_x_size,
               int& _mesh_y_size,
               int _overlap_width,
@@ -47,7 +47,7 @@ template< class T > class mMPIMesh2D
               MPI_Comm comm = MPI_COMM_WORLD );
    
    //! Initiation by parametr container
-   bool Init( const mGrid2D< T >& u,
+   bool Init( const tnlGrid2D< T >& u,
               const tnlParameterContainer& parameters,
               int _overlap_width,
               int root = 0,
@@ -142,29 +142,29 @@ template< class T > class mMPIMesh2D
       return top_overlap;
    };
 
-   bool SetGlobalDomain( mGrid2D< T >& global_u );
+   bool SetGlobalDomain( tnlGrid2D< T >& global_u );
 
    //! Create subdomains
-   bool CreateMesh( const mGrid2D< T >& u,
-                    mGrid2D< T >& sub_u,
+   bool CreateMesh( const tnlGrid2D< T >& u,
+                    tnlGrid2D< T >& sub_u,
                     int root = 0 ) const;
 
    //! Scatter the function
-   void Scatter( const mGrid2D< T >& u,
-                 mGrid2D< T >& sub_u,
+   void Scatter( const tnlGrid2D< T >& u,
+                 tnlGrid2D< T >& sub_u,
                  int root = 0 ) const;
 
    //! Scatter the function but only at the domains at the boundaries
-   //void ScatterAtBoundaries( const mGrid2D* u,
-   //                          mGrid2D* sub_u ); 
+   //void ScatterAtBoundaries( const tnlGrid2D* u,
+   //                          tnlGrid2D* sub_u ); 
 
    //! Gather the function
-   void Gather( mGrid2D< T >& u,
-                const mGrid2D< T >& sub_u,
+   void Gather( tnlGrid2D< T >& u,
+                const tnlGrid2D< T >& sub_u,
                 int root = 0 ) const;
 
    //! Synchronize domain edges
-   void Synchronize( mGrid2D< T >& u );
+   void Synchronize( tnlGrid2D< T >& u );
    
    //! Get domain edges
    void DomainOverlaps( int& right, int& left,
@@ -172,8 +172,8 @@ template< class T > class mMPIMesh2D
 
    protected:
    //! Supporting method for scattering
-   void ScatterToNode( const mGrid2D< T >& u,
-                       mGrid2D< T >& sub_u,
+   void ScatterToNode( const tnlGrid2D< T >& u,
+                       tnlGrid2D< T >& sub_u,
                        int dest_node,
                        int root ) const;
 
@@ -223,7 +223,7 @@ template< class T > class mMPIMesh2D
 };
                
 template< class T > void DrawSubdomains( const mMPIMesh2D< T >& mpi_mesh, 
-                                         const mGrid2D< T >* u,
+                                         const tnlGrid2D< T >* u,
                                          const char* file_name_base,
                                          const char* format );
 
@@ -254,7 +254,7 @@ template< class T > mMPIMesh2D< T > :: mMPIMesh2D()
       top_right_recieve_buff( 0 )
       {};
    
-template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
+template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
                                                   int& _mesh_x_size,
                                                   int& _mesh_y_size,
                                                   int _overlap_width,
@@ -416,7 +416,7 @@ template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
       return true;
    };
    
-template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
+template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
                                                   const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
@@ -428,7 +428,7 @@ template< class T > bool mMPIMesh2D< T > :: Init( const mGrid2D< T >& u,
    return Init( u, mpi_mesh_x_size, mpi_mesh_y_size, _overlap_width, root, comm );
 }
 
-template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( mGrid2D< T >& global_u )
+template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( tnlGrid2D< T >& global_u )
 {
    if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size ) )
       return false;
@@ -437,8 +437,8 @@ template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( mGrid2D< T >& globa
    return true;
 }
    
-template< class T > bool mMPIMesh2D< T > :: CreateMesh( const mGrid2D< T >& u,
-                                                        mGrid2D< T >& sub_u,
+template< class T > bool mMPIMesh2D< T > :: CreateMesh( const tnlGrid2D< T >& u,
+                                                        tnlGrid2D< T >& sub_u,
                                                         int root ) const
 {
 #ifdef HAVE_MPI
@@ -484,8 +484,8 @@ template< class T > bool mMPIMesh2D< T > :: CreateMesh( const mGrid2D< T >& u,
 return true;
 };
 
-template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u,
-                                                           mGrid2D< T >& sub_u,
+template< class T > void mMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T >& u,
+                                                           tnlGrid2D< T >& sub_u,
                                                            int dest_node,
                                                            int root ) const
 {
@@ -513,10 +513,10 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u
                dest_left_overlap << dest_right_overlap <<
                dest_bottom_overlap << dest_top_overlap );
 
-      mGrid2D< T >* mpi_buff;
+      tnlGrid2D< T >* mpi_buff;
       if( dest_node == root )
          mpi_buff = &sub_u;
-      else mpi_buff = new mGrid2D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
+      else mpi_buff = new tnlGrid2D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
                                          subdomain_y_size + dest_bottom_overlap + dest_top_overlap,
                                          0.0, 1.0, 0.0, 1.0 );
       dbgCout( "mpi buff < " <<
@@ -564,8 +564,8 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const mGrid2D< T >& u
 #endif
 }
 
-template< class T > void mMPIMesh2D< T > :: Scatter( const mGrid2D< T >& u,
-                                                     mGrid2D< T >& sub_u,
+template< class T > void mMPIMesh2D< T > :: Scatter( const tnlGrid2D< T >& u,
+                                                     tnlGrid2D< T >& sub_u,
                                                      int root ) const
 {
 #ifdef HAVE_MPI
@@ -582,8 +582,8 @@ template< class T > void mMPIMesh2D< T > :: Scatter( const mGrid2D< T >& u,
 #endif
 }
     
-template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
-                                                    const mGrid2D< T >& sub_u,
+template< class T > void mMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
+                                                    const tnlGrid2D< T >& sub_u,
                                                     int root ) const
 {
    dbgFunctionName( "mMPIMesh2D", "Gather" );
@@ -623,7 +623,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
                       ", " << ( src_y_pos + 1 ) * subdomain_y_size + src_top_overlap <<
                       " >" );
                   
-            mGrid2D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
+            tnlGrid2D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    0.0, 1.0, 0.0, 1.0 );
             long int buf_size = 
@@ -686,7 +686,7 @@ template< class T > void mMPIMesh2D< T > :: Gather( mGrid2D< T >& u,
 #endif
 }
 
-template< class T > void mMPIMesh2D< T > :: Synchronize( mGrid2D< T >& u )
+template< class T > void mMPIMesh2D< T > :: Synchronize( tnlGrid2D< T >& u )
 {
    dbgFunctionName( "mMPIMesh2D", "Synchronize" );
 #ifdef HAVE_MPI
@@ -1071,7 +1071,7 @@ template< class T > void mMPIMesh2D< T > :: FreeBuffers()
 };
 
 template< class T > void DrawSubdomains( const mMPIMesh2D< T >& mpi_mesh, 
-                                         const mGrid2D< T >& u,
+                                         const tnlGrid2D< T >& u,
                                          const char* file_name_base,
                                          const char* format )
 {
