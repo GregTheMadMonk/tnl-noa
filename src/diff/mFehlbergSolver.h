@@ -19,9 +19,9 @@
 #define mFehlbergSolverH
 
 #include <math.h>
-#include <diff/mExplicitSolver.h>
+#include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver : public mExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
@@ -69,12 +69,12 @@ template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver 
       T* _k_tmp = k_tmp -> Data();
       T* _u = u. Data();
            
-      mExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
-      double& _time = mExplicitSolver< GRID, SCHEME, T > :: time;  
-      double& _residue = mExplicitSolver< GRID, SCHEME, T > :: residue;  
-      long int& _iteration = mExplicitSolver< GRID, SCHEME, T > :: iteration;
+      tnlExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
+      double& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;  
+      double& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;  
+      long int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
       
-      T _tau = mExplicitSolver< GRID, SCHEME, T > :: tau;
+      T _tau = tnlExplicitSolver< GRID, SCHEME, T > :: tau;
       if( _time + _tau > stop_time )
          _tau = stop_time - _time;
       if( _tau == 0.0 ) return true;
@@ -161,10 +161,10 @@ template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver 
          _tau *= pow( 0.5 * adaptivity * _tau / err, 0.25 );
          if( _time + _tau > stop_time )
             _tau = stop_time - _time; //we don't want to keep such tau
-         else mExplicitSolver< GRID, SCHEME, T > :: tau = _tau;
+         else tnlExplicitSolver< GRID, SCHEME, T > :: tau = _tau;
          _iteration ++;
          
-         mExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+         tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
          
          if( _time == stop_time ) return true;
          if( max_res && _residue < max_res ) return true;

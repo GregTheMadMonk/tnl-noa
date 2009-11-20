@@ -11,7 +11,7 @@ headers = \
    drawGrid1D.h \
    drawGrid2D.h \
    drawGrid3D.h \
-   mExplicitSolver.h \
+   tnlExplicitSolver.h \
    mGrid1D.h \
    mGrid2D.h \
    mGrid3D.h \

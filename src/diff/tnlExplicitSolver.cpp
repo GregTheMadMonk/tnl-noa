@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mExplicitSolver.cpp  -  description
+                          tnlExplicitSolver.cpp  -  description
                              -------------------
     begin                : 2007/06/17
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -16,50 +16,50 @@
  ***************************************************************************/
 
 #include <iomanip>
-#include "mExplicitSolver.h"
+#include "tnlExplicitSolver.h"
 
 //--------------------------------------------------------------------------
-/*void mExplicitSolver :: SetTime( const double& t )
+/*void tnlExplicitSolver :: SetTime( const double& t )
 {
    time = t;
 };
 //--------------------------------------------------------------------------
-const double& mExplicitSolver :: GetTime() const
+const double& tnlExplicitSolver :: GetTime() const
 {
    return time;
 };
 //--------------------------------------------------------------------------
-void mExplicitSolver :: SetFinalTime( const double& t )
+void tnlExplicitSolver :: SetFinalTime( const double& t )
 {
    final_time = t;
 };
 //--------------------------------------------------------------------------
-long int mExplicitSolver :: GetIterationNumber() const
+long int tnlExplicitSolver :: GetIterationNumber() const
 {
    return iteration;
 };
 //--------------------------------------------------------------------------
-void mExplicitSolver :: SetTau( const double& t )
+void tnlExplicitSolver :: SetTau( const double& t )
 {
    tau = t;
 };
 //--------------------------------------------------------------------------
-const double& mExplicitSolver :: GetTau() const
+const double& tnlExplicitSolver :: GetTau() const
 {
    return tau;
 };
 //--------------------------------------------------------------------------
-const double& mExplicitSolver :: GetResidue() const
+const double& tnlExplicitSolver :: GetResidue() const
 {
    return residue;
 };
 //--------------------------------------------------------------------------
-void mExplicitSolver :: SetVerbosity( int v )
+void tnlExplicitSolver :: SetVerbosity( int v )
 {
    verbosity = v;
 }
 //--------------------------------------------------------------------------
-void mExplicitSolver :: PrintOut()
+void tnlExplicitSolver :: PrintOut()
 {
    if( verbosity > 0 )
    {

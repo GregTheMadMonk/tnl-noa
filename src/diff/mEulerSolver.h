@@ -19,9 +19,9 @@
 #define mEulerSolverH
 
 #include <math.h>
-#include <diff/mExplicitSolver.h>
+#include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mEulerSolver : public mExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class mEulerSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
@@ -53,18 +53,18 @@ template< class GRID, class SCHEME, typename T = double > class mEulerSolver : p
       T* _k1 = k1 -> Data();
       T* _u = u. Data();
            
-      mExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
-      double& _time = mExplicitSolver< GRID, SCHEME, T > :: time;  
-      double& _residue = mExplicitSolver< GRID, SCHEME, T > :: residue;  
-      long int& _iteration = mExplicitSolver< GRID, SCHEME, T > :: iteration;
+      tnlExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
+      double& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;  
+      double& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;  
+      long int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
       const double size_inv = 1.0 / ( double ) u. GetSize();
       
-      T _tau = mExplicitSolver< GRID, SCHEME, T > :: tau;
+      T _tau = tnlExplicitSolver< GRID, SCHEME, T > :: tau;
       if( _time + _tau > stop_time ) _tau = stop_time - _time;
       if( _tau == 0.0 ) return true;
 
-      if( mExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
-         mExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+      if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
+         tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
       while( 1 )
       {
          long int i;
@@ -88,23 +88,23 @@ template< class GRID, class SCHEME, typename T = double > class mEulerSolver : p
          else
          {
              loc_residue /= _tau * size_inv;
-             :: MPIAllreduce( loc_residue, _residue, 1, MPI_SUM, mExplicitSolver< GRID, SCHEME, T > :: solver_comm );
+             :: MPIAllreduce( loc_residue, _residue, 1, MPI_SUM, tnlExplicitSolver< GRID, SCHEME, T > :: solver_comm );
          }
          _time += _tau;
          _iteration ++;
          
          if( _time + _tau > stop_time )
             _tau = stop_time - _time; //we don't want to keep such tau
-         else mExplicitSolver< GRID, SCHEME, T > :: tau = _tau;
+         else tnlExplicitSolver< GRID, SCHEME, T > :: tau = _tau;
          
-         if( mExplicitSolver< GRID, SCHEME, T > :: verbosity > 1 )
-            mExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+         if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 1 )
+            tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
          
          if( _time == stop_time || 
              ( max_res && _residue < max_res ) )
           {
-            if( mExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
-               mExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+            if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
+               tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
              return true;
           }
          //if( max_iter && _iteration == max_iter ) return false;

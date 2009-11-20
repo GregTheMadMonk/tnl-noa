@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mExplicitSolver.h  -  description
+                          tnlExplicitSolver.h  -  description
                              -------------------
     begin                : 2007/06/17
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,18 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mExplicitSolverH
-#define mExplicitSolverH
+#ifndef tnlExplicitSolverH
+#define tnlExplicitSolverH
 
 #include <iomanip>
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 
-template< class GRID, class SCHEME, typename T = double > class mExplicitSolver : public tnlObject
+template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolver : public tnlObject
 {
    public:
    
-   mExplicitSolver()
+   tnlExplicitSolver()
    :  iteration( 0 ), 
       time( 0 ),
       tau( 0 ),
