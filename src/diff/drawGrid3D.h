@@ -22,9 +22,9 @@
 #include <fstream>
 #include <iomanip>
 #include <float.h>
-#include <diff/mGrid3D.h>
+#include <diff/tnlGrid3D.h>
 
-template< class T > bool Draw( const mGrid3D< T >& u,
+template< class T > bool Draw( const tnlGrid3D< T >& u,
                                ostream& str,
                                const char* format,
                                const long int i_step = 1,
@@ -55,7 +55,7 @@ template< class T > bool Draw( const mGrid3D< T >& u,
    }
    if( strcmp( format, "gnuplot" ) == 0 )
    {
-      cout << "GNUPLOT is not supported for mGrid3D." << endl;
+      cout << "GNUPLOT is not supported for tnlGrid3D." << endl;
       return false;
    }
    if( strcmp( format, "vti" ) == 0 )
@@ -119,7 +119,7 @@ template< class T > bool Draw( const mGrid3D< T >& u,
    return false;
 };
 
-template< class T > bool Draw( const mGrid3D< T >& u,
+template< class T > bool Draw( const tnlGrid3D< T >& u,
                                const char* file_name,
                                const char* format,
                                const long int i_step = 1,
@@ -149,7 +149,7 @@ template< class T > bool Draw( const mGrid3D< T >& u,
    return true;
 };
 
-template< class T > bool Read( mGrid3D< T >& u,
+template< class T > bool Read( tnlGrid3D< T >& u,
                                const char* input_file )
 {
    int strln = strlen( input_file );

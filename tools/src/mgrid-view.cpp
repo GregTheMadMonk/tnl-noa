@@ -102,13 +102,13 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
    cout << " OK " << endl;
 }
 //--------------------------------------------------------------------------
-bool ProcessmGrid3D( const tnlString& file_name,
+bool ProcesstnlGrid3D( const tnlString& file_name,
                      const tnlParameterContainer& parameters,
                      int file_index,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
-   mGrid3D< double > u;
+   tnlGrid3D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
    if( ! u. Load( file ) )
@@ -119,7 +119,7 @@ bool ProcessmGrid3D( const tnlString& file_name,
    }
    file. close();
 
-   mGrid3D< double >* output_u;
+   tnlGrid3D< double >* output_u;
    
    int output_x_size( 0 ), output_y_size( 0 ), output_z_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );
@@ -134,7 +134,7 @@ bool ProcessmGrid3D( const tnlString& file_name,
       if( ! output_y_size ) output_y_size = u. GetYSize();
       if( ! output_z_size ) output_z_size = u. GetZSize();
 
-      output_u = new mGrid3D< double >( output_x_size,
+      output_u = new tnlGrid3D< double >( output_x_size,
                                         output_y_size,
                                         output_z_size,
                                         u. GetAx(),
@@ -239,9 +239,9 @@ int main( int argc, char* argv[] )
             ProcesstnlGrid2D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "mGrid3D< double >" )
+         if( object_type == "tnlGrid3D< double >" )
          {
-             ProcessmGrid3D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+             ProcesstnlGrid3D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
              object_type_matched = true;
          }
          if( ! object_type_matched )

@@ -14,7 +14,7 @@ headers = \
    tnlExplicitSolver.h \
    tnlGrid1D.h \
    tnlGrid2D.h \
-   mGrid3D.h \
+   tnlGrid3D.h \
    mGridSystem1D.h \
    tnlEulerSolver.h \
    mMersonSolver.h \

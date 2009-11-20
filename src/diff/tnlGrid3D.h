@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mGrid3D.h  -  description
+                          tnlGrid3D.h  -  description
                              -------------------
     begin                : 2009/07/21
     copyright            : (C) 2009 by Tomas Oberhuber
@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mGrid3DH
-#define mGrid3DH
+#ifndef tnlGrid3DH
+#define tnlGrid3DH
 
 #include <core/tnlField3D.h>
 
-template< typename T = double > class mGrid3D : public tnlField3D< T >
+template< typename T = double > class tnlGrid3D : public tnlField3D< T >
 {
    public:
 
-   mGrid3D()
+   tnlGrid3D()
    {
    };
 
@@ -33,7 +33,7 @@ template< typename T = double > class mGrid3D : public tnlField3D< T >
        @param A_x, @param B_x, @param A_y, @param B_y, @param A_z and @param B_zdefine domain
        Omega = <A_x,B_x>*<A_y,B_y>*,A_z,B_z>.
     */
-   mGrid3D( int x_size,
+   tnlGrid3D( int x_size,
             int y_size,
             int z_size,
             const double& A_x,
@@ -53,7 +53,7 @@ template< typename T = double > class mGrid3D : public tnlField3D< T >
       Hz = ( Bz - Az ) / ( double ) ( z_size - 1 );
    };
 
-   mGrid3D( const mGrid3D& g )
+   tnlGrid3D( const tnlGrid3D& g )
    : tnlField3D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Ay( g. Ay ), By( g. By ),
@@ -65,7 +65,7 @@ template< typename T = double > class mGrid3D : public tnlField3D< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mGrid3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlGrid3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,
@@ -93,7 +93,7 @@ template< typename T = double > class mGrid3D : public tnlField3D< T >
       else Hz = hz;
    }
    
-   void SetNewDomain( const mGrid3D< T >& u )
+   void SetNewDomain( const tnlGrid3D< T >& u )
    {
       SetNewDomain( u. GetAx(), u. GetBx(),
                     u. GetAy(), u. GetBy(),
@@ -419,6 +419,6 @@ template< typename T = double > class mGrid3D : public tnlField3D< T >
 };
 
 // Explicit instatiation
-template class mGrid3D< double >;
+template class tnlGrid3D< double >;
 
 #endif

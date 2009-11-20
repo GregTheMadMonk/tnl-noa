@@ -315,12 +315,12 @@ int main( int argc, char* argv[] )
             if( space_step ) h = space_step;
             else h = Min( u1. GetHx(), u1. GetHy() );
          }
-         if( first_object_type == "mGrid3D< double >" )
+         if( first_object_type == "tnlGrid3D< double >" )
          {
-            dbgCout( "Processing file with mGrid3D< double > ..." );
+            dbgCout( "Processing file with tnlGrid3D< double > ..." );
             dbgExpr( first_file_uncompressed );
             dbgExpr( second_file_uncompressed );
-            mGrid3D< double > u1, u2, difference;
+            tnlGrid3D< double > u1, u2, difference;
             fstream file;
             file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u1. Load( file ) )

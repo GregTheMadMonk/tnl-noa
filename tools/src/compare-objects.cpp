@@ -59,12 +59,12 @@ bool Compare( const tnlGrid2D< double >& u1,
    return true; 
 }
 //--------------------------------------------------------------------------
-bool Compare( const mGrid3D< double >& u1,
-              const mGrid3D< double >& u2,
+bool Compare( const tnlGrid3D< double >& u1,
+              const tnlGrid3D< double >& u2,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              mGrid3D< double >& difference )
+              tnlGrid3D< double >& difference )
 {
    if( u1. GetXSize() != u2. GetXSize() ||
        u1. GetYSize() != u2. GetYSize() ||

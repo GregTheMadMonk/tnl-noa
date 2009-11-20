@@ -19,7 +19,7 @@
 #define mMPIMesh3DH
 
 #include <debug/tnlDebug.h>
-#include <diff/mGrid3D.h>
+#include <diff/tnlGrid3D.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
 
@@ -37,7 +37,7 @@ template< class T > class mMPIMesh3D
    };
 
    //! Initiation
-   bool Init( const mGrid3D< T >& u,
+   bool Init( const tnlGrid3D< T >& u,
               int& _mesh_x_size,
               int& _mesh_y_size,
               int& _mesh_z_size,
@@ -45,7 +45,7 @@ template< class T > class mMPIMesh3D
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
 
-   bool Init( const mGrid3D< T >& u,
+   bool Init( const tnlGrid3D< T >& u,
               const tnlParameterContainer& parameters,
               int _overlap_width,
               int root = 0,
@@ -167,7 +167,7 @@ template< class T > class mMPIMesh3D
       return further_overlap;
    };
 
-   bool SetGlobalDomain( mGrid3D< T >& global_u )
+   bool SetGlobalDomain( tnlGrid3D< T >& global_u )
    {
       if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size, domain_z_size ) )
          return false;
@@ -177,13 +177,13 @@ template< class T > class mMPIMesh3D
    }
 
    //! Create subdomains
-   bool CreateMesh( const mGrid3D< T >& u,
-                    mGrid3D< T >& sub_u,
+   bool CreateMesh( const tnlGrid3D< T >& u,
+                    tnlGrid3D< T >& sub_u,
                     int root = 0 ) const;
 
    //! Scatter the function
-   void Scatter( const mGrid3D< T >& u,
-                 mGrid3D< T >& sub_u,
+   void Scatter( const tnlGrid3D< T >& u,
+                 tnlGrid3D< T >& sub_u,
                  int root = 0 ) const;
 
    //! Scatter the function but only at the domains at the boundaries
@@ -191,12 +191,12 @@ template< class T > class mMPIMesh3D
    //                          tnlGrid2D* sub_u ); 
 
    //! Gather the function
-   void Gather( mGrid3D< T >& u,
-                const mGrid3D< T >& sub_u,
+   void Gather( tnlGrid3D< T >& u,
+                const tnlGrid3D< T >& sub_u,
                 int root = 0 ) const;
 
    //! Synchronize domain edges
-   void Synchronize( mGrid3D< T >& u );
+   void Synchronize( tnlGrid3D< T >& u );
    
    //! Get domain edges
    void DomainOverlaps( int& right, int& left,
@@ -204,8 +204,8 @@ template< class T > class mMPIMesh3D
 
    protected:
    //! Supporting method for scattering
-   void ScatterToNode( const mGrid3D< T >& u,
-                       mGrid3D< T >& sub_u,
+   void ScatterToNode( const tnlGrid3D< T >& u,
+                       tnlGrid3D< T >& sub_u,
                        int dest_node,
                        int root ) const;
 
@@ -262,7 +262,7 @@ template< class T > class mMPIMesh3D
 };
                
 template< class T > void DrawSubdomains( const mMPIMesh3D< T >& mpi_mesh, 
-                                         const mGrid3D< T >& u,
+                                         const tnlGrid3D< T >& u,
                                          const char* file_name_base,
                                          const char* format );
 
@@ -297,7 +297,7 @@ template< class T > mMPIMesh3D< T > :: mMPIMesh3D()
       top_right_recieve_buff( 0 )
       {};
    
-template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
+template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
                                                   int& _mesh_x_size,
                                                   int& _mesh_y_size,
                                                   int& _mesh_z_size,
@@ -531,7 +531,7 @@ template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
       return true;
    };
 
-template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
+template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
                                                   const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
@@ -551,8 +551,8 @@ template< class T > bool mMPIMesh3D< T > :: Init( const mGrid3D< T >& u,
 }
 
    
-template< class T > bool mMPIMesh3D< T > :: CreateMesh( const mGrid3D< T >& u,
-                                                        mGrid3D< T >& sub_u,
+template< class T > bool mMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& u,
+                                                        tnlGrid3D< T >& sub_u,
                                                         int root ) const
 {
    dbgFunctionName( "mMPIMesh3D", "CreateMesh" );
@@ -625,8 +625,8 @@ template< class T > bool mMPIMesh3D< T > :: CreateMesh( const mGrid3D< T >& u,
 return true;
 };
 
-template< class T > void mMPIMesh3D< T > :: ScatterToNode( const mGrid3D< T >& u,
-                                                           mGrid3D< T >& sub_u,
+template< class T > void mMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T >& u,
+                                                           tnlGrid3D< T >& sub_u,
                                                            int dest_node,
                                                            int root ) const
 {
@@ -664,7 +664,7 @@ template< class T > void mMPIMesh3D< T > :: ScatterToNode( const mGrid3D< T >& u
                            " Clsr. " << dest_closer_overlap <<
                            " Frth. " << dest_further_overlap );
 
-      mGrid3D< T >* mpi_buff;
+      tnlGrid3D< T >* mpi_buff;
       if( dest_node == root )
       {
          dbgCout( "Forwarding mpi_buffer to sub_u ..." );
@@ -676,7 +676,7 @@ template< class T > void mMPIMesh3D< T > :: ScatterToNode( const mGrid3D< T >& u
                    << subdomain_x_size + dest_left_overlap + dest_right_overlap << "x"
                    << subdomain_y_size + dest_bottom_overlap + dest_top_overlap << "x"
                    << subdomain_z_size + dest_closer_overlap + dest_further_overlap );
-         mpi_buff = new mGrid3D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
+         mpi_buff = new tnlGrid3D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
                                        subdomain_y_size + dest_bottom_overlap + dest_top_overlap,
                                        subdomain_z_size + dest_closer_overlap + dest_further_overlap,
                                        0.0, 1.0, 0.0, 1.0, 0.0, 1.0 );
@@ -736,8 +736,8 @@ template< class T > void mMPIMesh3D< T > :: ScatterToNode( const mGrid3D< T >& u
 #endif
 }
 
-template< class T > void mMPIMesh3D< T > :: Scatter( const mGrid3D< T >& u,
-                                                     mGrid3D< T >& sub_u,
+template< class T > void mMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
+                                                     tnlGrid3D< T >& sub_u,
                                                      int root ) const
 {
    dbgFunctionName( "mMPIMesh3D", "Scatter" );
@@ -766,8 +766,8 @@ template< class T > void mMPIMesh3D< T > :: Scatter( const mGrid3D< T >& u,
 #endif
 }
     
-template< class T > void mMPIMesh3D< T > :: Gather( mGrid3D< T >& u,
-                                                    const mGrid3D< T >& sub_u,
+template< class T > void mMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
+                                                    const tnlGrid3D< T >& sub_u,
                                                     int root ) const
 {
    dbgFunctionName( "mMPIMesh3D", "Gather" );
@@ -812,7 +812,7 @@ template< class T > void mMPIMesh3D< T > :: Gather( mGrid3D< T >& u,
                       " >" << src_z_pos * subdomain_z_size - src_closer_overlap <<
                       ", " << ( src_z_pos + 1 ) * subdomain_z_size + src_further_overlap << " >" );
                   
-            mGrid3D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
+            tnlGrid3D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    subdomain_z_size + src_closer_overlap + src_further_overlap,
                                    0.0, 1.0, 0.0, 1.0, 0.0, 1.0 );
@@ -885,7 +885,7 @@ template< class T > void mMPIMesh3D< T > :: Gather( mGrid3D< T >& u,
 #endif
 }
 
-template< class T > void mMPIMesh3D< T > :: Synchronize( mGrid3D< T >& u )
+template< class T > void mMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
 {
    dbgFunctionName( "mMPIMesh3D", "Synchronize" );
 #ifdef HAVE_MPI
@@ -1379,7 +1379,7 @@ template< class T > void mMPIMesh3D< T > ::  FreeBuffers()
 };
 
 template< class T > void DrawSubdomains( const mMPIMesh3D< T >& mpi_mesh, 
-                                         const mGrid3D< T >& u,
+                                         const tnlGrid3D< T >& u,
                                          const char* file_name_base,
                                          const char* format )
 {

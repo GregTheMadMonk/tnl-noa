@@ -19,7 +19,7 @@
 #define compare_objetsH
 
 #include <diff/tnlGrid2D.h>
-#include <diff/mGrid3D.h>
+#include <diff/tnlGrid3D.h>
 
 bool Compare( const tnlGrid2D< double >& u1,
               const tnlGrid2D< double >& u2,
@@ -28,11 +28,11 @@ bool Compare( const tnlGrid2D< double >& u1,
               double& max_norm,
               tnlGrid2D< double >& difference );
 
-bool Compare( const mGrid3D< double >& u1,
-              const mGrid3D< double >& u2,
+bool Compare( const tnlGrid3D< double >& u1,
+              const tnlGrid3D< double >& u2,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              mGrid3D< double >& difference );
+              tnlGrid3D< double >& difference );
 
 #endif
