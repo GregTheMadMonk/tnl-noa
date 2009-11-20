@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMersonSolver.h  -  description
+                          tnlMersonSolver.h  -  description
                              -------------------
     begin                : 2007/06/16
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mMersonSolverH
-#define mMersonSolverH
+#ifndef tnlMersonSolverH
+#define tnlMersonSolverH
 
 #include <math.h>
 #include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mMersonSolver : public tnlExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
-   mMersonSolver( const GRID& v )
+   tnlMersonSolver( const GRID& v )
    {
       k1 = new GRID( v );
       k2 = new GRID( v );
@@ -50,7 +50,7 @@ template< class GRID, class SCHEME, typename T = double > class mMersonSolver : 
    {
       T t;
       GRID grid;
-      return tnlString( "mMersonSolver< " ) + grid. GetType() + 
+      return tnlString( "tnlMersonSolver< " ) + grid. GetType() + 
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
@@ -190,7 +190,7 @@ template< class GRID, class SCHEME, typename T = double > class mMersonSolver : 
       }
    };
 
-   ~mMersonSolver()
+   ~tnlMersonSolver()
    {
       delete k1;
       delete k2;
