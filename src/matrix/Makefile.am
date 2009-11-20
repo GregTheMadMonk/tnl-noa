@@ -3,7 +3,7 @@
 headers = \
       mMatrix.h \
 	  tnlCSRMatrix.h \
-	  mFullMatrix.h \
+	  tnlFullMatrix.h \
 	  tnlBaseMatrix.h \
 	  mMatrixSolver.h \
 	  mPETSCMatrix.h \

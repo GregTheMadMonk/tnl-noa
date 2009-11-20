@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mFullMatrix.h  -  description
+                          tnlFullMatrix.h  -  description
                              -------------------
     begin                : 2007/07/23
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,29 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mFullMatrixH
-#define mFullMatrixH
+#ifndef tnlFullMatrixH
+#define tnlFullMatrixH
 
 #include <core/tnlField2D.h>
 #include <matrix/tnlBaseMatrix.h>
 
 
-template< typename T > class mFullMatrix : public tnlBaseMatrix< T >, public tnlField2D< T >
+template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public tnlField2D< T >
 {
 
    public:
 
    //! Basic constructor
-   mFullMatrix(){};
+   tnlFullMatrix(){};
 
    //! Constructor with matrix dimension
-   mFullMatrix( const long int size )
+   tnlFullMatrix( const long int size )
    : tnlField2D< T >( size, size ){};
 
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mFullMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlFullMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    const tnlString& GetMatrixClass() const
@@ -133,13 +133,13 @@ template< typename T > class mFullMatrix : public tnlBaseMatrix< T >, public tnl
    };
 
    //! Destructor
-   ~mFullMatrix(){};
+   ~tnlFullMatrix(){};
 };
 
 //! Matrix product
-template< typename T > void MatrixProduct( const mFullMatrix< T >& m1,
-                                           const mFullMatrix< T >& m2,
-                                           mFullMatrix< T >& result )
+template< typename T > void MatrixProduct( const tnlFullMatrix< T >& m1,
+                                           const tnlFullMatrix< T >& m2,
+                                           tnlFullMatrix< T >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
    long int size = result. GetSize();
@@ -155,9 +155,9 @@ template< typename T > void MatrixProduct( const mFullMatrix< T >& m1,
 };
 
 //! Matrix sum
-template< typename T > void MatrixSum( const mFullMatrix< T >& m1,
-                                       const mFullMatrix< T >& m2,
-                                       mFullMatrix< T >& result )
+template< typename T > void MatrixSum( const tnlFullMatrix< T >& m1,
+                                       const tnlFullMatrix< T >& m2,
+                                       tnlFullMatrix< T >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
    long int size = result. GetSize();
@@ -168,7 +168,7 @@ template< typename T > void MatrixSum( const mFullMatrix< T >& m1,
 };
 
 //! Operator <<
-template< typename T > ostream& operator << ( ostream& o_str, const mFullMatrix< T >& A )
+template< typename T > ostream& operator << ( ostream& o_str, const tnlFullMatrix< T >& A )
 {
    return operator << ( o_str, ( const tnlBaseMatrix< T >& ) A );
 };
