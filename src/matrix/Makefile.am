@@ -14,7 +14,7 @@ headers = \
 	  tnlBICGStabSolver.h \
 	  tnlGMRESSolver.h  \
 	  mPreconditioner.h \
-	  mILUPreconditioner.h \
+	  tnlILUPreconditioner.h \
 	  mPETSCPreconditioner.h
 
 sources = tnlBaseMatrix.cpp 

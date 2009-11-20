@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mILUPreconditioner.cpp  -  description
+                          tnlILUPreconditioner.cpp  -  description
                              -------------------
     begin                : 2007/02/01
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <math.h>
 #include "debug.h"
-#include "mILUPreconditioner.h"
+#include "tnlILUPreconditioner.h"
 #include "mfuncs.h"
 
 #ifdef ILU_DEBUG
@@ -41,7 +41,7 @@ void WriteFullMatrix( ostream& o_str, const m_real* M, const m_int N )
 }
 #endif
 //--------------------------------------------------------------------------
-mILUPreconditioner :: mILUPreconditioner( const m_int _size, 
+tnlILUPreconditioner :: tnlILUPreconditioner( const m_int _size, 
                                           const m_int initial_size,
                                           const m_int segment_size,
                                           const m_int init_row_elements )
@@ -55,7 +55,7 @@ mILUPreconditioner :: mILUPreconditioner( const m_int _size,
    M = new tnlCSRMatrix( size, initial_size, segment_size, init_row_elements );
 }
 //--------------------------------------------------------------------------  
-mILUPreconditioner :: ~mILUPreconditioner()
+tnlILUPreconditioner :: ~tnlILUPreconditioner()
 {
    if( M ) delete M;
    if( y ) delete[] y;
@@ -65,14 +65,14 @@ mILUPreconditioner :: ~mILUPreconditioner()
 #endif
 }
 //--------------------------------------------------------------------------  
-const tnlCSRMatrix* mILUPreconditioner :: Data() const
+const tnlCSRMatrix* tnlILUPreconditioner :: Data() const
 {
    return M;
 }
 //--------------------------------------------------------------------------  
-m_int mILUPreconditioner :: Init( const tnlCSRMatrix& A, const m_real& threshold )
+m_int tnlILUPreconditioner :: Init( const tnlCSRMatrix& A, const m_real& threshold )
 {
-   dbgFunctionName( "mILUPreconditioner", "Init" );
+   dbgFunctionName( "tnlILUPreconditioner", "Init" );
    assert( A. Size() == M -> Size() );
    long int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
@@ -282,9 +282,9 @@ cout << "LU: " << ( m_real ) i / ( m_real ) size * 100.0 << " % done   \r" << fl
 
 }
 //--------------------------------------------------------------------------     
-void mILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
+void tnlILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
 {
-   dbgFunctionName( "mILUPreconditioner", "Solve" );
+   dbgFunctionName( "tnlILUPreconditioner", "Solve" );
    const m_int size = M -> Size();
    const tnlCSRMatrixElement* M_data;
    const tnlCSRMatrixRowInfo *M_rows_info;

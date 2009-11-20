@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mILUPreconditioner.h  -  description
+                          tnlILUPreconditioner.h  -  description
                              -------------------
     begin                : 2007/02/01
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mILUPreconditionerH
-#define mILUPreconditionerH
+#ifndef tnlILUPreconditionerH
+#define tnlILUPreconditionerH
 
 #include <matrix/mPreconditioner.h>
 #include <matrix/tnlCSRMatrix.h>
@@ -24,11 +24,11 @@
 
 //#define ILU_DEBUG
 
-template< typename T > class mILUPreconditioner : public mPreconditioner< T >
+template< typename T > class tnlILUPreconditioner : public mPreconditioner< T >
 {
    public:
    
-   mILUPreconditioner( const long int _size,
+   tnlILUPreconditioner( const long int _size,
                        const long int initial_size,
                        const long int segment_size,
                        const long int init_row_elements = 0 )
@@ -45,7 +45,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mILUPreconditioner< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlILUPreconditioner< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
 
@@ -56,7 +56,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
 
    bool Init( const tnlCSRMatrix< T >& A, const T& threshold )
    {
-      dbgFunctionName( "mILUPreconditioner", "Init" );
+      dbgFunctionName( "tnlILUPreconditioner", "Init" );
       assert( A. GetSize() == M -> GetSize() );
       long int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
@@ -269,7 +269,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
    
    bool Solve( const T* b, T* x ) const
    {
-      dbgFunctionName( "mILUPreconditioner", "Solve" );
+      dbgFunctionName( "tnlILUPreconditioner", "Solve" );
       const long int size = M -> GetSize();
       const tnlCSRMatrixElement< T >* M_data;
       const tnlCSRMatrixRowInfo *M_rows_info;
@@ -331,7 +331,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
       return true;
    }
    
-   ~mILUPreconditioner()
+   ~tnlILUPreconditioner()
    {
       if( M ) delete M;
       if( y ) delete[] y;
