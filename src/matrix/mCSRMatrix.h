@@ -22,7 +22,7 @@
 #include <iomanip>
 #include <assert.h>
 #include <core/mfuncs.h>
-#include <matrix/mBaseMatrix.h>
+#include <matrix/tnlBaseMatrix.h>
 #include <debug/tnlDebug.h>
 
 //! Structure for keeping single element of the CSR matrix
@@ -76,7 +76,7 @@ struct mCSRMatrixRowInfo
     stored in param allocation_segment_size.
     \author Tomas Oberhuber.
  */
-template< typename T > class mCSRMatrix : public mBaseMatrix< T >
+template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
 {
    enum csr_operation { set, add }; 
 

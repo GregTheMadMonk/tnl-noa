@@ -4,7 +4,7 @@ headers = \
       mMatrix.h \
 	  mCSRMatrix.h \
 	  mFullMatrix.h \
-	  mBaseMatrix.h \
+	  tnlBaseMatrix.h \
 	  mMatrixSolver.h \
 	  mPETSCMatrix.h \
 	  mPETSCSolver.h \
@@ -17,7 +17,7 @@ headers = \
 	  mILUPreconditioner.h \
 	  mPETSCPreconditioner.h
 
-sources = mBaseMatrix.cpp 
+sources = tnlBaseMatrix.cpp 
 
 libtnlmatrixincludedir = $(TNL_INCLUDE_DIR)/matrix
 libtnlmatrixinclude_HEADERS = $(headers)

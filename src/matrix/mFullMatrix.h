@@ -19,10 +19,10 @@
 #define mFullMatrixH
 
 #include <core/tnlField2D.h>
-#include <matrix/mBaseMatrix.h>
+#include <matrix/tnlBaseMatrix.h>
 
 
-template< typename T > class mFullMatrix : public mBaseMatrix< T >, public tnlField2D< T >
+template< typename T > class mFullMatrix : public tnlBaseMatrix< T >, public tnlField2D< T >
 {
 
    public:
@@ -170,7 +170,7 @@ template< typename T > void MatrixSum( const mFullMatrix< T >& m1,
 //! Operator <<
 template< typename T > ostream& operator << ( ostream& o_str, const mFullMatrix< T >& A )
 {
-   return operator << ( o_str, ( const mBaseMatrix< T >& ) A );
+   return operator << ( o_str, ( const tnlBaseMatrix< T >& ) A );
 };
 
 #endif

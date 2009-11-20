@@ -32,7 +32,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
    {
    };
 
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,
@@ -185,7 +185,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
 
    protected:
 
-   double GetResidue( const mBaseMatrix< T >& A,
+   double GetResidue( const tnlBaseMatrix< T >& A,
                       const T* b,
                       const T* x,
                       const T& b_norm,

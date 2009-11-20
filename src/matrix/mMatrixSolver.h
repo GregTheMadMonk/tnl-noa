@@ -21,7 +21,7 @@
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 #include <core/mpi-supp.h>
-#include <matrix/mBaseMatrix.h>
+#include <matrix/tnlBaseMatrix.h>
 #include <matrix/mPreconditioner.h>
 
 template< typename T > class mMatrixSolver 
@@ -82,7 +82,7 @@ template< typename T > class mMatrixSolver
       }
    };
 
-   virtual bool Solve( const mBaseMatrix< T >& A,
+   virtual bool Solve( const tnlBaseMatrix< T >& A,
                        const T* b,
                        T* x, 
                        const double& max_residue,

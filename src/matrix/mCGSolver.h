@@ -29,7 +29,7 @@ template< typename T > class mCGSolver : public mMatrixSolver< T >
    : r( 0 ), new_r( 0 ), p( 0 ), Ap( 0 ), size( 0 )
    {};
    
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,
@@ -118,7 +118,7 @@ template< typename T > class mCGSolver : public mMatrixSolver< T >
 
    protected:
 
-   double GetResidue( const mBaseMatrix< T >& A,
+   double GetResidue( const tnlBaseMatrix< T >& A,
                       const T* b,
                       const T* x,
                       const T& b_norm,

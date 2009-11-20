@@ -38,7 +38,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
       restarting = rest;
    };
    
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,

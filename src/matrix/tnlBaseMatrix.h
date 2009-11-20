@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mBaseMatrix.h  -  description
+                          tnlBaseMatrix.h  -  description
                              -------------------
     begin                : 2007/07/23
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mBaseMatrixH
-#define mBaseMatrixH
+#ifndef tnlBaseMatrixH
+#define tnlBaseMatrixH
 
 #include <ostream>
 #include <iomanip>
@@ -34,7 +34,7 @@ class mMatrixClass
    static const tnlString petsc;
 };
 
-template< typename T > class mBaseMatrix : public tnlObject
+template< typename T > class tnlBaseMatrix : public tnlObject
 {
    public:
 
@@ -62,12 +62,12 @@ template< typename T > class mBaseMatrix : public tnlObject
 
    virtual void MultiplyRow( long int row, const T& value ) = 0;
 
-   virtual ~mBaseMatrix()
+   virtual ~tnlBaseMatrix()
    {};
 };
 
 //! Operator <<
-template< typename T > ostream& operator << ( ostream& o_str, const mBaseMatrix< T >& A )
+template< typename T > ostream& operator << ( ostream& o_str, const tnlBaseMatrix< T >& A )
 {
    long int size = A. GetSize();
    long int i, j;

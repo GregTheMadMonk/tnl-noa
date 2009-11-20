@@ -25,10 +25,10 @@
 struct Mat;
 #endif
 
-#include <matrix/mBaseMatrix.h>
+#include <matrix/tnlBaseMatrix.h>
 
 //! Wrapper for the PETSC matrices
-template< typename T > class mPETSCMatrix : public mBaseMatrix< T >
+template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
 {
 
 #ifdef HAVE_PETSC

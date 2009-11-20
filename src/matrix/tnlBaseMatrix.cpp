@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mBaseMatrix.cpp  -  description
+                          tnlBaseMatrix.cpp  -  description
                              -------------------
     begin                : 2008/05/10
     copyright            : (C) 2008 by Tomá¹ Oberhuber
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mBaseMatrix.h"
+#include "tnlBaseMatrix.h"
 
 const tnlString mMatrixClass :: main( "main" );
 const tnlString mMatrixClass :: petsc( "petsc" );

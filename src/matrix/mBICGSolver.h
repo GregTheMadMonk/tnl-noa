@@ -31,12 +31,12 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
    {
    };
 
-   void SetTransposeMatrix( mBaseMatrix< T >* _A_T )
+   void SetTransposeMatrix( tnlBaseMatrix< T >* _A_T )
    {
       A_T = _A_T;
    };
    
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,
@@ -150,7 +150,7 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
 
    protected:
 
-   double GetResidue( const mBaseMatrix< T >& A,
+   double GetResidue( const tnlBaseMatrix< T >& A,
                       const T* b,
                       const T* x,
                       const T& b_norm,
@@ -205,7 +205,7 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
 
    T *r, *r_ast, *r_new, *r_ast_new, *p, *p_ast, *tmp;
 
-   mBaseMatrix< T >* A_T;
+   tnlBaseMatrix< T >* A_T;
 
    long int size;
 };

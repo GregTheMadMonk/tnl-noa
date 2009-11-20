@@ -34,7 +34,7 @@ template< typename T > class mSORSolver : public mMatrixSolver< T >
       sor_omega = omega;
    };
 
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,
@@ -85,7 +85,7 @@ template< typename T > class mSORSolver : public mMatrixSolver< T >
 
    protected:
    
-   T GetResidue( const mBaseMatrix< T >& A,
+   T GetResidue( const tnlBaseMatrix< T >& A,
                  const T* b,
                  const T* x,
                  const T& b_norm )

@@ -82,7 +82,7 @@ template< typename T > class mPETSCSolver : public mMatrixSolver< T >
 #endif
    };
 
-   bool Solve( const mBaseMatrix< T >& A,
+   bool Solve( const tnlBaseMatrix< T >& A,
                const T* b,
                T* x, 
                const double& max_residue,
