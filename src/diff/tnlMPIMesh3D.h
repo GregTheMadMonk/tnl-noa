@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMPIMesh3D.h  -  description
+                          tnlMPIMesh3D.h  -  description
                              -------------------
     begin                : 2009/07/26
     copyright            : (C) 2009 by Tomas Oberhuber
@@ -15,23 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mMPIMesh3DH
-#define mMPIMesh3DH
+#ifndef tnlMPIMesh3DH
+#define tnlMPIMesh3DH
 
 #include <debug/tnlDebug.h>
 #include <diff/tnlGrid3D.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
 
-template< class T > class mMPIMesh3D
+template< class T > class tnlMPIMesh3D
 {
    public:
 
    //! Basic constructor
-   mMPIMesh3D();
+   tnlMPIMesh3D();
 
    //! Destructor
-   ~mMPIMesh3D()
+   ~tnlMPIMesh3D()
    {
       FreeBuffers();
    };
@@ -261,14 +261,14 @@ template< class T > class mMPIMesh3D
      *top_right_recieve_buff;
 };
                
-template< class T > void DrawSubdomains( const mMPIMesh3D< T >& mpi_mesh, 
+template< class T > void DrawSubdomains( const tnlMPIMesh3D< T >& mpi_mesh, 
                                          const tnlGrid3D< T >& u,
                                          const char* file_name_base,
                                          const char* format );
 
 // Implementation
 
-template< class T > mMPIMesh3D< T > :: mMPIMesh3D()
+template< class T > tnlMPIMesh3D< T > :: tnlMPIMesh3D()
     : mesh_comm( 0 ), original_comm( 0 ),
       mesh_x_size( 0 ), mesh_y_size( 0 ), mesh_z_size( 0 ),
       node_x_pos( 0 ) , node_y_pos( 0 ), node_z_pos( 0 ),
@@ -297,7 +297,7 @@ template< class T > mMPIMesh3D< T > :: mMPIMesh3D()
       top_right_recieve_buff( 0 )
       {};
    
-template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
+template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
                                                   int& _mesh_x_size,
                                                   int& _mesh_y_size,
                                                   int& _mesh_z_size,
@@ -305,7 +305,7 @@ template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
                                                   int root,
                                                   MPI_Comm comm )
    {
-      dbgFunctionName( "mMPIMesh3D", "Init" );
+      dbgFunctionName( "tnlMPIMesh3D", "Init" );
 #ifdef HAVE_MPI
       dbgMPIBarrier;
       dbgCout( "Getting MPI mesh dimenions..." );
@@ -531,7 +531,7 @@ template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
       return true;
    };
 
-template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
+template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
                                                   const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
@@ -551,11 +551,11 @@ template< class T > bool mMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
 }
 
    
-template< class T > bool mMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& u,
+template< class T > bool tnlMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& u,
                                                         tnlGrid3D< T >& sub_u,
                                                         int root ) const
 {
-   dbgFunctionName( "mMPIMesh3D", "CreateMesh" );
+   dbgFunctionName( "tnlMPIMesh3D", "CreateMesh" );
 #ifdef HAVE_MPI
    dbgMPIBarrier;
    dbgCout( "Creating subdomains ... " );
@@ -625,12 +625,12 @@ template< class T > bool mMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& u,
 return true;
 };
 
-template< class T > void mMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T >& u,
+template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T >& u,
                                                            tnlGrid3D< T >& sub_u,
                                                            int dest_node,
                                                            int root ) const
 {
-   dbgFunctionName( "mMPIMesh3D", "ScatterToNode" );
+   dbgFunctionName( "tnlMPIMesh3D", "ScatterToNode" );
 #ifdef HAVE_MPI
    assert( sub_u );
    if( MPIGetRank( original_comm ) == root )
@@ -736,11 +736,11 @@ template< class T > void mMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T >&
 #endif
 }
 
-template< class T > void mMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
+template< class T > void tnlMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
                                                      tnlGrid3D< T >& sub_u,
                                                      int root ) const
 {
-   dbgFunctionName( "mMPIMesh3D", "Scatter" );
+   dbgFunctionName( "tnlMPIMesh3D", "Scatter" );
    assert( sub_u );
 #ifdef HAVE_MPI
    dbgMPIBarrier;
@@ -766,11 +766,11 @@ template< class T > void mMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
 #endif
 }
     
-template< class T > void mMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
+template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
                                                     const tnlGrid3D< T >& sub_u,
                                                     int root ) const
 {
-   dbgFunctionName( "mMPIMesh3D", "Gather" );
+   dbgFunctionName( "tnlMPIMesh3D", "Gather" );
 #ifdef HAVE_MPI
    dbgCout( "Gathering data ..." );
    dbgMPIBarrier;
@@ -885,9 +885,9 @@ template< class T > void mMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
 #endif
 }
 
-template< class T > void mMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
+template< class T > void tnlMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
 {
-   dbgFunctionName( "mMPIMesh3D", "Synchronize" );
+   dbgFunctionName( "tnlMPIMesh3D", "Synchronize" );
 #ifdef HAVE_MPI
   long int i, j, k;
   int min_x = left_overlap;
@@ -1335,7 +1335,7 @@ template< class T > void mMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
 #endif
 }
 
-template< class T > void mMPIMesh3D< T > ::  FreeBuffers()
+template< class T > void tnlMPIMesh3D< T > ::  FreeBuffers()
 {
    if( left_send_buff ) delete left_send_buff;
    if( right_send_buff ) delete right_send_buff;
@@ -1378,7 +1378,7 @@ template< class T > void mMPIMesh3D< T > ::  FreeBuffers()
    top_right_recieve_buff = 0;
 };
 
-template< class T > void DrawSubdomains( const mMPIMesh3D< T >& mpi_mesh, 
+template< class T > void DrawSubdomains( const tnlMPIMesh3D< T >& mpi_mesh, 
                                          const tnlGrid3D< T >& u,
                                          const char* file_name_base,
                                          const char* format )

@@ -19,7 +19,7 @@ headers = \
    tnlEulerSolver.h \
    tnlMersonSolver.h \
    tnlMPIMesh2D.h \
-   mMPIMesh3D.h \
+   tnlMPIMesh3D.h \
    mNonlinearRungeKuttaSolver.h \
    curve-ident.h \
    norms.h
