@@ -10,7 +10,7 @@ headers = \
 	  mPETSCSolver.h \
 	  mSORSolver.h \
 	  mCGSolver.h \
-	  mBICGSolver.h \
+	  tnlBICGSolver.h \
 	  mBICGStabSolver.h \
 	  mGMRESSolver.h  \
 	  mPreconditioner.h \

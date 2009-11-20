@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mBICGSolver.h  -  description
+                          tnlBICGSolver.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mBICGSolverH
-#define mBICGSolverH
+#ifndef tnlBICGSolverH
+#define tnlBICGSolverH
 
 #include <math.h>
 #include <matrix/mMatrixSolver.h>
 
-template< typename T > class mBICGSolver : public mMatrixSolver< T >
+template< typename T > class tnlBICGSolver : public mMatrixSolver< T >
 {
    public:
 
-   mBICGSolver()
+   tnlBICGSolver()
    : r( 0 ), r_ast( 0 ), r_new( 0 ), r_ast_new( 0 ), p( 0 ), p_ast( 0 ), tmp( 0 ),
      A_T( 0 ), size( 0 )
    {
@@ -143,7 +143,7 @@ template< typename T > class mBICGSolver : public mMatrixSolver< T >
          mMatrixSolver< T > :: PrintOut();
    };
 
-   ~mBICGSolver()
+   ~tnlBICGSolver()
    {
       FreeSupportingArrays();
    };
