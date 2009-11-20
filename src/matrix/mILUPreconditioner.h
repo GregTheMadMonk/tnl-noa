@@ -19,7 +19,7 @@
 #define mILUPreconditionerH
 
 #include <matrix/mPreconditioner.h>
-#include <matrix/mCSRMatrix.h>
+#include <matrix/tnlCSRMatrix.h>
 #include <debug/tnlDebug.h>
 
 //#define ILU_DEBUG
@@ -39,7 +39,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
       ilu_check = new T[ size * size ];
 #endif
       y = new T[ size ];
-      M = new mCSRMatrix< T >( size, initial_size, segment_size, init_row_elements );
+      M = new tnlCSRMatrix< T >( size, initial_size, segment_size, init_row_elements );
    }
 
    tnlString GetType() const
@@ -49,12 +49,12 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
    };
 
 
-   const mCSRMatrix< T >* Data() const
+   const tnlCSRMatrix< T >* Data() const
    {
       return M;
    }
 
-   bool Init( const mCSRMatrix< T >& A, const T& threshold )
+   bool Init( const tnlCSRMatrix< T >& A, const T& threshold )
    {
       dbgFunctionName( "mILUPreconditioner", "Init" );
       assert( A. GetSize() == M -> GetSize() );
@@ -63,8 +63,8 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
       M -> ResetStatistics();
 #endif
       long int i, j, k;
-      const mCSRMatrixElement< T > *A_data;
-      const mCSRMatrixRowInfo *A_rows_info;
+      const tnlCSRMatrixElement< T > *A_data;
+      const tnlCSRMatrixRowInfo *A_rows_info;
       A. Data( A_data, A_rows_info );
       
 #ifdef ILU_DEBUG
@@ -80,8 +80,8 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
 #endif
 
       M -> Reset();
-      mCSRMatrixElement< T >* M_data;
-      const mCSRMatrixRowInfo *M_rows_info;
+      tnlCSRMatrixElement< T >* M_data;
+      const tnlCSRMatrixRowInfo *M_rows_info;
       // 2. Processing IKJ version of ILU factorisation
       // For i = 0, ... , N
       for( i = 0; i < size; i ++ )
@@ -271,8 +271,8 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
    {
       dbgFunctionName( "mILUPreconditioner", "Solve" );
       const long int size = M -> GetSize();
-      const mCSRMatrixElement< T >* M_data;
-      const mCSRMatrixRowInfo *M_rows_info;
+      const tnlCSRMatrixElement< T >* M_data;
+      const tnlCSRMatrixRowInfo *M_rows_info;
       M -> Data( M_data, M_rows_info );
       long int i, j;
       
@@ -343,7 +343,7 @@ template< typename T > class mILUPreconditioner : public mPreconditioner< T >
 
    protected:
 
-   mCSRMatrix< T >* M;
+   tnlCSRMatrix< T >* M;
 
    T* y;
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mCSRMatrix.h  -  description
+                          tnlCSRMatrix.h  -  description
                              -------------------
     begin                : 2007/07/23
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mCSRMatrixH
-#define mCSRMatrixH
+#ifndef tnlCSRMatrixH
+#define tnlCSRMatrixH
 
 #include <ostream>
 #include <iomanip>
@@ -28,7 +28,7 @@
 //! Structure for keeping single element of the CSR matrix
 /*! This structure stores the element value and its column index.
  */
-template< typename T > struct mCSRMatrixElement
+template< typename T > struct tnlCSRMatrixElement
 {
    //! Element value
    T value;
@@ -37,7 +37,7 @@ template< typename T > struct mCSRMatrixElement
    long int column;
 
    //! Constructor
-   mCSRMatrixElement( const T& v, long int col )
+   tnlCSRMatrixElement( const T& v, long int col )
    : value( v ), column( col ){};
 };
 
@@ -46,7 +46,7 @@ template< typename T > struct mCSRMatrixElement
     last elements in in the row. 'diagonal' points
     to the diagonal element.
  */
-struct mCSRMatrixRowInfo
+struct tnlCSRMatrixRowInfo
 {
    //! Row begining
    long int first;
@@ -63,7 +63,7 @@ struct mCSRMatrixRowInfo
 //! Matrix storing the non-zero elements in the CSR (Compressed Sparse Row) format 
 /*! For details see. Yousef Saad, Iterative Methods for Sparse Linear Systems, p. 85
     at http://www-users.cs.umn.edu/~saad/ .
-    The elements are stored in the array data of the type mCSRMatrixElement. It is
+    The elements are stored in the array data of the type tnlCSRMatrixElement. It is
     equivalent of the AA and JA arrays in the book. The boundaries of the rows
     (IA array in the book) are stored in the array rows_info.
     Since the number of non-zero elements may increase during the computation, one
@@ -76,14 +76,14 @@ struct mCSRMatrixRowInfo
     stored in param allocation_segment_size.
     \author Tomas Oberhuber.
  */
-template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
+template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
 {
    enum csr_operation { set, add }; 
 
    public:
 
    //! Basic constructor
-   mCSRMatrix()
+   tnlCSRMatrix()
    : size( 0 ),
      data( 0 ),
      allocated_elements( 0 ),
@@ -105,17 +105,17 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
        \param _alloctaion_segment_size  If we need to allocate more new non-zero elements this says the amount if increase.
        \param _inititial_row_size       It says how many elements we expect to be in each row. This s information can significialy speedup the insertion of the elements.
     */
-   mCSRMatrix( const long int _size,
+   tnlCSRMatrix( const long int _size,
                const long int _initial_allocation = 0,
                const long int _allocation_segment_size = 0,
                const long int _initial_row_size = 0 )
    : size( _size ),
      allocation_segment_size( _allocation_segment_size )
    {
-      dbgFunctionName( "mCSRMatrix", "mCSRMatrix" );
+      dbgFunctionName( "tnlCSRMatrix", "tnlCSRMatrix" );
       
-      data = ( mCSRMatrixElement< T >* ) calloc( _initial_allocation + 1, sizeof( mCSRMatrixElement< T >) );
-      rows_info = ( mCSRMatrixRowInfo* ) calloc( size + 2, sizeof( mCSRMatrixRowInfo ) );
+      data = ( tnlCSRMatrixElement< T >* ) calloc( _initial_allocation + 1, sizeof( tnlCSRMatrixElement< T >) );
+      rows_info = ( tnlCSRMatrixRowInfo* ) calloc( size + 2, sizeof( tnlCSRMatrixRowInfo ) );
       if( ! data || ! rows_info )
       {
          cerr << "Unable to allocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
@@ -153,7 +153,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mCSRMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlCSRMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    const tnlString& GetMatrixClass() const
@@ -166,8 +166,8 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
        \param _data     Returns the data array (AA and JA arrays).
        \param _rows_info Returns the row_info array (IA array).
    */ 
-   void Data( const mCSRMatrixElement< T >*& _data, 
-              const mCSRMatrixRowInfo*& _rows_info ) const
+   void Data( const tnlCSRMatrixElement< T >*& _data, 
+              const tnlCSRMatrixRowInfo*& _rows_info ) const
    {
       _data = data;
       _rows_info = rows_info;
@@ -178,8 +178,8 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
        \param _data     returns the data array (AA and JA arrays).
        \param _rows_info returns the row_info array (IA array).
    */ 
-   void Data( mCSRMatrixElement< T >*& _data, 
-              const mCSRMatrixRowInfo*& _rows_info )
+   void Data( tnlCSRMatrixElement< T >*& _data, 
+              const tnlCSRMatrixRowInfo*& _rows_info )
    {
       _data = data;
       _rows_info = rows_info;
@@ -200,7 +200,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
     */
    T GetElement( long int row, long int column ) const
    {
-      dbgFunctionName( "mCSRMatrix", "operator()" );
+      dbgFunctionName( "tnlCSRMatrix", "operator()" );
       dbgCout( "row = " << row << " col = " << column );
 
       assert( row < size );
@@ -215,7 +215,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
       long int i = row_beg;
       while( i < row_end && data[ i ]. column < column ) i ++;
 #ifdef CSR_MATRIX_TUNING
-      const_cast< mCSRMatrix* >( this ) -> data_seeks += i - row_beg;
+      const_cast< tnlCSRMatrix* >( this ) -> data_seeks += i - row_beg;
 #endif
       dbgCout( " i = " << i << " i-th column = " << data[ i ]. column << " value = " << data[ i ]. value );
       if( i < row_end && data[ i ]. column == column ) 
@@ -230,7 +230,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
                     const long int col,
                     const T& v )
    {
-      dbgFunctionName( "mCSRMatrix", "SetElement" );
+      dbgFunctionName( "tnlCSRMatrix", "SetElement" );
       dbgCout( "row = " << row << " col = " << col << " value = " << v );
    
       return ChangeElement( row, col, v, set );  
@@ -252,7 +252,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
                 const long int first_non_zero,
                 const long int last_non_zero )
    {
-      dbgFunctionName( "mCSRMatrix", "SetSparseRow" );
+      dbgFunctionName( "tnlCSRMatrix", "SetSparseRow" );
 
       long int row_beg = rows_info[ row ]. first;
       long int row_end = rows_info[ row ]. last;
@@ -320,10 +320,10 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
                long int new_allocation_segment_size = 0,
                long int new_initial_row_size = 0 )
    {
-      dbgFunctionName( "mCSRMatrix", "Reset" );
+      dbgFunctionName( "tnlCSRMatrix", "Reset" );
       if( new_size && size != new_size )
       {
-         rows_info = ( mCSRMatrixRowInfo* ) realloc( --rows_info, ( new_size + 1 ) * sizeof( mCSRMatrixRowInfo ) );
+         rows_info = ( tnlCSRMatrixRowInfo* ) realloc( --rows_info, ( new_size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) );
          if( ! rows_info )
          {
             cerr << "Unable to reallocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
@@ -335,7 +335,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
 
       if( new_initial_allocation && allocated_elements != new_initial_allocation )
       {
-         data = ( mCSRMatrixElement< T >* ) realloc( --data, ( new_initial_allocation + 1 ) * sizeof( mCSRMatrixElement< T > ) );
+         data = ( tnlCSRMatrixElement< T >* ) realloc( --data, ( new_initial_allocation + 1 ) * sizeof( tnlCSRMatrixElement< T > ) );
          if( ! data )
          {
             cerr << "Unable to reallocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
@@ -374,21 +374,21 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    };  
 
    //! Clone matrix
-   bool Clone( const mCSRMatrix& m )
+   bool Clone( const tnlCSRMatrix& m )
    {
       size = m. GetSize();
-      rows_info = ( mCSRMatrixRowInfo* ) realloc( --rows_info, ( size + 1 ) * sizeof( mCSRMatrixRowInfo ) ); 
+      rows_info = ( tnlCSRMatrixRowInfo* ) realloc( --rows_info, ( size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) ); 
       if( ! rows_info ) return false;
       rows_info ++;
       
       if( allocated_elements < m. allocated_elements )
       {
          allocated_elements = m. allocated_elements;
-         data = ( mCSRMatrixElement< T >* ) realloc( --data, allocated_elements * sizeof( mCSRMatrixElement< T > ) );
+         data = ( tnlCSRMatrixElement< T >* ) realloc( --data, allocated_elements * sizeof( tnlCSRMatrixElement< T > ) );
          if( ! data ) return false;
          data ++;
       }
-      memcpy( rows_info, m. rows_info, ( size + 1 ) * sizeof( mCSRMatrixRowInfo ) );
+      memcpy( rows_info, m. rows_info, ( size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) );
       last_non_zero_element = m. last_non_zero_element;
       allocation_segment_size = m. allocation_segment_size;
       long int l = Min( last_non_zero_element + 1, allocated_elements );
@@ -402,7 +402,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
     */
    T RowProduct( const long int row, const T* vec ) const
    {
-      dbgFunctionName( "mCSRMatrix", "RowProduct" );
+      dbgFunctionName( "tnlCSRMatrix", "RowProduct" );
       long int row_beg = rows_info[ row ]. first;
       long int row_end = rows_info[ row ]. last;
       dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
@@ -421,7 +421,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    //! Vector product
    void VectorProduct( const T* vec, T* result ) const
    {
-      dbgFunctionName( "mCSRMatrix", "VectorProduct" );
+      dbgFunctionName( "tnlCSRMatrix", "VectorProduct" );
       long int row, i;
       T res;
 #ifdef HAVE_OPENMP
@@ -444,7 +444,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    };
    
    //! Add matrix
-   void MatrixAdd( const mCSRMatrix& m2 );
+   void MatrixAdd( const tnlCSRMatrix& m2 );
 
    //! Multiply row
    void MultiplyRow( const long int row, const T& c )
@@ -503,7 +503,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
 #endif
 
    //! Destructor
-   ~mCSRMatrix()
+   ~tnlCSRMatrix()
    {
       if( data ) delete[] --data;
       if( rows_info ) delete[] -- rows_info;
@@ -522,7 +522,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    bool AllocateNewMemory( long int amount )
    {
       assert( amount > 0 );
-      dbgFunctionName( "mCSRMatrix", "AllocateNewMemory" );
+      dbgFunctionName( "tnlCSRMatrix", "AllocateNewMemory" );
 #ifdef CSR_MATRIX_TUNING
       re_allocs ++;
 #endif
@@ -533,7 +533,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
       else
          allocated_elements += 
             ( ( amount / allocation_segment_size ) + 1 ) * allocation_segment_size;
-      data = ( mCSRMatrixElement< T >* ) realloc( --data, ( allocated_elements + 1 ) * sizeof( mCSRMatrixElement< T > ) );
+      data = ( tnlCSRMatrixElement< T >* ) realloc( --data, ( allocated_elements + 1 ) * sizeof( tnlCSRMatrixElement< T > ) );
       if( ! data ) return false;
       data ++;
       return true;
@@ -552,7 +552,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
                        const T& v,
                        csr_operation operation )
    {
-      dbgFunctionName( "mCSRMatrix", "ChangeElement" );
+      dbgFunctionName( "tnlCSRMatrix", "ChangeElement" );
       dbgCout( "row = " << row << " col = " << col << " value = " << v );
       //cout <<  "row = " << row << " col = " << col << " value = " << v << endl;
      
@@ -560,12 +560,12 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
       if( row < 0 || col < 0 )
       {
          cerr << "Negative row( " << row << " ) or column ( " << col << 
-                 " ) in mCSRMatrix :: Set calling." << endl;
+                 " ) in tnlCSRMatrix :: Set calling." << endl;
          abort();
       }
       if( row >= size )
       {
-         cerr << "Parametr row exceeds number of matrix rows in mCSRMatrix :: Set call." << endl;
+         cerr << "Parametr row exceeds number of matrix rows in tnlCSRMatrix :: Set call." << endl;
          abort();
       }
 
@@ -686,7 +686,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    long int size;
    
    //! Array with matrix elements (AA and JA arrays)
-   mCSRMatrixElement< T >* data;
+   tnlCSRMatrixElement< T >* data;
 
    //! Number of allocated elements
    /*! It says how many elements are there in @param data array.
@@ -710,7 +710,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
    //! Field of row info structures - one for each row
    /*! To make algortithms easier we have info even for the row number size + 1.
     */
-   mCSRMatrixRowInfo* rows_info;
+   tnlCSRMatrixRowInfo* rows_info;
 
 
 #ifdef CSR_MATRIX_TUNING
@@ -737,7 +737,7 @@ template< typename T > class mCSRMatrix : public tnlBaseMatrix< T >
 
 };
 
-template< typename T > ostream& operator << ( ostream& o_str, const mCSRMatrix< T >& A )
+template< typename T > ostream& operator << ( ostream& o_str, const tnlCSRMatrix< T >& A )
 {
    long int size = A. GetSize();
    long int i, j;

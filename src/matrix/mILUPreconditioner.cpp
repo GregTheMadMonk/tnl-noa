@@ -52,7 +52,7 @@ mILUPreconditioner :: mILUPreconditioner( const m_int _size,
    ilu_check = new m_real[ size * size ];
 #endif
    y = new m_real[ size ];
-   M = new mCSRMatrix( size, initial_size, segment_size, init_row_elements );
+   M = new tnlCSRMatrix( size, initial_size, segment_size, init_row_elements );
 }
 //--------------------------------------------------------------------------  
 mILUPreconditioner :: ~mILUPreconditioner()
@@ -65,12 +65,12 @@ mILUPreconditioner :: ~mILUPreconditioner()
 #endif
 }
 //--------------------------------------------------------------------------  
-const mCSRMatrix* mILUPreconditioner :: Data() const
+const tnlCSRMatrix* mILUPreconditioner :: Data() const
 {
    return M;
 }
 //--------------------------------------------------------------------------  
-m_int mILUPreconditioner :: Init( const mCSRMatrix& A, const m_real& threshold )
+m_int mILUPreconditioner :: Init( const tnlCSRMatrix& A, const m_real& threshold )
 {
    dbgFunctionName( "mILUPreconditioner", "Init" );
    assert( A. Size() == M -> Size() );
@@ -79,8 +79,8 @@ m_int mILUPreconditioner :: Init( const mCSRMatrix& A, const m_real& threshold )
    M -> ResetStatistics();
 #endif
    m_int i, j, k;
-   const mCSRMatrixElement *A_data;
-   const mCSRMatrixRowInfo *A_rows_info;
+   const tnlCSRMatrixElement *A_data;
+   const tnlCSRMatrixRowInfo *A_rows_info;
    A. Data( A_data, A_rows_info );
    
 #ifdef ILU_DEBUG
@@ -96,8 +96,8 @@ m_int mILUPreconditioner :: Init( const mCSRMatrix& A, const m_real& threshold )
 #endif
 
    M -> Reset();
-   mCSRMatrixElement* M_data;
-   const mCSRMatrixRowInfo *M_rows_info;
+   tnlCSRMatrixElement* M_data;
+   const tnlCSRMatrixRowInfo *M_rows_info;
    // 2. Processing IKJ version of ILU factorisation
    // For i = 0, ... , N
    for( i = 0; i < size; i ++ )
@@ -286,8 +286,8 @@ void mILUPreconditioner :: Solve( const m_real* b, m_real* x ) const
 {
    dbgFunctionName( "mILUPreconditioner", "Solve" );
    const m_int size = M -> Size();
-   const mCSRMatrixElement* M_data;
-   const mCSRMatrixRowInfo *M_rows_info;
+   const tnlCSRMatrixElement* M_data;
+   const tnlCSRMatrixRowInfo *M_rows_info;
    M -> Data( M_data, M_rows_info );
    m_int i, j;
    
