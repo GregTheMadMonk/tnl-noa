@@ -20,7 +20,7 @@ headers = \
    tnlMersonSolver.h \
    tnlMPIMesh2D.h \
    tnlMPIMesh3D.h \
-   mNonlinearRungeKuttaSolver.h \
+   tnlNonlinearRungeKuttaSolver.h \
    curve-ident.h \
    norms.h
 

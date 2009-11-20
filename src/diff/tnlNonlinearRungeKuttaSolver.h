@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mNonlinearRungeKuttaSolver.h  -  description
+                          tnlNonlinearRungeKuttaSolver.h  -  description
                              -------------------
     begin                : 2007/07/06
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mNonlinearRungeKuttaSolverH
-#define mNonlinearRungeKuttaSolverH
+#ifndef tnlNonlinearRungeKuttaSolverH
+#define tnlNonlinearRungeKuttaSolverH
 
 #include <math.h>
 #include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mNonlinearRungeKuttaSolver : public tnlExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class tnlNonlinearRungeKuttaSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
-   mNonlinearRungeKuttaSolver( const GRID& v )
+   tnlNonlinearRungeKuttaSolver( const GRID& v )
    {
       k1 = new GRID( v );
       k2 = new GRID( v );
@@ -50,7 +50,7 @@ template< class GRID, class SCHEME, typename T = double > class mNonlinearRungeK
    {
       T t;
       GRID grid;
-      return tnlString( "mNonLinearRungeKuttaSolver< " ) + grid. GetType() + 
+      return tnlString( "tnlNonlinearRungeKuttaSolver< " ) + grid. GetType() + 
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
@@ -176,7 +176,7 @@ template< class GRID, class SCHEME, typename T = double > class mNonlinearRungeK
       }
    };
 
-   ~mNonlinearRungeKuttaSolver()
+   ~tnlNonlinearRungeKuttaSolver()
    {
       delete k1;
       delete k2;
