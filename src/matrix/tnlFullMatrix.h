@@ -42,7 +42,7 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
 
    const tnlString& GetMatrixClass() const
    {
-      return mMatrixClass :: main;
+      return tnlMatrixClass :: main;
    };
 
    long int GetSize() const

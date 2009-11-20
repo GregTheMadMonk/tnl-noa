@@ -17,6 +17,6 @@
 
 #include "tnlBaseMatrix.h"
 
-const tnlString mMatrixClass :: main( "main" );
-const tnlString mMatrixClass :: petsc( "petsc" );
+const tnlString tnlMatrixClass :: main( "main" );
+const tnlString tnlMatrixClass :: petsc( "petsc" );
 //--------------------------------------------------------------------------

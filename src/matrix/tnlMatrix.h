@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMatrix.h  -  description
+                          tnlMatrix.h  -  description
                              -------------------
     begin                : 2007/07/23
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,14 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mMatrixH
-#define mMatrixH
+#ifndef tnlMatrixH
+#define tnlMatrixH
 
 #include <ostream>
 #include <iomanip.h>
 #include <core/tnlObject.h>
 
-template< typename T > class mMatrix : public tnlObject
+template< typename T > class tnlMatrix : public tnlObject
 {
    public:
 
@@ -45,12 +45,12 @@ template< typename T > class mMatrix : public tnlObject
 
    virtual void MultiplyRow( long int row, const T& value ) = 0;
 
-   virtual ~mMatrix()
+   virtual ~tnlMatrix()
    {};
 };
 
 //! Operator <<
-template< typename T > ostream& operator << ( ostream& o_str, const mMatrix< T >& A )
+template< typename T > ostream& operator << ( ostream& o_str, const tnlMatrix< T >& A )
 {
    long int size = A. GetSize();
    long int i, j;

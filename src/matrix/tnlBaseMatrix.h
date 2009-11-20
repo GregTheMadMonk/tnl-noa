@@ -23,11 +23,11 @@
 #include <core/tnlObject.h>
 #include <core/tnlString.h>
 
-class mMatrixClass
+class tnlMatrixClass
 {
    private:
 
-   mMatrixClass() {};
+   tnlMatrixClass() {};
 
    public:
    static const tnlString main;

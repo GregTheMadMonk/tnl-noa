@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMatrixSolver.h  -  description
+                          tnlMatrixSolver.h  -  description
                              -------------------
     begin                : 2007/07/30
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mMatrixSolverH
-#define mMatrixSolverH
+#ifndef tnlMatrixSolverH
+#define tnlMatrixSolverH
 
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
@@ -24,11 +24,11 @@
 #include <matrix/tnlBaseMatrix.h>
 #include <matrix/mPreconditioner.h>
 
-template< typename T > class mMatrixSolver 
+template< typename T > class tnlMatrixSolver 
 {
    public:
 
-   mMatrixSolver()
+   tnlMatrixSolver()
    : iteration( 0 ),
      residue( 0.0 ),
      solver_comm( MPI_COMM_WORLD ),
@@ -89,7 +89,7 @@ template< typename T > class mMatrixSolver
                        const long int max_iterations,
                        mPreconditioner< T >* precond = 0 ) = 0;
 
-   virtual ~mMatrixSolver() {};
+   virtual ~tnlMatrixSolver() {};
 
    protected:
 

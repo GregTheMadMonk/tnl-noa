@@ -20,9 +20,9 @@
 
 
 #include <math.h>
-#include <matrix/mMatrixSolver.h>
+#include <matrix/tnlMatrixSolver.h>
 
-template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
+template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
 {
    public:
 
@@ -107,18 +107,18 @@ template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
      
       if( normb == 0.0 ) normb = 1.0;
     
-      mMatrixSolver< T > :: iteration = 0; 
-      mMatrixSolver< T > :: residue = beta / normb;
-      //if( mMatrixSolver< T > :: residue <= max_residue )
+      tnlMatrixSolver< T > :: iteration = 0; 
+      tnlMatrixSolver< T > :: residue = beta / normb;
+      //if( tnlMatrixSolver< T > :: residue <= max_residue )
       //{
-      //   if( mMatrixSolver< T > :: verbosity > 0 )
-      //      mMatrixSolver< T > :: PrintOut();
+      //   if( tnlMatrixSolver< T > :: verbosity > 0 )
+      //      tnlMatrixSolver< T > :: PrintOut();
       //   return true;
       //}
       
 
-      while( mMatrixSolver< T > :: iteration < max_iterations && 
-             mMatrixSolver< T > :: residue > max_residue )
+      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+             tnlMatrixSolver< T > :: residue > max_residue )
       {
          const long int m = restarting;
 #ifdef HAVE_OPENMP
@@ -150,7 +150,7 @@ template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
 
          
          //dbgCout( " ----------- Starting m-loop -----------------" );
-         for( i = 0; i < m && mMatrixSolver< T > :: iteration <= max_iterations; i++ )
+         for( i = 0; i < m && tnlMatrixSolver< T > :: iteration <= max_iterations; i++ )
          {
 
             // Solve w from M w = A v_i
@@ -228,25 +228,25 @@ template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
             //dbgCout_ARRAY( cs, m + 1 );
             //dbgCout_ARRAY( sn, m + 1 );
             
-            mMatrixSolver< T > :: residue = fabs( s[ i + 1 ] ) / normb;
+            tnlMatrixSolver< T > :: residue = fabs( s[ i + 1 ] ) / normb;
 
             //dbgExpr( resid );
             //dbgExpr( normb );
             //dbgExpr( resid / normb );
             //dbgExpr( tol );
 
-            if( mMatrixSolver< T > :: iteration % 10 == 0 &&
-                mMatrixSolver< T > :: verbosity > 1 ) 
-               mMatrixSolver< T > :: PrintOut();
-            if( mMatrixSolver< T > :: residue < max_residue )
+            if( tnlMatrixSolver< T > :: iteration % 10 == 0 &&
+                tnlMatrixSolver< T > :: verbosity > 1 ) 
+               tnlMatrixSolver< T > :: PrintOut();
+            if( tnlMatrixSolver< T > :: residue < max_residue )
             {
                Update(x, i, m, H, s, v);
-               if( mMatrixSolver< T > :: verbosity > 0 )
-                  mMatrixSolver< T > :: PrintOut();
+               if( tnlMatrixSolver< T > :: verbosity > 0 )
+                  tnlMatrixSolver< T > :: PrintOut();
                return true;
             }
             //DBG_WAIT;
-            mMatrixSolver< T > :: iteration ++;
+            tnlMatrixSolver< T > :: iteration ++;
          }
          Update( x, m - 1, m, H, s, v);
          //dbgCout_ARRAY( x, size );
@@ -284,12 +284,12 @@ template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
          //dbgCout_ARRAY( r, size );
          //dbgExpr( beta );
          //dbgExpr( beta / normb );
-         mMatrixSolver< T > :: residue = beta / normb;
-         mMatrixSolver< T > :: iteration ++;
+         tnlMatrixSolver< T > :: residue = beta / normb;
+         tnlMatrixSolver< T > :: iteration ++;
       }
-      if( mMatrixSolver< T > :: verbosity > 0 ) 
-         mMatrixSolver< T > :: PrintOut();
-      if( mMatrixSolver< T > :: iteration == max_iterations ) return false;
+      if( tnlMatrixSolver< T > :: verbosity > 0 ) 
+         tnlMatrixSolver< T > :: PrintOut();
+      if( tnlMatrixSolver< T > :: iteration == max_iterations ) return false;
       return true;
    };
 

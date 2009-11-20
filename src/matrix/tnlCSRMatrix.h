@@ -158,7 +158,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
 
    const tnlString& GetMatrixClass() const
    {
-      return mMatrixClass :: main;
+      return tnlMatrixClass :: main;
    };
 
    //! Direct data acces for constant instances

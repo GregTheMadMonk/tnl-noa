@@ -61,7 +61,7 @@ template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
 
    const tnlString& GetMatrixClass() const
    {
-      return mMatrixClass :: petsc;
+      return tnlMatrixClass :: petsc;
    };
    
    void GetData( Mat& _matrix )

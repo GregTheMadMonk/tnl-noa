@@ -1,11 +1,11 @@
 ## Process this file with automake to produce Makefile.in
 
 headers = \
-      mMatrix.h \
+      tnlMatrix.h \
 	  tnlCSRMatrix.h \
 	  tnlFullMatrix.h \
 	  tnlBaseMatrix.h \
-	  mMatrixSolver.h \
+	  tnlMatrixSolver.h \
 	  mPETSCMatrix.h \
 	  mPETSCSolver.h \
 	  mSORSolver.h \

@@ -19,9 +19,9 @@
 #define tnlBICGSolverH
 
 #include <math.h>
-#include <matrix/mMatrixSolver.h>
+#include <matrix/tnlMatrixSolver.h>
 
-template< typename T > class tnlBICGSolver : public mMatrixSolver< T >
+template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
 {
    public:
 
@@ -50,8 +50,8 @@ template< typename T > class tnlBICGSolver : public mMatrixSolver< T >
          return false;
       }
 
-      mMatrixSolver< T > :: residue =  max_residue + 1.0;
-      mMatrixSolver< T > :: iteration = 0;
+      tnlMatrixSolver< T > :: residue =  max_residue + 1.0;
+      tnlMatrixSolver< T > :: iteration = 0;
       T alpha, beta, s1, s2;
       T b_norm( 0.0 );
       long int i;
@@ -70,8 +70,8 @@ template< typename T > class tnlBICGSolver : public mMatrixSolver< T >
          p[ i ] = p_ast[ i ] = b[ i ] - r[ i ];
       
 
-      while( mMatrixSolver< T > :: iteration < max_iterations && 
-             mMatrixSolver< T > :: residue > max_residue )
+      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+             tnlMatrixSolver< T > :: residue > max_residue )
       {
          //dbgCout( "Starting BiCG iteration " << iter + 1 );
 
@@ -130,17 +130,17 @@ template< typename T > class tnlBICGSolver : public mMatrixSolver< T >
          r_ast_new = r_ast;
          r_ast = q;
          
-         if( mMatrixSolver< T > :: iteration % 10 == 0 )
+         if( tnlMatrixSolver< T > :: iteration % 10 == 0 )
          {
-            mMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
-            if( mMatrixSolver< T > :: verbosity > 1 ) 
-               mMatrixSolver< T > :: PrintOut();
+            tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
+            if( tnlMatrixSolver< T > :: verbosity > 1 ) 
+               tnlMatrixSolver< T > :: PrintOut();
          }
-         mMatrixSolver< T > :: iteration ++;
+         tnlMatrixSolver< T > :: iteration ++;
       }
-      mMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
-      if( mMatrixSolver< T > :: verbosity > 0 ) 
-         mMatrixSolver< T > :: PrintOut();
+      tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
+      if( tnlMatrixSolver< T > :: verbosity > 0 ) 
+         tnlMatrixSolver< T > :: PrintOut();
    };
 
    ~tnlBICGSolver()

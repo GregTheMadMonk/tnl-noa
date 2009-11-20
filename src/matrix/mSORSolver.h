@@ -19,9 +19,9 @@
 #define mSORSolverH
 
 #include <math.h>
-#include <matrix/mMatrixSolver.h>
+#include <matrix/tnlMatrixSolver.h>
 
-template< typename T > class mSORSolver : public mMatrixSolver< T >
+template< typename T > class mSORSolver : public tnlMatrixSolver< T >
 {
    public:
    
@@ -43,16 +43,16 @@ template< typename T > class mSORSolver : public mMatrixSolver< T >
    {
       const long int size = A. GetSize();
       long int i;
-      mMatrixSolver< T > :: iteration = 0;
-      mMatrixSolver< T > :: residue = max_residue + 1.0;;
+      tnlMatrixSolver< T > :: iteration = 0;
+      tnlMatrixSolver< T > :: residue = max_residue + 1.0;;
 
       T b_norm( 0.0 );
       for( i = 0; i < size; i ++ )
          b_norm += b[ i ] * b[ i ];
       b_norm = sqrt( b_norm );
 
-      while( mMatrixSolver< T > :: iteration < max_iterations && 
-             max_residue < mMatrixSolver< T > :: residue )
+      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+             max_residue < tnlMatrixSolver< T > :: residue )
       {
          for( i = 0; i < size; i ++ )
          {
@@ -67,19 +67,19 @@ template< typename T > class mSORSolver : public mMatrixSolver< T >
             }
             x[ i ] = ( 1.0 - sor_omega ) * x_i + sor_omega * ( b[ i ] - sigma ) / diag_entry;
          }
-         if( mMatrixSolver< T > :: iteration % 10 == 0 && mMatrixSolver< T > :: verbosity > 1 )
+         if( tnlMatrixSolver< T > :: iteration % 10 == 0 && tnlMatrixSolver< T > :: verbosity > 1 )
          {
-            mMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm );
-            mMatrixSolver< T > :: PrintOut();
+            tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm );
+            tnlMatrixSolver< T > :: PrintOut();
          }
-         mMatrixSolver< T > :: iteration ++;
+         tnlMatrixSolver< T > :: iteration ++;
       }
-      if( mMatrixSolver< T > :: verbosity > 0 )
+      if( tnlMatrixSolver< T > :: verbosity > 0 )
       {
-         mMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm );
-         mMatrixSolver< T > :: PrintOut();
+         tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm );
+         tnlMatrixSolver< T > :: PrintOut();
       }
-      if( mMatrixSolver< T > :: iteration <= max_iterations ) return true;
+      if( tnlMatrixSolver< T > :: iteration <= max_iterations ) return true;
       return false;
    };
 
