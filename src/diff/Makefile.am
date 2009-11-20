@@ -18,7 +18,7 @@ headers = \
    tnlGridSystem1D.h \
    tnlEulerSolver.h \
    tnlMersonSolver.h \
-   mMPIMesh2D.h \
+   tnlMPIMesh2D.h \
    mMPIMesh3D.h \
    mNonlinearRungeKuttaSolver.h \
    curve-ident.h \

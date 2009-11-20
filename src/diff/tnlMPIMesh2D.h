@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMPIMesh2D.h  -  description
+                          tnlMPIMesh2D.h  -  description
                              -------------------
     begin                : 2005/07/09
     copyright            : (C) 2005 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mMPIMesh2DH
-#define mMPIMesh2DH
+#ifndef tnlMPIMesh2DH
+#define tnlMPIMesh2DH
 
 #include <diff/tnlGrid2D.h>
 #include <core/tnlParameterContainer.h>
@@ -25,15 +25,15 @@
 #include <core/mfilename.h>
 
 
-template< class T > class mMPIMesh2D
+template< class T > class tnlMPIMesh2D
 {
    public:
 
    //! Basic constructor
-   mMPIMesh2D();
+   tnlMPIMesh2D();
 
    //! Destructor
-   ~mMPIMesh2D()
+   ~tnlMPIMesh2D()
    {
       FreeBuffers();
    };
@@ -222,14 +222,14 @@ template< class T > class mMPIMesh2D
      *top_right_recieve_buff;
 };
                
-template< class T > void DrawSubdomains( const mMPIMesh2D< T >& mpi_mesh, 
+template< class T > void DrawSubdomains( const tnlMPIMesh2D< T >& mpi_mesh, 
                                          const tnlGrid2D< T >* u,
                                          const char* file_name_base,
                                          const char* format );
 
 // Implementation
 
-template< class T > mMPIMesh2D< T > :: mMPIMesh2D()
+template< class T > tnlMPIMesh2D< T > :: tnlMPIMesh2D()
     : mesh_comm( 0 ), original_comm( 0 ),
       mesh_x_size( 0 ), mesh_y_size( 0 ),
       node_x_pos( 0 ) , node_y_pos( 0 ),
@@ -254,7 +254,7 @@ template< class T > mMPIMesh2D< T > :: mMPIMesh2D()
       top_right_recieve_buff( 0 )
       {};
    
-template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
+template< class T > bool tnlMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
                                                   int& _mesh_x_size,
                                                   int& _mesh_y_size,
                                                   int _overlap_width,
@@ -416,7 +416,7 @@ template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
       return true;
    };
    
-template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
+template< class T > bool tnlMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
                                                   const tnlParameterContainer& parameters,
                                                   int _overlap_width,
                                                   int root,
@@ -428,7 +428,7 @@ template< class T > bool mMPIMesh2D< T > :: Init( const tnlGrid2D< T >& u,
    return Init( u, mpi_mesh_x_size, mpi_mesh_y_size, _overlap_width, root, comm );
 }
 
-template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( tnlGrid2D< T >& global_u )
+template< class T > bool tnlMPIMesh2D< T > :: SetGlobalDomain( tnlGrid2D< T >& global_u )
 {
    if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size ) )
       return false;
@@ -437,7 +437,7 @@ template< class T > bool mMPIMesh2D< T > :: SetGlobalDomain( tnlGrid2D< T >& glo
    return true;
 }
    
-template< class T > bool mMPIMesh2D< T > :: CreateMesh( const tnlGrid2D< T >& u,
+template< class T > bool tnlMPIMesh2D< T > :: CreateMesh( const tnlGrid2D< T >& u,
                                                         tnlGrid2D< T >& sub_u,
                                                         int root ) const
 {
@@ -484,12 +484,12 @@ template< class T > bool mMPIMesh2D< T > :: CreateMesh( const tnlGrid2D< T >& u,
 return true;
 };
 
-template< class T > void mMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T >& u,
+template< class T > void tnlMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T >& u,
                                                            tnlGrid2D< T >& sub_u,
                                                            int dest_node,
                                                            int root ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "ScatterToNode" );
+   dbgFunctionName( "tnlMPIMesh2D", "ScatterToNode" );
 #ifdef HAVE_MPI
    if( MPIGetRank( original_comm ) == root )
    {
@@ -564,7 +564,7 @@ template< class T > void mMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T >&
 #endif
 }
 
-template< class T > void mMPIMesh2D< T > :: Scatter( const tnlGrid2D< T >& u,
+template< class T > void tnlMPIMesh2D< T > :: Scatter( const tnlGrid2D< T >& u,
                                                      tnlGrid2D< T >& sub_u,
                                                      int root ) const
 {
@@ -582,11 +582,11 @@ template< class T > void mMPIMesh2D< T > :: Scatter( const tnlGrid2D< T >& u,
 #endif
 }
     
-template< class T > void mMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
+template< class T > void tnlMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
                                                     const tnlGrid2D< T >& sub_u,
                                                     int root ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "Gather" );
+   dbgFunctionName( "tnlMPIMesh2D", "Gather" );
 #ifdef HAVE_MPI
    
    dbgMPIBarrier;
@@ -686,9 +686,9 @@ template< class T > void mMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
 #endif
 }
 
-template< class T > void mMPIMesh2D< T > :: Synchronize( tnlGrid2D< T >& u )
+template< class T > void tnlMPIMesh2D< T > :: Synchronize( tnlGrid2D< T >& u )
 {
-   dbgFunctionName( "mMPIMesh2D", "Synchronize" );
+   dbgFunctionName( "tnlMPIMesh2D", "Synchronize" );
 #ifdef HAVE_MPI
   long int i, j;
   int min_x = left_overlap;
@@ -1034,7 +1034,7 @@ template< class T > void mMPIMesh2D< T > :: Synchronize( tnlGrid2D< T >& u )
   dbgMPIBarrier;
 #endif
 }
-template< class T > void mMPIMesh2D< T > :: FreeBuffers()
+template< class T > void tnlMPIMesh2D< T > :: FreeBuffers()
 {
    if( left_send_buff ) delete left_send_buff;
    if( right_send_buff ) delete right_send_buff;
@@ -1070,7 +1070,7 @@ template< class T > void mMPIMesh2D< T > :: FreeBuffers()
    top_right_recieve_buff = 0;
 };
 
-template< class T > void DrawSubdomains( const mMPIMesh2D< T >& mpi_mesh, 
+template< class T > void DrawSubdomains( const tnlMPIMesh2D< T >& mpi_mesh, 
                                          const tnlGrid2D< T >& u,
                                          const char* file_name_base,
                                          const char* format )

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mMPIMesh2D.cpp  -  description
+                          tnlMPIMesh2D.cpp  -  description
                              -------------------
     begin                : 2005/07/09
     copyright            : (C) 2005 by Tomas Oberhuber
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mMPIMesh2D.h"
+#include "tnlMPIMesh2D.h"
 #include <config.h>
 #include "mdiff-cpp-headers.h"
 #include "tnlGrid2D.h"
@@ -27,7 +27,7 @@
 
 
 //--------------------------------------------------------------------------
-mMPIMesh2D :: mMPIMesh2D()
+tnlMPIMesh2D :: tnlMPIMesh2D()
    : mesh_comm( 0 ),
      mesh_x_size( 1 ),
      mesh_y_size( 1 ),
@@ -69,7 +69,7 @@ mMPIMesh2D :: mMPIMesh2D()
 #endif
 }
 //--------------------------------------------------------------------------
-mMPIMesh2D :: mMPIMesh2D( const mMPIMesh2D& mpi_mesh,
+tnlMPIMesh2D :: tnlMPIMesh2D( const tnlMPIMesh2D& mpi_mesh,
                           m_int _overlap_width )
    : mesh_comm( mpi_mesh. mesh_comm ),
      mesh_x_size( mpi_mesh. mesh_x_size ),
@@ -130,9 +130,9 @@ mMPIMesh2D :: mMPIMesh2D( const mMPIMesh2D& mpi_mesh,
       uppr_rght_rcv_buf = new m_real[ buf_size ];
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: FreeBuffers()
+void tnlMPIMesh2D :: FreeBuffers()
 {
-   dbgFunctionName( "mMPIMesh2D", "FreeBuffers" );
+   dbgFunctionName( "tnlMPIMesh2D", "FreeBuffers" );
    dbgExpr( lft_snd_buf );
    dbgExpr( rght_snd_buf );
    dbgExpr( uppr_snd_buf );
@@ -175,17 +175,17 @@ void mMPIMesh2D :: FreeBuffers()
 
 }
 //--------------------------------------------------------------------------
-mMPIMesh2D :: ~mMPIMesh2D()
+tnlMPIMesh2D :: ~tnlMPIMesh2D()
 {
    FreeBuffers();
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: Init( const tnlGrid2D* phi,
+m_int tnlMPIMesh2D :: Init( const tnlGrid2D* phi,
                           m_int _mesh_x_size,
                           m_int _mesh_y_size,
                           m_int _overlap_width )
 {
-   dbgFunctionName( "mMPIMesh2D", "Init" );
+   dbgFunctionName( "tnlMPIMesh2D", "Init" );
    
    // for consistency we want to have global dimensions set even
    // if we do not use mpi at all
@@ -352,10 +352,10 @@ m_int mMPIMesh2D :: Init( const tnlGrid2D* phi,
    return 1;
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: CreateMesh( const tnlGrid2D* phi,
+m_bool tnlMPIMesh2D :: CreateMesh( const tnlGrid2D* phi,
                                  tnlGrid2D*& sub_phi ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "CreateMesh" );
+   dbgFunctionName( "tnlMPIMesh2D", "CreateMesh" );
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return true;
    tnlVector2D a, h;
@@ -395,7 +395,7 @@ m_bool mMPIMesh2D :: CreateMesh( const tnlGrid2D* phi,
    return 1;
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: CreateMeshAtBoundaries( const tnlGrid2D* phi,
+m_bool tnlMPIMesh2D :: CreateMeshAtBoundaries( const tnlGrid2D* phi,
                                              tnlGrid2D*& sub_phi )
 {
 #ifdef HAVE_MPI_H
@@ -425,10 +425,10 @@ m_bool mMPIMesh2D :: CreateMeshAtBoundaries( const tnlGrid2D* phi,
    return true;
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: CreateGlobalGrid( tnlGrid2D*& phi,
+void tnlMPIMesh2D :: CreateGlobalGrid( tnlGrid2D*& phi,
                                      const tnlGrid2D* sub_phi ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "CreateGlobalGrid" );
+   dbgFunctionName( "tnlMPIMesh2D", "CreateGlobalGrid" );
    dbgExpr( node_rank );
    dbgExpr( global_x_size );
    dbgExpr( global_y_size );
@@ -442,11 +442,11 @@ void mMPIMesh2D :: CreateGlobalGrid( tnlGrid2D*& phi,
                       sub_phi -> GetName(). Data () );
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: ScatterToNode( const tnlGrid2D* phi,
+void tnlMPIMesh2D :: ScatterToNode( const tnlGrid2D* phi,
                                   tnlGrid2D* sub_phi,
                                   m_int dest_node ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "ScatterToNode" );
+   dbgFunctionName( "tnlMPIMesh2D", "ScatterToNode" );
 #ifdef HAVE_MPI_H
    if( node_rank == 0 )
    {
@@ -519,7 +519,7 @@ void mMPIMesh2D :: ScatterToNode( const tnlGrid2D* phi,
 #endif
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: Scatter( const tnlGrid2D* phi, tnlGrid2D* sub_phi ) const
+void tnlMPIMesh2D :: Scatter( const tnlGrid2D* phi, tnlGrid2D* sub_phi ) const
 {
    if( MeshSize() == 1 ) return;
    if( node_rank == 0 )
@@ -538,10 +538,10 @@ void mMPIMesh2D :: Scatter( const tnlGrid2D* phi, tnlGrid2D* sub_phi ) const
    else ScatterToNode( phi, sub_phi, 0 );
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: ScatterAtBoundaries( const tnlGrid2D* phi,
+void tnlMPIMesh2D :: ScatterAtBoundaries( const tnlGrid2D* phi,
                                         tnlGrid2D* sub_phi )
 {
-   dbgFunctionName( "mMPIMesh2D", "ScatterAtBoundaries" );
+   dbgFunctionName( "tnlMPIMesh2D", "ScatterAtBoundaries" );
    if( MeshSize() == 1 ) return;
    if( ! sub_phi ) return;
 #ifdef HAVE_MPI_H
@@ -572,10 +572,10 @@ void mMPIMesh2D :: ScatterAtBoundaries( const tnlGrid2D* phi,
 #endif
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: Gather( tnlGrid2D* phi,
+void tnlMPIMesh2D :: Gather( tnlGrid2D* phi,
                            const tnlGrid2D* sub_phi ) const
 {
-   dbgFunctionName( "mMPIMesh2D", "Gather" );
+   dbgFunctionName( "tnlMPIMesh2D", "Gather" );
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return;
    
@@ -664,9 +664,9 @@ void mMPIMesh2D :: Gather( tnlGrid2D* phi,
 #endif
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: Synchronize( tnlGrid2D* phi )
+void tnlMPIMesh2D :: Synchronize( tnlGrid2D* phi )
 {
-   dbgFunctionName( "mMPIMesh2D", "Synchronize" );
+   dbgFunctionName( "tnlMPIMesh2D", "Synchronize" );
    //return;
 #ifdef HAVE_MPI_H
    if( MeshSize() == 1 ) return;
@@ -1027,7 +1027,7 @@ void mMPIMesh2D :: Synchronize( tnlGrid2D* phi )
 #endif
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: SetDirichletBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
+void tnlMPIMesh2D :: SetDirichletBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
 {
    if( MeshSize() == 1 )
    {
@@ -1053,7 +1053,7 @@ void mMPIMesh2D :: SetDirichletBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
          ( *phi )( global_x_size - 1, j ) = ( *bnd )( global_x_size - 1, j );
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: SetNeumannBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
+void tnlMPIMesh2D :: SetNeumannBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
 {
    if( MeshSize() == 1 )
    {
@@ -1085,7 +1085,7 @@ void mMPIMesh2D :: SetNeumannBnd( tnlGrid2D* phi, const tnlGrid2D* bnd )
             hx * ( *bnd )( global_x_size - 1, j );
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: DomainDimensions( m_int& x_pos, m_int& y_pos,
+void tnlMPIMesh2D :: DomainDimensions( m_int& x_pos, m_int& y_pos,
                                      m_int& x_size, m_int& y_size )
 {
    x_pos = node_x_pos * local_x_size;
@@ -1094,13 +1094,13 @@ void mMPIMesh2D :: DomainDimensions( m_int& x_pos, m_int& y_pos,
    y_size = local_y_size;
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: GlobalDimensions( m_int& x_size, m_int& y_size )
+void tnlMPIMesh2D :: GlobalDimensions( m_int& x_size, m_int& y_size )
 {
    x_size = global_x_size;
    y_size = global_y_size;
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: DomainEdges( m_int& right, m_int& left,
+void tnlMPIMesh2D :: DomainEdges( m_int& right, m_int& left,
                                 m_int& bottom, m_int& top )
 {
    right = right_overlap;
@@ -1109,57 +1109,57 @@ void mMPIMesh2D :: DomainEdges( m_int& right, m_int& left,
    top = upper_overlap;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: NodeRank() const
+m_int tnlMPIMesh2D :: NodeRank() const
 { 
    return node_rank;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: XPos() const
+m_int tnlMPIMesh2D :: XPos() const
 {
    return node_x_pos;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: YPos() const
+m_int tnlMPIMesh2D :: YPos() const
 {
    return node_y_pos;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: MeshSize() const
+m_int tnlMPIMesh2D :: MeshSize() const
 {
    return mesh_x_size * mesh_y_size;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: XSize() const
+m_int tnlMPIMesh2D :: XSize() const
 {
    return mesh_x_size;
 }
 //--------------------------------------------------------------------------
-m_int mMPIMesh2D :: YSize() const
+m_int tnlMPIMesh2D :: YSize() const
 {
    return mesh_y_size;
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: LeftNeighbour( m_int& nb_node ) const
+m_bool tnlMPIMesh2D :: LeftNeighbour( m_int& nb_node ) const
 {
    return :: LeftNeighbour( mesh_comm, node_rank, nb_node );
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: RightNeighbour( m_int& nb_node ) const
+m_bool tnlMPIMesh2D :: RightNeighbour( m_int& nb_node ) const
 {
    return :: RightNeighbour( mesh_comm, node_rank, nb_node );
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: UpperNeighbour( m_int& nb_node ) const
+m_bool tnlMPIMesh2D :: UpperNeighbour( m_int& nb_node ) const
 {
    return :: UpperNeighbour( mesh_comm, node_rank, nb_node );
 }
 //--------------------------------------------------------------------------
-m_bool mMPIMesh2D :: LowerNeighbour( m_int& nb_node ) const
+m_bool tnlMPIMesh2D :: LowerNeighbour( m_int& nb_node ) const
 {
    return :: LowerNeighbour( mesh_comm, node_rank, nb_node );
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: DrawFunction( const tnlGrid2D* phi, const m_char* file_name )
+void tnlMPIMesh2D :: DrawFunction( const tnlGrid2D* phi, const m_char* file_name )
 {
    if( MeshSize() == 1 )
    {
@@ -1188,7 +1188,7 @@ void mMPIMesh2D :: DrawFunction( const tnlGrid2D* phi, const m_char* file_name )
    MPIBarrier();
 }
 //--------------------------------------------------------------------------
-void mMPIMesh2D :: DrawSubdomains( tnlGrid2D* phi,
+void tnlMPIMesh2D :: DrawSubdomains( tnlGrid2D* phi,
                                   const m_char* file_name )
 {
    if( MeshSize() == 1 ) return;
@@ -1202,7 +1202,7 @@ void mMPIMesh2D :: DrawSubdomains( tnlGrid2D* phi,
    phi -> DrawFunction( file );
 }
 //--------------------------------------------------------------------------
-MPI_Comm mMPIMesh2D :: GetMeshComm() const
+MPI_Comm tnlMPIMesh2D :: GetMeshComm() const
 {
    return mesh_comm;
 }
@@ -1223,11 +1223,11 @@ m_int FindNodeByCoord( MPI_Comm mesh_comm, m_int x_pos, m_int y_pos )
    return -1;
 }
 //--------------------------------------------------------------------------
-m_bool CreateMesh( const mMPIMesh2D& mpi_mesh,
+m_bool CreateMesh( const tnlMPIMesh2D& mpi_mesh,
                    const mObjectContainer* phi_cont,
                    mObjectContainer* sub_phi_cont )
 {
-   dbgFunctionName( "mMPIMesh2D", "CreateMesh" );
+   dbgFunctionName( "tnlMPIMesh2D", "CreateMesh" );
    if( mpi_mesh. MeshSize() == 1 ) return true;
    m_int size;
    if( mpi_mesh. NodeRank() == 0 ) size = phi_cont -> Size();
@@ -1249,11 +1249,11 @@ m_bool CreateMesh( const mMPIMesh2D& mpi_mesh,
    return true;
 }
 //--------------------------------------------------------------------------
-void CreateGlobalGrid( const mMPIMesh2D* mpi_mesh,
+void CreateGlobalGrid( const tnlMPIMesh2D* mpi_mesh,
                        mObjectContainer* phi_cont,
                        const mObjectContainer* sub_phi_cont )
 {
-   dbgFunctionName( "mMPIMesh2D", "CreateGlobalGrid" );
+   dbgFunctionName( "tnlMPIMesh2D", "CreateGlobalGrid" );
    if( mpi_mesh -> MeshSize() == 1 ) return;
    m_int size = sub_phi_cont -> Size();
    m_int i;
@@ -1268,7 +1268,7 @@ void CreateGlobalGrid( const mMPIMesh2D* mpi_mesh,
    }
 }
 //--------------------------------------------------------------------------
-void Scatter( const mMPIMesh2D* mpi_mesh,
+void Scatter( const tnlMPIMesh2D* mpi_mesh,
               const mObjectContainer* phi_cont,
               mObjectContainer* sub_phi_cont )
 {
@@ -1298,11 +1298,11 @@ void Scatter( const mMPIMesh2D* mpi_mesh,
    }
 }
 //--------------------------------------------------------------------------
-void Gather( const mMPIMesh2D* mpi_mesh,
+void Gather( const tnlMPIMesh2D* mpi_mesh,
              mObjectContainer* phi_cont,
              const mObjectContainer* sub_phi_cont )
 {
-   dbgFunctionName( "mMPIMesh2D", "Gather" );
+   dbgFunctionName( "tnlMPIMesh2D", "Gather" );
    dbgExpr( mpi_mesh -> NodeRank() );
    if( mpi_mesh -> MeshSize() == 1 ) return;
    m_int size;
