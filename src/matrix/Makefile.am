@@ -12,7 +12,7 @@ headers = \
 	  tnlCGSolver.h \
 	  tnlBICGSolver.h \
 	  tnlBICGStabSolver.h \
-	  mGMRESSolver.h  \
+	  tnlGMRESSolver.h  \
 	  mPreconditioner.h \
 	  mILUPreconditioner.h \
 	  mPETSCPreconditioner.h

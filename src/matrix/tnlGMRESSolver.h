@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mGMRESSolver.h  -  description
+                          tnlGMRESSolver.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,18 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mGMRESSolverH
-#define mGMRESSolverH
+#ifndef tnlGMRESSolverH
+#define tnlGMRESSolverH
 
 
 #include <math.h>
 #include <matrix/mMatrixSolver.h>
 
-template< typename T > class mGMRESSolver : public mMatrixSolver< T >
+template< typename T > class tnlGMRESSolver : public mMatrixSolver< T >
 {
    public:
 
-   mGMRESSolver()
+   tnlGMRESSolver()
    : _r( 0 ), _w( 0 ), _s( 0 ), _cs( 0 ), _sn( 0 ), _v( 0 ), _H( 0 ), _M_tmp( 0 ),
      size( 0 ), restarting( 0 )
    {};
@@ -293,7 +293,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
       return true;
    };
 
-   ~mGMRESSolver()
+   ~tnlGMRESSolver()
    {
       FreeSupportingArrays();
    };
@@ -307,7 +307,7 @@ template< typename T > class mGMRESSolver : public mMatrixSolver< T >
                 const T* s,
                 const T* v )
    {
-      //dbgFunctionName( "mGMRESSolver", "Update" );
+      //dbgFunctionName( "tnlGMRESSolver", "Update" );
       T* y = new T[ m + 1 ];
       long int i, j;
 #ifdef HAVE_OPENMP
