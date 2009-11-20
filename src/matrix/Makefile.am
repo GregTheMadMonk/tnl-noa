@@ -11,7 +11,7 @@ headers = \
 	  mSORSolver.h \
 	  mCGSolver.h \
 	  tnlBICGSolver.h \
-	  mBICGStabSolver.h \
+	  tnlBICGStabSolver.h \
 	  mGMRESSolver.h  \
 	  mPreconditioner.h \
 	  mILUPreconditioner.h \

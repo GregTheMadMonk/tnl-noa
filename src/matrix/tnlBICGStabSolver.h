@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mBICGStabSolver.h  -  description
+                          tnlBICGStabSolver.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,18 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mBICGStabSolverH
-#define mBICGStabSolverH
+#ifndef tnlBICGStabSolverH
+#define tnlBICGStabSolverH
 
 
 #include <math.h>
 #include <matrix/mMatrixSolver.h>
 
-template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
+template< typename T > class tnlBICGStabSolver : public mMatrixSolver< T >
 {
    public:
 
-   mBICGStabSolver()
+   tnlBICGStabSolver()
    : r( 0 ), r_ast( 0 ), r_new( 0 ), p( 0 ), s( 0 ), Ap( 0 ), As( 0 ), M_tmp( 0 ),
      size( 0 )
    {
@@ -39,7 +39,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
                const long int max_iterations,
                mPreconditioner< T >* precond = 0 )
    {
-      dbgFunctionName( "mBICGStabSolver", "Solve" );
+      dbgFunctionName( "tnlBICGStabSolver", "Solve" );
       if( ! SetSize( A. GetSize() ) ) return false;
 
       mMatrixSolver< T > :: residue =  max_residue + 1.0;
@@ -178,7 +178,7 @@ template< typename T > class mBICGStabSolver : public mMatrixSolver< T >
          mMatrixSolver< T > :: PrintOut();
    };
 
-   ~mBICGStabSolver()
+   ~tnlBICGStabSolver()
    {
       FreeSupportingArrays();
    };
