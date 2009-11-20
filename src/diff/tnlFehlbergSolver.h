@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mFehlbergSolver.h  -  description
+                          tnlFehlbergSolver.h  -  description
                              -------------------
     begin                : 2007/06/19
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mFehlbergSolverH
-#define mFehlbergSolverH
+#ifndef tnlFehlbergSolverH
+#define tnlFehlbergSolverH
 
 #include <math.h>
 #include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver : public tnlExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class tnlFehlbergSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
-   mFehlbergSolver( const GRID& v )
+   tnlFehlbergSolver( const GRID& v )
    {
       k1 = new GRID( v );
       k2 = new GRID( v );
@@ -45,7 +45,7 @@ template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver 
    {
       T t;
       GRID grid;
-      return tnlString( "mFehlbergSolver< " ) + grid. GetType() + 
+      return tnlString( "tnlFehlbergSolver< " ) + grid. GetType() + 
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
@@ -172,7 +172,7 @@ template< class GRID, class SCHEME, typename T = double > class mFehlbergSolver 
       }
    };
 
-   ~mFehlbergSolver()
+   ~tnlFehlbergSolver()
    {
       delete k1;
       delete k2;
