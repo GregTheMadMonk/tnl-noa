@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mPETSCPreconditioner.h  -  description
+                          tnlPETSCPreconditioner.h  -  description
                              -------------------
     begin                : 2008/05/13
     copyright            : (C) 2008 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mPETSCPreconditionerH
-#define mPETSCPreconditionerH
+#ifndef tnlPETSCPreconditionerH
+#define tnlPETSCPreconditionerH
 
 #include <matrix/mPreconditioner.h>
 
@@ -31,7 +31,7 @@ struct PC;
 using namespace std;
 
 //! This class wraps PETSc preconditioners
-template< typename T > class mPETSCPreconditioner : public mPreconditioner< T >
+template< typename T > class tnlPETSCPreconditioner : public mPreconditioner< T >
 {
 #ifdef HAVE_PETSC
    PC petsc_preconditioner;
@@ -39,7 +39,7 @@ template< typename T > class mPETSCPreconditioner : public mPreconditioner< T >
 
    public:
 
-   mPETSCPreconditioner( const char* type )
+   tnlPETSCPreconditioner( const char* type )
    {
 #ifdef HAVE_PETSC
       PCCreate( MPI_COMM_SELF, &petsc_preconditioner );
@@ -65,11 +65,11 @@ template< typename T > class mPETSCPreconditioner : public mPreconditioner< T >
    
    bool Solve( const T* b, T* x ) const
    {
-      cerr << "Do not call mPETSCPreconditioner :: Solve. Connect it to mPETSCSolver using mPETSCPreconditioner :: GetData( PC& precond )." << endl;
+      cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to mPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << endl;
       abort();
    };
 
-   ~mPETSCPreconditioner()
+   ~tnlPETSCPreconditioner()
    {
 #ifdef HAVE_PETSC
       PCDestroy( petsc_preconditioner );
