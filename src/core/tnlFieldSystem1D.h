@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mFieldSystem1D.h  -  description
+                          tnlFieldSystem1D.h  -  description
                              -------------------
     begin                : 2007/12/17
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,26 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mFieldSystem1DH
-#define mFieldSystem1DH
+#ifndef tnlFieldSystem1DH
+#define tnlFieldSystem1DH
 
 #include "tnlLongVector.h"
 #include "tnlVector.h"
 
-template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D : public tnlLongVector< T >
+template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem1D : public tnlLongVector< T >
 {
    public:
 
-   mFieldSystem1D()
+   tnlFieldSystem1D()
    : tnlLongVector< T >( 0 )
    { };
 
-   mFieldSystem1D( long int _x_size )
+   tnlFieldSystem1D( long int _x_size )
    : tnlLongVector< T >( _x_size * SYSTEM_SIZE ),
      x_size( _x_size )
    { };
 
-   mFieldSystem1D( const mFieldSystem1D& f )
+   tnlFieldSystem1D( const tnlFieldSystem1D& f )
    : tnlLongVector< T >( f ),
      x_size( f. x_size )
    { };
@@ -42,7 +42,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mFieldSystem1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlFieldSystem1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    long int GetXSize() const
@@ -56,7 +56,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
       return tnlLongVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
    };
 
-   bool SetNewDimensions( const mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& f )
+   bool SetNewDimensions( const tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& f )
    {
       return SetNewDimensions( f. GetXSize() );
    };
@@ -113,6 +113,6 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mFieldSystem1D
 };
 
 // Explicit instatiation
-//template class mFieldSystem1D< double, 1, int >;
+//template class tnlFieldSystem1D< double, 1, int >;
 
 #endif

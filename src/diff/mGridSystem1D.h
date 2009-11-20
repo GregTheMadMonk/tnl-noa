@@ -18,9 +18,9 @@
 #ifndef mGridSystem1DH
 #define mGridSystem1DH
 
-#include <core/mFieldSystem1D.h>
+#include <core/tnlFieldSystem1D.h>
 
-template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem1D : public mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >
+template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem1D : public tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >
 {
    public:
 
@@ -34,7 +34,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
    mGridSystem1D( long int x_size,
                   const double& A_x,
                   const double& B_x )
-   : mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( x_size ),
+   : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( x_size ),
      Ax( A_x ), Bx( B_x ) 
    {
       assert( Ax < Bx );
@@ -42,7 +42,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
    };
 
    mGridSystem1D( const mGridSystem1D& g )
-   : mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( g ),
+   : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Hx( g. Hx )
    { };
@@ -61,7 +61,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
       Ax = A_x;
       Bx = B_x;
       assert( Ax < Bx );
-      Hx = ( Bx - Ax ) / ( double ) ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: GetXSize() - 1 ); 
+      Hx = ( Bx - Ax ) / ( double ) ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: GetXSize() - 1 ); 
    }
 
    void SetNewDomain( const mGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u )
@@ -97,43 +97,43 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
    T Partial_x_f( const SYSTEM_INDEX ind, const long int i ) const
    {
       assert( i >= 0 );
-      assert( i < ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
-      return ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
-               mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > ::  operator()( ind, i ) ) / Hx;
+      assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
+      return ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
+               tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > ::  operator()( ind, i ) ) / Hx;
    };
    
    //! Backward difference w.r.t x
    T Partial_x_b( const SYSTEM_INDEX ind, const long int i ) const
    {
       assert( i > 0 );
-      assert( i < ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size ) );
-      return ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i ) - 
-               mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / Hx;
+      assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size ) );
+      return ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i ) - 
+               tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / Hx;
    };
 
    //! Central difference w.r.t. x
    T Partial_x( const SYSTEM_INDEX ind, const long int i ) const
    {
       assert( i > 0 );
-      assert( i < ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
-      return ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
-               mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / ( 2.0 * Hx );
+      assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
+      return ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
+               tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / ( 2.0 * Hx );
    };
    
    //! Second order difference w.r.t. x
    T Partial_xx( const SYSTEM_INDEX ind, const long int i ) const
    {
       assert( i > 0 );
-      assert( i < ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
-      return ( mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
-               2.0 * mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i ) + 
-               mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / ( Hx * Hx );   
+      assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
+      return ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i + 1 ) - 
+               2.0 * tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i ) + 
+               tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: operator()( ind, i - 1 ) ) / ( Hx * Hx );   
    };
    
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: Save( file ) ) return false;
+      if( ! tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: Save( file ) ) return false;
       file. write( ( char* ) &Ax, sizeof( double ) );
       file. write( ( char* ) &Bx, sizeof( double ) );
       file. write( ( char* ) &Hx, sizeof( double ) );
@@ -144,7 +144,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! mFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: Load( file ) ) return false;
+      if( ! tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: Load( file ) ) return false;
       file. read( ( char* ) &Ax, sizeof( double ) );
       file. read( ( char* ) &Bx, sizeof( double ) );
       file. read( ( char* ) &Hx, sizeof( double ) );
