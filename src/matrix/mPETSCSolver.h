@@ -92,7 +92,7 @@ template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
 #ifdef HAVE_PETSC
       assert( A. GetMatrixClass() == tnlMatrixClass :: petsc );
       Vec petsc_x, petsc_b;
-      mPETSCMatrix< T >* petsc_matrix = ( mPETSCMatrix< T >* ) & A;
+      tnlPETSCMatrix< T >* petsc_matrix = ( tnlPETSCMatrix< T >* ) & A;
       Mat matrix;
       petsc_matrix -> GetData( matrix );
 

@@ -6,7 +6,7 @@ headers = \
 	  tnlFullMatrix.h \
 	  tnlBaseMatrix.h \
 	  tnlMatrixSolver.h \
-	  mPETSCMatrix.h \
+	  tnlPETSCMatrix.h \
 	  mPETSCSolver.h \
 	  mSORSolver.h \
 	  tnlCGSolver.h \

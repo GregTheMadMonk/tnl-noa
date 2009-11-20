@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mPETSCMatrix.h  -  description
+                          tnlPETSCMatrix.h  -  description
                              -------------------
     begin                : 2008/05/09
     copyright            : (C) 2008 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mPETSCMatrixH
-#define mPETSCMatrixH
+#ifndef tnlPETSCMatrixH
+#define tnlPETSCMatrixH
 
 #ifdef HAVE_PETSC
 #include <petscmat.h>
@@ -28,7 +28,7 @@ struct Mat;
 #include <matrix/tnlBaseMatrix.h>
 
 //! Wrapper for the PETSC matrices
-template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
+template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
 {
 
 #ifdef HAVE_PETSC
@@ -39,9 +39,9 @@ template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
 
    public:
 
-   mPETSCMatrix(){};
+   tnlPETSCMatrix(){};
 
-   mPETSCMatrix( const long int _size,
+   tnlPETSCMatrix( const long int _size,
                  const long int row_size )
    : size( _size )
    {
@@ -56,7 +56,7 @@ template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mPETSCMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlPETSCMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    const tnlString& GetMatrixClass() const
@@ -136,7 +136,7 @@ template< typename T > class mPETSCMatrix : public tnlBaseMatrix< T >
 
    void MultiplyRow( long int row, const T& value ) {};
 
-   ~mPETSCMatrix()
+   ~tnlPETSCMatrix()
    {
 #ifdef HAVE_PETSC
       MatDestroy( matrix );
