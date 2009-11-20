@@ -16,7 +16,7 @@ headers = \
    mGrid2D.h \
    mGrid3D.h \
    mGridSystem1D.h \
-   mEulerSolver.h \
+   tnlEulerSolver.h \
    mMersonSolver.h \
    mMPIMesh2D.h \
    mMPIMesh3D.h \

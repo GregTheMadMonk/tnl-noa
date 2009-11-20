@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mEulerSolver.h  -  description
+                          tnlEulerSolver.h  -  description
                              -------------------
     begin                : 2008/04/01
     copyright            : (C) 2008 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mEulerSolverH
-#define mEulerSolverH
+#ifndef tnlEulerSolverH
+#define tnlEulerSolverH
 
 #include <math.h>
 #include <diff/tnlExplicitSolver.h>
 
-template< class GRID, class SCHEME, typename T = double > class mEulerSolver : public tnlExplicitSolver< GRID, SCHEME, T >
+template< class GRID, class SCHEME, typename T = double > class tnlEulerSolver : public tnlExplicitSolver< GRID, SCHEME, T >
 {
    public:
 
-   mEulerSolver( const GRID& v )
+   tnlEulerSolver( const GRID& v )
    {
       k1 = new GRID( v );
       if( ! k1 )
@@ -40,7 +40,7 @@ template< class GRID, class SCHEME, typename T = double > class mEulerSolver : p
    {
       T t;
       GRID grid;
-      return tnlString( "mEulerSolver< " ) + grid. GetType() + 
+      return tnlString( "tnlEulerSolver< " ) + grid. GetType() + 
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
@@ -111,7 +111,7 @@ template< class GRID, class SCHEME, typename T = double > class mEulerSolver : p
       }
    };
 
-   ~mEulerSolver()
+   ~tnlEulerSolver()
    {
       delete k1;
    };
