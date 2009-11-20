@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mGrid1D.h  -  description
+                          tnlGrid1D.h  -  description
                              -------------------
     begin                : 2007/11/26
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mGrid1DH
-#define mGrid1DH
+#ifndef tnlGrid1DH
+#define tnlGrid1DH
 
 #include <core/tnlField1D.h>
 
-template< typename T = double > class mGrid1D : public tnlField1D< T >
+template< typename T = double > class tnlGrid1D : public tnlField1D< T >
 {
    public:
 
-   mGrid1D()
+   tnlGrid1D()
    {
    };
 
@@ -33,7 +33,7 @@ template< typename T = double > class mGrid1D : public tnlField1D< T >
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   mGrid1D( int x_size,
+   tnlGrid1D( int x_size,
             const double& A_x,
             const double& B_x )
    : tnlField1D< T >( x_size ),
@@ -43,7 +43,7 @@ template< typename T = double > class mGrid1D : public tnlField1D< T >
       Hx = ( Bx - Ax ) / ( double ) ( x_size - 1 ); 
    };
 
-   mGrid1D( const mGrid1D& g )
+   tnlGrid1D( const tnlGrid1D& g )
    : tnlField1D< T >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Hx( g. Hx )
@@ -52,7 +52,7 @@ template< typename T = double > class mGrid1D : public tnlField1D< T >
    tnlString GetType() const
    {
       T t;
-      return tnlString( "mGrid1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlGrid1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
    void SetNewDomain( const double& A_x,
@@ -66,7 +66,7 @@ template< typename T = double > class mGrid1D : public tnlField1D< T >
       else Hx = hx;
    }
    ;
-   void SetNewDomain( const mGrid1D< T >& u )
+   void SetNewDomain( const tnlGrid1D< T >& u )
    {
       SetNewDomain( u. GetAx(),
                     u. GetBx() );
@@ -165,6 +165,6 @@ template< typename T = double > class mGrid1D : public tnlField1D< T >
 };
 
 // Explicit instatiation
-template class mGrid1D< double >;
+template class tnlGrid1D< double >;
 
 #endif

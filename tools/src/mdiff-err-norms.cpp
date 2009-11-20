@@ -20,7 +20,7 @@
 #include <math.h>
 
 #include <debug/tnlDebug.h>
-#include <diff/mGrid1D.h>
+#include <diff/tnlGrid1D.h>
 #include <diff/mGrid2D.h>
 #include <diff/drawGrid1D.h>
 #include <diff/drawGrid2D.h>
@@ -430,7 +430,7 @@ int main( int argc, char* argv[] )
             file. close();
          }
 
-         mGrid1D< double > difference( curve. Size(), 0.0, 1.0 );
+         tnlGrid1D< double > difference( curve. Size(), 0.0, 1.0 );
          for( j = 0; j < curve. Size() - 1; j ++ )
          {
             if( curve[ j ]. separator ) continue;
