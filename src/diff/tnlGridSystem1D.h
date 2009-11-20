@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mGridSystem1D.h  -  description
+                          tnlGridSystem1D.h  -  description
                              -------------------
     begin                : 2007/12/17
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,23 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mGridSystem1DH
-#define mGridSystem1DH
+#ifndef tnlGridSystem1DH
+#define tnlGridSystem1DH
 
 #include <core/tnlFieldSystem1D.h>
 
-template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem1D : public tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >
+template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSystem1D : public tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >
 {
    public:
 
-   mGridSystem1D() {};
+   tnlGridSystem1D() {};
 
    //! Constructor with the grid and the domain dimensions
    /*! @param x_size and @param y_size define the grid dimensions.
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   mGridSystem1D( long int x_size,
+   tnlGridSystem1D( long int x_size,
                   const double& A_x,
                   const double& B_x )
    : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( x_size ),
@@ -41,7 +41,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
       Hx = ( Bx - Ax ) / ( double ) ( x_size - 1 ); 
    };
 
-   mGridSystem1D( const mGridSystem1D& g )
+   tnlGridSystem1D( const tnlGridSystem1D& g )
    : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( g ),
      Ax( g. Ax ), Bx( g. Bx ),
      Hx( g. Hx )
@@ -51,7 +51,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
    {
       T t;
       stringstream str;
-      str << "mGridSystem1D< " << GetParameterType( t ) << ", " << SYSTEM_SIZE << " >";
+      str << "tnlGridSystem1D< " << GetParameterType( t ) << ", " << SYSTEM_SIZE << " >";
       return tnlString( str. str(). data() );
    };
 
@@ -64,7 +64,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
       Hx = ( Bx - Ax ) / ( double ) ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: GetXSize() - 1 ); 
    }
 
-   void SetNewDomain( const mGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u )
+   void SetNewDomain( const tnlGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u )
    {
       SetNewDomain( u. GetAx(), u. GetBx() );
    }
@@ -162,6 +162,6 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class mGridSystem
 };
 
 // Explicit instatiation
-//template class mGridSystem1D< double, 1, int >;
+//template class tnlGridSystem1D< double, 1, int >;
 
 #endif

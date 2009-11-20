@@ -22,7 +22,7 @@
 #include <fstream>
 #include <iomanip>
 #include <diff/tnlGrid1D.h>
-#include <diff/mGridSystem1D.h>
+#include <diff/tnlGridSystem1D.h>
 #include <core/mfuncs.h>
 #include <core/compress-file.h>
 
@@ -57,7 +57,7 @@ template< class T > bool Draw( const tnlGrid1D< T >& u,
    return false;
 };
 
-template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const mGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
+template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const tnlGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
                                                                        ostream& str,
                                                                        const char* format,
                                                                        const long int i_step = 1 )
@@ -118,7 +118,7 @@ template< class T > bool Draw( const tnlGrid1D< T >& u,
    return true;
 };
 
-template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const mGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
+template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const tnlGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
                                                                        const char* file_name,
                                                                        const char* format,
                                                                        const long int i_step = 1 )
