@@ -9,7 +9,7 @@ headers = \
 	  mPETSCMatrix.h \
 	  mPETSCSolver.h \
 	  mSORSolver.h \
-	  mCGSolver.h \
+	  tnlCGSolver.h \
 	  tnlBICGSolver.h \
 	  tnlBICGStabSolver.h \
 	  mGMRESSolver.h  \

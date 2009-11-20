@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mCGSolver.h  -  description
+                          tnlCGSolver.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mCGSolverH
-#define mCGSolverH
+#ifndef tnlCGSolverH
+#define tnlCGSolverH
 
 #include <math.h>
 #include <matrix/mMatrixSolver.h>
 
-template< typename T > class mCGSolver : public mMatrixSolver< T >
+template< typename T > class tnlCGSolver : public mMatrixSolver< T >
 {
    public:
 
-   mCGSolver()
+   tnlCGSolver()
    : r( 0 ), new_r( 0 ), p( 0 ), Ap( 0 ), size( 0 )
    {};
    
@@ -111,7 +111,7 @@ template< typename T > class mCGSolver : public mMatrixSolver< T >
          mMatrixSolver< T > :: PrintOut();
    };
 
-   ~mCGSolver()
+   ~tnlCGSolver()
    {
       FreeSupportingArrays();
    };
