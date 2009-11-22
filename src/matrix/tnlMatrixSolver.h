@@ -22,7 +22,7 @@
 #include <core/tnlTimerRT.h>
 #include <core/mpi-supp.h>
 #include <matrix/tnlBaseMatrix.h>
-#include <matrix/mPreconditioner.h>
+#include <matrix/tnlPreconditioner.h>
 
 template< typename T > class tnlMatrixSolver 
 {
@@ -87,7 +87,7 @@ template< typename T > class tnlMatrixSolver
                        T* x, 
                        const double& max_residue,
                        const long int max_iterations,
-                       mPreconditioner< T >* precond = 0 ) = 0;
+                       tnlPreconditioner< T >* precond = 0 ) = 0;
 
    virtual ~tnlMatrixSolver() {};
 

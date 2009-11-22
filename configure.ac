@@ -45,6 +45,22 @@ then
    LDFLAGS="$LDFLAGS -pg"
 fi
 
+dnl -----------------------------------------
+dnl ----------- check for gcov --------------
+dnl -----------------------------------------
+AC_ARG_WITH(gcov,
+            AS_HELP_STRING([--with-gcov],[compile with gcov support[default=no]]),
+            with_gcov=$withval,
+            with_gcov=no)
+if test x"$with_gcov" = xyes;
+then
+   CXXFLAGS="-fprofile-arcs -ftest-coverage"
+fi
+
+dnl -----------------------------------------
+dnl --------- check for dmalloc -------------
+dnl -----------------------------------------
+
 AC_ARG_WITH(dmalloc, [  --with-dmalloc=[no/yes/full]	compile with Debug Malloc Library])
 if test x"$with_dmalloc" = xfull;
 then
@@ -57,6 +73,11 @@ then
   CXXFLAGS="$CXXFLAGS -DGAG_DEBUG_MEM"
   LIBS="$LIBS -ldmalloc"
 fi
+
+dnl -----------------------------------------
+dnl ---------- check for malloc -------------
+dnl -----------------------------------------
+
 
 AC_ARG_WITH(malloc, [  --with-efence compile with Electric Fence Library])
 if test x"$with_efence" = xyes;

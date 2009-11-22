@@ -7,13 +7,13 @@ headers = \
 	  tnlBaseMatrix.h \
 	  tnlMatrixSolver.h \
 	  tnlPETSCMatrix.h \
-	  mPETSCSolver.h \
-	  mSORSolver.h \
+	  tnlPETSCSolver.h \
+	  tnlSORSolver.h \
 	  tnlCGSolver.h \
 	  tnlBICGSolver.h \
 	  tnlBICGStabSolver.h \
 	  tnlGMRESSolver.h  \
-	  mPreconditioner.h \
+	  tnlPreconditioner.h \
 	  tnlILUPreconditioner.h \
 	  tnlPETSCPreconditioner.h
 

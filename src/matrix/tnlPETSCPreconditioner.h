@@ -18,7 +18,7 @@
 #ifndef tnlPETSCPreconditionerH
 #define tnlPETSCPreconditionerH
 
-#include <matrix/mPreconditioner.h>
+#include <matrix/tnlPreconditioner.h>
 
 #ifdef HAVE_PETSC
 #include <petscksp.h>
@@ -31,7 +31,7 @@ struct PC;
 using namespace std;
 
 //! This class wraps PETSc preconditioners
-template< typename T > class tnlPETSCPreconditioner : public mPreconditioner< T >
+template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< T >
 {
 #ifdef HAVE_PETSC
    PC petsc_preconditioner;
@@ -65,7 +65,7 @@ template< typename T > class tnlPETSCPreconditioner : public mPreconditioner< T 
    
    bool Solve( const T* b, T* x ) const
    {
-      cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to mPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << endl;
+      cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to tnlPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << endl;
       abort();
    };
 

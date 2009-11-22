@@ -10,8 +10,7 @@ EXTRA_DIST = tnlConfigDescriptionParser.y \
 	         tnlConfigDescriptionScanner.l \
 	         FlexLexer.h
 
-headers =  \
-		  tnlConfigDescription.h \
+headers = tnlConfigDescription.h \
 		  tnlCurve.h \
 		  tnlDataElement.h \
 		  tnlField1D.h \
@@ -22,6 +21,7 @@ headers =  \
 		  tnlLongVector.h \
 		  tnlLogger.h \
 		  tnlObject.h \
+		  tnlStack.h \
 		  tnlString.h \
 		  tnlConfigDescriptionParser.h \
 		  tnlConfigDescriptionParserbase.h \
@@ -30,6 +30,7 @@ headers =  \
 		  tnlParameterContainer.h \
 		  tnlTimerCPU.h \
 		  tnlTimerRT.h \
+		  tnlTester.h \
 		  tnlVector.h \
 		  compress-file.h \
 		  mfilename.h \
@@ -46,6 +47,7 @@ sources = tnlConfigDescription.cpp \
 	  tnlParameterContainer.cpp \
 	  tnlTimerCPU.cpp \
 	  tnlTimerRT.cpp \
+	  tnlTester.cpp \
 	  compress-file.cpp \
 	  mfilename.cpp \
 	  mpi-supp.cpp \
@@ -79,3 +81,9 @@ libtnlcore_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
 libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPICXXFLAGS) $(DBGLDFLAGS)
 endif
+
+check_LTLIBRARIES = libcore-tests.la
+libcore_tests_la_SOURCES = tnlStringTester.cpp \
+                           tnlStringTester.h \
+                           tnlObjectTester.cpp \
+                           tnlObjectTester.h 

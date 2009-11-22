@@ -41,7 +41,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
                T* x, 
                const double& max_residue,
                const long int max_iterations,
-               mPreconditioner< T >* precond = 0 )
+               tnlPreconditioner< T >* precond = 0 )
    {
       if( ! SetSize( A. GetSize() ) ) return false;
       if( ! A_T )

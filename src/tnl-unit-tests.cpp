@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mPETSCSolver.cpp  -  description
+                          tnl-unit-tests.cpp  -  description
                              -------------------
-    begin                : 2008/05/12
-    copyright            : (C) 2008 by Tomá¹ Oberhuber
+    begin                : Nov 21, 2009
+    copyright            : (C) 2009 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,13 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mPETSCSolver.h"
+#include <stdlib.h>
+#include <core/tnlTester.h>
+#include <core/tnlStringTester.h>
+#include <core/tnlObjectTester.h>
 
-//--------------------------------------------------------------------------
-#ifdef HAVE_PETSC
-/*PetscErrorCode PETSCSolverMonitorCallback( KSP petsc_solver, PetscInt iter, PetscReal rnorm, void* ctx )
+int main( int argc, char* argv[] )
 {
-   cout << "*" << flush;
-}*/
-#endif
+   tnlTester tester;
 
+   /* Testing tnlString
+    *
+    */
+   tnlStringTester string_tester;
+   string_tester. Test( tester );
+
+   /* Testing tnlObject
+    *
+    */
+   tnlObjectTester tnl_object_tester;
+   tnl_object_tester. Test( tester );
+
+
+   tester. PrintStatistics();
+
+   return EXIT_SUCCESS;
+}

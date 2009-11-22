@@ -37,7 +37,7 @@ template< typename T > class tnlBICGStabSolver : public tnlMatrixSolver< T >
                T* x, 
                const double& max_residue,
                const long int max_iterations,
-               mPreconditioner< T >* precond = 0 )
+               tnlPreconditioner< T >* precond = 0 )
    {
       dbgFunctionName( "tnlBICGStabSolver", "Solve" );
       if( ! SetSize( A. GetSize() ) ) return false;

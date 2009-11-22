@@ -18,13 +18,13 @@
 #ifndef tnlILUPreconditionerH
 #define tnlILUPreconditionerH
 
-#include <matrix/mPreconditioner.h>
+#include <matrix/tnlPreconditioner.h>
 #include <matrix/tnlCSRMatrix.h>
 #include <debug/tnlDebug.h>
 
 //#define ILU_DEBUG
 
-template< typename T > class tnlILUPreconditioner : public mPreconditioner< T >
+template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T >
 {
    public:
    

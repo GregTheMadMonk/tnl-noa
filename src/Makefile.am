@@ -46,3 +46,10 @@ libtnl_mpi_dbg_0_1_la_LIBADD = debug/libtnldebug-mpi-dbg-0.1.la \
                        diff/libtnldiff-mpi-dbg-0.1.la \
                        matrix/libtnlmatrix-mpi-dbg-0.1.la
 endif                       
+
+check_PROGRAMS = tnl-unit-tests
+tnl_unit_tests_SOURCES = tnl-unit-tests.cpp
+tnl_unit_tests_LDADD = libtnl-0.1.la \
+                       core/libcore-tests.la
+
+TESTS = tnl-unit-tests

@@ -1,9 +1,9 @@
 /***************************************************************************
-                          mPreconditioner.h  -  description
-                             -------------------
-    begin                : 2007/02/01
-    copyright            : (C) 2007 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
+ tnlStringTester.h  -  description
+ -------------------
+ begin                : Nov 22, 2009
+ copyright            : (C) 2009 by Tomas Oberhuber
+ email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,16 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mPreconditionerH
-#define mPreconditionerH
+#ifndef TNLSTRINGTESTER_H_
+#define TNLSTRINGTESTER_H_
 
-template< typename T > class mPreconditioner
+#include <core/tnlString.h>
+#include <core/tnlTester.h>
+
+/*
+ *
+ */
+class tnlStringTester : public tnlString
 {
    public:
 
-   virtual ~mPreconditioner() {};
+   void Test( tnlTester& tester );
 
-   virtual bool Solve( const T* b, T* x ) const = 0;
+
 };
 
-#endif
+#endif /* TNLSTRINGTESTER_H_ */

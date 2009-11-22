@@ -56,13 +56,13 @@ template< class T > class tnlList
    tnlDataElement< T >* last;
    
    //! List size
-   long int size;
+   int size;
 
    //! Iterator
    mutable tnlDataElement< T >* iterator;
 
    //! Iterator index
-   mutable long int index;
+   mutable int index;
 
    public:
    //! Basic constructor
@@ -91,10 +91,10 @@ template< class T > class tnlList
    bool IsEmpty() const { return ! size; };
    
    //! Return size of the list
-   long int Size() const { return size; };
+   int Size() const { return size; };
 
    //! Indexing operator
-   T& operator[] ( long int ind )
+   T& operator[] ( int ind )
    {
       assert( ind < size );
       //if( ! size ) return NULL;
@@ -105,7 +105,7 @@ template< class T > class tnlList
       //cout << "List operator[]: size = " << size
       //     << " current index = " << index
       //     << " index = " << ind << endl;
-      long int iter_dist = abs( index - ind );
+      int iter_dist = abs( index - ind );
       if( ! iterator ||
           iter_dist > ind || 
           iter_dist > size - ind )
@@ -145,7 +145,7 @@ template< class T > class tnlList
    };
    
    //! Indexing operator for constant instances
-   const T& operator[] ( long int ind ) const
+   const T& operator[] ( int ind ) const
    {
       return const_cast< tnlList< T >* >( this ) -> operator[]( ind );
    }
@@ -191,7 +191,7 @@ template< class T > class tnlList
    };
 
    //! Insert new data element at given position
-   bool Insert( const T& data, long int ind )
+   bool Insert( const T& data, int ind )
    {
       assert( ind <= size || ! size );
       if( ind == 0 ) return Prepend( data );
@@ -212,7 +212,7 @@ template< class T > class tnlList
    //! Append copy of another list
    bool AppendList( const tnlList< T >& lst )
    {
-      long int i;
+      int i;
       for( i = 0; i < lst. Size(); i ++ )
       {
          if( ! Append( lst[ i ] ) ) return false;
@@ -224,14 +224,14 @@ template< class T > class tnlList
    bool PrependList( const tnlList< T >& lst )
    
    {
-      long int i;
+      int i;
       for( i = lst. Size(); i > 0; i -- )
          if( ! Prepend( lst[ i - 1 ] ) ) return false;
       return true;
    };
 
    //! Erase data element at given position
-   void Erase( long int ind )
+   void Erase( int ind )
    {
       operator[]( ind );
       tnlDataElement< T >* tmp_it = iterator;
@@ -252,7 +252,7 @@ template< class T > class tnlList
    };
 
    //! Erase data element with contained data at given position
-   void DeepErase( long int ind )
+   void DeepErase( int ind )
    {
       operator[]( ind );
       delete iterator -> Data();
@@ -293,8 +293,8 @@ template< class T > class tnlList
    //! Save the list in binary format
    bool Save( ostream& file ) const
    {
-      file. write( ( char* ) &size, sizeof( long int ) );
-      long int i;
+      file. write( ( char* ) &size, sizeof( int ) );
+      int i;
       for( i = 0; i < size; i ++ )
          file. write( ( char* ) & operator[]( i ), sizeof( T ) );
       if( file. bad() ) return false;
@@ -304,8 +304,8 @@ template< class T > class tnlList
    //! Save the list in binary format using method Save of type T
    bool DeepSave( ostream& file ) const
    {
-      file. write( ( char* ) &size, sizeof( long int ) );
-      long int i;
+      file. write( ( char* ) &size, sizeof( int ) );
+      int i;
       for( i = 0; i < size; i ++ )
          if( ! operator[]( i ). Save( file ) ) return false;
       if( file. bad() ) return false;
@@ -316,14 +316,14 @@ template< class T > class tnlList
    bool Load( istream& file ) 
    {
       EraseAll();
-      long int _size;
-      file. read( ( char* ) &_size, sizeof( long int ) );
+      int _size;
+      file. read( ( char* ) &_size, sizeof( int ) );
       if( _size < 0 )
       {
          cerr << "The curve size is negative." << endl;
          return false;
       }
-      long int i;
+      int i;
       T t;
       for( i = 0; i < _size; i ++ )
       {
@@ -338,14 +338,14 @@ template< class T > class tnlList
    bool DeepLoad( istream& file ) 
    {
       EraseAll();
-      long int _size;
-      file. read( ( char* ) &_size, sizeof( long int ) );
+      int _size;
+      file. read( ( char* ) &_size, sizeof( int ) );
       if( _size < 0 )
       {
          cerr << "The list size is negative." << endl;
          return false;
       }
-      long int i;
+      int i;
       for( i = 0; i < _size; i ++ )
       {
          T t;
@@ -366,7 +366,7 @@ template< typename T > tnlString GetParameterType( const tnlList< T >& )
 
 template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list )
 {
-   long int i, size( list. Size() );
+   int i, size( list. Size() );
    for( i = 0; i < size; i ++ )
       str << list[ i ] << endl;
    return str;

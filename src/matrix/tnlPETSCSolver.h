@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mPETSCSolver.h  -  description
+                          tnlPETSCSolver.h  -  description
                              -------------------
     begin                : 2008/05/09
     copyright            : (C) 2008 by Tomá¹ Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mPETSCSolverH
-#define mPETSCSolverH
+#ifndef tnlPETSCSolverH
+#define tnlPETSCSolverH
 
 #ifdef HAVE_PETSC
 #include <petscksp.h>
@@ -30,7 +30,7 @@ template< typename T > inline PetscErrorCode PETSCSolverMonitorCallback( KSP pet
 #endif
 
 //! This class is a wrapper for the PETSc solvers.
-template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 {
 #ifdef HAVE_PETSC
    KSP petsc_solver;
@@ -40,7 +40,7 @@ template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
 
    public:
 
-   mPETSCSolver( const char* solver_name )
+   tnlPETSCSolver( const char* solver_name )
    {
 #ifdef HAVE_PETSC
       PetscErrorCode ierr = KSPCreate( MPI_COMM_SELF, &petsc_solver );
@@ -87,7 +87,7 @@ template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
                T* x, 
                const double& max_residue,
                const long int max_iterations,
-               mPreconditioner< T >* precond = 0 )
+               tnlPreconditioner< T >* precond = 0 )
    {
 #ifdef HAVE_PETSC
       assert( A. GetMatrixClass() == tnlMatrixClass :: petsc );
@@ -151,7 +151,7 @@ template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
 
    };
 
-   ~mPETSCSolver()
+   ~tnlPETSCSolver()
    {
 #ifdef HAVE_PETSC
       KSPDestroy( petsc_solver );
@@ -165,7 +165,7 @@ template< typename T > class mPETSCSolver : public tnlMatrixSolver< T >
 #ifdef HAVE_PETSC
 template< typename T > inline PetscErrorCode PETSCSolverMonitorCallback( KSP ksp_solver, PetscInt iter, PetscReal rnorm, void* ctx )
 {
-   mPETSCSolver< T >* petsc_solver = ( mPETSCSolver< T > * ) ctx;
+   tnlPETSCSolver< T >* petsc_solver = ( tnlPETSCSolver< T > * ) ctx;
    petsc_solver -> PrintOut();
       
    return 0;

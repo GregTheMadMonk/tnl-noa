@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mSORSolver.h  -  description
+                          tnlSORSolver.h  -  description
                              -------------------
     begin                : 2007/07/30
     copyright            : (C) 2007 by Tomá¹ Oberhuber
@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mSORSolverH
-#define mSORSolverH
+#ifndef tnlSORSolverH
+#define tnlSORSolverH
 
 #include <math.h>
 #include <matrix/tnlMatrixSolver.h>
 
-template< typename T > class mSORSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlSORSolver : public tnlMatrixSolver< T >
 {
    public:
    
-   mSORSolver()
+   tnlSORSolver()
    : sor_omega( 1.0 )
    {};
 
@@ -39,7 +39,7 @@ template< typename T > class mSORSolver : public tnlMatrixSolver< T >
                T* x, 
                const double& max_residue,
                const long int max_iterations,
-               mPreconditioner< T >* precond = 0 )
+               tnlPreconditioner< T >* precond = 0 )
    {
       const long int size = A. GetSize();
       long int i;
