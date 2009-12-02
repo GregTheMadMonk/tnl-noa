@@ -17,6 +17,14 @@ if test x"$CXX" = xicpc; then
 fi
 
 dnl -----------------------------------------
+dnl ----------- check for CUDA --------------
+dnl -----------------------------------------
+AC_CHECK_PROG(cuda,nvcc,"yes","no")
+if test x$cuda = xyes; then
+	CXX="nvcc"
+fi
+
+dnl -----------------------------------------
 dnl ----------- check for debug--------------
 dnl -----------------------------------------
 AC_ARG_ENABLE(debug,[  --enable-debug=[no/yes]	turn on debugging [default=no]] )

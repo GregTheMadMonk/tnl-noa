@@ -266,6 +266,7 @@ template< class T > class tnlList
       tnlDataElement< T >* tmp_it;
       while( iterator )
       {
+    	 assert( iterator );
          tmp_it = iterator;
          iterator = iterator -> Next();
          delete tmp_it;

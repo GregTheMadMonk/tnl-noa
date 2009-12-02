@@ -61,6 +61,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
                                   u. GetBx(),
                                   u. GetAy(),
                                   u. GetBy() );
+
       const double& hx = output_u -> GetHx();
       const double& hy = output_u -> GetHy();
       long int i, j;
@@ -98,6 +99,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
       {
          cerr << " ... FAILED " << endl;
       }
+   level_lines. EraseAll();
    if( output_u != &u ) delete output_u;
    cout << " OK " << endl;
 }
