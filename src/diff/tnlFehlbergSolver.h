@@ -58,7 +58,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlFehlbergSolve
                GRID& u,
                const double& stop_time,
                const double& max_res,
-               const long int max_iter )
+               const int max_iter )
    {
       T* _k1 = k1 -> Data();
       T* _k2 = k2 -> Data();
@@ -72,7 +72,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlFehlbergSolve
       tnlExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
       double& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;  
       double& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;  
-      long int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
+      int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
       
       T _tau = tnlExplicitSolver< GRID, SCHEME, T > :: tau;
       if( _time + _tau > stop_time )
@@ -81,8 +81,8 @@ template< class GRID, class SCHEME, typename T = double > class tnlFehlbergSolve
 
       while( 1 )
       {
-         long int i;
-         const long int size = k1 -> Size();
+         int i;
+         const int size = k1 -> Size();
          assert( size == u. Size() );
          
          scheme. GetExplicitRHS( _time, u, *k1 );

@@ -31,7 +31,7 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
    tnlFullMatrix(){};
 
    //! Constructor with matrix dimension
-   tnlFullMatrix( const long int size )
+   tnlFullMatrix( const int size )
    : tnlField2D< T >( size, size ){};
 
    tnlString GetType() const
@@ -45,23 +45,23 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
       return tnlMatrixClass :: main;
    };
 
-   long int GetSize() const
+   int GetSize() const
    {
       return tnlField2D< T > :: GetXSize(); // it is the same as GetYSize()
    };
    
-   T GetElement( long int i, long int j ) const
+   T GetElement( int i, int j ) const
    {
       return ( *this )( i, j );
    };
 
-   bool SetElement( long int i, long int j, const T& v )
+   bool SetElement( int i, int j, const T& v )
    {
       ( *this )( i, j ) = v;
       return true;
    };
 
-   bool AddToElement( long int i, long int j, const T& v )
+   bool AddToElement( int i, int j, const T& v )
    {
       ( *this )( i, j ) += v;
       return true;
@@ -70,13 +70,13 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
    //! Row product
    /*! Compute product of given vector with given row
     */
-   T RowProduct( const long int row, const T* vec ) const
+   T RowProduct( const int row, const T* vec ) const
    {
-      const long int size = GetSize();
-      long int pos = row * size;
+      const int size = GetSize();
+      int pos = row * size;
       const T* data = tnlField2D< T > :: Data();
       T res( 0.0 );
-      long int i;
+      int i;
       for( i = 0; i < size; i ++ )
       {
          res += data[ pos ] * vec[ i ];
@@ -88,11 +88,11 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
    //! Vector product
    void VectorProduct( const T* vec, T* result ) const
    {
-      const long int size = GetSize();
-      long int pos( 0 );
+      const int size = GetSize();
+      int pos( 0 );
       const T* data = tnlField2D< T > :: Data();
       T res;
-      long int i, j;
+      int i, j;
       for( i = 0; i < size; i ++ )
       {
          res = 0.0;
@@ -107,12 +107,12 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
 
 
    //! Multiply row
-   void MultiplyRow( const long int row, const T& c )
+   void MultiplyRow( const int row, const T& c )
    {
-      const long int size = GetSize();
+      const int size = GetSize();
       T* data = tnlField2D< T > :: Data();
-      long int i;
-      long int pos = row * size;
+      int i;
+      int pos = row * size;
       for( i = 0; i < size; i ++ )
       {
          data[ pos + i ] *= c;
@@ -120,13 +120,13 @@ template< typename T > class tnlFullMatrix : public tnlBaseMatrix< T >, public t
    };
 
    //! Get row L1 norm
-   T GetRowL1Norm( const long int row ) const
+   T GetRowL1Norm( const int row ) const
    {
-      const long int size = GetSize();
+      const int size = GetSize();
       const T* data = tnlField2D< T > :: Data();
       T res( 0.0 );
-      long int i;
-      long int pos = row * size;
+      int i;
+      int pos = row * size;
       for( i = 0; i < size; i ++ )
          res += fabs( data[ pos + i ] );
       return res;
@@ -142,8 +142,8 @@ template< typename T > void MatrixProduct( const tnlFullMatrix< T >& m1,
                                            tnlFullMatrix< T >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
-   long int size = result. GetSize();
-   long int i, j, k;
+   int size = result. GetSize();
+   int i, j, k;
    for( i = 0; i < size; i ++ )
       for( j = 0; j < size; j ++ )
       {
@@ -160,8 +160,8 @@ template< typename T > void MatrixSum( const tnlFullMatrix< T >& m1,
                                        tnlFullMatrix< T >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
-   long int size = result. GetSize();
-   long int i,j;
+   int size = result. GetSize();
+   int i,j;
    for( i = 0; i < size; i ++ )
       for( j = 0; j < size; j ++ )
          result( i, j ) = m1( i, j ) + m2( i, j );

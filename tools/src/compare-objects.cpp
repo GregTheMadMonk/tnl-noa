@@ -38,12 +38,12 @@ bool Compare( const tnlGrid2D< double >& u1,
       cerr << "Both grids describes different numerical domain." << endl;
       return false;
    }
-   const long int x_size = u1. GetXSize();
-   const long int y_size = u1. GetYSize();
+   const int x_size = u1. GetXSize();
+   const int y_size = u1. GetYSize();
    const double& hx = u1. GetHx();
    const double& hy = u1. GetHy();
    
-   long int i, j;
+   int i, j;
    l1_norm = l2_norm = max_norm = 0.0;
    for( i = 0; i < x_size; i ++ )
       for( j = 0; j < y_size; j ++ )
@@ -79,14 +79,14 @@ bool Compare( const tnlGrid3D< double >& u1,
       cerr << "Both grids describes different numerical domain." << endl;
       return false;
    }
-   const long int x_size = u1. GetXSize();
-   const long int y_size = u1. GetYSize();
-   const long int z_size = u1. GetZSize();
+   const int x_size = u1. GetXSize();
+   const int y_size = u1. GetYSize();
+   const int z_size = u1. GetZSize();
    const double& hx = u1. GetHx();
    const double& hy = u1. GetHy();
    const double& hz = u1. GetHz();
    
-   long int i, j, k;
+   int i, j, k;
    l1_norm = l2_norm = max_norm = 0.0;
    for( i = 0; i < x_size; i ++ )
       for( j = 0; j < y_size; j ++ )

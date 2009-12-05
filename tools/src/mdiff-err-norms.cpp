@@ -175,10 +175,10 @@ int main( int argc, char* argv[] )
       }
       second_files = parameters. GetParameter< tnlList< tnlString > >( "second-set" );
    }
-   long int size = first_files. Size();
+   int size = first_files. Size();
    cout << "Processing " << size << " files. " << endl;
 
-   long int edge_skip = parameters. GetParameter< int >( "edges-skip" );
+   int edge_skip = parameters. GetParameter< int >( "edges-skip" );
    bool write_difference = parameters. GetParameter< bool >( "write-difference" );
    bool write_exact_curve = parameters. GetParameter< bool >( "write-exact-curve" );
    bool write_graph = parameters. GetParameter< bool >( "write-graph" );
@@ -223,7 +223,7 @@ int main( int argc, char* argv[] )
    }
    
    
-   long int i;
+   int i;
    tnlGrid2D< double > u1, u2;
    double l1_int( 0.0 ), l2_int( 0.0 ), max_int( 0.0 ), h( 0.0 );
    if( test == "function" )
@@ -409,7 +409,7 @@ int main( int argc, char* argv[] )
          }
         
          cout << "Exact radius is " << exact_r << endl; 
-         long int j;
+         int j;
          double l1_norm( 0.0 ), l2_norm( 0.0 ), max_norm( 0.0 );
          if( curve. Size() == 1 )
          {
@@ -422,7 +422,7 @@ int main( int argc, char* argv[] )
             cout << "Writing file " << file_name << endl;
             fstream file;
             file. open( file_name. Data(), ios :: out );
-            const long int curve_nodes = curve. Size();
+            const int curve_nodes = curve. Size();
             const double dt = 2.0 * M_PI / ( double ) curve_nodes;
             double t( 0.0 );
             for( t = 0.0; t <= 2.0 * M_PI; t += dt )

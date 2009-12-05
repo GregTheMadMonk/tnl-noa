@@ -38,7 +38,7 @@ template< typename T > class tnlMatrixSolver
    {
    };
 
-   long int GetIterationNumber() const
+   int GetIterationNumber() const
    {
       return iteration;
    };
@@ -86,14 +86,14 @@ template< typename T > class tnlMatrixSolver
                        const T* b,
                        T* x, 
                        const double& max_residue,
-                       const long int max_iterations,
+                       const int max_iterations,
                        tnlPreconditioner< T >* precond = 0 ) = 0;
 
    virtual ~tnlMatrixSolver() {};
 
    protected:
 
-   long int iteration;
+   int iteration;
 
    T residue;
 

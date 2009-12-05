@@ -31,15 +31,15 @@ using namespace std;
 template< class T > bool Draw( const tnlGrid1D< T >& u,
                                ostream& str,
                                const char* format,
-                               const long int i_step = 1 )
+                               const int i_step = 1 )
 {
    if( ! format )
    {
       cerr << "No format given for drawing 1D grid. " << endl;
       return false;
    }
-   long int i;
-   const long int x_size = u. GetXSize();
+   int i;
+   const int x_size = u. GetXSize();
    const double& ax = u. GetAx();
    const double& hx = u. GetHx();
    if( strcmp( format, "gnuplot" ) == 0 )
@@ -60,15 +60,15 @@ template< class T > bool Draw( const tnlGrid1D< T >& u,
 template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const tnlGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
                                                                        ostream& str,
                                                                        const char* format,
-                                                                       const long int i_step = 1 )
+                                                                       const int i_step = 1 )
 {
    if( ! format )
    {
       cerr << "No format given for drawing 1D grid system. " << endl;
       return false;
    }
-   long int i, j;
-   const long int x_size = u. GetXSize();
+   int i, j;
+   const int x_size = u. GetXSize();
    const double& ax = u. GetAx();
    const double& hx = u. GetHx();
    if( strcmp( format, "gnuplot" ) == 0 )
@@ -94,7 +94,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const tnl
 template< class T > bool Draw( const tnlGrid1D< T >& u,
                                const char* file_name,
                                const char* format,
-                               const long int i_step = 1 )
+                               const int i_step = 1 )
 {
    fstream file;
    if( strncmp( format, "bin",3 ) == 0 )
@@ -121,7 +121,7 @@ template< class T > bool Draw( const tnlGrid1D< T >& u,
 template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > bool Draw( const tnlGridSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& u,
                                                                        const char* file_name,
                                                                        const char* format,
-                                                                       const long int i_step = 1 )
+                                                                       const int i_step = 1 )
 {
    fstream file;
    if( strncmp( format, "bin",3 ) == 0 )

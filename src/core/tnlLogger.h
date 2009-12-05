@@ -27,7 +27,7 @@ class tnlLogger
 {
    public:
 
-   tnlLogger( long int _width,
+   tnlLogger( int _width,
             ostream& _stream )
    : width( _width ), 
      stream( _stream ){};
@@ -66,7 +66,7 @@ class tnlLogger
 
    protected:
 
-   long int width;
+   int width;
 
    ostream& stream;
 };

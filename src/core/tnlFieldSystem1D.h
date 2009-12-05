@@ -29,7 +29,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    : tnlLongVector< T >( 0 )
    { };
 
-   tnlFieldSystem1D( long int _x_size )
+   tnlFieldSystem1D( int _x_size )
    : tnlLongVector< T >( _x_size * SYSTEM_SIZE ),
      x_size( _x_size )
    { };
@@ -45,12 +45,12 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
       return tnlString( "tnlFieldSystem1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   long int GetXSize() const
+   int GetXSize() const
    {
       return x_size;
    };
 
-   bool SetNewDimensions( long int new_x_size )
+   bool SetNewDimensions( int new_x_size )
    {
       x_size = new_x_size;
       return tnlLongVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
@@ -61,19 +61,19 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
       return SetNewDimensions( f. GetXSize() );
    };
 
-   const T& operator() ( const SYSTEM_INDEX ind, const long int i ) const
+   const T& operator() ( const SYSTEM_INDEX ind, const int i ) const
    {
-      assert( i < x_size && i >= 0 && ( long int ) ind < SYSTEM_SIZE );
+      assert( i < x_size && i >= 0 && ( int ) ind < SYSTEM_SIZE );
       return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
-   T& operator() ( const SYSTEM_INDEX ind, const long int i )
+   T& operator() ( const SYSTEM_INDEX ind, const int i )
    {
-      assert( i < x_size && i >= 0 && ( long int ) ind < SYSTEM_SIZE );
+      assert( i < x_size && i >= 0 && ( int ) ind < SYSTEM_SIZE );
       return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
-   tnlVector< SYSTEM_SIZE, T > operator() ( const long int i ) const
+   tnlVector< SYSTEM_SIZE, T > operator() ( const int i ) const
    {
       assert( i < x_size && i >= 0 );
       tnlVector< SYSTEM_SIZE, T > v;
@@ -83,7 +83,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
       return v;
    };
 
-   long int GetLongVectorIndex( long int i ) const
+   int GetLongVectorIndex( int i ) const
    {
       assert( i >= 0 && i < x_size );
       return i;
@@ -93,7 +93,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    bool Save( ostream& file ) const
    {
       if( ! tnlLongVector< T > :: Save( file ) ) return false;
-      file. write( ( char* ) &x_size, sizeof( long int ) );
+      file. write( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };
@@ -102,14 +102,14 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    bool Load( istream& file )
    {
       if( ! tnlLongVector< T > :: Load( file ) ) return false;
-      file. read( ( char* ) &x_size, sizeof( long int ) );
+      file. read( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };   
    
    protected:
 
-   long int x_size;
+   int x_size;
 };
 
 // Explicit instatiation

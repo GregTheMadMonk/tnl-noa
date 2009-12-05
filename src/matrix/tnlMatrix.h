@@ -26,24 +26,24 @@ template< typename T > class tnlMatrix : public tnlObject
 {
    public:
 
-   virtual long int GetSize() const = 0;
+   virtual int GetSize() const = 0;
 
-   virtual T GetElement( long int row, long int column ) const = 0;
+   virtual T GetElement( int row, int column ) const = 0;
 
    //! Setting given element
    /*! Returns false if fails to allocate the new element
     */
-   virtual bool SetElement( long int row, long int column, const T& v ) = 0;
+   virtual bool SetElement( int row, int column, const T& v ) = 0;
 
-   virtual bool AddToElement( long int row, long int column, const T& v ) = 0;
+   virtual bool AddToElement( int row, int column, const T& v ) = 0;
    
-   virtual T RowProduct( const long int row, const T* vec ) const = 0;
+   virtual T RowProduct( const int row, const T* vec ) const = 0;
    
    virtual void VectorProduct( const T* vec, T* result ) const = 0;
 
-   virtual T GetRowL1Norm( long int row ) const = 0;
+   virtual T GetRowL1Norm( int row ) const = 0;
 
-   virtual void MultiplyRow( long int row, const T& value ) = 0;
+   virtual void MultiplyRow( int row, const T& value ) = 0;
 
    virtual ~tnlMatrix()
    {};
@@ -52,8 +52,8 @@ template< typename T > class tnlMatrix : public tnlObject
 //! Operator <<
 template< typename T > ostream& operator << ( ostream& o_str, const tnlMatrix< T >& A )
 {
-   long int size = A. GetSize();
-   long int i, j;
+   int size = A. GetSize();
+   int i, j;
    o_str << endl;
    for( i = 0; i < size; i ++ )
    {

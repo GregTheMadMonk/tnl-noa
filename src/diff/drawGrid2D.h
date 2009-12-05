@@ -29,17 +29,17 @@
 template< class T > bool Draw( const tnlGrid2D< T >& u,
                                ostream& str,
                                const char* format,
-                               const long int i_step = 1,
-                               const long int j_step = 1 )
+                               const int i_step = 1,
+                               const int j_step = 1 )
 {
    if( ! format )
    {
       cerr << "No format given for drawing 2D grid. " << endl;
       return false;
    }
-   long int i, j;
-   const long int x_size = u. GetXSize();
-   const long int y_size = u. GetYSize();
+   int i, j;
+   const int x_size = u. GetXSize();
+   const int y_size = u. GetYSize();
    const double& ax = u. GetAx();
    const double& ay = u. GetAy();
    const double& hx = u. GetHx();
@@ -65,7 +65,7 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
       str << "<PointData Scalars=\"order_parameter\">" << endl;
       str << "<DataArray Name=\"order_parameter\" type=\"Float32\" format=\"ascii\">" << endl;
       str. flags( ios_base::scientific );
-      long int i, j;
+      int i, j;
       for( j = 0; j <= y_size - j_step; j += j_step )
          for( i = 0; i <= x_size - i_step; i += i_step )
               str << u( i, j ) << " ";
@@ -89,8 +89,8 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
 template< class T > bool Draw( const tnlGrid2D< T >& u,
                                const char* file_name,
                                const char* format,
-                               const long int i_step = 1,
-                               const long int j_step = 1 )
+                               const int i_step = 1,
+                               const int j_step = 1 )
 {
    fstream file;
    if( strncmp( format, "bin",3 ) == 0 )

@@ -34,7 +34,7 @@ void tnlExplicitSolver :: SetFinalTime( const double& t )
    final_time = t;
 };
 //--------------------------------------------------------------------------
-long int tnlExplicitSolver :: GetIterationNumber() const
+int tnlExplicitSolver :: GetIterationNumber() const
 {
    return iteration;
 };

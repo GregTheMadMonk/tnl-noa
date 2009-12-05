@@ -31,7 +31,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
      size( 0 ), restarting( 0 )
    {};
 
-   void SetRestarting( long int rest )
+   void SetRestarting( int rest )
    {
       if( size != 0 )
          AllocateSupportingArrays( size, rest );
@@ -42,7 +42,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
                const T* b,
                T* x, 
                const double& max_residue,
-               const long int max_iterations,
+               const int max_iterations,
                tnlPreconditioner< T >* precond = 0 ) 
    {
       if( restarting <= 0 )
@@ -54,9 +54,9 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       if( ! SetSize( A. GetSize(), restarting ) ) return false;
       
       
-      long int i, j = 1, k, l;
+      int i, j = 1, k, l;
       
-      long int _size = size;
+      int _size = size;
    
       T *r( _r ), *w( _w ), *p( _p ), *s( _s ), *cs( _cs ), *sn( _sn ), *v( _v ), *H( _H ), *M_tmp( _M_tmp );
     
@@ -120,7 +120,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       while( tnlMatrixSolver< T > :: iteration < max_iterations && 
              tnlMatrixSolver< T > :: residue > max_residue )
       {
-         const long int m = restarting;
+         const int m = restarting;
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private( i ) firstprivate( m, H, s, cs, sn )
 #endif
@@ -166,7 +166,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
             for( k = 0; k <= i; k++ )
             {
                // H_{k,i} = ( w, v_k )
-               long int l;
+               int l;
                double H_k_i( 0.0 );
                //T H_k_i( 0.0 ); does not work with openmp ?yet?
 #ifdef HAVE_OPENMP
@@ -301,15 +301,15 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
    protected:
 
    void Update( T* x,
-                long int k,
-                long int m,
+                int k,
+                int m,
                 const T* H,
                 const T* s,
                 const T* v )
    {
       //dbgFunctionName( "tnlGMRESSolver", "Update" );
       T* y = new T[ m + 1 ];
-      long int i, j;
+      int i, j;
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private( i ) firstprivate( m, y, s )
 #endif
@@ -330,7 +330,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       //dbgCout_ARRAY( y, m + 1 );
 
 
-      const long int _size = size;
+      const int _size = size;
       for( i = 0; i <= k; i++)
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private( j ) firstprivate( i , _size )
@@ -379,7 +379,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
    };
 
 
-   bool AllocateSupportingArrays( long int size, long int restart )
+   bool AllocateSupportingArrays( int size, int restart )
    {
       _r = new T[ size ];
       _w = new T[ size ];
@@ -397,7 +397,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       return true;
    };
 
-   bool SetSize( long int _size, long int m )
+   bool SetSize( int _size, int m )
    {
       if( size == _size && restarting == m ) return true;
       size = _size;
@@ -420,7 +420,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
 
    T *_r, *_w, *_p, *_s, *_cs, *_sn, *_v, *_H, *_M_tmp;
 
-   long int size, restarting;
+   int size, restarting;
 };
 
 #endif

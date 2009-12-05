@@ -70,12 +70,12 @@ template< class T > class tnlMPIMesh2D
       return mesh_x_size;
    };
 
-   long int GetSubdomainXSize() const
+   int GetSubdomainXSize() const
    {
       return subdomain_x_size;
    };
 
-   long int GetSubdomainYSize() const
+   int GetSubdomainYSize() const
    {
       return subdomain_y_size;
    };
@@ -525,15 +525,15 @@ template< class T > void tnlMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T 
                   dest_y_pos * subdomain_y_size - dest_bottom_overlap << ", " <<
                   ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap << " >" );
       
-      long int i, j;
-      const long int i1 = dest_x_pos * subdomain_x_size - dest_left_overlap;
-      const long int i2 = ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap;
-      const long int j1 = dest_y_pos * subdomain_y_size - dest_bottom_overlap;
-      const long int j2 = ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap;
+      int i, j;
+      const int i1 = dest_x_pos * subdomain_x_size - dest_left_overlap;
+      const int i2 = ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap;
+      const int j1 = dest_y_pos * subdomain_y_size - dest_bottom_overlap;
+      const int j2 = ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap;
       for( i = i1; i < i2; i ++ )
          for( j = j1; j < j2; j ++ )
             ( *mpi_buff )( i - i1, j - j1 ) = u( i, j );
-      long int buf_size = 
+      int buf_size = 
          ( subdomain_x_size + dest_left_overlap + dest_right_overlap ) *
          ( subdomain_y_size + dest_bottom_overlap + dest_top_overlap );
       if( dest_node != root )
@@ -549,7 +549,7 @@ template< class T > void tnlMPIMesh2D< T > :: ScatterToNode( const tnlGrid2D< T 
       return;
    }
    if( dest_node == root ) return;
-   long int buf_size =
+   int buf_size =
          ( subdomain_x_size + left_overlap + right_overlap ) *
          ( subdomain_y_size + bottom_overlap + top_overlap );
    MPI_Status status;
@@ -626,7 +626,7 @@ template< class T > void tnlMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
             tnlGrid2D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    0.0, 1.0, 0.0, 1.0 );
-            long int buf_size = 
+            int buf_size = 
                ( subdomain_x_size + src_left_overlap + src_right_overlap ) *
                ( subdomain_y_size + src_bottom_overlap + src_top_overlap );
             dbgExpr( buf_size );
@@ -640,10 +640,10 @@ template< class T > void tnlMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
                       mesh_comm,
                       &status );
             dbgCout( "Receiving data done." );
-            const long int i1 = src_x_pos * subdomain_x_size;
-            const long int i2 = i1 + subdomain_x_size;
-            const long int j1 = src_y_pos * subdomain_y_size;
-            const long int j2 = j1 + subdomain_y_size;
+            const int i1 = src_x_pos * subdomain_x_size;
+            const int i2 = i1 + subdomain_x_size;
+            const int j1 = src_y_pos * subdomain_y_size;
+            const int j2 = j1 + subdomain_y_size;
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                {
@@ -653,10 +653,10 @@ template< class T > void tnlMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
          }
          else
          {
-            const long int i1 = src_x_pos * subdomain_x_size;
-            const long int i2 = i1 + subdomain_x_size;
-            const long int j1 = src_y_pos * subdomain_y_size;
-            const long int j2 = j1 + subdomain_y_size;
+            const int i1 = src_x_pos * subdomain_x_size;
+            const int i2 = i1 + subdomain_x_size;
+            const int j1 = src_y_pos * subdomain_y_size;
+            const int j2 = j1 + subdomain_y_size;
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                {
@@ -669,7 +669,7 @@ template< class T > void tnlMPIMesh2D< T > :: Gather( tnlGrid2D< T >& u,
    else
    {
       dbgCout( "node rank " << MPIGetRank( original_comm ) << " SENDING data" );
-      long int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
+      int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
                           ( subdomain_y_size + bottom_overlap + top_overlap );
       MPI_Send( const_cast< T* >( sub_u. Data() ),
                 buf_size * sizeof( T ),
@@ -690,7 +690,7 @@ template< class T > void tnlMPIMesh2D< T > :: Synchronize( tnlGrid2D< T >& u )
 {
    dbgFunctionName( "tnlMPIMesh2D", "Synchronize" );
 #ifdef HAVE_MPI
-  long int i, j;
+  int i, j;
   int min_x = left_overlap;
   int min_y = bottom_overlap;
   int max_x = min_x + subdomain_x_size;

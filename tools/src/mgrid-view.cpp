@@ -64,7 +64,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
 
       const double& hx = output_u -> GetHx();
       const double& hy = output_u -> GetHy();
-      long int i, j;
+      int i, j;
       for( i = 0; i < output_x_size; i ++ )
          for( j = 0; j < output_y_size; j ++ )
          {
@@ -81,7 +81,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
    if( ! level_lines. IsEmpty() )
    {
       tnlCurve< tnlVector< 2, double > > crv;
-      long int j;
+      int j;
       for( j = 0; j < level_lines. Size(); j ++ )
          if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
          {
@@ -148,7 +148,7 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
       const double& hx = output_u -> GetHx();
       const double& hy = output_u -> GetHy();
       const double& hz = output_u -> GetHz();
-      long int i, j, k;
+      int i, j, k;
       for( i = 0; i < output_x_size; i ++ )
          for( j = 0; j < output_y_size; j ++ )
             for( k = 0; j < output_y_size; k ++ )
@@ -184,12 +184,12 @@ int main( int argc, char* argv[] )
 
    tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
 
-   long int size = input_files. Size();
+   int size = input_files. Size();
    tnlString output_file_name;
    tnlList< tnlString > output_files;
    if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
-   long int i;
+   int i;
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. Data();

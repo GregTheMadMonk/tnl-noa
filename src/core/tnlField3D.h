@@ -30,9 +30,9 @@ template< class T > class tnlField3D : public tnlLongVector< T >
    : tnlLongVector< T >( 0 )
    { };
 
-   tnlField3D( long int _x_size,
-             long int _y_size,
-             long int _z_size )
+   tnlField3D( int _x_size,
+             int _y_size,
+             int _z_size )
    : tnlLongVector< T >( _x_size * _y_size * _z_size ),
      x_size( _x_size ), y_size( _y_size ), z_size( _z_size )
    { };
@@ -48,24 +48,24 @@ template< class T > class tnlField3D : public tnlLongVector< T >
       return tnlString( "tnlField3D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   long int GetXSize() const
+   int GetXSize() const
    {
       return x_size;
    };
 
-   long int GetYSize() const
+   int GetYSize() const
    {
       return y_size;
    };
 
-   long int GetZSize() const
+   int GetZSize() const
    {
       return z_size;
    };
 
-   bool SetNewDimensions( long int new_x_size,
-                          long int new_y_size,
-                          long int new_z_size )
+   bool SetNewDimensions( int new_x_size,
+                          int new_y_size,
+                          int new_z_size )
    {
       x_size = new_x_size;
       y_size = new_y_size;
@@ -78,7 +78,7 @@ template< class T > class tnlField3D : public tnlLongVector< T >
       return SetNewDimensions( f. GetXSize(), f. GetYSize(), f. GetZSize() );
    };
 
-   void SetSharedData( T* _data, const long int _x_size, const long int _y_size, const long int _z_size )
+   void SetSharedData( T* _data, const int _x_size, const int _y_size, const int _z_size )
    {
       tnlLongVector< T > :: SetSharedData( _data, _x_size * _y_size * _z_size );
       x_size = _x_size;
@@ -86,19 +86,19 @@ template< class T > class tnlField3D : public tnlLongVector< T >
       z_size = _z_size;
    };
 
-   const T& operator() ( long int i, long int j, long int k ) const
+   const T& operator() ( int i, int j, int k ) const
    {
       assert( i < x_size && j < y_size && k < z_size && i >= 0 && j >= 0 && k >= 0 );
       return tnlLongVector< T > :: data[ i * y_size * z_size + j * z_size + k ];
    };
 
-   T& operator() ( long int i, long int j, long int k )
+   T& operator() ( int i, int j, int k )
    {
       assert( i < x_size && j < y_size && k < z_size && i >= 0 && j >= 0 && k >= 0 );
       return tnlLongVector< T > :: data[ i * y_size * z_size + j * z_size + k ];
    };
 
-   long int GetLongVectorIndex( long int i, long int j, long int k ) const
+   int GetLongVectorIndex( int i, int j, int k ) const
    {
       assert( i >= 0 && j >= 0 && k >= 0 );
       assert( i < x_size && j < y_size && k < z_size );
@@ -109,9 +109,9 @@ template< class T > class tnlField3D : public tnlLongVector< T >
    bool Save( ostream& file ) const
    {
       if( ! tnlLongVector< T > :: Save( file ) ) return false;
-      file. write( ( char* ) &x_size, sizeof( long int ) );
-      file. write( ( char* ) &y_size, sizeof( long int ) );
-      file. write( ( char* ) &z_size, sizeof( long int ) );
+      file. write( ( char* ) &x_size, sizeof( int ) );
+      file. write( ( char* ) &y_size, sizeof( int ) );
+      file. write( ( char* ) &z_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };
@@ -120,16 +120,16 @@ template< class T > class tnlField3D : public tnlLongVector< T >
    bool Load( istream& file )
    {
       if( ! tnlLongVector< T > :: Load( file ) ) return false;
-      file. read( ( char* ) &x_size, sizeof( long int ) );
-      file. read( ( char* ) &y_size, sizeof( long int ) );
-      file. read( ( char* ) &z_size, sizeof( long int ) );
+      file. read( ( char* ) &x_size, sizeof( int ) );
+      file. read( ( char* ) &y_size, sizeof( int ) );
+      file. read( ( char* ) &z_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };   
    
    protected:
 
-   long int x_size, y_size, z_size;
+   int x_size, y_size, z_size;
 };
 
 // Explicit instatiation

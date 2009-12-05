@@ -33,13 +33,13 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
                const T* b,
                T* x, 
                const double& max_residue,
-               const long int max_iterations,
+               const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
    {
       if( ! SetSize( A. GetSize() ) ) return false;
       
       T alpha, beta, s1, s2;
-      long int i;
+      int i;
       tnlMatrixSolver< T > :: residue = max_residue + 1.0;
       tnlMatrixSolver< T > :: iteration = 0;
       
@@ -126,8 +126,8 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
    {
       A. VectorProduct( x, tmp );
       T res = 0.0;
-      const long int size = A. GetSize();
-      long int i;
+      const int size = A. GetSize();
+      int i;
       for( i = 0; i < size; i ++ )
       {
          T v = tmp[ i ] - b[ i ];
@@ -136,7 +136,7 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
       return sqrt( res ) / b_norm;
    };
 
-   bool AllocateSupportingArrays( long int size )
+   bool AllocateSupportingArrays( int size )
    {
       r = new T[ size ];
       new_r = new T[ size ];
@@ -150,7 +150,7 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
       return true;
    };
 
-   bool SetSize( long int _size )
+   bool SetSize( int _size )
    {
       if( size == _size ) return true;
       size = _size;
@@ -168,7 +168,7 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
 
    T *r, *new_r, *p, *Ap;
 
-   long int size;
+   int size;
 };
 
 #endif

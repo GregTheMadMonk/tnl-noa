@@ -22,9 +22,9 @@
 
 template< class T > T GetL1Norm( const tnlGrid2D< T >& u )
 {
-   long int size = u. GetSize();
+   int size = u. GetSize();
    const T* _u = u. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
       result += fabs( _u[ i ] );
@@ -34,9 +34,9 @@ template< class T > T GetL1Norm( const tnlGrid2D< T >& u )
 
 template< class T > T GetL2Norm( const tnlGrid2D< T >& u )
 {
-   long int size = u. GetSize();
+   int size = u. GetSize();
    const T* _u = u. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
       result += _u[ i ] * _u[ i ];
@@ -46,9 +46,9 @@ template< class T > T GetL2Norm( const tnlGrid2D< T >& u )
 
 template< class T > T GetMaxNorm( const tnlGrid2D< T >& u )
 {
-   long int size = u. GetSize();
+   int size = u. GetSize();
    const T* _u = u. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
       result = Max( result, fabs( _u[ i ] ) );
@@ -61,10 +61,10 @@ template< class T > T GetDiffL1Norm( const tnlGrid2D< T >& u1,
    assert( u1. GetSize() == u2. GetSize() );
    assert( u1. GetHx() == u2. GetHx() );
    assert( u1. GetHy() == u2. GetHy() );
-   long int size = u1. GetSize();
+   int size = u1. GetSize();
    const T* _u1 = u1. Data(); 
    const T* _u2 = u2. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
    {
@@ -81,10 +81,10 @@ template< class T > T GetDiffL2Norm( const tnlGrid2D< T >& u1,
    assert( u1. GetSize() == u2. GetSize() );
    assert( u1. GetHx() == u2. GetHx() );
    assert( u1. GetHy() == u2. GetHy() );
-   long int size = u1. GetSize();
+   int size = u1. GetSize();
    const T* _u1 = u1. Data(); 
    const T* _u2 = u2. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
    {
@@ -99,10 +99,10 @@ template< class T > T GetDiffMaxNorm( const tnlGrid2D< T >& u1,
                                      const tnlGrid2D< T >& u2 )
 {
    assert( u1. GetSize() == u2. GetSize() );
-   long int size = u1. GetSize();
+   int size = u1. GetSize();
    const T* _u1 = u1. Data(); 
    const T* _u2 = u2. Data(); 
-   long int i;
+   int i;
    T result( 0 );
    for( i = 0; i < size; i ++ )
    {

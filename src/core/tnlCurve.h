@@ -110,7 +110,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
 template< class T > bool Write( const tnlCurve< T >& curve,
                                 ostream& str,
                                 const char* format,
-                                const long int step = 1 )
+                                const int step = 1 )
 {
    if( ! format )
    {
@@ -124,8 +124,8 @@ template< class T > bool Write( const tnlCurve< T >& curve,
    }
    if( strcmp( format, "gnuplot" ) == 0 )
    {
-      const long int size = curve. Size();
-      long int i, j;
+      const int size = curve. Size();
+      int i, j;
       for( i = 0; i < size; i += step )
       {
          if( curve[ i ]. separator )
@@ -151,7 +151,7 @@ template< class T > bool Write( const tnlCurve< T >& curve,
 template< class T > bool Write( const tnlCurve< T >& curve,
                                 const char* file_name,
                                 const char* format,
-                                const long int step = 1 )
+                                const int step = 1 )
 {
    fstream file;
    if( strncmp( format, "bin",3 ) == 0 )

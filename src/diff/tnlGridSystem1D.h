@@ -31,7 +31,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   tnlGridSystem1D( long int x_size,
+   tnlGridSystem1D( int x_size,
                   const double& A_x,
                   const double& B_x )
    : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( x_size ),
@@ -88,13 +88,13 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
    template< typename N > T Value( N x ) const
    {
       x = ( x - Ax ) / Hx;
-      long int ix = ( long int ) ( x );
+      int ix = ( int ) ( x );
       N dx = x - ( N ) ix;
       assert( 0 );
    }
    
    //! Forward difference w.r.t x
-   T Partial_x_f( const SYSTEM_INDEX ind, const long int i ) const
+   T Partial_x_f( const SYSTEM_INDEX ind, const int i ) const
    {
       assert( i >= 0 );
       assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
@@ -103,7 +103,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
    };
    
    //! Backward difference w.r.t x
-   T Partial_x_b( const SYSTEM_INDEX ind, const long int i ) const
+   T Partial_x_b( const SYSTEM_INDEX ind, const int i ) const
    {
       assert( i > 0 );
       assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size ) );
@@ -112,7 +112,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
    };
 
    //! Central difference w.r.t. x
-   T Partial_x( const SYSTEM_INDEX ind, const long int i ) const
+   T Partial_x( const SYSTEM_INDEX ind, const int i ) const
    {
       assert( i > 0 );
       assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );
@@ -121,7 +121,7 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
    };
    
    //! Second order difference w.r.t. x
-   T Partial_xx( const SYSTEM_INDEX ind, const long int i ) const
+   T Partial_xx( const SYSTEM_INDEX ind, const int i ) const
    {
       assert( i > 0 );
       assert( i < ( tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX > :: x_size - 1 ) );

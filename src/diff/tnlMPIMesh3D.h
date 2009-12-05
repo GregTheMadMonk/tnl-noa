@@ -68,7 +68,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_x_size;
    };
 
-   long int GetSubdomainXSize() const
+   int GetSubdomainXSize() const
    {
       return subdomain_x_size;
    };
@@ -79,7 +79,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_y_size;
    };
 
-   long int GetSubdomainYSize() const
+   int GetSubdomainYSize() const
    {
       return subdomain_y_size;
    };
@@ -90,7 +90,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_z_size;
    };
 
-   long int GetSubdomainZSize() const
+   int GetSubdomainZSize() const
    {
       return subdomain_z_size;
    };
@@ -687,13 +687,13 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
             abort();
          }
       }
-      long int i, j, k;
-      const long int i1 = dest_x_pos * subdomain_x_size - dest_left_overlap;
-      const long int i2 = ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap;
-      const long int j1 = dest_y_pos * subdomain_y_size - dest_bottom_overlap;
-      const long int j2 = ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap;
-      const long int k1 = dest_z_pos * subdomain_z_size - dest_closer_overlap;
-      const long int k2 = ( dest_z_pos + 1 ) * subdomain_z_size + dest_further_overlap;
+      int i, j, k;
+      const int i1 = dest_x_pos * subdomain_x_size - dest_left_overlap;
+      const int i2 = ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap;
+      const int j1 = dest_y_pos * subdomain_y_size - dest_bottom_overlap;
+      const int j2 = ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap;
+      const int k1 = dest_z_pos * subdomain_z_size - dest_closer_overlap;
+      const int k2 = ( dest_z_pos + 1 ) * subdomain_z_size + dest_further_overlap;
       dbgCout( "Copying data to buffer ... " );
       dbgCout( "Limits are i @ [" << i1 << "," << i2 << "] " <<
                          " j @ [" << j1 << "," << j2 << "] " <<
@@ -708,7 +708,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
       dbgCout( "Data succesfuly copied to buffer." );
       if( dest_node != root )
       {
-         long int buf_size = mpi_buff -> GetSize();
+         int buf_size = mpi_buff -> GetSize();
          dbgCout( "Calling MPI_Send and sending " << buf_size << "*" << sizeof( T ) << " bytes ... " );
          MPI_Send( mpi_buff -> Data(),
                    buf_size * sizeof( T ),
@@ -722,7 +722,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
       return;
    }
    if( dest_node == root ) return;
-   long int buf_size = sub_u. GetSize();
+   int buf_size = sub_u. GetSize();
    dbgCout( "Receiving data - " << buf_size << "*" << sizeof( T ) << " bytes required ..." );
    MPI_Status status;
    MPI_Recv( sub_u. Data(),
@@ -816,7 +816,7 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    subdomain_z_size + src_closer_overlap + src_further_overlap,
                                    0.0, 1.0, 0.0, 1.0, 0.0, 1.0 );
-            long int buf_size = mpi_buff. GetSize();
+            int buf_size = mpi_buff. GetSize();
             dbgExpr( buf_size );
             
             dbgCout( "RECEIVING data from node " << src  );
@@ -828,12 +828,12 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
                       mesh_comm,
                       &status );
             dbgCout( "Receiving data done." );
-            const long int i1 = src_x_pos * subdomain_x_size;
-            const long int i2 = i1 + subdomain_x_size;
-            const long int j1 = src_y_pos * subdomain_y_size;
-            const long int j2 = j1 + subdomain_y_size;
-            const long int k1 = src_z_pos * subdomain_z_size;
-            const long int k2 = k1 + subdomain_z_size;
+            const int i1 = src_x_pos * subdomain_x_size;
+            const int i2 = i1 + subdomain_x_size;
+            const int j1 = src_y_pos * subdomain_y_size;
+            const int j2 = j1 + subdomain_y_size;
+            const int k1 = src_z_pos * subdomain_z_size;
+            const int k2 = k1 + subdomain_z_size;
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                   for( k = k1; k < k2; k ++ )
@@ -846,12 +846,12 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
          }
          else
          {
-            const long int i1 = src_x_pos * subdomain_x_size;
-            const long int i2 = i1 + subdomain_x_size;
-            const long int j1 = src_y_pos * subdomain_y_size;
-            const long int j2 = j1 + subdomain_y_size;
-            const long int k1 = src_z_pos * subdomain_z_size;
-            const long int k2 = k1 + subdomain_z_size;
+            const int i1 = src_x_pos * subdomain_x_size;
+            const int i2 = i1 + subdomain_x_size;
+            const int j1 = src_y_pos * subdomain_y_size;
+            const int j2 = j1 + subdomain_y_size;
+            const int k1 = src_z_pos * subdomain_z_size;
+            const int k2 = k1 + subdomain_z_size;
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                   for( k = k1; k < k2; k ++ )
@@ -867,7 +867,7 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
    else
    {
       dbgCout( "Sending data ... " );
-      long int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
+      int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
                           ( subdomain_y_size + bottom_overlap + top_overlap ) *
                           ( subdomain_z_size + closer_overlap + further_overlap );
       MPI_Send( const_cast< T* >( sub_u. Data() ),
@@ -889,7 +889,7 @@ template< class T > void tnlMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
 {
    dbgFunctionName( "tnlMPIMesh3D", "Synchronize" );
 #ifdef HAVE_MPI
-  long int i, j, k;
+  int i, j, k;
   int min_x = left_overlap;
   int min_y = bottom_overlap;
   int min_z = closer_overlap;
@@ -913,7 +913,7 @@ template< class T > void tnlMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
   
   dbgMPIBarrier;
   
-  long int buff_iter;
+  int buff_iter;
   dbgCout( "Starting communication with the left neighbour ... " );
   if( left_neighbour != MPI_PROC_NULL )
   {

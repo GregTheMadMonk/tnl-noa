@@ -28,10 +28,10 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 {
    public:
    
-   tnlILUPreconditioner( const long int _size,
-                       const long int initial_size,
-                       const long int segment_size,
-                       const long int init_row_elements = 0 )
+   tnlILUPreconditioner( const int _size,
+                       const int initial_size,
+                       const int segment_size,
+                       const int init_row_elements = 0 )
    : size( _size )
    {
 #ifdef ILU_DEBUG
@@ -58,11 +58,11 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    {
       dbgFunctionName( "tnlILUPreconditioner", "Init" );
       assert( A. GetSize() == M -> GetSize() );
-      long int non_zero_elements( 0 );
+      int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
       M -> ResetStatistics();
 #endif
-      long int i, j, k;
+      int i, j, k;
       const tnlCSRMatrixElement< T > *A_data;
       const tnlCSRMatrixRowInfo *A_rows_info;
       A. Data( A_data, A_rows_info );
@@ -73,7 +73,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       for( i = 0; i < size; i ++ )
          for( j = A_rows_info[ i ]. first; j < A_rows_info[ i ]. last; j ++ )
          {
-            long int col = A_data[ j ]. column;
+            int col = A_data[ j ]. column;
             if( col != -1 )
                full_M[ i * size + col ] = A_data[ j ]. value;
          }
@@ -93,7 +93,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
          const long a_row_end = A_rows_info[ i ]. last;
          for( k = a_row_beg; k < a_row_end; k ++ )
          {
-            const long int col = A_data[ k ]. column;
+            const int col = A_data[ k ]. column;
             const T& a_ik = A_data[ k ]. value;
             if( col == -1 ) break;
             y[ col ] = a_ik;
@@ -111,9 +111,9 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
             if( fabs( y[ k ] ) < threshold_i ) y[ k ] = 0.0;
             if( y[ k ] != 0.0 )
             {
-               const long int row_beg = M_rows_info[ k ]. diagonal + 1;
-               const long int row_end = M_rows_info[ k ]. last;
-               long int col;
+               const int row_beg = M_rows_info[ k ]. diagonal + 1;
+               const int row_end = M_rows_info[ k ]. last;
+               int col;
                for( j = row_beg;
                     j < row_end && ( col = M_data[ j ]. column ) != -1;
                     j ++ )
@@ -210,7 +210,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
          for( j = 0; j < size; j ++ )
          {
             cout << i << " : " << j << "     \r" << flush;
-            long int l = Min( i, j );
+            int l = Min( i, j );
             T sum( 0.0 );
             for( k = 0; k <= l; k ++ )
                if( k < i )
@@ -240,9 +240,9 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       {
          // For k = 0 ... i - 1 and for ( i, k ) non-zero
          //  = take non-zero entries at the i-th row before the diagonal entry
-         long int i_th_row_beg = M_row_ind[ i ];
-         long int i_th_row_end = M_row_ind[ i + 1 ];
-         long int k_ind;
+         int i_th_row_beg = M_row_ind[ i ];
+         int i_th_row_end = M_row_ind[ i + 1 ];
+         int k_ind;
          for( k_ind = i_th_row_beg; k_ind < i_th_row_end; k_ind ++ )
          {
             k = M_data[ k_ind ]. column;
@@ -253,7 +253,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 
             // For j = k + 1 ... n - 1 and for ( i, j ) non-zero
             // = take non-zero entries at the i-th row behind the diagonal entry
-            long int j_ind;
+            int j_ind;
             for( j_ind = k_ind + 1; j_ind < i_th_row_end; j_ind ++ )
             {
                j = M_data[ j_ind ]. column;
@@ -270,20 +270,20 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    bool Solve( const T* b, T* x ) const
    {
       dbgFunctionName( "tnlILUPreconditioner", "Solve" );
-      const long int size = M -> GetSize();
+      const int size = M -> GetSize();
       const tnlCSRMatrixElement< T >* M_data;
       const tnlCSRMatrixRowInfo *M_rows_info;
       M -> Data( M_data, M_rows_info );
-      long int i, j;
+      int i, j;
       
       dbgCout( "Solving Ly = b" );
       // L is unit lower triangular
       for( i = 0; i < size; i ++ )
       {
          y[ i ] = b[ i ];
-         const long int i_row_beg = M_rows_info[ i ]. first;
-         const long int i_row_end = M_rows_info[ i ]. diagonal;
-         long int col;
+         const int i_row_beg = M_rows_info[ i ]. first;
+         const int i_row_end = M_rows_info[ i ]. diagonal;
+         int col;
          for( j = i_row_beg;
               j < i_row_end && ( col = M_data[ j ]. column ) != -1;
               j ++ )
@@ -296,10 +296,10 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       for( i = size - 1; i >=0 ; i -- )
       {
          x[ i ] = y[ i ];
-         const long int i_row_beg = M_rows_info[ i ]. diagonal;
+         const int i_row_beg = M_rows_info[ i ]. diagonal;
          assert( i_row_beg != -1 );
-         const long int i_row_end = M_rows_info[ i ]. last;
-         long int col;
+         const int i_row_end = M_rows_info[ i ]. last;
+         int col;
          for( j = i_row_beg + 1;
               j < i_row_end && ( col = M_data[ j ]. column ) != -1;
               j ++ )
@@ -347,7 +347,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 
    T* y;
 
-   long int size;
+   int size;
    
 #ifdef ILU_DEBUG
    T* full_M, *ilu_check;

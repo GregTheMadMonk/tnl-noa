@@ -34,10 +34,10 @@ template< typename T > struct tnlCSRMatrixElement
    T value;
    
    //! Element column
-   long int column;
+   int column;
 
    //! Constructor
-   tnlCSRMatrixElement( const T& v, long int col )
+   tnlCSRMatrixElement( const T& v, int col )
    : value( v ), column( col ){};
 };
 
@@ -49,15 +49,15 @@ template< typename T > struct tnlCSRMatrixElement
 struct tnlCSRMatrixRowInfo
 {
    //! Row begining
-   long int first;
+   int first;
 
    //! Last non-zero element of the row
-   long int last;
+   int last;
 
    //! Diagonal element
    /*! It is set to -1 if there is no diagonal element at the row
     */
-   long int diagonal;
+   int diagonal;
 };
 
 //! Matrix storing the non-zero elements in the CSR (Compressed Sparse Row) format 
@@ -105,10 +105,10 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
        \param _alloctaion_segment_size  If we need to allocate more new non-zero elements this says the amount if increase.
        \param _inititial_row_size       It says how many elements we expect to be in each row. This s information can significialy speedup the insertion of the elements.
     */
-   tnlCSRMatrix( const long int _size,
-               const long int _initial_allocation = 0,
-               const long int _allocation_segment_size = 0,
-               const long int _initial_row_size = 0 )
+   tnlCSRMatrix( const int _size,
+               const int _initial_allocation = 0,
+               const int _allocation_segment_size = 0,
+               const int _initial_row_size = 0 )
    : size( _size ),
      allocation_segment_size( _allocation_segment_size )
    {
@@ -135,7 +135,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       
       dbgCout( "Setting rows size to " << _initial_row_size << "( and pointers to diagonal to -1 )" );
       assert( size * _initial_row_size <= allocated_elements );
-      long int i;
+      int i;
       for( i = 0; i <= size; i ++ )
       {
          dbgCout( "Setting row " << i << " first and last to " << i * _initial_row_size );
@@ -188,7 +188,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    //! Size getter
    /*! \return the dimension of the matrix
     */
-   long int GetSize() const
+   int GetSize() const
    {
       return size;
    };
@@ -198,21 +198,21 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
     *  \param column element column.
     *  \return value of the element.
     */
-   T GetElement( long int row, long int column ) const
+   T GetElement( int row, int column ) const
    {
       dbgFunctionName( "tnlCSRMatrix", "operator()" );
       dbgCout( "row = " << row << " col = " << column );
 
       assert( row < size );
-      long int row_beg = -1;
+      int row_beg = -1;
       if( column >= row ) row_beg = rows_info[ row ]. diagonal; //diagonal might be also -1
       if( row_beg == -1 ) row_beg = rows_info[ row ]. first;
-      long int row_end = rows_info[ row ]. last;
+      int row_end = rows_info[ row ]. last;
       assert( row_end <= allocated_elements );
       
       dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
 
-      long int i = row_beg;
+      int i = row_beg;
       while( i < row_end && data[ i ]. column < column ) i ++;
 #ifdef CSR_MATRIX_TUNING
       const_cast< tnlCSRMatrix* >( this ) -> data_seeks += i - row_beg;
@@ -226,8 +226,8 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    //! Set element at given position
    /*! \return false if some allocation failed.
     */
-   bool SetElement( const long int row,
-                    const long int col,
+   bool SetElement( const int row,
+                    const int col,
                     const T& v )
    {
       dbgFunctionName( "tnlCSRMatrix", "SetElement" );
@@ -236,7 +236,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       return ChangeElement( row, col, v, set );  
    };
    
-   bool AddToElement( long int row, long int column, const T& v )
+   bool AddToElement( int row, int column, const T& v )
    {
       if( v == 0.0 ) return true;
       return ChangeElement( row, column, v, add );
@@ -246,17 +246,17 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    /** THIS METHOD WAS NOT PROPERLY TESTED YET !!!
     *  @param non_zero_elems says how many non-zero elements are there in the array
     */
-   bool SetRow( const long int row,
+   bool SetRow( const int row,
                 const T* row_data,
-                const long int non_zero_elems,
-                const long int first_non_zero,
-                const long int last_non_zero )
+                const int non_zero_elems,
+                const int first_non_zero,
+                const int last_non_zero )
    {
       dbgFunctionName( "tnlCSRMatrix", "SetSparseRow" );
 
-      long int row_beg = rows_info[ row ]. first;
-      long int row_end = rows_info[ row ]. last;
-      const long int current_row_size = row_beg - row_end;
+      int row_beg = rows_info[ row ]. first;
+      int row_end = rows_info[ row ]. last;
+      const int current_row_size = row_beg - row_end;
 
       dbgExpr( row_beg );
       dbgExpr( row_end );
@@ -265,14 +265,14 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       if( current_row_size < non_zero_elems )
       {
          dbgCout( "Shifting the rest of the data" );
-         long int shift = non_zero_elems - current_row_size;
+         int shift = non_zero_elems - current_row_size;
          dbgExpr( shift );
          dbgExpr( allocated_elements );
          dbgExpr( rows_info[ size ]. last );
          dbgExpr( size );
-         long int new_alloc = shift - ( allocated_elements - rows_info[ size ]. last );
+         int new_alloc = shift - ( allocated_elements - rows_info[ size ]. last );
          if( new_alloc > 0 && ! AllocateNewMemory( new_alloc ) ) return false;
-         long int j = last_non_zero_element - 1;
+         int j = last_non_zero_element - 1;
          while( j >= row_end ) data[ j + shift ] = data[ j -- ];
          last_non_zero_element += shift;
          j = row + 1;
@@ -287,7 +287,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       rows_info[ row ]. last = row_beg + non_zero_elems;
       dbgCout( "Reseting diagonal entry pionter." );
       rows_info[ row ]. diagonal = -1;
-      long int i( 0 ), j( first_non_zero ), row_pos( row_beg );
+      int i( 0 ), j( first_non_zero ), row_pos( row_beg );
       while( i < non_zero_elems && j <= last_non_zero )
       {
          if( row_data[ j ] == 0 )
@@ -315,10 +315,10 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
        \param new_segment_size New segment size.
        \return False if some allocation failed.
     */
-   bool Reset( long int new_size = 0,
-               long int new_initial_allocation = 0,
-               long int new_allocation_segment_size = 0,
-               long int new_initial_row_size = 0 )
+   bool Reset( int new_size = 0,
+               int new_initial_allocation = 0,
+               int new_allocation_segment_size = 0,
+               int new_initial_row_size = 0 )
    {
       dbgFunctionName( "tnlCSRMatrix", "Reset" );
       if( new_size && size != new_size )
@@ -345,7 +345,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
          allocated_elements = new_initial_allocation;
       }
 
-      long int i;
+      int i;
       if( new_initial_row_size )
       {
          dbgCout( "Setting rows size to " << new_initial_row_size );
@@ -391,8 +391,8 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       memcpy( rows_info, m. rows_info, ( size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) );
       last_non_zero_element = m. last_non_zero_element;
       allocation_segment_size = m. allocation_segment_size;
-      long int l = Min( last_non_zero_element + 1, allocated_elements );
-      long int i;
+      int l = Min( last_non_zero_element + 1, allocated_elements );
+      int i;
       for( i = 0; i < l; i ++ ) data[ i ] = m. data[ i ];
       return true;
    };
@@ -400,16 +400,16 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    //! Row product
    /*! Compute product of given vector with given row
     */
-   T RowProduct( const long int row, const T* vec ) const
+   T RowProduct( const int row, const T* vec ) const
    {
       dbgFunctionName( "tnlCSRMatrix", "RowProduct" );
-      long int row_beg = rows_info[ row ]. first;
-      long int row_end = rows_info[ row ]. last;
+      int row_beg = rows_info[ row ]. first;
+      int row_end = rows_info[ row ]. last;
       dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
       
-      long int col;
+      int col;
       T res( 0.0 );
-      long int i = row_beg;
+      int i = row_beg;
       while( i < row_end )
       {
          assert( data[ i ]. column >= 0 && data[ i ]. column < size );
@@ -422,15 +422,15 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    void VectorProduct( const T* vec, T* result ) const
    {
       dbgFunctionName( "tnlCSRMatrix", "VectorProduct" );
-      long int row, i;
+      int row, i;
       T res;
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private( row, i )
 #endif
       for( row = 0; row < size; row ++ )
       {
-         const long int row_beg = rows_info[ row ]. first;
-         const long int row_end = rows_info[ row ]. last;
+         const int row_beg = rows_info[ row ]. first;
+         const int row_end = rows_info[ row ]. last;
          dbgCout( "row = " << row << " row_beg = " << row_beg << " row_end = " << row_end );
          
          res = 0.0;
@@ -447,22 +447,22 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    void MatrixAdd( const tnlCSRMatrix& m2 );
 
    //! Multiply row
-   void MultiplyRow( const long int row, const T& c )
+   void MultiplyRow( const int row, const T& c )
    {
-      const long int row_beg = rows_info[ row ]. first;
-      const long int row_end = rows_info[ row ]. last;
-      long int i;
+      const int row_beg = rows_info[ row ]. first;
+      const int row_end = rows_info[ row ]. last;
+      int i;
       for( i = row_beg; i < row_end; i ++ )
          data[ i ]. value *= c;
    };
 
    //! Get row L1 norm
-   T GetRowL1Norm( const long int row ) const
+   T GetRowL1Norm( const int row ) const
    {
-      const long int row_beg = rows_info[ row ]. first;
-      const long int row_end = rows_info[ row ]. last;
+      const int row_beg = rows_info[ row ]. first;
+      const int row_end = rows_info[ row ]. last;
       T res( 0.0 );
-      long int i;
+      int i;
       for( i = row_beg; i < row_end; i ++ )
          res += fabs( data[ i ]. value );
       return res;
@@ -474,7 +474,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    void Print( ostream& str )
    {
       str << "Data array:" << endl;
-      long int i = 0;
+      int i = 0;
       while( i < last_non_zero_element )
          str << i << "  Col: " << data[ i ]. column << " Val: " << data[ i ++ ]. value << endl;
       str << "Rows info:" << endl;
@@ -519,7 +519,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
        \param amount positive number of new elements that are requested.
        \return false if the allocation failed otherwise true.
    */
-   bool AllocateNewMemory( long int amount )
+   bool AllocateNewMemory( int amount )
    {
       assert( amount > 0 );
       dbgFunctionName( "tnlCSRMatrix", "AllocateNewMemory" );
@@ -547,8 +547,8 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
     * \param operation can be set or add.
     * \return false if some allocation failed.
     */
-   bool ChangeElement( const long int row,
-                       const long int col,
+   bool ChangeElement( const int row,
+                       const int col,
                        const T& v,
                        csr_operation operation )
    {
@@ -570,13 +570,13 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       }
 
       dbgCout( "Check if given element is already set" );
-      long int _row_beg = -1;
+      int _row_beg = -1;
       if( col >= row ) _row_beg = rows_info[ row ]. diagonal; //diagonal might be also -1
       if( _row_beg == -1 ) _row_beg = rows_info[ row ]. first;
-      const long int row_beg = _row_beg;
-      const long int row_end = rows_info[ row ]. last;
+      const int row_beg = _row_beg;
+      const int row_end = rows_info[ row ]. last;
       assert( row_end <= allocated_elements );
-      long int i = row_beg;
+      int i = row_beg;
       while( i < row_end && data[ i ]. column < col ) i ++;
 #ifdef CSR_MATRIX_TUNING
          data_seeks += i - row_beg;
@@ -599,13 +599,13 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       // otherwise we must set the new element
       dbgCout( "Element was not set yet" );
       //cout <<  "Element was not set yet" << endl;
-      const long int next_row_beg = rows_info[ row + 1 ]. first;
+      const int next_row_beg = rows_info[ row + 1 ]. first;
       if( row_end < next_row_beg ) // we can insert the element in this row without shifting the rest
       {
          dbgCout( "Free space in the row " << row << " found - inserting new element." );
          //cout <<  "Free space in the row " << row << " found - inserting new element." << endl;
          dbgExpr( row_end );
-         long int j = row_end;
+         int j = row_end;
 #ifdef CSR_MATRIX_TUNING
          data_shifts += j - i;
 #endif
@@ -638,7 +638,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
       if( rows_info[ size ]. last + 1 >= allocated_elements &&
          ! AllocateNewMemory( 1 ) ) return false;
 
-      long int j = last_non_zero_element ++;
+      int j = last_non_zero_element ++;
 #ifdef CSR_MATRIX_TUNING
          data_shifts += j - i;
 #endif
@@ -683,7 +683,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    //m_bool ShiftData( m_int from, m_int shift );
    
    //! Dimension
-   long int size;
+   int size;
    
    //! Array with matrix elements (AA and JA arrays)
    tnlCSRMatrixElement< T >* data;
@@ -693,19 +693,19 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
        If we need more additional elements are going to be allocated
        @see allocation_segement_size, @see AllocateNewMemory
     */
-   long int allocated_elements;
+   int allocated_elements;
    
    //! Segment size
    /*! It says by what amount the @param data array is goind to be
        increased during AllocateNewMemory call.
     */
-   long int allocation_segment_size;
+   int allocation_segment_size;
   
    //! This points right behind the last non-zero element in the @param data array
    /*! It is important for shifting data in @param data array when a new element
        is inserted
     */
-   long int last_non_zero_element;
+   int last_non_zero_element;
 
    //! Field of row info structures - one for each row
    /*! To make algortithms easier we have info even for the row number size + 1.
@@ -714,9 +714,9 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
 
 
 #ifdef CSR_MATRIX_TUNING
-   long int data_shifts;
-   long int data_seeks;
-   long int re_allocs;
+   int data_shifts;
+   int data_seeks;
+   int re_allocs;
 
    public:
 
@@ -728,7 +728,7 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
    private:
    void PrintDataArray() const
    {
-      long int i;
+      int i;
       for( i = 0; i < last_non_zero_element; i ++ )
          if( data[ i ]. value != 0.0 )
             cout << i << " col. " << data[ i ]. column << " val. " << data[ i ]. value << endl;
@@ -739,8 +739,8 @@ template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
 
 template< typename T > ostream& operator << ( ostream& o_str, const tnlCSRMatrix< T >& A )
 {
-   long int size = A. GetSize();
-   long int i, j;
+   int size = A. GetSize();
+   int i, j;
    o_str << endl;
    for( i = 0; i < size; i ++ )
    {

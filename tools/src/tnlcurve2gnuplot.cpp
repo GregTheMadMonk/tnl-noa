@@ -43,13 +43,13 @@ int main( int argc, char* argv[] )
    parameters. GetParameter< int >( "output-step", output_step );
    tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
 
-   long int size = input_files. Size();
+   int size = input_files. Size();
    /*if( size != output_files. Size() )
    {
       cerr << "Sorry, there is different number of input and output files." << endl;
       return 1;
    }*/
-   long int i;
+   int i;
    tnlCurve< tnlVector< 2, double > > crv;
    for( i = 0; i < size; i ++ )
    {
@@ -100,8 +100,8 @@ int main( int argc, char* argv[] )
       }
 
       tnlCurve< tnlVector< 2, double > > out_crv;
-      const long int size = crv. Size();
-      long int i;
+      const int size = crv. Size();
+      int i;
       for( i = 0; i < size; i += output_step )
       {
          out_crv. Append( crv[ i ]. position, crv[ i ]. separator );

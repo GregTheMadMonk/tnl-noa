@@ -51,7 +51,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
 
    //void SetFinalTime( const double& t );
 
-   long int GetIterationNumber() const
+   int GetIterationNumber() const
    {
       return iteration;
    };
@@ -118,11 +118,11 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
                        GRID& u,
                        const double& stop_time,
                        const double& max_res,
-                       const long int max_iter ) = 0;
+                       const int max_iter ) = 0;
      
    protected:
     
-   long int iteration;
+   int iteration;
 
    double time;
 

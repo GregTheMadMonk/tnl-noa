@@ -30,7 +30,7 @@ template< class T > class tnlField1D : public tnlLongVector< T >
    : tnlLongVector< T >( 0 )
    { };
 
-   tnlField1D( long int _x_size )
+   tnlField1D( int _x_size )
    : tnlLongVector< T >( _x_size ),
      x_size( _x_size )
    { };
@@ -46,12 +46,12 @@ template< class T > class tnlField1D : public tnlLongVector< T >
       return tnlString( "tnlField1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    };
 
-   long int GetXSize() const
+   int GetXSize() const
    {
       return x_size;
    };
 
-   bool SetNewDimensions( long int new_x_size )
+   bool SetNewDimensions( int new_x_size )
    {
       x_size = new_x_size;
       return tnlLongVector< T > :: SetNewSize( x_size );
@@ -63,19 +63,19 @@ template< class T > class tnlField1D : public tnlLongVector< T >
    };
    
 
-   const T& operator() ( long int i ) const
+   const T& operator() ( int i ) const
    {
       assert( i < x_size && i >= 0 );
       return tnlLongVector< T > :: data[ i ];
    };
 
-   T& operator() ( long int i )
+   T& operator() ( int i )
    {
       assert( i < x_size && i >= 0 );
       return tnlLongVector< T > :: data[ i ];
    };
 
-   long int GetLongVectorIndex( long int i ) const
+   int GetLongVectorIndex( int i ) const
    {
       assert( i >= 0 && i < x_size );
       return i;
@@ -85,7 +85,7 @@ template< class T > class tnlField1D : public tnlLongVector< T >
    bool Save( ostream& file ) const
    {
       if( ! tnlLongVector< T > :: Save( file ) ) return false;
-      file. write( ( char* ) &x_size, sizeof( long int ) );
+      file. write( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };
@@ -94,14 +94,14 @@ template< class T > class tnlField1D : public tnlLongVector< T >
    bool Load( istream& file )
    {
       if( ! tnlLongVector< T > :: Load( file ) ) return false;
-      file. read( ( char* ) &x_size, sizeof( long int ) );
+      file. read( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
    };   
    
    protected:
 
-   long int x_size;
+   int x_size;
 };
 
 // Explicit instatiation

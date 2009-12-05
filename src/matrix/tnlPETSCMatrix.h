@@ -35,14 +35,14 @@ template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
    Mat matrix;
 #endif
 
-   long int size;
+   int size;
 
    public:
 
    tnlPETSCMatrix(){};
 
-   tnlPETSCMatrix( const long int _size,
-                 const long int row_size )
+   tnlPETSCMatrix( const int _size,
+                 const int row_size )
    : size( _size )
    {
 #ifdef HAVE_PETSC
@@ -73,19 +73,19 @@ template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
 #endif
    }
    
-   long int GetSize() const
+   int GetSize() const
    {
       return size;
    };
 
-   T GetElement( const long int row,
-                 const long int col ) const
+   T GetElement( const int row,
+                 const int col ) const
    {
       abort(); // Not implemented yet.
    };
 
-   bool SetElement( const long int row,
-                    const long int col,
+   bool SetElement( const int row,
+                    const int col,
                     const T& v )
    {
 #ifdef HAVE_PETSC
@@ -97,8 +97,8 @@ template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
 #endif
    };
 
-   bool AddToElement( const long int row,
-                      const long int col,
+   bool AddToElement( const int row,
+                      const int col,
                       const T& v )
    {
 #ifdef HAVE_PETSC
@@ -110,7 +110,7 @@ template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
 #endif
    };
    
-   T RowProduct( const long int row, const T* vec ) const {};
+   T RowProduct( const int row, const T* vec ) const {};
    
    void VectorProduct( const T* vec, T* result ) const   
    {
@@ -132,9 +132,9 @@ template< typename T > class tnlPETSCMatrix : public tnlBaseMatrix< T >
       
    };
    
-   T GetRowL1Norm( long int row ) const {};
+   T GetRowL1Norm( int row ) const {};
 
-   void MultiplyRow( long int row, const T& value ) {};
+   void MultiplyRow( int row, const T& value ) {};
 
    ~tnlPETSCMatrix()
    {

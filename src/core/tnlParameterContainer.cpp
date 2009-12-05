@@ -50,7 +50,7 @@ bool tnlParameterContainer :: AddParameter( const char* name,
 bool tnlParameterContainer :: SetParameter( const char* name,
                                           const char* value )
 {
-   long int i;
+   int i;
    for( i = 0; i < parameters. Size(); i ++ )
    {
       if( parameters[ i ] -> name == name )

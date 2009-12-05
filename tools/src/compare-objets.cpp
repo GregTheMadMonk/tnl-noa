@@ -35,12 +35,12 @@ bool Compare( const tnlGrid2D< double >& u1,
       cerr << "Both grids describes different numerical domain." << endl;
       return false;
    }
-   const long int x_size = u1. GetXSize();
-   const long int y_size = u1. GetYSize();
+   const int x_size = u1. GetXSize();
+   const int y_size = u1. GetYSize();
    const double& hx = u1. GetHx();
    const double& hy = u1. GetHy();
    
-   long int i, j;
+   int i, j;
    l1_norm = l2_norm = max_norm = 0.0;
    for( i = 0; i < x_size; i ++ )
       for( j = 0l j < y_size, j ++ )

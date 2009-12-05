@@ -47,13 +47,13 @@ int main( int argc, char* argv[] )
    double scale = parameters. GetParameter< double >( "scale" );
    tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
 
-   long int size = input_files. Size();
+   int size = input_files. Size();
    /*if( size != output_files. Size() )
    {
       cerr << "Sorry, there is different number of input and output files." << endl;
       return 1;
    }*/
-   long int i;
+   int i;
    tnlGrid2D< double > u;
    for( i = 0; i < size; i ++ )
    {
@@ -119,7 +119,7 @@ int main( int argc, char* argv[] )
                                            u. GetBy() );
          const double& hx = output_u -> GetHx();
          const double& hy = output_u -> GetHy();
-         long int i, j;
+         int i, j;
          for( i = 0; i < output_x_size; i ++ )
             for( j = 0; j < output_y_size; j ++ )
             {
@@ -145,7 +145,7 @@ int main( int argc, char* argv[] )
       if( ! level_lines. IsEmpty() )
       {
          tnlCurve< tnlVector< 2, double > > crv;
-         long int j;
+         int j;
          for( j = 0; j < level_lines. Size(); j ++ )
             if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
             {

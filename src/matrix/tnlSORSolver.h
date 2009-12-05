@@ -38,11 +38,11 @@ template< typename T > class tnlSORSolver : public tnlMatrixSolver< T >
                const T* b,
                T* x, 
                const double& max_residue,
-               const long int max_iterations,
+               const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
    {
-      const long int size = A. GetSize();
-      long int i;
+      const int size = A. GetSize();
+      int i;
       tnlMatrixSolver< T > :: iteration = 0;
       tnlMatrixSolver< T > :: residue = max_residue + 1.0;;
 
@@ -90,8 +90,8 @@ template< typename T > class tnlSORSolver : public tnlMatrixSolver< T >
                  const T* x,
                  const T& b_norm )
    {
-      const long int size = A. GetSize();
-      long int i;
+      const int size = A. GetSize();
+      int i;
       T res( ( T ) 0.0 );
       for( i = 0; i < size; i ++ )
       {

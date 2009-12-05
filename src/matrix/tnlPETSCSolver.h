@@ -36,7 +36,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
    KSP petsc_solver;
 #endif
 
-   long int gmre_restarting;
+   int gmre_restarting;
 
    public:
 
@@ -57,7 +57,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 #endif
    };
 
-   void SetRestarting( long int rest )
+   void SetRestarting( int rest )
    {
 #ifdef HAVE_PETSC
       KSPGMRESSetRestart( petsc_solver, rest );
@@ -86,7 +86,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
                const T* b,
                T* x, 
                const double& max_residue,
-               const long int max_iterations,
+               const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
    {
 #ifdef HAVE_PETSC
@@ -99,13 +99,13 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       MatAssemblyBegin( matrix, MAT_FINAL_ASSEMBLY );
       MatAssemblyEnd( matrix, MAT_FINAL_ASSEMBLY );
       
-      const long int size = petsc_matrix -> GetSize();
+      const int size = petsc_matrix -> GetSize();
 
       VecCreateSeqWithArray( MPI_COMM_SELF, size, x, &petsc_x );
       VecCreateSeqWithArray( MPI_COMM_SELF, size, b, &petsc_b );
       
       T normb;
-      long int i;
+      int i;
       for( i = 0; i < size; i ++ )
       {
          normb += b[ i ] * b[ i ];

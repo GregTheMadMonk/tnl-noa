@@ -23,12 +23,12 @@
 #include <debug/tnlDebug.h>
 
 //! Supporting structure for a curve identification
-// TODO replace it with tnlVector< 2, long int > 
+// TODO replace it with tnlVector< 2, int > 
 struct MeshIndex
 {
-   long int i, j;
-   MeshIndex( long int _i,
-              long int _j )
+   int i, j;
+   MeshIndex( int _i,
+              int _j )
       : i( _i ), j( _j ){}
 };
 
@@ -37,9 +37,9 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                                            const double level = 0.0 )
 {
    dbgFunctionName( "", "GetLevelSetCurve" );
-   long int i, j, k;
-   const long int x_size = u. GetXSize();
-   const long int y_size = u. GetYSize();
+   int i, j, k;
+   const int x_size = u. GetXSize();
+   const int y_size = u. GetYSize();
 
    // this list stores curves or just curve fargments
    tnlList< tnlList< MeshIndex>* > curves;
@@ -62,10 +62,10 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
          bool added( false );
          for( k = 0; k < curves. Size(); k ++ )
          {
-            long int l = curves[ k ] -> Size();
+            int l = curves[ k ] -> Size();
             MeshIndex mi = ( * curves[ k ] )[ l - 1 ];
-            long int n1 = abs( ( long int ) i - ( long int ) mi. i );
-            long int n2 = abs( ( long int ) j - ( long int ) mi. j );
+            int n1 = abs( ( int ) i - ( int ) mi. i );
+            int n2 = abs( ( int ) j - ( int ) mi. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -76,8 +76,8 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                break;
             }
             mi = ( * curves[ k ] )[ 0 ];
-            n1 = abs( ( long int ) i - ( long int ) mi. i );
-            n2 = abs( ( long int ) j - ( long int ) mi. j );
+            n1 = abs( ( int ) i - ( int ) mi. i );
+            n2 = abs( ( int ) j - ( int ) mi. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -118,9 +118,9 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
             assert( &c2 != &c1 );
             MeshIndex c2_start = c2[ 0 ];
             MeshIndex c2_end = c2[ c2. Size() - 1 ];
-            long int n1, n2;
-            n1 = abs( ( long int ) c1_start. i - ( long int ) c2_end. i );
-            n2 = abs( ( long int ) c1_start. j - ( long int ) c2_end. j );
+            int n1, n2;
+            n1 = abs( ( int ) c1_start. i - ( int ) c2_end. i );
+            n2 = abs( ( int ) c1_start. j - ( int ) c2_end. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -136,8 +136,8 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                fragmented = true;
                continue;
             }
-            n1 = abs( ( long int ) c1_end. i - ( long int ) c2_start. i );
-            n2 = abs( ( long int ) c1_end. j - ( long int ) c2_start. j );
+            n1 = abs( ( int ) c1_end. i - ( int ) c2_start. i );
+            n2 = abs( ( int ) c1_end. j - ( int ) c2_start. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -153,8 +153,8 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                fragmented = true;
                continue;
             }
-            n1 = abs( ( long int ) c1_start. i - ( long int ) c2_start. i );
-            n2 = abs( ( long int ) c1_start. j - ( long int ) c2_start. j );
+            n1 = abs( ( int ) c1_start. i - ( int ) c2_start. i );
+            n2 = abs( ( int ) c1_start. j - ( int ) c2_start. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -171,8 +171,8 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
                fragmented = true;
                continue;
             }
-            n1 = abs( ( long int ) c1_end. i - ( long int ) c2_end. i );
-            n2 = abs( ( long int ) c1_end. j - ( long int ) c2_end. j );
+            n1 = abs( ( int ) c1_end. i - ( int ) c2_end. i );
+            n2 = abs( ( int ) c1_end. j - ( int ) c2_end. j );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
@@ -198,11 +198,11 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
    for( i = 0; i < curves. Size(); i ++ )
    {
       tnlList< MeshIndex >& c = * curves[ i ];
-      long int l = c. Size();
+      int l = c. Size();
       MeshIndex m1 = c[ 0 ];
       MeshIndex m2 = c[ l - 1 ];
-      long int n1 = abs( ( long int ) m1. i - ( long int ) m2. i );
-      long int n2 = abs( ( long int ) m1. j - ( long int ) m2. j );
+      int n1 = abs( ( int ) m1. i - ( int ) m2. i );
+      int n2 = abs( ( int ) m1. j - ( int ) m2. j );
       if( ( n1 == 1 && n2 == 0 ) ||
           ( n1 == 0 && n2 == 1 ) )
       {
@@ -223,14 +223,14 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
    {
       if( i > 0 ) crv. Append( null_vector, true );  //separator
       tnlList< MeshIndex >& c = * curves[ i ];
-      long int l = c. Size();
+      int l = c. Size();
       tnlVector< 2, T > first;
       for( j = 0; j < l - 1; j ++ )
       {
          MeshIndex m1 = c[ j ];
          MeshIndex m2 = c[ j + 1 ];
-         long int n1 = m2. i - m1. i;
-         long int n2 = m2. j - m1. j;
+         int n1 = m2. i - m1. i;
+         int n2 = m2. j - m1. j;
          T p[ 2 ], v[ 2 ];
          if( n1 == 0 && n2 == -1 )
          {

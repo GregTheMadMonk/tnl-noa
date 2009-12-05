@@ -74,7 +74,7 @@ m_int tnlILUPreconditioner :: Init( const tnlCSRMatrix& A, const m_real& thresho
 {
    dbgFunctionName( "tnlILUPreconditioner", "Init" );
    assert( A. Size() == M -> Size() );
-   long int non_zero_elements( 0 );
+   int non_zero_elements( 0 );
 #ifdef CSR_MATRIX_TUNING
    M -> ResetStatistics();
 #endif
