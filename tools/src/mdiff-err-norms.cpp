@@ -156,12 +156,15 @@ int main( int argc, char* argv[] )
       conf_desc. PrintUsage( argv[ 0 ] );
       return 1;
    }
-
-   cout << "************************************************************************" << endl;
-   cout << "*                                                                      *" << endl;
-   cout << "*           mDiff Tools: grid difference                               *" << endl;
-   cout << "*                                                                      *" << endl;
-   cout << "************************************************************************" << endl;
+   int verbose = parameters. GetParameter< int >( "verbose" );
+   if( verbose )
+   {
+      cout << "************************************************************************" << endl;
+      cout << "*                                                                      *" << endl;
+      cout << "*           mDiff Tools: grid difference                               *" << endl;
+      cout << "*                                                                      *" << endl;
+      cout << "************************************************************************" << endl;
+   }
 
    tnlString test = parameters. GetParameter< tnlString >( "test" );
    tnlList< tnlString > first_files = parameters. GetParameter< tnlList< tnlString > >( "first-set" );
@@ -176,7 +179,8 @@ int main( int argc, char* argv[] )
       second_files = parameters. GetParameter< tnlList< tnlString > >( "second-set" );
    }
    int size = first_files. Size();
-   cout << "Processing " << size << " files. " << endl;
+   if( verbose )
+      cout << "Processing " << size << " files. " << endl;
 
    int edge_skip = parameters. GetParameter< int >( "edges-skip" );
    bool write_difference = parameters. GetParameter< bool >( "write-difference" );
@@ -240,7 +244,8 @@ int main( int argc, char* argv[] )
       {
          //cout << setw( 85 ) << " ";
          const char* first_file = first_files[ i ]. Data();
-         cout << "Processing file " << first_file << " ...          \r" << flush;
+         if( verbose )
+            cout << "Processing file " << first_file << " ...          \r" << flush;
          if( ! TryUncompressFile( first_file, first_file_uncompressed ) )
          {
             cerr << "SKIPPING ... " << endl;
@@ -255,7 +260,8 @@ int main( int argc, char* argv[] )
          if( i % first2second_ratio == 0 && i / first2second_ratio < second_files. Size() )
          {
             second_file = second_files[ i / first2second_ratio ]. Data();
-            cout << "Processing file " << second_file << " ...          \r" << flush;
+            if( verbose )
+               cout << "Processing file " << second_file << " ...          \r" << flush;
             if( ! TryUncompressFile( second_file, second_file_uncompressed ) )
             {
                cerr << "SKIPPING ... " << endl;
@@ -273,7 +279,7 @@ int main( int argc, char* argv[] )
             continue;
          }
          
-         double l1_norm( 0.0 ), l2_norm( 0.0 ), max_norm( 0.0 ), h( 0.0 );
+         double l1_norm( 0.0 ), l2_norm( 0.0 ), max_norm( 0.0 );
          
          if( first_object_type == "tnlGrid2D< double >" )
          {
@@ -285,7 +291,7 @@ int main( int argc, char* argv[] )
             file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u1. Load( file ) )
             {
-               cout << " unable to restore the data " << endl;
+               cerr << " unable to restore the data " << endl;
                file. close();
                return false;
             }
@@ -293,7 +299,7 @@ int main( int argc, char* argv[] )
             file. open( second_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u2. Load( file ) )
             {
-               cout << " unable to restore the data " << endl;
+               cerr << " unable to restore the data " << endl;
                file. close();
                return false;
             }
@@ -325,7 +331,7 @@ int main( int argc, char* argv[] )
             file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u1. Load( file ) )
             {
-               cout << " unable to restore the data " << endl;
+               cerr << " unable to restore the data " << endl;
                file. close();
                return false;
             }
@@ -333,7 +339,7 @@ int main( int argc, char* argv[] )
             file. open( second_file_uncompressed. Data(), ios :: in | ios :: binary );
             if( ! u2. Load( file ) )
             {
-               cout << " unable to restore the data " << endl;
+               cerr << " unable to restore the data " << endl;
                file. close();
                return false;
             }
@@ -359,21 +365,22 @@ int main( int argc, char* argv[] )
          l1_int += tau * l1_norm;
          l2_int += tau * l2_norm * l2_norm;
          max_int = Max( max_int, max_norm );
-         WriteLine( cout, i, tau, h, l1_norm, l2_norm, max_norm );
+         if( verbose )
+            WriteLine( cout, i, tau, h, l1_norm, l2_norm, max_norm );
          if( output_file )
             WriteLine( output_file, i, tau, h, l1_norm, l2_norm, max_norm );
          if( write_graph )
             WriteGraphLine( graph_file, i, tau, l1_norm, l2_norm, max_norm );
          if( write_log_graph )
             WriteLogGraphLine( log_graph_file, i, tau, l1_norm, l2_norm, max_norm );
-
-         cout << "Compressing opened files back ...                   \r" << flush;
+         if( verbose )
+            cout << "Compressing opened files back ...                   \r" << flush;
          TryCompressFile( first_file, first_file_uncompressed );
          TryCompressFile( second_file, second_file_uncompressed );
 
       }
       l2_int = sqrt( l2_int );
-      if( tau )
+      if( tau && verbose )
          WriteLastLine( cout, h, l1_int, l2_int, max_int );
       if( output_file )
       {
@@ -381,7 +388,8 @@ int main( int argc, char* argv[] )
             WriteLastLine( output_file, h, l1_int, l2_int, max_int );
          output_file. close();
       }
-      cout << endl << "Bye." << endl;
+      if( verbose )
+         cout << endl << "Bye." << endl;
       return 0;
    }
    if( test == "mean-curvature-circle" ||
@@ -475,7 +483,8 @@ int main( int argc, char* argv[] )
          l1_int += tau * l1_norm;
          l2_int += tau * l2_norm * l2_norm;
          max_int = Max( max_int, max_norm );
-         WriteLine( cout, i, tau, h, l1_norm, l2_norm, max_norm );
+         if( verbose )
+            WriteLine( cout, i, tau, h, l1_norm, l2_norm, max_norm );
          if( output_file )
             WriteLine( output_file, i, tau, h, l1_norm, l2_norm, max_norm );
          if( write_graph )
@@ -485,7 +494,7 @@ int main( int argc, char* argv[] )
          t += tau;
       }
       l2_int = sqrt( l2_int );
-      if( tau )
+      if( tau && verbose )
          WriteLastLine( cout, h, l1_int, l2_int, max_int );
       if( output_file )
       {
@@ -493,13 +502,14 @@ int main( int argc, char* argv[] )
             WriteLastLine( output_file, h, l1_int, l2_int, max_int );
          output_file. close();
       }
-      cout << endl << "Bye." << endl;
+      if( verbose )
+         cout << endl << "Bye." << endl;
       if( output_file ) output_file. close();
       if( graph_file ) graph_file. close();
       if( log_graph_file ) log_graph_file. close();
       return 0;
    }
-   cout << endl << "Uknown test " << test << ". Bye." << endl;
+   cerr << endl << "Uknown test " << test << ". Bye." << endl;
    return -1;
 }
 

@@ -44,7 +44,7 @@ tnlcurve2gnuplot_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
 tnlcurve2gnuplot_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 endif
 
-bin_SCRIPTS = mdiff-err2eoc.py
+bin_SCRIPTS = tnl-diff-err2eoc.py
 
 EXTRA_DIST = debug.h \
-	         mdiff-err2eoc.py
+	         tnl-diff-err2eoc.py

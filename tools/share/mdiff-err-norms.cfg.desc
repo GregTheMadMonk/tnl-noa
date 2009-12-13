@@ -13,5 +13,6 @@ group IO
    real tau                         [Time period between the subsequent solutions.]; 
    real initial-radius              [Radius of the initial circle.];
    real space-step(0.0)             [Says explicitly the space step of the numerical simulation.];
+   integer verbose(1)               [Sets verbosity.];
 },[Arguments describing input and output data.];
 
