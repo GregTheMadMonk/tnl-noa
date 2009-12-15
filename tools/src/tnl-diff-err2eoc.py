@@ -98,6 +98,7 @@ while i < items:
                       string. rjust( " ", err_width ) + " |" +
                       string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + " |" +
                       string. rjust( " ", err_width ) + " |\n" )
+         file. write( "+--------------+----------------+----------------+----------------+----------------+----------------+----------------+\n" )
       i = i + 1;
       continue
    if h_list[ i ] == h_list[ i - 1 ]:
@@ -128,12 +129,10 @@ while i < items:
                       string. rjust( "**" + "%.4g" % ( l2_ratio / h_ratio ) + "**", err_width ) + " |" +
                       string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + " |" +
                       string. rjust( "**" + "%.4g" % ( max_ratio / h_ratio ) + "**", err_width ) + " |\n" )
+         file. write( "+--------------+----------------+----------------+----------------+----------------+----------------+----------------+\n" )
    i = i + 1
 
 if format == "latex":
    file. write( "\\hline \n" )
    file. write( "\\end{tabular} \n" )
-   
-if format == "txt":
-    file. write( "+--------------+----------------+----------------+----------------+----------------+----------------+----------------+\n" )
-   
+    
