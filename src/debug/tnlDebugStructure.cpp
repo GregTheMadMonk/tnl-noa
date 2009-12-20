@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <string>
+#include <cstring>
 #include <iostream>
 #include "tnlDebugStructure.h"
 

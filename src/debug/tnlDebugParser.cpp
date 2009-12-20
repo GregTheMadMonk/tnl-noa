@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlDebugParser.h"
-#include "tnlDebugScanner.h"
+#include <tnlDebugParser.h>
+#include <tnlDebugScanner.h>
 #include "assert.h"
 
 tnlDebugParser* tnlDebugParser :: current_parser;

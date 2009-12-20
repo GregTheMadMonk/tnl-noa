@@ -3,7 +3,7 @@
    //#include "scanner.ih"
    
    #include "tnlDebugParser.h"
-   #include <iostream.h>
+   #include <iostream>
 
    int yywrap();
 %}

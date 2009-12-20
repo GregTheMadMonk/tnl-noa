@@ -42,7 +42,7 @@ tnlParameterContainer :: tnlParameterContainer()
 }
 //--------------------------------------------------------------------------
 bool tnlParameterContainer :: AddParameter( const char* name,
-                                          const char* value )
+                                            const char* value )
 {
    return parameters. Append( new tnlParameter< tnlString >( name, GetParameterType( tnlString() ). Data(), tnlString( value ) ) );
 }
@@ -65,7 +65,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
             cerr << "Parameter " << name << " already exists with different type " 
                  << GetParameterType( parameters[ i ] ) << " not " 
                  << GetParameterType( value ) << endl;
-            //abort(); TODO: Add back
+            abort();
             return false;
          }
       }

@@ -26,13 +26,15 @@ bool Compare( const tnlGrid2D< double >& u1,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              tnlGrid2D< double >& difference );
+              tnlGrid2D< double >& difference,
+              int edge_skip = 0 );
 
 bool Compare( const tnlGrid3D< double >& u1,
               const tnlGrid3D< double >& u2,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              tnlGrid3D< double >& difference );
+              tnlGrid3D< double >& difference,
+              int edge_skip = 0 );
 
 #endif

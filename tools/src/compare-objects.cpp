@@ -26,7 +26,8 @@ bool Compare( const tnlGrid2D< double >& u1,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              tnlGrid2D< double >& difference )
+              tnlGrid2D< double >& difference,
+              int edge_skip )
 {
    if( u1. GetXSize() != u2. GetXSize() ||
        u1. GetYSize() != u2. GetYSize() ||
@@ -36,6 +37,12 @@ bool Compare( const tnlGrid2D< double >& u1,
        u1. GetBy()    != u2. GetBy()    )
    {
       cerr << "Both grids describes different numerical domain." << endl;
+      cerr << u1. GetXSize() << "x"  << u1. GetYSize( ) << " on domain < "
+           << u1. GetAx()    << ", " << u1. GetBx() << " > x < "
+           << u1. GetAy()    << ", " << u1. GetBy() << " > VS. "
+           << u2. GetXSize() << "x"  << u2. GetYSize( ) << " on domain "
+           << u2. GetAx()    << ", " << u2. GetBx() << " > x < "
+           << u2. GetAy()    << ", " << u2. GetBy() << " > ." << endl;
       return false;
    }
    const int x_size = u1. GetXSize();
@@ -45,8 +52,8 @@ bool Compare( const tnlGrid2D< double >& u1,
    
    int i, j;
    l1_norm = l2_norm = max_norm = 0.0;
-   for( i = 0; i < x_size; i ++ )
-      for( j = 0; j < y_size; j ++ )
+   for( i = edge_skip; i < x_size - edge_skip; i ++ )
+      for( j = edge_skip; j < y_size - edge_skip; j ++ )
       {
          double diff = u1( i, j ) - u2( i, j );
          double err = fabs( diff );
@@ -64,7 +71,8 @@ bool Compare( const tnlGrid3D< double >& u1,
               double& l1_norm,
               double& l2_norm,
               double& max_norm,
-              tnlGrid3D< double >& difference )
+              tnlGrid3D< double >& difference,
+              int edge_skip )
 {
    if( u1. GetXSize() != u2. GetXSize() ||
        u1. GetYSize() != u2. GetYSize() ||
@@ -88,9 +96,9 @@ bool Compare( const tnlGrid3D< double >& u1,
    
    int i, j, k;
    l1_norm = l2_norm = max_norm = 0.0;
-   for( i = 0; i < x_size; i ++ )
-      for( j = 0; j < y_size; j ++ )
-         for( k = 0; k < z_size; k ++ )
+   for( i = edge_skip; i < x_size - edge_skip; i ++ )
+      for( j = edge_skip; j < y_size - edge_skip; j ++ )
+         for( k = edge_skip; k < z_size - edge_skip; k ++ )
          {
             double diff = u1( i, j, k ) - u2( i, j, k );
             double err = fabs( diff );

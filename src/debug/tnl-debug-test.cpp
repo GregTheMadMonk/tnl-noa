@@ -15,10 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <iostream.h>
+#include <iostream>
 #define HAVE_TNLDEBUG_H
 #define DEBUG
 #include "tnlDebug.h"
+
+using namespace std;
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )

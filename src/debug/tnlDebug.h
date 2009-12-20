@@ -21,7 +21,7 @@
 
 #ifdef DEBUG 
 #include <assert.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 
 #include <string>

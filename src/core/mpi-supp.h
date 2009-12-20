@@ -19,6 +19,7 @@
 #define mpi_suppH
 
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 

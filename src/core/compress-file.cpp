@@ -15,8 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
+#include <cstring>
 #include <tnlString.h>
 #include "compress-file.h"
 

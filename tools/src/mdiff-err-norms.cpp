@@ -314,7 +314,8 @@ int main( int argc, char* argv[] )
                            l1_norm,
                            l2_norm,
                            max_norm,
-                           difference ) )
+                           difference,
+                           edge_skip) )
             {
                continue;
             }
@@ -354,7 +355,8 @@ int main( int argc, char* argv[] )
                            l1_norm,
                            l2_norm,
                            max_norm,
-                           difference ) )
+                           difference,
+                           edge_skip) )
             {
                continue;
             }

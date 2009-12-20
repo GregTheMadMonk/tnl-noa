@@ -117,7 +117,7 @@ bool ParseCommandLine( int argc, char* argv[],
                        tnlParameterContainer& parameters );
 
 template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
-                                                              const T& value )
+                                                                const T& value )
 {
    return parameters. Append( new tnlParameter< T >( name, GetParameterType( value ). Data(), value ) );
 };
@@ -130,7 +130,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
    {
       if( parameters[ i ] -> name == name )
       {
-         if( GetParameterType( parameters[ i ] ) == GetParameterType( value ) ) 
+         if( parameters[ i ] -> type == GetParameterType( value ) )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -138,9 +138,9 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
          else
          {
             cerr << "Parameter " << name << " already exists with different type " 
-                 << GetParameterType( parameters[ i ] ) << " not " 
+                 << parameters[ i ] -> type << " not "
                  << GetParameterType( value ) << endl;
-            //abort(); TODO: Add back
+            abort( ); 
             return false;
          }
       }

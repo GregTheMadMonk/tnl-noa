@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include <stdio.h>
 #include "debug.h"
 
