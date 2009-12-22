@@ -84,19 +84,19 @@ while i < items:
    if i == 0:
       if format == "latex":
          file. write( " " + string. ljust( str( h_list[ i ] ), h_width ) + "&" +
-                      string. rjust( "%.4g" % l1_norm_list[ i ], err_width ) + "&" + 
+                      string. rjust( "%.2g" % l1_norm_list[ i ], err_width ) + "&" + 
                       string. rjust( " ", err_width ) + "&"+ 
-                      string. rjust( "%.4g" % l2_norm_list[ i ], err_width ) + "&" +
+                      string. rjust( "%.2g" % l2_norm_list[ i ], err_width ) + "&" +
                       string. rjust( " ", err_width ) + "&" +
-                      string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + "&" +
+                      string. rjust( "%.2g" % max_norm_list[ i ], err_width ) + "&" +
                       string. rjust( " ", err_width ) + "\\\\\n" )
       if format == "txt":
          file. write( "| " + string. ljust( str( h_list[ i ] ), h_width ) + " |" + 
-                      string. rjust( "%.4g" % l1_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "%.2g" % l1_norm_list[ i ], err_width ) + " |" +
                       string. rjust( " ", err_width ) + " |" +
-                      string. rjust( "%.4g" % l2_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "%.2g" % l2_norm_list[ i ], err_width ) + " |" +
                       string. rjust( " ", err_width ) + " |" +
-                      string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "%.2g" % max_norm_list[ i ], err_width ) + " |" +
                       string. rjust( " ", err_width ) + " |\n" )
          file. write( "+--------------+----------------+----------------+----------------+----------------+----------------+----------------+\n" )
       i = i + 1;
@@ -115,20 +115,20 @@ while i < items:
       max_ratio = math. log( max_norm_list[ i ] / max_norm_list[ i - 1 ] )
       if format == "latex":
          file. write( " " + string. ljust( str( h_list[ i ] ), h_width ) + "&" +
-                      string. rjust( "%.4g" % l1_norm_list[ i ], err_width ) + "&" +
-                      string. rjust( "{\\bf " + "%.4g" % ( l1_ratio / h_ratio ) + "}", err_width ) + "&" +
-                      string. rjust( "%.4g" % l2_norm_list[ i ], err_width ) + "&" +
-                      string. rjust( "{\\bf " + "%.4g" % ( l2_ratio / h_ratio ) + "}", err_width ) + "&" +
-                      string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + "&" +
-                      string. rjust( "{\\bf " + "%.4g" % ( max_ratio / h_ratio ) + "}", err_width ) + "\\\\\n" )
+                      string. rjust( "%.2g" % l1_norm_list[ i ], err_width ) + "&" +
+                      string. rjust( "{\\bf " + "%.2g" % ( l1_ratio / h_ratio ) + "}", err_width ) + "&" +
+                      string. rjust( "%.2g" % l2_norm_list[ i ], err_width ) + "&" +
+                      string. rjust( "{\\bf " + "%.2g" % ( l2_ratio / h_ratio ) + "}", err_width ) + "&" +
+                      string. rjust( "%.2g" % max_norm_list[ i ], err_width ) + "&" +
+                      string. rjust( "{\\bf " + "%.2g" % ( max_ratio / h_ratio ) + "}", err_width ) + "\\\\\n" )
       if format == "txt":
          file. write( "| " + string. ljust( str( h_list[ i ] ), h_width ) + " |" +
-                      string. rjust( "%.4g" % l1_norm_list[ i ], err_width ) + " |" +
-                      string. rjust( "**" + "%.4g" % ( l1_ratio / h_ratio ) + "**", err_width ) + " |" +
-                      string. rjust( "%.4g" % l2_norm_list[ i ], err_width ) + " |" +
-                      string. rjust( "**" + "%.4g" % ( l2_ratio / h_ratio ) + "**", err_width ) + " |" +
-                      string. rjust( "%.4g" % max_norm_list[ i ], err_width ) + " |" +
-                      string. rjust( "**" + "%.4g" % ( max_ratio / h_ratio ) + "**", err_width ) + " |\n" )
+                      string. rjust( "%.2g" % l1_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "**" + "%.2g" % ( l1_ratio / h_ratio ) + "**", err_width ) + " |" +
+                      string. rjust( "%.2g" % l2_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "**" + "%.2g" % ( l2_ratio / h_ratio ) + "**", err_width ) + " |" +
+                      string. rjust( "%.2g" % max_norm_list[ i ], err_width ) + " |" +
+                      string. rjust( "**" + "%.2g" % ( max_ratio / h_ratio ) + "**", err_width ) + " |\n" )
          file. write( "+--------------+----------------+----------------+----------------+----------------+----------------+----------------+\n" )
    i = i + 1
 
