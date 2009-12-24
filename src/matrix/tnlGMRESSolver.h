@@ -122,12 +122,12 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       {
          const int m = restarting;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for private( i ) firstprivate( m, H, s, cs, sn )
+#pragma omp parallel for private( i ) firstprivate( H, s, cs, sn )
 #endif
          for( i = 0; i < m + 1; i ++ )
             H[ i ] = s[ i ] = cs[ i ] = sn[ i ] = 0.0;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for private( i ) firstprivate( m, _size, v )
+#pragma omp parallel for private( i ) firstprivate( _size, v )
 #endif
          for( i = 0; i < _size * ( m + 1 ); i ++ )
             v[ i ] = 0;
@@ -142,7 +142,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
             v[ i ] = r[ i ] / beta;    // ??? r / beta
          // s = |r| e_1
 #ifdef HAVE_OPENMP
-#pragma omp parallel for private( i ) firstprivate( m, s )
+#pragma omp parallel for private( i ) firstprivate( s )
 #endif
          for( i = 1; i <= m; i ++ )
             s[ i ] = 0.0;
@@ -333,7 +333,7 @@ template< typename T > class tnlGMRESSolver : public tnlMatrixSolver< T >
       const int _size = size;
       for( i = 0; i <= k; i++)
 #ifdef HAVE_OPENMP
-#pragma omp parallel for private( j ) firstprivate( i , _size )
+#pragma omp parallel for private( j ) firstprivate( i )
 #endif
          for( j = 0; j < _size; j ++ )
             x[ j ] += v[ i * _size + j ] * y[ i ];

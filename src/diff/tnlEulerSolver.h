@@ -76,7 +76,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlEulerSolver :
          double last_residue = _residue;
          double loc_residue = 0.0;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:loc_residue) firstprivate( size, _u, _k1,_tau )
+#pragma omp parallel for reduction(+:loc_residue) firstprivate( _u, _k1,_tau )
 #endif
          for( i = 0; i < size; i ++ )
          {
