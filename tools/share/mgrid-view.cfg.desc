@@ -8,5 +8,6 @@ group IO
    integer output-z-size           [Z size of the output.];
    real scale(1.0)                 [Multiply the function by given number.];
    string output-file-format("vti") [Output file format. Can be gnuplot, vti.];
+   integer verbose(1)              [Set the verbosity of the program.];
 },[Arguments describing input and output data.];
 

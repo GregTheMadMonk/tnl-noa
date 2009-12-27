@@ -106,7 +106,7 @@ class tnlString
    friend ostream& operator << ( ostream& stream, const tnlString& str );
 };
 
-inline tnlString GetParameterType( const tnlString& ) { return tnlString( "mString" ); };
+inline tnlString GetParameterType( const tnlString& ) { return tnlString( "tnlString" ); };
 
 ostream& operator << ( ostream& stream, const tnlString& str );
 

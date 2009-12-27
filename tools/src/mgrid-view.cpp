@@ -31,6 +31,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
+   int verbose = parameters. GetParameter< int >( "verbose ");
    tnlGrid2D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
@@ -74,7 +75,8 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
          }
    }
 
-   cout << " writing ... " << output_file_name;
+   if( verbose )
+      cout << " writing ... " << output_file_name;
 
    tnlList< double > level_lines;
    parameters. GetParameter< tnlList< double > >( "level-lines", level_lines );
@@ -101,7 +103,8 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
       }
    level_lines. EraseAll();
    if( output_u != &u ) delete output_u;
-   cout << " OK " << endl;
+   if( verbose )
+      cout << " OK " << endl;
 }
 //--------------------------------------------------------------------------
 bool ProcesstnlGrid3D( const tnlString& file_name,
@@ -110,6 +113,7 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
+   int verbose = parameters. GetParameter< int >( "verbose ");
    tnlGrid3D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
@@ -160,13 +164,15 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
             }
    }
 
-   cout << " writing " << output_file_name << " ... ";
+   if( verbose )
+      cout << " writing " << output_file_name << " ... ";
    if( ! Draw( *output_u, output_file_name. Data(), output_file_format. Data() ) )
    {
       cerr << " unable to write to " << output_file_name << endl;
    }
    else
-      cout << " ... OK " << endl;
+      if( verbose )
+         cout << " ... OK " << endl;
    if( output_u != &u ) delete output_u;
 }
 //--------------------------------------------------------------------------
@@ -183,6 +189,7 @@ int main( int argc, char* argv[] )
    }
 
    tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   int verbose = parameters. GetParameter< int >( "verbose ");
 
    int size = input_files. Size();
    tnlString output_file_name;
@@ -193,7 +200,8 @@ int main( int argc, char* argv[] )
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. Data();
-      cout << "Processing file " << input_file << " ... " << flush;
+      if( verbose )
+         cout << "Processing file " << input_file << " ... " << flush;
 
       int strln = strlen( input_file );
       tnlString uncompressed_file_name( input_file );
@@ -218,7 +226,8 @@ int main( int argc, char* argv[] )
           cerr << "unknown object ... SKIPPING!" << endl;
        else
        {
-         cout << object_type << " detected ... ";
+          if( verbose )
+             cout << object_type << " detected ... ";
 
          tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
          if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];

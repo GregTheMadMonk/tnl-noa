@@ -15,6 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
+
+#include <cppunit/ui/text/TestRunner.h>
+
+#include <core/tnlLongVectorCUDATester.h>
+
+int main( int argc, char* argv[] )
+{
+   CppUnit::TextUi::TestRunner runner;
+   runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
+   //runner.addTest( ComplexNumberTest::suite() );
+   runner.run();
+   return 0;
+}
+
+
+
+
+
+#ifdef UNDEF
+
 #include <stdlib.h>
 #include <core/tnlTester.h>
 #include <core/tnlStringTester.h>
@@ -41,3 +61,4 @@ int main( int argc, char* argv[] )
 
    return EXIT_SUCCESS;
 }
+#endif

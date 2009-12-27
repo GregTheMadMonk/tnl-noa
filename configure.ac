@@ -9,6 +9,15 @@ AM_CONFIG_HEADER(config.h)
 AM_PROG_LIBTOOL
 
 dnl -----------------------------------------
+dnl ----------- check for progs -------------
+dnl -----------------------------------------
+
+AC_PROG_CXX
+AC_PROG_AWK
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
+dnl -----------------------------------------
 dnl ----------- check for icpc --------------
 dnl -----------------------------------------
 
@@ -19,17 +28,82 @@ fi
 dnl -----------------------------------------
 dnl ----------- check for CUDA --------------
 dnl -----------------------------------------
-AC_CHECK_PROG(cuda,nvcc,"yes","no")
-if test x$cuda = xyes; then
-	CXX="nvcc"
+AC_ARG_VAR(CUDA_LIBS,
+           AS_HELP_STRING([],[point to a directory with CUDA libraries e.g. /usr/local/cuda/lib])
+           )
+AC_ARG_VAR(CUDA_HEADERS,
+           AS_HELP_STRING([],[point to a directory with CUDA headers e.g. /usr/local/cuda/include])
+           )
+if test x$CUDA_LIBS = x;
+then
+   CUDA_LIBS="/usr/local/cuda/lib"
 fi
+if test x$CUDA_HEADERS = x;
+then
+   CUDA_HEADERS="/usr/local/cuda/include"
+fi
+AC_ARG_WITH(cuda,
+            AS_HELP_STRING([--with-cuda=[yes/no]],[turn on nVidia CUDA support [default=yes]]),
+            with_cuda=$withval,
+            with_cuda=yes)
+AC_ARG_WITH(cuda_headers,
+            AS_HELP_STRING([--with-cuda-headers=dir],[nVidia CUDA headers [default=/usr/local/cuda/include]]),
+            CUDA_HEADERS=$withval)
+AC_ARG_WITH(cuda_libdir,
+            AS_HELP_STRING([--with-cuda-libdir],
+                           [says where the CUDA libraries can be found, default is /usr/local/cuda/lib]),
+            CUDA_LIBS=$withval)  
+if test x$with_cuda = xyes;
+then
+                    
+   AC_CHECK_PROG(cuda,nvcc,"yes","no")
+   NVCC="nvcc"
+   AC_SUBST(NVCC)
+   STORE_CXXFLAGS=$CXXFLAGS
+   STORE_CPPFLAGS=$CPPFLAGS
+   STORE_LDFLAGS=$LDFLAGS
+   CUDA_LDFLAGS="-L$CUDA_LIBS"
+   CUDA_CXXFLAGS="-I$CUDA_HEADERS -DHAVE_CUDA"
+   CXXFLAGS="$CXXFLAGS -I$CUDA_HEADERS"
+   CPPFLAGS="$CPPFLAGS -I$CUDA_HEADERS"
+   LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
+   AC_CHECK_HEADER(cuda.h,HAVE_CUDA="yes",HAVE_CUDA="no")
+   if test x$HAVE_CUDA = xyes;
+   then
+      AC_CHECK_HEADER(cuda.h,HAVE_CUDA="yes",HAVE_CUDA="no")
+   fi
+   if test x$HAVE_CUDA = xyes;
+   then
+      AC_CHECK_HEADER(cuda_runtime.h,HAVE_CUDA="yes",HAVE_CUDA="no")
+   fi
+   if test x$HAVE_CUDA = xyes;
+   then
+      AC_CHECK_LIB(cudart,cudaMalloc,HAVE_CUDA="yes",HAVE_CUDA="no")
+   fi
+   if test x$HAVE_CUDA = xyes;
+   then
+      CUDA_LDFLAGS="$CUDA_LDFLAGS -lcudart"
+   else
+      CUDA_LDFLAGS=""
+      CUDA_CXXFLAGS=""
+   fi
+   CXXFLAGS=$STORE_CXXFLAGS
+   CPPFLAGS=$STORE_CPPFLAGS
+   LDFLAGS=$STORE_LDFLAGS
+fi
+
+CXXFLAGS="$CXXFLAGS $CUDA_CXXFLAGS"
+CPPFLAGS="$CPPFLAGS $CUDA_CPPFLAGS"
+LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
 
 dnl -----------------------------------------
 dnl ----------- check for debug--------------
 dnl -----------------------------------------
 AC_ARG_ENABLE(debug,[  --enable-debug=[no/yes]	turn on debugging [default=no]] )
 if test x"$enable_debug" = xyes; then
-   DBGCXXFLAGS="-O0 -DDEBUG -g3 -Wall -W -ansi -Wno-unused"
+   DBGCXXFLAGS="-O0 -DDEBUG"
+   DBGCXXFLAGS="$DBGCXXFLAGS -g3 -Wall -W -ansi -Wno-unused"
+   
    DBGSTATUS="yes"
 else
    DBGSTATUS="no"
@@ -100,10 +174,6 @@ then
    CXXFLAGS="$CXXFLAGS -pg"
 fi
 
-
-AC_PROG_CXX
-AC_PROG_AWK
-
 AC_CHECK_FUNCS(bzero)
 AC_CHECK_FUNCS(pow)
 AC_CHECK_FUNCS(sqrt)
@@ -150,11 +220,9 @@ then
       fi
    fi
    STORE_CXXFLAGS="$CXXFLAGS"
-   AC_LANG_SAVE
-   AC_LANG_CPLUSPLUS
+   
    CXXFLAGS="$CXXFLAGS $MPICXXFLAGS"
    AC_CHECK_HEADERS(mpi.h, MPICXXFLAGS="$MPICXXFLAGS -DHAVE_MPI")
-   AC_LANG_RESTORE
    CXXFLAGS="$STORE_CXXFLAGS"
    AC_SUBST(MPICXXFLAGS)
    AC_SUBST(MPILDFLAGS)
@@ -163,7 +231,6 @@ fi
 dnl -----------------------------------------
 dnl ---------- check for OpenMP -------------
 dnl -----------------------------------------
-
 AC_ARG_WITH(openmp, 
             AS_HELP_STRING([--with-openmp=[yes/no],compile with OpenMP support[default=no]]),
             with_openmp=$withval,
@@ -172,6 +239,31 @@ if test x"$with_openmp" = xyes;
 then
    AC_CHECK_HEADER(omp.h, OPENMPFLAGS="-openmp -DHAVE_OPENMP" )
 fi
+
+dnl -----------------------------------------
+dnl ---------- check for CppUnit ------------
+dnl -----------------------------------------
+AC_CHECK_HEADER(cppunit/TestCase.h)
+STORE_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS -lcppunit"
+AC_TRY_LINK([#include <cppunit/TestCase.h>],
+            [
+               class IntegerTest : public CppUnit::TestCase 
+               {  
+                  public: 
+                  void runTest()
+                  { 
+                     CPPUNIT_ASSERT( 1 == 1 );
+                  };
+                }
+              ],HAVE_CPPUNIT="yes",HAVE_CPPUNIT="no")
+if test x$HAVE_CPPUNIT="xyes";
+then
+   CXXFLAGS="$CXXFLAGS -DHAVE_CPPUNIT"
+else
+   LDFLAGS=$STORE_LDFLAGS
+fi
+AC_LANG_RESTORE
 
 CXXFLAGS="$CXXFLAGS -I../../src -I../../src/debug -I../src/debug"
 
@@ -291,9 +383,7 @@ echo "" >> mdiff-err-norms-def.h
 echo "#define CONFIG_DESCRIPTION_FILE \"$prefix/share/mdiff-tools/mdiff-err-norms.cfg.desc\"" >> mdiff-err-norms-def.h
 
 
-CXXFLAGS="$CXXFLAGS $OPENMPFLAGS -I../src/debug -I../src/core -I../src/diff -I../../src -I../../../src"
-
-
+CXXFLAGS="$CXXFLAGS $OPENMPFLAGS $CUDA_CXXFLAGS -I../src/debug -I../src/core -I../src/diff -I../../src -I../../../src"
 
 AC_OUTPUT(Makefile \
           src/core/Makefile \
@@ -305,6 +395,8 @@ AC_OUTPUT(Makefile \
           tools/share/Makefile \
           tools/src/Makefile)
 
+
+
 echo
 echo "**************************************************"
 echo "*                                                *"
@@ -313,12 +405,16 @@ echo "*                                                *"
 echo "**************************************************"
 echo "*"
 echo "* Compiler:" $CXX
+echo "* Preprocessor:" $CPP
 echo "* Compiler flags:" $CXXFLAGS
+echo "* Preprocessor glags:" $CPPFLAGS
 echo "* Linker flags: " $LDFLAGS
 echo "* Debug flags: " $DBGCXXFLAGS
 echo "* Optimising flags: " $OPTIMISECXXFLAGS
 echo "* MPI compiler flags:" $MPICXXFLAGS
 echo "* MPI linker flags:" $MPILDFLAGS
+echo "* CUDA flags:" $CUDA_CXXFLAGS
+ 
 
 
 if eval test "x$enable_debug = xyes"; then

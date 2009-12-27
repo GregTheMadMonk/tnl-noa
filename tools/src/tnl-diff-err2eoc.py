@@ -26,10 +26,7 @@ while i < len( arguments ):
    i = i + 1
 
 if not verbose == 0:
-   if latex_format == "yes":
-      print "Writing to " + output_file_name + " in latex format"
-   else: 
-      print "Writing to " + output_file_name + "."
+   print "Writing to " + output_file_name + " in " + format + "."
 
 h_list = []
 l1_norm_list = []

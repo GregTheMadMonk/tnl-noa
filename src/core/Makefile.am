@@ -11,32 +11,33 @@ EXTRA_DIST = tnlConfigDescriptionParser.y \
 	         FlexLexer.h
 
 headers = tnlConfigDescription.h \
-		  tnlCurve.h \
-		  tnlDataElement.h \
-		  tnlField1D.h \
-		  tnlField2D.h \
-		  tnlField3D.h \
-		  tnlFieldSystem1D.h \
-		  tnlList.h \
-		  tnlLongVector.h \
-		  tnlLogger.h \
-		  tnlObject.h \
-		  tnlStack.h \
-		  tnlString.h \
-		  tnlConfigDescriptionParser.h \
-		  tnlConfigDescriptionParserbase.h \
-		  tnlConfigDescriptionParser.ih \
-		  tnlConfigDescriptionScanner.h \
-		  tnlParameterContainer.h \
-		  tnlTimerCPU.h \
-		  tnlTimerRT.h \
-		  tnlTester.h \
-		  tnlVector.h \
-		  compress-file.h \
-		  mfilename.h \
-		  mfuncs.h \
-		  mpi-supp.h \
-		  param-types.h
+    	    tnlCurve.h \
+		    tnlDataElement.h \
+		    tnlField1D.h \
+		    tnlField2D.h \
+		    tnlField3D.h \
+		    tnlFieldSystem1D.h \
+		    tnlList.h \
+		    tnlLongVector.h \
+		    tnlLongVectorCUDA.h \
+		    tnlLogger.h \
+		    tnlObject.h \
+		    tnlStack.h \
+		    tnlString.h \
+		    tnlConfigDescriptionParser.h \
+		    tnlConfigDescriptionParserbase.h \
+		    tnlConfigDescriptionParser.ih \
+		    tnlConfigDescriptionScanner.h \
+		    tnlParameterContainer.h \
+		    tnlTimerCPU.h \
+		    tnlTimerRT.h \
+		    tnlTester.h \
+		    tnlVector.h \
+		    compress-file.h \
+		    mfilename.h \
+		    mfuncs.h \
+		    mpi-supp.h \
+		    param-types.h
 
 sources = tnlConfigDescription.cpp \
 	  tnlLogger.cpp \
@@ -86,4 +87,5 @@ check_LTLIBRARIES = libcore-tests.la
 libcore_tests_la_SOURCES = tnlStringTester.cpp \
                            tnlStringTester.h \
                            tnlObjectTester.cpp \
-                           tnlObjectTester.h 
+                           tnlObjectTester.h \
+                           tnlLongVectorCUDATester.h

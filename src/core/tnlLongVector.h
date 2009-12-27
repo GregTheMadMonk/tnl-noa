@@ -19,8 +19,8 @@
 #define tnlLongVectorH
 
 #include <assert.h>
-#include "tnlObject.h"
-#include "param-types.h"
+#include <core/tnlObject.h>
+#include <core/param-types.h>
 
 template< class T > class tnlLongVector : public tnlObject
 {
@@ -136,7 +136,7 @@ template< class T > class tnlLongVector : public tnlObject
       for( i = 0; i < size; i ++ ) data[ i ] = ( T ) 0;
    };
 
-   ~tnlLongVector()
+   virtual ~tnlLongVector()
    {
       if( data && ! shared_data ) delete -- data;
    };
