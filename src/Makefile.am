@@ -47,9 +47,18 @@ libtnl_mpi_dbg_0_1_la_LIBADD = debug/libtnldebug-mpi-dbg-0.1.la \
                        matrix/libtnlmatrix-mpi-dbg-0.1.la
 endif                       
 
+tnl_unit_tests_sources = tnl-unit-tests.cpp
+
 check_PROGRAMS = tnl-unit-tests
-tnl_unit_tests_SOURCES = tnl-unit-tests.cpp
+tnl_unit_tests_SOURCES = $(tnl_unit_tests_sources)
 tnl_unit_tests_LDADD = libtnl-0.1.la \
                        core/libcore-tests.la
+
+if BUILD_DBG
+bin_PROGRAMS = tnl-unit-tests-dbg
+tnl_unit_tests_dbg_SOURCES = $(tnl_unit_tests_sources)
+tnl_unit_tests_dbg_LDADD = libtnl-dbg-0.1.la \
+                           core/libcore-tests-dbg.la
+endif
 
 TESTS = tnl-unit-tests

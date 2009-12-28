@@ -83,9 +83,17 @@ libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPICXXFLAGS) $(DBGLDFLAGS)
 endif
 
+libcore_tests_sources = tnlStringTester.cpp \
+                        tnlStringTester.h \
+                        tnlObjectTester.cpp \
+                        tnlObjectTester.h \
+                        tnlLongVectorCUDATester.h
+
+
 check_LTLIBRARIES = libcore-tests.la
-libcore_tests_la_SOURCES = tnlStringTester.cpp \
-                           tnlStringTester.h \
-                           tnlObjectTester.cpp \
-                           tnlObjectTester.h \
-                           tnlLongVectorCUDATester.h
+libcore_tests_la_SOURCES = $(libcore_tests_sources)
+
+if BUILD_DBG
+noinst_LTLIBRARIES += libcore-tests-dbg.la
+libcore_tests_dbg_la_SOURCES = $(libcore_tests_sources)
+endif 

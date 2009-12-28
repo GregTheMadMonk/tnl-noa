@@ -22,10 +22,13 @@
 
 int main( int argc, char* argv[] )
 {
+   cerr << "////////////////////" << endl;
    CppUnit::TextUi::TestRunner runner;
    runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
    //runner.addTest( ComplexNumberTest::suite() );
+   cerr << "..............." << endl;
    runner.run();
+   cerr << "--------------------" << endl;
    return 0;
 }
 
