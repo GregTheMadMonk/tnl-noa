@@ -55,10 +55,8 @@ AC_ARG_WITH(cuda_libdir,
             CUDA_LIBS=$withval)  
 if test x$with_cuda = xyes;
 then
-                    
-   AC_CHECK_PROG(cuda,nvcc,"yes","no")
-   NVCC="nvcc"
-   AC_SUBST(NVCC)
+  
+   
    STORE_CXXFLAGS=$CXXFLAGS
    STORE_CPPFLAGS=$CPPFLAGS
    STORE_LDFLAGS=$LDFLAGS
@@ -80,7 +78,31 @@ then
    then
       AC_CHECK_LIB(cudart,cudaMalloc,HAVE_CUDA="yes",HAVE_CUDA="no")
    fi
-   if test x$HAVE_CUDA = xyes;
+   AC_CHECK_PROG(cuda,nvcc,"yes","no")
+   AC_ARG_VAR([NVCC], [nvcc compiler to use])
+   AC_PATH_PROG([NVCC], [nvcc], [no])
+   working_nvcc=no
+   if test "x$NVCC" != "xno";
+   then
+      AC_MSG_CHECKING([whether nvcc works])
+      echo "" >> conftest.cu
+      echo " __global__ void test_cuda() { " >> conftest.cu
+      echo "  const int tid = threadIdx.x; " >> conftest.cu
+      echo "  const int bid = blockIdx.x; " >> conftest.cu
+      echo " __syncthreads(); " >> conftest.cu
+      echo " }" >> conftest.cu
+      
+      if $NVCC $CXXFLAGS conftest.cu > /dev/null 2>&1 && test_whether_output_files_are_ok;
+      then
+         working_nvcc=yes
+         AC_SUBST(NVCC)
+      fi
+      rm -f conftest.cu conftest.o conftest.what conftest.ever
+      AC_MSG_RESULT([$working_nvcc])
+   fi
+   AM_CONDITIONAL([WORKING_NVCC], [test "x$working_nvcc" = "xyes"])
+   
+   if test x$HAVE_CUDA = xyes; # TODO: && test x$working_nvcc = xyes;
    then
       CUDA_LDFLAGS="$CUDA_LDFLAGS -lcudart"
    else

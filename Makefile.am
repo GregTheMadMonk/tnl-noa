@@ -19,5 +19,4 @@ if BUILD_DBG
    pkgconfig_DATA += libtnl-dbg-$(VERSION).pc
 endif
 
-
-EXTRA_DIST = TODO create-config-description-parser
+EXTRA_DIST = TODO create-config-description-parser cuda.mk

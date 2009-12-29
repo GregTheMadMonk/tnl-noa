@@ -26,6 +26,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <core/tnlLongVectorCUDA.h>
+#include <core/tnlLongVector.h>
+
+
 
 template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
 {
@@ -37,22 +40,71 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite suite;
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlLongVectorCUDATester" );
       CppUnit :: TestResult result;
-      suite.addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
-                     "testAllocation",
-                     & tnlLongVectorCUDATester< float > :: testAllocation )
-                   );
-      suite.run( &result );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
+                               "testAllocation",
+                               & tnlLongVectorCUDATester< float > :: testAllocation )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
+                               "testCopying",
+                               & tnlLongVectorCUDATester< float > :: testCopying )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
+                                     "testKernel",
+                                     & tnlLongVectorCUDATester< float > :: testKernel )
+                                   );
+      return suiteOfTests;
+   }
+
+   void testKernel();
+
+   void testCopying()
+   {
+      tnlLongVector< T > host_vector( 500 );
+      tnlLongVectorCUDA< T > device_vector( 500 );
+      for( int i = 0; i < 500; i ++ )
+         host_vector[ i ] = ( T ) i;
+      device_vector. copyFrom( host_vector );
+      host_vector. Zeros();
+      host_vector. copyFrom( device_vector );
+      int errs( 0 );
+      for( int i = 0; i < 500; i ++ )
+         if( host_vector[ i ] != i ) errs ++;
+      CPPUNIT_ASSERT( ! errs );
    }
 
    void testAllocation()
    {
-	  cerr << "********" << endl;
-      //tnlLongVectorCUDA< T > cuda_vector;
-	  int a = 1;
-      //CPPUNIT_ASSERT( a );
+      tnlLongVectorCUDA< T > cuda_vector_1;
+      CPPUNIT_ASSERT( !cuda_vector_1 );
+ 
+      cuda_vector_1. SetNewSize( 100 );
+      CPPUNIT_ASSERT( cuda_vector_1 );
+      CPPUNIT_ASSERT( cuda_vector_1. GetSize() == 100 );
 
+      tnlLongVectorCUDA< T > cuda_vector_2;
+      CPPUNIT_ASSERT( !cuda_vector_2 );
+      cuda_vector_2. SetNewSize( cuda_vector_1 );
+      CPPUNIT_ASSERT( cuda_vector_2. GetSize() == 100 );
+
+      tnlLongVectorCUDA< T > cuda_vector_3( 100 );
+      CPPUNIT_ASSERT( cuda_vector_3. GetSize() == 100 );
+
+      tnlLongVectorCUDA< T >* cuda_vector_4 = new tnlLongVectorCUDA< T >( 100 );
+      tnlLongVectorCUDA< T >* cuda_vector_5 = new tnlLongVectorCUDA< T >;
+      CPPUNIT_ASSERT( *cuda_vector_4 );
+      CPPUNIT_ASSERT( ! *cuda_vector_5 );
+
+      cuda_vector_5 -> SetSharedData( cuda_vector_4 -> Data(),
+                                      cuda_vector_4 -> GetSize() );
+      CPPUNIT_ASSERT( *cuda_vector_5 );
+      /* Shared data are not handled automaticaly.
+       * One must be sure that data were not freed sooner
+       * then any LongVectors stopped using it.
+       */
+      delete cuda_vector_5;
+      delete cuda_vector_4;
    }
 
 };

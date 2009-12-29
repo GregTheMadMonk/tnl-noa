@@ -26,6 +26,7 @@
 #include <cuda_runtime.h>
 #include <core/tnlObject.h>
 #include <core/param-types.h>
+#include <core/tnlLongVector.h>
 
 template< class T > class tnlLongVectorCUDA : public tnlObject
 {
@@ -120,6 +121,12 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       return ( GetSize() != 0 );
    };
 
+   bool copyFrom( const tnlLongVector< T >& long_vector )
+   {
+      assert( long_vector. GetSize() == GetSize() );
+      cudaMemcpy( data, long_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyHostToDevice );
+   }
+
    virtual
    ~tnlLongVectorCUDA()
    {
@@ -136,5 +143,12 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
 
    //friend class tnlLongVectorCUDATester< T >;
 };
+
+template< class T > bool tnlLongVector< T > :: copyFrom( const tnlLongVectorCUDA< T >& cuda_vector )
+{
+   assert( cuda_vector. GetSize() == GetSize() );
+   cudaMemcpy( data, cuda_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyDeviceToHost );
+}
+
 #endif
 #endif /* TNLLONGVECTORCUDA_H_ */

@@ -19,8 +19,14 @@
 #define tnlLongVectorH
 
 #include <assert.h>
+#include <string.h>
 #include <core/tnlObject.h>
 #include <core/param-types.h>
+
+#ifdef HAVE_CUDA
+template< class T > class tnlLongVectorCUDA;
+#endif
+
 
 template< class T > class tnlLongVector : public tnlObject
 {
@@ -53,7 +59,7 @@ template< class T > class tnlLongVector : public tnlObject
       data ++;
    };
    
-   tnlString GetType()
+   tnlString GetType() const
    {
       T t;
       return tnlString( "tnlLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
@@ -135,6 +141,16 @@ template< class T > class tnlLongVector : public tnlObject
       int i;
       for( i = 0; i < size; i ++ ) data[ i ] = ( T ) 0;
    };
+
+   bool copyFrom( const tnlLongVector< T >& long_vector )
+   {
+      assert( long_vector. GetSize() == GetSize() );
+      memcpy( data, long_vector. Data(), GetSize() * sizeof( T ) );
+   };
+
+#ifdef HAVE_CUDA
+   bool copyFrom( const tnlLongVectorCUDA< T >& cuda_vector );
+#endif
 
    virtual ~tnlLongVector()
    {

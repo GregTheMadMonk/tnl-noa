@@ -6,6 +6,8 @@
 #SUBDIRS = 
 #endif
 
+include  ${top_srcdir}/cuda.mk
+
 EXTRA_DIST = tnlConfigDescriptionParser.y \
 	         tnlConfigDescriptionScanner.l \
 	         FlexLexer.h
@@ -87,11 +89,16 @@ libcore_tests_sources = tnlStringTester.cpp \
                         tnlStringTester.h \
                         tnlObjectTester.cpp \
                         tnlObjectTester.h \
+                        tnlLongVectorCUDATester.cpp \
                         tnlLongVectorCUDATester.h
+                        
+#libcore_tests_objects = tnlLongVectorCUDATester.cpp
+
 
 
 check_LTLIBRARIES = libcore-tests.la
 libcore_tests_la_SOURCES = $(libcore_tests_sources)
+#$(libcore_tests_la_OBJECTS) : $(libcore_tests_objects)
 
 if BUILD_DBG
 noinst_LTLIBRARIES += libcore-tests-dbg.la
