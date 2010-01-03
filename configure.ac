@@ -13,9 +13,12 @@ dnl ----------- check for progs -------------
 dnl -----------------------------------------
 
 AC_PROG_CXX
+dnl reset CXXFLAGS
+CXXFLAGS="" 
 AC_PROG_AWK
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
+
 
 dnl -----------------------------------------
 dnl ----------- check for icpc --------------
@@ -52,11 +55,10 @@ AC_ARG_WITH(cuda_headers,
 AC_ARG_WITH(cuda_libdir,
             AS_HELP_STRING([--with-cuda-libdir],
                            [says where the CUDA libraries can be found, default is /usr/local/cuda/lib]),
-            CUDA_LIBS=$withval)  
+            CUDA_LIBS=$withval)
+working_nvcc="no"  
 if test x$with_cuda = xyes;
 then
-  
-   
    STORE_CXXFLAGS=$CXXFLAGS
    STORE_CPPFLAGS=$CPPFLAGS
    STORE_LDFLAGS=$LDFLAGS
@@ -100,11 +102,12 @@ then
       rm -f conftest.cu conftest.o conftest.what conftest.ever
       AC_MSG_RESULT([$working_nvcc])
    fi
-   AM_CONDITIONAL([WORKING_NVCC], [test "x$working_nvcc" = "xyes"])
    
    if test x$HAVE_CUDA = xyes; # TODO: && test x$working_nvcc = xyes;
    then
       CUDA_LDFLAGS="$CUDA_LDFLAGS -lcudart"
+      CC="nvcc"
+      CXX="nvcc"
    else
       CUDA_LDFLAGS=""
       CUDA_CXXFLAGS=""
@@ -113,10 +116,10 @@ then
    CPPFLAGS=$STORE_CPPFLAGS
    LDFLAGS=$STORE_LDFLAGS
 fi
+AM_CONDITIONAL([working_nvcc], [test "x$working_nvcc" = "xyes"])
 
-CXXFLAGS="$CXXFLAGS $CUDA_CXXFLAGS"
-CPPFLAGS="$CPPFLAGS $CUDA_CPPFLAGS"
-LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
+
+
 
 dnl -----------------------------------------
 dnl ----------- check for debug--------------
@@ -124,7 +127,10 @@ dnl -----------------------------------------
 AC_ARG_ENABLE(debug,[  --enable-debug=[no/yes]	turn on debugging [default=no]] )
 if test x"$enable_debug" = xyes; then
    DBGCXXFLAGS="-O0 -DDEBUG"
-   DBGCXXFLAGS="$DBGCXXFLAGS -g3 -Wall -W -ansi -Wno-unused"
+   if test x$CXX != xnvcc;
+   then
+      DBGCXXFLAGS="$DBGCXXFLAGS -g3 -Wall -W -ansi -Wno-unused"
+   fi
    
    DBGSTATUS="yes"
 else
@@ -287,7 +293,6 @@ else
 fi
 AC_LANG_RESTORE
 
-CXXFLAGS="$CXXFLAGS -I../../src -I../../src/debug -I../src/debug"
 
 AM_CONDITIONAL([BUILD_MPI],[test x"$MPISTATUS" = xyes] )
 AM_CONDITIONAL([BUILD_DBG],[test x"$DBGSTATUS" = xyes] )
@@ -406,6 +411,11 @@ echo "#define CONFIG_DESCRIPTION_FILE \"$prefix/share/mdiff-tools/mdiff-err-norm
 
 
 CXXFLAGS="$CXXFLAGS $OPENMPFLAGS $CUDA_CXXFLAGS -I../src/debug -I../src/core -I../src/diff -I../../src -I../../../src"
+CXXFLAGS="$CXXFLAGS -I../../src -I../../src/debug -I../src/debug"
+CPPFLAGS="$CPPFLAGS $CUDA_CPPFLAGS"
+LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
+
+
 
 AC_OUTPUT(Makefile \
           src/core/Makefile \
@@ -429,7 +439,7 @@ echo "*"
 echo "* Compiler:" $CXX
 echo "* Preprocessor:" $CPP
 echo "* Compiler flags:" $CXXFLAGS
-echo "* Preprocessor glags:" $CPPFLAGS
+echo "* Preprocessor flags:" $CPPFLAGS
 echo "* Linker flags: " $LDFLAGS
 echo "* Debug flags: " $DBGCXXFLAGS
 echo "* Optimising flags: " $OPTIMISECXXFLAGS

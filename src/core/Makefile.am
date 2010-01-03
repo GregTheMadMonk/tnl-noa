@@ -62,26 +62,26 @@ libmcoreinclude_HEADERS = $(headers)
 
 noinst_LTLIBRARIES = libtnlcore-0.1.la
 libtnlcore_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnlcore_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMSECXXFLAGS)
+libtnlcore_0_1_la_CXXFLAGS = $(OPTIMSECXXFLAGS)
 
 if BUILD_MPI
 noinst_LTLIBRARIES += libtnlcore-mpi-0.1.la
 libtnlcore_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnlcore_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(OPTIMSECXXFLAGS)
+libtnlcore_mpi_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(OPTIMSECXXFLAGS)
 libtnlcore_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
 
 if BUILD_DBG
 noinst_LTLIBRARIES += libtnlcore-dbg-0.1.la
 libtnlcore_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnlcore_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+libtnlcore_dbg_0_1_la_CXXFLAGS = $(DBGCXXFLAGS)
 libtnlcore_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
 endif
 
 if BUILD_MPI_DBG
 noinst_LTLIBRARIES += libtnlcore-mpi-dbg-0.1.la
 libtnlcore_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
-libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPICXXFLAGS) $(DBGLDFLAGS)
 endif
 
@@ -89,16 +89,12 @@ libcore_tests_sources = tnlStringTester.cpp \
                         tnlStringTester.h \
                         tnlObjectTester.cpp \
                         tnlObjectTester.h \
-                        tnlLongVectorCUDATester.cpp \
+                        tnlLongVectorCUDATester.cu \
                         tnlLongVectorCUDATester.h
                         
-#libcore_tests_objects = tnlLongVectorCUDATester.cpp
-
-
 
 check_LTLIBRARIES = libcore-tests.la
 libcore_tests_la_SOURCES = $(libcore_tests_sources)
-#$(libcore_tests_la_OBJECTS) : $(libcore_tests_objects)
 
 if BUILD_DBG
 noinst_LTLIBRARIES += libcore-tests-dbg.la
