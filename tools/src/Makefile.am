@@ -7,7 +7,7 @@ tnlerrnormssources = mdiff-err-norms.cpp \
                      compare-objects.cpp \
                      $(common)
 
-tnlgridviewsources = mgrid-view.cpp \
+tnlgridviewsources = tnl-grid-view.cpp \
                      $(common)
                      
 tnlcurve2gnuplotsources = tnlcurve2gnuplot.cpp \

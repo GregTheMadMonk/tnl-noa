@@ -31,7 +31,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
-   int verbose = parameters. GetParameter< int >( "verbose ");
+   int verbose = parameters. GetParameter< int >( "verbose");
    tnlGrid2D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
@@ -113,7 +113,7 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
                      const tnlString& output_file_name,
                      const tnlString& output_file_format )
 {
-   int verbose = parameters. GetParameter< int >( "verbose ");
+   int verbose = parameters. GetParameter< int >( "verbose");
    tnlGrid3D< double > u;
    fstream file;
    file. open( file_name. Data(), ios :: in | ios :: binary );
@@ -189,7 +189,7 @@ int main( int argc, char* argv[] )
    }
 
    tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
-   int verbose = parameters. GetParameter< int >( "verbose ");
+   int verbose = parameters. GetParameter< int >( "verbose");
 
    int size = input_files. Size();
    tnlString output_file_name;

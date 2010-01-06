@@ -57,10 +57,15 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
       return suiteOfTests;
    }
 
-   void testKernel();
+   void testKernel()
+   {
+#ifdef HAVE_CUDA
+#endif
+   };
 
    void testCopying()
    {
+#ifdef HAVE_CUDA
       tnlLongVector< T > host_vector( 500 );
       tnlLongVectorCUDA< T > device_vector( 500 );
       for( int i = 0; i < 500; i ++ )
@@ -72,10 +77,12 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
       for( int i = 0; i < 500; i ++ )
          if( host_vector[ i ] != i ) errs ++;
       CPPUNIT_ASSERT( ! errs );
+#endif
    }
 
    void testAllocation()
    {
+#ifdef HAVE_CUDA
       tnlLongVectorCUDA< T > cuda_vector_1;
       CPPUNIT_ASSERT( !cuda_vector_1 );
  
@@ -105,6 +112,7 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
        */
       delete cuda_vector_5;
       delete cuda_vector_4;
+#endif
    }
 
 };
