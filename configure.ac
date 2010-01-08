@@ -8,25 +8,6 @@ AM_INIT_AUTOMAKE(libtnl,0.1)
 AM_CONFIG_HEADER(config.h)
 AM_PROG_LIBTOOL
 
-dnl -----------------------------------------
-dnl ----------- check for progs -------------
-dnl -----------------------------------------
-
-AC_PROG_CXX
-dnl reset CXXFLAGS
-CXXFLAGS="" 
-AC_PROG_AWK
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-
-
-dnl -----------------------------------------
-dnl ----------- check for icpc --------------
-dnl -----------------------------------------
-
-if test x"$CXX" = xicpc; then
-   CXXFLAGS="$CXXFLAGS -DHAVE_ICPC"
-fi
 
 dnl -----------------------------------------
 dnl ----------- check for CUDA --------------
@@ -118,8 +99,22 @@ then
 fi
 AM_CONDITIONAL([working_nvcc], [test "x$working_nvcc" = "xyes"])
 
+dnl -----------------------------------------
+dnl ----------- check for progs -------------
+dnl -----------------------------------------
 
+AC_PROG_CXX
+AC_PROG_AWK
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
 
+dnl -----------------------------------------
+dnl ----------- check for icpc --------------
+dnl -----------------------------------------
+
+if test x"$CXX" = xicpc; then
+   CXXFLAGS="$CXXFLAGS -DHAVE_ICPC"
+fi
 
 dnl -----------------------------------------
 dnl ----------- check for debug--------------

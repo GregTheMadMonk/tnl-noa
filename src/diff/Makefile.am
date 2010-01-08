@@ -6,10 +6,6 @@
 #SUBDIRS = 
 #endif
 
-include ${top_srcdir}/cuda.mk
-
-
-
 headers = \
    mdiff-debug.h \
    drawGrid1D.h \

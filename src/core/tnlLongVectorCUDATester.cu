@@ -1,9 +1,8 @@
-__global void setZeros( float* A )
+#include <core/tnlLongVectorCUDATester.h>
+
+__global__ void setZeros( float* A )
 {
-   int i = threadId. x;
+   int i = threadIdx. x;
    A[ i ] = 0.0;
 }
 
-void tnlLongVectorCUDATester< float > :: testKernel()
-{
-}

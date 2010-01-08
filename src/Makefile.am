@@ -5,10 +5,6 @@ SUBDIRS = core \
           diff \
 	       matrix
 
-
-
-include  ${top_srcdir}/cuda.mk
-
 lib_LTLIBRARIES = libtnl-0.1.la
 libtnl_0_1_la_SOURCES =
 # Dummy C++ source to cause C++ linking.

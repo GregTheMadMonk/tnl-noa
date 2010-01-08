@@ -6,8 +6,6 @@
 #SUBDIRS = 
 #endif
 
-include  ${top_srcdir}/cuda.mk
-
 EXTRA_DIST = tnlConfigDescriptionParser.y \
 	         tnlConfigDescriptionScanner.l \
 	         FlexLexer.h

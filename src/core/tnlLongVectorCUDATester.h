@@ -28,6 +28,9 @@
 #include <core/tnlLongVectorCUDA.h>
 #include <core/tnlLongVector.h>
 
+#ifdef HAVE_CUDA
+__global__ void setZeros( float* A );
+#endif
 
 
 template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
@@ -60,6 +63,7 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
    void testKernel()
    {
 #ifdef HAVE_CUDA
+
 #endif
    };
 
