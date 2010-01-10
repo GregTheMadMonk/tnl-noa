@@ -29,7 +29,7 @@
 #include <core/tnlLongVector.h>
 
 #ifdef HAVE_CUDA
-__global__ void setZeros( float* A );
+void testKernel();
 #endif
 
 
@@ -63,7 +63,10 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
    void testKernel()
    {
 #ifdef HAVE_CUDA
-
+      :: testKernel();
+#else
+      cout << "CUDA is not supported." << endl;
+      CPPUNIT_ASSERT( true );
 #endif
    };
 
