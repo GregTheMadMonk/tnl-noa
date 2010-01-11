@@ -56,7 +56,6 @@ int main( int argc, char* argv[] )
    tnlObjectTester tnl_object_tester;
    tnl_object_tester. Test( tester );
 
-
    tester. PrintStatistics();
 
    return EXIT_SUCCESS;

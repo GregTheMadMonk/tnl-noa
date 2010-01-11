@@ -125,6 +125,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    {
       assert( long_vector. GetSize() == GetSize() );
       cudaMemcpy( data, long_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyHostToDevice );
+      return true;
    }
 
    virtual
@@ -148,6 +149,7 @@ template< class T > bool tnlLongVector< T > :: copyFrom( const tnlLongVectorCUDA
 {
    assert( cuda_vector. GetSize() == GetSize() );
    cudaMemcpy( data, cuda_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyDeviceToHost );
+   return true;
 }
 
 #endif

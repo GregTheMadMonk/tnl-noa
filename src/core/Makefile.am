@@ -88,6 +88,7 @@ libcore_tests_sources = tnlStringTester.cpp \
                         tnlObjectTester.cpp \
                         tnlObjectTester.h \
                         tnlLongVectorCUDATester.cu \
+                        tnlLongVectorCUDATester.cu.h \
                         tnlLongVectorCUDATester.h
                         
 

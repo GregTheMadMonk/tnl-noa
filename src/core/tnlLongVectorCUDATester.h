@@ -29,7 +29,8 @@
 #include <core/tnlLongVector.h>
 
 #ifdef HAVE_CUDA
-void testKernel();
+void testKernelStarter( const float& number, const int size );
+void testKernelStarter( const double& number, const int size );
 #endif
 
 
@@ -54,16 +55,21 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
                                & tnlLongVectorCUDATester< float > :: testCopying )
                              );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
-                                     "testKernel",
+                                     "testKernelFloat",
                                      & tnlLongVectorCUDATester< float > :: testKernel )
                                    );
+      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< double > >(
+                                           "testKernelDouble",
+                                           & tnlLongVectorCUDATester< double > :: testKernel )
+                                         );*/
       return suiteOfTests;
    }
 
    void testKernel()
    {
 #ifdef HAVE_CUDA
-      :: testKernel();
+	  for( int i = 0; i < 10; i ++ )
+		  :: testKernelStarter( ( T ) i, 1000 );
 #else
       cout << "CUDA is not supported." << endl;
       CPPUNIT_ASSERT( true );
