@@ -68,8 +68,8 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
    void testKernel()
    {
 #ifdef HAVE_CUDA
-	  for( int i = 0; i < 10; i ++ )
-		  :: testKernelStarter( ( T ) i, 1000 );
+      for( int i = 0; i < 10; i ++ )
+         :: testKernelStarter( ( T ) i, 100 );
 #else
       cout << "CUDA is not supported." << endl;
       CPPUNIT_ASSERT( true );

@@ -32,15 +32,15 @@ bin_PROGRAMS += tnl-err-norms-dbg \
 	            tnlcurve2gnuplot-dbg
 
 tnl_err_norms_dbg_SOURCES = $(tnlerrnormssources) 
-tnl_err_norms_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+tnl_err_norms_dbg_CXXFLAGS = $(DBGCXXFLAGS)
 tnl_err_norms_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 
 tnlgrid_view_dbg_SOURCES = $(tnlgridviewsources) 
-tnlgrid_view_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+tnlgrid_view_dbg_CXXFLAGS = $(DBGCXXFLAGS)
 tnlgrid_view_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 
 tnlcurve2gnuplot_dbg_SOURCES = $(tnlcurve2gnuplotsources) 
-tnlcurve2gnuplot_dbg_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+tnlcurve2gnuplot_dbg_CXXFLAGS = $(DBGCXXFLAGS)
 tnlcurve2gnuplot_dbg_LDADD = ../../src/libtnl-dbg-0.1.la
 endif
 

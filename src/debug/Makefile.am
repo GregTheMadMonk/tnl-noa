@@ -29,25 +29,25 @@ tnl_debug_test_LDADD = libtnldebug-0.1.la
 
 noinst_LTLIBRARIES = libtnldebug-0.1.la
 libtnldebug_0_1_la_SOURCES = $(sources)
-libtnldebug_0_1_la_CXXFLAGS = $(CXXFLAGS) $(OPTIMISECXXFLAGS)
+libtnldebug_0_1_la_CXXFLAGS = $(OPTIMISECXXFLAGS)
 
 if BUILD_MPI
 noinst_LTLIBRARIES += libtnldebug-mpi-0.1.la
 libtnldebug_mpi_0_1_la_SOURCES = $(sources)
-libtnldebug_mpi_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS)
+libtnldebug_mpi_0_1_la_CXXFLAGS = $(MPICXXFLAGS)
 libtnldebug_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
 
 if BUILD_DBG
 noinst_LTLIBRARIES += libtnldebug-dbg-0.1.la
 libtnldebug_dbg_0_1_la_SOURCES = $(sources)
-libtnldebug_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(DBGCXXFLAGS)
+libtnldebug_dbg_0_1_la_CXXFLAGS = $(DBGCXXFLAGS)
 endif
 
 if BUILD_MPI_DBG
 noinst_LTLIBRARIES += libtnldebug-mpi-dbg-0.1.la
 libtnldebug_mpi_dbg_0_1_la_SOURCES = $(sources)
-libtnldebug_mpi_dbg_0_1_la_CXXFLAGS = $(CXXFLAGS) $(MPICXXFLAGS) $(DBGCXXFLAGS)
+libtnldebug_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnldebug_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
 

@@ -47,7 +47,7 @@ libtnl_mpi_dbg_0_1_la_LIBADD = debug/libtnldebug-mpi-dbg-0.1.la \
                        matrix/libtnlmatrix-mpi-dbg-0.1.la
 endif                       
 
-tnl_unit_tests_sources = tnl-unit-tests.cpp
+tnl_unit_tests_sources = tnl-unit-tests.cu
 
 check_PROGRAMS = tnl-unit-tests
 tnl_unit_tests_SOURCES = $(tnl_unit_tests_sources)

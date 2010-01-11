@@ -7,6 +7,6 @@ void testKernelStarter( const float& number, const int size )
 
 void testKernelStarter( const double& number, const int size )
 {
-   testKernel( number, size );
+  // testKernel( number, size );
 }
 

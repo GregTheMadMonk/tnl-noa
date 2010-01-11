@@ -146,6 +146,7 @@ template< class T > class tnlLongVector : public tnlObject
    {
       assert( long_vector. GetSize() == GetSize() );
       memcpy( data, long_vector. Data(), GetSize() * sizeof( T ) );
+      return true;
    };
 
 #ifdef HAVE_CUDA

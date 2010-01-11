@@ -35,10 +35,10 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    tnlLongVectorCUDA( int _size = 0 )
     : size( _size ), shared_data( false )
    {
-      cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) );
-      if( ! data )
+      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess  )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         data = NULL;
          abort();
       }
       //data ++;
@@ -48,10 +48,10 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    tnlLongVectorCUDA( const tnlLongVectorCUDA& v )
     : tnlObject( v ), size( v. size ), shared_data( false )
    {
-      cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) );
-      if( ! data )
+      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         data = NULL;
          abort();
       }
       //data ++;
@@ -69,14 +69,14 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       if( ! shared_data )
       {
          cudaFree( data );
-         data = 0;
+         data = NULL;
       }
       size = _size;
-      cudaMalloc( ( void** ) &data, size * sizeof( T ) );
       shared_data = false;
-      if( ! data )
+      if( cudaMalloc( ( void** ) &data, size * sizeof( T ) ) != cudaSuccess )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         data = NULL;
          size = 0;
          return false;
       }
@@ -124,7 +124,12 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    bool copyFrom( const tnlLongVector< T >& long_vector )
    {
       assert( long_vector. GetSize() == GetSize() );
-      cudaMemcpy( data, long_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyHostToDevice );
+      if( cudaMemcpy( data, long_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyHostToDevice ) != cudaSuccess )
+      {
+         cerr << "Transfer of data from CUDA host ( " << long_vector. GetName()
+              << " ) to CUDA device ( " << GetName() << " ) failed." << endl;
+         return false;
+      }
       return true;
    }
 
@@ -148,7 +153,12 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
 template< class T > bool tnlLongVector< T > :: copyFrom( const tnlLongVectorCUDA< T >& cuda_vector )
 {
    assert( cuda_vector. GetSize() == GetSize() );
-   cudaMemcpy( data, cuda_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( cudaMemcpy( data, cuda_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyDeviceToHost ) != cudaSuccess )
+   {
+      cerr << "Transfer of data from CUDA device ( " << cuda_vector. GetName()
+           << " ) to CUDA host ( " << GetName() << " ) failed." << endl;
+      return false;
+   }
    return true;
 }
 
