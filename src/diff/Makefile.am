@@ -15,6 +15,9 @@ headers = \
    tnlGrid1D.h \
    tnlGrid2D.h \
    tnlGrid3D.h \
+   tnlGridCUDA1D.h \
+   tnlGridCUDA2D.h \
+   tnlGridCUDA3D.h \
    tnlGridSystem1D.h \
    tnlEulerSolver.h \
    tnlMersonSolver.h \

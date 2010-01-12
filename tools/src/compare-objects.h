@@ -2,7 +2,7 @@
                           compare-objets.h  -  description
                              -------------------
     begin                : 2009/08/14
-    copyright            : (C) 2009 by Tomá¹ Oberhuber
+    copyright            : (C) 2009 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

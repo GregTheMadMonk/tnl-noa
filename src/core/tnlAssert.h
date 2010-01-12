@@ -14,17 +14,16 @@
 
 using namespace std;
 
-#define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )  \
-	if( ! ___tnl__assert_condition )                    \
-	{                                    \
-		cerr << "Assertion '___tnl__assert_condition' failed !!!" << endl
-             << "File: __FILE__" << endl
-             << "Function: __PRETTY_FUNCTION__ " << endl
-             << "Line: __LINE__" << endl
-             << "Diagnostics: ";
-        ___tnl__assert_command;
-        cerr << endl;
-        exit( EXIT_FAILURE );
+#define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )     \
+	if( ! ___tnl__assert_condition )                                  \
+	{                                                                 \
+	cerr << "Assertion '___tnl__assert_condition' failed !!!" << endl \
+             << "File: __FILE__" << endl                                  \
+             << "Function: __PRETTY_FUNCTION__ " << endl                  \
+             << "Line: __LINE__" << endl                                  \
+             << "Diagnostics: ";                                          \
+        ___tnl__assert_command;                                           \
+        exit( EXIT_FAILURE );                                             \
 	}
 #else
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )

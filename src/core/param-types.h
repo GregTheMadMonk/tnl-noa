@@ -2,7 +2,7 @@
                           param-types.h  -  description
                              -------------------
     begin                : 2009/07/29
-    copyright            : (C) 2009 by Tomá¹ Oberhuber
+    copyright            : (C) 2009 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

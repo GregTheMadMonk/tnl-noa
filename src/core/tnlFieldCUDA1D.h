@@ -1,8 +1,8 @@
 /***************************************************************************
                           tnlFieldCUDA1D.h  -  description
                              -------------------
-    begin                : 2007/11/26
-    copyright            : (C) 2007 by Tomá¹ Oberhuber
+    begin                : 2010/01/12
+    copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

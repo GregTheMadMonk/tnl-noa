@@ -2,7 +2,7 @@
                           tnlLogger.cpp  -  description
                              -------------------
     begin                : 2007/08/22
-    copyright            : (C) 2007 by Tomá¹ Oberhuber
+    copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

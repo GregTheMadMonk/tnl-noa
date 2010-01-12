@@ -2,7 +2,7 @@
                           tnlPETSCSolver.cpp  -  description
                              -------------------
     begin                : 2008/05/12
-    copyright            : (C) 2008 by Tomá¹ Oberhuber
+    copyright            : (C) 2008 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
