@@ -8,35 +8,56 @@
 #ifndef tnlLongVectorCUDATester_cu_h
 #define tnlLongVectorCUDATester_cu_h
 
-//template< class T >
-__global__ void setNumber( float* A, float c )
+template< class T >
+__global__ void setMultiBlockNumber( const T c, T* A, const int size )
+{
+   int i = blockIdx. x * blockDim. x + threadIdx. x;
+   if( i < size ) A[ i ] = c;
+};
+
+template< class T >
+void testMultiBlockKernel( const T& number, const int size )
+{
+   tnlLongVectorCUDA< T > device_vector( size );
+   tnlLongVector< T > host_vector( size );
+   T* data = device_vector. Data();
+
+   const int block_size = 512;
+   const int grid_size = size / 512 + 1;
+
+   setMultiBlockNumber<<< grid_size, block_size >>>( number, data, size );
+   host_vector. copyFrom( device_vector );
+
+   int errors( 0 );
+   for( int i = 0; i < size; i ++ )
+   {
+      //cout << host_vector[ i ] << "-";
+      if( host_vector[ i ] != number ) errors ++;
+   }
+   CPPUNIT_ASSERT( ! errors );
+};
+
+template< class T >
+__global__ void setNumber( T* A, const T c )
 {
    int i = threadIdx. x;
    A[ i ] = c;
 };
 
-//template< class T >
-void testKernel( float number, const int size )
+template< class T >
+void testKernel( const T& number, const int size )
 {
-   cout << number << " -- " << size << endl;
-   /*tnlLongVectorCUDA< float > device_vector( size );
-   tnlLongVector< float > host_vector( size );
-   float* data = device_vector. Data();
-
+   tnlLongVectorCUDA< T > device_vector( size );
+   tnlLongVector< T > host_vector( size );
+   T* data = device_vector. Data();
    setNumber<<< 1, size >>>( data, number );
-   host_vector. copyFrom( device_vector );*/
-
-   float *h_a, *d_a;
-   cudaMalloc( ( void** ) &d_a, size * sizeof( float ) );
-   h_a = ( float* ) malloc( size * sizeof( float ) );
-   setNumber<<< 1, size >>>( d_a, number );
-   cudaMemcpy( h_a, d_a, size * sizeof( float ), cudaMemcpyDeviceToHost );
+   host_vector. copyFrom( device_vector );
 
    int errors( 0 );
    for( int i = 0; i < size; i ++ )
    {
-      cout << h_a[ i ] << "-";
-      if( h_a[ i ] != number ) errors ++;
+      //cout << host_vector[ i ] << "-";
+      if( host_vector[ i ] != number ) errors ++;
    }
    CPPUNIT_ASSERT( ! errors );
 };

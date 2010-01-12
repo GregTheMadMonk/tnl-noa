@@ -19,36 +19,25 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 #include <core/tnlLongVectorCUDATester.h>
+#include <core/tnlFieldCUDA2DTester.h>
 
 using namespace std;
 
-__global__ void setNumber( float* A, float c )
-{
-   int i = threadIdx. x;
-   A[ i ] = 1.0;
-}
-
 int main( int argc, char* argv[] )
 {
-   int size = 100;
-   float *h_a, *d_a;
-   cudaMalloc( ( void** )&d_a, size * sizeof( float ) );
-   h_a = ( float* ) malloc( size * sizeof( float ) );
-   setNumber<<< 1, size >>>( d_a, 1.0 );
-   cudaMemcpy( h_a, d_a, size * sizeof( float ), cudaMemcpyDeviceToHost );
-   for( int i = 0; i < size; i ++ )
-      cout << h_a[ i ] << "-";
-}
-
-
-/*int main( int argc, char* argv[] )
-{
    CppUnit::TextUi::TestRunner runner;
+   
+   runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
    runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
-   //runner.addTest( ComplexNumberTest::suite() );
+   runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
+   
+   runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );
+   runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
+   
    runner.run();
    return 0;
-}*/
+}
 
 
 

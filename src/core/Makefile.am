@@ -10,12 +10,16 @@ EXTRA_DIST = tnlConfigDescriptionParser.y \
 	         tnlConfigDescriptionScanner.l \
 	         FlexLexer.h
 
-headers = tnlConfigDescription.h \
+headers = tnlAssert.h \
+          tnlConfigDescription.h \
     	    tnlCurve.h \
 		    tnlDataElement.h \
 		    tnlField1D.h \
+		    tnlFieldCUDA1D.h \
 		    tnlField2D.h \
+		    tnlFieldCUDA2D.h \
 		    tnlField3D.h \
+		    tnlFieldCUDA3D.h \
 		    tnlFieldSystem1D.h \
 		    tnlList.h \
 		    tnlLongVector.h \

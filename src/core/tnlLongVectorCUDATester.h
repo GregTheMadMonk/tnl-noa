@@ -29,6 +29,10 @@
 #include <core/tnlLongVector.h>
 
 #ifdef HAVE_CUDA
+void testMultiBlockKernelStarter( const int& number, const int size );
+void testMultiBlockKernelStarter( const float& number, const int size );
+void testMultiBlockKernelStarter( const double& number, const int size );
+void testKernelStarter( const int& number, const int size );
 void testKernelStarter( const float& number, const int size );
 void testKernelStarter( const double& number, const int size );
 #endif
@@ -46,29 +50,45 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlLongVectorCUDATester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
                                "testAllocation",
-                               & tnlLongVectorCUDATester< float > :: testAllocation )
+                               & tnlLongVectorCUDATester< T > :: testAllocation )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
                                "testCopying",
-                               & tnlLongVectorCUDATester< float > :: testCopying )
+                               & tnlLongVectorCUDATester< T > :: testCopying )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< float > >(
-                                     "testKernelFloat",
-                                     & tnlLongVectorCUDATester< float > :: testKernel )
-                                   );
-      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< double > >(
-                                           "testKernelDouble",
-                                           & tnlLongVectorCUDATester< double > :: testKernel )
-                                         );*/
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
+                               "testKernel",
+                               & tnlLongVectorCUDATester< T > :: testKernel )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
+							   "testKernel",
+                               & tnlLongVectorCUDATester< T > :: testKernel )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
+      						   "testMultiBlockKernel",
+                               & tnlLongVectorCUDATester< T > :: testMultiBlockKernel )
+                             );
       return suiteOfTests;
    }
+
+   void testMultiBlockKernel()
+   {
+#ifdef HAVE_CUDA
+	   for( int size = 100; size <= 10000; size += 100 )
+		   for( int i = 0; i < 10; i ++ )
+			   :: testMultiBlockKernelStarter( ( T ) i, size );
+#else
+	   cout << "CUDA is not supported." << endl;
+	   CPPUNIT_ASSERT( true );
+#endif
+   };
 
    void testKernel()
    {
 #ifdef HAVE_CUDA
-      for( int i = 0; i < 10; i ++ )
+      for( int i = 0; i < 100; i ++ )
          :: testKernelStarter( ( T ) i, 100 );
 #else
       cout << "CUDA is not supported." << endl;

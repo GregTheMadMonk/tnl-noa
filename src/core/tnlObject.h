@@ -18,7 +18,8 @@
 #ifndef tnlObjectH
 #define tnlObjectH
 
-#include "tnlString.h"
+#include <core/tnlAssert.h>
+#include <core/tnlString.h>
 
 //! This is basic class for many other more complex objects.
 /*! Objects like numerical grids, meshes, matrices large vectors etc.

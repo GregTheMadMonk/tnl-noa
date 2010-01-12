@@ -19,8 +19,12 @@
 #define tnlField2DH
 
 #include <string.h>
-#include "tnlObject.h"
-#include "tnlLongVector.h"
+#include <core/tnlObject.h>
+#include <core/tnlLongVector.h>
+
+#ifdef HAVE_CUDA
+template< class T > class tnlFieldCUDA2D;
+#endif
 
 template< class T > class tnlField2D : public tnlLongVector< T >
 {
@@ -79,13 +83,17 @@ template< class T > class tnlField2D : public tnlLongVector< T >
 
    const T& operator() ( int i, int j ) const
    {
-      assert( i < x_size && j < y_size && i >= 0 && j >= 0 );
+      tnlAssert( i < x_size && j < y_size && i >= 0 && j >= 0,
+    		     cerr << "i = " << i << " j = " << j
+    		          << "x_size = " << x_size << " y_size = " << y_size );
       return tnlLongVector< T > :: data[ i * y_size + j ];
    };
 
    T& operator() ( int i, int j )
    {
-      assert( i < x_size && j < y_size && i >= 0 && j >= 0 );
+	  tnlAssert( i < x_size && j < y_size && i >= 0 && j >= 0,
+	       		     cerr << "i = " << i << " j = " << j
+	       		          << "x_size = " << x_size << " y_size = " << y_size );
       return tnlLongVector< T > :: data[ i * y_size + j ];
    };
 
@@ -96,6 +104,11 @@ template< class T > class tnlField2D : public tnlLongVector< T >
       return i * y_size + j;
    };
    
+#ifdef HAVE_CUDA
+   bool copyFrom( const tnlFieldCUDA2D< T >& cuda_vector );
+#endif
+
+
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
