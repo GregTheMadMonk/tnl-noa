@@ -123,7 +123,7 @@ void updateU( const int size,
               const float* k5,
               float* u )
 {
-   updateU<<< grid_size, block_size >>>( size, tau, k1, k4, k5, u );
+   updateUKernel<<< grid_size, block_size >>>( size, tau, k1, k4, k5, u );
 }
 
 void updateU( const int size,
@@ -133,7 +133,7 @@ void updateU( const int size,
               const double* k1,
               const double* k4,
               const double* k5,
-              float* u )
+              double* u )
 {
-   updateU<<< grid_size, block_size >>>( size, tau, k1, k4, k5, u );
+   updateUKernel<<< grid_size, block_size >>>( size, tau, k1, k4, k5, u );
 }

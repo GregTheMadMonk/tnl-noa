@@ -22,14 +22,78 @@
 #include <diff/tnlExplicitSolver.h>
 
 #ifdef HAVE_CUDA
-void computeK2Arg( const int size, const float* u, const float* k1, float* k2_arg );
-void computeK2Arg( const int size, const double* u, const double* k1, double* k2_arg );
-void computeK3Arg( const int size, const float* u, const float* k1, const float* k2, float* k3_arg );
-void computeK3Arg( const int size, const double* u, const double* k1, const double* k2, double* k3_arg );
-void computeK4Arg( const int size, const float* u, const float* k1, const float* k3, float* k4_arg );
-void computeK4Arg( const int size, const double* u, const double* k1, const double* k3, double* k4_arg );
-void computeK5Arg( const int size, const float* u, const float* k1, const float* k3, const float* k4, float* k5_arg );
-void computeK5Arg( const int size, const double* u, const double* k1, const double* k3, const double* k4, double* k5_arg );
+void computeK2Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const float* u,
+                   const float* k1,
+                   float* k2_arg );
+void computeK2Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const double* u,
+                   const double* k1,
+                   double* k2_arg );
+void computeK3Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const float* u,
+                   const float* k1,
+                   const float* k2,
+                   float* k3_arg );
+void computeK3Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const double* u,
+                   const double* k1,
+                   const double* k2,
+                   double* k3_arg );
+void computeK4Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const float* u,
+                   const float* k1,
+                   const float* k3,
+                   float* k4_arg );
+void computeK4Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const double* u,
+                   const double* k1,
+                   const double* k3,
+                   double* k4_arg );
+void computeK5Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const float* u,
+                   const float* k1,
+                   const float* k3,
+                   const float* k4,
+                   float* k5_arg );
+void computeK5Arg( const int size,
+                   const int block_size,
+                   const int grid_size,
+                   const double* u,
+                   const double* k1,
+                   const double* k3,
+                   const double* k4,
+                   double* k5_arg );
+void updateU( const int size,
+              const int block_size,
+              const int grid_size,
+              const float tau,
+              const float* k1,
+              const float* k4,
+              const float* k5,
+              float* u );
+void updateU( const int size,
+              const int block_size,
+              const int grid_size,
+              const double tau,
+              const double* k1,
+              const double* k4,
+              const double* k5,
+              double* u );
 #endif
 
 template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver : public tnlExplicitSolver< GRID, SCHEME, T >
@@ -144,7 +208,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
             double last_residue = _residue;
             double loc_residue = 0.0;
 
-            updateU( size, tau, _k1, _k4, _k5 );
+            updateU( size, block_size, grid_size, tau, _k1, _k4, _k5 );
             // TODO: implement loc_residue - if possible
 
             if( _tau + _time == stop_time ) _residue = last_residue;  // fixing strange values of res. at the last iteration
