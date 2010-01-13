@@ -20,6 +20,7 @@
 
 #include <core/tnlLongVectorCUDATester.h>
 #include <core/tnlFieldCUDA2DTester.h>
+#include <diff/tnlGridCUDA2DTester.h>
 
 using namespace std;
 
@@ -34,6 +35,10 @@ int main( int argc, char* argv[] )
    runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
    runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );
    runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
+   
+   runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
+   runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
    
    runner.run();
    return 0;
