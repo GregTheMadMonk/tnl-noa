@@ -18,9 +18,12 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 
+
 #include <core/tnlLongVectorCUDATester.h>
 #include <core/tnlFieldCUDA2DTester.h>
+#include <core/tnlCUDAKernelsTester.h>
 #include <diff/tnlGridCUDA2DTester.h>
+
 
 using namespace std;
 
@@ -39,6 +42,10 @@ int main( int argc, char* argv[] )
    runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
    runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
    runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
+   
+   runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
+   runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
+   runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
    
    runner.run();
    return 0;

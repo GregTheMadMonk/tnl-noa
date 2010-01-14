@@ -37,6 +37,8 @@ headers = tnlAssert.h \
 		    tnlTimerRT.h \
 		    tnlTester.h \
 		    tnlVector.h \
+		    tnl-cuda-kernels.h \
+		    tnlCUDAKernelsTester.h \
 		    compress-file.h \
 		    mfilename.h \
 		    mfuncs.h \
@@ -53,6 +55,7 @@ sources = tnlConfigDescription.cpp \
 	  tnlTimerCPU.cpp \
 	  tnlTimerRT.cpp \
 	  tnlTester.cpp \
+	  tnl-cuda-kernels.cu \
 	  compress-file.cpp \
 	  mfilename.cpp \
 	  mpi-supp.cpp \
