@@ -235,6 +235,93 @@ T tnlCUDAReduction( const int size,
 	return result;
 }
 
+template < class T, tnlOperation operation >
+__global__ void tnlCUDASimpleReductionKernel1( const int size,
+		                                       const T* d_input,
+		                                       T* d_output )
+{
+	extern __shared__ int sdata[];
+
+	// Read data into the shared memory
+	int tid = threadIdx. x;
+	int gid = blockIdx. x * blockDim. x + threadIdx. x;
+	// Last thread ID which manipulates meaningful data
+	int last_tid = size - blockIdx. x * blockDim. x;
+	if( gid < size )
+		sdata[tid] = d_input[gid];
+	__syncthreads();
+
+	// Parallel reduction
+	for( int s = 1; s < blockDim. x; s *= 2 )
+	{
+		if( ( tid % ( 2 * s ) ) == 0 && tid + s < last_tid )
+		{
+			if( operation == tnlMin )
+				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
+			if( operation == tnlMax )
+				sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
+			if( operation == tnlSum )
+				sdata[ tid ] += sdata[ tid + s ];
+		}
+		__syncthreads();
+	}
+
+	// Store the result back in global memory
+	if( tid == 0 )
+		d_output[ blockIdx. x ] = sdata[ 0 ];
+}
+
+template< class T, tnlOperation operation >
+T tnlCUDASimpleReduction1( const int size,
+					       const int block_size,
+					       const int grid_size,
+	                       const T* d_input )
+{
+	T result;
+
+	dim3 blockSize( block_size );
+	dim3 gridSize( grid_size );
+	int shmem = 512 * sizeof( T );
+	tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." );
+	switch( block_size )
+	{
+		case 512:
+	        tnlCUDASimpleReductionKernel1< T, operation, 512 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	        break;
+	    case 256:
+	    	tnlCUDASimpleReductionKernel1< T, operation, 256 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case 128:
+	    	tnlCUDASimpleReductionKernel1< T, operation, 128 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case  64:
+	    	tnlCUDASimpleReductionKernel1< T, operation,  64 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case  32:
+	    	tnlCUDASimpleReductionKernel1< T, operation,  32 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case  16:
+	    	tnlCUDASimpleReductionKernel1< T, operation,  16 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case   8:
+	    	tnlCUDASimpleReductionKernel1< T, operation,   8 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case   4:
+	    	tnlCUDAReductionKernel< T, operation,   4 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case   2:
+	    	tnlCUDAReductionKernel< T, operation,   2 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    case   1:
+	    	tnlCUDAReductionKernel< T, operation,   1 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
+	    	break;
+	    default:
+	    	tnlAssert( false, cerr << "Block size is " << block_size << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+	    	break;
+	}
+	return result;
+}
+
 #endif /* HAVE_CUDA */
 
 #endif /* TNLCUDAKERNELS_H_ */
