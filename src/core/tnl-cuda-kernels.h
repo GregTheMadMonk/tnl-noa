@@ -273,53 +273,49 @@ __global__ void tnlCUDASimpleReductionKernel1( const int size,
 
 template< class T, tnlOperation operation >
 T tnlCUDASimpleReduction1( const int size,
-					       const int block_size,
-					       const int grid_size,
-	                       const T* d_input )
+	                   const T* d_input,
+	                   T* output = 0 )
 {
-	T result;
+   //Calculate necessary block/grid dimensions
+   const int cpuThreshold = 1;
+   const int desBlockSize = 128;    //Desired block size
+   dim3 block_size = :: Min( size, desBlockSize );
+   dim3 grid_size = size / blockSize. x;
+   unsigned int shmem = blockSize. x * sizeof( int );
+   cout << "Grid size: " << grid_size. x << endl
+        << "Block size: " << block_size. x << endl
+        << "Shmem: " << shmem << endl;
+   if( ! output )
+   {
+      cudaMalloc( ( void** ) &output, grid_size * sizeof( T ) );
+      if( cuda // TODO: add allocation check
+   }
+   tnlCUDASimpleReductionKernel1< T, operation ><<< grid_size, block_size, shmem >>>( size, input, output );
+   int size_reduced = grid_size. x;
+   while( sizeReduced > cpuThreshold )
+   {
+      cout << "Reducing with size reduced = " << size_reduced << endl;
+      block_size. x = :: Min( size_reduced, desBlockSize );
+      grid_size. x = size_reduced / block_size. x;
+      shmem = block_size. x * sizeof(int);
+      tnlCUDASimpleReductionKernel1< T, operation ><<< grid_size, block_size, shmem >>>( size, input, output );
+      size_reduced = grid_size. x;
+   }
+   int* host_output = new int[ size_reduced ];
+   cudaMemcpy( host_output, output, sizeReduced * sizeof(int), cudaMemcpyDeviceToHost );
+   int result = host_output[ 0 ];
+   for( int i = 1;i < size_reduced; i++ )
+   {
+      if( operation == tnlMin)
+         result = :: Min( result, host_output[ i ] );
+      if( operation == tnlMax )
+         result = :: Max( result, host_output[ i ] );
+      if( operation == tnlSum )
+         result += host_ouput[ i ];
+   }
+   delete[] host_output;
 
-	dim3 blockSize( block_size );
-	dim3 gridSize( grid_size );
-	int shmem = 512 * sizeof( T );
-	tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." );
-	switch( block_size )
-	{
-		case 512:
-	        tnlCUDASimpleReductionKernel1< T, operation, 512 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	        break;
-	    case 256:
-	    	tnlCUDASimpleReductionKernel1< T, operation, 256 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case 128:
-	    	tnlCUDASimpleReductionKernel1< T, operation, 128 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case  64:
-	    	tnlCUDASimpleReductionKernel1< T, operation,  64 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case  32:
-	    	tnlCUDASimpleReductionKernel1< T, operation,  32 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case  16:
-	    	tnlCUDASimpleReductionKernel1< T, operation,  16 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case   8:
-	    	tnlCUDASimpleReductionKernel1< T, operation,   8 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case   4:
-	    	tnlCUDAReductionKernel< T, operation,   4 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case   2:
-	    	tnlCUDAReductionKernel< T, operation,   2 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    case   1:
-	    	tnlCUDAReductionKernel< T, operation,   1 ><<< gridSize, blockSize, shmem >>>( size, d_input, &result );
-	    	break;
-	    default:
-	    	tnlAssert( false, cerr << "Block size is " << block_size << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-	    	break;
-	}
-	return result;
+   return result;
 }
 
 #endif /* HAVE_CUDA */

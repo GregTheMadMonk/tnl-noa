@@ -16,6 +16,15 @@ __global__ void setMultiBlockNumber( const T c, T* A, const int size )
 };
 
 template< class T >
+__global__ void setNumber( const T c, T* A, const int size )
+{
+   int i = threadIdx. x;
+   if( i < size )
+      A[ i ] = c;
+};
+
+
+template< class T >
 void testMultiBlockKernel( const T& number, const int size )
 {
    tnlLongVectorCUDA< T > device_vector( size );
@@ -38,19 +47,12 @@ void testMultiBlockKernel( const T& number, const int size )
 };
 
 template< class T >
-__global__ void setNumber( T* A, const T c )
-{
-   int i = threadIdx. x;
-   A[ i ] = c;
-};
-
-template< class T >
 void testKernel( const T& number, const int size )
 {
    tnlLongVectorCUDA< T > device_vector( size );
    tnlLongVector< T > host_vector( size );
    T* data = device_vector. Data();
-   setNumber<<< 1, size >>>( data, number );
+   setNumber<<< 1, size >>>( number, data, size );
    host_vector. copyFrom( device_vector );
 
    int errors( 0 );

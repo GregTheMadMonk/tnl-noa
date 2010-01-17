@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include <cppunit/ui/text/TestRunner.h>
 
 
@@ -24,6 +23,7 @@
 #include <core/tnlCUDAKernelsTester.h>
 #include <diff/tnlGridCUDA2DTester.h>
 
+#include <iostream>
 
 using namespace std;
 

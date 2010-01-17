@@ -35,6 +35,7 @@ void testMultiBlockKernelStarter( const double& number, const int size );
 void testKernelStarter( const int& number, const int size );
 void testKernelStarter( const float& number, const int size );
 void testKernelStarter( const double& number, const int size );
+int mainTest();
 #endif
 
 

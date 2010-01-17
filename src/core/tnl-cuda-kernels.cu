@@ -104,33 +104,7 @@ int tnlCUDASimpleReduction1Min( const int size,
                                 const int* input,
                                 int* output )
 {
-   //Calculate necessary block/grid dimensions
-   const int cpuThreshold = 1;
-   const int desBlockSize = 128;    //Desired block size   
-   dim3 blockSize = :: Min( size, desBlockSize );
-   dim3 gridSize = size / blockSize. x;
-   unsigned int shmem = blockSize. x * sizeof( int );
-   cout << "Grid size: " << gridSize. x << endl 
-        << "Block size: " << blockSize. x << endl
-        << "Shmem: " << shmem << endl;
-   tnlCUDASimpleReductionKernel1< int, tnlMin ><<< gridSize, blockSize, shmem >>>( size, input, output );
-   int sizeReduced = gridSize. x;
-   while( sizeReduced > cpuThreshold )
-   {
-      cout << "Reducing with size reduced = " << sizeReduced << endl;
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = sizeReduced / blockSize. x;
-      shmem = blockSize. x * sizeof(int);
-      tnlCUDASimpleReductionKernel1< int, tnlMin ><<< gridSize, blockSize, shmem >>>( size, input, output );
-      sizeReduced = gridSize. x;
-   }
-   int* host_output = new int[ sizeReduced ];
-   cudaMemcpy( host_output, output, sizeReduced * sizeof(int), cudaMemcpyDeviceToHost );
-   int result = host_output[ 0 ];
-   for( int i = 1;i < sizeReduced; i++ )
-        result = :: Min( result, host_output[ i ] );
-   delete[] host_output;
-   return result;
+
 }
 
 int tnlCUDASimpleReduction1Max( const int size,
