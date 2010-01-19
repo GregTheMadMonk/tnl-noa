@@ -37,6 +37,12 @@ AC_ARG_WITH(cuda_libdir,
             AS_HELP_STRING([--with-cuda-libdir],
                            [says where the CUDA libraries can be found, default is /usr/local/cuda/lib]),
             CUDA_LIBS=$withval)
+AC_ARG_WITH(cuda_arch,
+            AS_HELP_STRING([--with-cuda-arch],
+                           [specifies the CUDA architecture, can be 1.0, 1.1, 1.2 or 1.3 - default is 1.3]),
+            CUDA_ARCH=$withval,
+            CUDA_ARCH="1.3")
+
 working_nvcc="no"  
 if test x$with_cuda = xyes;
 then
@@ -89,6 +95,21 @@ then
       CUDA_LDFLAGS="$CUDA_LDFLAGS -lcudart"
       CC="nvcc"
       CXX="nvcc"
+      case "$CUDA_ARCH"  in
+         1.0 )
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_10"
+         ;;
+         1.1 )
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_11"
+         ;;
+         1.2 )
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_12"
+         ;;
+         1.3 )
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_13"
+         ;;
+      esac  
+      DBGCXXFLAGS="$DBGCXXFLAGS -deviceemu"    
    else
       CUDA_LDFLAGS=""
       CUDA_CXXFLAGS=""
@@ -121,7 +142,7 @@ dnl ----------- check for debug--------------
 dnl -----------------------------------------
 AC_ARG_ENABLE(debug,[  --enable-debug=[no/yes]	turn on debugging [default=no]] )
 if test x"$enable_debug" = xyes; then
-   DBGCXXFLAGS="-O0 -DDEBUG"
+   DBGCXXFLAGS="$DBGCXXFLAGS -O0 -DDEBUG"
    if test x$CXX != xnvcc;
    then
       DBGCXXFLAGS="$DBGCXXFLAGS -g3 -Wall -W -ansi -Wno-unused"

@@ -95,133 +95,409 @@ double tnlCUDAReductionSum( const int size,
 }
 
 /*
- * Simple redcution 1
+ * Simple redcution 5
  */
 
-int tnlCUDASimpleReduction1Min( const int size,
-                                const int block_size,
-                                const int grid_size,
-                                const int* input,
-                                int* output )
+bool tnlCUDASimpleReduction5Min( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-
+   return tnlCUDASimpleReduction5< int, tnlMin >( size,
+                                                  device_input,
+                                                  result );
 }
 
-int tnlCUDASimpleReduction1Max( const int size,
-                                const int block_size,
-                                const int grid_size,
-                                const int* input,
-                                int* output )
+bool tnlCUDASimpleReduction5Max( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-   //Calculate necessary block/grid dimensions
-   const int cpuThreshold = 1;
-   const int desBlockSize = 128;    //Desired block size   
-   dim3 blockSize = :: Min( size, desBlockSize );
-   dim3 gridSize = size / blockSize. x;
-   unsigned int shmem = blockSize. x * sizeof( int );
-   cout << "Grid size: " << gridSize. x << endl 
-        << "Block size: " << blockSize. x << endl
-        << "Shmem: " << shmem << endl;
-   tnlCUDASimpleReductionKernel1< int, tnlMax ><<< gridSize, blockSize, shmem >>>( size, input, output );
-   int sizeReduced = gridSize. x;
-   while( sizeReduced > cpuThreshold )
-   {
-      cout << "Reducing with size reduced = " << sizeReduced << endl;
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = sizeReduced / blockSize. x;
-      shmem = blockSize. x * sizeof(int);
-      tnlCUDASimpleReductionKernel1< int, tnlMax ><<< gridSize, blockSize, shmem >>>( size, input, output );
-      sizeReduced = gridSize. x;
-   }
-   int* host_output = new int[ sizeReduced ];
-   cudaMemcpy( host_output, output, sizeReduced * sizeof(int), cudaMemcpyDeviceToHost );
-   int result = host_output[ 0 ];
-   for( int i = 1;i < sizeReduced; i++ )
-        result = :: Max( result, host_output[ i ] );
-   delete[] host_output;
-   return result;
+   return tnlCUDASimpleReduction5< int, tnlMax >( size,
+                                                  device_input,
+                                                  result );
 }
-                         
-int tnlCUDASimpleReduction1Sum( const int size,
-                                const int block_size,
-                                const int grid_size,
-                                const int* input,
-                                int* output )
+bool tnlCUDASimpleReduction5Sum( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-   //Calculate necessary block/grid dimensions
-   const int cpuThreshold = 1;
-   const int desBlockSize = 128;    //Desired block size   
-   dim3 blockSize = :: Min( size, desBlockSize );
-   dim3 gridSize = size / blockSize. x;
-   unsigned int shmem = blockSize. x * sizeof( int );
-   cout << "Grid size: " << gridSize. x << endl 
-        << "Block size: " << blockSize. x << endl
-        << "Shmem: " << shmem << endl;
-   tnlCUDASimpleReductionKernel1< int, tnlSum ><<< gridSize, blockSize, shmem >>>( size, input, output );
-   int sizeReduced = gridSize. x;
-   while( sizeReduced > cpuThreshold )
-   {
-      cout << "Reducing with size reduced = " << sizeReduced << endl;
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = sizeReduced / blockSize. x;
-      shmem = blockSize. x * sizeof(int);
-      tnlCUDASimpleReductionKernel1< int, tnlSum ><<< gridSize, blockSize, shmem >>>( size, input, output );
-      sizeReduced = gridSize. x;
-   }
-   int* host_output = new int[ sizeReduced ];
-   cudaMemcpy( host_output, output, sizeReduced * sizeof(int), cudaMemcpyDeviceToHost );
-   int result = host_output[ 0 ];
-   for( int i = 1;i < sizeReduced; i++ )
-        result += host_output[ i ];
-   delete[] host_output;
-   return result;  
+   return tnlCUDASimpleReduction5< int, tnlSum >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction5Min( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction5< float, tnlMin >( size,
+                                                    device_input,
+                                                    result );
+}
+
+bool tnlCUDASimpleReduction5Max( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction5< float, tnlMax >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction5Sum( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction5< float, tnlSum >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction5Min( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction5< double, tnlMin >( size,
+                                                     device_input,
+                                                     result );
+}
+
+bool tnlCUDASimpleReduction5Max( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction5< double, tnlMax >( size,
+                                                     device_input,
+                                                     result );
+}
+bool tnlCUDASimpleReduction5Sum( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction5< double, tnlSum >( size,
+                                                     device_input,
+                                                     result );
+}
+
+
+/*
+ * Simple redcution 4
+ */
+
+bool tnlCUDASimpleReduction4Min( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction4< int, tnlMin >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction4Max( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction4< int, tnlMax >( size,
+                                                  device_input,
+                                                  result );
+}
+bool tnlCUDASimpleReduction4Sum( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction4< int, tnlSum >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction4Min( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction4< float, tnlMin >( size,
+                                                    device_input,
+                                                    result );
+}
+
+bool tnlCUDASimpleReduction4Max( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction4< float, tnlMax >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction4Sum( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction4< float, tnlSum >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction4Min( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction4< double, tnlMin >( size,
+                                                     device_input,
+                                                     result );
+}
+
+bool tnlCUDASimpleReduction4Max( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction4< double, tnlMax >( size,
+                                                     device_input,
+                                                     result );
+}
+bool tnlCUDASimpleReduction4Sum( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction4< double, tnlSum >( size,
+                                                     device_input,
+                                                     result );
 }
 
 /*
-float tnlCUDASimpleReduction1Min( const int size,
-                                  const int block_size,
-                                  const int grid_size,
-                                  const float* input )
+ * Simple redcution 3
+ */
+
+bool tnlCUDASimpleReduction3Min( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-   return tnlCUDASimpleReduction1< float, tnlMin >( size, block_size, grid_size, input );
+   return tnlCUDASimpleReduction3< int, tnlMin >( size,
+                                                  device_input,
+                                                  result );
 }
 
-float tnlCUDASimpleReduction1Max( const int size,
-                                  const int block_size,
-                                  const int grid_size,
-                                  const float* input )
+bool tnlCUDASimpleReduction3Max( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-   return tnlCUDASimpleReduction1< float, tnlMax >( size, block_size, grid_size, input );
+   return tnlCUDASimpleReduction3< int, tnlMax >( size,
+                                                  device_input,
+                                                  result );
 }
-                         
-float tnlCUDASimpleReduction1Sum( const int size,
-                                  const int block_size,
-                                  const int grid_size,
-                                  const float* input )
+bool tnlCUDASimpleReduction3Sum( const int size,
+                                 const int* device_input,
+                                 int& result )
 {
-   return tnlCUDASimpleReduction1< float, tnlSum >( size, block_size, grid_size, input );
-}
-
-double tnlCUDASimpleReduction1Min( const int size,
-                                   const int block_size,
-                                   const int grid_size,
-                                   const double* input )
-{
-   return tnlCUDASimpleReduction1< double, tnlMin >( size, block_size, grid_size, input );
+   return tnlCUDASimpleReduction3< int, tnlSum >( size,
+                                                  device_input,
+                                                  result );
 }
 
-double tnlCUDASimpleReduction1Max( const int size,
-                                   const int block_size,
-                                   const int grid_size,
-                                   const double* input )
+bool tnlCUDASimpleReduction3Min( const int size,
+                                 const float* device_input,
+                                 float& result )
 {
-   return tnlCUDASimpleReduction1< double, tnlMax >( size, block_size, grid_size, input );
+   return tnlCUDASimpleReduction3< float, tnlMin >( size,
+                                                    device_input,
+                                                    result );
 }
-                         
-double tnlCUDASimpleReduction1Sum( const int size,
-                                   const int block_size,
-                                   const int grid_size,
-                                   const double* input )
+
+bool tnlCUDASimpleReduction3Max( const int size,
+                                 const float* device_input,
+                                 float& result )
 {
-   return tnlCUDASimpleReduction1< double, tnlSum >( size, block_size, grid_size, input );
-}*/
+   return tnlCUDASimpleReduction3< float, tnlMax >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction3Sum( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction3< float, tnlSum >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction3Min( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction3< double, tnlMin >( size,
+                                                     device_input,
+                                                     result );
+}
+
+bool tnlCUDASimpleReduction3Max( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction3< double, tnlMax >( size,
+                                                     device_input,
+                                                     result );
+}
+bool tnlCUDASimpleReduction3Sum( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction3< double, tnlSum >( size,
+                                                     device_input,
+                                                     result );
+}
+
+/*
+ * Simple redcution 2
+ */
+
+bool tnlCUDASimpleReduction2Min( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction2< int, tnlMin >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction2Max( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction2< int, tnlMax >( size,
+                                                  device_input,
+                                                  result );
+}
+bool tnlCUDASimpleReduction2Sum( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction2< int, tnlSum >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction2Min( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction2< float, tnlMin >( size,
+                                                    device_input,
+                                                    result );
+}
+
+bool tnlCUDASimpleReduction2Max( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction2< float, tnlMax >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction2Sum( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction2< float, tnlSum >( size,
+                                                    device_input,
+                                                    result );
+}
+bool tnlCUDASimpleReduction2Min( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction2< double, tnlMin >( size,
+                                                     device_input,
+                                                     result );
+}
+
+bool tnlCUDASimpleReduction2Max( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction2< double, tnlMax >( size,
+                                                     device_input,
+                                                     result );
+}
+bool tnlCUDASimpleReduction2Sum( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction2< double, tnlSum >( size,
+                                                     device_input,
+                                                     result );
+}
+
+
+/*
+ * Simple redcution 1
+ */
+
+bool tnlCUDASimpleReduction1Min( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction1< int, tnlMin >( size,
+                                                  device_input,
+                                                  result );
+}
+
+bool tnlCUDASimpleReduction1Max( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction1< int, tnlMax >( size,
+                                   device_input,
+                                   result );
+}
+bool tnlCUDASimpleReduction1Sum( const int size,
+                                 const int* device_input,
+                                 int& result )
+{
+   return tnlCUDASimpleReduction1< int, tnlSum >( size,
+                                   device_input,
+                                   result );
+}
+
+bool tnlCUDASimpleReduction1Min( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction1< float, tnlMin >( size,
+                                   device_input,
+                                   result );
+}
+
+bool tnlCUDASimpleReduction1Max( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction1< float, tnlMax >( size,
+                                   device_input,
+                                   result );
+}
+bool tnlCUDASimpleReduction1Sum( const int size,
+                                 const float* device_input,
+                                 float& result )
+{
+   return tnlCUDASimpleReduction1< float, tnlSum >( size,
+                                   device_input,
+                                   result );
+}
+bool tnlCUDASimpleReduction1Min( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction1< double, tnlMin >( size,
+                                   device_input,
+                                   result );
+}
+
+bool tnlCUDASimpleReduction1Max( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction1< double, tnlMax >( size,
+                                   device_input,
+                                   result );
+}
+bool tnlCUDASimpleReduction1Sum( const int size,
+                                 const double* device_input,
+                                 double& result )
+{
+   return tnlCUDASimpleReduction1< double, tnlSum >( size,
+                                   device_input,
+                                   result );
+}
+

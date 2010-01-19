@@ -1,5 +1,8 @@
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 
+TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
+      to by melo byt robustnejsi, nez doposavadni pristup 
+
 TODO: implementovat tridu tnlParabolicSolver pro odvozovani resicu k casove promennym uloham
 
 TODO: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze
@@ -8,6 +11,4 @@ TODO: zavets iteratory pres uzle site misto for cyklu
 
 TODO: implementovat Mersona v CUDA
 
-TODO: metoda Test do tnlObject
-
-TODO: trida tnlTester pro rizeni testu   
+TODO: objekt pro osetreni chyb - zavedeni funkce tnlGetError   

@@ -44,8 +44,8 @@ int main( int argc, char* argv[] )
    runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
    
    runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
-   //runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
-   //runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
+   runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
+   runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
    
    runner.run();
    return 0;
