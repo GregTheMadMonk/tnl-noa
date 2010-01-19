@@ -27,15 +27,15 @@ enum tnlOperation { tnlMin, tnlMax, tnlSum };
 #ifdef HAVE_CUDA
 
 template< class T > __device__ T tnlCudaMin( const T& a,
-		                                     const T& b )
+                                             const T& b )
 {
-	return a < b ? a : b;
+   return a < b ? a : b;
 }
 
 template< class T > __device__ T tnlCudaMax( const T& a,
-		                                     const T& b )
+                                             const T& b )
 {
-	return a > b ? a : b;
+   return a > b ? a : b;
 }
 
 /*
@@ -51,159 +51,159 @@ template< class T > __device__ T tnlCudaMax( const T& a,
 
 template < class T, tnlOperation operation, int blockSize >
 __global__ void tnlCUDAReductionKernel( const int size,
-										const int grid_size,
-	                                    const T* d_input,
-	                                    T* d_output,
-	                                    T* dbg_array1 = 0  )
+	         			const int grid_size,
+	                                const T* d_input,
+	                                T* d_output,
+	                                T* dbg_array1 = 0  )
 {
-	extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) T sdata[];
 
-	// Read data into the shared memory
-	int tid = threadIdx. x;
-	int gid = 2 * blockIdx. x * blockDim. x + threadIdx. x;
-	// Last thread ID which manipulates meaningful data
+   // Read data into the shared memory
+   int tid = threadIdx. x;
+   int gid = 2 * blockIdx. x * blockDim. x + threadIdx. x;
+   // Last thread ID which manipulates meaningful data
 
-	int grid_size = 2 * blockSize * gridDim. x;
-	if( gid + blockSize < size )
-	{
-		if( operation == tnlMin ) sdata[ tid ] = :: Min( d_input[ gid ], d_input[ gid + blockSize ] );
-		if( operation == tnlMax ) sdata[ tid ] = :: Max( d_input[ gid ], d_input[ gid + blockSize ] );
-		if( operation == tnlSum ) sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockSize ];
-	}
-	else
-	{
-		sdata[ tid ] = d_input[ gid ];
-	}
-	gid += grid_size;
+   //int grid_size = 2 * blockSize * gridDim. x;
+   if( gid + blockSize < size )
+   {
+      if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( d_input[ gid ], d_input[ gid + blockSize ] );
+      if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( d_input[ gid ], d_input[ gid + blockSize ] );
+      if( operation == tnlSum ) sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockSize ];
+   }
+   else
+   {
+      sdata[ tid ] = d_input[ gid ];
+   }
+   gid += grid_size;
 
-	while (gid < size)
-	{
-		if( operation == tnlMin ) sdata[ tid ] = :: Min( sdata[ tid ], :: Min( d_input[gid], d_input[gid+blockSize] );
-		if( operation == tnlMax ) sdata[ tid ] = :: Max( sdata[ tid ], :: Max( d_input[gid], d_input[gid+blockSize] );
-		if( operation == tnlSum ) sdata[ tid ] += d_input[gid] + d_input[ gid + blockSize ];
-		gid += gridSize;
-	}
-	__syncthreads();
+   while( gid < size )
+   {
+      if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( sdata[ tid ], :: tnlCudaMin( d_input[gid], d_input[gid+blockSize] ) );
+      if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( sdata[ tid ], :: tnlCudaMax( d_input[gid], d_input[gid+blockSize] ) );
+      if( operation == tnlSum ) sdata[ tid ] += d_input[gid] + d_input[ gid + blockSize ];
+      gid += grid_size;
+   }
+   __syncthreads();
 
-	if( gid + blockDim. x < size )
-	{
-		if( operation == tnlMin )
-			sdata[ tid ] = tnlCudaMin( d_input[ gid ], d_input[ gid + blockDim. x ] );
-		if( operation == tnlMax )
-			sdata[ tid ] = tnlCudaMax( d_input[ gid ], d_input[ gid + blockDim. x ] );
-		if( operation == tnlSum )
-			sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockDim. x ];
-	}
-	else if( gid < size )
-	{
-		sdata[ tid ] = d_input[ gid ];
-	}
-	__syncthreads();
+   if( gid + blockDim. x < size )
+   {
+      if( operation == tnlMin )
+         sdata[ tid ] = tnlCudaMin( d_input[ gid ], d_input[ gid + blockDim. x ] );
+      if( operation == tnlMax )
+         sdata[ tid ] = tnlCudaMax( d_input[ gid ], d_input[ gid + blockDim. x ] );
+      if( operation == tnlSum )
+         sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockDim. x ];
+   }
+   else if( gid < size )
+   {
+      sdata[ tid ] = d_input[ gid ];
+   }
+   __syncthreads();
 
-	// Parallel reduction
-		if( blockSize == 512 )
-		{
-			if( tid < 256 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 256 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 256 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 256 ];
-			}
-			__syncthreads();
-		}
-		if( blockSize >= 256 )
-		{
-			if( tid < 128 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 128 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 128 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 128 ];
-			}
-			__syncthreads();
-		}
-		if( blockSize >= 128 )
-		{
-			if (tid< 64)
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 64 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 64 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 64 ];
-			}
-			__syncthreads();
-		}
-		/*
-		 * What follows runs in warp so it does not need to be synchronised.
-		 */
-		if( tid < 32 )
-		{
-			if( blockSize >= 64 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 32 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 32 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 32 ];
-			}
-			if( blockSize >= 32 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 16 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 16 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 16 ];
-			}
-			if( blockSize >= 16 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 8 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 8 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 8 ];
-			}
-		    if( blockSize >= 8 )
-		    {
-		    	if( operation == tnlMin )
-		    		sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 4 ] );
-		    	if( operation == tnlMax )
-		    		sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 4 ] );
-		    	if( operation == tnlSum )
-		    		sdata[ tid ] += sdata[ tid + 4 ];
-		    }
-			if( blockSize >= 4 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 2 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 2 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 2 ];
-			}
-			if( blockSize >= 2 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 1 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 1 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 1 ];
-			}
-		}
+   // Parallel reduction
+   if( blockSize == 512 )
+   {
+      if( tid < 256 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 256 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 256 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 256 ];
+      }
+      __syncthreads();
+   }
+   if( blockSize >= 256 )
+   {
+      if( tid < 128 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 128 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 128 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 128 ];
+      }
+      __syncthreads();
+   }
+   if( blockSize >= 128 )
+   {
+      if (tid< 64)
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 64 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 64 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 64 ];
+      }
+      __syncthreads();
+   }
+   /*
+    * What follows runs in warp so it does not need to be synchronised.
+    */
+   if( tid < 32 )
+   {
+      if( blockSize >= 64 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 32 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 32 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 32 ];
+      }
+      if( blockSize >= 32 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 16 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 16 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 16 ];
+      }
+      if( blockSize >= 16 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 8 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 8 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 8 ];
+      }
+      if( blockSize >= 8 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 4 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 4 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 4 ];
+      }
+      if( blockSize >= 4 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 2 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 2 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 2 ];
+      }
+      if( blockSize >= 2 )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 1 ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 1 ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + 1 ];
+      }
+   }
 
-	// Store the result back in global memory
-	if( tid == 0 )
-		d_output[ blockIdx. x ] = sdata[ 0 ];
+   // Store the result back in global memory
+   if( tid == 0 )
+      d_output[ blockIdx. x ] = sdata[ 0 ];
 }
 
 /*
@@ -213,15 +213,14 @@ __global__ void tnlCUDAReductionKernel( const int size,
  */
 template< class T, tnlOperation operation >
 bool tnlCUDAReduction( const int size,
-	                   const T* device_input,
-	                   T& result,
-	                   T* device_output = 0 )
+	               const T* device_input,
+	               T& result,
+	               T* device_output = 0 )
 {
    //Calculate necessary block/grid dimensions
    const int cpuThreshold = 1;
    const int desBlockSize = 16;    //Desired block size
-
-   T* dbg_array1;
+   const int desGridSize = 2048;
 
    bool device_output_allocated( false );
    if( ! device_output )
@@ -234,9 +233,6 @@ bool tnlCUDAReduction( const int size,
     	   return false;
        }
        device_output_allocated = true;
-
-       //cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
-       //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
    int shmem;
@@ -245,42 +241,41 @@ bool tnlCUDAReduction( const int size,
    while( size_reduced > cpuThreshold )
    {
       block_size. x = :: Min( size_reduced, desBlockSize );
-      grid_size. x = :: Min( ( size_reduced / block_size. x + 1 ) / 2, desGridSize );
+      grid_size. x = :: Min( ( int ) ( size_reduced / block_size. x + 1 ) / 2, desGridSize );
       shmem = block_size. x * sizeof( T );
       cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
            << " Shmem: " << shmem << endl;
-      //tnlCUDASimpleReductionKernel4< T, operation ><<< grid_size. x, block_size, shmem >>>( size_reduced, reduction_input, device_output );
       tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." );
       switch( block_size. x )
       {
 		  case 512:
-			  tnlCUDASimpleReductionKernel5< T, operation, 512 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case 256:
-			  tnlCUDASimpleReductionKernel5< T, operation, 256 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case 128:
-			  tnlCUDASimpleReductionKernel5< T, operation, 128 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case  64:
-			  tnlCUDASimpleReductionKernel5< T, operation,  64 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case  32:
-			  tnlCUDASimpleReductionKernel5< T, operation,  32 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case  16:
-			  tnlCUDASimpleReductionKernel5< T, operation,  16 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case   8:
-			  tnlCUDASimpleReductionKernel5< T, operation,   8 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case   4:
-			  tnlCUDASimpleReductionKernel5< T, operation,   4 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case   2:
-			  tnlCUDASimpleReductionKernel5< T, operation,   2 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
 			  break;
 		  case   1:
 			  tnlAssert( false, cerr << "blockSize should not be 1." << endl );

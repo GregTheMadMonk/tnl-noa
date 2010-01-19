@@ -30,198 +30,7 @@
 using namespace std;
 
 #ifdef HAVE_CUDA
-int tnlCUDAReductionMin( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input );
-int tnlCUDAReductionMax( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input );
-int tnlCUDAReductionSum( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input );
-float tnlCUDAReductionMin( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input );
-float tnlCUDAReductionMax( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input );
-float tnlCUDAReductionSum( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input );
-double tnlCUDAReductionMin( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input );
-double tnlCUDAReductionMax( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input );
-double tnlCUDAReductionSum( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input );
-/*
- * Simple reduction 5
- */
-bool tnlCUDASimpleReduction5Min( const int size,
-                                 const int* input,
-                                 int& result );
-bool tnlCUDASimpleReduction5Max( const int size,
-                                 const int* input,
-                                 int& result );
-bool tnlCUDASimpleReduction5Sum( const int size,
-                                 const int* input,
-                                 int& result );
-bool tnlCUDASimpleReduction5Min( const int size,
-                                 const float* input,
-                                 float& result);
-bool tnlCUDASimpleReduction5Max( const int size,
-                                 const float* input,
-                                 float& result);
-bool tnlCUDASimpleReduction5Sum( const int size,
-                                 const float* input,
-                                 float& result);
-bool tnlCUDASimpleReduction5Min( const int size,
-                                 const double* input,
-                                 double& result);
-bool tnlCUDASimpleReduction5Max( const int size,
-                                 const double* input,
-                                 double& result );
-bool tnlCUDASimpleReduction5Sum( const int size,
-                                 const double* input,
-                                 double& result );
-
-
-/*
- * Simple reduction 4
- */
-bool tnlCUDASimpleReduction4Min( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction4Max( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction4Sum( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction4Min( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction4Max( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction4Sum( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction4Min( const int size,
-                             const double* input,
-                             double& result);
-bool tnlCUDASimpleReduction4Max( const int size,
-                             const double* input,
-                             double& result );
-bool tnlCUDASimpleReduction4Sum( const int size,
-                             const double* input,
-                             double& result );
-
-/*
- * Simple reduction 3
- */
-bool tnlCUDASimpleReduction3Min( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction3Max( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction3Sum( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction3Min( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction3Max( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction3Sum( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction3Min( const int size,
-                             const double* input,
-                             double& result);
-bool tnlCUDASimpleReduction3Max( const int size,
-                             const double* input,
-                             double& result );
-bool tnlCUDASimpleReduction3Sum( const int size,
-                             const double* input,
-                             double& result );
-
-/*
- * Simple reduction 2
- */
-bool tnlCUDASimpleReduction2Min( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction2Max( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction2Sum( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction2Min( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction2Max( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction2Sum( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction2Min( const int size,
-                             const double* input,
-                             double& result);
-bool tnlCUDASimpleReduction2Max( const int size,
-                             const double* input,
-                             double& result );
-bool tnlCUDASimpleReduction2Sum( const int size,
-                             const double* input,
-                             double& result );
-
-/*
- * Simple reduction 1
- */
-bool tnlCUDASimpleReduction1Min( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction1Max( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction1Sum( const int size,
-                          const int* input,
-                          int& result );
-bool tnlCUDASimpleReduction1Min( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction1Max( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction1Sum( const int size,
-                            const float* input,
-                            float& result);
-bool tnlCUDASimpleReduction1Min( const int size,
-                             const double* input,
-                             double& result);
-bool tnlCUDASimpleReduction1Max( const int size,
-                             const double* input,
-                             double& result );
-bool tnlCUDASimpleReduction1Sum( const int size,
-                             const double* input,
-                             double& result );
-
+#include <core/tnl-cuda-kernels.cu.h>
 #endif
 
 
@@ -238,24 +47,30 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCUDAKernelsTester" );
       CppUnit :: TestResult result;
 
+      T param;
+      tnlString test_name = tnlString( "testSimpleReduction1< " ) + GetParameterType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-    		                   "testSimpleReduction1",
+    		               test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction1 )
                              );
+      test_name = tnlString( "testSimpleReduction2< " ) + GetParameterType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-        		               "testSimpleReduction2",
+                               test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction2 )
                               );
+      test_name = tnlString( "testSimpleReduction3< " ) + GetParameterType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-                      		   "testSimpleReduction3",
+                               test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction3 )
                               );
+      test_name = tnlString( "testSimpleReduction4< " ) + GetParameterType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-                               "testSimpleReduction4",
+                               test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction4 )
                               );
+      test_name = tnlString( "testSimpleReduction5< " ) + GetParameterType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-                               "testSimpleReduction5",
+                               test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction5 )
                               );
       /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
@@ -337,9 +152,9 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 			   tnlCUDASimpleReduction5Sum( size, device_input. Data(), sum );
 			   break;
 		   default:
-			   min = tnlCUDAReductionMin( size, block_size, grid_size, device_input. Data() );
-			   max = tnlCUDAReductionMax( size, block_size, grid_size, device_input. Data() );
-			   sum = tnlCUDAReductionSum( size, block_size, grid_size, device_input. Data() );
+			   tnlCUDAReductionMin( size, device_input. Data(), min );
+			   tnlCUDAReductionMax( size, device_input. Data(), max );
+			   tnlCUDAReductionSum( size, device_input. Data(), sum );
 	   }
 
 

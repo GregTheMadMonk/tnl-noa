@@ -38,6 +38,7 @@ headers = tnlAssert.h \
 		    tnlTester.h \
 		    tnlVector.h \
 		    tnl-cuda-kernels.h \
+		    tnl-cuda-kernels.cu.h \
 		    tnlCUDAKernelsTester.h \
 		    compress-file.h \
 		    mfilename.h \

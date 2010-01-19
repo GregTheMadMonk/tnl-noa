@@ -22,76 +22,74 @@
 using namespace std;
 
 int tnlCUDAReductionMin( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input )
+                         const int* input,
+                         int& result,
+                         int* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< int, tnlMin >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< int, tnlMin >( size, input, result, device_aux_array );
 }
 
 int tnlCUDAReductionMax( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input )
+                         const int* input,
+                         int& result,
+                         int* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< int, tnlMax >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< int, tnlMax >( size, input, result, device_aux_array );
 }
-                         
+
 int tnlCUDAReductionSum( const int size,
-                         const int block_size,
-                         const int grid_size,
-                         const int* input )
+                         const int* input,
+                         int& result,
+                         int* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< int, tnlSum >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< int, tnlSum >( size, input, result, device_aux_array );
 }
 
-
-float tnlCUDAReductionMin( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input )
+bool tnlCUDAReductionMin( const int size,
+                          const float* input,
+                          float& result,
+                          float* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< float, tnlMin >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< float, tnlMin >( size, input, result, device_aux_array );
 }
 
-float tnlCUDAReductionMax( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input )
+bool tnlCUDAReductionMax( const int size,
+                          const float* input,
+                          float& result,
+                          float* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< float, tnlMax >( size, block_size, grid_size, input );
-}
-                         
-float tnlCUDAReductionSum( const int size,
-                           const int block_size,
-                           const int grid_size,
-                           const float* input )
-{
-   return tnlCUDAReduction< float, tnlSum >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< float, tnlMax >( size, input, result, device_aux_array );
 }
 
-double tnlCUDAReductionMin( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input )
+bool tnlCUDAReductionSum( const int size,
+                          const float* input,
+                          float& result,
+                          float* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< double, tnlMin >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< float, tnlSum >( size, input, result, device_aux_array );
+}
+bool tnlCUDAReductionMin( const int size,
+                          const double* input,
+                          double& result,
+                          double* device_aux_array = 0 )
+{
+   return tnlCUDAReduction< double, tnlMin >( size, input, result, device_aux_array );
 }
 
-double tnlCUDAReductionMax( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input )
+bool tnlCUDAReductionMax( const int size,
+                          const double* input,
+                          double& result,
+                          double* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< double, tnlMax >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< double, tnlMax >( size, input, result, device_aux_array );
 }
-                         
-double tnlCUDAReductionSum( const int size,
-                            const int block_size,
-                            const int grid_size,
-                            const double* input )
+
+bool tnlCUDAReductionSum( const int size,
+                          const double* input,
+                          double& result,
+                          double* device_aux_array = 0 )
 {
-   return tnlCUDAReduction< double, tnlSum >( size, block_size, grid_size, input );
+   return tnlCUDAReduction< double, tnlSum >( size, input, result, device_aux_array );
 }
 
 /*

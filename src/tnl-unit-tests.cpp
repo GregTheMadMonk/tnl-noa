@@ -29,7 +29,7 @@ using namespace std;
 
 int main( int argc, char* argv[] )
 {
-   CppUnit::TextUi::TestRunner runner;
+   CppUnit :: TextTestRunner runner;
    
    runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
    runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
