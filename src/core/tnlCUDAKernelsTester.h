@@ -73,10 +73,11 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
                                test_name. Data(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction5 )
                               );
-      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
-                               "testReduction",
-                               & tnlCUDAKernelsTester< T > :: testFastReduction )
-                             );*/
+      test_name = tnlString( "testReduction< " ) + GetParameterType( param ) + tnlString( " >" );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+                               test_name. Data(),
+                               & tnlCUDAKernelsTester< T > :: testReduction )
+                             );
 
       return suiteOfTests;
    };
@@ -99,7 +100,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
    void testReduction( int algorithm_efficiency = 0 )
    {
-	   int size = 1<<10;
+	   int size = 1024; //1<<10;
 	   int desBlockSize = 128;    //Desired block size
 	   int desGridSize = 2048;    //Impose limitation on grid size so that threads could perform sequential work
 
@@ -168,6 +169,12 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
    };
 
+   void testReduction()
+   {
+   	   cout << "Test FAST reduction" << endl;
+	   testReduction( 0 );
+   }
+
    void testSimpleReduction5()
    {
    	   cout << "Test reduction 5" << endl;
@@ -197,11 +204,6 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   cout << "Test reduction 1" << endl;
 	   testReduction( 1 );
    };
-
-   void testFastReduction()
-   {
-	   testReduction( 0 );
-   }
 
 
 };

@@ -222,6 +222,8 @@ bool tnlCUDAReduction( const int size,
    const int desBlockSize = 16;    //Desired block size
    const int desGridSize = 2048;
 
+   T* dbg_array1( 0 );
+
    bool device_output_allocated( false );
    if( ! device_output )
    {
@@ -233,6 +235,9 @@ bool tnlCUDAReduction( const int size,
     	   return false;
        }
        device_output_allocated = true;
+
+       cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
+       //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
    int shmem;
@@ -247,35 +252,36 @@ bool tnlCUDAReduction( const int size,
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
            << " Shmem: " << shmem << endl;
-      tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." );
+      tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." << endl; );
+      tnlAssert( block_size. x <= 512, cerr << "Block size is " << block_size. x << endl; );
       switch( block_size. x )
       {
 		  case 512:
-			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 256:
-			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 128:
-			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  64:
-			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  32:
-			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  16:
-			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   8:
-			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   4:
-			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   2:
-			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output );
+			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   1:
 			  tnlAssert( false, cerr << "blockSize should not be 1." << endl );
@@ -288,7 +294,7 @@ bool tnlCUDAReduction( const int size,
       reduction_input = device_output;
 
       // debuging part
-      /*T* host_array = new T[ desBlockSize ];
+      T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
       for( int i = 0; i< :: Min( ( int ) block_size. x, desBlockSize ); i ++ )
     	  cout << host_array[ i ] << " - ";
@@ -300,7 +306,7 @@ bool tnlCUDAReduction( const int size,
       for( int i = 0; i < size_reduced; i ++ )
     	  cout << output[ i ] << "   ";
       cout << endl;
-      delete[] output;*/
+      delete[] output;
    }
    T* host_output = new T[ size_reduced ];
    cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
@@ -471,7 +477,7 @@ bool tnlCUDASimpleReduction5( const int size,
    const int cpuThreshold = 1;
    const int desBlockSize = 16;    //Desired block size
 
-   T* dbg_array1;
+   //T* dbg_array1;
 
    bool device_output_allocated( false );
    if( ! device_output )
@@ -497,12 +503,12 @@ bool tnlCUDASimpleReduction5( const int size,
       block_size. x = :: Min( size_reduced, desBlockSize );
       grid_size. x = ( size_reduced / block_size. x + 1 ) / 2;
       shmem = block_size. x * sizeof( T );
-      cout << "Size: " << size_reduced
+      /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
-           << " Shmem: " << shmem << endl;
-      //tnlCUDASimpleReductionKernel4< T, operation ><<< grid_size. x, block_size, shmem >>>( size_reduced, reduction_input, device_output );
+           << " Shmem: " << shmem << endl;*/
       tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." );
+      tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." << endl; );
       switch( block_size. x )
       {
 		  case 512:
