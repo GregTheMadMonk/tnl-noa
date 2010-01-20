@@ -100,7 +100,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
    void testReduction( int algorithm_efficiency = 0 )
    {
-	   int size = 1024; //1<<10;
+	   int size = 32; 1024; //1<<10;
 	   int desBlockSize = 128;    //Desired block size
 	   int desGridSize = 2048;    //Impose limitation on grid size so that threads could perform sequential work
 

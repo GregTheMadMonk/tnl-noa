@@ -60,29 +60,28 @@ __global__ void tnlCUDAReductionKernel( const int size,
 
    // Read data into the shared memory
    int tid = threadIdx. x;
-   int gid = 2 * blockIdx. x * blockDim. x + threadIdx. x;
-   // Last thread ID which manipulates meaningful data
+   int gid = 2 * blockSize * blockDim. x + threadIdx. x;
 
-   //int grid_size = 2 * blockSize * gridDim. x;
    if( gid + blockSize < size )
    {
       if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( d_input[ gid ], d_input[ gid + blockSize ] );
       if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( d_input[ gid ], d_input[ gid + blockSize ] );
       if( operation == tnlSum ) sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockSize ];
    }
-   else
+   else if( gid < size )
    {
       sdata[ tid ] = d_input[ gid ];
    }
    gid += grid_size;
 
-   while( gid < size )
+   while( gid + blockSize < size )
    {
-      if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( sdata[ tid ], :: tnlCudaMin( d_input[gid], d_input[gid+blockSize] ) );
-      if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( sdata[ tid ], :: tnlCudaMax( d_input[gid], d_input[gid+blockSize] ) );
+      if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( sdata[ tid ], :: tnlCudaMin( d_input[ gid ], d_input[ gid + blockSize ] ) );
+      if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( sdata[ tid ], :: tnlCudaMax( d_input[ gid ], d_input[ gid + blockSize ] ) );
       if( operation == tnlSum ) sdata[ tid ] += d_input[gid] + d_input[ gid + blockSize ];
       gid += grid_size;
    }
+   dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = sdata[ tid ];
    __syncthreads();
 
    if( gid + blockDim. x < size )
@@ -236,7 +235,7 @@ bool tnlCUDAReduction( const int size,
        }
        device_output_allocated = true;
 
-       cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
+       cudaMalloc( ( void** ) &dbg_array1, size * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
        //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
@@ -257,31 +256,31 @@ bool tnlCUDAReduction( const int size,
       switch( block_size. x )
       {
 		  case 512:
-			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 256:
-			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 128:
-			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  64:
-			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  32:
-			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  16:
-			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   8:
-			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   4:
-			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   2:
-			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size. x, block_size, shmem >>>( size_reduced, grid_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   1:
 			  tnlAssert( false, cerr << "blockSize should not be 1." << endl );
@@ -294,9 +293,9 @@ bool tnlCUDAReduction( const int size,
       reduction_input = device_output;
 
       // debuging part
-      T* host_array = new T[ desBlockSize ];
-      cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
-      for( int i = 0; i< :: Min( ( int ) block_size. x, desBlockSize ); i ++ )
+      T* host_array = new T[ size ];
+      cudaMemcpy( host_array, dbg_array1,  size * sizeof( T ), cudaMemcpyDeviceToHost );
+      for( int i = 0; i< size; i ++ )
     	  cout << host_array[ i ] << " - ";
       cout << endl;
 
