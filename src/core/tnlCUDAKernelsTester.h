@@ -19,6 +19,7 @@
 #define TNLCUDAKERNELSTESTER_H_
 
 #include <iostream>
+#include <math.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -98,31 +99,27 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   return true;
    }
 
-   void testReduction( int algorithm_efficiency = 0 )
+   bool mainReduction( const tnlLongVector< T >& host_input,
+		               int algorithm_efficiency,
+		               const int desired_block_size,
+		               const int desired_grid_size )
    {
-	   int size = 32; 1024; //1<<10;
-	   int desBlockSize = 128;    //Desired block size
-	   int desGridSize = 2048;    //Impose limitation on grid size so that threads could perform sequential work
-
-	   tnlLongVector< T > host_input;
+	   const int size = host_input. GetSize();
 	   tnlLongVectorCUDA< T > device_input;
-	   CPPUNIT_ASSERT( testSetup( host_input,
-		         	   device_input,
-		         	   size )  );
+	   if( ! device_input. SetNewSize( size ) )
+		   return false;
+	   device_input. copyFrom( host_input );
+
 	   T seq_min( host_input[ 0 ] ),
-	     seq_max( host_input[ 0 ] ),
-	     seq_sum( host_input[ 0 ] );
+		 seq_max( host_input[ 0 ] ),
+		 seq_sum( host_input[ 0 ] );
+
 	   for( int i = 1; i < size; i ++ )
 	   {
 		   seq_min = :: Min( seq_min, host_input[ i ] );
 		   seq_max = :: Max( seq_max, host_input[ i ] );
 		   seq_sum += host_input[ i ];
 	   }
-
-	   //Calculate necessary block/grid dimensions
-	   int block_size = :: Min( size/2, desBlockSize );
-	   //Grid size is limited in this case
-	   int grid_size = :: Min( desGridSize, size / block_size / 2 );
 
 	   T min, max, sum;
 	   switch( algorithm_efficiency )
@@ -159,13 +156,118 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   }
 
 
-	   cout << "Min: " << min << " Seq. min: " << seq_min << endl
-			<< "Max: " << max << " Seq. max: " << seq_max << endl
-			<< "Sum: " << sum << " Seq. sum: " << seq_sum << endl;
+	   if( min == seq_min )
+		   cout << "Min: " << min << " Seq. min: " << seq_min << " :-)" << endl;
+	   else
+		   cout << "Min: " << min << " Seq. min: " << seq_min << " !!!!!!!!!!" << endl;
+	   if( max == seq_max )
+		   cout	<< "Max: " << max << " Seq. max: " << seq_max << " :-)" << endl;
+	   else
+		   cout	<< "Max: " << max << " Seq. max: " << seq_max << " !!!!!!!!!!" << endl;
+	   if( sum == seq_sum )
+		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " :-)" << endl;
+	   else
+		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;
 
-	   CPPUNIT_ASSERT( min == seq_min );
-	   CPPUNIT_ASSERT( max == seq_max );
-	   CPPUNIT_ASSERT( sum == seq_sum );
+	   T param;
+	   if( GetParameterType( param ) == "float" )
+	   {
+		   CPPUNIT_ASSERT( min == seq_min );
+		   CPPUNIT_ASSERT( max == seq_max );
+		   if( sum == 0.0 )
+		   {
+			   CPPUNIT_ASSERT( sum == seq_sum );
+		   }
+		   else
+		   {
+			   double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
+			   CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );
+		   }
+	   }
+	   else
+	   {
+		   CPPUNIT_ASSERT( min == seq_min );
+		   CPPUNIT_ASSERT( max == seq_max );
+		   CPPUNIT_ASSERT( sum == seq_sum );
+	   }
+
+   }
+
+   void testReduction( int algorithm_efficiency = 0 )
+   {
+	   tnlLongVector< T > host_input;
+	   int size = 2;
+	   /*for( int s = 1; s < 12; s ++ )
+	   {
+		   tnlLongVector< T > host_input( size );
+
+		   for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = 0.0;
+		   mainReduction( host_input,
+		   		          algorithm_efficiency,
+		   		          256,
+		   		          2048 );
+
+		   for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = 1.0;
+		   mainReduction( host_input,
+		   		          algorithm_efficiency,
+		   		          256,
+		   		          2048 );
+
+		   for( int i = 0; i < size; i ++ )
+		   		   host_input[ i ] = i;
+		    mainReduction( host_input,
+						   algorithm_efficiency,
+		   		   		   256,
+		   		   		   2048 );
+
+		    for( int i = 0; i < size; i ++ )
+		    	host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
+		    mainReduction( host_input,
+		                   algorithm_efficiency,
+		    		   	   256,
+		    		   	   2048 );
+		    size *= 2;
+	   }*/
+	   for( size = 257; size < 5000; size ++ )
+	   {
+		   cout << "************* Size is " << size << " ******************* " << endl;
+		   tnlLongVector< T > host_input( size );
+
+		   /*for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = 0.0;
+		   mainReduction( host_input,
+				   algorithm_efficiency,
+				   256,
+				   2048 );*/
+
+		   for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = 1.0;
+		   mainReduction( host_input,
+						   algorithm_efficiency,
+						   256,
+						   2048 );
+
+		   for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = i;
+		   mainReduction( host_input,
+				   algorithm_efficiency,
+				   256,
+				   2048 );
+
+		   for( int i = 0; i < size; i ++ )
+			   host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
+		   mainReduction( host_input,
+				   algorithm_efficiency,
+				   256,
+				   2048 );
+
+	   	   }
+
+
+
+
 
    };
 
@@ -190,19 +292,19 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    void testSimpleReduction3()
    {
    	   cout << "Test reduction 3" << endl;
-     	   testReduction( 3 );
+       testReduction( 3 );
    };
 
    void testSimpleReduction2()
    {
 	   cout << "Test reduction 2" << endl;
-  	   testReduction( 2 );
+  	   //testReduction( 2 );
    };
 
    void testSimpleReduction1()
    {
 	   cout << "Test reduction 1" << endl;
-	   testReduction( 1 );
+	   //testReduction( 1 );
    };
 
 

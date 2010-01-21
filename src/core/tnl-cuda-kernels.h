@@ -51,26 +51,28 @@ template< class T > __device__ T tnlCudaMax( const T& a,
 
 template < class T, tnlOperation operation, int blockSize >
 __global__ void tnlCUDAReductionKernel( const int size,
-	         			const int grid_size,
-	                                const T* d_input,
-	                                T* d_output,
-	                                T* dbg_array1 = 0  )
+	         			                const int grid_size,
+	                                    const T* d_input,
+	                                    T* d_output,
+	                                    T* dbg_array1 = 0  )
 {
    extern __shared__ __align__ ( 8 ) T sdata[];
 
    // Read data into the shared memory
    int tid = threadIdx. x;
-   int gid = 2 * blockSize * blockDim. x + threadIdx. x;
+   int gid = 2 * blockDim. x * blockIdx. x + threadIdx. x;
 
    if( gid + blockSize < size )
    {
       if( operation == tnlMin ) sdata[ tid ] = :: tnlCudaMin( d_input[ gid ], d_input[ gid + blockSize ] );
       if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( d_input[ gid ], d_input[ gid + blockSize ] );
       if( operation == tnlSum ) sdata[ tid ] = d_input[ gid ] + d_input[ gid + blockSize ];
+      //dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = -1;
    }
    else if( gid < size )
    {
       sdata[ tid ] = d_input[ gid ];
+      //dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = -2;
    }
    gid += grid_size;
 
@@ -80,8 +82,9 @@ __global__ void tnlCUDAReductionKernel( const int size,
       if( operation == tnlMax ) sdata[ tid ] = :: tnlCudaMax( sdata[ tid ], :: tnlCudaMax( d_input[ gid ], d_input[ gid + blockSize ] ) );
       if( operation == tnlSum ) sdata[ tid ] += d_input[gid] + d_input[ gid + blockSize ];
       gid += grid_size;
+      //dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = -4;
    }
-   dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = sdata[ tid ];
+   //dbg_array1[ blockIdx. x * blockDim. x + threadIdx. x ] = sdata[ tid ];
    __syncthreads();
 
    if( gid + blockDim. x < size )
@@ -216,6 +219,9 @@ bool tnlCUDAReduction( const int size,
 	               T& result,
 	               T* device_output = 0 )
 {
+   if( ! size ) return false;
+
+
    //Calculate necessary block/grid dimensions
    const int cpuThreshold = 1;
    const int desBlockSize = 16;    //Desired block size
@@ -235,7 +241,7 @@ bool tnlCUDAReduction( const int size,
        }
        device_output_allocated = true;
 
-       cudaMalloc( ( void** ) &dbg_array1, size * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
+       //cudaMalloc( ( void** ) &dbg_array1, size * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
        //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
@@ -247,40 +253,40 @@ bool tnlCUDAReduction( const int size,
       block_size. x = :: Min( size_reduced, desBlockSize );
       grid_size. x = :: Min( ( int ) ( size_reduced / block_size. x + 1 ) / 2, desGridSize );
       shmem = block_size. x * sizeof( T );
-      cout << "Size: " << size_reduced
+      /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
-           << " Shmem: " << shmem << endl;
+           << " Shmem: " << shmem << endl;*/
       tnlAssert( shmem < 16384, cerr << shmem << " bytes are required." << endl; );
       tnlAssert( block_size. x <= 512, cerr << "Block size is " << block_size. x << endl; );
       switch( block_size. x )
       {
 		  case 512:
-			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 512 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 256:
-			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 256 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case 128:
-			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation, 128 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  64:
-			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  64 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  32:
-			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  32 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case  16:
-			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,  16 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   8:
-			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   8 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   4:
-			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   4 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   2:
-			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size, block_size, shmem >>>( size_reduced, grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
+			  tnlCUDAReductionKernel< T, operation,   2 ><<< grid_size, block_size, shmem >>>( size_reduced, 2 * grid_size. x * block_size. x, reduction_input, device_output, dbg_array1 );
 			  break;
 		  case   1:
 			  tnlAssert( false, cerr << "blockSize should not be 1." << endl );
@@ -293,22 +299,25 @@ bool tnlCUDAReduction( const int size,
       reduction_input = device_output;
 
       // debuging part
-      T* host_array = new T[ size ];
+      /*T* host_array = new T[ size ];
       cudaMemcpy( host_array, dbg_array1,  size * sizeof( T ), cudaMemcpyDeviceToHost );
       for( int i = 0; i< size; i ++ )
     	  cout << host_array[ i ] << " - ";
-      cout << endl;
+      cout << endl;*/
 
-      T* output = new T[ size_reduced ];
+      /*T* output = new T[ size_reduced ];
       cudaMemcpy( output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
       cout << endl;
       for( int i = 0; i < size_reduced; i ++ )
     	  cout << output[ i ] << "   ";
       cout << endl;
-      delete[] output;
+      delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+   	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -563,7 +572,10 @@ bool tnlCUDASimpleReduction5( const int size,
       delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+   	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -615,11 +627,13 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 		sdata[ tid ] = d_input[ gid ];
 	}
 	__syncthreads();
+	dbg_array1[ tid ] = sdata[ tid ];
 
 	// Parallel reduction
-	for( int s = blockDim. x / 2; s > 0; s >>= 1 )
+	int n = last_tid < blockDim. x ? last_tid : blockDim. x;
+	for( int s = n / 2; s > 0; s >>= 1 )
 	{
-		if( tid < s && tid + s < last_tid )
+		if( tid < s && tid + s < n )
 		{
 			if( operation == tnlMin )
 				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
@@ -628,7 +642,25 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 			if( operation == tnlSum )
 				sdata[ tid ] += sdata[ tid + s ];
 		}
+		/* This is for the case when we have odd number of elements.
+		 * The last one will be reduced using the thread with ID 0.
+		 */
+		if( 2 * s < n && tid == 0 )
+		{
+			if( operation == tnlMin )
+				sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ n ] );
+			if( operation == tnlMax )
+				sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ n ] );
+			if( operation == tnlSum )
+				sdata[ 0 ] += sdata[ n ];
+			dbg_array1[ n ] = -555; //sdata[ 0 ];
+
+		}
+		n = s;
+
 		__syncthreads();
+		//dbg_array1[ tid ] = -sdata[ tid ];
+
 	}
 
 	// Store the result back in global memory
@@ -660,7 +692,7 @@ bool tnlCUDASimpleReduction4( const int size,
        }
        device_output_allocated = true;
 
-       //cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
+       cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
        //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
@@ -670,18 +702,20 @@ bool tnlCUDASimpleReduction4( const int size,
    while( size_reduced > cpuThreshold )
    {
       block_size. x = :: Min( size_reduced, desBlockSize );
-      grid_size. x = ( size_reduced / block_size. x + 1 ) / 2;
+      grid_size. x = size_reduced / block_size. x / 2;
+      if( grid_size. x * 2 * block_size. x < size_reduced )
+    	  grid_size. x ++;
       shmem = block_size. x * sizeof( T );
-      /*cout << "Size: " << size_reduced
+      cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << endl;
       tnlCUDASimpleReductionKernel4< T, operation ><<< grid_size. x, block_size, shmem >>>( size_reduced, reduction_input, device_output, dbg_array1 );
       size_reduced = grid_size. x;
       reduction_input = device_output;
 
       // debuging part
-      /*T* host_array = new T[ desBlockSize ];
+      T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
       for( int i = 0; i< :: Min( ( int ) block_size. x, desBlockSize ); i ++ )
     	  cout << host_array[ i ] << " - ";
@@ -693,10 +727,13 @@ bool tnlCUDASimpleReduction4( const int size,
       for( int i = 0; i < size_reduced; i ++ )
     	  cout << output[ i ] << "   ";
       cout << endl;
-      delete[] output;*/
+      delete[] output;
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -783,7 +820,7 @@ bool tnlCUDASimpleReduction3( const int size,
    while( size_reduced > cpuThreshold )
    {
       block_size. x = :: Min( size_reduced, desBlockSize );
-      grid_size. x = size_reduced / block_size. x;
+      grid_size. x = size_reduced / block_size. x + ( size_reduced % block_size. x != 0 );
       shmem = block_size. x * sizeof( T );
       /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
@@ -803,7 +840,10 @@ bool tnlCUDASimpleReduction3( const int size,
       delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+   	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -891,7 +931,7 @@ bool tnlCUDASimpleReduction2( const int size,
    while( size_reduced > cpuThreshold )
    {
       block_size. x = :: Min( size_reduced, desBlockSize );
-      grid_size. x = size_reduced / block_size. x;
+      grid_size. x = size_reduced / block_size. x + ( size_reduced % block_size. x != 0 );
       shmem = block_size. x * sizeof( T );
       /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
@@ -911,7 +951,10 @@ bool tnlCUDASimpleReduction2( const int size,
       delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -998,7 +1041,7 @@ bool tnlCUDASimpleReduction1( const int size,
    while( size_reduced > cpuThreshold )
    {
       block_size. x = :: Min( size_reduced, desBlockSize );
-      grid_size. x = size_reduced / block_size. x;
+      grid_size. x = size_reduced / block_size. x + ( size_reduced % block_size. x != 0 );
       shmem = block_size. x * sizeof( T );
       /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
@@ -1018,7 +1061,10 @@ bool tnlCUDASimpleReduction1( const int size,
       delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
-   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+   if( size == 1 )
+	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+   else
+	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
