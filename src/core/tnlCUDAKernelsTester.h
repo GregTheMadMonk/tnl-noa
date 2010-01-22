@@ -156,7 +156,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   }
 
 
-	   if( min == seq_min )
+	   /*if( min == seq_min )
 		   cout << "Min: " << min << " Seq. min: " << seq_min << " :-)" << endl;
 	   else
 		   cout << "Min: " << min << " Seq. min: " << seq_min << " !!!!!!!!!!" << endl;
@@ -167,11 +167,16 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   if( sum == seq_sum )
 		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " :-)" << endl;
 	   else
-		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;
+		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;*/
 
 	   T param;
-	   if( GetParameterType( param ) == "float" )
+	   if( GetParameterType( param ) == "float" ||
+		   GetParameterType( param ) == "double" )
 	   {
+		   if( min != seq_min )
+			   cerr << "Diff. min = " << min << " seq. min = " << seq_min;
+		   if( max != seq_max )
+			   cerr << "Diff. max = " << max << " seq. max = " << seq_max;
 		   CPPUNIT_ASSERT( min == seq_min );
 		   CPPUNIT_ASSERT( max == seq_max );
 		   if( sum == 0.0 )
@@ -181,11 +186,19 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		   else
 		   {
 			   double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
+			   if( fabs( diff > 1.0e-5 ) )
+				   cerr << "Diff is " << diff << " for " << GetParameterType( param ) << endl;
 			   CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );
 		   }
 	   }
 	   else
 	   {
+		   if( min != seq_min )
+			   cerr << "Diff. min = " << min << " seq. min = " << seq_min;
+		   if( max != seq_max )
+			   cerr << "Diff. max = " << max << " seq. max = " << seq_max;
+		   if( sum != seq_sum )
+			   cerr << "Diff. sum = " << sum << " seq. sum = " << seq_sum;
 		   CPPUNIT_ASSERT( min == seq_min );
 		   CPPUNIT_ASSERT( max == seq_max );
 		   CPPUNIT_ASSERT( sum == seq_sum );
@@ -197,10 +210,11 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    {
 	   tnlLongVector< T > host_input;
 	   int size = 2;
-	   /*for( int s = 1; s < 12; s ++ )
+	   for( int s = 1; s < 12; s ++ )
 	   {
 		   tnlLongVector< T > host_input( size );
 
+		   cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = 0.0;
 		   mainReduction( host_input,
@@ -208,20 +222,21 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		   		          256,
 		   		          2048 );
 
+		   cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = 1.0;
 		   mainReduction( host_input,
 		   		          algorithm_efficiency,
 		   		          256,
 		   		          2048 );
-
+		   cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 		   		   host_input[ i ] = i;
 		    mainReduction( host_input,
 						   algorithm_efficiency,
 		   		   		   256,
 		   		   		   2048 );
-
+		    cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
 		    for( int i = 0; i < size; i ++ )
 		    	host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
 		    mainReduction( host_input,
@@ -229,46 +244,43 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		    		   	   256,
 		    		   	   2048 );
 		    size *= 2;
-	   }*/
-	   for( size = 257; size < 5000; size ++ )
+		    cout << endl;
+	   }
+	   for( size = 1; size < 5000; size ++ )
 	   {
-		   cout << "************* Size is " << size << " ******************* " << endl;
 		   tnlLongVector< T > host_input( size );
 
-		   /*for( int i = 0; i < size; i ++ )
+		   cout << "Alg. " << algorithm_efficiency  << "Testing zeros with size "  << size << " ";
+		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = 0.0;
 		   mainReduction( host_input,
 				   algorithm_efficiency,
 				   256,
-				   2048 );*/
+				   2048 );
 
+		   cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = 1.0;
 		   mainReduction( host_input,
 						   algorithm_efficiency,
 						   256,
 						   2048 );
-
+		   cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = i;
 		   mainReduction( host_input,
 				   algorithm_efficiency,
 				   256,
 				   2048 );
-
+		   cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
 		   for( int i = 0; i < size; i ++ )
 			   host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
 		   mainReduction( host_input,
 				   algorithm_efficiency,
 				   256,
 				   2048 );
-
-	   	   }
-
-
-
-
-
+		   cout << endl;
+	   }
    };
 
    void testReduction()
@@ -298,13 +310,13 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    void testSimpleReduction2()
    {
 	   cout << "Test reduction 2" << endl;
-  	   //testReduction( 2 );
+  	   testReduction( 2 );
    };
 
    void testSimpleReduction1()
    {
 	   cout << "Test reduction 1" << endl;
-	   //testReduction( 1 );
+	   testReduction( 1 );
    };
 
 

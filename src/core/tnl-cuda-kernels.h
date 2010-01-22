@@ -370,32 +370,32 @@ __global__ void tnlCUDASimpleReductionKernel5( const int size,
 	__syncthreads();
 
 	// Parallel reduction
-		if( blockSize == 512 )
+	if( blockSize == 512 )
+	{
+		if( tid < 256 )
 		{
-			if( tid < 256 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 256 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 256 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 256 ];
-			}
-			__syncthreads();
+			if( operation == tnlMin )
+				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 256 ] );
+			if( operation == tnlMax )
+				sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 256 ] );
+			if( operation == tnlSum )
+				sdata[ tid ] += sdata[ tid + 256 ];
 		}
-		if( blockSize >= 256 )
+		__syncthreads();
+	}
+	if( blockSize >= 256 )
+	{
+		if( tid < 128 )
 		{
-			if( tid < 128 )
-			{
-				if( operation == tnlMin )
-					sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 128 ] );
-				if( operation == tnlMax )
-					sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 128 ] );
-				if( operation == tnlSum )
-					sdata[ tid ] += sdata[ tid + 128 ];
-			}
-			__syncthreads();
+			if( operation == tnlMin )
+				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + 128 ] );
+			if( operation == tnlMax )
+				sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + 128 ] );
+			if( operation == tnlSum )
+				sdata[ tid ] += sdata[ tid + 128 ];
 		}
+		__syncthreads();
+	}
 		if( blockSize >= 128 )
 		{
 			if (tid< 64)
@@ -627,13 +627,13 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 		sdata[ tid ] = d_input[ gid ];
 	}
 	__syncthreads();
-	dbg_array1[ tid ] = sdata[ tid ];
+	//dbg_array1[ tid ] = tid; //sdata[ tid ];
 
 	// Parallel reduction
 	int n = last_tid < blockDim. x ? last_tid : blockDim. x;
 	for( int s = n / 2; s > 0; s >>= 1 )
 	{
-		if( tid < s && tid + s < n )
+		if( tid < s )
 		{
 			if( operation == tnlMin )
 				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
@@ -645,16 +645,15 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 		/* This is for the case when we have odd number of elements.
 		 * The last one will be reduced using the thread with ID 0.
 		 */
-		if( 2 * s < n && tid == 0 )
+		if( 2 * s < n && tid == n - 1 )
 		{
 			if( operation == tnlMin )
-				sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ n ] );
+				sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ tid ] );
 			if( operation == tnlMax )
-				sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ n ] );
+				sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ tid ] );
 			if( operation == tnlSum )
-				sdata[ 0 ] += sdata[ n ];
-			dbg_array1[ n ] = -555; //sdata[ 0 ];
-
+				sdata[ 0 ] += sdata[ tid ];
+			dbg_array1[ 0 ] = sdata[ tid ];
 		}
 		n = s;
 
@@ -663,7 +662,7 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 
 	}
 
-	// Store the result back in global memory
+	// Store the result back in the global memory
 	if( tid == 0 )
 		d_output[ blockIdx. x ] = sdata[ 0 ];
 }
@@ -692,7 +691,7 @@ bool tnlCUDASimpleReduction4( const int size,
        }
        device_output_allocated = true;
 
-       cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
+       //cudaMalloc( ( void** ) &dbg_array1, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!
        //cudaMalloc( ( void** ) &dbg_array2, desBlockSize * sizeof( T ) ); //!!!!!!!!!!!!!!!!!!!!!!!!!
    }
    dim3 block_size( 0 ), grid_size( 0 );
@@ -706,19 +705,19 @@ bool tnlCUDASimpleReduction4( const int size,
       if( grid_size. x * 2 * block_size. x < size_reduced )
     	  grid_size. x ++;
       shmem = block_size. x * sizeof( T );
-      cout << "Size: " << size_reduced
+      /*cout << "Size: " << size_reduced
            << " Grid size: " << grid_size. x
            << " Block size: " << block_size. x
-           << " Shmem: " << shmem << endl;
+           << " Shmem: " << shmem << endl;*/
       tnlCUDASimpleReductionKernel4< T, operation ><<< grid_size. x, block_size, shmem >>>( size_reduced, reduction_input, device_output, dbg_array1 );
       size_reduced = grid_size. x;
       reduction_input = device_output;
 
       // debuging part
-      T* host_array = new T[ desBlockSize ];
+      /*T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
       for( int i = 0; i< :: Min( ( int ) block_size. x, desBlockSize ); i ++ )
-    	  cout << host_array[ i ] << " - ";
+    	  cout << host_array[ i ] << " ";
       cout << endl;
 
       T* output = new T[ size_reduced ];
@@ -727,7 +726,7 @@ bool tnlCUDASimpleReduction4( const int size,
       for( int i = 0; i < size_reduced; i ++ )
     	  cout << output[ i ] << "   ";
       cout << endl;
-      delete[] output;
+      delete[] output;*/
    }
    T* host_output = new T[ size_reduced ];
    if( size == 1 )
@@ -772,7 +771,8 @@ __global__ void tnlCUDASimpleReductionKernel3( const int size,
 	__syncthreads();
 
 	// Parallel reduction
-	for( int s = blockDim. x / 2; s > 0; s >>= 1 )
+	int n = last_tid < blockDim. x ? last_tid : blockDim. x;
+	for( int s = n / 2; s > 0; s >>= 1 )
 	{
 		if( tid < s && tid + s < last_tid )
 		{
@@ -783,6 +783,19 @@ __global__ void tnlCUDASimpleReductionKernel3( const int size,
 			if( operation == tnlSum )
 				sdata[ tid ] += sdata[ tid + s ];
 		}
+		/* This is for the case when we have odd number of elements.
+		 * The last one will be reduced using the thread with ID 0.
+		 */
+		if( 2 * s < n && tid == 0 )
+		{
+			if( operation == tnlMin )
+				sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ n - 1 ] );
+			if( operation == tnlMax )
+				sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ n - 1 ] );
+			if( operation == tnlSum )
+				sdata[ 0 ] += sdata[ n - 1 ];
+		}
+		n = s;
 		__syncthreads();
 	}
 
