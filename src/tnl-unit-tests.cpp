@@ -31,21 +31,27 @@ int main( int argc, char* argv[] )
 {
    CppUnit :: TextTestRunner runner;
    
+#ifdef HAVE_CUDA
    runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
    runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
-   runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
+   if( CUDA_ARCH == 1.3 )
+      runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
    
    runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
    runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );
-   runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
+   if( CUDA_ARCH == 1.3 )
+      runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
    
    runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
    runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
-   runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
+   if( CUDA_ARCH == 1.3 )
+      runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
    
    runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
    runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
-   runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
+   if( CUDA_ARCH == 1.3 )
+      runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
+#endif
    
    runner.run();
    return 0;

@@ -30,7 +30,11 @@ headers = \
    curve-ident.h \
    norms.h
 
-sources= tnlMersonSolverCUDA.cu
+sources =
+
+if BUILD_CUDA
+sources += tnlMersonSolverCUDA.cu
+endif
 
 libtnldiffincludedir = $(TNL_INCLUDE_DIR)/diff
 libtnldiffinclude_HEADERS = $(headers)

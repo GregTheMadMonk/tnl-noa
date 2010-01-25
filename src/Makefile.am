@@ -48,11 +48,17 @@ libtnl_mpi_dbg_0_1_la_LIBADD = debug/libtnldebug-mpi-dbg-0.1.la \
 endif                       
 
 tnl_unit_tests_sources = tnl-unit-tests.cpp
+tnl_benchmarks_sources = tnl-benchmarks.cpp
 
-check_PROGRAMS = tnl-unit-tests
+check_PROGRAMS = tnl-unit-tests \
+                 tnl-benchmarks
+                  
 tnl_unit_tests_SOURCES = $(tnl_unit_tests_sources)
 tnl_unit_tests_LDADD = libtnl-0.1.la \
                        core/libcore-tests.la
+
+tnl_benchmarks_SOURCES = $(tnl_benchmarks_sources)
+tnl_benchmarks_LDADD = libtnl-0.1.la
 
 if BUILD_DBG
 bin_PROGRAMS = tnl-unit-tests-dbg
@@ -63,4 +69,4 @@ endif
 
 
 
-TESTS = tnl-unit-tests
+TESTS = tnl-benchmarks

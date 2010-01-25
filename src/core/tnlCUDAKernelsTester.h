@@ -104,59 +104,59 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		               const int desired_block_size,
 		               const int desired_grid_size )
    {
-	   const int size = host_input. GetSize();
-	   tnlLongVectorCUDA< T > device_input;
-	   if( ! device_input. SetNewSize( size ) )
-		   return false;
-	   device_input. copyFrom( host_input );
+      const int size = host_input. GetSize();
+      tnlLongVectorCUDA< T > device_input;
+      if( ! device_input. SetNewSize( size ) )
+         return false;
+      device_input. copyFrom( host_input );
 
-	   T seq_min( host_input[ 0 ] ),
+      T seq_min( host_input[ 0 ] ),
 		 seq_max( host_input[ 0 ] ),
 		 seq_sum( host_input[ 0 ] );
 
-	   for( int i = 1; i < size; i ++ )
-	   {
-		   seq_min = :: Min( seq_min, host_input[ i ] );
-		   seq_max = :: Max( seq_max, host_input[ i ] );
-		   seq_sum += host_input[ i ];
-	   }
+      for( int i = 1; i < size; i ++ )
+      {
+         seq_min = :: Min( seq_min, host_input[ i ] );
+         seq_max = :: Max( seq_max, host_input[ i ] );
+         seq_sum += host_input[ i ];
+      }
 
-	   T min, max, sum;
-	   switch( algorithm_efficiency )
-	   {
-		   case 1:
-			   tnlCUDASimpleReduction1Min( size, device_input. Data(), min );
-			   tnlCUDASimpleReduction1Max( size, device_input. Data(), max );
-			   tnlCUDASimpleReduction1Sum( size, device_input. Data(), sum );
-			   break;
-		   case 2:
-			   tnlCUDASimpleReduction2Min( size, device_input. Data(), min );
-			   tnlCUDASimpleReduction2Max( size, device_input. Data(), max );
-			   tnlCUDASimpleReduction2Sum( size, device_input. Data(), sum );
-			   break;
-		   case 3:
-			   tnlCUDASimpleReduction3Min( size, device_input. Data(), min );
-			   tnlCUDASimpleReduction3Max( size, device_input. Data(), max );
-			   tnlCUDASimpleReduction3Sum( size, device_input. Data(), sum );
-			   break;
-		   case 4:
-			   tnlCUDASimpleReduction4Min( size, device_input. Data(), min );
-			   tnlCUDASimpleReduction4Max( size, device_input. Data(), max );
-			   tnlCUDASimpleReduction4Sum( size, device_input. Data(), sum );
-			   break;
-		   case 5:
-			   tnlCUDASimpleReduction5Min( size, device_input. Data(), min );
-			   tnlCUDASimpleReduction5Max( size, device_input. Data(), max );
-			   tnlCUDASimpleReduction5Sum( size, device_input. Data(), sum );
-			   break;
-		   default:
-			   tnlCUDAReductionMin( size, device_input. Data(), min );
-			   tnlCUDAReductionMax( size, device_input. Data(), max );
-			   tnlCUDAReductionSum( size, device_input. Data(), sum );
-	   }
+      T min, max, sum;
+      switch( algorithm_efficiency )
+      {
+         case 1:
+            tnlCUDASimpleReduction1Min( size, device_input. Data(), min );
+            tnlCUDASimpleReduction1Max( size, device_input. Data(), max );
+            tnlCUDASimpleReduction1Sum( size, device_input. Data(), sum );
+            break;
+         case 2:
+            tnlCUDASimpleReduction2Min( size, device_input. Data(), min );
+            tnlCUDASimpleReduction2Max( size, device_input. Data(), max );
+            tnlCUDASimpleReduction2Sum( size, device_input. Data(), sum );
+            break;
+         case 3:
+            tnlCUDASimpleReduction3Min( size, device_input. Data(), min );
+            tnlCUDASimpleReduction3Max( size, device_input. Data(), max );
+            tnlCUDASimpleReduction3Sum( size, device_input. Data(), sum );
+            break;
+         case 4:
+            tnlCUDASimpleReduction4Min( size, device_input. Data(), min );
+            tnlCUDASimpleReduction4Max( size, device_input. Data(), max );
+            tnlCUDASimpleReduction4Sum( size, device_input. Data(), sum );
+            break;
+         case 5:
+            tnlCUDASimpleReduction5Min( size, device_input. Data(), min );
+            tnlCUDASimpleReduction5Max( size, device_input. Data(), max );
+            tnlCUDASimpleReduction5Sum( size, device_input. Data(), sum );
+            break;
+         default:
+            tnlCUDAReductionMin( size, device_input. Data(), min );
+            tnlCUDAReductionMax( size, device_input. Data(), max );
+            tnlCUDAReductionSum( size, device_input. Data(), sum );
+      }
 
 
-	   /*if( min == seq_min )
+      /*if( min == seq_min )
 		   cout << "Min: " << min << " Seq. min: " << seq_min << " :-)" << endl;
 	   else
 		   cout << "Min: " << min << " Seq. min: " << seq_min << " !!!!!!!!!!" << endl;
@@ -169,154 +169,167 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   else
 		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;*/
 
-	   T param;
-	   if( GetParameterType( param ) == "float" ||
-		   GetParameterType( param ) == "double" )
-	   {
-		   if( min != seq_min )
-			   cerr << "Diff. min = " << min << " seq. min = " << seq_min;
-		   if( max != seq_max )
-			   cerr << "Diff. max = " << max << " seq. max = " << seq_max;
-		   CPPUNIT_ASSERT( min == seq_min );
-		   CPPUNIT_ASSERT( max == seq_max );
-		   if( sum == 0.0 )
-		   {
-			   CPPUNIT_ASSERT( sum == seq_sum );
-		   }
-		   else
-		   {
-			   double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
-			   if( fabs( diff > 1.0e-5 ) )
-				   cerr << "Diff is " << diff << " for " << GetParameterType( param ) << endl;
-			   CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );
-		   }
-	   }
-	   else
-	   {
-		   if( min != seq_min )
-			   cerr << "Diff. min = " << min << " seq. min = " << seq_min;
-		   if( max != seq_max )
-			   cerr << "Diff. max = " << max << " seq. max = " << seq_max;
-		   if( sum != seq_sum )
-			   cerr << "Diff. sum = " << sum << " seq. sum = " << seq_sum;
-		   CPPUNIT_ASSERT( min == seq_min );
-		   CPPUNIT_ASSERT( max == seq_max );
-		   CPPUNIT_ASSERT( sum == seq_sum );
-	   }
+      T param;
+      if( GetParameterType( param ) == "float" ||
+               GetParameterType( param ) == "double" )
+      {
+         if( min != seq_min )
+            cout << "Diff. min = " << min << " seq. min = " << seq_min;
+         if( max != seq_max )
+            cout << "Diff. max = " << max << " seq. max = " << seq_max;
+         CPPUNIT_ASSERT( min == seq_min );
+         CPPUNIT_ASSERT( max == seq_max );
+         if( sum == 0.0 )
+         {
+            CPPUNIT_ASSERT( sum == seq_sum );
+         }
+         else
+         {
+            double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
+            if( fabs( diff > 1.0e-5 ) )
+            {
+               cout << "Diff is " << diff << " for " << GetParameterType( param ) << endl;
+               abort();
+            }
+            CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );
+         }
+      }
+      else
+      {
+         if( min != seq_min )
+         {
+            cout << "Diff. min = " << min << " seq. min = " << seq_min;
+            abort();
+         }
+         if( max != seq_max )
+         {
+            cout << "Diff. max = " << max << " seq. max = " << seq_max;
+            abort();
+         }
+         if( sum != seq_sum )
+         {
+            cout << "Diff. sum = " << sum << " seq. sum = " << seq_sum;
+            abort();
+         }
+         CPPUNIT_ASSERT( min == seq_min );
+         CPPUNIT_ASSERT( max == seq_max );
+         CPPUNIT_ASSERT( sum == seq_sum );
+      }
 
    }
 
    void testReduction( int algorithm_efficiency = 0 )
    {
-	   tnlLongVector< T > host_input;
-	   int size = 2;
-	   for( int s = 1; s < 12; s ++ )
-	   {
-		   tnlLongVector< T > host_input( size );
+      tnlLongVector< T > host_input;
+      int size = 2;
+      /*for( int s = 1; s < 12; s ++ )
+      {
+         tnlLongVector< T > host_input( size );
 
-		   cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = 0.0;
-		   mainReduction( host_input,
-		   		          algorithm_efficiency,
-		   		          256,
-		   		          2048 );
+         cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = 0.0;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
 
-		   cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = 1.0;
-		   mainReduction( host_input,
-		   		          algorithm_efficiency,
-		   		          256,
-		   		          2048 );
-		   cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-		   		   host_input[ i ] = i;
-		    mainReduction( host_input,
-						   algorithm_efficiency,
-		   		   		   256,
-		   		   		   2048 );
-		    cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
-		    for( int i = 0; i < size; i ++ )
-		    	host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
-		    mainReduction( host_input,
-		                   algorithm_efficiency,
-		    		   	   256,
-		    		   	   2048 );
-		    size *= 2;
-		    cout << endl;
-	   }
-	   for( size = 1; size < 5000; size ++ )
-	   {
-		   tnlLongVector< T > host_input( size );
+         cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = 1.0;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+         cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = i;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+         cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+         size *= 2;
+         cout << endl;
+      }*/
+      for( size = 1; size < 5000; size ++ )
+      {
+         tnlLongVector< T > host_input( size );
 
-		   cout << "Alg. " << algorithm_efficiency  << "Testing zeros with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = 0.0;
-		   mainReduction( host_input,
-				   algorithm_efficiency,
-				   256,
-				   2048 );
+         //cout << "Alg. " << algorithm_efficiency  << " Testing zeros with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = 0.0;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
 
-		   cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = 1.0;
-		   mainReduction( host_input,
-						   algorithm_efficiency,
-						   256,
-						   2048 );
-		   cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = i;
-		   mainReduction( host_input,
-				   algorithm_efficiency,
-				   256,
-				   2048 );
-		   cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
-		   for( int i = 0; i < size; i ++ )
-			   host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
-		   mainReduction( host_input,
-				   algorithm_efficiency,
-				   256,
-				   2048 );
-		   cout << endl;
-	   }
+         //cout << "Alg. " << algorithm_efficiency  << " Testing ones with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = 1.0;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+         //cout << "Alg. " << algorithm_efficiency  << " Testing linear sequence with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = i;
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+
+         //cout << "Alg. " << algorithm_efficiency  << " Testing quadratic sequence with size "  << size << " ";
+         for( int i = 0; i < size; i ++ )
+            host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
+         mainReduction( host_input,
+                  algorithm_efficiency,
+                  256,
+                  2048 );
+         //cout << endl;
+      }
    };
 
    void testReduction()
    {
-   	   cout << "Test FAST reduction" << endl;
-	   testReduction( 0 );
+      //cout << "Test FAST reduction" << endl;
+      //testReduction( 0 );
    }
 
    void testSimpleReduction5()
    {
-   	   cout << "Test reduction 5" << endl;
-   	   testReduction( 5 );
+      //cout << "Test reduction 5" << endl;
+      //testReduction( 5 );
    };
 
    void testSimpleReduction4()
    {
-	   cout << "Test reduction 4" << endl;
-	   testReduction( 4 );
+      cout << "Test reduction 4" << endl;
+      testReduction( 4 );
    };
 
    void testSimpleReduction3()
    {
-   	   cout << "Test reduction 3" << endl;
-       testReduction( 3 );
+      cout << "Test reduction 3" << endl;
+      testReduction( 3 );
    };
 
    void testSimpleReduction2()
    {
-	   cout << "Test reduction 2" << endl;
-  	   testReduction( 2 );
+      cout << "Test reduction 2" << endl;
+      testReduction( 2 );
    };
 
    void testSimpleReduction1()
    {
-	   cout << "Test reduction 1" << endl;
-	   testReduction( 1 );
+      cout << "Test reduction 1" << endl;
+      testReduction( 1 );
    };
 
 

@@ -23,9 +23,7 @@
 #include <core/tnlObject.h>
 #include <core/param-types.h>
 
-#ifdef HAVE_CUDA
 template< class T > class tnlLongVectorCUDA;
-#endif
 
 
 template< class T > class tnlLongVector : public tnlObject
@@ -149,9 +147,7 @@ template< class T > class tnlLongVector : public tnlObject
       return true;
    };
 
-#ifdef HAVE_CUDA
    bool copyFrom( const tnlLongVectorCUDA< T >& cuda_vector );
-#endif
 
    virtual ~tnlLongVector()
    {

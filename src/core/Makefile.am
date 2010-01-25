@@ -56,11 +56,14 @@ sources = tnlConfigDescription.cpp \
 	  tnlTimerCPU.cpp \
 	  tnlTimerRT.cpp \
 	  tnlTester.cpp \
-	  tnl-cuda-kernels.cu \
 	  compress-file.cpp \
 	  mfilename.cpp \
 	  mpi-supp.cpp \
 	  parse.cc
+	  
+if BUILD_CUDA
+sources += tnl-cuda-kernels.cu 
+endif
 
 libmcoreincludedir = $(TNL_INCLUDE_DIR)/core
 libmcoreinclude_HEADERS = $(headers)
@@ -95,10 +98,11 @@ libcore_tests_sources = tnlStringTester.cpp \
                         tnlStringTester.h \
                         tnlObjectTester.cpp \
                         tnlObjectTester.h \
-                        tnlLongVectorCUDATester.cu \
                         tnlLongVectorCUDATester.cu.h \
                         tnlLongVectorCUDATester.h
-                        
+if BUILD_CUDA
+libcore_tests_sources += tnlLongVectorCUDATester.cu
+endif                        
 
 check_LTLIBRARIES = libcore-tests.la
 libcore_tests_la_SOURCES = $(libcore_tests_sources)

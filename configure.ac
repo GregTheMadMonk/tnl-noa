@@ -97,16 +97,16 @@ then
       CXX="nvcc"
       case "$CUDA_ARCH"  in
          1.0 )
-            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_10"
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_10 -DCUDA_ARCH=1.0"
          ;;
          1.1 )
-            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_11"
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_11 -DCUDA_ARCH=1.1"
          ;;
          1.2 )
-            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_12"
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_12 -DCUDA_ARCH=1.2"
          ;;
          1.3 )
-            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_13"
+            CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_13 -DCUDA_ARCH=1.3"
          ;;
       esac  
       DBGCXXFLAGS="$DBGCXXFLAGS -deviceemu"    
@@ -309,7 +309,7 @@ else
 fi
 AC_LANG_RESTORE
 
-
+AM_CONDITIONAL([BUILD_CUDA],[test x"$HAVE_CUDA" = xyes] )
 AM_CONDITIONAL([BUILD_MPI],[test x"$MPISTATUS" = xyes] )
 AM_CONDITIONAL([BUILD_DBG],[test x"$DBGSTATUS" = xyes] )
 AM_CONDITIONAL([BUILD_MPI_DBG],[test x"$DBGSTATUS" = xyes -a x"$MPISTATUS" = xyes] )

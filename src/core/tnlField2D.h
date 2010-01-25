@@ -22,9 +22,7 @@
 #include <core/tnlObject.h>
 #include <core/tnlLongVector.h>
 
-#ifdef HAVE_CUDA
 template< class T > class tnlFieldCUDA2D;
-#endif
 
 template< class T > class tnlField2D : public tnlLongVector< T >
 {
@@ -104,9 +102,7 @@ template< class T > class tnlField2D : public tnlLongVector< T >
       return i * y_size + j;
    };
    
-#ifdef HAVE_CUDA
    bool copyFrom( const tnlFieldCUDA2D< T >& cuda_vector );
-#endif
 
 
    //! Method for saving the object to a file as a binary data

@@ -19,12 +19,14 @@
 #define TNLLONGVECTORCUDA_H_
 
 
-
 /*
  *
  */
 #ifdef HAVE_CUDA
 #include <cuda_runtime.h>
+#else
+#include <iostream>
+using namespace std;
 #endif
 
 #include <core/tnlObject.h>
@@ -36,9 +38,10 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    public:
    //! Constructor with given size
    tnlLongVectorCUDA( int _size = 0 )
+#ifdef HAVE_CUDA
     : size( _size ), shared_data( false )
    {
-#ifdef HAVE_CUDA
+
       if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess  )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
@@ -46,16 +49,19 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
          abort();
       }
       //data ++;
+   };
 #else
+   {
       cerr << "CUDA support is missing in this system." << endl;
+   }
 #endif
-    };
 
    //! Constructor with another long vector as template
    tnlLongVectorCUDA( const tnlLongVectorCUDA& v )
+#ifdef HAVE_CUDA
     : tnlObject( v ), size( v. size ), shared_data( false )
    {
-#ifdef HAVE_CUDA
+
       if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
@@ -63,10 +69,13 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
          abort();
       }
       //data ++;
-#else
-      cerr << "CUDA support is missing in this system." << endl;
-#endif
    };
+#else
+   {
+      cerr << "CUDA support is missing in this system." << endl;
+   }
+#endif
+
 
    tnlString GetType() const
    {
@@ -74,8 +83,9 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       return tnlString( "tnlLongVectorCUDA< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
    }
 
-#ifdef HAVE_CUDA
+
    bool SetNewSize( int _size )
+#ifdef HAVE_CUDA
    {
       if( size == _size ) return true;
       if( ! shared_data )
@@ -93,11 +103,13 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
          return false;
       }
       return true;
+   };
 #else
+   {
       cerr << "CUDA support is missing in this system." << endl;
       return false;
-#endif
    };
+#endif
 
    bool SetNewSize( const tnlLongVectorCUDA< T >& v )
    {
@@ -105,12 +117,18 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    };
 
    void SetSharedData( T* _data, const int _size )
+#ifdef HAVE_CUDA
    {
       if( data && ! shared_data ) cudaFree( data );
       data = _data;
       shared_data = true;
       size = _size;
    };
+#else
+   {
+      cerr << "CUDA support is missing in this system." << endl;
+   };
+#endif
 
    int GetSize() const
    {
@@ -152,7 +170,27 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       cerr << "CUDA support is missing in this system." << endl;
       return false;
 #endif
-   }
+   };
+
+   bool copyFrom( const tnlLongVectorCUDA< T >& long_vector, bool safe_mod = true )
+   {
+#ifdef HAVE_CUDA
+      assert( long_vector. GetSize() == GetSize() );
+      if( cudaMemcpy( data, long_vector. Data(), GetSize() * sizeof( T ), cudaMemcpyDeviceToDevice ) != cudaSuccess )
+      {
+         cerr << "Transfer of data from CUDA host ( " << long_vector. GetName()
+              << " ) to CUDA device ( " << GetName() << " ) failed." << endl;
+         return false;
+      }
+      if( safe_mod )
+         cudaThreadSynchronize();
+      return true;
+#else
+      cerr << "CUDA support is missing in this system." << endl;
+      return false;
+#endif
+   };
+
 
    virtual
    ~tnlLongVectorCUDA()
