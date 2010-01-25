@@ -899,52 +899,52 @@ bool tnlCUDASimpleReduction4( const int size,
 
 template < class T, tnlOperation operation >
 __global__ void tnlCUDASimpleReductionKernel3( const int size,
-		                                       const T* d_input,
-		                                       T* d_output )
+                                               const T* d_input,
+		                               T* d_output )
 {
-	extern __shared__ T sdata[];
+   extern __shared__ T sdata[];
 
-	// Read data into the shared memory
-	int tid = threadIdx. x;
-	int gid = blockIdx. x * blockDim. x + threadIdx. x;
-	// Last thread ID which manipulates meaningful data
-	int last_tid = size - blockIdx. x * blockDim. x;
-	if( gid < size )
-		sdata[ tid ] = d_input[gid];
-	__syncthreads();
+   // Read data into the shared memory
+   int tid = threadIdx. x;
+   int gid = blockIdx. x * blockDim. x + threadIdx. x;
+   // Last thread ID which manipulates meaningful data
+   int last_tid = size - blockIdx. x * blockDim. x;
+   if( gid < size )
+      sdata[ tid ] = d_input[gid];
+   __syncthreads();
 
-	// Parallel reduction
-	int n = last_tid < blockDim. x ? last_tid : blockDim. x;
-	for( int s = n / 2; s > 0; s >>= 1 )
-	{
-		if( tid < s && tid + s < last_tid )
-		{
-			if( operation == tnlMin )
-				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
-			if( operation == tnlMax )
-				sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
-			if( operation == tnlSum )
-				sdata[ tid ] += sdata[ tid + s ];
-		}
-		/* This is for the case when we have odd number of elements.
-		 * The last one will be reduced using the thread with ID 0.
-		 */
-		if( 2 * s < n && tid == 0 )
-		{
-			if( operation == tnlMin )
-				sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ n - 1 ] );
-			if( operation == tnlMax )
-				sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ n - 1 ] );
-			if( operation == tnlSum )
-				sdata[ 0 ] += sdata[ n - 1 ];
-		}
-		n = s;
-		__syncthreads();
-	}
+   // Parallel reduction
+   int n = last_tid < blockDim. x ? last_tid : blockDim. x;
+   for( int s = n / 2; s > 0; s >>= 1 )
+   {
+      if( tid < s && tid + s < last_tid )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + s ];
+      }
+      /* This is for the case when we have odd number of elements.
+       * The last one will be reduced using the thread with ID 0.
+       */
+      if( 2 * s < n && tid == 0 )
+      {
+         if( operation == tnlMin )
+            sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ n - 1 ] );
+         if( operation == tnlMax )
+            sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ n - 1 ] );
+         if( operation == tnlSum )
+            sdata[ 0 ] += sdata[ n - 1 ];
+      }
+      n = s;
+      __syncthreads();
+   }
 
-	// Store the result back in global memory
-	if( tid == 0 )
-		d_output[ blockIdx. x ] = sdata[ 0 ];
+   // Store the result back in global memory
+   if( tid == 0 )
+      d_output[ blockIdx. x ] = sdata[ 0 ];
 }
 
 template< class T, tnlOperation operation >
@@ -955,7 +955,7 @@ bool tnlCUDASimpleReduction3( const int size,
 {
    //Calculate necessary block/grid dimensions
    const int cpuThreshold = 1;
-   const int desBlockSize = 256;    //Desired block size
+   const int desBlockSize = 512;    //Desired block size
 
    bool device_output_allocated( false );
    if( ! device_output )
@@ -997,9 +997,9 @@ bool tnlCUDASimpleReduction3( const int size,
    }
    T* host_output = new T[ size_reduced ];
    if( size == 1 )
-   	   cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
+      cudaMemcpy( host_output, device_input, sizeof( T ), cudaMemcpyDeviceToHost );
    else
-	   cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
+      cudaMemcpy( host_output, device_output, size_reduced * sizeof( T ), cudaMemcpyDeviceToHost );
    result = host_output[ 0 ];
    for( int i = 1; i < size_reduced; i++ )
    {
@@ -1023,39 +1023,39 @@ bool tnlCUDASimpleReduction3( const int size,
 
 template < class T, tnlOperation operation >
 __global__ void tnlCUDASimpleReductionKernel2( const int size,
-		                                       const T* d_input,
-		                                       T* d_output )
+		                               const T* d_input,
+		                               T* d_output )
 {
-	extern __shared__ T sdata[];
+   extern __shared__ T sdata[];
 
-	// Read data into the shared memory
-	int tid = threadIdx. x;
-	int gid = blockIdx. x * blockDim. x + threadIdx. x;
-	// Last thread ID which manipulates meaningful data
-	int last_tid = size - blockIdx. x * blockDim. x;
-	if( gid < size )
-		sdata[tid] = d_input[gid];
-	__syncthreads();
+   // Read data into the shared memory
+   int tid = threadIdx. x;
+   int gid = blockIdx. x * blockDim. x + threadIdx. x;
+   // Last thread ID which manipulates meaningful data
+   int last_tid = size - blockIdx. x * blockDim. x;
+   if( gid < size )
+      sdata[tid] = d_input[gid];
+   __syncthreads();
 
-	// Parallel reduction
-	for( int s = 1; s < blockDim. x; s *= 2 )
-	{
-		int inds = 2 * s * tid;
-		if( inds < blockDim. x && inds + s < last_tid )
-		{
-			if( operation == tnlMin )
-				sdata[ inds ] = tnlCudaMin( sdata[ inds ], sdata[ inds + s ] );
-			if( operation == tnlMax )
-				sdata[ inds ] = tnlCudaMax( sdata[ inds ], sdata[ inds + s ] );
-			if( operation == tnlSum )
-				sdata[ inds ] += sdata[ inds + s ];
-		}
-		__syncthreads();
-	}
+   // Parallel reduction
+   for( int s = 1; s < blockDim. x; s *= 2 )
+   {
+      int inds = 2 * s * tid;
+      if( inds < blockDim. x && inds + s < last_tid )
+      {
+         if( operation == tnlMin )
+            sdata[ inds ] = tnlCudaMin( sdata[ inds ], sdata[ inds + s ] );
+         if( operation == tnlMax )
+            sdata[ inds ] = tnlCudaMax( sdata[ inds ], sdata[ inds + s ] );
+         if( operation == tnlSum )
+            sdata[ inds ] += sdata[ inds + s ];
+      }
+      __syncthreads();
+   }
 
-	// Store the result back in global memory
-	if( tid == 0 )
-		d_output[ blockIdx. x ] = sdata[ 0 ];
+   // Store the result back in global memory
+   if( tid == 0 )
+      d_output[ blockIdx. x ] = sdata[ 0 ];
 }
 
 template< class T, tnlOperation operation >
@@ -1066,7 +1066,7 @@ bool tnlCUDASimpleReduction2( const int size,
 {
    //Calculate necessary block/grid dimensions
    const int cpuThreshold = 1;
-   const int desBlockSize = 256;    //Desired block size
+   const int desBlockSize = 512;    //Desired block size
 
    bool device_output_allocated( false );
    if( ! device_output )
@@ -1133,62 +1133,62 @@ bool tnlCUDASimpleReduction2( const int size,
 
 template < class T, tnlOperation operation >
 __global__ void tnlCUDASimpleReductionKernel1( const int size,
-		                                       const T* d_input,
-		                                       T* d_output )
+		                               const T* d_input,
+		                               T* d_output )
 {
-	extern __shared__ T sdata[];
+   extern __shared__ T sdata[];
 
-	// Read data into the shared memory
-	int tid = threadIdx. x;
-	int gid = blockIdx. x * blockDim. x + threadIdx. x;
-	// Last thread ID which manipulates meaningful data
-	int last_tid = size - blockIdx. x * blockDim. x;
+   // Read data into the shared memory
+   int tid = threadIdx. x;
+   int gid = blockIdx. x * blockDim. x + threadIdx. x;
+   // Last thread ID which manipulates meaningful data
+   int last_tid = size - blockIdx. x * blockDim. x;
 
-	if( gid < size )
-		sdata[tid] = d_input[gid];
-	__syncthreads();
+   if( gid < size )
+      sdata[tid] = d_input[gid];
+   __syncthreads();
 
-	// Parallel reduction
-	for( int s = 1; s < blockDim. x; s *= 2 )
-	{
-		if( ( tid % ( 2 * s ) ) == 0 && tid + s < last_tid )
-		{
-			if( operation == tnlMin )
-				sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
-			if( operation == tnlMax )
-				sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
-			if( operation == tnlSum )
-				sdata[ tid ] += sdata[ tid + s ];
-		}
-		__syncthreads();
-	}
+   // Parallel reduction
+   for( int s = 1; s < blockDim. x; s *= 2 )
+   {
+      if( ( tid % ( 2 * s ) ) == 0 && tid + s < last_tid )
+      {
+         if( operation == tnlMin )
+            sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
+         if( operation == tnlMax )
+            sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
+         if( operation == tnlSum )
+            sdata[ tid ] += sdata[ tid + s ];
+         }
+         __syncthreads();
+      }
 
-	// Store the result back in global memory
-	if( tid == 0 )
-		d_output[ blockIdx. x ] = sdata[ 0 ];
+   // Store the result back in global memory
+   if( tid == 0 )
+      d_output[ blockIdx. x ] = sdata[ 0 ];
 }
 
 template< class T, tnlOperation operation >
 bool tnlCUDASimpleReduction1( const int size,
-	                          const T* device_input,
-	                          T& result,
-	                          T* device_output = 0 )
+	                      const T* device_input,
+	                      T& result,
+	                      T* device_output = 0 )
 {
    //Calculate necessary block/grid dimensions
    const int cpuThreshold = 1;
-   const int desBlockSize = 256;    //Desired block size
+   const int desBlockSize = 512;    //Desired block size
 
    bool device_output_allocated( false );
    if( ! device_output )
    {
-	   int bytes_alloc = :: Max( 1, size / desBlockSize ) * sizeof( T );
-       cudaMalloc( ( void** ) &device_output, bytes_alloc );
-       if( cudaGetLastError() != cudaSuccess )
-       {
-    	   cerr << "Unable to allocate device memory with size " << bytes_alloc << "." << endl;
-    	   return false;
-       }
-       device_output_allocated = true;
+      int bytes_alloc = :: Max( 1, size / desBlockSize ) * sizeof( T );
+      cudaMalloc( ( void** ) &device_output, bytes_alloc );
+      if( cudaGetLastError() != cudaSuccess )
+      {
+         cerr << "Unable to allocate device memory with size " << bytes_alloc << "." << endl;
+         return false;
+      }
+      device_output_allocated = true;
    }
    dim3 block_size( 0 ), grid_size( 0 );
    int shmem;
