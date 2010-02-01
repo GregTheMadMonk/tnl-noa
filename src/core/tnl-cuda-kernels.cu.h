@@ -68,155 +68,239 @@ bool tnlCUDAReductionSum( const int size,
  */
 bool tnlCUDASimpleReduction5Min( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction5Max( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction5Sum( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction5Min( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction5Max( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction5Sum( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction5Min( const int size,
                                  const double* input,
-                                 double& result);
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction5Max( const int size,
                                  const double* input,
-                                 double& result );
+                                 double& result,
+                                 double* device_aux = 0  );
 bool tnlCUDASimpleReduction5Sum( const int size,
                                  const double* input,
-                                 double& result );
+                                 double& result,
+                                 double* device_aux = 0  );
 
 /*
  * Simple reduction 4
  */
 bool tnlCUDASimpleReduction4Min( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction4Max( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction4Sum( const int size,
                                  const int* input,
-                                 int& result );
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction4Min( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction4Max( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction4Sum( const int size,
                                  const float* input,
-                                 float& result);
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction4Min( const int size,
                                  const double* input,
-                                 double& result);
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction4Max( const int size,
                                  const double* input,
-                                 double& result );
+                                 double& result,
+                                 double* device_aux = 0  );
 bool tnlCUDASimpleReduction4Sum( const int size,
                                  const double* input,
-                                 double& result );
+                                 double& result,
+                                 double* device_aux = 0  );
 
 /*
  * Simple reduction 3
  */
 bool tnlCUDASimpleReduction3Min( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction3Max( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction3Sum( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction3Min( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction3Max( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction3Sum( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction3Min( const int size,
-                             const double* input,
-                             double& result);
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction3Max( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0  );
 bool tnlCUDASimpleReduction3Sum( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0  );
 
 /*
  * Simple reduction 2
  */
 bool tnlCUDASimpleReduction2Min( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction2Max( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction2Sum( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0  );
 bool tnlCUDASimpleReduction2Min( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction2Max( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction2Sum( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction2Min( const int size,
-                             const double* input,
-                             double& result);
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction2Max( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0  );
 bool tnlCUDASimpleReduction2Sum( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0  );
 
 /*
  * Simple reduction 1
  */
 bool tnlCUDASimpleReduction1Min( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction1Max( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction1Sum( const int size,
-                          const int* input,
-                          int& result );
+                                 const int* input,
+                                 int& result,
+                                 int* device_aux = 0 );
 bool tnlCUDASimpleReduction1Min( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction1Max( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction1Sum( const int size,
-                            const float* input,
-                            float& result);
+                                 const float* input,
+                                 float& result,
+                                 float* device_aux = 0 );
 bool tnlCUDASimpleReduction1Min( const int size,
-                             const double* input,
-                             double& result);
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction1Max( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0 );
 bool tnlCUDASimpleReduction1Sum( const int size,
-                             const double* input,
-                             double& result );
+                                 const double* input,
+                                 double& result,
+                                 double* device_aux = 0 );
+
+
+/********************************************************************/
+
+int testReduction1( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
+int testReduction2( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
+int testReduction3( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
+int testReduction4( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
+void reductionKernel5Switch(int* dp_output, int* dp_input, uint gridSz, uint blockSz, uint shmemBB);
+
+
+int testReduction5( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
+inline void reductionKernel6Switch(uint psize, int* dp_output, int* dp_input, uint gridSz, uint blockSz, uint shmemBB);
+
+int testReduction6( int size,
+                    int* drp_input,
+                    int* drp_output,
+                    int* output );
+
 
 
 #endif /* TNLCUDAKERNELS_CU_H_ */

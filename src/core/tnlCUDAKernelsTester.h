@@ -125,9 +125,9 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       switch( algorithm_efficiency )
       {
          case 1:
-            tnlCUDASimpleReduction1Min( size, device_input. Data(), min );
-            tnlCUDASimpleReduction1Max( size, device_input. Data(), max );
-            tnlCUDASimpleReduction1Sum( size, device_input. Data(), sum );
+            tnlCUDASimpleReduction1Min( size, device_input. Data(), min, 0 );
+            tnlCUDASimpleReduction1Max( size, device_input. Data(), max, 0 );
+            tnlCUDASimpleReduction1Sum( size, device_input. Data(), sum, 0 );
             break;
          case 2:
             tnlCUDASimpleReduction2Min( size, device_input. Data(), min );
@@ -222,11 +222,11 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    {
       tnlLongVector< T > host_input;
       int size = 2;
-      /*for( int s = 1; s < 12; s ++ )
+      for( int s = 1; s < 12; s ++ )
       {
          tnlLongVector< T > host_input( size );
 
-         cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
+         //cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
             host_input[ i ] = 0.0;
          mainReduction( host_input,
@@ -234,21 +234,21 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
                   256,
                   2048 );
 
-         cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
+         //cout << "Alg. " << algorithm_efficiency  << "Testing ones with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
             host_input[ i ] = 1.0;
          mainReduction( host_input,
                   algorithm_efficiency,
                   256,
                   2048 );
-         cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
+         //cout << "Alg. " << algorithm_efficiency  << "Testing linear sequence with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
             host_input[ i ] = i;
          mainReduction( host_input,
                   algorithm_efficiency,
                   256,
                   2048 );
-         cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
+         //cout << "Alg. " << algorithm_efficiency  << "Testing quadratic sequence with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
             host_input[ i ] = ( i - size / 2 ) * ( i - size / 2 );
          mainReduction( host_input,
@@ -256,8 +256,8 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
                   256,
                   2048 );
          size *= 2;
-         cout << endl;
-      }*/
+         //cout << endl;
+      }
       for( size = 1; size < 5000; size ++ )
       {
          tnlLongVector< T > host_input( size );
@@ -299,36 +299,36 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    void testReduction()
    {
       //cout << "Test FAST reduction" << endl;
-      //testReduction( 0 );
+      testReduction( 0 );
    }
 
    void testSimpleReduction5()
    {
       //cout << "Test reduction 5" << endl;
-      //testReduction( 5 );
+      testReduction( 5 );
    };
 
    void testSimpleReduction4()
    {
-      cout << "Test reduction 4" << endl;
+      //cout << "Test reduction 4" << endl;
       testReduction( 4 );
    };
 
    void testSimpleReduction3()
    {
-      cout << "Test reduction 3" << endl;
+      //cout << "Test reduction 3" << endl;
       testReduction( 3 );
    };
 
    void testSimpleReduction2()
    {
-      cout << "Test reduction 2" << endl;
+      //cout << "Test reduction 2" << endl;
       testReduction( 2 );
    };
 
    void testSimpleReduction1()
    {
-      cout << "Test reduction 1" << endl;
+      //cout << "Test reduction 1" << endl;
       testReduction( 1 );
    };
 
