@@ -76,6 +76,26 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    }
 #endif
 
+   //! Constructor with another long vector as template
+   tnlLongVectorCUDA( const tnlLongVector< T >& v )
+#ifdef HAVE_CUDA
+    : tnlObject( v ), size( v. GetSize() ), shared_data( false )
+   {
+
+      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess )
+      {
+         cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         data = NULL;
+         abort();
+      }
+      //data ++;
+   };
+#else
+   {
+      cerr << "CUDA support is missing in this system." << endl;
+   }
+#endif
+
 
    tnlString GetType() const
    {

@@ -15,30 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlMersonSolverH
-#define tnlMersonSolverH
+#ifndef tnlMersonSolverCUDAH
+#define tnlMersonSolverCUDAH
 
 #include <math.h>
-#include <core/tnl-cuda-kernels.h>
+#include <core/tnl-cuda-kernels.cu.h>
 #include <diff/tnlExplicitSolver.h>
 
 #ifdef HAVE_CUDA
-// TODO: remove this
-/*void computeK2Arg( const int size,
+void computeK2Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const float& tau,
                    const float* u,
                    const float* k1,
                    float* k2_arg );
 void computeK2Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const double& tau,
                    const double* u,
                    const double* k1,
                    double* k2_arg );
 void computeK3Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const float& tau,
                    const float* u,
                    const float* k1,
                    const float* k2,
@@ -46,6 +48,7 @@ void computeK3Arg( const int size,
 void computeK3Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const double& tau,
                    const double* u,
                    const double* k1,
                    const double* k2,
@@ -53,6 +56,7 @@ void computeK3Arg( const int size,
 void computeK4Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const float& tau,
                    const float* u,
                    const float* k1,
                    const float* k3,
@@ -60,6 +64,7 @@ void computeK4Arg( const int size,
 void computeK4Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const double& tau,
                    const double* u,
                    const double* k1,
                    const double* k3,
@@ -67,6 +72,7 @@ void computeK4Arg( const int size,
 void computeK5Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const float& tau,
                    const float* u,
                    const float* k1,
                    const float* k3,
@@ -75,15 +81,34 @@ void computeK5Arg( const int size,
 void computeK5Arg( const int size,
                    const int block_size,
                    const int grid_size,
+                   const double& tau,
                    const double* u,
                    const double* k1,
                    const double* k3,
                    const double* k4,
                    double* k5_arg );
+void computeErr( const int size,
+                 const int block_size,
+                 const int grid_size,
+                 const float& tau,
+                 const float* _k1,
+                 const float* _k3,
+                 const float* _k4,
+                 const float* _k5,
+                 float* _err );
+void computeErr( const int size,
+                 const int block_size,
+                 const int grid_size,
+                 const double& tau,
+                 const double* _k1,
+                 const double* _k3,
+                 const double* _k4,
+                 const double* _k5,
+                 double* _err );
 void updateU( const int size,
               const int block_size,
               const int grid_size,
-              const float tau,
+              const float& tau,
               const float* k1,
               const float* k4,
               const float* k5,
@@ -91,56 +116,12 @@ void updateU( const int size,
 void updateU( const int size,
               const int block_size,
               const int grid_size,
-              const double tau,
+              const double& tau,
               const double* k1,
               const double* k4,
               const double* k5,
-              double* u );*/
+              double* u );
 
-template< class T > __global__ void computeK2ArgKernel( const int size, const T tau, const T* u, const T* k1, T* k2_arg )
-{
-   int i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      k2_arg[ i ] = u[ i ] + tau * ( 1.0 / 3.0 * k1[ i ] );
-}
-
-template< class T > __global__ void computeK3ArgKernel( const int size, const T tau, const T* u, const T* k1, const T* k2, T* k3_arg )
-{
-   int i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      k3_arg[ i ] = u[ i ] + tau * 1.0 / 6.0 * ( k1[ i ] + k2[ i ] );
-}
-
-template< class T > __global__ void computeK4ArgKernel( const int size, const T tau, const T* u, const T* k1, const T* k3, T* k4_arg )
-{
-   int i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      k4_arg[ i ] = u[ i ] + tau * ( 0.125 * k1[ i ] + 0.375 * k3[ i ] );
-}
-
-template< class T > __global__ void computeK5ArgKernel( const int size, const T tau, const T* u, const T* k1, const T* k3, const T* k4, T* k5_arg )
-{
-   int i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      k5_arg[ i ] = u[ i ] + tau * ( 0.5 * k1[ i ] - 1.5 * k3[ i ] + 2.0 * k4[ i ] );
-}
-
-template< class T > __global__ void computeErrKernel( const int size, const T tau, const T* _k1, const T* _k3, const T* _k4, const T* _k5, T* err )
-{
-   int i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      err[ i ] = 1.0 / 3.0 *  tau * fabs( 0.2 * k1[ i ] +
-                                         -0.9 * k3[ i ] +
-                                          0.8 * k4[ i ] +
-                                         -0.1 * k5[ i ] ) );
-}
-
-template< class T > __global__ void updateUKernel( const int size, const T tau, const T* k1, const T* k4, const T* k5, T* u )
-{
-        int i = blockIdx. x * blockDim. x + threadIdx. x;
-        if( i < size )
-                u[ i ] += tau / 6.0 * ( k1[ i ] + 4.0 * k4[ i ] + k5[ i ] );
-}
 
 #endif
 
@@ -148,34 +129,33 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
 {
    public:
 
-   tnlMersonSolver( const GRID& v )
+   tnlMersonSolverCUDA( const GRID& v )
+   : adaptivity( 1.0e-5 )
    {
-      k1. SetNewDimension( v );
+#ifdef HAVE_CUDA
+      k1. SetNewDimensions( v );
       k1. SetNewDomain( v );
-      k2. SetNewDimension( v );
+      k2. SetNewDimensions( v );
       k2. SetNewDomain( v );
-      k3. SetNewDimension( v );
+      k3. SetNewDimensions( v );
       k3. SetNewDomain( v );
-      k4. SetNewDimension( v );
+      k4. SetNewDimensions( v );
       k4. SetNewDomain( v );
-      k5. SetNewDimension( v );
+      k5. SetNewDimensions( v );
       k5. SetNewDomain( v );
-      k_tmp. SetNewDimension( v );
+      k_tmp. SetNewDimensions( v );
       k_tmp. SetNewDomain( v );
-      err. SetNewDimension( v );
+      err. SetNewDimensions( v );
       err. SetNewDomain( v );
       if( ! k1 || ! k2 || ! k3 || ! k4 || ! k5 || ! k_tmp || ! err )
       {
          cerr << "Unable to allocate supporting structures for the Merson solver." << endl;
          abort();
       };
-      k1. Zeros();
-      k2. Zeros();
-      k3. Zeros();
-      k4. Zeros();
-      k5. Zeros();
-      k_tmp. Zeros();
-      err. Zeros();
+      tnlExplicitSolver< GRID, SCHEME, T > :: tau = 1.0;
+#else
+	cerr << "CUDA is not supported on this system." << endl;
+#endif
    };
 
    tnlString GetType() const
@@ -186,17 +166,18 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
-   void SetAdaptivity( const double& a )
+   void SetAdaptivity( const T& a )
    {
       adaptivity = a;
    };
    
    bool Solve( SCHEME& scheme,
                GRID& u,
-               const double& stop_time,
-               const double& max_res,
-               const int max_iter )
+               const T& stop_time,
+               const T& max_res,
+               const int max_iter = -1 )
    {
+#ifdef HAVE_CUDA
       T* _k1 = k1. Data();
       T* _k2 = k2. Data();
       T* _k3 = k3. Data();
@@ -207,11 +188,12 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
       T* _err = err. Data();
            
       tnlExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
-      double& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;  
-      double& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;  
+      T& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;
+      T& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;
       int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
-      const double size_inv = 1.0 / ( double ) u. GetSize();
+      const T size_inv = 1.0 / ( T ) u. GetSize();
       
+      const int size = u. GetSize();
       const int block_size = 512;
       const int grid_size = ( size - 1 ) / block_size + 1;
 
@@ -221,42 +203,57 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
 
       if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
          tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+
+      // DEBUG
+      /*tnlGrid2D< T > hostAux;
+      hostAux. SetNewDimensions( u. GetXSize(), u. GetYSize() );
+      hostAux. SetNewDomain( u. GetAx(), u. GetBx(), u. GetAy(), u. GetBy() );*/
+
       while( 1 )
       {
 
          int i;
-         int size = k1 -> GetSize();
+         int size = k1. GetSize();
          assert( size == u. GetSize() );
          
          T tau_3 = _tau / 3.0;
 
-         scheme. GetExplicitRHSCUDA( _time, u, *k1 );
+         scheme. GetExplicitRHSCUDA( _time, u, k1 );
 
-         computeK2ArgKernel<<< block_size, grid_size >>>( size, tau, _u, _k1, _k_tmp );
-         scheme. GetExplicitRHSCUDA( _time + tau_3, *k_tmp, *k2 );
+         computeK2Arg( size, block_size, grid_size, _tau, _u, _k1, _k_tmp );
+         scheme. GetExplicitRHSCUDA( _time + tau_3, k_tmp, k2 );
          
-         computeK3ArgKernel<<< block_size, grid_size >>>( size, tau, _u, _k1, _k2, _k_tmp );
-         scheme. GetExplicitRHSCUDA( _time + tau_3, *k_tmp, *k3 );
+         computeK3Arg( size, block_size, grid_size, _tau, _u, _k1, _k2, _k_tmp );
+         scheme. GetExplicitRHSCUDA( _time + tau_3, k_tmp, k3 );
          
-         computeK4ArgKernel<<< block_size, grid_size >>>( size, tau, _u, _k1, _k3, _k_tmp );
-         scheme. GetExplicitRHSCUDA( _time + 0.5 * _tau, *k_tmp, *k4 );
+         computeK4Arg( size, block_size, grid_size, _tau, _u, _k1, _k3, _k_tmp );
+         scheme. GetExplicitRHSCUDA( _time + 0.5 * _tau, k_tmp, k4 );
          
-         computeK5Arg<<< block_size, grid_size >>>( size, tau, _k1, _k3, _k4, _k_tmp );
-         scheme. GetExplicitRHSCUDA( _time + _tau, *k_tmp, *k5 );
+         computeK5Arg( size, block_size, grid_size, _tau, _u, _k1, _k3, _k4, _k_tmp );
+         scheme. GetExplicitRHSCUDA( _time + _tau, k_tmp, k5 );
    
-         double eps( 0.0 ), max_eps( 0.0 );
+         T eps( 0.0 ), max_eps( 0.0 );
          if( adaptivity )
          {
-            computeErrKernel<<< block_size, grid_size >>>( size, tau, _k1, _k3, _k4, _k5, _err );
-            tnlCUDAReduction( size, err, max_eps ); // TODO: allocate auxiliary array for the reduction
+            computeErr( size, block_size, grid_size, _tau, _k1, _k3, _k4, _k5, _err );
+            tnlCUDAReductionMax( size, _err, max_eps ); // TODO: allocate auxiliary array for the reduction
+
+            /*hostAux. copyFrom( err );
+            T seq_max_eps = 0.0;
+            for( int i = 0; i < hostAux. GetSize(); i ++ )
+            	seq_max_eps = :: Max( seq_max_eps, hostAux[ i ] );
+            if( max_eps != seq_max_eps )
+            	abort();*/
+
          }
+
          //cout << endl << "max_eps = " << max_eps << endl;
          if( ! adaptivity || max_eps < adaptivity )
          {
-            double last_residue = _residue;
-            double loc_residue = 0.0;
+            T last_residue = _residue;
+            T loc_residue = 0.0;
 
-            updateU( size, block_size, grid_size, tau, _k1, _k4, _k5 );
+            updateU( size,  block_size, grid_size, _tau, _k1, _k4, _k5, _u );
             // TODO: implement loc_residue - if possible
 
             if( _tau + _time == stop_time ) _residue = last_residue;  // fixing strange values of res. at the last iteration
@@ -288,11 +285,15 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
                tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
              return true;
           }
-         //if( max_iter && _iteration == max_iter ) return false;
+         if( _iteration == max_iter ) return false;
       }
+#else
+      cerr << "CUDA is not supported on this system." << endl;
+      return false;
+#endif
    };
 
-   ~tnlMersonSolver()
+   ~tnlMersonSolverCUDA()
    {
    };
 
@@ -300,7 +301,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
    
    GRID k1, k2, k3, k4, k5, k_tmp, err;
 
-   double adaptivity;
+   T adaptivity;
 };
 
 #endif

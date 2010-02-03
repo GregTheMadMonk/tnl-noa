@@ -22,6 +22,7 @@
 #include <core/tnlFieldCUDA2DTester.h>
 #include <core/tnlCUDAKernelsTester.h>
 #include <diff/tnlGridCUDA2DTester.h>
+#include <diff/tnlMersonSolverCUDATester.h>
 
 #include <iostream>
 
@@ -32,7 +33,7 @@ int main( int argc, char* argv[] )
    CppUnit :: TextTestRunner runner;
    
 #ifdef HAVE_CUDA
-   runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
+/*   runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
    runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
    if( CUDA_ARCH == 1.3 )
       runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
@@ -50,7 +51,13 @@ int main( int argc, char* argv[] )
    runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
    runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
    if( CUDA_ARCH == 1.3 )
-      runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
+      runner.addTest( tnlCUDAKernelsTester< double > :: suite() );*/
+
+   runner.addTest( tnlMersonSolverCUDATester< float > :: suite() );
+   if( CUDA_ARCH == 1.3 )
+	   runner.addTest( tnlMersonSolverCUDATester< double > :: suite() );
+
+
 #endif
    
    runner.run();

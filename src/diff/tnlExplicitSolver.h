@@ -28,9 +28,9 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
    
    tnlExplicitSolver()
    :  iteration( 0 ), 
-      time( 0 ),
-      tau( 0 ),
-      residue( 0 ),
+      time( 0.0 ),
+      tau( 0.0 ),
+      residue( 0.0 ),
       solver_comm( MPI_COMM_WORLD ),
       verbosity( 0 ),
       cpu_timer( &default_mcore_cpu_timer ),
@@ -39,12 +39,12 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
       };
 
 
-   void SetTime( const double& t )
+   void SetTime( const T& t )
    {
       time = t;
    };
 
-   const double& GetTime() const
+   const T& GetTime() const
    {
       return time;
    };
@@ -66,7 +66,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
       return tau;
    };
 
-   const double& GetResidue() const
+   const T& GetResidue() const
    {
       return residue;
    };
@@ -116,19 +116,19 @@ template< class GRID, class SCHEME, typename T = double > class tnlExplicitSolve
    
    virtual bool Solve( SCHEME& scheme,
                        GRID& u,
-                       const double& stop_time,
-                       const double& max_res,
+                       const T& stop_time,
+                       const T& max_res,
                        const int max_iter ) = 0;
      
    protected:
     
    int iteration;
 
-   double time;
+   T time;
 
    T tau;
 
-   double residue;
+   T residue;
 
    MPI_Comm solver_comm;
 

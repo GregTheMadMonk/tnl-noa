@@ -19,6 +19,7 @@
 #define tnlGridCUDA2DH
 
 #include <core/tnlFieldCUDA2D.h>
+#include <diff/tnlGrid2D.h>
 
 template< class T = double > class tnlGridCUDA2D :
 	                         public tnlFieldCUDA2D< T >
@@ -56,6 +57,15 @@ template< class T = double > class tnlGridCUDA2D :
      Hx( g. Hx ), Hy( g. Hy )
    {
    };
+
+   tnlGridCUDA2D( const tnlGrid2D< T >& g )
+   : tnlFieldCUDA2D< T >( g ),
+     Ax( g. GetAx() ), Bx( g. GetBx() ),
+     Ay( g. GetAy() ), By( g. GetBy() ),
+     Hx( g. GetHx() ), Hy( g. GetHy() )
+   {
+   };
+
 
    tnlString GetType() const
    {

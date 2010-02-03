@@ -59,8 +59,24 @@ endif
 
 
 if BUILD_MPI_DBG
+
    noinst_LTLIBRARIES += libtnldiff-mpi-dbg-0.1.la 
    libtnldiff_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
    libtnldiff_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
    libtnldiff_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)
 endif
+
+libdiff_tests_sources = 
+
+if BUILD_CUDA
+libdiff_tests_sources += tnlMersonSolverCUDATester.h \
+                         tnlMersonSolverCUDATester.cu
+endif                        
+
+check_LTLIBRARIES = libdiff-tests.la
+libdiff_tests_la_SOURCES = $(libdiff_tests_sources)
+
+if BUILD_DBG
+noinst_LTLIBRARIES += libdiff-tests-dbg.la
+libdiff_tests_dbg_la_SOURCES = $(libdiff_tests_sources)
+endif 

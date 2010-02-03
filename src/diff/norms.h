@@ -107,7 +107,7 @@ template< class T > T GetDiffMaxNorm( const tnlGrid2D< T >& u1,
    for( i = 0; i < size; i ++ )
    {
       T diff = _u1[ i ] - _u2[ i ];
-      result = Max( result, fabs( diff ) );
+      result = Max( result, ( T ) fabs( diff ) );
    }
    return result;
 };

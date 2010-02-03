@@ -1,8 +1,3 @@
-
-
-
-
-
 /***************************************************************************
                           tnlMersonSolver.h  -  description
                              -------------------
@@ -31,6 +26,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
    public:
 
    tnlMersonSolver( const GRID& v )
+   : adaptivity( 1.0e-5 )
    {
       k1 = new GRID( v );
       k2 = new GRID( v );
@@ -49,6 +45,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
       k4 -> Zeros();
       k5 -> Zeros();
       k_tmp -> Zeros();
+      tnlExplicitSolver< GRID, SCHEME, T > :: tau = 1.0;
    };
 
    tnlString GetType() const
@@ -59,16 +56,16 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
              tnlString( ", " ) + GetParameterType( t ) + tnlString( " >" );
    };
 
-   void SetAdaptivity( const double& a )
+   void SetAdaptivity( const T& a )
    {
       adaptivity = a;
    };
    
    bool Solve( SCHEME& scheme,
                GRID& u,
-               const double& stop_time,
-               const double& max_res,
-               const int max_iter )
+               const T& stop_time,
+               const T& max_res,
+               const int max_iter = -1 )
    {
       T* _k1 = k1 -> Data();
       T* _k2 = k2 -> Data();
@@ -79,17 +76,18 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
       T* _u = u. Data();
            
       tnlExplicitSolver< GRID, SCHEME, T > :: iteration = 0;
-      double& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;  
-      double& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;  
+      T& _time = tnlExplicitSolver< GRID, SCHEME, T > :: time;
+      T& _residue = tnlExplicitSolver< GRID, SCHEME, T > :: residue;
       int& _iteration = tnlExplicitSolver< GRID, SCHEME, T > :: iteration;
-      const double size_inv = 1.0 / ( double ) u. GetSize();
-      
+      const T size_inv = 1.0 / ( T ) u. GetSize();
+
       T _tau = tnlExplicitSolver< GRID, SCHEME, T > :: tau;
       if( _time + _tau > stop_time ) _tau = stop_time - _time;
       if( _tau == 0.0 ) return true;
 
       if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
          tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+
       while( 1 )
       {
 
@@ -129,16 +127,16 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
             _k_tmp[ i ] = _u[ i ] + _tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] ); 
          scheme. GetExplicitRHS( _time + _tau, *k_tmp, *k5 );      
    
-         double eps( 0.0 ), max_eps( 0.0 );
+         T eps( 0.0 ), max_eps( 0.0 );
          if( adaptivity )
          {
             for( i = 0; i < size; i ++  )
             {
-               eps = Max( eps, _tau / 3.0 * 
+               eps = Max( eps, ( T ) ( _tau / 3.0 *
                                  fabs( 0.2 * _k1[ i ] +
                                       -0.9 * _k3[ i ] + 
                                        0.8 * _k4[ i ] +
-                                      -0.1 * _k5[ i ] ) );
+                                      -0.1 * _k5[ i ] ) ) );
             }
             :: MPIAllreduce( eps, max_eps, 1, MPI_MAX, tnlExplicitSolver< GRID, SCHEME, T > :: solver_comm );
             //if( MPIGetRank() == 0 )
@@ -148,19 +146,19 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
          //cout << endl << "max_eps = " << max_eps << endl;
          if( ! adaptivity || max_eps < adaptivity )
          {
-            double last_residue = _residue;
-            double loc_residue = 0.0;
+            T last_residue = _residue;
+            T loc_residue = 0.0;
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:loc_residue) firstprivate( size, _k_tmp, _u, _k1,_tau, tau_3 )
 #endif
             for( i = 0; i < size; i ++ )
             {
-               // this does not have to be in double precision
+               // this does not have to be in T precision
                //_k_tmp[ i ] = ( 0.5 * ( _k1[ i ] + _k5[ i ] ) + 
                //                2.0 * _k4[ i ] ) * tau_3;
                const T add = _tau / 6.0 * ( _k1[ i ] + 4.0 * _k4[ i ] + _k5[ i ] );
                _u[ i ] += add; 
-               loc_residue += fabs( ( double ) add );
+               loc_residue += fabs( ( T ) add );
             }
             if( _tau + _time == stop_time ) _residue = last_residue;  // fixing strange values of res. at the last iteration
             else
@@ -170,6 +168,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
             }
             _time += _tau;
             _iteration ++;
+            cout << _iteration << " ";
          }
          if( adaptivity && max_eps != 0.0 )
          {
@@ -182,16 +181,16 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
          else tnlExplicitSolver< GRID, SCHEME, T > :: tau = _tau;
          
          if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 1 )
-            tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
+             tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
          
-         if( _time == stop_time || 
+         if( _time == stop_time ||
              ( max_res && _residue < max_res ) )
           {
             if( tnlExplicitSolver< GRID, SCHEME, T > :: verbosity > 0 )
                tnlExplicitSolver< GRID, SCHEME, T > :: PrintOut();
              return true;
           }
-         //if( max_iter && _iteration == max_iter ) return false;
+         if( _iteration == max_iter ) return false;
       }
    };
 
@@ -209,7 +208,7 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
    
    GRID *k1, *k2, *k3, *k4, *k5, *k_tmp;
 
-   double adaptivity;
+   T adaptivity;
 };
 
 #endif

@@ -42,6 +42,11 @@ template< class T > class tnlFieldCUDA2D : public tnlLongVectorCUDA< T >
      x_size( f. x_size ), y_size( f. y_size )
    { };
 
+   tnlFieldCUDA2D( const tnlField2D< T >& f )
+      : tnlLongVectorCUDA< T >( f ),
+        x_size( f. GetXSize() ), y_size( f. GetYSize() )
+      { };
+
    tnlString GetType() const
    {
       T t;

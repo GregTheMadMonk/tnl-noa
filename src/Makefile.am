@@ -56,7 +56,8 @@ check_PROGRAMS = tnl-unit-tests \
                   
 tnl_unit_tests_SOURCES = $(tnl_unit_tests_sources)
 tnl_unit_tests_LDADD = libtnl-0.1.la \
-                       core/libcore-tests.la
+                       core/libcore-tests.la \
+                       diff/libdiff-tests.la
 
 tnl_benchmarks_SOURCES = $(tnl_benchmarks_sources) $(tnl_benchmarks_headers)
 tnl_benchmarks_LDADD = libtnl-0.1.la
@@ -65,7 +66,8 @@ if BUILD_DBG
 bin_PROGRAMS = tnl-unit-tests-dbg
 tnl_unit_tests_dbg_SOURCES = $(tnl_unit_tests_sources)
 tnl_unit_tests_dbg_LDADD = libtnl-dbg-0.1.la \
-                           core/libcore-tests-dbg.la
+                           core/libcore-tests-dbg.la \
+                           diff/libdiff-tests-dbg.la
 endif
 
 
