@@ -72,7 +72,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    };
 #else
    {
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
    }
 #endif
 
@@ -92,7 +92,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    };
 #else
    {
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
    }
 #endif
 
@@ -126,7 +126,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    };
 #else
    {
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
       return false;
    };
 #endif
@@ -146,7 +146,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    };
 #else
    {
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
    };
 #endif
 
@@ -187,7 +187,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       }
       return true;
 #else
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
       return false;
 #endif
    };
@@ -206,7 +206,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
          cudaThreadSynchronize();
       return true;
 #else
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
       return false;
 #endif
    };
@@ -222,7 +222,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
             cerr << "Unable to free alocated memory of " << GetName() << "." << endl;
          }
 #else
-      cerr << "CUDA support is missing in this system." << endl;
+      cerr << "CUDA support is missing on this system." << endl;
 #endif
    };
 

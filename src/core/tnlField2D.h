@@ -83,7 +83,7 @@ template< class T > class tnlField2D : public tnlLongVector< T >
    {
       tnlAssert( i < x_size && j < y_size && i >= 0 && j >= 0,
     		     cerr << "i = " << i << " j = " << j
-    		          << "x_size = " << x_size << " y_size = " << y_size );
+    		          << " x_size = " << x_size << " y_size = " << y_size );
       return tnlLongVector< T > :: data[ i * y_size + j ];
    };
 
