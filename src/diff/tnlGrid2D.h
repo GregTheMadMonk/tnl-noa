@@ -20,27 +20,30 @@
 
 #include <core/tnlField2D.h>
 
+template< class T > class tnlGridCUDA2D;
+
 template< class T = double > class tnlGrid2D :
 	                         public tnlField2D< T >
 {
    public:
 
-   tnlGrid2D()
-   {
-   };
+   tnlGrid2D( const char* name = 0 )
+   : tnlField2D< T >( name )
+   {};
 
    //! Constructor with the grid and the domain dimensions
    /*! @param x_size and @param y_size define the grid dimensions.
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   tnlGrid2D( int x_size,
-            int y_size,
-            const double& A_x,
-            const double& B_x,
-            const double& A_y,
-            const double& B_y )
-   : tnlField2D< T >( x_size, y_size ),
+   tnlGrid2D( const char* name,
+              int x_size,
+              int y_size,
+              const double& A_x,
+              const double& B_x,
+              const double& A_y,
+              const double& B_y )
+   : tnlField2D< T >( name, x_size, y_size ),
      Ax( A_x ), Bx( B_x ),
      Ay( A_y ), By( B_y )  
    {
@@ -56,6 +59,8 @@ template< class T = double > class tnlGrid2D :
      Hx( g. Hx ), Hy( g. Hy )
    {
    };
+
+   tnlGrid2D( const tnlGridCUDA2D< T >& g );
 
    tnlString GetType() const
    {
@@ -276,6 +281,22 @@ template< class T = double > class tnlGrid2D :
    //! The grid space steps
    double Hx, Hy;
 };
+
+#include <diff/tnlGridCUDA2D.h>
+
+template< class T > tnlGrid2D< T > :: tnlGrid2D( const tnlGridCUDA2D< T >& g )
+#ifdef HAVE_CUDA
+: tnlField2D< T >( g ),
+         Ax( g. GetAx() ), Bx( g. GetBx() ),
+         Ay( g. GetAy() ), By( g. GetBy() ),
+         Hx( g. GetHx() ), Hy( g. GetHy() )
+ {
+ };
+#else
+{
+   cerr << "CUDA is not supported on this system " << __FILE__ << " line " << __LINE__ << endl;
+};
+#endif
 
 // Explicit instatiation
 template class tnlGrid2D< double >;

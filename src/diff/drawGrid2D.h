@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <string>
 #include <diff/tnlGrid2D.h>
+#include <diff/tnlGridCUDA2D.h>
 #include <core/compress-file.h>
 #include <core/mfuncs.h>
 
@@ -162,5 +163,24 @@ template< class T > bool Read( tnlGrid2D< T >& u,
    }
    return true;
 }
-
+template< class T > bool Draw( const tnlGridCUDA2D< T >& u,
+                               const char* file_name,
+                               const char* format,
+                               const int i_step = 1,
+                               const int j_step = 1 )
+{
+#ifdef HAVE_CUDA
+   tnlGrid2D< T > hostAux( u );
+   hostAux. SetName( "drawAux" );
+   hostAux. copyFrom( u );
+   return Draw( hostAux,
+                file_name,
+                format,
+                i_step,
+                j_step );
+#else
+   cerr << "CUDA is not supported on this system " << __FILE__ << " line " << __LINE__ << endl;
+   return false;
+#endif
+}
 #endif

@@ -26,12 +26,13 @@ template< class T > class tnlField1D : public tnlLongVector< T >
 {
    public:
 
-   tnlField1D()
-   : tnlLongVector< T >( 0 )
+   tnlField1D( const char* name = 0 )
+   : tnlLongVector< T >( name )
    { };
 
-   tnlField1D( int _x_size )
-   : tnlLongVector< T >( _x_size ),
+   tnlField1D( const char* name,
+               int _x_size )
+   : tnlLongVector< T >( name, _x_size ),
      x_size( _x_size )
    { };
 

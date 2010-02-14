@@ -24,17 +24,20 @@ template< typename T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlGridSyst
 {
    public:
 
-   tnlGridSystem1D() {};
+   tnlGridSystem1D( const char* name = 0 )
+   : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( name )
+   {};
 
    //! Constructor with the grid and the domain dimensions
    /*! @param x_size and @param y_size define the grid dimensions.
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   tnlGridSystem1D( int x_size,
-                  const double& A_x,
-                  const double& B_x )
-   : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( x_size ),
+   tnlGridSystem1D( const char* name,
+                    int x_size,
+                    const double& A_x,
+                    const double& B_x )
+   : tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >( name, x_size ),
      Ax( A_x ), Bx( B_x ) 
    {
       assert( Ax < Bx );

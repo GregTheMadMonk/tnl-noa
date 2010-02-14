@@ -3,19 +3,20 @@
 common = read-file.h
 
 tnlerrnormssources = mdiff-err-norms.cpp \
+                     tnl-err-norms.h \
                      compare-objects.h \
-                     compare-objects.cpp \
                      $(common)
 
 tnlgridviewsources = tnl-grid-view.cpp \
+                     tnl-grid-view.h \
                      $(common)
                      
 tnlcurve2gnuplotsources = tnlcurve2gnuplot.cpp \
                           $(common) 
 
 bin_PROGRAMS = tnl-err-norms \
-	           tnlgrid-view \
-	           tnlcurve2gnuplot
+	            tnlgrid-view \
+	            tnlcurve2gnuplot
 
 tnl_err_norms_SOURCES = $(tnlerrnormssources)
 tnl_err_norms_LDADD = ../../src/libtnl-0.1.la
@@ -28,8 +29,8 @@ tnlcurve2gnuplot_LDADD = ../../src/libtnl-0.1.la
 
 if BUILD_DBG
 bin_PROGRAMS += tnl-err-norms-dbg \
-	            tnlgrid-view-dbg \
-	            tnlcurve2gnuplot-dbg
+	             tnlgrid-view-dbg \
+	             tnlcurve2gnuplot-dbg
 
 tnl_err_norms_dbg_SOURCES = $(tnlerrnormssources) 
 tnl_err_norms_dbg_CXXFLAGS = $(DBGCXXFLAGS)

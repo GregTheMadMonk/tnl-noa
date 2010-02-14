@@ -45,8 +45,8 @@ template< class T > class tnlGridCUDA2DTester : public CppUnit :: TestCase
    {
 #ifdef HAVE_CUDA
 	   const int size = 100;
-	   tnlGrid2D< T > host_grid( size, size, 0.0, 1.0, 0.0, 1.0 );
-	   tnlGridCUDA2D< T > device_grid( size, size, 0.0, 1.0, 0.0, 1.0 );
+	   tnlGrid2D< T > host_grid( "host-grid", size, size, 0.0, 1.0, 0.0, 1.0 );
+	   tnlGridCUDA2D< T > device_grid( "device-grid", size, size, 0.0, 1.0, 0.0, 1.0 );
 	   for( int i = 0; i < size; i ++ )
 		   for( int j = 0; j < size; j ++ )
 			   host_grid( i, j ) = ( T ) ( i + j );
@@ -88,7 +88,7 @@ template< class T > class tnlGridCUDA2DTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( cuda_grid_2. GetAy() == 0.0 );
       CPPUNIT_ASSERT( cuda_grid_2. GetBy() == 1.0 );
 
-      tnlGridCUDA2D< T > cuda_grid_3( 100, 100, 0.0, 1.0, 0.0, 1.0 );
+      tnlGridCUDA2D< T > cuda_grid_3( "cuda-grid-3", 100, 100, 0.0, 1.0, 0.0, 1.0 );
       CPPUNIT_ASSERT( cuda_grid_3. GetXSize() == 100 );
       CPPUNIT_ASSERT( cuda_grid_3. GetYSize() == 100 );
       CPPUNIT_ASSERT( cuda_grid_3. GetAx() == 0.0 );
@@ -96,7 +96,7 @@ template< class T > class tnlGridCUDA2DTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( cuda_grid_3. GetAy() == 0.0 );
       CPPUNIT_ASSERT( cuda_grid_3. GetBy() == 1.0 );
 
-      tnlGridCUDA2D< T >* cuda_grid_4 = new tnlGridCUDA2D< T >( 100, 100, 0.0, 1.0, 0.0, 1.0 );
+      tnlGridCUDA2D< T >* cuda_grid_4 = new tnlGridCUDA2D< T >( "cuda-grid-4", 100, 100, 0.0, 1.0, 0.0, 1.0 );
       tnlGridCUDA2D< T >* cuda_grid_5 = new tnlGridCUDA2D< T >;
       CPPUNIT_ASSERT( *cuda_grid_4 );
       CPPUNIT_ASSERT( ! *cuda_grid_5 );

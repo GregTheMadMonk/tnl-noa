@@ -1,3 +1,6 @@
+TODO: zavest povinna jmena objektu
+      - mozna mit konstruktor jen se jmenem a metody pro nastaveni dimenze a oblasti
+
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin

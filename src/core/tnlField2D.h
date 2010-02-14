@@ -28,13 +28,15 @@ template< class T > class tnlField2D : public tnlLongVector< T >
 {
    public:
 
-   tnlField2D()
-   : tnlLongVector< T >( 0 )
-   { };
+   tnlField2D( const char* name = 0 )
+   : tnlLongVector< T >( name )
+   {
+   };
 
-   tnlField2D( int _x_size,
+   tnlField2D( const char* name,
+               int _x_size,
                int _y_size )
-   : tnlLongVector< T >( _x_size * _y_size ),
+   : tnlLongVector< T >( name, _x_size * _y_size ),
      x_size( _x_size ), y_size( _y_size )
    { };
 
@@ -42,6 +44,8 @@ template< class T > class tnlField2D : public tnlLongVector< T >
    : tnlLongVector< T >( f ),
      x_size( f. x_size ), y_size( f. y_size )
    { };
+
+   tnlField2D( const tnlFieldCUDA2D< T >& f );
 
    tnlString GetType() const
    {
@@ -130,6 +134,18 @@ template< class T > class tnlField2D : public tnlLongVector< T >
    int x_size, y_size;
 };
 
+#include <core/tnlFieldCUDA2D.h>
+
+template< class T > tnlField2D< T > :: tnlField2D( const tnlFieldCUDA2D< T >& f )
+#ifdef HAVE_CUDA
+   : tnlLongVector< T >( f ),
+     x_size( f. GetXSize() ), y_size( f. GetYSize() )
+   { };
+#else
+{
+   cerr << "CUDA is not supported on this system " << __FILE__ << " line " << __LINE__ << endl;
+};
+#endif
 // Explicit instatiation
 template class tnlField2D< double >;
 

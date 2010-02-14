@@ -42,12 +42,12 @@ template< class T > bool Draw( const tnlGrid3D< T >& u,
    const int x_size = u. GetXSize();
    const int y_size = u. GetYSize();
    const int z_size = u. GetZSize();
-   const double& ax = u. GetAx();
-   const double& ay = u. GetAy();
-   const double& az = u. GetAy();
-   const double& hx = u. GetHx();
-   const double& hy = u. GetHy();
-   const double& hz = u. GetHy();
+   const T& ax = u. GetAx();
+   const T& ay = u. GetAy();
+   const T& az = u. GetAy();
+   const T& hx = u. GetHx();
+   const T& hy = u. GetHy();
+   const T& hz = u. GetHy();
    if( strncmp( format, "bin", 3 ) == 0 )
    {
       if( ! u. Save( str ) ) return false;
@@ -97,7 +97,7 @@ template< class T > bool Draw( const tnlGrid3D< T >& u,
       str. put( ( char ) ( z_size >> 8 ) );
       str. put( ( char ) ( z_size & 0xff ) );
       int i, j, k;
-      double min( DBL_MAX ), max( -DBL_MAX );
+      T min( u( 0, 0, 0 ) ), max( u( 0, 0, 0 ) );
       for( k = 0; k < z_size; k ++ ) 
          for( j = 0; j < y_size; j ++ ) 
             for( i = 0; i < x_size; i ++ )

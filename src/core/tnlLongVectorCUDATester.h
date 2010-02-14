@@ -60,6 +60,10 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
                                & tnlLongVectorCUDATester< T > :: testCopying )
                              );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
+                                     "testAllocationFromNonCUDA",
+                                     & tnlLongVectorCUDATester< T > :: testAllocationFromNonCUDA )
+                                   );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
                                "testKernel",
                                & tnlLongVectorCUDATester< T > :: testKernel )
                              );
@@ -71,7 +75,24 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
       						   "testMultiBlockKernel",
                                & tnlLongVectorCUDATester< T > :: testMultiBlockKernel )
                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlLongVectorCUDATester< T > >(
+                                                         "testSetValue",
+                                     & tnlLongVectorCUDATester< T > :: testSetValue )
+                                   );
       return suiteOfTests;
+   }
+
+   void testSetValue()
+   {
+      tnlLongVectorCUDA< T > deviceV( "deviceV", 100 );
+      deviceV. setValue( 1.0 );
+      tnlLongVector< T > hostV( deviceV );
+      hostV. copyFrom( deviceV );
+      bool error( false );
+      for( int i = 0; i < 100; i ++ )
+         if( hostV[ i ] != 1.0 )
+            error = true;
+      CPPUNIT_ASSERT( ! error );
    }
 
    void testMultiBlockKernel()
@@ -97,11 +118,34 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
 #endif
    };
 
+   void testAllocationFromNonCUDA()
+   {
+#ifdef HAVE_CUDA
+      tnlLongVector< T > hostV( "hostV", 100 );
+      for( int i = 0; i < 100; i ++ )
+         hostV[ i ] = i;
+      tnlLongVectorCUDA< T > deviceV( hostV );
+      CPPUNIT_ASSERT( hostV. GetSize() == deviceV. GetSize() );
+      deviceV. copyFrom( hostV );
+      tnlLongVector< T > hostW( deviceV );
+      CPPUNIT_ASSERT( hostW. GetSize() == deviceV. GetSize() );
+      hostW. copyFrom( deviceV );
+      bool error( false );
+      for( int i = 0; i < 100; i ++ )
+         if( hostV[ i ] != hostW[ i ] ) error = true;
+      CPPUNIT_ASSERT( ! error );
+#else
+      cout << "CUDA is not supported." << endl;
+      CPPUNIT_ASSERT( true );
+#endif
+
+   };
+
    void testCopying()
    {
 #ifdef HAVE_CUDA
-      tnlLongVector< T > host_vector( 500 );
-      tnlLongVectorCUDA< T > device_vector( 500 );
+      tnlLongVector< T > host_vector( "host-vector", 500 );
+      tnlLongVectorCUDA< T > device_vector( "device-vector", 500 );
       for( int i = 0; i < 500; i ++ )
          host_vector[ i ] = ( T ) i;
       device_vector. copyFrom( host_vector );
@@ -129,10 +173,10 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
       cuda_vector_2. SetNewSize( cuda_vector_1 );
       CPPUNIT_ASSERT( cuda_vector_2. GetSize() == 100 );
 
-      tnlLongVectorCUDA< T > cuda_vector_3( 100 );
+      tnlLongVectorCUDA< T > cuda_vector_3( "cuda-vector", 100 );
       CPPUNIT_ASSERT( cuda_vector_3. GetSize() == 100 );
 
-      tnlLongVectorCUDA< T >* cuda_vector_4 = new tnlLongVectorCUDA< T >( 100 );
+      tnlLongVectorCUDA< T >* cuda_vector_4 = new tnlLongVectorCUDA< T >( "cuda-vector-4", 100 );
       tnlLongVectorCUDA< T >* cuda_vector_5 = new tnlLongVectorCUDA< T >;
       CPPUNIT_ASSERT( *cuda_vector_4 );
       CPPUNIT_ASSERT( ! *cuda_vector_5 );

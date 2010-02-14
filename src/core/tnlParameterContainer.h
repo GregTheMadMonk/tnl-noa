@@ -77,7 +77,7 @@ class tnlParameterContainer
       if( verbose )
          cerr << "Missing parameter '" << name << "'." << endl;
       return false;
-   };
+   }
 
    template< class T > const T& GetParameter( const char* name ) const
    {
@@ -88,7 +88,7 @@ class tnlParameterContainer
             return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
       cerr << "Unknown parameter " << name << endl;
       abort();
-   };
+   }
    
    template< class T > T& GetParameter( const char* name )
    {
@@ -99,7 +99,7 @@ class tnlParameterContainer
             return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
       cerr << "Unknown parameter " << name << endl;
       abort();
-   };
+   }
    
    //! Broadcast to other nodes in MPI cluster
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );

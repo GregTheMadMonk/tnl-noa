@@ -30,7 +30,7 @@
 
 #include "../../mdiff-err-norms-def.h"
 #include "read-file.h"
-#include "compare-objects.h"
+#include "tnl-err-norms.h"
 
 //--------------------------------------------------------------------------
 void WriteHeader( ostream& stream,
@@ -283,44 +283,34 @@ int main( int argc, char* argv[] )
          
          if( first_object_type == "tnlGrid2D< double >" )
          {
-            dbgCout( "Processing file with tnlGrid2D< double > ..." );
-            dbgExpr( first_file_uncompressed );
-            dbgExpr( second_file_uncompressed );
-            tnlGrid2D< double > u1, u2, difference;
-            fstream file;
-            file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
-            if( ! u1. Load( file ) )
-            {
-               cerr << " unable to restore the data " << endl;
-               file. close();
-               return false;
-            }
-            file. close();
-            file. open( second_file_uncompressed. Data(), ios :: in | ios :: binary );
-            if( ! u2. Load( file ) )
-            {
-               cerr << " unable to restore the data " << endl;
-               file. close();
-               return false;
-            }
-            file. close();
-            if( write_difference )
-            {
-               difference. SetNewDimensions( u1 );
-               difference. SetNewDomain( u1 );
-            }
-            if( ! Compare( u1,
-                           u2,
-                           l1_norm,
-                           l2_norm,
-                           max_norm,
-                           difference,
-                           edge_skip) )
-            {
-               continue;
-            }
-            if( space_step ) h = space_step;
-            else h = Min( u1. GetHx(), u1. GetHy() );
+            compareGrid2D< double >( first_file_uncompressed,
+                                     second_file_uncompressed,
+                                     write_difference,
+                                     edge_skip,
+                                     space_step,
+                                     l1_norm,
+                                     l2_norm,
+                                     max_norm,
+                                     h );
+         }
+         if( first_object_type == "tnlGrid2D< float >" )
+         {
+            float _l1_norm, _l2_norm, _max_norm;
+            float _space_step = ( float ) space_step;
+            float _h = ( float ) h;
+            compareGrid2D< float >( first_file_uncompressed,
+                                     second_file_uncompressed,
+                                     write_difference,
+                                     edge_skip,
+                                     _space_step,
+                                     _l1_norm,
+                                     _l2_norm,
+                                     _max_norm,
+                                     _h );
+            l1_norm = ( double ) _l1_norm;
+            l2_norm = ( double ) _l2_norm;
+            max_norm = ( double ) _max_norm;
+            h = ( double ) _h;
          }
          if( first_object_type == "tnlGrid3D< double >" )
          {
@@ -440,7 +430,7 @@ int main( int argc, char* argv[] )
             file. close();
          }
 
-         tnlGrid1D< double > difference( curve. Size(), 0.0, 1.0 );
+         tnlGrid1D< double > difference( "difference", curve. Size(), 0.0, 1.0 );
          for( j = 0; j < curve. Size() - 1; j ++ )
          {
             if( curve[ j ]. separator ) continue;

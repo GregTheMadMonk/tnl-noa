@@ -224,7 +224,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       int size = 2;
       for( int s = 1; s < 12; s ++ )
       {
-         tnlLongVector< T > host_input( size );
+         tnlLongVector< T > host_input( "host-input", size );
 
          //cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
@@ -260,7 +260,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       }
       for( size = 1; size < 5000; size ++ )
       {
-         tnlLongVector< T > host_input( size );
+         tnlLongVector< T > host_input( "host-input", size );
 
          //cout << "Alg. " << algorithm_efficiency  << " Testing zeros with size "  << size << " ";
          for( int i = 0; i < size; i ++ )

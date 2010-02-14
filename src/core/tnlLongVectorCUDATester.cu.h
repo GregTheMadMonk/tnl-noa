@@ -27,8 +27,8 @@ __global__ void setNumber( const T c, T* A, const int size )
 template< class T >
 void testMultiBlockKernel( const T& number, const int size )
 {
-   tnlLongVectorCUDA< T > device_vector( size );
-   tnlLongVector< T > host_vector( size );
+   tnlLongVectorCUDA< T > device_vector( "device-vector", size );
+   tnlLongVector< T > host_vector( "host-vector", size );
    T* data = device_vector. Data();
 
    const int block_size = 512;
@@ -49,8 +49,8 @@ void testMultiBlockKernel( const T& number, const int size )
 template< class T >
 void testKernel( const T& number, const int size )
 {
-   tnlLongVectorCUDA< T > device_vector( size );
-   tnlLongVector< T > host_vector( size );
+   tnlLongVectorCUDA< T > device_vector( "device-vector", size );
+   tnlLongVector< T > host_vector( "host-vector", size );
    T* data = device_vector. Data();
    setNumber<<< 1, size >>>( number, data, size );
    host_vector. copyFrom( device_vector );

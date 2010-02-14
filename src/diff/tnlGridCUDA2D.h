@@ -26,8 +26,10 @@ template< class T = double > class tnlGridCUDA2D :
 {
    public:
 
-   tnlGridCUDA2D()
+   tnlGridCUDA2D( const char* name = 0 )
    {
+      if( name )
+         tnlFieldCUDA2D< T > :: SetName( name );
    };
 
    //! Constructor with the grid and the domain dimensions
@@ -35,13 +37,14 @@ template< class T = double > class tnlGridCUDA2D :
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   tnlGridCUDA2D( int x_size,
-            int y_size,
-            const double& A_x,
-            const double& B_x,
-            const double& A_y,
-            const double& B_y )
-   : tnlFieldCUDA2D< T >( x_size, y_size ),
+   tnlGridCUDA2D( const char* name,
+                  int x_size,
+                  int y_size,
+                  const double& A_x,
+                  const double& B_x,
+                  const double& A_y,
+                  const double& B_y )
+   : tnlFieldCUDA2D< T >( name, x_size, y_size ),
      Ax( A_x ), Bx( B_x ),
      Ay( A_y ), By( B_y )  
    {

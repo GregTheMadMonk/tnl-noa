@@ -24,6 +24,7 @@ headers = tnlAssert.h \
 		    tnlList.h \
 		    tnlLongVector.h \
 		    tnlLongVectorCUDA.h \
+		    tnlLongVectorCUDA.cu.h \
 		    tnlLogger.h \
 		    tnlObject.h \
 		    tnlStack.h \
@@ -52,6 +53,7 @@ sources = tnlConfigDescription.cpp \
 	  tnlString.cpp \
 	  tnlConfigDescriptionScanner.cpp \
 	  tnlConfigDescriptionParser.cpp \
+	  tnlLongVectorCUDA.cu \
 	  tnlParameterContainer.cpp \
 	  tnlTimerCPU.cpp \
 	  tnlTimerRT.cpp \

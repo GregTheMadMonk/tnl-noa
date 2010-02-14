@@ -24,7 +24,8 @@ template< typename T = double > class tnlGrid1D : public tnlField1D< T >
 {
    public:
 
-   tnlGrid1D()
+   tnlGrid1D( const char* name = 0 )
+   : tnlField1D< T >( name )
    {
    };
 
@@ -33,10 +34,11 @@ template< typename T = double > class tnlGrid1D : public tnlField1D< T >
        @param A_x, @param B_x, @param A_y and @param B_y define domain
        Omega = <A_x,B_x>*<A_y,B_y>.
     */
-   tnlGrid1D( int x_size,
-            const double& A_x,
-            const double& B_x )
-   : tnlField1D< T >( x_size ),
+   tnlGrid1D( const char* name,
+              int x_size,
+              const double& A_x,
+              const double& B_x )
+   : tnlField1D< T >( name, x_size ),
      Ax( A_x ), Bx( B_x ) 
    {
       assert( Ax < Bx );

@@ -26,14 +26,15 @@ template< class T > class tnlField3D : public tnlLongVector< T >
 {
    public:
 
-   tnlField3D()
-   : tnlLongVector< T >( 0 )
+   tnlField3D( const char* name = 0 )
+   : tnlLongVector< T >( name )
    { };
 
-   tnlField3D( int _x_size,
-             int _y_size,
-             int _z_size )
-   : tnlLongVector< T >( _x_size * _y_size * _z_size ),
+   tnlField3D( const char* name,
+               int _x_size,
+               int _y_size,
+               int _z_size )
+   : tnlLongVector< T >( name, _x_size * _y_size * _z_size ),
      x_size( _x_size ), y_size( _y_size ), z_size( _z_size )
    { };
 

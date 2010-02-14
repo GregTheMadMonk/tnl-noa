@@ -32,9 +32,11 @@ template< class T > class tnlLongVector : public tnlObject
    public:
 
    //! Constructor with given size
-   tnlLongVector( int _size = 0 )
+   tnlLongVector( const char* name = 0, int _size = 0 )
    : size( _size ), shared_data( false )
    {
+      if( name )
+         SetName( name );
       data = new T[ size + 1 ];
       if( ! data )
       {
@@ -57,6 +59,8 @@ template< class T > class tnlLongVector : public tnlObject
       data ++;
    };
    
+   tnlLongVector( const tnlLongVectorCUDA< T >& v );
+
    tnlString GetType() const
    {
       T t;
@@ -202,6 +206,26 @@ template< class T > class tnlLongVector : public tnlObject
 
    bool shared_data;
 };
+
+#include <core/tnlLongVectorCUDA.h>
+
+template< typename T > tnlLongVector< T > :: tnlLongVector( const tnlLongVectorCUDA< T >& v )
+#ifdef HAVE_CUDA
+         : tnlObject( v ), size( v. GetSize() ), shared_data( false )
+{
+   data = new T[ size + 1 ];
+   if( ! data )
+   {
+      cerr << "Unable to allocate new long vector with size " << size << "." << endl;
+      abort();
+   }
+   data ++;
+}
+#else
+{
+   cerr << "CUDA is not supported on this system " << __FILE__ << " line " << __LINE__ << endl;
+}
+#endif
 
 template< typename T > ostream& operator << ( ostream& o, const tnlLongVector< T >& v )
 {

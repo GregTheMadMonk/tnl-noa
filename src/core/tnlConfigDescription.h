@@ -79,7 +79,7 @@ struct tnlConfigEntryBase
         group( _group ),
         comment( _comment ),
         required( _required ),
-        has_default_value( false ){};
+        has_default_value( false ){}
 
 };
 
@@ -101,7 +101,7 @@ template< class T > struct tnlConfigEntry : public tnlConfigEntryBase
         default_value( _default_value ) 
       {
          has_default_value = true;
-      };
+      }
 
 };
 
@@ -132,7 +132,7 @@ class tnlConfigDescription
                                               group,
                                               comment,
                                               default_value ) );
-   };
+   }
 
    
    //! Returns zero if given entry does not exist
@@ -150,7 +150,7 @@ class tnlConfigDescription
             else return NULL;
       cerr << "Asking for the default value of uknown parameter." << endl;
       return NULL;
-   };
+   }
    
    //! Returns zero pointer if there is no default value
    template< class T > T* GetDefaultValue( const char* name )
@@ -164,7 +164,7 @@ class tnlConfigDescription
             else return NULL;
       cerr << "Asking for the default value of uknown parameter." << endl;
       return NULL;
-   };
+   }
 
    //! If there is missing entry with defined default value in the tnlParameterContainer it is going to be added
    void AddMissingEntries( tnlParameterContainer& parameter_container ) const;

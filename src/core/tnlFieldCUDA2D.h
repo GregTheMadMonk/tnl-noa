@@ -27,13 +27,17 @@ template< class T > class tnlFieldCUDA2D : public tnlLongVectorCUDA< T >
 {
    public:
 
-   tnlFieldCUDA2D()
+   tnlFieldCUDA2D( const char* name = 0 )
    : tnlLongVectorCUDA< T >( 0 )
-   { };
+   {
+      if( name )
+         tnlLongVectorCUDA< T > :: SetName( name );
+   };
 
-   tnlFieldCUDA2D( int _x_size,
-               int _y_size )
-   : tnlLongVectorCUDA< T >( _x_size * _y_size ),
+   tnlFieldCUDA2D( const char* name,
+                   int _x_size,
+                   int _y_size )
+   : tnlLongVectorCUDA< T >( name, _x_size * _y_size ),
      x_size( _x_size ), y_size( _y_size )
    { };
 

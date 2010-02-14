@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "mgrid-view-def.h"
-
+#include "tnl-grid-view.h"
 #include <core/compress-file.h>
 #include <core/tnlCurve.h>
 #include <core/tnlConfigDescription.h>
@@ -25,157 +25,6 @@
 #include <diff/drawGrid2D.h>
 #include <diff/drawGrid3D.h>
 
-bool ProcesstnlGrid2D( const tnlString& file_name, 
-                     const tnlParameterContainer& parameters,
-                     int file_index,
-                     const tnlString& output_file_name,
-                     const tnlString& output_file_format )
-{
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid2D< double > u;
-   fstream file;
-   file. open( file_name. Data(), ios :: in | ios :: binary );
-   if( ! u. Load( file ) )
-   {
-      cout << " unable to restore the data " << endl;
-      file. close();
-      return false;
-   }
-   file. close();
-
-   tnlGrid2D< double >* output_u;
-   
-   int output_x_size( 0 ), output_y_size( 0 );
-   parameters. GetParameter< int >( "output-x-size", output_x_size );
-   parameters. GetParameter< int >( "output-y-size", output_y_size );
-   double scale = parameters. GetParameter< double >( "scale" );
-   if( ! output_x_size && ! output_y_size && scale == 1.0 )
-      output_u = &u;
-   else
-   {
-      if( ! output_x_size ) output_x_size = u. GetXSize();
-      if( ! output_y_size ) output_y_size = u. GetYSize();
-
-      output_u = new tnlGrid2D< double >( output_x_size,
-                                  output_y_size,
-                                  u. GetAx(),
-                                  u. GetBx(),
-                                  u. GetAy(),
-                                  u. GetBy() );
-
-      const double& hx = output_u -> GetHx();
-      const double& hy = output_u -> GetHy();
-      int i, j;
-      for( i = 0; i < output_x_size; i ++ )
-         for( j = 0; j < output_y_size; j ++ )
-         {
-            const double x = output_u -> GetAx() + i * hx;
-            const double y = output_u -> GetAy() + j * hy;
-            ( *output_u )( i, j ) = scale * u. Value( x, y );
-         }
-   }
-
-   if( verbose )
-      cout << " writing ... " << output_file_name;
-
-   tnlList< double > level_lines;
-   parameters. GetParameter< tnlList< double > >( "level-lines", level_lines );
-   if( ! level_lines. IsEmpty() )
-   {
-      tnlCurve< tnlVector< 2, double > > crv;
-      int j;
-      for( j = 0; j < level_lines. Size(); j ++ )
-         if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
-         {
-            cerr << "Unable to identify the level line " << level_lines[ j ] << endl;
-            if( output_u != &u ) delete output_u;
-            return false;
-         }
-      if( ! Write( crv, output_file_name. Data(), output_file_format. Data() ) )
-      {
-         cerr << " ... FAILED " << endl;
-      }
-   }
-   else
-      if( ! Draw( *output_u, output_file_name. Data(), output_file_format. Data() ) )
-      {
-         cerr << " ... FAILED " << endl;
-      }
-   level_lines. EraseAll();
-   if( output_u != &u ) delete output_u;
-   if( verbose )
-      cout << " OK " << endl;
-}
-//--------------------------------------------------------------------------
-bool ProcesstnlGrid3D( const tnlString& file_name,
-                     const tnlParameterContainer& parameters,
-                     int file_index,
-                     const tnlString& output_file_name,
-                     const tnlString& output_file_format )
-{
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid3D< double > u;
-   fstream file;
-   file. open( file_name. Data(), ios :: in | ios :: binary );
-   if( ! u. Load( file ) )
-   {
-      cout << " unable to restore the data " << endl;
-      file. close();
-      return false;
-   }
-   file. close();
-
-   tnlGrid3D< double >* output_u;
-   
-   int output_x_size( 0 ), output_y_size( 0 ), output_z_size( 0 );
-   parameters. GetParameter< int >( "output-x-size", output_x_size );
-   parameters. GetParameter< int >( "output-y-size", output_y_size );
-   parameters. GetParameter< int >( "output-y-size", output_z_size );
-   double scale = parameters. GetParameter< double >( "scale" );
-   if( ! output_x_size && ! output_y_size && ! output_z_size && scale == 1.0 )
-      output_u = &u;
-   else
-   {
-      if( ! output_x_size ) output_x_size = u. GetXSize();
-      if( ! output_y_size ) output_y_size = u. GetYSize();
-      if( ! output_z_size ) output_z_size = u. GetZSize();
-
-      output_u = new tnlGrid3D< double >( output_x_size,
-                                        output_y_size,
-                                        output_z_size,
-                                        u. GetAx(),
-                                        u. GetBx(),
-                                        u. GetAy(),
-                                        u. GetBy(),
-                                        u. GetAz(),
-                                        u. GetBz() );
-      const double& hx = output_u -> GetHx();
-      const double& hy = output_u -> GetHy();
-      const double& hz = output_u -> GetHz();
-      int i, j, k;
-      for( i = 0; i < output_x_size; i ++ )
-         for( j = 0; j < output_y_size; j ++ )
-            for( k = 0; j < output_y_size; k ++ )
-            {
-               const double x = output_u -> GetAx() + i * hx;
-               const double y = output_u -> GetAy() + j * hy;
-               const double z = output_u -> GetAz() + k * hz;
-               ( *output_u )( i, j, k ) = scale * u. Value( x, y, z );
-            }
-   }
-
-   if( verbose )
-      cout << " writing " << output_file_name << " ... ";
-   if( ! Draw( *output_u, output_file_name. Data(), output_file_format. Data() ) )
-   {
-      cerr << " unable to write to " << output_file_name << endl;
-   }
-   else
-      if( verbose )
-         cout << " ... OK " << endl;
-   if( output_u != &u ) delete output_u;
-}
-//--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
@@ -245,14 +94,24 @@ int main( int argc, char* argv[] )
          }
 
          bool object_type_matched( false );
+         if( object_type == "tnlGrid2D< float >" )
+         {
+            ProcesstnlGrid2D< float >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
          if( object_type == "tnlGrid2D< double >" )
          {
-            ProcesstnlGrid2D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            ProcesstnlGrid2D< double >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
+         if( object_type == "tnlGrid3D< float >" )
+         {
+            ProcesstnlGrid3D< float >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
          if( object_type == "tnlGrid3D< double >" )
          {
-             ProcesstnlGrid3D( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+             ProcesstnlGrid3D< double >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
              object_type_matched = true;
          }
          if( ! object_type_matched )

@@ -45,8 +45,8 @@ template< class T > class tnlFieldCUDA2DTester : public CppUnit :: TestCase
    {
 #ifdef HAVE_CUDA
 	   const int size = 100;
-	   tnlField2D< T > host_field( size, size );
-	   tnlFieldCUDA2D< T > device_field( size, size );
+	   tnlField2D< T > host_field( "host-field", size, size );
+	   tnlFieldCUDA2D< T > device_field( "device-field", size, size );
 	   for( int i = 0; i < size; i ++ )
 		   for( int j = 0; j < size; j ++ )
 			   host_field( i, j ) = ( T ) ( i + j );
@@ -78,11 +78,11 @@ template< class T > class tnlFieldCUDA2DTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( cuda_field_2. GetXSize() == 100 );
       CPPUNIT_ASSERT( cuda_field_2. GetYSize() == 100 );
 
-      tnlFieldCUDA2D< T > cuda_field_3( 100, 100 );
+      tnlFieldCUDA2D< T > cuda_field_3( "cuda-field", 100, 100 );
       CPPUNIT_ASSERT( cuda_field_3. GetXSize() == 100 );
       CPPUNIT_ASSERT( cuda_field_3. GetYSize() == 100 );
 
-      tnlFieldCUDA2D< T >* cuda_field_4 = new tnlFieldCUDA2D< T >( 100, 100 );
+      tnlFieldCUDA2D< T >* cuda_field_4 = new tnlFieldCUDA2D< T >( "cuda-field-4", 100, 100 );
       tnlFieldCUDA2D< T >* cuda_field_5 = new tnlFieldCUDA2D< T >;
       CPPUNIT_ASSERT( *cuda_field_4 );
       CPPUNIT_ASSERT( ! *cuda_field_5 );

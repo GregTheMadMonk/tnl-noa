@@ -33,16 +33,17 @@ template< typename T = double > class tnlGrid3D : public tnlField3D< T >
        @param A_x, @param B_x, @param A_y, @param B_y, @param A_z and @param B_zdefine domain
        Omega = <A_x,B_x>*<A_y,B_y>*,A_z,B_z>.
     */
-   tnlGrid3D( int x_size,
-            int y_size,
-            int z_size,
-            const double& A_x,
-            const double& B_x,
-            const double& A_y,
-            const double& B_y,
-            const double& A_z,
-            const double& B_z )
-   : tnlField3D< T >( x_size, y_size, z_size ),
+   tnlGrid3D( const char* name,
+              int x_size,
+              int y_size,
+              int z_size,
+              const double& A_x,
+              const double& B_x,
+              const double& A_y,
+              const double& B_y,
+              const double& A_z,
+              const double& B_z )
+   : tnlField3D< T >( name, x_size, y_size, z_size ),
      Ax( A_x ), Bx( B_x ),
      Ay( A_y ), By( B_y ),  
      Az( A_z ), Bz( B_z )  

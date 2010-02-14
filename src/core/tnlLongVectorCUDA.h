@@ -24,6 +24,18 @@
  */
 #ifdef HAVE_CUDA
 #include <cuda_runtime.h>
+void tnlLongVectorCUDASetValue( int* data,
+                                const int size,
+                                const int& v );
+
+void tnlLongVectorCUDASetValue( float* data,
+                                const int size,
+                                const float& v );
+
+void tnlLongVectorCUDASetValue( double* data,
+                                const int size,
+                                const double& v );
+
 #else
 #include <iostream>
 using namespace std;
@@ -37,14 +49,17 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
 {
    public:
    //! Constructor with given size
-   tnlLongVectorCUDA( int _size = 0 )
+   tnlLongVectorCUDA( const char* name = 0, int _size = 0 )
 #ifdef HAVE_CUDA
     : size( _size ), shared_data( false )
    {
-
+      if( name )
+         SetName( name );
       if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess  )
       {
-         cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         cerr << "Unable to allocate new long vector with size "
+              << size << " on CUDA device for "
+              << GetName() << "." << endl;
          data = NULL;
          abort();
       }
@@ -117,7 +132,9 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       shared_data = false;
       if( cudaMalloc( ( void** ) &data, size * sizeof( T ) ) != cudaSuccess )
       {
-         cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
+         cerr << "Unable to allocate new long vector with size "
+              << size << " on CUDA device for "
+              << GetName() << "." << endl;
          data = NULL;
          size = 0;
          return false;
@@ -211,6 +228,14 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
 #endif
    };
 
+   void setValue( const T& c )
+   {
+#ifdef HAVE_CUDA
+      :: tnlLongVectorCUDASetValue( this -> Data(), this -> GetSize(), c );
+#else
+      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+#endif
+   };
 
    virtual
    ~tnlLongVectorCUDA()
@@ -219,7 +244,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       if( data && ! shared_data )
          if( cudaFree( data ) != cudaSuccess )
          {
-            cerr << "Unable to free alocated memory of " << GetName() << "." << endl;
+            cerr << "Unable to free alocated memory on CUDA device of " << GetName() << "." << endl;
          }
 #else
       cerr << "CUDA support is missing on this system." << endl;

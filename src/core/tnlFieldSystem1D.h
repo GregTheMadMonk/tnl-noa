@@ -25,12 +25,13 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
 {
    public:
 
-   tnlFieldSystem1D()
-   : tnlLongVector< T >( 0 )
+   tnlFieldSystem1D( const char* name = 0 )
+   : tnlLongVector< T >( name )
    { };
 
-   tnlFieldSystem1D( int _x_size )
-   : tnlLongVector< T >( _x_size * SYSTEM_SIZE ),
+   tnlFieldSystem1D( const char* name,
+                     int _x_size )
+   : tnlLongVector< T >( name, _x_size * SYSTEM_SIZE ),
      x_size( _x_size )
    { };
 

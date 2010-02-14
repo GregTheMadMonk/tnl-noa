@@ -1,8 +1,8 @@
 /***************************************************************************
-                          compare-objets.h  -  description
+                          tnlLongVectorCUDA.h  -  description
                              -------------------
-    begin                : 2009/08/14
-    copyright            : (C) 2009 by Tomas Oberhuber
+    begin                : Feb 11, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,22 +14,26 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+ 
+#include <core/tnlLongVectorCUDA.cu.h> 
 
-#ifndef compare-objetsH
-#define compare-objetsH
+void tnlLongVectorCUDASetValue( int* data,
+                                const int size,
+                                const int& v )
+{
+   tnlLongVectorCUDASetValueKernelCaller( data, size, v );
+}
 
-bool Compare( const tnlGrid2D< double >& u1,
-              const tnlGrid2D< double >& u2,
-              double& l1_norm,
-              double& l2_norm,
-              double& max_norm,
-              tnlGrid2D< double >& difference );
+void tnlLongVectorCUDASetValue( float* data,
+                                const int size,
+                                const float& v )
+{
+   tnlLongVectorCUDASetValueKernelCaller( data, size, v );
+}
 
-bool Compare( const tnlGrid3D< double >& u1,
-              const tnlGrid3D< double >& u2,
-              double& l1_norm,
-              double& l2_norm,
-              double& max_norm,
-              tnlGrid3D< double >& difference );
-
-#endif
+void tnlLongVectorCUDASetValue( double* data,
+                                const int size,
+                                const double& v )
+{
+   tnlLongVectorCUDASetValueKernelCaller( data, size, v );
+}
