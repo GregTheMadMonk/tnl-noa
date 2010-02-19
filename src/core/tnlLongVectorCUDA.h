@@ -178,12 +178,16 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
     */
    const T* Data() const
    {
+	   if( ! size )
+		   return NULL;
       return data;
    };
 
    //! Returns pointer to data
    T* Data()
    {
+	  if( ! size )
+		  return NULL;
       return data;
    }
 

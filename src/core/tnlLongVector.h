@@ -110,6 +110,7 @@ template< class T > class tnlLongVector : public tnlObject
    /*! This is not clear from the OOP point of view however it is necessary for keeping 
        good performance of derived numerical structure like solvers.
     */
+   // TODO: return zero pointer if size == 0
    const T* Data() const
    {
       return data;
@@ -138,10 +139,16 @@ template< class T > class tnlLongVector : public tnlObject
       return data[ i ];
    };
 
-   void Zeros()
+   void Zeros() // TODO: replace by setValue
    {
       int i;
       for( i = 0; i < size; i ++ ) data[ i ] = ( T ) 0;
+   };
+
+   void setValue( const T& v )
+   {
+	   int i;
+	   for( i = 0; i < size; i ++ ) data[ i ] = ( T ) 0;
    };
 
    bool copyFrom( const tnlLongVector< T >& long_vector )
