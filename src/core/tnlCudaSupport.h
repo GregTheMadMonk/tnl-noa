@@ -19,7 +19,7 @@
 #define TNLCUDASUPPORT_H_
 
 template< class T >
-T* passToCudaDevice( const T& data )
+T* tnlPassToCudaDevice( const T& data )
 {
 #ifdef HAVE_CUDA
    T* cuda_data;
