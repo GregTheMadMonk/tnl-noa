@@ -24,9 +24,9 @@ template< typename T = double > class tnlGrid3D : public tnlField3D< T >
 {
    public:
 
-   tnlGrid3D()
-   {
-   };
+   tnlGrid3D( const char* name = 0 )
+   : tnlField3D< T >( name )
+     {};
 
    //! Constructor with the grid and the domain dimensions
    /*! @param x_size, @param y_size and @param z_size define the grid dimensions.
