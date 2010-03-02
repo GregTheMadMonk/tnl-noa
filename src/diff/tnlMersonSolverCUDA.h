@@ -130,7 +130,13 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolverC
    public:
 
    tnlMersonSolverCUDA( const GRID& v )
-   : adaptivity( 1.0e-5 )
+   : adaptivity( 1.0e-5 ),
+     k1( "tnlMersonSolverCUDA:k1" ),
+     k2( "tnlMersonSolverCUDA:k2" ),
+     k3( "tnlMersonSolverCUDA:k3" ),
+     k4( "tnlMersonSolverCUDA:k4" ),
+     k5( "tnlMersonSolverCUDA:k5" ),
+     k_tmp( "tnlMersonSolverCUDA:k-tmp" )
    {
 #ifdef HAVE_CUDA
       k1. SetNewDimensions( v );

@@ -34,7 +34,10 @@ class tnlObject
    public:
 
    //! Basic constructor
-   tnlObject();
+   tnlObject(); // TODO: Remove this we want to have only constructor with name
+
+   //! Constructor with name
+   tnlObject( const char* name );
    
    //! Copy constructor 
    /*! It does not copy name - name should be unique
@@ -56,6 +59,9 @@ class tnlObject
    //! Method for restoring the object from a file
    virtual bool Load( istream& file );   
 
+   //! Debug moder setter
+   static void setDebug( bool );
+
    //! Destructor
    virtual ~tnlObject(){};
 
@@ -63,6 +69,9 @@ class tnlObject
 
    //! Object name
    tnlString name;
+
+   //! Turns on debuging messages
+   static bool debug;
 
 };
 

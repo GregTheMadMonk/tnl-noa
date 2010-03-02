@@ -51,13 +51,8 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    //! Constructor with given size
    tnlLongVectorCUDA( const char* name = 0, int _size = 0 )
 #ifdef HAVE_CUDA
-    : size( _size ), shared_data( false )
+    : tnlObject( name ), size( _size ), shared_data( false )
    {
-	   cerr << "X##" << endl;
-      if( name )
-         SetName( name );
-      cout << "Initiating " << GetName() << endl;
-      cerr << "X### " << size + 1 << endl;
       if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess  )
       {
          cerr << "Unable to allocate new long vector with size "
@@ -66,7 +61,6 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
          data = NULL;
          abort();
       }
-      cerr << "X####" << endl;
       //data ++;
    };
 #else
@@ -126,7 +120,8 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    bool SetNewSize( int _size )
 #ifdef HAVE_CUDA
    {
-	   cerr << "Setting new size to " << _size << " for " << GetName() << endl;
+      if( debug )
+	   cout << "Setting new size to " << _size << " for " << GetName() << endl;
       if( size == _size ) return true;
       if( ! shared_data )
       {
@@ -260,6 +255,11 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
 #endif
    };
 
+   static void setDebug( bool _debug )
+   {
+      debug = _debug;
+   };
+
    private:
 
    int size;
@@ -267,6 +267,8 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    T* data;
 
    bool shared_data;
+
+   static bool debug;
 
    //friend class tnlLongVectorCUDATester< T >;
 };
@@ -288,5 +290,7 @@ template< class T > bool tnlLongVector< T > :: copyFrom( const tnlLongVectorCUDA
 #endif
 
 }
+
+template< class T > bool tnlLongVectorCUDA< T > :: debug;
 
 #endif /* TNLLONGVECTORCUDA_H_ */
