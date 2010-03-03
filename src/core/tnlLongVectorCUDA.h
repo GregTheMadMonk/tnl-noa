@@ -241,10 +241,14 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    {
 #ifdef HAVE_CUDA
       if( data && ! shared_data )
+      {
+         if( debug )
+            cout << "Freeing allocated memory of " << GetName() << " on CUDA device." << endl;
          if( cudaFree( data ) != cudaSuccess )
          {
             cerr << "Unable to free alocated memory on CUDA device of " << GetName() << "." << endl;
          }
+      }
 #else
       cerr << "CUDA support is missing on this system." << endl;
 #endif
