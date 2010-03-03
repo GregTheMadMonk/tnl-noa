@@ -27,9 +27,8 @@ template< class T = double > class tnlGridCUDA2D :
    public:
 
    tnlGridCUDA2D( const char* name = 0 )
+   : tnlFieldCUDA2D< T >( name )
    {
-      if( name )
-         tnlFieldCUDA2D< T > :: SetName( name );
    };
 
    //! Constructor with the grid and the domain dimensions

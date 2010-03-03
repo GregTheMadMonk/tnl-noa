@@ -26,8 +26,8 @@ template< class T > class tnlFieldCUDA3D : public tnlLongVectorCUDA< T >
 {
    public:
 
-   tnlFieldCUDA3D()
-   : tnlLongVectorCUDA< T >( 0 )
+   tnlFieldCUDA3D( const char* name = 0 )
+   : tnlLongVectorCUDA< T >( name )
    { };
 
    tnlFieldCUDA3D( int _x_size,

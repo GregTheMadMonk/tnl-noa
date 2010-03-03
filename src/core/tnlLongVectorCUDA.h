@@ -51,11 +51,11 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    //! Constructor with given size
    tnlLongVectorCUDA( const char* name = 0, int _size = 0 )
 #ifdef HAVE_CUDA
-    : tnlObject( name ), size( _size ), shared_data( false )
+    : tnlObject( name ), size( _size ), data( NULL ), shared_data( false )
    {
-      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess  )
+      if( size && cudaMalloc( ( void** ) &data, ( size ) * sizeof( T ) ) != cudaSuccess  )
       {
-         cerr << "Unable to allocate new long vector with size "
+         cerr << "Unable to allocate new long vector '" << GetName() << "' with size "
               << size << " on CUDA device for "
               << GetName() << "." << endl;
          data = NULL;
@@ -72,15 +72,15 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    //! Constructor with another long vector as template
    tnlLongVectorCUDA( const tnlLongVectorCUDA& v )
 #ifdef HAVE_CUDA
-    : tnlObject( v ), size( v. size ), shared_data( false )
+    : tnlObject( v ), size( v. size ), data( NULL ), shared_data( false )
    {
-
-      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess )
-      {
-         cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
-         data = NULL;
-         abort();
-      }
+	  if( size )
+		  if( cudaMalloc( ( void** ) &data, size * sizeof( T ) ) != cudaSuccess )
+		  {
+			  cerr << "Unable to allocate new long vector '" << GetName() << "' with size " << size << " on CUDA device." << endl;
+			  data = NULL;
+			  abort();
+		  }
       //data ++;
    };
 #else
@@ -92,10 +92,9 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    //! Constructor with another long vector as template
    tnlLongVectorCUDA( const tnlLongVector< T >& v )
 #ifdef HAVE_CUDA
-    : tnlObject( v ), size( v. GetSize() ), shared_data( false )
+    : tnlObject( v ), size( v. GetSize() ), data( NULL ), shared_data( false )
    {
-
-      if( cudaMalloc( ( void** ) &data, ( size + 1 ) * sizeof( T ) ) != cudaSuccess )
+      if( size && cudaMalloc( ( void** ) &data, size * sizeof( T ) ) != cudaSuccess )
       {
          cerr << "Unable to allocate new long vector with size " << size << " on CUDA device." << endl;
          data = NULL;
@@ -123,7 +122,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       if( debug )
 	   cout << "Setting new size to " << _size << " for " << GetName() << endl;
       if( size == _size ) return true;
-      if( ! shared_data )
+      if( data && ! shared_data )
       {
          cudaFree( data );
          data = NULL;
@@ -178,16 +177,12 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
     */
    const T* Data() const
    {
-	   if( ! size )
-		   return NULL;
       return data;
    };
 
    //! Returns pointer to data
    T* Data()
    {
-	  if( ! size )
-		  return NULL;
       return data;
    }
 

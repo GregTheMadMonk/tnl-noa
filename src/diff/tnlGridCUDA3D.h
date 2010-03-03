@@ -24,7 +24,8 @@ template< typename T = double > class tnlGridCUDA3D : public tnlFieldCUDA3D< T >
 {
    public:
 
-   tnlGridCUDA3D()
+   tnlGridCUDA3D( const char* name = 0 )
+   : tnlFieldCUDA3D( name )
    {
    };
 

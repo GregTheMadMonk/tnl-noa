@@ -399,7 +399,7 @@ bool tnlCUDAReduction( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -644,7 +644,7 @@ bool tnlCUDASimpleReduction5( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -870,7 +870,7 @@ bool tnlCUDASimpleReduction4( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -1081,7 +1081,7 @@ bool tnlCUDASimpleReduction3( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -1257,7 +1257,7 @@ bool tnlCUDASimpleReduction2( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -1416,7 +1416,7 @@ bool tnlCUDASimpleReduction1( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVectorCUDA< T > deviceAuxVct;
+   tnlLongVectorCUDA< T > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );

@@ -28,10 +28,8 @@ template< class T > class tnlFieldCUDA2D : public tnlLongVectorCUDA< T >
    public:
 
    tnlFieldCUDA2D( const char* name = 0 )
-   : tnlLongVectorCUDA< T >( 0 )
+   : tnlLongVectorCUDA< T >( name )
    {
-      if( name )
-         tnlLongVectorCUDA< T > :: SetName( name );
    };
 
    tnlFieldCUDA2D( const char* name,
