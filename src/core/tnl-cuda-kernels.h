@@ -403,7 +403,7 @@ bool tnlCUDAReduction( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }
@@ -648,7 +648,7 @@ bool tnlCUDASimpleReduction5( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }
@@ -874,7 +874,7 @@ bool tnlCUDASimpleReduction4( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }
@@ -1085,7 +1085,7 @@ bool tnlCUDASimpleReduction3( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }
@@ -1261,7 +1261,7 @@ bool tnlCUDASimpleReduction2( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }
@@ -1420,7 +1420,7 @@ bool tnlCUDASimpleReduction1( const int size,
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
-      if( ! deviceAuxVct. SetNewSize( sizeAlloc ) )
+      if( ! deviceAuxVct. setNewSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. Data();
    }

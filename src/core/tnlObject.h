@@ -59,9 +59,6 @@ class tnlObject
    //! Method for restoring the object from a file
    virtual bool Load( istream& file );   
 
-   //! Debug moder setter
-   static void setDebug( bool );
-
    //! Destructor
    virtual ~tnlObject(){};
 
@@ -69,10 +66,6 @@ class tnlObject
 
    //! Object name
    tnlString name;
-
-   //! Turns on debuging messages
-   static bool debug;
-
 };
 
 bool GetObjectType( istream& file, tnlString& type );

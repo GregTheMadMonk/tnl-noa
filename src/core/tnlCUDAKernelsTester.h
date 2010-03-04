@@ -106,7 +106,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
    {
       const int size = host_input. GetSize();
       tnlLongVectorCUDA< T > device_input;
-      if( ! device_input. SetNewSize( size ) )
+      if( ! device_input. setNewSize( size ) )
          return false;
       device_input. copyFrom( host_input );
 

@@ -28,10 +28,10 @@ bool transferBenchmark( const int size,
                         double& device_to_device_band_width )
 {
 
-  tnlLongVector< T > host_vector( size );
-  tnlLongVector< T > host_vector2( size );
-  tnlLongVectorCUDA< T > device_vector( size );
-  tnlLongVectorCUDA< T > device_vector2( size );
+  tnlLongVector< T > host_vector( "transferBenchmark:host-vector", size );
+  tnlLongVector< T > host_vector2( "transferBenchmark:host-vector-2", size );
+  tnlLongVectorCUDA< T > device_vector( "transferBenchmark:device-vector", size );
+  tnlLongVectorCUDA< T > device_vector2( "transferBenchmark:device-vector-2", size );
 
    for( int i = 0; i < size; i ++ )
       host_vector[ i ] = i + 1;
@@ -122,9 +122,9 @@ template< class T >
 void reductionBenchmark( const int size,
                          const int algorithm )
 {
-   tnlLongVector< T > host_vector( size );
-   tnlLongVectorCUDA< T > device_vector( size );
-   tnlLongVectorCUDA< T > device_aux( size / 2 );
+   tnlLongVector< T > host_vector( "reductionBenchmark:host-vector", size );
+   tnlLongVectorCUDA< T > device_vector( "reductionBenchmark:device-vector", size );
+   tnlLongVectorCUDA< T > device_aux( "reductionBenchmark:device-aux", size / 2 );
 
    for( int i = 0; i < size; i ++ )
       host_vector[ i ] = i + 1;

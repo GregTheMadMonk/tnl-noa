@@ -72,5 +72,7 @@ endif
 
 
 
-TESTS = tnl-unit-tests \
-        tnl-benchmarks
+TESTS = tnl-unit-tests 
+
+##tnl-unit-tests \
+##        tnl-benchmarks

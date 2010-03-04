@@ -25,6 +25,7 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
 #include <core/tnlLongVectorCUDA.h>
 #include <core/tnlLongVector.h>
 
@@ -164,13 +165,14 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
       tnlLongVectorCUDA< T > cuda_vector_1;
       CPPUNIT_ASSERT( !cuda_vector_1 );
  
-      cuda_vector_1. SetNewSize( 100 );
+      cuda_vector_1. setNewSize( 100 );
+
       CPPUNIT_ASSERT( cuda_vector_1 );
       CPPUNIT_ASSERT( cuda_vector_1. GetSize() == 100 );
 
       tnlLongVectorCUDA< T > cuda_vector_2;
       CPPUNIT_ASSERT( !cuda_vector_2 );
-      cuda_vector_2. SetNewSize( cuda_vector_1 );
+      cuda_vector_2. setNewSize( cuda_vector_1 );
       CPPUNIT_ASSERT( cuda_vector_2. GetSize() == 100 );
 
       tnlLongVectorCUDA< T > cuda_vector_3( "cuda-vector", 100 );

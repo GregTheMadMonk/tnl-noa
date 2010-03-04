@@ -25,7 +25,6 @@
 
 const char magic_number[] = "SIM33";
 
-bool tnlObject :: debug = false;
 //--------------------------------------------------------------------------
 tnlObject :: tnlObject( )
 {
@@ -33,9 +32,9 @@ tnlObject :: tnlObject( )
 //--------------------------------------------------------------------------
 tnlObject :: tnlObject( const char* name )
 {
+   dbgFunctionName( "tnlObject", "tnlObject" );
+   dbgCout( "Initiating object " << GetName() );
    SetName( name );
-   if( debug )
-      cout << "Initiating object " << GetName() << endl;
 }
 //--------------------------------------------------------------------------
 tnlObject :: tnlObject( const tnlObject& object )
@@ -83,11 +82,6 @@ bool tnlObject :: Load( istream& file )
    dbgCout( "Reading object name " );
    if( ! name. Load( file ) ) return false;
    return true;
-}
-//--------------------------------------------------------------------------
-void tnlObject :: setDebug( bool _debug )
-{
-   debug = _debug;
 }
 //--------------------------------------------------------------------------
 bool GetObjectType( istream& file, tnlString& type )

@@ -70,12 +70,17 @@ template< class T > class tnlFieldCUDA2D : public tnlLongVectorCUDA< T >
    {
       x_size = new_x_size;
       y_size = new_y_size;
-      return tnlLongVectorCUDA< T > :: SetNewSize( x_size * y_size );
+      return tnlLongVectorCUDA< T > :: setNewSize( x_size * y_size );
    };
 
    bool SetNewDimensions( const tnlFieldCUDA2D< T >& f )
    {
       return SetNewDimensions( f. GetXSize(), f. GetYSize() );
+   };
+
+   bool SetNewDimensions( const tnlField2D< T >& f )
+   {
+	   return SetNewDimensions( f. GetXSize(), f. GetYSize() );
    };
 
    void SetSharedData( T* _data, const int _x_size, const int _y_size )
