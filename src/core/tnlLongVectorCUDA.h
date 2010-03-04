@@ -100,7 +100,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    bool setNewSize( int _size )
 #ifdef HAVE_CUDA
    {
-	  dbgFunctionName( "tnlLongVectorCUDA", "setNewSize" );
+      dbgFunctionName( "tnlLongVectorCUDA", "setNewSize" );
       dbgCout( "Setting new size to " << _size << " for " << GetName() );
       if( size == _size ) return true;
       if( data && ! shared_data )
@@ -111,11 +111,10 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
       }
       size = _size;
       shared_data = false;
-      cerr << "###########" << endl;
       if( cudaMalloc( ( void** ) &data, size * sizeof( T ) ) != cudaSuccess )
       {
          cerr << "Unable to allocate new long vector with size "
-              << size << " on CUDA device for "
+              << size * sizeof( T ) << " on CUDA device for "
               << GetName() << "." << endl;
          data = NULL;
          size = 0;

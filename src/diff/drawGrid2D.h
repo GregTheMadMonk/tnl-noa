@@ -26,6 +26,7 @@
 #include <diff/tnlGridCUDA2D.h>
 #include <core/compress-file.h>
 #include <core/mfuncs.h>
+#include <debug/tnlDebug.h>
 
 template< class T > bool Draw( const tnlGrid2D< T >& u,
                                ostream& str,
@@ -33,6 +34,7 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
                                const int i_step = 1,
                                const int j_step = 1 )
 {
+   dbgFunctionName( "", "Draw" );
    if( ! format )
    {
       cerr << "No format given for drawing 2D grid. " << endl;
@@ -50,7 +52,9 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
       for( i = 0; i < x_size; i += i_step )
       {
          for( j = 0; j < y_size; j += j_step )
+         {
             str << setprecision( 12 ) << ax + i * hx << " " << ay + j * hy << " " << u( i, j ) << endl;
+         }
          str << endl;
       }
       return true;           
@@ -93,6 +97,10 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
                                const int i_step = 1,
                                const int j_step = 1 )
 {
+   dbgFunctionName( "", "Draw" );
+   dbgCout( "Drawing tnlGrid2D in " << format << " format "
+            << u. GetName() << " with dimensions "
+            << u. GetXSize() << "x" << u. GetYSize() );
    fstream file;
    if( strncmp( format, "bin",3 ) == 0 )
       file. open( file_name, ios :: out | ios :: binary );
@@ -171,7 +179,7 @@ template< class T > bool Draw( const tnlGridCUDA2D< T >& u,
 {
 #ifdef HAVE_CUDA
    tnlGrid2D< T > hostAux( u );
-   hostAux. SetName( "drawAux" );
+   hostAux. SetName( "drawAux:" + u. GetName() );
    hostAux. copyFrom( u );
    return Draw( hostAux,
                 file_name,

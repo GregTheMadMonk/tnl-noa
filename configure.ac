@@ -109,7 +109,7 @@ then
             CUDA_CXXFLAGS="$CUDA_CXXFLAGS -arch=sm_13 -DCUDA_ARCH=1.3"
          ;;
       esac  
-      DBGCXXFLAGS="$DBGCXXFLAGS -deviceemu"    
+dnl      DBGCXXFLAGS="$DBGCXXFLAGS -deviceemu"    
    else
       CUDA_LDFLAGS=""
       CUDA_CXXFLAGS=""

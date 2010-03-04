@@ -122,6 +122,7 @@ template< class T > class tnlLongVectorCUDATester : public CppUnit :: TestCase
    void testAllocationFromNonCUDA()
    {
 #ifdef HAVE_CUDA
+
       tnlLongVector< T > hostV( "hostV", 100 );
       for( int i = 0; i < 100; i ++ )
          hostV[ i ] = i;
