@@ -98,7 +98,7 @@ template< class T > bool Draw( const tnlGrid2D< T >& u,
                                const int j_step = 1 )
 {
    dbgFunctionName( "", "Draw" );
-   dbgCout( "Drawing tnlGrid2D in " << format << " format "
+   dbgCout( "Drawing tnlGrid2D " << u. GetName() << " in " << format << " format "
             << u. GetName() << " with dimensions "
             << u. GetXSize() << "x" << u. GetYSize() );
    fstream file;
