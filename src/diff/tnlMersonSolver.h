@@ -168,7 +168,6 @@ template< class GRID, class SCHEME, typename T = double > class tnlMersonSolver 
             }
             _time += _tau;
             _iteration ++;
-            cout << _iteration << " ";
          }
          if( adaptivity && max_eps != 0.0 )
          {
