@@ -54,7 +54,6 @@ sources = tnlConfigDescription.cpp \
 	  tnlString.cpp \
 	  tnlConfigDescriptionScanner.cpp \
 	  tnlConfigDescriptionParser.cpp \
-	  tnlLongVectorCUDA.cu \
 	  tnlParameterContainer.cpp \
 	  tnlTimerCPU.cpp \
 	  tnlTimerRT.cpp \
@@ -65,7 +64,8 @@ sources = tnlConfigDescription.cpp \
 	  parse.cc
 	  
 if BUILD_CUDA
-sources += tnl-cuda-kernels.cu 
+sources += tnlLongVectorCUDA.cu \
+           tnl-cuda-kernels.cu 
 endif
 
 libmcoreincludedir = $(TNL_INCLUDE_DIR)/core
