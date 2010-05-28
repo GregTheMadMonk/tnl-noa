@@ -1944,13 +1944,13 @@ void tnlDebugfree (void * ptr )
 
 
 
-int tnlDebugFlexLexer::yywrap()
+/*int tnlDebugFlexLexer::yywrap()
 {
    return 1;
-}
+}*/
 
-/*int yywrap()
-{
+extern int yywrap();
+/*{
    return 1;
 }*/
 

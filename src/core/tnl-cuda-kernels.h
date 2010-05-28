@@ -177,7 +177,8 @@ __global__ void tnlCUDAReductionKernel( const int size,
                                         T* deviceOutput,
                                         T* dbg_array1 = 0 )
 {
-   extern __shared__ __align__ ( 8 ) T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -513,7 +514,8 @@ __global__ void tnlCUDASimpleReductionKernel5( const int size,
                                                T* deviceOutput,
                                                T* dbg_array1 = 0 )
 {
-   extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -732,7 +734,8 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
 	                                       T* deviceOutput,
 	                   	               T* dbg_array1 = 0  )
 {
-   extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -965,7 +968,8 @@ __global__ void tnlCUDASimpleReductionKernel3( const int size,
                                                const T* deviceInput,
 		                               T* deviceOutput )
 {
-   extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -1157,7 +1161,8 @@ __global__ void tnlCUDASimpleReductionKernel2( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
 {
-   extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -1335,7 +1340,8 @@ __global__ void tnlCUDASimpleReductionKernel1( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
 {
-   extern __shared__ T sdata[];
+   extern __shared__ __align__ ( 8 ) char __sdata[];
+   T* sdata = reinterpret_cast< T* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).
