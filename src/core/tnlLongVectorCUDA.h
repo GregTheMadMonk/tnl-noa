@@ -46,7 +46,7 @@ using namespace std;
 #include <core/tnlLongVector.h>
 #include <debug/tnlDebug.h>
 
-template< class T > class tnlLongVectorCUDA : public tnlObject
+template< class T, tnlDevice device = tnlHost > class tnlLongVectorCUDA : public tnlObject
 {
    public:
    //! Constructor with given size
@@ -254,7 +254,7 @@ template< class T > class tnlLongVectorCUDA : public tnlObject
    //friend class tnlLongVectorCUDATester< T >;
 };
 
-template< class T > bool tnlLongVector< T > :: copyFrom( const tnlLongVectorCUDA< T >& cuda_vector )
+template< class T, tnlDevice device > bool tnlLongVector< T, device > :: copyFrom( const tnlLongVectorCUDA< T, device >& cuda_vector )
 {
 #ifdef HAVE_CUDA
    assert( cuda_vector. GetSize() == GetSize() );

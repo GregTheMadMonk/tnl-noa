@@ -41,10 +41,10 @@ default-debug                                 { //cout << "DEFAULT" << endl;
 .                                             { return yytext[ 0 ]; }
 %%
 
-/*int tnlDebugFlexLexer::yywrap()
+int tnlDebugFlexLexer::yywrap()
 {
    return 1;
-}*/
+}
 
 extern int yywrap();
 /*{
