@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-#cd src
-bisonc++ tnlConfigDescriptionParser.y
-flex++ tnlConfigDescriptionScanner.l
-#cd ..
