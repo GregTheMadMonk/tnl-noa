@@ -1,0 +1,6 @@
+group IO
+{
+   string input-file            [Input file name.];
+   string log-file("")          [Log file name.];
+   bool verbose(yes)            [Verbose mode.];
+},[Arguments describing input and output data.];

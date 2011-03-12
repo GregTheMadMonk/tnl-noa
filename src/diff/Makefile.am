@@ -7,34 +7,12 @@
 #endif
 
 headers = \
-   mdiff-debug.h \
-   drawGrid1D.h \
-   drawGrid2D.h \
-   drawGrid3D.h \
-   tnlExplicitSolver.h \
-   tnlGrid1D.h \
-   tnlGrid2D.h \
-   tnlGrid3D.h \
-   tnlGridCUDA1D.h \
-   tnlGridCUDA2D.h \
-   tnlGridCUDA3D.h \
-   tnlGridCUDA2DTester.h \
-   tnlGridSystem1D.h \
-   tnlEulerSolver.h \
-   tnlMersonSolver.h \
-   tnlMersonSolverCUDA.h \
-   tnlMersonSolverCUDA.cu.h \
+   tnlMPIMesh.h \
    tnlMPIMesh2D.h \
    tnlMPIMesh3D.h \
-   tnlNonlinearRungeKuttaSolver.h \
-   curve-ident.h \
-   norms.h
+   curve-ident.h
 
 sources =
-
-if BUILD_CUDA
-sources += tnlMersonSolverCUDA.cu
-endif
 
 libtnldiffincludedir = $(TNL_INCLUDE_DIR)/diff
 libtnldiffinclude_HEADERS = $(headers)
@@ -69,8 +47,7 @@ endif
 libdiff_tests_sources = 
 
 if BUILD_CUDA
-libdiff_tests_sources += tnlMersonSolverCUDATester.h \
-                         tnlMersonSolverCUDATester.cu
+libdiff_tests_sources += 
 endif                        
 
 check_LTLIBRARIES = libdiff-tests.la

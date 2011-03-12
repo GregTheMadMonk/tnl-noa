@@ -67,14 +67,14 @@ int main( int argc, char* argv[] )
             cerr << "Unable to uncompress the file " << input_file << "." << endl;
             return -1;
          }
-         else uncompressed_file_name. SetString( input_file, 0, 3 );
+         else uncompressed_file_name. setString( input_file, 0, 3 );
       if( strcmp( input_file + strln - 4, ".bz2" ) == 0 )
          if( ! UnCompressFile( input_file, "bz2" ) )
          {
             cerr << "Unable to uncompress the file " << input_file << "." << endl;
             return -1;
          }
-         else uncompressed_file_name. SetString( input_file, 0, 4 );
+         else uncompressed_file_name. setString( input_file, 0, 4 );
 
           
       fstream file;
@@ -130,19 +130,19 @@ int main( int argc, char* argv[] )
       }
 
       tnlString output_file_name;
-      if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];
+      if( ! output_files. isEmpty() ) output_file_name = output_files[ i ];
       else
       {
-         if( strcmp( uncompressed_file_name. Data() + uncompressed_file_name. Length() - 4, ".bin" ) == 0 )
-            output_file_name. SetString( uncompressed_file_name. Data(), 0, 4 );
-         else output_file_name. SetString( uncompressed_file_name. Data() );
+         if( strcmp( uncompressed_file_name. Data() + uncompressed_file_name. getLength() - 4, ".bin" ) == 0 )
+            output_file_name. setString( uncompressed_file_name. Data(), 0, 4 );
+         else output_file_name. setString( uncompressed_file_name. Data() );
          if( output_file_format == "gnuplot" )
             output_file_name += ".gplt";
          if( output_file_format == "vti" )
             output_file_name += ".vti";
       }
       cout << " writing ... " << output_file_name;
-      if( ! level_lines. IsEmpty() )
+      if( ! level_lines. isEmpty() )
       {
          tnlCurve< tnlVector< 2, double > > crv;
          int j;

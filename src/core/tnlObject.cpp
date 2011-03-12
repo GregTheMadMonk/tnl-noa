@@ -15,96 +15,192 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlObject.h"
-#include <assert.h>
+#include <core/tnlObject.h>
+#include <debug/tnlDebug.h>
+#include <core/tnlAssert.h>
+#include <core/tnlFile.h>
+#include <core/tnlList.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <stdio.h>
-#include "debug.h"
 
 const char magic_number[] = "SIM33";
 
-//--------------------------------------------------------------------------
-tnlObject :: tnlObject( )
-{
-}
-//--------------------------------------------------------------------------
-tnlObject :: tnlObject( const char* name )
+
+tnlObject :: tnlObject( const tnlString& _name )
+: name( _name )
 {
    dbgFunctionName( "tnlObject", "tnlObject" );
-   dbgCout( "Initiating object " << GetName() );
-   SetName( name );
+   dbgCout( "Initiating object " << getName() );
 }
-//--------------------------------------------------------------------------
-tnlObject :: tnlObject( const tnlObject& object )
-{
-}
-//--------------------------------------------------------------------------
-tnlString tnlObject :: GetType() const
+
+tnlString tnlObject :: getType() const
 {
    return tnlString( "tnlObject" );
 }
-//--------------------------------------------------------------------------
-void tnlObject :: SetName( const char* _name )
-{
-   name. SetString( _name );
-}
-//--------------------------------------------------------------------------
-const tnlString& tnlObject :: GetName() const
+
+const tnlString& tnlObject :: getName() const
 {
    return name;
 }
-//--------------------------------------------------------------------------
-bool tnlObject :: Save( ostream& file ) const
+
+bool tnlObject :: save( tnlFile& file ) const
 {
-   dbgFunctionName( "mObject", "Save" );
+   dbgFunctionName( "tnlObject", "Save" );
    dbgCout( "Writing magic number." );
-   file. write( magic_number, strlen( magic_number ) * sizeof( char ) ); 
-   if( file. bad() ) return false;
+   if( ! file. write( magic_number, strlen( magic_number ) ) )
+      return false;
    dbgCout( "Writing object name " << name );
-   if( ! GetType(). Save( file ) || ! name. Save( file ) ) return false;
+   if( ! getType(). save( file ) || ! name. save( file ) ) return false;
    return true;
 }
-//--------------------------------------------------------------------------
-bool tnlObject :: Load( istream& file )
+
+bool tnlObject :: load( tnlFile& file )
 {
-   dbgFunctionName( "mObject", "Load" );
+   dbgFunctionName( "tnlObject", "Load" );
    dbgCout( "Reading object type " );
    tnlString load_type;
-   if( ! GetObjectType( file, load_type ) )
+   if( ! getObjectType( file, load_type ) )
       return false;
-   if( load_type != GetType() )
+   if( load_type != getType() )
    {
-      cerr << "Given file contains instance of " << load_type << " but " << GetType() << " is expected." << endl;
+      cerr << "Given file contains instance of " << load_type << " but " << getType() << " is expected." << endl;
       return false;
    }
    dbgCout( "Reading object name " );
-   if( ! name. Load( file ) ) return false;
+   if( ! name. load( file ) ) return false;
    return true;
 }
-//--------------------------------------------------------------------------
-bool GetObjectType( istream& file, tnlString& type )
+
+bool tnlObject :: save( const tnlString& fileName ) const
 {
-   dbgFunctionName( "", "GetObjectType" );
-   dbgCout( "Chacking magic number." );
-   char mn[ 10 ];
-   file. read( mn, strlen( magic_number ) * sizeof( char ) );
-   if( strncmp( mn, magic_number, 5 ) != 0 ) return false;
-   if( ! type. Load( file ) ) return false;
-   return true;
-}
-//--------------------------------------------------------------------------
-bool GetObjectType( const char* file_name, tnlString& type )
-{
-   fstream file;
-   file. open( file_name, ios :: in | ios :: binary );
-   if( ! file )
+   tnlFile file;
+   if( ! file. open( fileName, tnlWriteMode ) )
    {
-      cerr << "Unable to open file " << file_name << " ... " << endl;
+      cerr << "I am not bale to open the file " << fileName << " for writing." << endl;
       return false;
    }
-   bool ret_val = GetObjectType( file, type );
-   file. close();
+   if( ! this -> save( file ) )
+      return false;
+   if( ! file. close() )
+   {
+      cerr << "An error occured when I was closing the file " << fileName << "." << endl;
+      return false;
+   }
+   return true;
+}
+
+bool tnlObject :: load( const tnlString& fileName )
+{
+   tnlFile file;
+   if( ! file. open( fileName, tnlReadMode ) )
+   {
+      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      return false;
+   }
+   if( ! this -> load( file ) )
+      return false;
+   if( ! file. close() )
+   {
+      cerr << "An error occured when I was closing the file " << fileName << "." << endl;
+      return false;
+   }
+   return true;
+}
+
+bool getObjectType( tnlFile& file, tnlString& type )
+{
+   dbgFunctionName( "", "getObjectType" );
+   dbgCout( "Checking magic number." );
+   char mn[ 10 ];
+   if( ! file. read( mn, strlen( magic_number ) ) )
+   {
+      cerr << "Unable to read file " << file. getFileName() << " ... " << endl;
+      return false;
+   }
+   if( strncmp( mn, magic_number, 5 ) != 0 ) return false;
+   if( ! type. load( file ) ) return false;
+   return true;
+}
+
+bool getObjectType( const tnlString& fileName, tnlString& type )
+{
+   tnlFile binaryFile;
+   if( ! binaryFile. open( fileName, tnlReadMode ) )
+   {
+      cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << endl;
+      return false;
+   }
+   bool ret_val = getObjectType( binaryFile, type );
+   binaryFile. close();
    return ret_val;
 }
+
+bool parseObjectType( const tnlString& objectType,
+                      tnlList< tnlString >& parsedObjectType )
+{
+   parsedObjectType. EraseAll();
+   int objectTypeLength = objectType. getLength();
+   int i = 0;
+   /****
+    * The object type consists of the following:
+    * objectName< param1, param2, param3, .. >.
+    * We first extract the objectName by finding the first
+    * character '<'.
+    */
+   while( i < objectTypeLength && objectType[ i ] != '<' )
+      i ++;
+   tnlString objectName( objectType. getString(), 0, objectTypeLength - i );
+   if( ! parsedObjectType. Append( objectName ) )
+      return false;
+   i ++;
+
+   /****
+    * Now, we will extract the parameters.
+    * Each parameter can be template, so we must compute and pair
+    * '<' with '>'.
+    */
+   int templateBrackets( 0 );
+   tnlString buffer( "" );
+
+   while( i < objectTypeLength )
+   {
+      if( objectType[ i ] == '<' )
+         templateBrackets ++;
+      if( ! templateBrackets )
+      {
+         if( objectType[ i ] == ' ' ||
+             objectType[ i ] == ',' ||
+             objectType[ i ] == '>' )
+         {
+            if( buffer != "" )
+            {
+               if( ! parsedObjectType. Append( buffer ) )
+                  return false;
+               buffer. setString( "" );
+            }
+         }
+         else buffer += objectType[ i ];
+      }
+      else buffer += objectType[ i ];
+      if( objectType[ i ] == '>' )
+         templateBrackets --;
+      i ++;
+   }
+}
+
+tnlString getDeviceType( tnlDevice device )
+{
+   switch( device )
+   {
+      case tnlHost:
+         return tnlString( "tnlHost" );
+      case tnlCuda:
+         return tnlString( "tnlHost" );
+         //TODO: return "tnlCuda" should be here but we are not sure if it is good
+      default:
+         return tnlString( "tnlUnknownDevice" );
+   }
+}
+

@@ -16,8 +16,7 @@
  ***************************************************************************/
 
 #include "tnlcurve2gnuplot-def.h"
-#include <core/tnlParameterContainer.h>
-#include <core/compress-file.h>
+#include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
 #include <core/tnlVector.h>
 
@@ -43,64 +42,34 @@ int main( int argc, char* argv[] )
    parameters. GetParameter< int >( "output-step", output_step );
    tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
 
-   int size = input_files. Size();
-   /*if( size != output_files. Size() )
+   int size = input_files. getSize();
+   /*if( size != output_files. getSize() )
    {
       cerr << "Sorry, there is different number of input and output files." << endl;
       return 1;
    }*/
    int i;
-   tnlCurve< tnlVector< 2, double > > crv;
+   tnlCurve< tnlVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
    for( i = 0; i < size; i ++ )
    {
-      const char* input_file = input_files[ i ]. Data();
+      const char* input_file = input_files[ i ]. getString();
       cout << "Processing file " << input_file << " ... " << flush;
-      int strln = strlen( input_file );
-      tnlString uncompressed_file_name( input_file );
-      if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
-         if( ! UnCompressFile( input_file, "gz" ) )
-         {
-            cerr << "Unable to uncompress the file " << input_file << "." << endl;
-            return -1;
-         }
-         else uncompressed_file_name. SetString( input_file, 0, 3 );
-      if( strcmp( input_file + strln - 4, ".bz2" ) == 0 )
-         if( ! UnCompressFile( input_file, "bz2" ) )
-         {
-            cerr << "Unable to uncompress the file " << input_file << "." << endl;
-            return -1;
-         }
-         else uncompressed_file_name. SetString( input_file, 0, 4 );
-
           
-      fstream file;
-      file. open( uncompressed_file_name. Data(), ios :: in | ios :: binary );
-      if( ! file )
+      tnlFile file;
+      if( ! file. open( input_files[ i ], tnlReadMode ) )
       {
-         cout << " unable to open file " << uncompressed_file_name. Data() << endl;
+         cout << " unable to open file " << input_files[ i ] << endl;
          continue;
       }
-      if( ! crv. Load( file ) )
+      if( ! crv. load( file ) )
       {
          cout << " unable to restore the data " << endl;
          continue;
       }
       file. close();
-      if( strcmp( input_file + strln - 3, ".gz" ) == 0 &&
-          ! CompressFile( uncompressed_file_name. Data(), "gz" ) )
-      {
-         cerr << "Unable to compress back the file " << input_file << "." << endl;
-         return -1;
-      }
-      if( strcmp( input_file + strln - 4, ".bz2" ) == 0 &&
-          ! CompressFile( uncompressed_file_name. Data(), "bz2" ) )
-      {
-         cerr << "Unable to compress back the file " << input_file << "." << endl;
-         return -1;
-      }
 
-      tnlCurve< tnlVector< 2, double > > out_crv;
-      const int size = crv. Size();
+      tnlCurve< tnlVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
+      const int size = crv. getSize();
       int i;
       for( i = 0; i < size; i += output_step )
       {
@@ -112,17 +81,14 @@ int main( int argc, char* argv[] )
       }
 
       tnlString output_file_name;
-      if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];
+      if( ! output_files. isEmpty() ) output_file_name = output_files[ i ];
       else
       {
-         if( strcmp( uncompressed_file_name. Data() + uncompressed_file_name. Length() - 4, ".bin" ) == 0 )
-            output_file_name. SetString( uncompressed_file_name. Data(), 0, 4 );
-         else output_file_name. SetString( uncompressed_file_name. Data() );
          if( output_file_format == "gnuplot" )
             output_file_name += ".gplt";
       }
       cout << " writing... " << output_file_name << endl;
-      if( ! Write( out_crv, output_file_name. Data(), output_file_format. Data() ) )
+      if( ! Write( out_crv, output_file_name. getString(), output_file_format. getString() ) )
       {
          cerr << " unable to write to " << output_file_name << endl;
       }

@@ -1,24 +1,25 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST = tnlDebugParser.y \
-	         tnlDebugScanner.l \
+	          tnlDebugScanner.l \
              create-tnl-debug-parser
            
 sources = tnlDebug.cpp \
           tnlDebugGroup.cpp \
           tnlDebugStructure.cpp \
-	      tnlDebugParser.cpp \
-	      tnlDebugScanner.cpp \
-	      parse.cc
+	       tnlDebugParser.cpp \
+	       tnlDebugScanner.cpp \
+	       parse.cc
 
 headers = tnlDbgDataElement.h \
-	      tnlDebugEntry.h \
-	      tnlDebugGroup.h \
-	      tnlDebugParserbase.h \
-	      tnlDebugParser.h \
+	       tnlDebugEntry.h \
+	       tnlDebugGroup.h \
+	       tnlDebugParserbase.h \
+	       tnlDebugParser.ih \
+	       tnlDebugParser.h \
           tnlDebug.h \
-	      tnlDebugScanner.h \
-	      tnlDebugStructure.h
+          tnlDebugScanner.h \
+          tnlDebugStructure.h
 	      
 libtnldebug_0_1_la_includedir = $(TNL_INCLUDE_DIR)/debug
 libtnldebug_0_1_la_include_HEADERS = $(headers)
@@ -50,5 +51,6 @@ libtnldebug_mpi_dbg_0_1_la_SOURCES = $(sources)
 libtnldebug_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnldebug_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
+ 
 
 

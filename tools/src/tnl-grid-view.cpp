@@ -17,13 +17,11 @@
 
 #include "mgrid-view-def.h"
 #include "tnl-grid-view.h"
-#include <core/compress-file.h>
 #include <core/tnlCurve.h>
-#include <core/tnlConfigDescription.h>
-#include <core/tnlParameterContainer.h>
+#include <core/tnlFile.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <diff/curve-ident.h>
-#include <diff/drawGrid2D.h>
-#include <diff/drawGrid3D.h>
 
 int main( int argc, char* argv[] )
 {
@@ -40,7 +38,7 @@ int main( int argc, char* argv[] )
    tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
    int verbose = parameters. GetParameter< int >( "verbose");
 
-   int size = input_files. Size();
+   int size = input_files. getSize();
    tnlString output_file_name;
    tnlList< tnlString > output_files;
    if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
@@ -48,43 +46,29 @@ int main( int argc, char* argv[] )
    int i;
    for( i = 0; i < size; i ++ )
    {
-      const char* input_file = input_files[ i ]. Data();
+      const char* input_file = input_files[ i ]. getString();
       if( verbose )
          cout << "Processing file " << input_file << " ... " << flush;
 
-      int strln = strlen( input_file );
-      tnlString uncompressed_file_name( input_file );
-      if( strcmp( input_file + strln - 3, ".gz" ) == 0 )
-         if( ! UnCompressFile( input_file, "gz" ) )
-         {
-            cerr << "Unable to uncompress the file " << input_file << "." << endl;
-            return false;
-         }
-         else uncompressed_file_name. SetString( input_file, 0, 3 );
-      if( strcmp( input_file + strln - 4, ".bz2" ) == 0 )
-         if( ! UnCompressFile( input_file, "bz2" ) )
-         {
-            cerr << "Unable to uncompress the file " << input_file << "." << endl;
-            return false;
-         }
-         else uncompressed_file_name. SetString( input_file, 0, 4 );
-
        
        tnlString object_type;
-       if( ! GetObjectType( uncompressed_file_name. Data(), object_type ) )
+       if( ! getObjectType( input_files[ i ]. getString(), object_type ) )
           cerr << "unknown object ... SKIPPING!" << endl;
        else
        {
           if( verbose )
              cout << object_type << " detected ... ";
 
-         tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
-         if( ! output_files. IsEmpty() ) output_file_name = output_files[ i ];
+         tnlString output_file_format = parameters. GetParameter< tnlString >( "output-format" );
+         if( ! output_files. isEmpty() ) output_file_name = output_files[ i ];
          else
          {
-            if( strcmp( uncompressed_file_name. Data() + uncompressed_file_name. Length() - 4, ".bin" ) == 0 )
-               output_file_name. SetString( uncompressed_file_name. Data(), 0, 4 );
-            else output_file_name. SetString( uncompressed_file_name. Data() );
+            if( strcmp( input_file + input_files[ i ]. getLength() - 4, ".tnl" ) == 0 )
+               output_file_name. setString( input_file, 0, 4 );
+            else output_file_name. setString( input_file );
+            output_file_name += ".crv";
+            if( output_file_format == "tnl" )
+               output_file_name += ".tnl";
             if( output_file_format == "gnuplot" )
                output_file_name += ".gplt";
             if( output_file_format == "vti" )
@@ -94,42 +78,60 @@ int main( int argc, char* argv[] )
          }
 
          bool object_type_matched( false );
-         if( object_type == "tnlGrid2D< float >" )
+         if( object_type == "tnlGrid< 2, float, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< float >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            ProcesstnlGrid2D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid2D< double >" )
+         if( object_type == "tnlGrid< 2, double, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< double >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            ProcesstnlGrid2D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid3D< float >" )
+         if( object_type == "tnlGrid< 3, float, tnlHost, int >" )
          {
-            ProcesstnlGrid3D< float >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+            ProcesstnlGrid3D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid3D< double >" )
+         if( object_type == "tnlGrid< 3, double, tnlHost, int >" )
          {
-             ProcesstnlGrid3D< double >( uncompressed_file_name. Data(), parameters, i, output_file_name, output_file_format );
+             ProcesstnlGrid3D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
              object_type_matched = true;
+         }
+         if( object_type == "tnlGrid< 2, tnlFloat, tnlHost, int >" )
+         {
+            ProcesstnlGrid2D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
+         if( object_type == "tnlGrid< 2, tnlDouble, tnlHost, int >" )
+         {
+            ProcesstnlGrid2D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
+         if( object_type == "tnlGrid< 3, tnlFloat, tnlHost, int >" )
+         {
+            ProcesstnlGrid3D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
+         if( object_type == "tnlGrid3D< tnlDouble >" )
+         {
+             ProcesstnlGrid3D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+             object_type_matched = true;
+         }
+         if( object_type == "tnlCSRMatrix< float, tnlHost >")
+         {
+            ProcessCSRMatrix< float >( input_file, parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
+         }
+         if( object_type == "tnlCSRMatrix< double, tnlHost >")
+         {
+            ProcessCSRMatrix< double >( input_file, parameters, i, output_file_name, output_file_format );
+            object_type_matched = true;
          }
          if( ! object_type_matched )
             cerr << "Unknown type ... Skipping. " << endl;
        }
    
-       if( strcmp( input_file + strln - 3, ".gz" ) == 0 &&
-           ! CompressFile( uncompressed_file_name. Data(), "gz" ) )
-       {
-          cerr << "Unable to compress back the file " << input_file << "." << endl;
-          return false;
-       }
-       if( strcmp( input_file + strln - 4, ".bz2" ) == 0 &&
-           ! CompressFile( uncompressed_file_name. Data(), "bz2" ) )
-       {
-          cerr << "Unable to compress back the file " << input_file << "." << endl;
-          return false;
-       }
    }
    return 0;
 }

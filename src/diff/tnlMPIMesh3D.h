@@ -19,35 +19,36 @@
 #define tnlMPIMesh3DH
 
 #include <debug/tnlDebug.h>
-#include <diff/tnlGrid3D.h>
+#include <mesh/tnlGrid.h>
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
 
-template< class T > class tnlMPIMesh3D
+template< typename Real, tnlDevice Device, typename Index >
+class tnlMPIMesh< 3, Real, Device, Index >
 {
    public:
 
    //! Basic constructor
-   tnlMPIMesh3D();
+   tnlMPIMesh();
 
    //! Destructor
-   ~tnlMPIMesh3D()
+   ~tnlMPIMesh()
    {
       FreeBuffers();
    };
 
    //! Initiation
-   bool Init( const tnlGrid3D< T >& u,
+   bool Init( const tnlGrid< 3, Real, Device, Index >& u,
               int& _mesh_x_size,
               int& _mesh_y_size,
               int& _mesh_z_size,
-              int _overlap_width,
+              Index _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
 
-   bool Init( const tnlGrid3D< T >& u,
+   bool Init( const tnlGrid< 3, Real, Device, Index >& u,
               const tnlParameterContainer& parameters,
-              int _overlap_width,
+              Index _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
 
@@ -68,7 +69,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_x_size;
    };
 
-   int GetSubdomainXSize() const
+   Index GetSubdomainXSize() const
    {
       return subdomain_x_size;
    };
@@ -79,7 +80,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_y_size;
    };
 
-   int GetSubdomainYSize() const
+   Index GetSubdomainYSize() const
    {
       return subdomain_y_size;
    };
@@ -90,7 +91,7 @@ template< class T > class tnlMPIMesh3D
       return mesh_z_size;
    };
 
-   int GetSubdomainZSize() const
+   Index GetSubdomainZSize() const
    {
       return subdomain_z_size;
    };
@@ -113,77 +114,78 @@ template< class T > class tnlMPIMesh3D
       return node_z_pos;
    };
 
-   //! Get left neighbour of this node
+   //! Get left neighbor of this node
    bool GetLeftNeighbour( int& nb_rank ) const
    {
       return left_neighbour;
    };
 
-   //! Get right neighbour of this node
+   //! Get right neighbor of this node
    bool GetRightNeighbour( int& nb_rank ) const
    {
       return right_neighbour;
    };
 
-   //! Get lower neighbour of this node
+   //! Get lower neighbor of this node
    bool GetBottomNeighbour( int& nb_rank ) const
    {
       return bottom_neighbour;
    };
 
-   //! Get upper neighbour of this node
+   //! Get upper neighbor of this node
    bool GetTopNeighbour( int& nb_rank ) const
    {
       return top_neighbour;
    };
 
-   int GetLeftOverlap() const
+   Index GetLeftOverlap() const
    {
       return left_overlap;
    };
 
-   int GetRightOverlap() const
+   Index GetRightOverlap() const
    {
       return right_overlap;
    };
 
-   int GetBottomOverlap() const
+   Index GetBottomOverlap() const
    {
       return bottom_overlap;
    };
 
-   int GetTopOverlap() const
+   Index GetTopOverlap() const
    {
       return top_overlap;
    };
 
-   int GetCloserOverlap() const
+   Index GetCloserOverlap() const
    {
       return closer_overlap;
    };
 
-   int GetFurtherOverlap() const
+   Index GetFurtherOverlap() const
    {
       return further_overlap;
    };
 
-   bool SetGlobalDomain( tnlGrid3D< T >& global_u )
+   bool SetGlobalDomain( tnlGrid< 3, Real, Device, Index >& global_u )
    {
-      if( ! global_u. SetNewDimensions( domain_x_size, domain_y_size, domain_z_size ) )
+      if( ! global_u. setDimensions( tnlVector< 3, Index >( domain_x_size, domain_y_size, domain_z_size  ) ) )
          return false;
       
-      global_u. SetNewDomain( Ax, Bx, Ay, By, Az, Bz );
+      global_u. setDomain( tnlVector< 3, Real >( Ax, Bx, Ay ),
+                           tnlVector< 3, Real >( By, Az, Bz ) );
       return true;
    }
 
    //! Create subdomains
-   bool CreateMesh( const tnlGrid3D< T >& u,
-                    tnlGrid3D< T >& sub_u,
+   bool CreateMesh( const tnlGrid< 3, Real, Device, Index >& u,
+                    tnlGrid< 3, Real, Device, Index >& sub_u,
                     int root = 0 ) const;
 
    //! Scatter the function
-   void Scatter( const tnlGrid3D< T >& u,
-                 tnlGrid3D< T >& sub_u,
+   void Scatter( const tnlGrid< 3, Real, Device, Index >& u,
+                 tnlGrid< 3, Real, Device, Index >& sub_u,
                  int root = 0 ) const;
 
    //! Scatter the function but only at the domains at the boundaries
@@ -191,12 +193,12 @@ template< class T > class tnlMPIMesh3D
    //                          tnlGrid2D* sub_u ); 
 
    //! Gather the function
-   void Gather( tnlGrid3D< T >& u,
-                const tnlGrid3D< T >& sub_u,
+   void Gather( tnlGrid< 3, Real, Device, Index >& u,
+                const tnlGrid< 3, Real, Device, Index >& sub_u,
                 int root = 0 ) const;
 
    //! Synchronize domain edges
-   void Synchronize( tnlGrid3D< T >& u );
+   void Synchronize( tnlGrid< 3, Real, Device, Index >& u );
    
    //! Get domain edges
    void DomainOverlaps( int& right, int& left,
@@ -204,12 +206,12 @@ template< class T > class tnlMPIMesh3D
 
    protected:
    //! Supporting method for scattering
-   void ScatterToNode( const tnlGrid3D< T >& u,
-                       tnlGrid3D< T >& sub_u,
+   void ScatterToNode( const tnlGrid< 3, Real, Device, Index >& u,
+                       tnlGrid< 3, Real, Device, Index >& sub_u,
                        int dest_node,
                        int root ) const;
 
-   //! Freeing momery used by buffers
+   //! Freeing memory used by buffers
    void FreeBuffers();
 
    protected:
@@ -230,45 +232,47 @@ template< class T > class tnlMPIMesh3D
        left_top_neighbour, right_top_neighbour;
   
    //! The subdomain dimensions
-   int subdomain_x_size, subdomain_y_size, subdomain_z_size;
+   Index subdomain_x_size, subdomain_y_size, subdomain_z_size;
    
    //! Global domain dimensions
-   int domain_x_size, domain_y_size, domain_z_size;
+   Index domain_x_size, domain_y_size, domain_z_size;
 
    //! Global domain size
-   double Ax, Bx, Ay, By, Az, Bz;
+   Real Ax, Bx, Ay, By, Az, Bz;
     
    //! The domain overlaps
-   int overlap_width,
+   Index overlap_width,
        left_overlap, right_overlap,
        bottom_overlap, top_overlap,
        closer_overlap, further_overlap;
 
    //! Buffers for MPI communication
-   T *left_send_buff, *right_send_buff,
-     *bottom_send_buff, *top_send_buff,
-     *closer_send_buff, *further_send_buff,
-     *bottom_left_send_buff,
-     *bottom_right_send_buff,
-     *top_left_send_buff,
-     *top_right_send_buff,
-     *left_recieve_buff, *right_recieve_buff,
-     *bottom_recieve_buff, *top_recieve_buff,
-     *closer_recieve_buff, *further_recieve_buff,
-     *bottom_left_recieve_buff,
-     *bottom_right_recieve_buff,
-     *top_left_recieve_buff,
-     *top_right_recieve_buff;
+   Real *left_send_buff, *right_send_buff,
+        *bottom_send_buff, *top_send_buff,
+        *closer_send_buff, *further_send_buff,
+        *bottom_left_send_buff,
+        *bottom_right_send_buff,
+        *top_left_send_buff,
+        *top_right_send_buff,
+        *left_recieve_buff, *right_recieve_buff,
+        *bottom_recieve_buff, *top_recieve_buff,
+        *closer_recieve_buff, *further_recieve_buff,
+        *bottom_left_recieve_buff,
+        *bottom_right_recieve_buff,
+        *top_left_recieve_buff,
+        *top_right_recieve_buff;
 };
                
-template< class T > void DrawSubdomains( const tnlMPIMesh3D< T >& mpi_mesh, 
-                                         const tnlGrid3D< T >& u,
+template< typename Real, tnlDevice Device, typename Index >
+void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
+                                         const tnlGrid< 3, Real, Device, Index >& u,
                                          const char* file_name_base,
                                          const char* format );
 
 // Implementation
 
-template< class T > tnlMPIMesh3D< T > :: tnlMPIMesh3D()
+template< typename Real, tnlDevice Device, typename Index >
+tnlMPIMesh< 3, Real, Device, Index > :: tnlMPIMesh()
     : mesh_comm( 0 ), original_comm( 0 ),
       mesh_x_size( 0 ), mesh_y_size( 0 ), mesh_z_size( 0 ),
       node_x_pos( 0 ) , node_y_pos( 0 ), node_z_pos( 0 ),
@@ -297,13 +301,14 @@ template< class T > tnlMPIMesh3D< T > :: tnlMPIMesh3D()
       top_right_recieve_buff( 0 )
       {};
    
-template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
-                                                  int& _mesh_x_size,
-                                                  int& _mesh_y_size,
-                                                  int& _mesh_z_size,
-                                                  int _overlap_width,
-                                                  int root,
-                                                  MPI_Comm comm )
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Device, Index >& u,
+                                                   int& _mesh_x_size,
+                                                   int& _mesh_y_size,
+                                                   int& _mesh_z_size,
+                                                   Index _overlap_width,
+                                                   int root,
+                                                   MPI_Comm comm )
    {
       dbgFunctionName( "tnlMPIMesh3D", "Init" );
 #ifdef HAVE_MPI
@@ -518,24 +523,25 @@ template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
            << " x " << GetSubdomainYSize()
            << " x " << GetSubdomainZSize() << endl;
 #else
-   domain_x_size = u. GetXSize();
-   domain_y_size = u. GetYSize();
-   domain_z_size = u. GetZSize();
-   Ax = u. GetAx();
-   Ay = u. GetAy();
-   Bx = u. GetBx();
-   By = u. GetBy();
-   Az = u. GetAz();
-   Bz = u. GetBz();
+   domain_x_size = u. getDimensions(). x();
+   domain_y_size = u. getDimensions(). y();
+   domain_z_size = u. getDimensions(). z();
+   Ax = u. getDomainLowerCorner(). x();
+   Ay = u. getDomainLowerCorner(). y();
+   Az = u. getDomainLowerCorner(). z();
+   Bx = u. getDomainUpperCorner(). x();
+   By = u. getDomainUpperCorner(). y();
+   Bz = u. getDomainUpperCorner(). z();
 #endif
       return true;
    };
 
-template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
-                                                  const tnlParameterContainer& parameters,
-                                                  int _overlap_width,
-                                                  int root,
-                                                  MPI_Comm comm )
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Device, Index >& u,
+                                                   const tnlParameterContainer& parameters,
+                                                   Index _overlap_width,
+                                                   int root,
+                                                   MPI_Comm comm )
 {
    int mpi_mesh_x_size = parameters. GetParameter< int >( "mpi-mesh-x-size" );
    int mpi_mesh_y_size = parameters. GetParameter< int >( "mpi-mesh-y-size" );
@@ -551,9 +557,10 @@ template< class T > bool tnlMPIMesh3D< T > :: Init( const tnlGrid3D< T >& u,
 }
 
    
-template< class T > bool tnlMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& u,
-                                                        tnlGrid3D< T >& sub_u,
-                                                        int root ) const
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGrid< 3, Real, Device, Index >& u,
+                                                         tnlGrid< 3, Real, Device, Index >& sub_u,
+                                                         int root ) const
 {
    dbgFunctionName( "tnlMPIMesh3D", "CreateMesh" );
 #ifdef HAVE_MPI
@@ -571,7 +578,7 @@ template< class T > bool tnlMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& 
       hx = u. GetHx();
       hy = u. GetHy();
       hz = u. GetHz();
-      name. SetString( u. GetName(). Data() );  
+      name. setString( u. getName(). getString() );  
    }
    :: MPIBcast< double >( ax, 1, root, original_comm );
    :: MPIBcast< double >( ay, 1, root, original_comm );
@@ -607,7 +614,7 @@ template< class T > bool tnlMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& 
            << " rank " << MPIGetRank( original_comm ) << "." << endl;
       err = 1;
    }
-   sub_u. SetName( name. Data() );
+   sub_u. setName( name. getString() );
    dbgMPIBarrier;
    dbgCout( "Subdomain is as: Ax = " << sub_u. GetAx() << 
                             " Ay = " << sub_u. GetAy() << 
@@ -619,16 +626,16 @@ template< class T > bool tnlMPIMesh3D< T > :: CreateMesh( const tnlGrid3D< T >& 
    MPI_Allreduce( &err, &all_err, 1, MPI_INT,MPI_SUM, mesh_comm );
    if( all_err != 0 ) return false;
 #else
-   sub_u. SetNewDimensions( u );
-   sub_u. SetNewDomain( u );
+   sub_u. setLike( u );
 #endif
 return true;
 };
 
-template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T >& u,
-                                                           tnlGrid3D< T >& sub_u,
-                                                           int dest_node,
-                                                           int root ) const
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGrid< 3, Real, Device, Index >& u,
+                                                            tnlGrid< 3, Real, Device, Index >& sub_u,
+                                                            int dest_node,
+                                                            int root ) const
 {
    dbgFunctionName( "tnlMPIMesh3D", "ScatterToNode" );
 #ifdef HAVE_MPI
@@ -664,7 +671,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
                            " Clsr. " << dest_closer_overlap <<
                            " Frth. " << dest_further_overlap );
 
-      tnlGrid3D< T >* mpi_buff;
+      tnlGrid< 3, Real, Device, Index >* mpi_buff;
       if( dest_node == root )
       {
          dbgCout( "Forwarding mpi_buffer to sub_u ..." );
@@ -676,7 +683,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
                    << subdomain_x_size + dest_left_overlap + dest_right_overlap << "x"
                    << subdomain_y_size + dest_bottom_overlap + dest_top_overlap << "x"
                    << subdomain_z_size + dest_closer_overlap + dest_further_overlap );
-         mpi_buff = new tnlGrid3D< T > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
+         mpi_buff = new tnlGrid< 3, Real, Device, Index > ( subdomain_x_size + dest_left_overlap + dest_right_overlap,
                                        subdomain_y_size + dest_bottom_overlap + dest_top_overlap,
                                        subdomain_z_size + dest_closer_overlap + dest_further_overlap,
                                        0.0, 1.0, 0.0, 1.0, 0.0, 1.0 );
@@ -710,7 +717,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
       {
          int buf_size = mpi_buff -> GetSize();
          dbgCout( "Calling MPI_Send and sending " << buf_size << "*" << sizeof( T ) << " bytes ... " );
-         MPI_Send( mpi_buff -> Data(),
+         MPI_Send( mpi_buff -> getVector(),
                    buf_size * sizeof( T ),
                    MPI_BYTE,
                    dest_node,
@@ -725,7 +732,7 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
    int buf_size = sub_u. GetSize();
    dbgCout( "Receiving data - " << buf_size << "*" << sizeof( T ) << " bytes required ..." );
    MPI_Status status;
-   MPI_Recv( sub_u. Data(),
+   MPI_Recv( sub_u. getVector(),
              buf_size * sizeof( T ),
              MPI_BYTE,
              0,
@@ -736,9 +743,10 @@ template< class T > void tnlMPIMesh3D< T > :: ScatterToNode( const tnlGrid3D< T 
 #endif
 }
 
-template< class T > void tnlMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
-                                                     tnlGrid3D< T >& sub_u,
-                                                     int root ) const
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMPIMesh< 3, Real, Device, Index > :: Scatter( const tnlGrid< 3, Real, Device, Index >& u,
+                                                      tnlGrid< 3, Real, Device, Index >& sub_u,
+                                                      int root ) const
 {
    dbgFunctionName( "tnlMPIMesh3D", "Scatter" );
    assert( sub_u );
@@ -762,13 +770,14 @@ template< class T > void tnlMPIMesh3D< T > :: Scatter( const tnlGrid3D< T >& u,
    }
 #else
    if( &u == &sub_u ) return;
-   Copy( u, sub_u );
+   sub_u = u;
 #endif
 }
     
-template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
-                                                    const tnlGrid3D< T >& sub_u,
-                                                    int root ) const
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGrid< 3, Real, Device, Index >& u,
+                                                     const tnlGrid< 3, Real, Device, Index >& sub_u,
+                                                     int root ) const
 {
    dbgFunctionName( "tnlMPIMesh3D", "Gather" );
 #ifdef HAVE_MPI
@@ -812,7 +821,7 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
                       " >" << src_z_pos * subdomain_z_size - src_closer_overlap <<
                       ", " << ( src_z_pos + 1 ) * subdomain_z_size + src_further_overlap << " >" );
                   
-            tnlGrid3D< T > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap, 
+            tnlGrid< 3, Real, Device, Index > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap,
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    subdomain_z_size + src_closer_overlap + src_further_overlap,
                                    0.0, 1.0, 0.0, 1.0, 0.0, 1.0 );
@@ -820,7 +829,7 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
             dbgExpr( buf_size );
             
             dbgCout( "RECEIVING data from node " << src  );
-            MPI_Recv( mpi_buff. Data(),
+            MPI_Recv( mpi_buff. getVector(),
                       buf_size * sizeof( T ),
                       MPI_BYTE,
                       src,
@@ -870,7 +879,7 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
       int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
                           ( subdomain_y_size + bottom_overlap + top_overlap ) *
                           ( subdomain_z_size + closer_overlap + further_overlap );
-      MPI_Send( const_cast< T* >( sub_u. Data() ),
+      MPI_Send( const_cast< T* >( sub_u. getVector() ),
                 buf_size * sizeof( T ),
                 MPI_BYTE,
                 root,
@@ -881,11 +890,12 @@ template< class T > void tnlMPIMesh3D< T > :: Gather( tnlGrid3D< T >& u,
    dbgCout( "Gathering data done." );
 #else
    if( &u == &sub_u ) return;
-   Copy( sub_u, u );
+   u = sub_u;
 #endif
 }
 
-template< class T > void tnlMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMPIMesh< 3, Real, Device, Index > :: Synchronize( tnlGrid< 3, Real, Device, Index >& u )
 {
    dbgFunctionName( "tnlMPIMesh3D", "Synchronize" );
 #ifdef HAVE_MPI
@@ -1335,7 +1345,8 @@ template< class T > void tnlMPIMesh3D< T > :: Synchronize( tnlGrid3D< T >& u )
 #endif
 }
 
-template< class T > void tnlMPIMesh3D< T > ::  FreeBuffers()
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMPIMesh< 3, Real, Device, Index > ::  FreeBuffers()
 {
    if( left_send_buff ) delete left_send_buff;
    if( right_send_buff ) delete right_send_buff;
@@ -1378,10 +1389,11 @@ template< class T > void tnlMPIMesh3D< T > ::  FreeBuffers()
    top_right_recieve_buff = 0;
 };
 
-template< class T > void DrawSubdomains( const tnlMPIMesh3D< T >& mpi_mesh, 
-                                         const tnlGrid3D< T >& u,
-                                         const char* file_name_base,
-                                         const char* format )
+template< typename Real, tnlDevice Device, typename Index >
+void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
+                     const tnlGrid< 3, Real, Device, Index >& u,
+                     const char* file_name_base,
+                     const char* format )
 {
    int num = mpi_mesh. GetXPos() * 100 + mpi_mesh. GetYPos() * 10 + mpi_mesh. GetZPos();
    tnlString file_name;
@@ -1390,7 +1402,7 @@ template< class T > void DrawSubdomains( const tnlMPIMesh3D< T >& mpi_mesh,
                              3,
                              ".vti",
                              file_name );
-   Draw( u, file_name. Data(), format );
+   Draw( u, file_name. getString(), format );
 };
 
 #endif

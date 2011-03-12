@@ -18,176 +18,609 @@
 #ifndef tnlVectorH
 #define tnlVectorH
 
-#include <assert.h>
+#include <core/tnlAssert.h>
 #include <string.h>
-#include <sstream>
+#include <core/tnlFile.h>
 #include "param-types.h"
 
-template< int SIZE, typename T > class tnlVector
+//! Aliases for the coordinates
+enum { tnlX = 0, tnlY, tnlZ };
+
+template< int Size, typename Real = double >
+class tnlVector
 {
    public:
 
-   tnlVector()
-   {
-      bzero( Data(), SIZE * sizeof( T ) );
-   };
+   tnlVector();
 
-   tnlVector( const T v[ SIZE ] )
-   {
-      memcpy( &data[ 0 ], &v[ 0 ], SIZE * sizeof( T ) ); 
-      /*int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] = v[ i ];*/
-   };
+   tnlVector( const Real v[ Size ] );
 
-   tnlVector( const T& v )
-   {
-      memcpy( &data[ 0 ], &v. data[ 0 ], SIZE * sizeof( T ) ); 
-      /*int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] = v. data[ i ];*/
-   }
+   //! This sets all vector components to v
+   tnlVector( const Real& v );
 
-   const T* Data() const
-   {
-      return &data[ 0 ];
-   };
+   //! Copy constructor
+   tnlVector( const tnlVector< Size, Real >& v );
 
-   T* Data()
-   {
-      return &data[ 0 ];
-   };
+   //! This is constructore of vector with Size = 2.
+   tnlVector( const Real& v1,
+              const Real& v2 );
 
-   const T& operator[]( int i ) const
-   {
-      assert( i >= 0 && i < SIZE );
-      return data[ i ];
-   };
+   //! This is constructore of vector with Size = 3.
+   tnlVector( const Real& v1,
+              const Real& v2,
+              const Real& v3 );
 
-   T& operator[]( int i )
-   {
-      assert( i < SIZE );
-      return data[ i ];
-   };
+   const Real& operator[]( int i ) const;
+
+   Real& operator[]( int i );
    
-   //! Adding operator
-   tnlVector& operator += ( const tnlVector& v )
-   {
-      int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] += v. data[ i ];
-   };
+   //! Returns the first coordinate
+   Real& x();
 
-   //! Subtracting operator
-   tnlVector& operator -= ( const tnlVector& v )
-   {
-      int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] -= v. data[ i ];
-   };
+   //! Returns the first coordinate
+   const Real& x() const;
 
-   //! Multiplication with number
-   tnlVector& operator *= ( const T& c )
-   {
-      int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] *= c;
-   };
+   //! Returns the second coordinate
+   Real& y();
+
+   //! Returns the second coordinate
+   const Real& y() const;
+
+   //! Returns the third coordinate
+   Real& z();
+
+   //! Returns the third coordinate
+   const Real& z() const;
 
    //! Adding operator
-   tnlVector operator + ( const tnlVector& u ) const
-   {
-      // TODO: Leads to sigsegv 
-      return tnlVector( * this ) += u;
-   };
+   tnlVector& operator += ( const tnlVector& v );
 
    //! Subtracting operator
-   tnlVector operator - ( const tnlVector& u ) const
-   {
-      // TODO: Leads to sigsegv 
-      return tnlVector( * this ) -= u; 
-   };
+   tnlVector& operator -= ( const tnlVector& v );
 
    //! Multiplication with number
-   tnlVector operator * ( const T& c ) const
-   { 
-      return tnlVector( * this ) *= c; 
-   };
+   tnlVector& operator *= ( const Real& c );
+
+   //! Adding operator
+   tnlVector operator + ( const tnlVector& u ) const;
+
+   //! Subtracting operator
+   tnlVector operator - ( const tnlVector& u ) const;
+
+   //! Multiplication with number
+   tnlVector operator * ( const Real& c ) const;
 
    //! 
-   tnlVector& operator = ( const tnlVector& v )
-   {
-      memcpy( &data[ 0 ], &v. data[ 0 ], SIZE * sizeof( T ) ); 
-      /*int i;
-      for( i = 0; i < SIZE; i ++ )
-         data[ i ] = v. data[ i ];*/
-      return *this;
-   };
+   tnlVector& operator = ( const tnlVector& v );
 
    //! Scalar product
-   T operator * ( const tnlVector& u ) const
-   { 
-      int i;
-      T res( 0.0 );
-      for( i = 0; i < SIZE; i ++ )
-         res += data[ i ] * u. data[ i ];
-      return res;
-   };
+   Real operator * ( const tnlVector& u ) const;
 
    //! Comparison operator
-   bool operator == ( const tnlVector& v ) const
-   { 
-      int i;
-      for( i = 0; i < SIZE; i ++ )
-         if( data[ i ] != v. data[ i ] ) 
-            return false;
-      return true;
-   };
+   template< typename Real2 >
+   bool operator == ( const tnlVector< Size, Real2 >& v ) const;
 
-   //! 
-   bool operator!= ( const tnlVector& v ) const 
-   { 
-      int i;
-      for( i = 0; i < SIZE; i ++ )
-         if( data[ i ] != v. data[ i ] ) 
-            return true;
-      return false;
-   };
+   //! Comparison operator
+   template< typename Real2 >
+   bool operator != ( const tnlVector< Size, Real2 >& v ) const;
+
+   bool operator < ( const tnlVector& v ) const;
+
+   bool operator <= ( const tnlVector& v ) const;
+
+   bool operator > ( const tnlVector& v ) const;
+
+   bool operator >= ( const tnlVector& v ) const;
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file);
 
    protected:
-   T data[ SIZE ];
+   Real data[ Size ];
 
 };
 
-template< int SIZE, typename T > bool Save( ostream& file, const tnlVector< SIZE, T >& vec )
+template< int Size, typename Real >
+tnlVector< Size, Real > operator * ( const Real& c, const tnlVector< Size, Real >& u );
+
+template< int Size, typename Real >
+ostream& operator << ( ostream& str, const tnlVector< Size, Real >& v );
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector()
 {
-   file. write( ( char* ) vec. Data(), SIZE * sizeof( T ) );
+   bzero( data, Size * sizeof( Real ) );
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector( const Real v[ Size ] )
+{
+   if( Size == 1 )
+      data[ 0 ] = v[ 0 ];
+   if( Size == 2 )
+   {
+      data[ 0 ] = v[ 0 ];
+      data[ 1 ] = v[ 1 ];
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] = v[ 0 ];
+      data[ 1 ] = v[ 1 ];
+      data[ 2 ] = v[ 2 ];
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] = v[ i ];
+   }
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector( const Real& v )
+{
+   if( Size == 1 )
+      data[ 0 ] = v;
+   if( Size == 2 )
+   {
+      data[ 0 ] = data[ 1 ] = v;
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] = data[ 1 ] = data[ 2 ] = v;
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] = v;
+   }
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector( const tnlVector< Size, Real >& v )
+{
+   if( Size == 1 )
+      data[ 0 ] = v[ 0 ];
+   if( Size == 2 )
+   {
+      data[ 0 ] = v[ 0 ];
+      data[ 1 ] = v[ 1 ];
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] = v[ 0 ];
+      data[ 1 ] = v[ 1 ];
+      data[ 2 ] = v[ 2 ];
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] = v[ i ];
+   }
+};
+
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector( const Real& v1,
+                                      const Real& v2 )
+{
+   tnlAssert( Size == 2,
+              cerr << "Using this constructor does not makes sense for Size different then 2.")
+   data[ 0 ] = v1;
+   data[ 1 ] = v2;
+}
+
+template< int Size, typename Real >
+tnlVector< Size, Real > :: tnlVector( const Real& v1,
+                                      const Real& v2,
+                                      const Real& v3 )
+{
+   tnlAssert( Size == 3,
+              cerr << "Using this constructor does not makes sense for Size different then 3.")
+   data[ 0 ] = v1;
+   data[ 1 ] = v2;
+   data[ 2 ] = v3;
+}
+
+template< int Size, typename Real >
+const Real& tnlVector< Size, Real > :: operator[]( int i ) const
+{
+   assert( i >= 0 && i < Size );
+   return data[ i ];
+};
+
+template< int Size, typename Real >
+Real& tnlVector< Size, Real > :: operator[]( int i )
+{
+   assert( i < Size );
+   return data[ i ];
+};
+
+template< int Size, typename Real >
+Real& tnlVector< Size, Real > :: x()
+{
+   tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
+   if( Size < 1 )
+   {
+      cerr << "The size of the tnlVector is too small to get x coordinate." << endl;
+      abort();
+   }
+   return data[ 0 ];
+};
+
+template< int Size, typename Real >
+const Real& tnlVector< Size, Real > :: x() const
+{
+   tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
+   if( Size < 1 )
+   {
+      cerr << "The size of the tnlVector is too small to get x coordinate." << endl;
+      abort();
+   }
+   return data[ 0 ];
+};
+
+template< int Size, typename Real >
+Real& tnlVector< Size, Real > :: y()
+{
+   tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
+   if( Size < 2 )
+   {
+      cerr << "The size of the tnlVector is too small to get y coordinate." << endl;
+      abort();
+   }
+   return data[ 1 ];
+};
+
+template< int Size, typename Real >
+const Real& tnlVector< Size, Real > :: y() const
+{
+   tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
+   if( Size < 2 )
+   {
+      cerr << "The size of the tnlVector is too small to get y coordinate." << endl;
+      abort();
+   }
+   return data[ 1 ];
+
+};
+
+template< int Size, typename Real >
+Real& tnlVector< Size, Real > :: z()
+{
+   tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
+   if( Size < 3 )
+   {
+      cerr << "The size of the tnlVector is too small to get z coordinate." << endl;
+      abort();
+   }
+   return data[ 2 ];
+};
+
+template< int Size, typename Real >
+const Real& tnlVector< Size, Real > :: z() const
+{
+   tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
+   if( Size < 3 )
+   {
+      cerr << "The size of the tnlVector is too small to get z coordinate." << endl;
+      abort();
+   }
+   return data[ 2 ];
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real >& tnlVector< Size, Real > :: operator += ( const tnlVector& v )
+{
+   if( Size == 1 )
+      data[ 0 ] += v. data[ 0 ];
+   if( Size == 2 )
+   {
+      data[ 0 ] += v. data[ 0 ];
+      data[ 1 ] += v. data[ 1 ];
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] += v. data[ 0 ];
+      data[ 1 ] += v. data[ 1 ];
+      data[ 2 ] += v. data[ 2 ];
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] += v. data[ i ];
+   }
+   return ( *this );
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real >& tnlVector< Size, Real > :: operator -= ( const tnlVector& v )
+{
+   if( Size == 1 )
+      data[ 0 ] -= v. data[ 0 ];
+   if( Size == 2 )
+   {
+      data[ 0 ] -= v. data[ 0 ];
+      data[ 1 ] -= v. data[ 1 ];
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] -= v. data[ 0 ];
+      data[ 1 ] -= v. data[ 1 ];
+      data[ 2 ] -= v. data[ 2 ];
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] -= v. data[ i ];
+   }
+   return ( *this );
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real >& tnlVector< Size, Real > :: operator *= ( const Real& c )
+{
+   if( Size == 1 )
+      data[ 0 ] *= c;
+   if( Size == 2 )
+   {
+      data[ 0 ] *= c;
+      data[ 1 ] *= c;
+   }
+   if( Size == 3 )
+   {
+      data[ 0 ] *= c;
+      data[ 1 ] *= c;
+      data[ 2 ] *= c;
+   }
+   if( Size > 3 )
+   {
+      for( int i = 0; i < Size; i ++ )
+         data[ i ] *= c;
+   }
+   return ( *this );
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > tnlVector< Size, Real > :: operator + ( const tnlVector& u ) const
+{
+   // TODO: Leads to sigsegv
+   return tnlVector( * this ) += u;
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > tnlVector< Size, Real > :: operator - ( const tnlVector& u ) const
+{
+   // TODO: Leads to sigsegv
+   return tnlVector( * this ) -= u;
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real > tnlVector< Size, Real > :: operator * ( const Real& c ) const
+{
+   return tnlVector( * this ) *= c;
+};
+
+template< int Size, typename Real >
+tnlVector< Size, Real >& tnlVector< Size, Real > :: operator = ( const tnlVector& v )
+{
+   memcpy( &data[ 0 ], &v. data[ 0 ], Size * sizeof( Real ) );
+   /*int i;
+   for( i = 0; i < Size; i ++ )
+      data[ i ] = v. data[ i ];*/
+   return *this;
+};
+
+template< int Size, typename Real >
+Real tnlVector< Size, Real > :: operator * ( const tnlVector& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] * u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] * u[ 0 ] +
+             data[ 1 ] * u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] * u[ 0 ] +
+             data[ 1 ] * u[ 1 ] +
+             data[ 2 ] * u[ 2 ];
+   if( Size > 3 )
+   {
+      Real res( 0.0 );
+      for( int i = 0; i < Size; i ++ )
+         res += data[ i ] * u. data[ i ];
+      return res;
+   }
+};
+
+template< int Size, typename Real >
+template< typename Real2 >
+bool tnlVector< Size, Real > :: operator == ( const tnlVector< Size, Real2 >& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] == u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] == u[ 0 ] &&
+             data[ 1 ] == u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] == u[ 0 ] &&
+             data[ 1 ] == u[ 1 ] &&
+             data[ 2 ] == u[ 2 ];
+   for( int i = 0; i < Size; i ++ )
+      if( data[ i ] != u[ i ] )
+         return false;
+   return true;
+
+};
+
+template< int Size, typename Real >
+template< typename Real2 >
+bool tnlVector< Size, Real > :: operator != ( const tnlVector< Size, Real2 >& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] != u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] != u[ 0 ] ||
+             data[ 1 ] != u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] != u[ 0 ] ||
+             data[ 1 ] != u[ 1 ] ||
+             data[ 2 ] != u[ 2 ];
+   for( int i = 0; i < Size; i ++ )
+      if( data[ i ] != u[ i ] )
+         return true;
+   return false;
+};
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: operator < ( const tnlVector& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] < u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] < u[ 0 ] &&
+             data[ 1 ] < u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] < u[ 0 ] &&
+             data[ 1 ] < u[ 1 ] &&
+             data[ 2 ] < u[ 2 ];
+   if( Size > 3 )
+   {
+      for( int i = 0; i <  Size; i ++ )
+         if( data[ i ] >= u[ i ] )
+            return false;
+      return true;
+   }
+}
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: operator <= ( const tnlVector& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] <= u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] <= u[ 0 ] &&
+             data[ 1 ] <= u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] <= u[ 0 ] &&
+             data[ 1 ] <= u[ 1 ] &&
+             data[ 2 ] <= u[ 2 ];
+   for( int i = 0; i <  Size; i ++ )
+      if( data[ i ] > u[ i ] )
+         return false;
+   return true;
+}
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: operator > ( const tnlVector& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] > u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] > u[ 0 ] &&
+             data[ 1 ] > u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] > u[ 0 ] &&
+             data[ 1 ] > u[ 1 ] &&
+             data[ 2 ] > u[ 2 ];
+   for( int i = 0; i <  Size; i ++ )
+      if( data[ i ] <= u[ i ] )
+         return false;
+   return true;
+}
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: operator >= ( const tnlVector& u ) const
+{
+   if( Size == 1 )
+      return data[ 0 ] >= u[ 0 ];
+   if( Size == 2 )
+      return data[ 0 ] >= u[ 0 ] &&
+             data[ 1 ] >= u[ 1 ];
+   if( Size == 3 )
+      return data[ 0 ] >= u[ 0 ] &&
+             data[ 1 ] >= u[ 1 ] &&
+             data[ 2 ] >= u[ 2 ];
+   for( int i = 0; i <  Size; i ++ )
+      if( data[ i ] < u[ i ] )
+         return false;
+   return true;
+}
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: save( tnlFile& file ) const
+{
+   int size = Size;
+   if( ! file. write( &size, 1 ) ||
+       ! file. write( data, size ) )
+      cerr << "Unable to write tnlVector." << endl;
+   return true;
+};
+
+template< int Size, typename Real >
+bool tnlVector< Size, Real > :: load( tnlFile& file)
+{
+   int size;
+   if( ! file. read( &size, 1 ) )
+   {
+      cerr << "Unable to read tnlVector." << endl;
+      return false;
+   }
+   if( size != Size )
+   {
+      cerr << "You try to read tnlVector with wrong size " << size
+           << ". It should be " << Size << endl;
+      return false;
+   }
+   if( ! file. read( data, size ) )
+   {
+      cerr << "Unable to read tnlVector." << endl;
+      return false;
+   }
+   return true;
+}
+
+template< int Size, typename Real >
+tnlVector< Size, Real > operator * ( const Real& c, const tnlVector< Size, Real >& u )
+{
+   return u * c;
+}
+
+
+
+// TODO: remove
+template< int Size, typename Real > bool Save( ostream& file, const tnlVector< Size, Real >& vec )
+{
+   for( int i = 0; i < Size; i ++ )
+      file. write( ( char* ) &vec[ i ], sizeof( Real ) );
    if( file. bad() ) return false;
    return true;
 };
-   
-template< int SIZE, typename T > bool Load( istream& file, tnlVector< SIZE, T >& vec ) 
+
+// TODO: remove
+template< int Size, typename Real > bool Load( istream& file, tnlVector< Size, Real >& vec )
 {
-   file. read( ( char* ) vec. Data(), SIZE * sizeof( T ) );
+   for( int i = 0; i < Size; i ++ )
+      file. read( ( char* ) &vec[ i ], sizeof( Real ) );
    if( file. bad() ) return false;
    return true;
 };
 
-template< int SIZE, typename T > ostream& operator << ( ostream& str, tnlVector< SIZE, T > v )
+template< int Size, typename Real >
+ostream& operator << ( ostream& str, const tnlVector< Size, Real >& v )
 {
-   int i;
-   for( i = 0; i < SIZE - 1; i ++ )
+   for( int i = 0; i < Size - 1; i ++ )
       str << v[ i ] << ", ";
-   str << v[ SIZE - 1 ];
+   str << v[ Size - 1 ];
    return str;
 };
 
-template< int SIZE, typename T > tnlString GetParameterType( const tnlVector< SIZE, T >& )
+template< int Size, typename Real > tnlString GetParameterType( const tnlVector< Size, Real >& )
 { 
-   T t;
-   stringstream str;
-   str << "tnlVector< " << SIZE << ", " << GetParameterType( t ) << " >";
-   return tnlString( str. str(). data() ); 
+   return tnlString( "tnlVector< " ) +
+          tnlString( Size ) +
+          tnlString( ", " ) +
+          tnlString( GetParameterType( Real( 0 ) ) ) +
+          tnlString( " >" );
 };
 
 #endif

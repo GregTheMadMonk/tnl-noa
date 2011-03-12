@@ -28,7 +28,7 @@ void FileNameBaseNumberEnding( const char* base_name,
                                const char* ending,
                                tnlString& file_name )
 {
-   file_name. SetString( base_name );
+   file_name. setString( base_name );
    char snumber[ 1024 ], zeros[ 1024 ];;
    sprintf( snumber, "%d", number );
    int len = strlen( snumber );
@@ -45,8 +45,8 @@ void FileNameBaseNumberEnding( const char* base_name,
 //--------------------------------------------------------------------------
 void RemoveFileExtension( tnlString& file_name )
 {
-   int size = file_name. Length();
+   int size = file_name. getLength();
    int i = 1;
-   while( file_name. Data()[ size - i ] != '.' && size > i  ) i ++ ;
-   file_name. SetString( file_name. Data(), 0, i );
+   while( file_name. getString()[ size - i ] != '.' && size > i  ) i ++ ;
+   file_name. setString( file_name. getString(), 0, i );
 }

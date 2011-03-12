@@ -19,80 +19,71 @@
 #define curve_identH
 
 #include <core/tnlCurve.h>
-#include <diff/tnlGrid2D.h>
+#include <mesh/tnlGrid.h>
 #include <debug/tnlDebug.h>
 
-//! Supporting structure for a curve identification
-// TODO replace it with tnlVector< 2, int > 
-struct MeshIndex
-{
-   int i, j;
-   MeshIndex( int _i,
-              int _j )
-      : i( _i ), j( _j ){}
-};
-
-template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
-                                           tnlCurve< tnlVector< 2, T > >& crv,
-                                           const double level = 0.0 )
+template< typename Real, tnlDevice Device, typename Index >
+bool getLevelSetCurve( const tnlGrid< 2, Real, Device, Index >& u,
+                       tnlCurve< tnlVector< 2, Real > >& crv,
+                       const Real level = 0.0 )
 {
    dbgFunctionName( "", "GetLevelSetCurve" );
-   int i, j, k;
-   const int x_size = u. GetXSize();
-   const int y_size = u. GetYSize();
+
+   const Index xSize = u. getDimensions(). x();
+   const Index ySize = u. getDimensions(). y();
 
    // this list stores curves or just curve fargments
-   tnlList< tnlList< MeshIndex>* > curves;
+   tnlList< tnlList< tnlVector< 2, Index > >* > curves;
 
    // generating curves or fragments
-   for( i = 0; i < x_size - 1; i ++ )
-      for( j = 0; j < y_size - 1; j ++ )
+   for( Index i = 0; i < xSize - 1; i ++ )
+      for( Index j = 0; j < ySize - 1; j ++ )
       {
-         const T a1 = u( i, j ) - level;
-         const T a2 = u( i, j + 1 ) - level;
-         const T a3 = u( i + 1, j + 1 ) - level;
-         const T a4 = u( i + 1, j ) - level;
-         if( a1 * a2 > 0.0 && a2 * a3 > 0.0 &&
-             a3 * a4 > 0.0 && a4 * a1 > 0.0 )
+         const Real a1 = u. getElement( i, j ) - level;
+         const Real a2 = u. getElement( i, j + 1 ) - level;
+         const Real a3 = u. getElement( i + 1, j + 1 ) - level;
+         const Real a4 = u. getElement( i + 1, j ) - level;
+         if( a1 * a2 > Real( 0.0 ) && a2 * a3 > Real( 0.0 ) &&
+             a3 * a4 > Real( 0.0 ) && a4 * a1 > Real( 0.0 ) )
             continue;
          // There is a curve going through the mesh.
          // Find if it is adjacent to begining or end of
          // some of already traced curves (or just curve fragment).
          dbgCout( "Curve detected at ( " << i << ", " << j << ")" );
          bool added( false );
-         for( k = 0; k < curves. Size(); k ++ )
+         for( Index k = 0; k < curves. getSize(); k ++ )
          {
-            int l = curves[ k ] -> Size();
-            MeshIndex mi = ( * curves[ k ] )[ l - 1 ];
-            int n1 = abs( ( int ) i - ( int ) mi. i );
-            int n2 = abs( ( int ) j - ( int ) mi. j );
+            Index l = curves[ k ] -> getSize();
+            tnlVector< 2, Index > mi = ( * curves[ k ] )[ l - 1 ];
+            Index n1 = abs( ( Index ) i - ( Index ) mi. x() );
+            Index n2 = abs( ( Index ) j - ( Index ) mi. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               curves[ k ] -> Append( MeshIndex( i, j ) );
+               curves[ k ] -> Append( tnlVector< 2, Index >( i, j ) );
                added = true;
                dbgCout( "Appending to list no. " << k << "; list size -> " <<
-                         curves[ k ] -> Size() );
+                         curves[ k ] -> getSize() );
                break;
             }
             mi = ( * curves[ k ] )[ 0 ];
-            n1 = abs( ( int ) i - ( int ) mi. i );
-            n2 = abs( ( int ) j - ( int ) mi. j );
+            n1 = abs( ( Index ) i - ( Index ) mi. x() );
+            n2 = abs( ( Index ) j - ( Index ) mi. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               curves[ k ] -> Prepend( MeshIndex( i, j ) );
+               curves[ k ] -> Prepend( tnlVector< 2, Index >( i, j ) );
                added = true;
                dbgCout( "Prepending to list no. " << k << "; list size ->  " << 
-                     curves[ k ] -> Size() );
+                     curves[ k ] -> getSize() );
                break;
             }
          }
          // If it is not create new curve fragment.
          if( ! added )
          {
-            tnlList< MeshIndex >* new_list = new tnlList< MeshIndex >;
-            new_list -> Append( MeshIndex( i, j ) );
+            tnlList< tnlVector< 2, Index > >* new_list = new tnlList< tnlVector< 2, Index > >;
+            new_list -> Append( tnlVector< 2, Index >( i, j ) );
             curves. Append( new_list );
             dbgCout( "Adding new list." );
          }
@@ -106,103 +97,103 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
    while( fragmented )
    {
       fragmented = false;
-      for( i = 0; i < curves. Size(); i ++ )
+      for( Index i = 0; i < curves. getSize(); i ++ )
       {
-         tnlList< MeshIndex >& c1 = * curves[ i ];
-         MeshIndex c1_start = c1[ 0 ];
-         MeshIndex c1_end = c1[ c1. Size() - 1 ];
-         for( j = 0 ; j < curves. Size(); j ++ )
+         tnlList< tnlVector< 2, Index > >& c1 = * curves[ i ];
+         tnlVector< 2, Index > c1_start = c1[ 0 ];
+         tnlVector< 2, Index > c1_end = c1[ c1. getSize() - 1 ];
+         for( Index j = 0 ; j < curves. getSize(); j ++ )
          {
             if( i == j ) continue;
-            tnlList< MeshIndex >& c2 = * curves[ j ];
+            tnlList< tnlVector< 2, Index > >& c2 = * curves[ j ];
             assert( &c2 != &c1 );
-            MeshIndex c2_start = c2[ 0 ];
-            MeshIndex c2_end = c2[ c2. Size() - 1 ];
-            int n1, n2;
-            n1 = abs( ( int ) c1_start. i - ( int ) c2_end. i );
-            n2 = abs( ( int ) c1_start. j - ( int ) c2_end. j );
+            tnlVector< 2, Index > c2_start = c2[ 0 ];
+            tnlVector< 2, Index > c2_end = c2[ c2. getSize() - 1 ];
+            Index n1, n2;
+            n1 = abs( ( Index ) c1_start. x() - ( Index ) c2_end. x() );
+            n2 = abs( ( Index ) c1_start. y() - ( Index ) c2_end. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
                dbgCout( "Prepending the list no. " << j << 
-                         " (" << c2. Size() <<") to the list no. " << i <<
-                         " (" << c1. Size() <<").");
+                         " (" << c2. getSize() <<") to the list no. " << i <<
+                         " (" << c1. getSize() <<").");
                c1. PrependList( c2 );
                curves. DeepErase( j );
                if( i > j ) i --;
                j --;
                c1_start = c2_start;
-               dbgCout( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. getSize() );
                fragmented = true;
                continue;
             }
-            n1 = abs( ( int ) c1_end. i - ( int ) c2_start. i );
-            n2 = abs( ( int ) c1_end. j - ( int ) c2_start. j );
+            n1 = abs( ( Index ) c1_end. x() - ( Index ) c2_start. x() );
+            n2 = abs( ( Index ) c1_end. y() - ( Index ) c2_start. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
                dbgCout( "Appending the list no. " << j <<
-                         " (" << c2. Size() <<") to the list no. " << i <<
-                         " (" << c1. Size() <<").");
+                         " (" << c2. getSize() <<") to the list no. " << i <<
+                         " (" << c1. getSize() <<").");
                c1. AppendList( c2 );
                curves. DeepErase( j );
                if( i > j ) i --;
                j --;
                c1_end = c2_end;
-               dbgCout( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. getSize() );
                fragmented = true;
                continue;
             }
-            n1 = abs( ( int ) c1_start. i - ( int ) c2_start. i );
-            n2 = abs( ( int ) c1_start. j - ( int ) c2_start. j );
+            n1 = abs( ( Index ) c1_start. x() - ( Index ) c2_start. x() );
+            n2 = abs( ( Index ) c1_start. y() - ( Index ) c2_start. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
                dbgCout( "Prepending (reversaly) the list no. " << j <<
-                         " (" << c2. Size() <<" ) to the list no. " << i <<
-                         " (" << c1. Size() <<" ).");
-               for( k = 0; k < c2. Size(); k ++ )
+                         " (" << c2. getSize() <<" ) to the list no. " << i <<
+                         " (" << c1. getSize() <<" ).");
+               for( Index k = 0; k < c2. getSize(); k ++ )
                   c1. Prepend( c2[ k ] );
                curves. DeepErase( j );
                if( i > j ) i --;
                j --;
                c1_start = c2_end;
-               dbgCout( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. getSize() );
                fragmented = true;
                continue;
             }
-            n1 = abs( ( int ) c1_end. i - ( int ) c2_end. i );
-            n2 = abs( ( int ) c1_end. j - ( int ) c2_end. j );
+            n1 = abs( ( Index ) c1_end. x() - ( Index ) c2_end. x() );
+            n2 = abs( ( Index ) c1_end. y() - ( Index ) c2_end. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
                dbgCout( "Appending (reversaly) the list no. " << j <<
-                         " (" << c2. Size() <<" ) to the list no. " << i <<
-                         " (" << c1. Size() <<" ).");
-               for( k = c2.Size(); k > 0; k -- )
+                         " (" << c2. getSize() <<" ) to the list no. " << i <<
+                         " (" << c1. getSize() <<" ).");
+               for( Index k = c2.getSize(); k > 0; k -- )
                   c1. Append( c2[ k - 1 ] );
                curves. DeepErase( j );
                if( i > j ) i --;
                j --;
                c1_end = c2_start;
-               dbgCout( "New list size is " << c1. Size() );
+               dbgCout( "New list size is " << c1. getSize() );
                fragmented = true;
                continue;
             }
          }
       }
    }
-   dbgCout( "There are " << curves. Size() << " curves now." );
+   dbgCout( "There are " << curves. getSize() << " curves now." );
    // Now check if the curves are closed ( the begining and
    // the end match).
-   for( i = 0; i < curves. Size(); i ++ )
+   for( Index i = 0; i < curves. getSize(); i ++ )
    {
-      tnlList< MeshIndex >& c = * curves[ i ];
-      int l = c. Size();
-      MeshIndex m1 = c[ 0 ];
-      MeshIndex m2 = c[ l - 1 ];
-      int n1 = abs( ( int ) m1. i - ( int ) m2. i );
-      int n2 = abs( ( int ) m1. j - ( int ) m2. j );
+      tnlList< tnlVector< 2, Index > >& c = * curves[ i ];
+      Index l = c. getSize();
+      tnlVector< 2, Index > m1 = c[ 0 ];
+      tnlVector< 2, Index > m2 = c[ l - 1 ];
+      Index n1 = abs( ( Index ) m1. x() - ( Index ) m2. x() );
+      Index n2 = abs( ( Index ) m1. y() - ( Index ) m2. y() );
       if( ( n1 == 1 && n2 == 0 ) ||
           ( n1 == 0 && n2 == 1 ) )
       {
@@ -212,70 +203,70 @@ template< class T > bool GetLevelSetCurve( const tnlGrid2D< T >& u,
    }
  
    // Count precisly the curves points
-   const double a_x = u. GetAx();
-   const double a_y = u. GetAy();
-   const double h_x = u. GetHx();
-   const double h_y = u. GetHy();
-   tnlVector< 2, T > null_vector;
-   if( ! crv. IsEmpty() )
+   const Real a_x = u. getDomainLowerCorner(). x();
+   const Real a_y = u. getDomainLowerCorner(). y();
+   const Real h_x = u. getSpaceSteps(). x();
+   const Real h_y = u. getSpaceSteps(). y();
+   tnlVector< 2, Real > null_vector;
+   if( ! crv. isEmpty() )
       crv. Append( null_vector, true ); //separator
-   for( i = 0; i < curves. Size(); i ++ )
+   for( Index i = 0; i < curves. getSize(); i ++ )
    {
       if( i > 0 ) crv. Append( null_vector, true );  //separator
-      tnlList< MeshIndex >& c = * curves[ i ];
-      int l = c. Size();
-      tnlVector< 2, T > first;
-      for( j = 0; j < l - 1; j ++ )
+      tnlList< tnlVector< 2, Index > >& c = * curves[ i ];
+      Index l = c. getSize();
+      tnlVector< 2, Real > first;
+      for( Index j = 0; j < l - 1; j ++ )
       {
-         MeshIndex m1 = c[ j ];
-         MeshIndex m2 = c[ j + 1 ];
-         int n1 = m2. i - m1. i;
-         int n2 = m2. j - m1. j;
-         T p[ 2 ], v[ 2 ];
+         tnlVector< 2, Index > m1 = c[ j ];
+         tnlVector< 2, Index > m2 = c[ j + 1 ];
+         Index n1 = m2. x() - m1. x();
+         Index n2 = m2. y() - m1. y();
+         Real p[ 2 ], v[ 2 ];
          if( n1 == 0 && n2 == -1 )
          {
-            p[ 0 ] = a_x + m1. i * h_x;
-            p[ 1 ] = a_y + m1. j * h_y;
-            v[ 0 ] = u( m1. i, m1. j ) - level;
-            v[ 1 ] = u( m1. i + 1, m1. j ) - level;
+            p[ 0 ] = a_x + ( Real ) m1. x() * h_x;
+            p[ 1 ] = a_y + ( Real ) m1. y() * h_y;
+            v[ 0 ] = u. getElement( m1. x(), m1. y() ) - level;
+            v[ 1 ] = u. getElement( m1. x() + 1, m1. y() ) - level;
          }
          if( n1 == 1 && n2 == 0 )
          {
-            p[ 0 ] = a_x + ( m1. i + 1 ) * h_x;
-            p[ 1 ] = a_y + ( m1. j ) * h_y;
-            v[ 0 ] = u( m1. i + 1, m1. j ) - level;
-            v[ 1 ] = u( m1. i + 1, m1. j + 1 ) - level;
+            p[ 0 ] = a_x + ( Real ) ( m1. x() + 1 ) * h_x;
+            p[ 1 ] = a_y + ( Real ) ( m1. y() ) * h_y;
+            v[ 0 ] = u. getElement( m1. x() + 1, m1. y() ) - level;
+            v[ 1 ] = u. getElement( m1. x() + 1, m1. y() + 1 ) - level;
          }
          if( n1 == 0 && n2 == 1 )
          {
-            p[ 0 ] = a_x + ( m1. i + 1 ) * h_x;
-            p[ 1 ] = a_y + ( m1. j + 1 ) * h_y;
-            v[ 0 ] = u( m1. i + 1, m1. j + 1 ) - level;
-            v[ 1 ] = u( m1. i, m1. j + 1 ) - level;
+            p[ 0 ] = a_x + ( Real ) ( m1. x() + 1 ) * h_x;
+            p[ 1 ] = a_y + ( Real ) ( m1. y() + 1 ) * h_y;
+            v[ 0 ] = u. getElement( m1. x() + 1, m1. y() + 1 ) - level;
+            v[ 1 ] = u. getElement( m1. x(), m1. y() + 1 ) - level;
          }
          if( n1 == -1 && n2 == 0 )
          {
-            p[ 0 ] = a_x + ( m1. i ) * h_x;
-            p[ 1 ] = a_y + ( m1. j + 1 ) * h_y;
-            v[ 0 ] = u( m1. i, m1. j + 1 ) - level;
-            v[ 1 ] = u( m1. i, m1. j ) - level;
+            p[ 0 ] = a_x + ( Real ) ( m1. x() ) * h_x;
+            p[ 1 ] = a_y + ( Real ) ( m1. y() + 1 ) * h_y;
+            v[ 0 ] = u. getElement( m1. x(), m1. y() + 1 ) - level;
+            v[ 1 ] = u. getElement( m1. x(), m1. y() ) - level;
          }
-         if( v[ 0 ] * v[ 1 ] > 0.0 )
+         if( v[ 0 ] * v[ 1 ] > Real( 0.0 ) )
          {
             // this can happen near the edge or when two curves cross each other
             //curve. Append( CurveElement( Vector2D( 0.0, 0.0 ), true ) );
             //cerr << "Warning: v1 * v2 > 0 in curve identification." << endl;
             continue;
          }
-         T r = v[ 0 ] / ( v[ 1 ] - v[ 0 ] );
-         p[ 0 ] += ( ( T ) n2  ) * r * h_x;
-         p[ 1 ] += ( ( T ) -n1  ) * r * h_y;
-         crv. Append( tnlVector< 2, T >( p ) );
-         if( j == 0 ) first = tnlVector< 2, T >( p );
+         Real r = v[ 0 ] / ( v[ 1 ] - v[ 0 ] );
+         p[ 0 ] += ( ( Real ) n2  ) * r * h_x;
+         p[ 1 ] += ( ( Real ) -n1  ) * r * h_y;
+         crv. Append( tnlVector< 2, Real >( p ) );
+         if( j == 0 ) first = tnlVector< 2, Real >( p );
       }
-      MeshIndex m1 = c[ 0 ];
-      MeshIndex m2 = c[ l - 1 ];
-      if( m1. i == m2. i && m1. j == m2. j  )
+      tnlVector< 2, Index > m1 = c[ 0 ];
+      tnlVector< 2, Index > m2 = c[ l - 1 ];
+      if( m1 == m2  )
          crv. Append( first );
    }
 

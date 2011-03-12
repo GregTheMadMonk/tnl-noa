@@ -18,15 +18,15 @@
 #ifndef TNLGRIDVIEW_H_
 #define TNLGRIDVIEW_H_
 
-#include <core/tnlParameterContainer.h>
-#include <diff/tnlGrid2D.h>
-#include <diff/tnlGrid3D.h>
+#include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
+#include <matrix/tnlCSRMatrix.h>
+#include <mesh/tnlGrid.h>
 #include <fstream>
 
 using namespace std;
 
-template< typename REAL >
+template< typename Real, tnlDevice Device, typename Index >
 bool ProcesstnlGrid2D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
@@ -34,85 +34,80 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
                        const tnlString& output_file_format )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid2D< REAL > u;
-   fstream file;
-   file. open( file_name. Data(), ios :: in | ios :: binary );
-   if( ! u. Load( file ) )
+   tnlGrid< 2, Real, Device, Index > u( "u" ), resizedU( "resizedU" );
+   if( ! u. load( file_name ) )
    {
       cout << " unable to restore the data " << endl;
-      file. close();
       return false;
    }
-   file. close();
 
-   tnlGrid2D< REAL >* output_u;
+   tnlGrid< 2, Real, Device, Index >* output_u;
 
    int output_x_size( 0 ), output_y_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );
    parameters. GetParameter< int >( "output-y-size", output_y_size );
-   REAL scale = parameters. GetParameter< double >( "scale" );
-   if( ! output_x_size && ! output_y_size && scale == 1.0 )
+   Real scale = parameters. GetParameter< double >( "scale" );
+   if( ! output_x_size && ! output_y_size && scale == ( Real ) 1.0 )
       output_u = &u;
    else
    {
-      if( ! output_x_size ) output_x_size = u. GetXSize();
-      if( ! output_y_size ) output_y_size = u. GetYSize();
+      if( ! output_x_size ) output_x_size = u. getDimensions(). x();
+      if( ! output_y_size ) output_y_size = u. getDimensions(). y();
+      output_u = &resizedU;
 
-      output_u = new tnlGrid2D< REAL >( "output-u",
-                                        output_x_size,
-                                        output_y_size,
-                                        u. GetAx(),
-                                        u. GetBx(),
-                                        u. GetAy(),
-                                        u. GetBy() );
+      resizedU. setDimensions( tnlVector< 2, Index >( output_x_size, output_y_size ) );
+      resizedU. setDomain( u. getDomainLowerCorner(), u. getDomainUpperCorner() );
 
-      const REAL& hx = output_u -> GetHx();
-      const REAL& hy = output_u -> GetHy();
-      int i, j;
-      for( i = 0; i < output_x_size; i ++ )
-         for( j = 0; j < output_y_size; j ++ )
+      const Real& hx = output_u -> getSpaceSteps(). x();
+      const Real& hy = output_u -> getSpaceSteps(). y();
+      for( Index i = 0; i < output_x_size; i ++ )
+         for( Index j = 0; j < output_y_size; j ++ )
          {
-            const REAL x = output_u -> GetAx() + i * hx;
-            const REAL y = output_u -> GetAy() + j * hy;
-            ( *output_u )( i, j ) = scale * u. Value( x, y );
+            const Real x = output_u -> getDomainLowerCorner(). x() + Real( i ) * hx;
+            const Real y = output_u -> getDomainUpperCorner(). y() + Real( j ) * hy;
+            output_u -> setElement( i, j, scale * u. getValue( x, y ) );
          }
    }
 
    if( verbose )
       cout << " writing ... " << output_file_name;
 
-   tnlList< REAL > level_lines;
-   parameters. GetParameter< tnlList< REAL > >( "level-lines", level_lines );
-   if( ! level_lines. IsEmpty() )
+   tnlList< Real > level_lines;
+   parameters. GetParameter< tnlList< Real > >( "level-lines", level_lines );
+   if( ! level_lines. isEmpty() )
    {
-      tnlCurve< tnlVector< 2, REAL > > crv;
+      tnlCurve< tnlVector< 2, Real > > crv( "tnl-grid-view:curve" );
       int j;
-      for( j = 0; j < level_lines. Size(); j ++ )
-         if( ! GetLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
+      for( j = 0; j < level_lines. getSize(); j ++ )
+         if( ! getLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
          {
             cerr << "Unable to identify the level line " << level_lines[ j ] << endl;
             if( output_u != &u ) delete output_u;
             return false;
          }
-      if( ! Write( crv, output_file_name. Data(), output_file_format. Data() ) )
+      if( strcmp( output_file_name. getString() + output_file_name. getLength() - 4, ".tnl" ) == 0 )
       {
-         cerr << " ... FAILED " << endl;
+         if( ! crv. save( output_file_name ) )
+         {
+            cerr << " ... FAILED " << endl;
+         }
       }
+      else Write( crv, output_file_name. getString(), output_file_format. getString() );
+
    }
    else
    {
-      if( ! Draw( *output_u, output_file_name. Data(), output_file_format. Data() ) )
+      if( ! output_u -> draw( output_file_name, output_file_format ) )
       {
          cerr << " ... FAILED " << endl;
       }
    }
-   level_lines. EraseAll();
-   if( output_u != &u ) delete output_u;
    if( verbose )
       cout << " OK " << endl;
+   return true;
 }
 
-template< typename REAL >
+template< typename Real, tnlDevice Device, typename Index >
 bool ProcesstnlGrid3D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
@@ -120,10 +115,72 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
                        const tnlString& output_file_format )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid3D< REAL > u;
-   fstream file;
-   file. open( file_name. Data(), ios :: in | ios :: binary );
-   if( ! u. Load( file ) )
+   tnlGrid< 3, Real, Device, Index > u( "u"), resizedU( "resizedU" );
+   if( ! u. load( file_name ) )
+   {
+      cout << " unable to restore the data " << endl;
+      return false;
+   }
+
+   tnlGrid< 3, Real, Device, Index >* output_u;
+
+   int output_x_size( 0 ), output_y_size( 0 ), output_z_size( 0 );
+   parameters. GetParameter< int >( "output-x-size", output_x_size );
+   parameters. GetParameter< int >( "output-y-size", output_y_size );
+   parameters. GetParameter< int >( "output-y-size", output_z_size );
+   Real scale = parameters. GetParameter< Real >( "scale" );
+   if( ! output_x_size && ! output_y_size && ! output_z_size && scale == Real( 1.0 ) )
+      output_u = &u;
+   else
+   {
+      if( ! output_x_size ) output_x_size = u. getDimensions()[ tnlX ];
+      if( ! output_y_size ) output_y_size = u. getDimensions()[ tnlY ];
+      if( ! output_z_size ) output_z_size = u. getDimensions()[ tnlZ ];
+      output_u = &resizedU;
+
+      resizedU. setDimensions( tnlVector< 3, Index >( output_x_size, output_y_size, output_z_size ) );
+      resizedU. setDomain( u. getDomainLowerCorner(), u. getDomainUpperCorner() );
+
+      const Real& hx = output_u -> getSpaceSteps(). x();
+      const Real& hy = output_u -> getSpaceSteps(). y();
+      const Real& hz = output_u -> getSpaceSteps(). z();
+
+      for( Index i = 0; i < output_x_size; i ++ )
+         for( Index j = 0; j < output_y_size; j ++ )
+            for( Index k = 0; j < output_y_size; k ++ )
+            {
+               const Real x = output_u -> getDomainLowerCorner(). x() + Real( i ) * hx;
+               const Real y = output_u -> getDomainLowerCorner(). y() + Real( j ) * hy;
+               const Real z = output_u -> getDomainLowerCorner(). z() + Real( k ) * hz;
+               output_u -> setElement( i, j, k, scale * u. getValue( x, y, z ) );
+            }
+   }
+
+   if( verbose )
+      cout << " writing " << output_file_name << " ... ";
+   if( ! output_u -> draw( output_file_name, output_file_format ) )
+   {
+      cerr << " unable to write to " << output_file_name << endl;
+   }
+   else
+      if( verbose )
+         cout << " ... OK " << endl;
+   return true;
+}
+
+template< typename Real >
+bool ProcessCSRMatrix( const tnlString& file_name,
+                       const tnlParameterContainer& parameters,
+                       int file_index,
+                       const tnlString& output_file_name,
+                       const tnlString& output_file_format )
+{
+   int verbose = parameters. GetParameter< int >( "verbose");
+   tnlCSRMatrix< Real > matrix( "tnl-view:matrix" );
+   tnlFile file;
+   if( ! file. open( file_name, tnlReadMode ) )
+      return false;
+   if( ! matrix. load( file ) )
    {
       cout << " unable to restore the data " << endl;
       file. close();
@@ -131,56 +188,19 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
    }
    file. close();
 
-   tnlGrid3D< REAL >* output_u;
-
-   int output_x_size( 0 ), output_y_size( 0 ), output_z_size( 0 );
-   parameters. GetParameter< int >( "output-x-size", output_x_size );
-   parameters. GetParameter< int >( "output-y-size", output_y_size );
-   parameters. GetParameter< int >( "output-y-size", output_z_size );
-   REAL scale = parameters. GetParameter< REAL >( "scale" );
-   if( ! output_x_size && ! output_y_size && ! output_z_size && scale == 1.0 )
-      output_u = &u;
-   else
-   {
-      if( ! output_x_size ) output_x_size = u. GetXSize();
-      if( ! output_y_size ) output_y_size = u. GetYSize();
-      if( ! output_z_size ) output_z_size = u. GetZSize();
-
-      output_u = new tnlGrid3D< REAL >( "output-u",
-                                        output_x_size,
-                                        output_y_size,
-                                        output_z_size,
-                                        u. GetAx(),
-                                        u. GetBx(),
-                                        u. GetAy(),
-                                        u. GetBy(),
-                                        u. GetAz(),
-                                        u. GetBz() );
-      const REAL& hx = output_u -> GetHx();
-      const REAL& hy = output_u -> GetHy();
-      const REAL& hz = output_u -> GetHz();
-      int i, j, k;
-      for( i = 0; i < output_x_size; i ++ )
-         for( j = 0; j < output_y_size; j ++ )
-            for( k = 0; j < output_y_size; k ++ )
-            {
-               const REAL x = output_u -> GetAx() + i * hx;
-               const REAL y = output_u -> GetAy() + j * hy;
-               const REAL z = output_u -> GetAz() + k * hz;
-               ( *output_u )( i, j, k ) = scale * u. Value( x, y, z );
-            }
-   }
-
    if( verbose )
-      cout << " writing " << output_file_name << " ... ";
-   if( ! Draw( *output_u, output_file_name. Data(), output_file_format. Data() ) )
+      cout << " writing " << output_file_name << " ... " << endl;
+   fstream outFile;
+   outFile. open( output_file_name. getString(), ios :: out );
+   if( ! matrix. draw( outFile, output_file_format. getString(), verbose ) )
    {
       cerr << " unable to write to " << output_file_name << endl;
    }
    else
       if( verbose )
          cout << " ... OK " << endl;
-   if( output_u != &u ) delete output_u;
+   outFile. close();
+   return true;
 }
 
 

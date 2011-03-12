@@ -30,6 +30,7 @@ static tnlDebugStructure __tnl_debug_structure;
 bool tnlInitDebug( const char* file_name, const char* program_name )
 {
    cout << "tnlDebug initiation..." << endl;
+   __tnl_debug_structure. setDebug( true );
    tnlDebugParser debug_parser; 
    fstream in_file;
    in_file. open( file_name, ios :: in );
@@ -42,10 +43,10 @@ bool tnlInitDebug( const char* file_name, const char* program_name )
    int errs = debug_parser. runParsing( &__tnl_debug_structure );
    if( errs != 0 )
    {    
-      cerr << errs << " errors occured while parsing " << file_name << endl;
+      cerr << errs << " errors occurred while parsing " << file_name << endl;
       return false;
    }
-   cout << "Parsing of " << file_name << " succesfuly done ..." << endl;
+   cout << "Parsing of " << file_name << " successful done ..." << endl;
 #ifdef DEBUG
    cout << "Parsed data are ... " << endl;
    __tnl_debug_structure. Print();

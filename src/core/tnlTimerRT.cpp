@@ -37,18 +37,44 @@ void tnlTimerRT :: Reset()
 #ifdef HAVE_TIME
    struct timeval tp;
    int rtn = gettimeofday( &tp, NULL );
-   initial_time = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;   
-   return;
-#endif
+   initial_time = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
+   total_time = 0.0;
+   stop_state = false;
+#else
    initial_time = 0.0;
+#endif
+
 }
 //--------------------------------------------------------------------------
-double tnlTimerRT :: GetTime() const
+void tnlTimerRT :: Stop()
+{
+#ifdef HAVE_TIME
+   if( ! stop_state )
+   {
+      struct timeval tp;
+      int rtn = gettimeofday( &tp, NULL );
+      total_time += ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec - initial_time;
+      stop_state = true;
+   }
+#endif
+}
+//--------------------------------------------------------------------------
+void tnlTimerRT :: Continue()
 {
 #ifdef HAVE_TIME
    struct timeval tp;
    int rtn = gettimeofday( &tp, NULL );
-   return ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec - initial_time;   
+   initial_time = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
+   stop_state = false;
+#endif
+}
+//--------------------------------------------------------------------------
+double tnlTimerRT :: GetTime()
+{
+#ifdef HAVE_TIME
+	Stop();
+	Continue();
+	return total_time;
 #endif
  return -1;
 }

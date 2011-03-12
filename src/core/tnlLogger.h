@@ -21,7 +21,7 @@
 #include <cstring>
 #include <ostream>
 #include <iomanip>
-#include <core/tnlParameterContainer.h>
+#include <config/tnlParameterContainer.h>
 
 class tnlLogger
 {

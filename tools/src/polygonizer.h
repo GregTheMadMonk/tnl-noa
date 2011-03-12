@@ -33,7 +33,6 @@
 #include <vector.h>
 #include "vctr.h"
 #include "vertex.h"
-#include "../debug.h"
 
 //using namespace :: std;
 

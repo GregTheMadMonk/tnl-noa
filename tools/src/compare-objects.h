@@ -18,103 +18,56 @@
 #ifndef compare_objectsH
 #define compare_objectsH
 
-#include <diff/tnlGrid2D.h>
-#include <diff/tnlGrid3D.h>
+#include <mesh/tnlGrid.h>
 #include <math.h>
 #include <core/mfuncs.h>
 
-template< typename REAL >
-bool Compare( const tnlGrid2D< REAL >& u1,
-              const tnlGrid2D< REAL >& u2,
-              REAL& l1_norm,
-              REAL& l2_norm,
-              REAL& max_norm,
-              tnlGrid2D< REAL >& difference,
-              int edge_skip )
+template< int Dimensions,
+          typename Real1,
+          typename Real2,
+          tnlDevice Device1,
+          tnlDevice Device2,
+          typename Index >
+bool compareObjects( const tnlGrid< Dimensions, Real1, Device1, Index >& u1,
+                     const tnlGrid< Dimensions, Real2, Device2, Index >& u2,
+                     Real1& l1_norm,
+                     Real1& l2_norm,
+                     Real1& max_norm,
+                     tnlGrid< Dimensions, Real1, Device1, Index >& difference,
+                     Index edge_skip )
 {
-   if( u1. GetXSize() != u2. GetXSize() ||
-       u1. GetYSize() != u2. GetYSize() ||
-       u1. GetAx()    != u2. GetAx()    ||
-       u1. GetAy()    != u2. GetAy()    ||
-       u1. GetBx()    != u2. GetBx()    ||
-       u1. GetBy()    != u2. GetBy()    )
+   if( u1. getDimensions() != u2. getDimensions() ||
+       u1. getDomainLowerCorner() != u2. getDomainLowerCorner() ||
+       u1. getDomainUpperCorner() != u2. getDomainUpperCorner() )
    {
       cerr << "Both grids describes different numerical domain." << endl;
-      cerr << u1. GetXSize() << "x"  << u1. GetYSize( ) << " on domain < "
-           << u1. GetAx()    << ", " << u1. GetBx() << " > x < "
-           << u1. GetAy()    << ", " << u1. GetBy() << " > VS. "
-           << u2. GetXSize() << "x"  << u2. GetYSize( ) << " on domain "
-           << u2. GetAx()    << ", " << u2. GetBx() << " > x < "
-           << u2. GetAy()    << ", " << u2. GetBy() << " > ." << endl;
+      //TODO: Fix this - it produces compile errors.
+      /*cerr << u1. getDimensions() << " on domain "
+           << u1. getDomainLowerCorner() << " -- "
+           << u1. getDomainUpperCorner()  
+           << u2. getDimensions() << " on domain "
+           << u2. getDomainLowerCorner << " -- "
+           << u2. getDomainUpperCorner() << endl;*/
       return false;
    }
-   const int x_size = u1. GetXSize();
-   const int y_size = u1. GetYSize();
-   const REAL& hx = u1. GetHx();
-   const REAL& hy = u1. GetHy();
+   const Index xSize = u1. getDimensions(). x();
+   const Index ySize = u1. getDimensions(). y();
+   const Real1& hx = u1. getSpaceSteps(). x();
+   const Real1& hy = u1. getSpaceSteps(). x();
 
-   int i, j;
    l1_norm = l2_norm = max_norm = 0.0;
-   for( i = edge_skip; i < x_size - edge_skip; i ++ )
-      for( j = edge_skip; j < y_size - edge_skip; j ++ )
+   for( Index i = edge_skip; i < xSize - edge_skip; i ++ )
+      for( Index j = edge_skip; j < ySize - edge_skip; j ++ )
       {
-         REAL diff = u1( i, j ) - u2( i, j );
-         REAL err = fabs( diff );
+         Real1 diff = u1. getElement( i, j ) - Real1( u2. getElement( i, j ) );
+         Real1 err = fabs( diff );
          l1_norm += hx * hy * err;
          l2_norm += hx * hy * err * err;
          max_norm = Max( max_norm, err );
-         if( difference ) difference( i, j ) = diff;
+         if( difference ) difference. setElement( i, j, diff );
       }
    l2_norm = sqrt( l2_norm );
    return true;
 }
-
-template< typename REAL >
-bool Compare( const tnlGrid3D< REAL >& u1,
-              const tnlGrid3D< REAL >& u2,
-              REAL& l1_norm,
-              REAL& l2_norm,
-              REAL& max_norm,
-              tnlGrid3D< REAL >& difference,
-              int edge_skip )
-{
-   if( u1. GetXSize() != u2. GetXSize() ||
-       u1. GetYSize() != u2. GetYSize() ||
-       u1. GetZSize() != u2. GetZSize() ||
-       u1. GetAx()    != u2. GetAx()    ||
-       u1. GetAy()    != u2. GetAy()    ||
-       u1. GetAz()    != u2. GetAz()    ||
-       u1. GetBx()    != u2. GetBx()    ||
-       u1. GetBy()    != u2. GetBy()    ||
-       u1. GetBz()    != u2. GetBz()    )
-   {
-      cerr << "Both grids describes different numerical domain." << endl;
-      return false;
-   }
-   const int x_size = u1. GetXSize();
-   const int y_size = u1. GetYSize();
-   const int z_size = u1. GetZSize();
-   const REAL& hx = u1. GetHx();
-   const REAL& hy = u1. GetHy();
-   const REAL& hz = u1. GetHz();
-
-   int i, j, k;
-   l1_norm = l2_norm = max_norm = 0.0;
-   for( i = edge_skip; i < x_size - edge_skip; i ++ )
-      for( j = edge_skip; j < y_size - edge_skip; j ++ )
-         for( k = edge_skip; k < z_size - edge_skip; k ++ )
-         {
-            REAL diff = u1( i, j, k ) - u2( i, j, k );
-            REAL err = fabs( diff );
-            l1_norm += hx * hy * hz * err;
-            l2_norm += hx * hy * hz * err * err;
-            max_norm = Max( max_norm, err );
-            if( difference ) difference( i, j, k ) = diff;
-         }
-   l2_norm = sqrt( l2_norm );
-   return true;
-}
-
-
 
 #endif

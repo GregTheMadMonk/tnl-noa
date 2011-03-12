@@ -36,22 +36,22 @@ template< class T > class tnlStack : protected tnlList< T >
    //! Pop data
    bool Pop( T& data )
    {
-      if( tnlList< T > :: IsEmpty() )
+      if( tnlList< T > :: isEmpty() )
          return false;
-      data = tnlList< T > :: operator[] ( tnlList< T > :: Size() - 1 );
-      tnlList< T > :: Erase( tnlList< T > :: Size() - 1 );
+      data = tnlList< T > :: operator[] ( tnlList< T > :: getSize() - 1 );
+      tnlList< T > :: Erase( tnlList< T > :: getSize() - 1 );
    };
 
    //! Get stack size
    int GetSize()
    {
-      return tnlList< T > :: Size();
+      return tnlList< T > :: getSize();
    }
 
    //! Check whether stack is empty
-   bool IsEmpty()
+   bool isEmpty()
    {
-      return tnlList< T > :: IsEmpty();
+      return tnlList< T > :: isEmpty();
    }
 };
 

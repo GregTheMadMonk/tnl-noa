@@ -19,7 +19,7 @@
 #define __tnlDebug_h__
 
 
-#ifdef DEBUG 
+#ifdef DEBUG
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -40,54 +40,54 @@ extern int __tnldbg_mpi_i_proc;
 
 #ifdef HAVE_MPI // MPI definitions
 
-#define dbgMPIBarrier                          \
-   if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
-                       _tnldbg_debug_func_name ) )  \
+#define dbgMPIBarrier                                                          \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,                           \
+                       _tnldbg_debug_func_name ) )                             \
     MPI_Barrier( MPI_COMM_WORLD );
 
-#define dbgCout( args )                                       \
-   MPI_Comm_rank( MPI_COMM_WORLD, &__tnldbg_mpi_i_proc );     \
-   if( _tnldbg_debug_func( _tnldbg_debug_class_name,          \
-                       _tnldbg_debug_func_name ) )            \
-      cout << "# MPI proc. " << __tnldbg_mpi_i_proc << " | "  \
-      << _tnldbg_debug_class_name << " :: "                   \
-      << _tnldbg_debug_func_name << " @ "                     \
-      << __LINE__ << " | " << args << endl << flush;
+#define dbgCout( args )                                                        \
+   MPI_Comm_rank( MPI_COMM_WORLD, &__tnldbg_mpi_i_proc );                      \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,                           \
+                       _tnldbg_debug_func_name ) )                             \
+      std :: cout << "#TNLDBG# MPI proc. " << __tnldbg_mpi_i_proc << " | "            \
+      << _tnldbg_debug_class_name << " :: "                                    \
+      << _tnldbg_debug_func_name << " @ "                                      \
+      << __LINE__ << " | " << args << std :: std :: endl << std :: std :: flush;
 
-#define dbgExpr( expr )                                       \
-   MPI_Comm_rank( MPI_COMM_WORLD, &__tnldbg_mpi_i_proc );     \
-   if( _tnldbg_debug_func( _tnldbg_debug_class_name,          \
-                           _tnldbg_debug_func_name ) )        \
-      cout << "# MPI proc. " << __tnldbg_mpi_i_proc << " | "  \
-      << _tnldbg_debug_class_name << " :: "                   \
-      << _tnldbg_debug_func_name << " @ "                     \
-      << __LINE__ << " | " << #expr << " -> "                 \
-      << expr << endl << flush;
+#define dbgExpr( expr )                                                        \
+   MPI_Comm_rank( MPI_COMM_WORLD, &__tnldbg_mpi_i_proc );                      \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,                           \
+                           _tnldbg_debug_func_name ) )                         \
+      std :: cout << "#TNLDBG# MPI proc. " << __tnldbg_mpi_i_proc << " | "            \
+      << _tnldbg_debug_class_name << " :: "                                    \
+      << _tnldbg_debug_func_name << " @ "                                      \
+      << __LINE__ << " | " << #expr << " -> "                                  \
+      << expr << std :: endl << std :: flush;
 
-#define dbgCondExpr( condition, expr )         \
-   if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
-                       _tnldbg_debug_func_name ) )  \
-      if( condition )                            \
-         cout << "# MPI proc. " << __tnldbg_mpi_i_proc << " | "  \
-         << _tnldbg_debug_class_name << " :: " \
-         << _tnldbg_debug_func_name << " @ "        \
-         << __LINE__ << " | "                    \
-      << #expr << " -> " << expr << flush << endl;
+#define dbgCondExpr( condition, expr )                                         \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,                           \
+                       _tnldbg_debug_func_name ) )                             \
+      if( condition )                                                          \
+         std :: cout << "#TNLDBG# MPI proc. " << __tnldbg_mpi_i_proc << " | "         \
+         << _tnldbg_debug_class_name << " :: "                                 \
+         << _tnldbg_debug_func_name << " @ "                                   \
+         << __LINE__ << " | "                                                  \
+      << #expr << " -> " << expr << std :: flush << std :: endl;
 
 #else   // now non-MPI definitions
 
-#define dbgCout( args )                                      \
-   if( _tnldbg_debug_func( _tnldbg_debug_class_name,         \
-                       _tnldbg_debug_func_name ) )           \
-      cout << "# " << _tnldbg_debug_class_name << " :: "     \
-      << _tnldbg_debug_func_name << " @ "                    \
-      << __LINE__ << " | " << args << flush << endl;
+#define dbgCout( args )                                                        \
+   if( _tnldbg_debug_func( _tnldbg_debug_class_name,                           \
+                       _tnldbg_debug_func_name ) )                             \
+      std :: cout << "#TNLDBG# " << _tnldbg_debug_class_name << " :: "                \
+      << _tnldbg_debug_func_name << " @ "                                      \
+      << __LINE__ << " | " << args << std :: flush << std :: endl;
 
 #define dbgPrintf( expr )                                    \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,         \
                            _tnldbg_debug_func_name ) )       \
    {                                                         \
-      printf( " %s :: %s @ %d |" ,                           \
+      printf( "#TNLDBG# %s :: %s @ %d |" ,                           \
       _tnldbg_debug_class_name,  _tnldbg_debug_func_name,    \
       __LINE__);                                             \
       printf( #expr );                                       \
@@ -97,19 +97,19 @@ extern int __tnldbg_mpi_i_proc;
 #define dbgExpr( expr )                                      \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,         \
                            _tnldbg_debug_func_name ) )       \
-      cout << "# " << _tnldbg_debug_class_name << " :: "     \
+      std :: cout << "#TNLDBG# " << _tnldbg_debug_class_name << " :: "     \
       << _tnldbg_debug_func_name << " @ "                    \
       << __LINE__ << " | "                                   \
-      << #expr << " -> " << expr << flush << endl;
+      << #expr << " -> " << expr << std :: flush << std :: endl;
 
 #define dbgCall( expr )                         \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
                            _tnldbg_debug_func_name ) )  \
    {                                             \
-      cout << _tnldbg_debug_class_name << " :: "    \
+      std :: cout << "#TNLDBG#" << _tnldbg_debug_class_name << " :: "    \
       << _tnldbg_debug_func_name << " @ "           \
       << __LINE__ << " | CALL:  "                \
-      << #expr << " -> " << flush << endl;       \
+      << #expr << " -> " << std :: flush << std :: endl;       \
       expr;                                      \
    }         
 
@@ -117,10 +117,10 @@ extern int __tnldbg_mpi_i_proc;
    if( _tnldbg_interactive_func( _tnldbg_debug_class_name, \
                        _tnldbg_debug_func_name ) )      \
    {                                                 \
-      cout << _tnldbg_debug_class_name << " :: "        \
+      std :: cout << "#TNLDBG#" <<  _tnldbg_debug_class_name << " :: "        \
       << _tnldbg_debug_func_name << " @ "               \
       << __LINE__ << " | Press any key...  "         \
-      << flush << endl;                              \
+      << std :: flush << std :: endl;                              \
       getchar();                                     \
    }
 
@@ -128,16 +128,16 @@ extern int __tnldbg_mpi_i_proc;
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
                        _tnldbg_debug_func_name ) )  \
       if( condition )                            \
-         cout << _tnldbg_debug_class_name << " :: " \
+         std :: cout << "#TNLDBG#" <<  _tnldbg_debug_class_name << " :: " \
          << _tnldbg_debug_func_name << " @ "        \
-         << __LINE__ << " | " << args << flush << endl;
+         << __LINE__ << " | " << args << std :: flush << std :: endl;
 
 #define dbgCondPrintf( condition, expr )             \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,         \
                        _tnldbg_debug_func_name ) )        \
       if( condition )                                  \
       {                                                \
-         printf( " %s :: %s @ %d |" ,                  \
+         printf( "#TNLDBG# %s :: %s @ %d |" ,                  \
          _tnldbg_debug_class_name,  _tnldbg_debug_func_name, \
          __LINE__);                                    \
          printf( #expr );                              \
@@ -148,20 +148,20 @@ extern int __tnldbg_mpi_i_proc;
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
                        _tnldbg_debug_func_name ) )  \
       if( condition )                            \
-         cout << _tnldbg_debug_class_name << " :: " \
+         std :: cout << "#TNLDBG#" << _tnldbg_debug_class_name << " :: " \
          << _tnldbg_debug_func_name << " @ "        \
          << __LINE__ << " | "                    \
-      << #expr << " -> " << expr << flush << endl;
+      << #expr << " -> " << expr << std :: flush << std :: endl;
 
 #define dbgCondCall( condition, expr )         \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
                        _tnldbg_debug_func_name ) )  \
       if( condition )                            \
       {                                          \
-         cout << _tnldbg_debug_class_name << " :: " \
+         std :: cout << "#TNLDBG#" <<  _tnldbg_debug_class_name << " :: " \
          << _tnldbg_debug_func_name << " @ "        \
          << __LINE__ << " | CALL:  "             \
-         << #expr << " -> " << flush << endl;    \
+         << #expr << " -> " << std :: flush << std :: endl;    \
          expr;                                   \
       }         
 
@@ -170,10 +170,10 @@ extern int __tnldbg_mpi_i_proc;
                               _tnldbg_debug_func_name ) ) \
       if( condition )                                  \
       {                                                \
-         cout << _tnldbg_debug_class_name << " :: "       \
+         std :: cout << "#TNLDBG#" <<  _tnldbg_debug_class_name << " :: "       \
          << _tnldbg_debug_func_name << " @ "              \
          << __LINE__ << " | Press any key...  "        \
-         << flush << endl;                             \
+         << std :: flush << std :: endl;                             \
          getchar();                                    \
       }
 
@@ -181,30 +181,30 @@ extern int __tnldbg_mpi_i_proc;
    if( _tnldbg_interactive_func( _tnldbg_debug_class_name,                            \
                               _tnldbg_debug_func_name ) )                          \
    {                                                                            \
-      cout << _tnldbg_debug_class_name << " :: "                                   \
+      std :: cout << "#TNLDBG#" << _tnldbg_debug_class_name << " :: "                                   \
           << _tnldbg_debug_func_name << " @ "                                      \
           << __LINE__ << " | "                                                  \
           << #array << " = [ ";                                                 \
       for( int _tnldbg_index_ii = 0; _tnldbg_index_ii < size - 1 ; _tnldbg_index_ii ++ ) \
-         cout << array[ _tnldbg_index_ii ] << ", ";                                \
-      cout << array[ size - 1 ] << " ]" << flush << endl;                       \
+         std :: cout << array[ _tnldbg_index_ii ] << ", ";                                \
+      std :: cout << array[ size - 1 ] << " ]" << std :: flush << std :: endl;                       \
    }
 
 #define dbgCoutMatrixCW( matrix, n1, n2, wd )                                     \
    if( _tnldbg_interactive_func( _tnldbg_debug_class_name,                                 \
                               _tnldbg_debug_func_name ) )                               \
    {                                                                                 \
-      cout << _tnldbg_debug_class_name << " :: "                                        \
+      std :: cout "#TNLDBG#" <<  << _tnldbg_debug_class_name << " :: "                                        \
           << _tnldbg_debug_func_name << " @ "                                           \
           << __LINE__ << " | "                                                       \
-          << #matrix << " = [ " << endl;                                             \
+          << #matrix << " = [ " << std :: endl;                                             \
       for( int _tnldbg_index_ii = 0; _tnldbg_index_ii < ( n1 ) ; _tnldbg_index_ii ++ ) {      \
          for( int _tnldbg_index_jj = 0; _tnldbg_index_jj < ( n2 ) - 1 ; _tnldbg_index_jj ++ ) \
-            cout << setw( wd )                                                       \
+            std :: cout << setw( wd )                                                       \
                  << matrix[ _tnldbg_index_jj * ( n1 ) + _tnldbg_index_ii ] << ", ";        \
-            cout << setw( wd )                                                       \
-                 << matrix[ ( ( n2 ) - 1 ) * ( n1 ) + _tnldbg_index_ii ] << endl;}      \
-      cout << " ]" << flush << endl;                                                 \
+            std :: cout << setw( wd )                                                       \
+                 << matrix[ ( ( n2 ) - 1 ) * ( n1 ) + _tnldbg_index_ii ] << std :: endl;}      \
+       std :: cout << " ]" << std :: flush << std :: endl;                                                 \
    }
 
 #define dbgMPIBarrier

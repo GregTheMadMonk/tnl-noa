@@ -24,6 +24,8 @@
 
 using namespace :: std;
 
+template< class T > class tnlList;
+class tnlFile;
 
 //! Class for managing strings
 class tnlString
@@ -44,11 +46,14 @@ class tnlString
        @param sufix_cut_off says the same about sufix.
     */
    tnlString( const char* c,
-            int prefix_cut_off = 0,
-            int sufix_cut_off = 0 );
+              int prefix_cut_off = 0,
+              int sufix_cut_off = 0 );
 
    //! Copy constructor
    tnlString( const tnlString& str );
+
+   //! Convert number to a string
+   tnlString( int number );
 
    //! Destructor
    ~tnlString();
@@ -57,15 +62,30 @@ class tnlString
    /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
        @param sufix_cut_off says the same about sufix.
     */
-   void SetString( const char* c,
+   void setString( const char* c,
                    int prefix_cut_off = 0,
                    int sufix_cut_off = 0 );
+
+   //! Return pointer to data
+   const char* getString() const;
+
+   //! Return pointer to data
+   char* getString();
+
+   //! Operator for accesing particular chars of the string
+   const char& operator[]( int i ) const;
+
+   //! Operator for accesing particular chars of the string
+   char& operator[]( int i );
 
    //! Operator =
    tnlString& operator = ( const tnlString& str );
 
    //! Operator +=
    tnlString& operator += ( const char* str );
+
+   //! Operator +=
+   tnlString& operator += ( const char str );
 
    //! Operator +=
    tnlString& operator += ( const tnlString& str );
@@ -89,19 +109,30 @@ class tnlString
    operator bool () const;
 
    //! Return length of the string
-   int Length() const;
+   int getLength() const;
 
-   //! Return pointer to data
-   const char* Data() const;
+   // TODO: remove
+   //! Write to a binary file
+   bool save( ostream& file ) const;
+
+   // TODO: remove
+   //! Read from binary file
+   bool load( istream& file );
 
    //! Write to a binary file
-   bool Save( ostream& file ) const;
+   bool save( tnlFile& file ) const;
 
    //! Read from binary file
-   bool Load( istream& file );
+   bool load( tnlFile& file );
 
    //! Broadcast to other nodes in MPI cluster
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
+   //! Read one line from given stream.
+   bool getLine( istream& stream );
+
+   //! Parse the string into list of strings w.r.t. given separator.
+   int parse( tnlList< tnlString >& list, const char separator = ' ' ) const;
 
    friend ostream& operator << ( ostream& stream, const tnlString& str );
 };

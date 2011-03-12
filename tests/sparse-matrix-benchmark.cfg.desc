@@ -1,0 +1,8 @@
+group IO
+{
+   string input-file(!)         [Input binary file name.];
+   string input-mtx-file("")    [Input mtx file name.];
+   string log-file("")          [Log file name.];
+   real stop-time(3.0)          [How many seconds shell we iterate SpMV.];
+   integer verbose(1)           [Verbose mode.];
+},[Arguments describing input and output data.];

@@ -1,45 +1,163 @@
-2009-11-10  oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+2011-03-09  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
-	* config.h: Removed.
-	* config.log: Removed.
-	* config.status: Removed.
-	* libtool: Removed.
-	* Makefile: Removed.
-	* src/core/Makefile: Removed.
-	* src/debug/Makefile: Removed.
-	* src/debug/tnl-debug-test: Removed.
-	* src/diff/Makefile: Removed.
-	* src/dist/Makefile: Removed.
-	* src/Makefile: Removed.
-	* src/matrix/Makefile: Removed.
-	* stamp-h1: Removed.
-	* tnl-autotools: Removed.
-	* .cproject: New file.
-	* .project: New file.
-	* autom4te.cache/output.0: 
-	* autom4te.cache/output.1: 
-	* autom4te.cache/requests: 
-	* autom4te.cache/traces.0: 
-	* autom4te.cache/traces.1: 
 	* configure.ac: 
-	
-	* src/core/mCurve.h (Load): 
-	(Save): 
-	* src/core/mLongVector.h (mLongVector): 
-	(Load): 
-	(Save): 
-	* src/core/mObject.cpp (tnlObject::GetName): 
-	(tnlObject::Load): 
-	(tnlObject::SetName): 
-	(tnlObject::GetType): 
-	(tnlObject::tnlObject): 
-	(tnlObject::Save): 
-	* src/core/mObject.h (tnlObject): 
-	(tnlObject.~tnlObject): 
-	* src/diff/mExplicitSolver.h: 
-	* src/diff/mMPIMesh2D.cpp (Gather): 
-	(CreateGlobalGrid): 
-	(Scatter): 
-	(CreateMesh): 
-	* src/matrix/mBaseMatrix.h: 
-	* src/matrix/mMatrix.h: 
+	* src/core/tnlArray.h: 
+	* src/core/tnlCommunicator.h: 
+	* src/core/tnlCriticalSection.cpp: 
+	* src/core/tnlSharedMemory.h: 
+	* src/debug/Makefile.am: 
+	* src/matrix/tnlRgCSRMatrix.h (bindRgCSRMatrixCUDATexture):
+	 - fixing binding vector x to texture
+	* tests/convert-matrices: 
+	* tests/florida-matrix-market: 
+	* tests/Makefile.am: 
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorBroadcastLongVector): 
+	(testCommunicatorBroadcast): 
+	(testCommunicatorScatter): 
+	(testCommunicatorGather): 
+	(testCommunicatorSendReceive): 
+	(testCommunicatorSendReceiveOnLongVector): 
+	(testCommunicatorBarrier): 
+	(testCommunicatorReduction): 
+	* tests/unit-tests/Makefile.am: 
+
+2011-02-27  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/core/tnlCoordinates.h: New file.
+	* src/mesh/tnlDistributedGrid.h: New file.
+	* src/core/Makefile.am: 
+	* src/core/tnlCommunicator.h (getGoupSize<3>): 
+	(getGoupSize<2>): 
+	(getGoupSize<1>): 
+	* src/core/tnlCriticalSection.cpp (tnlCriticalSection::leave): 
+	(tnlCriticalSection::tnlCriticalSection): 
+	(tnlCriticalSection::enter): 
+	* src/core/tnlCriticalSection.h (tnlCriticalSection): 
+	* src/debug/tnlDebugStructure.cpp (tnlDebugStructure::Debug): 
+	* src/mesh/Makefile.am: 
+	* src/mesh/tnlGrid.h: 
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorBroadcastLongVector): 
+	(testCommunicatorBroadcast): 
+	(testCommunicatorScatter): 
+	(testCommunicatorGather): 
+	(suite): 
+	(testCommunicatorBarrier): 
+	(testCommunicatorReduction): 
+	* tests/unit-tests/tnl-unit-tests.cpp: 
+
+2011-02-23  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/core/tnlCommunicator.h: 
+	   - implementing method broadcast
+	* src/core/tnlSharedMemory.h: 
+	   - fixing bug with missing deletion of the shared memory
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorSendReceiveOnLongVector): 
+	* tests/unit-tests/core/tnlSharedMemoryTester.h (testSharedMemory): 
+	* tests/unit-tests/tnl-unit-tests.cpp: 
+
+2011-02-22  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* tests/unit-tests/core/tnlSharedMemoryTester.h: New file.
+	* src/core/tnlCommunicator.h:
+	 - rewriting non-vector send and receive using tnlSharedMemory 
+	* src/core/tnlSharedMemory.h: 
+	 - finishing implementation
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorSendReceiveOnLongVector): 
+	* tests/unit-tests/tnl-unit-tests.cpp (main): 
+
+2011-02-22  oberhuber  <oberhuber@yvonne>
+
+	* src/core/tnlSharedMemory.h: New file.
+	 - starting implementation of the shared memory 
+	* src/core/tnlCommunicator.h: 
+
+2011-02-20  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/core/tnlCriticalSection.cpp: New file.
+	* src/core/tnlCriticalSection.h: New file.
+	  - implementing tnlCriticalSection
+	* src/core/Makefile.am: 
+	* src/core/tnlCommunicator.h: 
+	  - rewriting the old code using tnlCriticalSection
+	  - implementing send and receive for vectors
+	* src/debug/tnlDebug.h: 
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorSendReceiveOnLongVector): 
+	(suite): 
+
+2011-02-19  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/core/tnlCommunicator.h: 
+	 - implementing methods start, send and receive
+	* tests/unit-tests/core/tnlCommunicatorTester.h (testCommunicatorInitiation): 
+	(testCommunicatorSendReceive): 
+	(suite): 
+
+2011-02-09  oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* configure.ac: 
+	* src/config/Makefile.in: 
+	* src/core/low-level/cuda-long-vector-kernels.h: 
+	 - changing number of threads per block for the CUDA reduction to get occupancy 1.0
+	* src/matrix/tnlCSRMatrix.h: 
+	* src/solver/tnlMersonSolver.h: 
+	 - optimizing the updating kernel to get occupancy 1.0 
+
+2011-02-06  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/core/debug.h: Removed.
+	* src/diff/debug.h: Removed.
+	* src/diff/mdiff-debug.h: Removed.
+	* tools/src/debug.h: Removed.
+	* src/config/Makefile.am: 
+	   - removing debug.h 
+	* src/config/tnlConfigDescriptionParser.cpp: 
+	* src/core/Makefile.am:
+	   - removing debug.h 
+	* src/core/tnlObject.cpp:
+	   - replacing debug.h with tnlDebug.h 
+	* src/core/tnlString.cpp:
+	   - replacing debug.h with tnlDebug.h 
+	* src/debug/Makefile.am:
+	   - removing debug.h 
+	* src/debug/tnlDebug.cpp (tnlInitDebug):
+	   - the flag debug is set to yes even if the parsing fails 
+	* src/debug/tnlDebug.h: 
+	   - adding prefix #TNLDBG# to all printouts
+	* src/diff/Makefile.am:
+	   - removing debug.h 
+	* tools/src/Makefile.am:
+	  - removing debug.h 
+
+2011-02-05  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+    * src/core/tnlComminucator.h New file.
+       - starting implementation of the CUDA/OpenCL/MPI communication framework
+	* src/matrix/tnlCSRMatrix.h: 
+	   - implementing method performSORIteration
+	* src/solver/tnlMatrixSolver.h: 
+	   - adding method getResidue (moved from the tnlSORSolver.h)
+	* src/solver/tnlSORSolver.h:
+	   - refactoring the solver to work with the new system o templates  
+
+
+
+December 2010 oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+* Explicit solvers now have device where the data are stored as a parameter too.
+* tnlGrid  is now a template with dimensions as parameter.
+  This avoids classes like tnlGrid1D, tnlGrid2D etc.
+  The device where the grid lives is also template parameter.
+* Implemented some basic operations lika Saxpy norms evaluation etc. on tnlLongVector.
+* Implemented tnlLongVector having the device where it lives as parameter.
+  At this moment it only supports CUDA. This should unified code for CPU and GPU
+  as much as possible.
+
+November 2010 oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+* Implemented tnlFile. It supports bzip2 compression transparently.
+  It makes all I/O operation simpler. It also allows to save data directly
+  from GPU devices - also for simplifing use of large numerical structures.
+
+July 2010 oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+* Implementing sparse matrices in CUDA - Coalesced CSR format. 
+
+December 2009 oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+* Starting implementation of the CUDA support.

@@ -5,10 +5,10 @@
    #include "tnlDebugParser.h"
    #include <iostream>
 
-   int yywrap();
+   //int yywrap();
 %}
-
-%option c++ outfile="tnlDebugScanner.cpp" header-file="tnlDebugScanner.h" prefix="tnlDebug" debug  
+ 
+%option c++ outfile="tnlDebugScanner.cpp" header-file="tnlDebugScanner.h" prefix="tnlDebug" debug
 
 
 BOOL_TRUE  "YES"|"Yes"|"yes"|"TRUE"|"True"|"true"
@@ -46,7 +46,5 @@ int tnlDebugFlexLexer::yywrap()
    return 1;
 }
 
-extern int yywrap();
-/*{
-   return 1;
-}*/
+//extern int yywrap();
+

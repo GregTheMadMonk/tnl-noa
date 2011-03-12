@@ -22,33 +22,41 @@
 #include <core/tnlString.h>
 #include "compare-objects.h"
 
-template< typename REAL >
-bool compareGrid2D( const tnlString& first_file_uncompressed,
-                    const tnlString& second_file_uncompressed,
-                    bool write_difference,
-                    int edge_skip,
-                    const REAL& space_step,
-                    REAL& l1_norm,
-                    REAL& l2_norm,
-                    REAL& max_norm,
-                    REAL& h )
+template< int Dimensions,
+          typename Real1,
+          typename Real2,
+          tnlDevice Device1,
+          tnlDevice Device2,
+          typename Index >
+bool compareGrids( const tnlString& firstFileName,
+                   const tnlString& secondFileName,
+                   bool write_difference,
+                   int edge_skip,
+                   const Real1& space_step,
+                   Real1& l1_norm,
+                   Real1& l2_norm,
+                   Real1& max_norm,
+                   Real1& h,
+                   bool verbose )
 {
-   dbgFunctionName( "", "compareGrid2D" );
-   dbgCout( "Processing file with tnlGrid2D< REAL > ..." );
-   dbgExpr( first_file_uncompressed );
-   dbgExpr( second_file_uncompressed );
-   tnlGrid2D< REAL > u1, u2, difference;
-   fstream file;
-   file. open( first_file_uncompressed. Data(), ios :: in | ios :: binary );
-   if( ! u1. Load( file ) )
+   dbgFunctionName( "", "compareGrids" );
+   dbgCout( "Processing file with tnlGrid ..." );
+   dbgExpr( firstFileName );
+   dbgExpr( secondFileName );
+   tnlGrid< Dimensions, Real1, Device1, Index > u1( "u1" ), difference( "difference" );
+   tnlGrid< Dimensions, Real2, Device2, Index > u2( "u2" );
+
+   tnlFile file;
+   file. open( firstFileName, tnlReadMode );
+   if( ! u1. load( file ) )
    {
       cerr << " unable to restore the data " << endl;
       file. close();
       return false;
    }
    file. close();
-   file. open( second_file_uncompressed. Data(), ios :: in | ios :: binary );
-   if( ! u2. Load( file ) )
+   file. open( secondFileName, tnlReadMode );
+   if( ! u2. load( file ) )
    {
       cerr << " unable to restore the data " << endl;
       file. close();
@@ -57,21 +65,31 @@ bool compareGrid2D( const tnlString& first_file_uncompressed,
    file. close();
    if( write_difference )
    {
-      difference. SetNewDimensions( u1 );
-      difference. SetNewDomain( u1 );
+      if( ! difference. setLike( u1 ) )
+      {
+         cerr << "I do not have enough memory to allocate the differencing grid." << endl;
+         return false;
+      }
+      difference. setValue( 0.0 );
    }
-   if( ! Compare( u1,
-            u2,
-            l1_norm,
-            l2_norm,
-            max_norm,
-            difference,
-            edge_skip) )
-   {
+   if( ! compareObjects( u1,
+                         u2,
+                         l1_norm,
+                         l2_norm,
+                         max_norm,
+                         difference,
+                         edge_skip) )
       return false;
+   if( write_difference )
+   {
+      tnlString fileName = firstFileName ;
+      fileName += tnlString( ".diff.tnl" );
+      if( verbose )
+         cout << endl << "Writing the difference grid to " << fileName << endl;
+      difference. save( fileName );
    }
-   if( space_step ) h = space_step;
-   else h = Min( u1. GetHx(), u1. GetHy() );
+   if( space_step != Real1( 0.0 ) ) h = space_step;
+   else h = Min( u1. getSpaceSteps(). x(), u1. getSpaceSteps(). y() );
    return true;
 }
 

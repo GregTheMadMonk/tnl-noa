@@ -1,24 +1,19 @@
 ## Process this file with automake to produce Makefile.in
 
 headers = \
-      tnlMatrix.h \
+     tnlMatrix.h \
+	  tnlRgCSRMatrix.h \
+	  tnlFastRgCSRMatrix.h \
+	  tnlFastRgCSRMatrixCUDA.h \
+	  tnlEllpackMatrix.h \
+	  tnlEllpackMatrixCUDA.h \
 	  tnlCSRMatrix.h \
+	  tnlFastCSRMatrix.h \
 	  tnlFullMatrix.h \
-	  tnlBaseMatrix.h \
-	  tnlMatrixSolver.h \
-	  tnlPETSCMatrix.h \
-	  tnlPETSCSolver.h \
-	  tnlSORSolver.h \
-	  tnlCGSolver.h \
-	  tnlBICGSolver.h \
-	  tnlBICGStabSolver.h \
-	  tnlGMRESSolver.h  \
-	  tnlPreconditioner.h \
-	  tnlILUPreconditioner.h \
-	  tnlPETSCPreconditioner.h
+	  tnlPETSCMatrix.h
 
-sources = tnlBaseMatrix.cpp 
-
+sources = tnlMatrix.cpp
+           
 libtnlmatrixincludedir = $(TNL_INCLUDE_DIR)/matrix
 libtnlmatrixinclude_HEADERS = $(headers)
 
@@ -46,7 +41,4 @@ if BUILD_MPI_DBG
    libtnlmatrix_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
    libtnlmatrix_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS) $(DBGLDFLAGS)
 endif
-
-
-EXTRA_DIST = Doxyfile
 

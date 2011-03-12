@@ -53,6 +53,12 @@ class tnlDebugStructure
    //! Destructor
    ~tnlDebugStructure();
 
+   //! This turns the debug mode on
+   /*!**
+    * This is usually done during the parsing of the debug file.
+    */
+   void setDebug( bool debug );
+
    //! Adds debug group to the list
    void AppendGroup( tnlDebugGroup* group );
 

@@ -18,6 +18,9 @@
 #ifndef mfuncsH
 #define mfuncsH
 
+#include <math.h>
+#include <stdlib.h>
+
 template< class T > T Min( const T& a, const T& b )
 {
    return a < b ? a : b;
@@ -37,9 +40,32 @@ template< class T > void Swap( T& a, T& b )
 
 template< class T > T Sign( const T& a )
 {
-   if( a < 0 ) return -1;
-   if( a == 0 ) return 0;
+   if( a < ( T ) 0 ) return -1;
+   if( a == ( T ) 0 ) return 0;
    return 1;
-}
+};
+
+template< class T >
+T tnlAbs( const T& n )
+{
+   if( n < ( T ) 0 )
+      return -n;
+   return n;
+};
+
+inline int tnlAbs( const int& n )
+{
+   return abs( n );
+};
+
+inline float tnlAbs( const float& f )
+{
+   return fabs( f );
+};
+
+inline double tnlAbs( const double& d )
+{
+   return fabs( d );
+};
 
 #endif

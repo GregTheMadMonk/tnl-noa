@@ -31,14 +31,14 @@ bool ReadInputFile( const char* file_name,
          cerr << "Sorry, I am unable to uncompress the file " << file_name << "." << endl;
          return false;
       }
-      else uncompressed_file_name. SetString( file_name, 0, 3 );
+      else uncompressed_file_name. setString( file_name, 0, 3 );
    if( strcmp( file_name + strln - 4, ".bz2" ) == 0  )
       if( ! UnCompressFile( file_name, "bz2" ) )
       {
          cerr << "Sorry, I am unable to uncompress the file " << file_name << "." << endl;
          return false;
       }
-      else uncompressed_file_name. SetString( file_name, 0, 4 );
+      else uncompressed_file_name. setString( file_name, 0, 4 );
        
    fstream file;
    file. open( uncompressed_file_name. Data(), ios :: in | ios :: binary );

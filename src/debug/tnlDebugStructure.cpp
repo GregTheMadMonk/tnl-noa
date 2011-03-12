@@ -24,21 +24,26 @@ const char* booltostr( bool b )
    if( b ) return "yes";
    return "no";
 }
-//--------------------------------------------------------------------------
+
 tnlDebugStructure :: tnlDebugStructure()
-   : debug( true ),
+   : debug( false ),
      interactive( true ),
      default_debug( true ),
      default_interactive( true )
 {
 }
-//--------------------------------------------------------------------------
+
 tnlDebugStructure :: ~tnlDebugStructure()
 {
    list< tnlDebugGroup* > :: iterator it = debug_groups. begin();
    while( it != debug_groups. end() ) delete * it ++;
 }
-//--------------------------------------------------------------------------
+
+void tnlDebugStructure :: setDebug( bool debug )
+{
+   this -> debug = debug;
+}
+
 void tnlDebugStructure :: AppendGroup( tnlDebugGroup* group )
 {
   //cout << "Adding group ... " << endl;
@@ -56,7 +61,7 @@ bool tnlDebugStructure :: Debug( const char* group_name,
 {
    if( ! debug ) return false;
 #ifdef DEBUG
-   cout << "Debug: " << group_name << " :: " << function_name << endl;
+   //cout << "Debug: " << group_name << " :: " << function_name << endl;
 #endif
    if( strlen( group_name ) != 0 )
    {
@@ -69,7 +74,7 @@ bool tnlDebugStructure :: Debug( const char* group_name,
          if( group -> group_name == group_name )
          {
 #ifdef DEBUG
-            cout << "Class " << group_name << " found." << endl;
+            //cout << "Class " << group_name << " found." << endl;
 #endif
             if( ! group -> debug ) return false;
             list< tnlDebugEntry* > :: iterator it2 = group -> debug_entries. begin();

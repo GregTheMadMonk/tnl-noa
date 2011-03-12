@@ -33,21 +33,45 @@ void tnlTimerCPU :: Reset()
 #ifdef HAVE_SYS_RESOURCE_H
    rusage init_usage;
    getrusage(  RUSAGE_SELF, &init_usage );
-   initial_time = init_usage. ru_utime. tv_sec;
+   initial_time = init_usage. ru_utime. tv_sec + 1.0e-6 * ( double ) init_usage. ru_utime. tv_usec;
 #else
    initial_time = 0;
 #endif
+   total_time = 0.0;
+   stop_state = false;
 }
-//--------------------------------------------------------------------------  
-int tnlTimerCPU :: GetTime( int root, MPI_Comm comm ) const
+//--------------------------------------------------------------------------
+void tnlTimerCPU :: Stop()
 {
 #ifdef HAVE_SYS_RESOURCE_H
-   rusage cur_usage;
-   getrusage( RUSAGE_SELF, &cur_usage );
-   int time = cur_usage. ru_utime. tv_sec - initial_time;
-   int total_time;
-   MPIReduce( time, total_time, 1, MPI_SUM, root, comm ); 
-   return total_time;
+   if( ! stop_state )
+   {
+      rusage init_usage;
+      getrusage(  RUSAGE_SELF, &init_usage );
+      total_time += init_usage. ru_utime. tv_sec + 1.0e-6 * ( double ) init_usage. ru_utime. tv_usec - initial_time;
+      stop_state = true;
+   }
+#endif
+}
+//--------------------------------------------------------------------------
+void tnlTimerCPU :: Continue()
+{
+#ifdef HAVE_SYS_RESOURCE_H
+	rusage init_usage;
+	getrusage(  RUSAGE_SELF, &init_usage );
+	initial_time = init_usage. ru_utime. tv_sec + 1.0e-6 * ( double ) init_usage. ru_utime. tv_usec;
+#endif
+  stop_state = false;
+}
+//--------------------------------------------------------------------------  
+double tnlTimerCPU :: GetTime( int root, MPI_Comm comm )
+{
+#ifdef HAVE_SYS_RESOURCE_H
+	Stop();
+	Continue();
+	double mpi_total_time;
+	MPIReduce( total_time, mpi_total_time, 1, MPI_SUM, root, comm );
+	return mpi_total_time;
 #else
    return -1;
 #endif

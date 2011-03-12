@@ -1,8 +1,8 @@
 /***************************************************************************
                           tnlCSRMatrix.h  -  description
                              -------------------
-    begin                : 2007/07/23
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Jul 10, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,744 +15,899 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlCSRMatrixH
-#define tnlCSRMatrixH
+#ifndef TNLCSRMATRIX_H_
+#define TNLCSRMATRIX_H_
 
-#include <ostream>
+#include <string>
+
+#include <iostream>
 #include <iomanip>
-#include <assert.h>
+#include <core/tnlLongVectorHost.h>
+#include <core/tnlAssert.h>
 #include <core/mfuncs.h>
-#include <matrix/tnlBaseMatrix.h>
+#include <matrix/tnlMatrix.h>
 #include <debug/tnlDebug.h>
 
-//! Structure for keeping single element of the CSR matrix
-/*! This structure stores the element value and its column index.
- */
-template< typename T > struct tnlCSRMatrixElement
-{
-   //! Element value
-   T value;
-   
-   //! Element column
-   int column;
+using namespace std;
 
-   //! Constructor
-   tnlCSRMatrixElement( const T& v, int col )
-   : value( v ), column( col ){};
-};
+template< typename Real, tnlDevice device, typename Index > class tnlRgCSRMatrix;
+template< typename Real, tnlDevice device, typename Index > class tnlFastCSRMatrix;
+template< typename Real, tnlDevice device, typename Index > class tnlEllpackMatrix;
 
-//! Structure for describing single row of the CSR matrix
-/*! This structure stores the index of the first and the
-    last elements in in the row. 'diagonal' points
-    to the diagonal element.
- */
-struct tnlCSRMatrixRowInfo
-{
-   //! Row begining
-   int first;
-
-   //! Last non-zero element of the row
-   int last;
-
-   //! Diagonal element
-   /*! It is set to -1 if there is no diagonal element at the row
-    */
-   int diagonal;
-};
-
-//! Matrix storing the non-zero elements in the CSR (Compressed Sparse Row) format 
+//! Matrix storing the non-zero elements in the CSR (Compressed Sparse Row) format
 /*! For details see. Yousef Saad, Iterative Methods for Sparse Linear Systems, p. 85
     at http://www-users.cs.umn.edu/~saad/ .
-    The elements are stored in the array data of the type tnlCSRMatrixElement. It is
-    equivalent of the AA and JA arrays in the book. The boundaries of the rows
-    (IA array in the book) are stored in the array rows_info.
-    Since the number of non-zero elements may increase during the computation, one
-    may allocate more memory for elements (it means larger array data). The
-    number of allocated elements is stored in allocated_elements. Therefore
-    we need to know what is the last relevant element (its index in data array)
-    which is stored in last_non_zero_element. One may also reallocate the data array
-    during the computation. It is useful in the case when we do not have a good estimate for
-    the non-zero elements number at the begining. The number of newly allocated elements is
-    stored in param allocation_segment_size.
+    The non-zero elements values are stored in the vector non_zero_elements. Their columns
+    are stored in the vector columns on the same position. We also need to know the positions
+    of the first non-zero element of the row in the non_zero_elements vector. It is stored
+    in the vector row_offsets.
     \author Tomas Oberhuber.
  */
-template< typename T > class tnlCSRMatrix : public tnlBaseMatrix< T >
-{
-   enum csr_operation { set, add }; 
 
+// TODO: add CUDA support
+template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
+{
    public:
 
    //! Basic constructor
-   tnlCSRMatrix()
-   : size( 0 ),
-     data( 0 ),
-     allocated_elements( 0 ),
-     allocation_segment_size( 0 ),
-     last_non_zero_element( 0 ),
-     rows_info( 0 )
-#ifdef CSR_MATRIX_TUNING
-     ,data_shifts( 0 ),
-     data_seeks( 0 ),
-     re_allocs( 0 )
-#endif
-   {
-      abort();
-   };
+   tnlCSRMatrix( const tnlString& name );
 
-   //! The main constructor
-   /*! \param _size                     Matrix dimension
-       \param _initial_allocation_size  Initial guess for non-zero elements number
-       \param _alloctaion_segment_size  If we need to allocate more new non-zero elements this says the amount if increase.
-       \param _inititial_row_size       It says how many elements we expect to be in each row. This s information can significialy speedup the insertion of the elements.
+   const tnlString& getMatrixClass() const;
+
+   tnlString getType() const;
+
+   //! Sets the number of row and columns.
+   bool setSize( Index new_size );
+
+   //! Allocate memory for the nonzero elements.
+   bool setNonzeroElements( Index elements );
+
+   Index getNonzeroElements() const;
+
+   //! This method explicitly computes the number of the non-zero elements.
+   Index checkNonzeroElements() const;
+
+   //! Insert one row to the matrix.
+   /*! If there is some data already in this @param row it will be rewritten.
+    *  @param elements says number of non-zero elements which will be inserted.
+    *  @param data is pointer to the elements values.
+    *  @param first_column is the column of the first non-zero element.
+    *  @param offsets is a pointer to field with offsets of the elements with
+    *  respect to the first one. All of them must sorted increasingly.
+    *  The elements which do not fit to the matrix are omitted.
     */
-   tnlCSRMatrix( const int _size,
-               const int _initial_allocation = 0,
-               const int _allocation_segment_size = 0,
-               const int _initial_row_size = 0 )
-   : size( _size ),
-     allocation_segment_size( _allocation_segment_size )
-   {
-      dbgFunctionName( "tnlCSRMatrix", "tnlCSRMatrix" );
-      
-      data = ( tnlCSRMatrixElement< T >* ) calloc( _initial_allocation + 1, sizeof( tnlCSRMatrixElement< T >) );
-      rows_info = ( tnlCSRMatrixRowInfo* ) calloc( size + 2, sizeof( tnlCSRMatrixRowInfo ) );
-      if( ! data || ! rows_info )
-      {
-         cerr << "Unable to allocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
-         abort();
-      }
+   bool insertRow( Index row,
+                   Index elements,
+                   Real* data,
+                   Index first_column,
+                   Index* offsets );
 
-      data ++;                  // protection against freeing this memory outside the class
-      rows_info ++;
+   bool setElement( Index row,
+                    Index colum,
+                    const Real& value );
 
-      allocated_elements = _initial_allocation;
-      
-      if( _initial_row_size < 0 )
-      {
-         cerr << "Initial row size can not be negative: " << __FILE__ << " at line " << __LINE__ << "." << endl;
-         abort();
-      }
-      
-      dbgCout( "Setting rows size to " << _initial_row_size << "( and pointers to diagonal to -1 )" );
-      assert( size * _initial_row_size <= allocated_elements );
-      int i;
-      for( i = 0; i <= size; i ++ )
-      {
-         dbgCout( "Setting row " << i << " first and last to " << i * _initial_row_size );
-         rows_info[ i ]. first = rows_info[ i ]. last = i * _initial_row_size;
-         rows_info[ i ]. diagonal = -1;
-      }
-      assert( rows_info[ size ]. last <= allocated_elements );
+   bool addToElement( Index row,
+                      Index column,
+                      const Real& value );
 
-      if( ! allocation_segment_size )
-         cerr << "WARNING: Segment size for allocating more memory is set to 0." << endl;
+   Real getElement( Index row,
+                    Index column ) const;
 
-      last_non_zero_element = 0;
-   };
+   Real rowProduct( Index row,
+                    const tnlLongVector< Real, Device, Index >& vector ) const;
 
-   tnlString GetType() const
-   {
-      T t;
-      return tnlString( "tnlCSRMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
-   };
+   void vectorProduct( const tnlLongVector< Real, Device, Index >& x,
+                       tnlLongVector< Real, Device, Index >& b ) const;
 
-   const tnlString& GetMatrixClass() const
-   {
-      return tnlMatrixClass :: main;
-   };
+   bool performSORIteration( const Real& omega,
+                             const tnlLongVector< Real, Device, Index >& b,
+                             tnlLongVector< Real, Device, Index >& x,
+                             Index firstRow,
+                             Index lastRow ) const;
 
-   //! Direct data acces for constant instances
-   /*! This is to make some matrix solver faster. 
-       \param _data     Returns the data array (AA and JA arrays).
-       \param _rows_info Returns the row_info array (IA array).
-   */ 
-   void Data( const tnlCSRMatrixElement< T >*& _data, 
-              const tnlCSRMatrixRowInfo*& _rows_info ) const
-   {
-      _data = data;
-      _rows_info = rows_info;
-   };
+   Real getRowL1Norm( Index row ) const;
 
-   //! Direct data acces
-   /*! This is to make some matrix solver faster. 
-       \param _data     returns the data array (AA and JA arrays).
-       \param _rows_info returns the row_info array (IA array).
-   */ 
-   void Data( tnlCSRMatrixElement< T >*& _data, 
-              const tnlCSRMatrixRowInfo*& _rows_info )
-   {
-      _data = data;
-      _rows_info = rows_info;
-   };
-   
-   //! Size getter
-   /*! \return the dimension of the matrix
-    */
-   int GetSize() const
-   {
-      return size;
-   };
-   
-   //! Get element at given row and column.
-   /** \param row element row.
-    *  \param column element column.
-    *  \return value of the element.
-    */
-   T GetElement( int row, int column ) const
-   {
-      dbgFunctionName( "tnlCSRMatrix", "operator()" );
-      dbgCout( "row = " << row << " col = " << column );
+   void multiplyRow( Index row, const Real& value );
 
-      assert( row < size );
-      int row_beg = -1;
-      if( column >= row ) row_beg = rows_info[ row ]. diagonal; //diagonal might be also -1
-      if( row_beg == -1 ) row_beg = rows_info[ row ]. first;
-      int row_end = rows_info[ row ]. last;
-      assert( row_end <= allocated_elements );
-      
-      dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
+   bool read( istream& str, int verbose = 0 );
 
-      int i = row_beg;
-      while( i < row_end && data[ i ]. column < column ) i ++;
-#ifdef CSR_MATRIX_TUNING
-      const_cast< tnlCSRMatrix* >( this ) -> data_seeks += i - row_beg;
-#endif
-      dbgCout( " i = " << i << " i-th column = " << data[ i ]. column << " value = " << data[ i ]. value );
-      if( i < row_end && data[ i ]. column == column ) 
-         return data[ i ]. value;
-      return 0.0;
-   };
+   //! Method for saving the matrix to a file as a binary data
+   bool save( tnlFile& file ) const;
 
-   //! Set element at given position
-   /*! \return false if some allocation failed.
-    */
-   bool SetElement( const int row,
-                    const int col,
-                    const T& v )
-   {
-      dbgFunctionName( "tnlCSRMatrix", "SetElement" );
-      dbgCout( "row = " << row << " col = " << col << " value = " << v );
-   
-      return ChangeElement( row, col, v, set );  
-   };
-   
-   bool AddToElement( int row, int column, const T& v )
-   {
-      if( v == 0.0 ) return true;
-      return ChangeElement( row, column, v, add );
-   };
-   
-   //! Set complete row stored as a an array of size equal to the matrix size
-   /** THIS METHOD WAS NOT PROPERLY TESTED YET !!!
-    *  @param non_zero_elems says how many non-zero elements are there in the array
-    */
-   bool SetRow( const int row,
-                const T* row_data,
-                const int non_zero_elems,
-                const int first_non_zero,
-                const int last_non_zero )
-   {
-      dbgFunctionName( "tnlCSRMatrix", "SetSparseRow" );
+   //! Method for restoring the matrix from a file
+   bool load( tnlFile& file );
 
-      int row_beg = rows_info[ row ]. first;
-      int row_end = rows_info[ row ]. last;
-      const int current_row_size = row_beg - row_end;
+   bool save( const tnlString& fileName ) const;
 
-      dbgExpr( row_beg );
-      dbgExpr( row_end );
-      dbgExpr( current_row_size );
+   bool load( const tnlString& fileName );
 
-      if( current_row_size < non_zero_elems )
-      {
-         dbgCout( "Shifting the rest of the data" );
-         int shift = non_zero_elems - current_row_size;
-         dbgExpr( shift );
-         dbgExpr( allocated_elements );
-         dbgExpr( rows_info[ size ]. last );
-         dbgExpr( size );
-         int new_alloc = shift - ( allocated_elements - rows_info[ size ]. last );
-         if( new_alloc > 0 && ! AllocateNewMemory( new_alloc ) ) return false;
-         int j = last_non_zero_element - 1;
-         while( j >= row_end ) data[ j + shift ] = data[ j -- ];
-         last_non_zero_element += shift;
-         j = row + 1;
-         while( j <= size )
-         {
-            rows_info[ j ]. first += shift;
-            if( rows_info[ j ]. diagonal != -1 ) rows_info[ j ]. diagonal += shift;
-            rows_info[ j ++ ]. last += shift;
-         }
-      }
-      dbgCout( "Setting row end to " << row_beg + non_zero_elems );
-      rows_info[ row ]. last = row_beg + non_zero_elems;
-      dbgCout( "Reseting diagonal entry pionter." );
-      rows_info[ row ]. diagonal = -1;
-      int i( 0 ), j( first_non_zero ), row_pos( row_beg );
-      while( i < non_zero_elems && j <= last_non_zero )
-      {
-         if( row_data[ j ] == 0 )
-         {
-            j ++;
-            continue;
-         }
-         data[ row_pos ]. value = row_data[ j ];
-         data[ row_pos ]. column = j;
-         //dbgCout( "Setting row " << row << " col " << row_pos << " to " << row_data[ j ] );
-         if( j == row )
-         {
-            rows_info[ row ]. diagonal = row_pos;
-            //dbgCout( "Seting diagonal entry pointer to " << row_pos );
-         }
-         i ++;
-         row_pos ++;
-         j ++;
-      }
-   };
+   //! Prints out the matrix structure
+   void printOut( ostream& str,
+		            const Index lines = 0 ) const;
 
-   //! Reset matrix
-   /*! \param new_size New matrix dimension.
-       \param new_data_size New data array size.
-       \param new_segment_size New segment size.
-       \return False if some allocation failed.
-    */
-   bool Reset( int new_size = 0,
-               int new_initial_allocation = 0,
-               int new_allocation_segment_size = 0,
-               int new_initial_row_size = 0 )
-   {
-      dbgFunctionName( "tnlCSRMatrix", "Reset" );
-      if( new_size && size != new_size )
-      {
-         rows_info = ( tnlCSRMatrixRowInfo* ) realloc( --rows_info, ( new_size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) );
-         if( ! rows_info )
-         {
-            cerr << "Unable to reallocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
-            abort();
-         }
-         rows_info ++;
-         size = new_size;
-      }
-
-      if( new_initial_allocation && allocated_elements != new_initial_allocation )
-      {
-         data = ( tnlCSRMatrixElement< T >* ) realloc( --data, ( new_initial_allocation + 1 ) * sizeof( tnlCSRMatrixElement< T > ) );
-         if( ! data )
-         {
-            cerr << "Unable to reallocate new matrix: " << __FILE__ << " at line " << __LINE__ << "." << endl;
-            abort();
-         }
-         data ++;
-         allocated_elements = new_initial_allocation;
-      }
-
-      int i;
-      if( new_initial_row_size )
-      {
-         dbgCout( "Setting rows size to " << new_initial_row_size );
-         assert( size * new_initial_row_size <= allocated_elements );
-         for( i = 0; i <= size; i ++ )
-         {
-            dbgCout( "Setting row " << i << " beginning to " << i * new_initial_row_size );
-            rows_info[ i ]. first = rows_info[ i ]. last = i * new_initial_row_size;
-            rows_info[ i ]. diagonal = -1;
-         }
-      }
-      else
-      {
-         for( i = 0; i <= size; i ++ )
-         {
-            dbgCout( "Setting row " << i << " beginning to " << i * new_initial_row_size );
-            rows_info[ i ]. last = rows_info[ i ]. first;
-            rows_info[ i ]. diagonal = -1;
-         }
-      }
-
-      if( new_allocation_segment_size )
-         allocation_segment_size = new_allocation_segment_size;
-      last_non_zero_element = 0;
-      return true;
-   };  
-
-   //! Clone matrix
-   bool Clone( const tnlCSRMatrix& m )
-   {
-      size = m. GetSize();
-      rows_info = ( tnlCSRMatrixRowInfo* ) realloc( --rows_info, ( size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) ); 
-      if( ! rows_info ) return false;
-      rows_info ++;
-      
-      if( allocated_elements < m. allocated_elements )
-      {
-         allocated_elements = m. allocated_elements;
-         data = ( tnlCSRMatrixElement< T >* ) realloc( --data, allocated_elements * sizeof( tnlCSRMatrixElement< T > ) );
-         if( ! data ) return false;
-         data ++;
-      }
-      memcpy( rows_info, m. rows_info, ( size + 1 ) * sizeof( tnlCSRMatrixRowInfo ) );
-      last_non_zero_element = m. last_non_zero_element;
-      allocation_segment_size = m. allocation_segment_size;
-      int l = Min( last_non_zero_element + 1, allocated_elements );
-      int i;
-      for( i = 0; i < l; i ++ ) data[ i ] = m. data[ i ];
-      return true;
-   };
-
-   //! Row product
-   /*! Compute product of given vector with given row
-    */
-   T RowProduct( const int row, const T* vec ) const
-   {
-      dbgFunctionName( "tnlCSRMatrix", "RowProduct" );
-      int row_beg = rows_info[ row ]. first;
-      int row_end = rows_info[ row ]. last;
-      dbgCout( "row_beg = " << row_beg << " row_end = " << row_end );
-      
-      int col;
-      T res( 0.0 );
-      int i = row_beg;
-      while( i < row_end )
-      {
-         assert( data[ i ]. column >= 0 && data[ i ]. column < size );
-         res += data[ i ]. value * vec[ data[ i ++ ]. column ];
-      }
-      return res;
-   };
-
-   //! Vector product
-   void VectorProduct( const T* vec, T* result ) const
-   {
-      dbgFunctionName( "tnlCSRMatrix", "VectorProduct" );
-      int row, i;
-      T res;
-#ifdef HAVE_OPENMP
-#pragma omp parallel for private( row, i )
-#endif
-      for( row = 0; row < size; row ++ )
-      {
-         const int row_beg = rows_info[ row ]. first;
-         const int row_end = rows_info[ row ]. last;
-         dbgCout( "row = " << row << " row_beg = " << row_beg << " row_end = " << row_end );
-         
-         res = 0.0;
-         i = row_beg;
-         while( i < row_end )
-            res += data[ i ]. value * vec[ data[ i ++ ]. column ];
-         
-         result[ row ] = res;
-      }
-      dbgCout( "VectorProduct done." );
-   };
-   
-   //! Add matrix
-   void MatrixAdd( const tnlCSRMatrix& m2 );
-
-   //! Multiply row
-   void MultiplyRow( const int row, const T& c )
-   {
-      const int row_beg = rows_info[ row ]. first;
-      const int row_end = rows_info[ row ]. last;
-      int i;
-      for( i = row_beg; i < row_end; i ++ )
-         data[ i ]. value *= c;
-   };
-
-   //! Get row L1 norm
-   T GetRowL1Norm( const int row ) const
-   {
-      const int row_beg = rows_info[ row ]. first;
-      const int row_end = rows_info[ row ]. last;
-      T res( 0.0 );
-      int i;
-      for( i = row_beg; i < row_end; i ++ )
-         res += fabs( data[ i ]. value );
-      return res;
-   };
-
-   //! Print matrix
-   /*! This is for the debuging purpose. For nicer output one should use the operator <<.
-    */
-   void Print( ostream& str )
-   {
-      str << "Data array:" << endl;
-      int i = 0;
-      while( i < last_non_zero_element )
-         str << i << "  Col: " << data[ i ]. column << " Val: " << data[ i ++ ]. value << endl;
-      str << "Rows info:" << endl;
-      i = 0;
-      while( i <= size )
-         str << " Row " << i << " First " << rows_info[ i ]. first <<
-                " Diagonal " << rows_info[ i ]. diagonal <<
-                " Last " << rows_info[ i ++ ]. last << endl;
-      str << " Last non-zero element " << last_non_zero_element <<
-             " Allocated elements " << allocated_elements << endl;
-   };
-
-#ifdef CSR_MATRIX_TUNING
-   void PrintStatistics()
-   {
-      cout << "Data seeks: " << data_seeks << endl 
-           << "Data shifts: " << data_shifts << endl
-           << "Reallocations: " << re_allocs << endl
-           << "Allocated elements; " << allocated_elements << endl;
-   }
-   
-   void ResetStatistics()
-   {
-      data_seeks = data_shifts = re_allocs = 0;
-   }
-#endif
-
-   //! Destructor
-   ~tnlCSRMatrix()
-   {
-      if( data ) delete[] --data;
-      if( rows_info ) delete[] -- rows_info;
-   };
+   //! This method tells the minimum, the maximum and the average number of non-zero elements in row.
+   void getRowStatistics( Index& min_row_length,
+                          Index& max_row_length,
+                          Index& average_row_length ) const;
 
    protected:
 
-   //! Allocates new memory for the data array
-   /*! If 'allocation_segment_size' is set, the number
-       of the newly allocated elements is equal to the smallest multiple of
-       'allocation_segment_size' larger then 'amount' - otherwise the number
-       of new allocated elements is equal to the 'amount'.
-       \param amount positive number of new elements that are requested.
-       \return false if the allocation failed otherwise true.
-   */
-   bool AllocateNewMemory( int amount )
-   {
-      assert( amount > 0 );
-      dbgFunctionName( "tnlCSRMatrix", "AllocateNewMemory" );
-#ifdef CSR_MATRIX_TUNING
-      re_allocs ++;
-#endif
-      dbgCout( "Data array is full! Need to reallocate a new one." );
-      dbgCout( "Old data array pointer is " << data );
-      if( ! allocation_segment_size )
-         allocated_elements += amount;
-      else
-         allocated_elements += 
-            ( ( amount / allocation_segment_size ) + 1 ) * allocation_segment_size;
-      data = ( tnlCSRMatrixElement< T >* ) realloc( --data, ( allocated_elements + 1 ) * sizeof( tnlCSRMatrixElement< T > ) );
-      if( ! data ) return false;
-      data ++;
-      return true;
-   };
-   
-   //! Change (set or add to) element at given position.
-   /**
-    * \param v value to be set or add to given element.
-    * \param row element row.
-    * \param col element column
-    * \param operation can be set or add.
-    * \return false if some allocation failed.
+   enum elementOperation { set_element, add_to_element };
+
+   Index getRowLength( Index row ) const;
+
+   //! This method creates free space for inserting new elements.
+   /*!
+    * It shifts data in nonzero_elements and columns. It also
+    * fixes new row_offsets and last_nonzero_elements. The last_non_zero_element
+    * is increased by shift and all row_offsets larger or equal to the position as well.
+    * It returns false if there is not enough allocated memory for the shift.
     */
-   bool ChangeElement( const int row,
-                       const int col,
-                       const T& v,
-                       csr_operation operation )
-   {
-      dbgFunctionName( "tnlCSRMatrix", "ChangeElement" );
-      dbgCout( "row = " << row << " col = " << col << " value = " << v );
-      //cout <<  "row = " << row << " col = " << col << " value = " << v << endl;
-     
-      // check whether the input parameters are correct
-      if( row < 0 || col < 0 )
-      {
-         cerr << "Negative row( " << row << " ) or column ( " << col << 
-                 " ) in tnlCSRMatrix :: Set calling." << endl;
-         abort();
-      }
-      if( row >= size )
-      {
-         cerr << "Parametr row exceeds number of matrix rows in tnlCSRMatrix :: Set call." << endl;
-         abort();
-      }
+   bool shiftElements( Index position,
+                       Index row,
+                       Index shift );
 
-      dbgCout( "Check if given element is already set" );
-      int _row_beg = -1;
-      if( col >= row ) _row_beg = rows_info[ row ]. diagonal; //diagonal might be also -1
-      if( _row_beg == -1 ) _row_beg = rows_info[ row ]. first;
-      const int row_beg = _row_beg;
-      const int row_end = rows_info[ row ]. last;
-      assert( row_end <= allocated_elements );
-      int i = row_beg;
-      while( i < row_end && data[ i ]. column < col ) i ++;
-#ifdef CSR_MATRIX_TUNING
-         data_seeks += i - row_beg;
-#endif
-
-      if( i < row_end && data[ i ]. column == col ) // given element was found 
-      {
-         dbgCout( "Element " << row << ", " << col << " was found." );
-         assert( i < allocated_elements );
-         if( operation == set )
-            data[ i ]. value = v;
-         else data[ i ]. value += v;
-         return true; 
-      }
-      assert( GetElement( row, col ) == 0.0 );
-      // given element does not exist 
-      // if the value to be set is zero we will do nothing
-      if( v == 0.0 ) return true;
-
-      // otherwise we must set the new element
-      dbgCout( "Element was not set yet" );
-      //cout <<  "Element was not set yet" << endl;
-      const int next_row_beg = rows_info[ row + 1 ]. first;
-      if( row_end < next_row_beg ) // we can insert the element in this row without shifting the rest
-      {
-         dbgCout( "Free space in the row " << row << " found - inserting new element." );
-         //cout <<  "Free space in the row " << row << " found - inserting new element." << endl;
-         dbgExpr( row_end );
-         int j = row_end;
-#ifdef CSR_MATRIX_TUNING
-         data_shifts += j - i;
-#endif
-         while( j > i )
-         {
-            data[ j ] = data[ j - 1 ];
-            j --;
-         }
-         data[ i ]. column = col;
-         data[ i ]. value = v;
-         if( col < row && rows_info[ row ]. diagonal != -1 ) rows_info[ row ]. diagonal ++;
-         if( row == col )
-         {
-            dbgCout( "Setting pointer to diagonal element on row " << row << " to " << i );
-            rows_info[ row ]. diagonal = i;
-         }
-         if( last_non_zero_element <= row_end )
-            last_non_zero_element = row_end + 1;
-         rows_info[ row ]. last ++;
-         dbgExpr( last_non_zero_element );
-         return true; 
-      }
-
-      dbgExpr( "No free space in row " << row );
-      // there is no space for adding the new element into the row
-      // we must shift all data behind up to the last-non-zero-element
-
-      // first check if there is enough allocated memory for shifting
-      
-      if( rows_info[ size ]. last + 1 >= allocated_elements &&
-         ! AllocateNewMemory( 1 ) ) return false;
-
-      int j = last_non_zero_element ++;
-#ifdef CSR_MATRIX_TUNING
-         data_shifts += j - i;
-#endif
-      while( j > i )
-      {
-         data[ j ] = data[ j - 1 ]; // data[ j ] = data[ -- j ]; really does not work on gcc 4.1.2
-         j --;
-      }
-      data[ i ]. column = col;
-      data[ i ]. value = v;
-      if( col < row && rows_info[ row ]. diagonal != -1 ) rows_info[ row ]. diagonal ++;
-      if( row == col )
-      {
-         dbgCout( "Setting pointer to diagonal element on row " << row << " to " << i );
-         rows_info[ row ]. diagonal = i;
-      }
-      rows_info[ row ]. last ++;
-      j = row + 1;
-#ifdef CSR_MATRIX_TUNING
-         data_shifts += size - j + 1;
-#endif
-      while( j <= size )
-      {
-         rows_info[ j ]. first ++;
-         if( rows_info[ j ]. diagonal != -1 ) rows_info[ j ]. diagonal ++;
-         rows_info[ j ]. last ++;
-         
-         assert( rows_info[ j ]. diagonal == -1 ||
-          ( rows_info[ j ]. first <= rows_info[ j ]. diagonal &&
-            rows_info[ j ]. diagonal < rows_info[ j ]. last ) );
-         assert( rows_info[ j ]. diagonal == - 1 ||
-          ( data[ rows_info[ j ]. diagonal ]. column == j ) );
-         j ++;
-      }
-      return true;
-   };
-
-   //! Shifts data from the given position (@param from) by @param shift elements.
-   /*! It also manages rof boundaries, diagonal entry pointers and it allocates 
-       new memory if it is neccesary.
+   //! Returns the position of the element in the vector of the non-zero elements.
+   /*!
+    * If there is no such element the returned value points to the next element with
+    * higher column index.
     */
-   //m_bool ShiftData( m_int from, m_int shift );
-   
-   //! Dimension
-   int size;
-   
-   //! Array with matrix elements (AA and JA arrays)
-   tnlCSRMatrixElement< T >* data;
+   Index getElementPosition( Index row,
+                             Index colum ) const;
 
-   //! Number of allocated elements
-   /*! It says how many elements are there in @param data array.
-       If we need more additional elements are going to be allocated
-       @see allocation_segement_size, @see AllocateNewMemory
+
+   //! This is auxiliary functions for setting an element or adding a number to an element.
+   /*!
+    * It works in both cases when the element already exists or not. If not it creates a new one.
+    * If the @param operation equals add_to_element the value is added.
     */
-   int allocated_elements;
-   
-   //! Segment size
-   /*! It says by what amount the @param data array is goind to be
-       increased during AllocateNewMemory call.
+   bool setElementAux( Index row,
+                       Index column,
+                       const Real& value,
+                       const elementOperation operation );
+
+   //! Insert element into preallocated row.
+   /*
+    * The row offsets must be set properly. This method does not check anything.
+    * So one must ne sure about what he is doing!
     */
-   int allocation_segment_size;
-  
-   //! This points right behind the last non-zero element in the @param data array
-   /*! It is important for shifting data in @param data array when a new element
-       is inserted
-    */
-   int last_non_zero_element;
+   void insertToAllocatedRow( Index row,
+                              Index column,
+                              const Real& value,
+                              Index insertedElements = 0 );
 
-   //! Field of row info structures - one for each row
-   /*! To make algortithms easier we have info even for the row number size + 1.
-    */
-   tnlCSRMatrixRowInfo* rows_info;
+   tnlLongVector< Real, Device, Index > nonzero_elements;
 
+   tnlLongVector< Index, Device, Index > columns;
 
-#ifdef CSR_MATRIX_TUNING
-   int data_shifts;
-   int data_seeks;
-   int re_allocs;
+   tnlLongVector< Index, Device, Index > row_offsets;
 
-   public:
+   //! The last non-zero element is at the position last_non_zero_element - 1
+   Index last_nonzero_element;
 
-   void PrintStatistics();
-   void ResetStatistics();
-#endif
-
-#ifdef DEBUG
-   private:
-   void PrintDataArray() const
-   {
-      int i;
-      for( i = 0; i < last_non_zero_element; i ++ )
-         if( data[ i ]. value != 0.0 )
-            cout << i << " col. " << data[ i ]. column << " val. " << data[ i ]. value << endl;
-   };
-#endif
-
+   friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
+   friend class tnlFastCSRMatrix< Real, tnlHost, Index >;
+   friend class tnlEllpackMatrix< Real, tnlHost, Index >;
 };
 
-template< typename T > ostream& operator << ( ostream& o_str, const tnlCSRMatrix< T >& A )
+template< typename Real, tnlDevice Device, typename Index >
+tnlCSRMatrix< Real, Device, Index > :: tnlCSRMatrix( const tnlString& name )
+   : tnlMatrix< Real, Device, Index >( name ),
+     nonzero_elements( "tnlCSRMatrix< Real, Device, Index > :: nonzero-elements" ),
+     columns( "tnlCSRMatrix< Real, Device, Index > :: columns" ),
+     row_offsets( "tnlCSRMatrix< Real, Device, Index > :: row_offsets" ),
+     last_nonzero_element( 0 )
 {
-   int size = A. GetSize();
-   int i, j;
-   o_str << endl;
-   for( i = 0; i < size; i ++ )
-   {
-      for( j = 0; j < size; j ++ )
-      {
-         const T& v = A. GetElement( i, j );
-         if( v == 0.0 ) o_str << setw( 12 ) << ".";
-         else o_str << setprecision( 6 ) << setw( 12 ) << v;
-      }
-      o_str << endl;
-   }
-   return o_str;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+const tnlString& tnlCSRMatrix< Real, Device, Index > :: getMatrixClass() const
+{
+   return tnlMatrixClass :: main;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+tnlString tnlCSRMatrix< Real, Device, Index > :: getType() const
+{
+   return tnlString( "tnlCSRMatrix< ") +
+          tnlString( GetParameterType( Real( 0.0 ) ) ) +
+          tnlString( ", " ) +
+          getDeviceType( Device ) +
+          tnlString( " >" );
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
+{
+   this -> size = new_size;
+   if( ! row_offsets. setSize( this -> size + 1 ) )
+      return false;
+   row_offsets. setValue( 0 );
+   last_nonzero_element = 0;
+   return true;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
+{
+   if( ! nonzero_elements. setSize( elements ) )
+      return false;
+   nonzero_elements. setValue( 0 );
+   if( ! columns. setSize( elements ) )
+      return false;
+   columns. setValue( -1 );
+   return true;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
+{
+	return nonzero_elements. getSize();
 }
 
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlCSRMatrix< Real, Device, Index > :: checkNonzeroElements() const
+{
+	Index elements( 0 );
+	for( Index i = 0; i < nonzero_elements. getSize(); i ++ )
+		elements += ( nonzero_elements[ i ] != 0 );
+	return elements;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlCSRMatrix< Real, Device, Index > :: getRowLength( Index row ) const
+{
+	tnlAssert( row >= 0 && row < this -> getSize(), );
+	return row_offsets[ row + 1 ] - row_offsets[ row ];
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
+                                                     Index row,
+                                                     Index shift )
+{
+   dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "shiftElements" );
+   dbgCout( "Shifting non-zero elements by " << shift << " elements." );
+   tnlAssert( position <= last_nonzero_element,
+              cerr << "Starting position for the shift in tnlCSRMatrix is behind the last element." );
+   if( last_nonzero_element + shift > nonzero_elements. getSize() )
+   {
+      cerr << "Not enough allocated memory to shift the data in tnlCSRMatrix." << endl;
+      return false;
+   }
+   if( position + shift < 0 )
+   {
+      cerr << "Attempt to shift to negative values." << endl;
+      return false;
+   }
+   if( shift == 0 )
+      return true;
+
+   Real* els = nonzero_elements. getVector();
+   Index* cls = columns. getVector();
+   if( shift > 0 )
+   {
+      for( Index i = last_nonzero_element - 1; i >= position; i -- )
+      {
+         els[ i + shift ] = els[ i ];
+         cls[ i + shift ] = cls[ i ];
+      }
+      for( Index i = position; i < position + shift; i++ )
+      {
+         els[ i ] = 0.0;
+         cls[ i ] = -1;
+      }
+   }
+   else // if( shift > 0 ) - note shift mus be < 0 now
+   {
+      for( Index i = position; i < last_nonzero_element; i ++ )
+      {
+         els[ i + shift ] = els[ i ];
+         cls[ i + shift ] = cls[ i ];
+      }
+   }
+   last_nonzero_element += shift;
+   for( Index i = row + 1; i <= this -> size; i ++ )
+      if( row_offsets[ i ] >= position )
+      {
+         row_offsets[ i ] += shift;
+         if( i > 1 && row_offsets[ i ] < row_offsets[ i -1 ] )
+         {
+            cerr << "The shift in the tnlCSRMatrix lead to the row pointer crossing for rows "
+                 << i - 1 << " and " << i << "." << endl;
+            return false;
+         }
+      }
+   return true;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
+                                                       Index elements,
+                                                       Real* data,
+                                                       Index first_column,
+                                                       Index* offsets )
+{
+   dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "insertRow" )
+   tnlAssert( row >=0 && row < this -> getSize(),
+              cerr << "The row " << row << " is out of the matrix." );
+   tnlAssert( elements > 0,
+              cerr << "The number of elements to insert is negative:" << elements << "." );
+   tnlAssert( data != NULL,
+              cerr << "Null pointer passed as data for the inserted row." );
+   tnlAssert( first_column >=0 &&  first_column < this -> getSize(),
+              cerr << "first_column is out of the matrix" );
+   tnlAssert( offsets != NULL,
+              cerr << "Null pointer passed as data for the column offsets." );
+
+   /*
+    *  Cut off elements which do not fit into the matrix.
+    *  We first cut off those which have column smaller then zero.
+    */
+   while( elements > 0 && first_column + offsets[ 0 ] < 0 )
+   {
+	   elements --;
+	   offsets ++;
+	   data ++;
+	   dbgCout( "Decreasing elements to " << elements << " increasing offsets to element " << offsets[ 0 ] << "." );
+   }
+   /*
+    * And now those which have column larger then size - 1
+    */
+   while( elements > 0 && first_column + offsets[ elements - 1 ] >= this -> size )
+   {
+	   elements --;
+	   dbgCout( "Decreasing elements to " << elements << "." );
+   }
+
+   /*
+    * Now we shift the data behind this row if it is necessary.
+    */
+   Index first_in_row = row_offsets[ row ];
+   Index current_row_elements = row_offsets[ row + 1 ] - first_in_row;
+   if( ! shiftElements( first_in_row, row, elements - current_row_elements ) )
+      return false;
+
+   /*
+    * And now we insert the data.
+    */
+   Real* els = nonzero_elements. getVector();
+   Index* cls = columns. getVector();
+   for( Index i = 0; i < elements; i ++ )
+   {
+	  Index column = first_column + offsets[ i ];
+     els[ first_in_row + i ] = data[ i ];
+     cls[ first_in_row + i ] = column;
+     if( i > 0 && offsets[ i - 1 ] >= offsets[ i ] )
+     {
+        cerr << "The offsets of the elements inserted to the tnlCSRMatrix are not sorted monotonicaly increasingly." << endl;
+        return false;
+     }
+   }
+   return true;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlCSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
+                                                                  Index column ) const
+{
+   tnlAssert( 0 <= row && row < this -> getSize(),
+              cerr << "The row is outside the matrix." );
+   tnlAssert( 0 <= column && column < this -> getSize(),
+              cerr << "The column is outside the matrix." );
+   Index first_in_row = row_offsets[ row ];
+   Index last_in_row = row_offsets[ row + 1 ];
+   const Index* cols = columns. getVector();
+   Index i = first_in_row;
+   while( i < last_in_row && cols[ i ] < column ) i++;
+   return i;
+}
+
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setElementAux( Index row,
+                                                            Index column,
+                                                            const Real& value,
+                                                            const elementOperation operation )
+{
+   dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "setElementAux" );
+   Real* els = nonzero_elements. getVector();
+   Index* cols = columns. getVector();
+   Index i = getElementPosition( row, column );
+   dbgCout( "Element position is " << i );
+   if( cols[ i ] == column && i < row_offsets[ row + 1 ] )
+      els[ i ] = value;
+   else
+   {
+      if( ! shiftElements( i, row, 1 ) )
+         return false;
+      cols[ i ] = column;
+      els[ i ] = value;
+   }
+   return true;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setElement( Index row,
+                                                         Index column,
+                                                         const Real& value )
+{
+   return setElementAux( row, column, value, set_element );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: addToElement( Index row,
+                                                           Index column,
+                                                           const Real& value )
+{
+   return setElementAux( row, column, value, add_to_element );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+Real tnlCSRMatrix< Real, Device, Index > :: getElement( Index row,
+                                                         Index column ) const
+{
+   const Real* els = nonzero_elements. getVector();
+   const Index* cols = columns. getVector();
+   Index i = getElementPosition( row, column );
+   if( i < row_offsets[ row + 1 ] && cols[ i ] == column )
+      return els[ i ];
+   return Real( 0.0 );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
+                                                         const tnlLongVector< Real, Device, Index >& vec ) const
+{
+   tnlAssert( 0 <= row && row < this -> getSize(),
+              cerr << "The row is outside the matrix." );
+   tnlAssert( vec. getSize() == this -> getSize(),
+              cerr << "The matrix and vector for multiplication have different sizes. "
+                   << "The matrix size is " << this -> getSize() << "."
+                   << "The vector size is " << vec. getSize() << endl; );
+   Index i = row_offsets[ row ];
+   Index last_in_row = row_offsets[ row + 1 ];
+   const Index* cols = columns. getVector();
+   const Real* els = nonzero_elements. getVector();
+   Real product( 0.0 );
+   while( i < last_in_row )
+   {
+      product += els[ i ] * vec[ cols[ i ] ];
+      i ++;
+   }
+   return product;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
+                                                                 const tnlLongVector< Real, Device, Index >& b,
+                                                                 tnlLongVector< Real, Device, Index >& x,
+                                                                 Index firstRow,
+                                                                 Index lastRow ) const
+{
+   tnlAssert( firstRow >=0 && firstRow < this -> getSize(),
+              cerr << "Wrong parameter firstRow. Should be in 0..." << this -> getSize()
+                   << " but it equals " << firstRow << endl; );
+   tnlAssert( lastRow >=0 && lastRow < this -> getSize(),
+              cerr << "Wrong parameter lastRow. Should be in 0..." << this -> getSize()
+                   << " but it equals " << lastRow << endl; );
+
+   if( lastRow == 0 )
+      lastRow = this -> getSize();
+   for( Index i = firstRow; i < lastRow; i ++ )
+   {
+      Real diagonal( 0.0 );
+      Real update = b[ i ];
+      for( Index j = this -> row_offsets[ i ]; j < this -> row_offsets[ i + 1 ]; j ++ )
+      {
+         const Index column = this -> columns[ j ];
+         if( column == i )
+            diagonal = this -> nonzero_elements[ j ];
+         else
+            update -= this -> nonzero_elements[ j ] * x[ column ];
+      }
+      if( diagonal == ( Real ) 0.0 )
+      {
+         cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << endl;
+         return false;
+      }
+      x[ i ] = ( 1.0 - omega ) * x[ i ] + omega / diagonal * update;
+   }
+   return true;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
+                                                            tnlLongVector< Real, Device, Index >& result ) const
+{
+   tnlAssert( vec. getSize() == this -> getSize(),
+              cerr << "The matrix and vector for a multiplication have different sizes. "
+                   << "The matrix size is " << this -> getSize() << "."
+                   << "The vector size is " << vec. getSize() << endl; );
+   tnlAssert( result. getSize() == this -> getSize(),
+              cerr << "The matrix and result vector of a multiplication have different sizes. "
+                   << "The matrix size is " << this -> getSize() << "."
+                   << "The vector size is " << result. getSize() << endl; );
+
+   const Index* cols = columns. getVector();
+   const Index* rw_offsets = row_offsets. getVector();
+   const Real* els = nonzero_elements. getVector();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
 #endif
+   for( Index row = 0; row < this -> size; row ++ )
+   {
+	   Index i = rw_offsets[ row ];
+	   Index last_in_row = rw_offsets[ row + 1 ];
+	   Real product( 0.0 );
+	   while( i < last_in_row )
+      {
+	      product += els[ i ] * vec[ cols[ i ] ];
+	      i ++;
+      }
+	   result[ row ] = product;
+   }
+};
+
+
+template< typename Real, tnlDevice Device, typename Index >
+Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
+{
+   tnlAssert( 0 <= row && row < this -> getSize(),
+                 cerr << "The row is outside the matrix." );
+   Index i = row_offsets[ row ];
+   Index last_in_row = row_offsets[ row + 1 ];
+   const Real* els = nonzero_elements. getVector();
+   Real norm( 0.0 );
+   while( i < last_in_row )
+      norm += fabs( els[ i ] );
+   return norm;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
+{
+   tnlAssert( 0 <= row && row < this -> getSize(),
+                 cerr << "The row is outside the matrix." );
+   Index i = row_offsets[ row ];
+   Index last_in_row = row_offsets[ row + 1 ];
+   Real* els = nonzero_elements. getVector();
+   while( i < last_in_row )
+      els[ i ] *= value;
+};
+
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: save( tnlFile& file ) const
+{
+   if( ! tnlMatrix< Real, Device, Index > :: save( file ) ) return false;
+   if( ! nonzero_elements. save( file ) ) return false;
+   if( ! columns. save( file ) ) return false;
+   if( ! row_offsets. save( file ) ) return false;
+   if( ! file. write( &last_nonzero_element, 1 ) )
+      return false;
+   return true;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: load( tnlFile& file )
+{
+   if( ! tnlMatrix< Real, Device, Index > :: load( file ) ) return false;
+   if( ! nonzero_elements. load( file ) ) return false;
+   if( ! columns. load( file ) ) return false;
+   if( ! row_offsets. load( file ) ) return false;
+   if( ! file. read( &last_nonzero_element ) )
+      return false;
+   return true;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+		                                        const Index lines ) const
+{
+   str << "Structure of tnlCSRMatrix" << endl;
+   str << "Matrix name:" << this -> getName() << endl;
+   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
+   str << "Matrix rows:" << endl;
+   Index print_lines = lines;
+   if( ! print_lines )
+	   print_lines = this -> getSize();
+   for( Index i = 0; i < print_lines; i ++ )
+   {
+      Index first = row_offsets[ i ];
+      Index last = row_offsets[ i + 1 ];
+      str << " Row number " << i
+          << " - elements " << first
+          << " -- " << last << endl;
+      str << " Data:   ";
+      for( Index j = first; j < last; j ++ )
+         str << setprecision( 5 ) << setw( 8 ) << nonzero_elements[ j ] << " ";
+      str << endl;
+      str << "Columns: ";
+      for( Index j = first; j < last; j ++ )
+         str << setw( 8 ) << columns[ j ] << " ";
+      str << endl;
+      str << "Last non-zero element: " << last_nonzero_element << endl;
+   }
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: getRowStatistics( Index& min_row_length,
+                                                        Index& max_row_length,
+                                                        Index& average_row_length ) const
+{
+   min_row_length = this -> getSize();
+   max_row_length = 0;
+   average_row_length = 0;
+   for( Index i = 0; i < this -> getSize(); i ++ )
+   {
+      Index row_length = row_offsets[ i + 1 ] - row_offsets[ i ];
+      min_row_length = Min( min_row_length, row_length );
+      max_row_length = Max( max_row_length, row_length );
+      average_row_length += row_length;
+   }
+   average_row_length /= ( double ) this -> getSize();
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
+		                                                    Index column,
+		                                                    const Real& value,
+		                                                    Index insertedElements )
+{
+    dbgFunctionName( "tnlCSRMatrix< T >", "insertToAllocatedRow" );
+
+    if( insertedElements != 0 )
+    {
+       Index element_pos = row_offsets[ row ] + insertedElements - 1;
+       tnlAssert( element_pos < row_offsets[ row + 1 ],
+                  cerr << "element_pos = " << element_pos
+                       << "row_offsets[ row + 1 ] = " << row_offsets[ row + 1 ]
+                       << "row_offsets[ row ] = " << row_offsets[ row ]);
+       while( element_pos > row_offsets[ row ] &&
+              columns[ element_pos ] > column )
+       {
+          tnlAssert( element_pos + 1 < row_offsets[ row + 1 ], );
+          columns[ element_pos + 1 ] = columns[ element_pos ];
+          nonzero_elements[ element_pos + 1 ] = nonzero_elements[ element_pos ];
+          element_pos --;
+          cerr << "*";
+       }
+       tnlAssert( element_pos >= row_offsets[ row ], );
+       //dbgExpr( element_pos );
+       if( element_pos == row_offsets[ row ] + insertedElements - 1 )
+          element_pos ++;
+       columns[ element_pos ] = column;
+       nonzero_elements[ element_pos ] = value;
+       return;
+    }
+
+    Index element_pos = row_offsets[ row ];
+    while( element_pos < row_offsets[ row + 1 ] &&
+           columns[ element_pos ] < column &&
+           columns[ element_pos ] != -1 )
+    {
+       element_pos ++;
+       cerr << "X";
+    }
+    //dbgExpr( element_pos );
+
+    Index J1( column ), J2;
+    double A1( value ), A2;
+    if( columns[ element_pos ] == -1 )
+    {
+       //dbgCout( "Inserting directly...");
+       columns[ element_pos ] = J1;
+       nonzero_elements[ element_pos ] = A1;
+    }
+    else
+    {
+       dbgCout( "Shifting data ..." );
+       while( element_pos < row_offsets[ row + 1 ] &&
+              columns[ element_pos ] != -1 )
+       {
+          J2 = columns[ element_pos ];
+          A2 = nonzero_elements[ element_pos ];
+          columns[ element_pos ] = J1;
+          nonzero_elements[ element_pos ] = A1;
+          J1 = J2;
+          A1 = A2;
+          element_pos ++;
+       }
+    }
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
+                                                   int verbose )
+{
+   dbgFunctionName( "tnlCSRMatrix< T >", "read" );
+   tnlString line;
+   bool dimensions_line( false ), format_ok( false );
+   tnlList< tnlString > parsed_line;
+   Index non_zero_elements( 0 );
+   Index parsed_elements( 0 );
+   Index size( 0 );
+   tnlLongVector< Index > rows_length( "rows-length" );
+   Index header_end( 0 );
+   bool symmetric = false;
+
+   /*
+    * For the CSR matrix we read the matrix in two steps.
+    * First we compute number of nonzero elements in each row then
+    * we allocate necessary memory a set to row pointers. After that
+    * we read the file again and store the data.
+    */
+
+   /*
+    * So first compute the row lengths.
+    */
+   dbgCout( "Computing the rows length." );
+   while( line. getLine( file ) )
+   {
+      if( ! format_ok )
+      {
+         format_ok = tnlMatrix< Real, Device, Index > :: checkMtxHeader( line, symmetric );
+         continue;
+      }
+      if( line[ 0 ] == '%' ) continue;
+      if( ! format_ok )
+      {
+         cerr << "Unknown format of the file: " << line << endl;
+         cerr << "We expect header line like this:" << endl;
+         cerr << "%%MatrixMarket matrix coordinate real general/symmetric" << endl;
+         return false;
+      }
+
+      if( ! dimensions_line )
+      {
+         parsed_line. EraseAll();
+         line. parse( parsed_line );
+         if( parsed_line. getSize() != 3 )
+         {
+           cerr << "Wrong number of parameters in the matrix header." << endl;
+           return false;
+         }
+         Index M = atoi( parsed_line[ 0 ]. getString() );
+         Index N = atoi( parsed_line[ 1 ]. getString() );
+         Index L = atoi( parsed_line[ 2 ]. getString() );
+         if( symmetric )
+        	 L = 2 * L - M;
+         if( verbose )
+         {
+         	cout << "Matrix size:                " << setw( 9 ) << right << M << endl;
+         	cout << "Non-zero elements expected: " << setw( 9 ) << right << L << endl;
+         }
+
+         if( M <= 0 || N <= 0 || L <= 0 )
+         {
+           cerr << "Wrong parameters in the matrix header." << endl;
+           return false;
+         }
+         if( M  != N )
+         {
+           cerr << "There is not square matrix in the file." << endl;
+           return false;
+         }
+
+         dimensions_line = true;
+         non_zero_elements = L;
+         size = M;
+         header_end = file. tellg();
+         rows_length. setSize( size );
+         rows_length. setValue( 0 );
+         continue;
+      }
+      if( parsed_line. getSize() != 3 )
+      {
+         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+         return false;
+      }
+
+      parsed_line. EraseAll();
+      line. parse( parsed_line );
+      Index I = atoi( parsed_line[ 0 ]. getString() ) - 1;
+      Index J = atoi( parsed_line[ 1 ]. getString() ) - 1;
+      if( I < 0 || I >= size )
+      {
+         cerr << "The row index " << I << " is out of the matrix." << endl;
+         return false;
+      }
+      rows_length[ I ] ++;
+      parsed_elements ++;
+      if( symmetric && I != J )
+      {
+    	  rows_length[ J ] ++;
+    	  parsed_elements ++;
+      }
+   }
+
+   if( verbose )
+      cout << "Non-zero elements parsed:   " << setw( 9 ) << right << parsed_elements << endl;
+
+   if( ! this -> setSize( size ) ||
+       ! this -> setNonzeroElements( parsed_elements ) )
+   {
+      cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
+      return false;
+   }
+   parsed_elements = 0;
+
+
+   /*
+    * Now set the row length.
+    */
+   dbgCout( "Setting rows length..." );
+   Index row_pointer( 0 );
+   for( Index i = 0; i < size; i ++ )
+   {
+      row_offsets[ i ] = row_pointer;
+      row_pointer += rows_length[ i ];
+   }
+   row_offsets[ size ] = row_pointer;
+   last_nonzero_element = row_offsets[ size ];
+
+
+   /*
+    * Now read the file again and insert the non-zero elements.
+    */
+   dbgCout( "Reading the matrix ..." );
+   dbgExpr( header_end );
+   file. clear();
+   file. seekg( header_end, ios :: beg );
+   tnlLongVector< Index, tnlHost > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
+   insertedElementsInRows. setSize( size );
+   insertedElementsInRows. setValue( 0 );
+   while( line. getLine( file ) )
+   {
+      parsed_line. EraseAll();
+      line. parse( parsed_line );
+      if( parsed_line. getSize() != 3 )
+      {
+         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+         return false;
+      }
+      Index I = atoi( parsed_line[ 0 ]. getString() ) - 1;
+      Index J = atoi( parsed_line[ 1 ]. getString() ) - 1;
+      double A = atof( parsed_line[ 2 ]. getString() );
+
+      if( I < 0 || I >= size || J < 0 || J >= size )
+      {
+         cerr << "Index outside of the matrix at line: " << line << endl;
+         return false;
+      }
+
+      //dbgCout( "Inserting element A(" << I << "," << J << ")=" << A );
+      insertToAllocatedRow( I, J, A, insertedElementsInRows[ I ] );
+      insertedElementsInRows[ I ] ++;
+      parsed_elements ++;
+      if( symmetric && I != J )
+      {
+         //dbgCout( "Inserting symmetric element A(" << J << "," << I << ")=" << A );
+    	   insertToAllocatedRow( J, I, A, insertedElementsInRows[ J ] );
+    	   insertedElementsInRows[ J ] ++;
+    	   parsed_elements ++;
+      }
+
+      if( verbose )
+    	 cout << "Parsed elements:            " << setw( 9 ) << right << parsed_elements << "\r" << flush;
+
+   }
+   return true;
+}
+
+#endif /* TNLCSRMATRIX_H_ */

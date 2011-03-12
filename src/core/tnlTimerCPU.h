@@ -28,11 +28,19 @@ class tnlTimerCPU
 
    void Reset();
    
-   int GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD ) const;
+   void Stop();
+
+   void Continue();
+
+   double GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
       
    protected:
 
-   int initial_time;   
+   double initial_time;
+
+   double total_time;
+
+   bool stop_state;
 };
 
 extern tnlTimerCPU default_mcore_cpu_timer;

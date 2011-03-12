@@ -21,14 +21,15 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <iostream>
-#include "tnlDataElement.h"
-#include "tnlString.h"
+#include <core/tnlDataElement.h>
+#include <core/tnlString.h>
+#include <core/tnlFile.h>
 #include "param-types.h"
 
 using namespace :: std;
 
 //! Template for double linked lists
-/*! To acces elements in the list one can use method Size() and
+/*! To acces elements in the list one can use method getSize() and
     operator[](). To add elements there are methods Append(), 
     Prepend() and Insert() to insert an element at given
     position. To erase particular element there is merthod
@@ -88,10 +89,10 @@ template< class T > class tnlList
    ~tnlList() { EraseAll(); };
 
    //! If the list is empty return 'true'
-   bool IsEmpty() const { return ! size; };
+   bool isEmpty() const { return ! size; };
    
    //! Return size of the list
-   int Size() const { return size; };
+   int getSize() const { return size; };
 
    //! Indexing operator
    T& operator[] ( int ind )
@@ -148,6 +149,12 @@ template< class T > class tnlList
    const T& operator[] ( int ind ) const
    {
       return const_cast< tnlList< T >* >( this ) -> operator[]( ind );
+   }
+
+   const tnlList& operator = ( const tnlList& lst )
+   {
+      AppendList( lst );
+      return( *this );
    }
 
    //! Append new data element
@@ -213,7 +220,7 @@ template< class T > class tnlList
    bool AppendList( const tnlList< T >& lst )
    {
       int i;
-      for( i = 0; i < lst. Size(); i ++ )
+      for( i = 0; i < lst. getSize(); i ++ )
       {
          if( ! Append( lst[ i ] ) ) return false;
       }
@@ -225,7 +232,7 @@ template< class T > class tnlList
    
    {
       int i;
-      for( i = lst. Size(); i > 0; i -- )
+      for( i = lst. getSize(); i > 0; i -- )
          if( ! Prepend( lst[ i - 1 ] ) ) return false;
       return true;
    };
@@ -266,7 +273,7 @@ template< class T > class tnlList
       tnlDataElement< T >* tmp_it;
       while( iterator )
       {
-    	 assert( iterator );
+    	   assert( iterator );
          tmp_it = iterator;
          iterator = iterator -> Next();
          delete tmp_it;
@@ -292,68 +299,62 @@ template< class T > class tnlList
    };
    
    //! Save the list in binary format
-   bool Save( ostream& file ) const
+   bool Save( tnlFile& file ) const
    {
-      file. write( ( char* ) &size, sizeof( int ) );
-      int i;
-      for( i = 0; i < size; i ++ )
-         file. write( ( char* ) & operator[]( i ), sizeof( T ) );
-      if( file. bad() ) return false;
+      file. write( &size, 1 );
+      for( int i = 0; i < size; i ++ )
+         if( ! file. write( &operator[]( i ), 1 ) )
+            return false;
       return true;
    }
 
-   //! Save the list in binary format using method Save of type T
-   bool DeepSave( ostream& file ) const
+   //! Save the list in binary format using method save of type T
+   bool DeepSave( tnlFile& file ) const
    {
-      file. write( ( char* ) &size, sizeof( int ) );
-      int i;
-      for( i = 0; i < size; i ++ )
-         if( ! operator[]( i ). Save( file ) ) return false;
-      if( file. bad() ) return false;
+      file. write( &size, 1 );
+      for( int i = 0; i < size; i ++ )
+         if( ! operator[]( i ). save( file ) ) return false;
       return true;
    }
 
    //! Load the list
-   bool Load( istream& file ) 
+   bool Load( tnlFile& file )
    {
       EraseAll();
       int _size;
-      file. read( ( char* ) &_size, sizeof( int ) );
+      file. read( &_size, 1 );
       if( _size < 0 )
       {
          cerr << "The curve size is negative." << endl;
          return false;
       }
-      int i;
       T t;
-      for( i = 0; i < _size; i ++ )
+      for( int i = 0; i < _size; i ++ )
       {
-         file. read( ( char* ) &t, sizeof( T ) );
+         if( ! file. read( &t, 1 ) )
+            return false;
          Append( t );
       }
-      if( file. bad() ) return false;
       return true;
    };
 
    //! Load the list using method Load of the type T
-   bool DeepLoad( istream& file ) 
+   bool DeepLoad( tnlFile& file )
    {
       EraseAll();
       int _size;
-      file. read( ( char* ) &_size, sizeof( int ) );
+      file. read( &_size, 1 );
       if( _size < 0 )
       {
          cerr << "The list size is negative." << endl;
          return false;
       }
-      int i;
-      for( i = 0; i < _size; i ++ )
+      for( int i = 0; i < _size; i ++ )
       {
          T t;
-         if( ! t. Load( file ) ) return false;
+         if( ! t. load( file ) ) return false;
          Append( t );
       }
-      if( file. bad() ) return false;
       return true;
    };
    
@@ -367,9 +368,9 @@ template< typename T > tnlString GetParameterType( const tnlList< T >& )
 
 template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list )
 {
-   int i, size( list. Size() );
+   int i, size( list. getSize() );
    for( i = 0; i < size; i ++ )
-      str << list[ i ] << endl;
+      str << "Item " << i << ":" << list[ i ] << endl;
    return str;
 };
 

@@ -18,7 +18,7 @@
 #ifndef tnlFieldSystem1DH
 #define tnlFieldSystem1DH
 
-#include "tnlLongVector.h"
+#include "tnlLongVectorHost.h"
 #include "tnlVector.h"
 
 template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem1D : public tnlLongVector< T >
@@ -40,7 +40,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
      x_size( f. x_size )
    { };
 
-   tnlString GetType() const
+   tnlString getType() const
    {
       T t;
       return tnlString( "tnlFieldSystem1D< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );

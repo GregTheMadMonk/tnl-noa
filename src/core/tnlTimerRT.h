@@ -28,11 +28,19 @@ class tnlTimerRT
 
    void Reset();
 
-   double GetTime() const;
+   void Stop();
+
+   void Continue();
+
+   double GetTime();
 
    protected:
 
    double initial_time;
+
+   double total_time;
+
+   bool stop_state;
 };
 
 extern tnlTimerRT default_mcore_rt_timer;

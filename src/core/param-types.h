@@ -18,13 +18,16 @@
 #ifndef param_typesH
 #define param_typesH
 
-#include "tnlList.h"
-#include "tnlString.h"
+#include <core/tnlReal.h>
+#include <core/tnlList.h>
+#include <core/tnlString.h>
 
 inline tnlString GetParameterType( bool ) { return tnlString( "bool" ); };
 inline tnlString GetParameterType( int ) { return tnlString( "int" ); };
 inline tnlString GetParameterType( char ) { return tnlString( "char" ); };
 inline tnlString GetParameterType( const float& ) { return tnlString( "float" ); };
 inline tnlString GetParameterType( const double& ) { return tnlString( "double" ); };
+inline tnlString GetParameterType( const tnlFloat& ) { return tnlString( "tnlFloat" ); };
+inline tnlString GetParameterType( const tnlDouble& ) { return tnlString( "tnlDouble" ); };
 
 #endif

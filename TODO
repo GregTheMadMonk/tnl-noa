@@ -1,6 +1,3 @@
-TODO: zavest povinna jmena objektu
-      - mozna mit konstruktor jen se jmenem a metody pro nastaveni dimenze a oblasti
-
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
@@ -8,10 +5,27 @@ TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj
 
 TODO: implementovat tridu tnlParabolicSolver pro odvozovani resicu k casove promennym uloham
 
-TODO: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze
 
 TODO: zavets iteratory pres uzle site misto for cyklu
 
-TODO: implementovat Mersona v CUDA
+TODO: objekt pro osetreni chyb - zavedeni funkce tnlGetError
+      - mozna dat do tnlObject priznak, zda je objekt ok nebo 
+        v nefunkcnim stavu   
 
-TODO: objekt pro osetreni chyb - zavedeni funkce tnlGetError   
+TODO: implementovat casovace merici jen cas resicu
+
+     
+TODO: implementovat maticovy format COO - mimo jine by se dal vyuzit k rychlejsimu parsovani mtx souboru
+
+TODO: implementovat metodu tnlObject passToDevice, ktera vytvori obraz daneho objektu na GPU.
+      Vrati ukazatel na tridu, ktetou lze pouzivat v kernelech. To by melo zjednodusti psani kernelu a
+      priblizit je kodu pro CPU.
+
+TODO: Zkusit z tnlExplicitSolver udelat tnlTimeSolver, od nej odvodit tnlEulerSolver, tnlMersonSolver a
+      tnlParabolicSolver. Objekt by obsahoval i metodu pro ukladani stavu v prubehu vypoctu.      
+      
+DONE: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze 
+
+DONE: trida tnlArray - misto tnlLongVector a tnlField (nebo postavenou na tnlLongVector)
+      template< typename REAL, int DIM, tnlDevice >
+DONE: do tnlGrid pridat metodu pro osetreni Dirichletovych a Neumannovych o.p.           

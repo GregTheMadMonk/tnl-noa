@@ -1,7 +1,12 @@
 ## Process this file witj automake to produce Makefile.in
 
 SUBDIRS = src \
-          tools
+          tools \
+          tests
+
+          
+libtnlincludedir = $(TNL_INCLUDE_DIR)
+libtnlinclude_HEADERS = tnl-config.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -19,4 +24,4 @@ if BUILD_DBG
    pkgconfig_DATA += libtnl-dbg-$(VERSION).pc
 endif
 
-EXTRA_DIST = TODO create-config-description-parser cuda.mk
+EXTRA_DIST = TODO 

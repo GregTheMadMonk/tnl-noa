@@ -6,106 +6,86 @@
 #SUBDIRS = 
 #endif
 
-EXTRA_DIST = tnlConfigDescriptionParser.y \
-	         tnlConfigDescriptionScanner.l \
-	         FlexLexer.h
+SUBDIRS = low-level
 
 headers = tnlAssert.h \
-          tnlConfigDescription.h \
+          tnlArray.h \
+          tnlCommunicator.h \
+          tnlCoordinates.h \
+          tnlCriticalSection.h \
     	    tnlCurve.h \
     	    tnlCudaSupport.h \
 		    tnlDataElement.h \
-		    tnlField1D.h \
-		    tnlFieldCUDA1D.h \
-		    tnlField2D.h \
-		    tnlFieldCUDA2D.h \
-		    tnlField3D.h \
-		    tnlFieldCUDA3D.h \
 		    tnlFieldSystem1D.h \
+		    tnlFile.h \
+		    tnlFlopsCounter.h \
 		    tnlList.h \
 		    tnlLongVector.h \
+		    tnlLongVectorBase.h \
+		    tnlLongVectorHost.h \
 		    tnlLongVectorCUDA.h \
-		    tnlLongVectorCUDA.cu.h \
 		    tnlLogger.h \
 		    tnlObject.h \
+		    tnlSharedMemory.h \
 		    tnlStack.h \
+		    tnlStatistics.h \
 		    tnlString.h \
-		    tnlConfigDescriptionParser.h \
-		    tnlConfigDescriptionParserbase.h \
-		    tnlConfigDescriptionParser.ih \
-		    tnlConfigDescriptionScanner.h \
-		    tnlParameterContainer.h \
+		    tnlReal.h \
 		    tnlTimerCPU.h \
 		    tnlTimerRT.h \
-		    tnlTester.h \
 		    tnlVector.h \
-		    tnl-cuda-kernels.h \
-		    tnl-cuda-kernels.cu.h \
-		    tnlCUDAKernelsTester.h \
-		    compress-file.h \
 		    mfilename.h \
 		    mfuncs.h \
 		    mpi-supp.h \
 		    param-types.h
 
-sources = tnlConfigDescription.cpp \
-	  tnlLogger.cpp \
-	  tnlObject.cpp \
-	  tnlString.cpp \
-	  tnlConfigDescriptionScanner.cpp \
-	  tnlConfigDescriptionParser.cpp \
-	  tnlParameterContainer.cpp \
-	  tnlTimerCPU.cpp \
-	  tnlTimerRT.cpp \
-	  tnlTester.cpp \
-	  compress-file.cpp \
-	  mfilename.cpp \
-	  mpi-supp.cpp \
-	  parse.cc
+sources = tnlCriticalSection.cpp \
+          tnlCudaSupport.cpp \
+          tnlFile.cpp \
+          tnlFlopsCounter.cpp \
+	       tnlLogger.cpp \
+	       tnlObject.cpp \
+	       tnlStatistics.cpp \
+	       tnlString.cpp \
+	       tnlTimerCPU.cpp \
+	       tnlTimerRT.cpp \
+	       mfilename.cpp \
+	       mpi-supp.cpp 
+	  
+	  
 	  
 if BUILD_CUDA
-sources += tnlLongVectorCUDA.cu \
-           tnl-cuda-kernels.cu 
+sources +=
 endif
 
-libmcoreincludedir = $(TNL_INCLUDE_DIR)/core
-libmcoreinclude_HEADERS = $(headers)
+libtnlcoreincludedir = $(TNL_INCLUDE_DIR)/core
+libtnlcoreinclude_HEADERS = $(headers)
 
 
 noinst_LTLIBRARIES = libtnlcore-0.1.la
-libtnlcore_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_0_1_la_SOURCES = $(sources) $(headers)
 libtnlcore_0_1_la_CXXFLAGS = $(OPTIMSECXXFLAGS)
 
 if BUILD_MPI
 noinst_LTLIBRARIES += libtnlcore-mpi-0.1.la
-libtnlcore_mpi_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_mpi_0_1_la_SOURCES = $(sources) $(headers)
 libtnlcore_mpi_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(OPTIMSECXXFLAGS)
 libtnlcore_mpi_0_1_la_LDFLAGS = $(LDFLAGS) $(MPILDFLAGS)
 endif
 
 if BUILD_DBG
 noinst_LTLIBRARIES += libtnlcore-dbg-0.1.la
-libtnlcore_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_dbg_0_1_la_SOURCES = $(sources) $(headers)
 libtnlcore_dbg_0_1_la_CXXFLAGS = $(DBGCXXFLAGS)
 libtnlcore_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(DBGLDFLAGS)
 endif
 
 if BUILD_MPI_DBG
 noinst_LTLIBRARIES += libtnlcore-mpi-dbg-0.1.la
-libtnlcore_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers) debug.h
+libtnlcore_mpi_dbg_0_1_la_SOURCES = $(sources) $(headers)
 libtnlcore_mpi_dbg_0_1_la_CXXFLAGS = $(MPICXXFLAGS) $(DBGCXXFLAGS)
 libtnlcore_mpi_dbg_0_1_la_LDFLAGS = $(LDFLAGS) $(MPICXXFLAGS) $(DBGLDFLAGS)
 endif
-
-libcore_tests_sources = tnlStringTester.cpp \
-                        tnlStringTester.h \
-                        tnlObjectTester.cpp \
-                        tnlObjectTester.h \
-                        tnlLongVectorCUDATester.cu.h \
-                        tnlLongVectorCUDATester.h
-if BUILD_CUDA
-libcore_tests_sources += tnlLongVectorCUDATester.cu
-endif                        
 
 check_LTLIBRARIES = libcore-tests.la
 libcore_tests_la_SOURCES = $(libcore_tests_sources)
