@@ -59,29 +59,8 @@ int main( int argc, char* argv[] )
       cout << object_type << " detected ... " << endl;
    binaryFile. close();
 
-   int spmv_csr_iter( 0 ),
-            spmv_hyb_iter( 0 ),
-            spmv_coacsr_iter[ 6 ],
-            spmv_cuda_coacsr_iter[ 6 ],
-            spmv_cuda_rgcsr_iter[ 10 ],
-            spmv_ellpack_iter( 0 ),
-            spmv_fast_csr_iter( 0 ),
-            spmv_coa_fast_csr_iter[ 6 ],
-            spmv_cuda_coa_fast_csr_iter[ 6 ],
-            coa_fast_csr_max_cs_dict_size[ 6 ];
-   double spmv_csr_gflops( 0.0 ),
-            spmv_hyb_gflops( 0.0 ),
-            spmv_coacsr_gflops[ 6 ],
-            spmv_cuda_coacsr_gflops[ 6 ],
-            spmv_cuda_rgcsr_gflops[ 10 ],
-            spmv_ellpack_gflops( 0.0 ),
-            spmv_fast_csr_gflops( 0.0 ),
-            spmv_coa_fast_csr_gflops[ 6 ],
-            spmv_cuda_coa_fast_csr_gflops[ 6 ];
-   double coa_csr_artificial_zeros[ 7 ],
-   ellpack_artificial_zeros( 0.0 ),
-   fast_csr_compression( 0.0 ),
-   coa_fast_csr_compression[ 5 ];
+   spmvBenchmarkStatistics benchmarkStatistics;
+
    int size, nonzero_elements;
 
    if( object_type == "tnlCSRMatrix< float, tnlHost >")
@@ -91,30 +70,7 @@ int main( int argc, char* argv[] )
                stop_time,
                size,
                nonzero_elements,
-               spmv_csr_iter,
-               spmv_hyb_iter,
-               spmv_coacsr_iter,
-               spmv_cuda_coacsr_iter,
-               spmv_cuda_rgcsr_iter,
-               spmv_fast_csr_iter,
-               spmv_coa_fast_csr_iter,
-               spmv_cuda_coa_fast_csr_iter,
-               spmv_ellpack_iter,
-               spmv_csr_gflops,
-               spmv_hyb_gflops,
-               spmv_coacsr_gflops,
-               spmv_cuda_coacsr_gflops,
-               spmv_cuda_rgcsr_gflops,
-               spmv_fast_csr_gflops,
-               spmv_coa_fast_csr_gflops,
-               spmv_cuda_coa_fast_csr_gflops,
-               spmv_ellpack_gflops,
-               coa_csr_artificial_zeros,
-               ellpack_artificial_zeros,
-               fast_csr_compression,
-               coa_fast_csr_compression,
-               coa_fast_csr_max_cs_dict_size );
-
+               benchmarkStatistics );
 
    if( object_type == "tnlCSRMatrix< double, tnlHost >" )
    {
@@ -125,29 +81,7 @@ int main( int argc, char* argv[] )
                stop_time,
                size,
                nonzero_elements,
-               spmv_csr_iter,
-               spmv_hyb_iter,
-               spmv_coacsr_iter,
-               spmv_cuda_coacsr_iter,
-               spmv_cuda_rgcsr_iter,
-               spmv_fast_csr_iter,
-               spmv_coa_fast_csr_iter,
-               spmv_cuda_coa_fast_csr_iter,
-               spmv_ellpack_iter,
-               spmv_csr_gflops,
-               spmv_hyb_gflops,
-               spmv_coacsr_gflops,
-               spmv_cuda_coacsr_gflops,
-               spmv_cuda_rgcsr_gflops,
-               spmv_fast_csr_gflops,
-               spmv_coa_fast_csr_gflops,
-               spmv_cuda_coa_fast_csr_gflops,
-               spmv_ellpack_gflops,
-               coa_csr_artificial_zeros,
-               ellpack_artificial_zeros,
-               fast_csr_compression,
-               coa_fast_csr_compression,
-               coa_fast_csr_max_cs_dict_size );
+               benchmarkStatistics );
 #else
    cerr << "Skipping double precision test because this CUDA device does not support the double precision." << endl;
 #endif
@@ -166,40 +100,11 @@ int main( int argc, char* argv[] )
       }
       cout << "Writing to log file " << log_file_name << "..." << endl;
       double all_elements = ( double ) size;
-      all_elements *= all_elements;
-      log_file << "| " << left << setw( 98 ) << input_file << right
-               << "| " << setw( 7 ) << right << size
-               << " | " << setw( 10 ) << right << nonzero_elements
-               << " | " << setw( 8 ) << right << setprecision( 2 ) << ( double ) nonzero_elements / all_elements << " %"
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_csr_gflops
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_hyb_gflops
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_hyb_gflops / spmv_csr_gflops;
-      for( int i = 0; i < 6; i ++ )
-      {
-         log_file << " | " << setw( 10 ) << setprecision( 2 ) << fixed << coa_csr_artificial_zeros[ i ] << " %"
-                  << " | " << setw( 6 ) << setprecision( 2 ) << spmv_coacsr_gflops[ i ]
-                  << " | " << setw( 8 ) << setprecision( 2 ) << spmv_coacsr_gflops[ i ] / spmv_csr_gflops
-                  << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_coacsr_gflops[ i ]
-                  << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_coacsr_gflops[ i ] / spmv_csr_gflops;
-      }
-      for( int i = 0; i < 8; i ++ )
-      {
-         log_file << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_rgcsr_gflops[ i ]
-                  << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_rgcsr_gflops[ i ] / spmv_csr_gflops;
-      }
-
-
-      log_file << " | " << setw( 5 ) << setprecision( 2 ) << fixed << fast_csr_compression << " %"
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_fast_csr_gflops;
-      for( int i = 0; i < 5; i ++ )
-      {
-         log_file << " | " << setw( 12 ) << setprecision( 2 ) << coa_fast_csr_max_cs_dict_size[ i ]
-                  << " | " << setw( 6 ) << setprecision( 2 ) << spmv_coa_fast_csr_gflops[ i ]
-                  << " | " << setw( 8 ) << setprecision( 2 ) << spmv_coa_fast_csr_gflops[ i ] / spmv_csr_gflops
-                  << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ]
-                  << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ] / spmv_csr_gflops;
-      }
-      log_file << " |" << endl;
+      benchmarkStatistics. writeToLog( log_file,
+                                       str_input_file,
+                                       size,
+                                       nonzero_elements,
+                                       all_elements * all_elements );
    }
    return EXIT_SUCCESS;
 }

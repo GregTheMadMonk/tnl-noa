@@ -14,11 +14,11 @@ endif
 tnlgridviewsources = tnl-grid-view.h \
                      $(common)
                      
-if BUILD_CUDA
-tnlgridviewsources += tnl-grid-view-cuda.cu
-else
+#if BUILD_CUDA
+#tnlgridviewsources += tnl-grid-view-cuda.cu
+#else
 tnlgridviewsources += tnl-grid-view.cpp
-endif                     
+#endif                     
                      
 tnlcurve2gnuplotsources = tnlcurve2gnuplot.cpp \
                           $(common) 
@@ -29,10 +29,10 @@ tnlfunctionsbenchmarksources = functions-benchmark.cpp \
 tnlmatrixconvertsources = tnl-matrix-convert.cpp \
                           tnl-matrix-convert.h                                
 
-if BUILD_CUDA
-tnlfunctionsbenchmarksources += functions-benchmark-cuda.cu \
-                                functions-benchmark-cuda.cu.h                                 
-endif
+#if BUILD_CUDA
+#tnlfunctionsbenchmarksources += functions-benchmark-cuda.cu \
+#                                functions-benchmark-cuda.cu.h                                 
+#endif
 
 bin_PROGRAMS = tnl-err-norms \
 	            tnlgrid-view \

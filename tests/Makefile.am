@@ -21,7 +21,7 @@ matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu
 tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else
 #matrix_formats_test_sources += matrix-formats-test.cpp
-#parse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
 #matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
 #tnl_benchmarks_sources += tnl-benchmarks.cpp                               
 #endif
@@ -88,7 +88,7 @@ check_SCRIPTS = get-matrices \
 
 check_DATA = tnl-sparse-matrix-check.cfg.desc \
              sparse-matrix-benchmark.cfg.desc \
-             matrix-solvers-benchmark.cfg.decs \
+             matrix-solvers-benchmark.cfg.desc \
              florida-matrix-market \
              matrix-market    
              

@@ -31,6 +31,7 @@
 using namespace std;
 
 template< typename Real, tnlDevice device, typename Index > class tnlRgCSRMatrix;
+template< typename Real, tnlDevice device, typename Index > class tnlAdaptiveRgCSRMatrix;
 template< typename Real, tnlDevice device, typename Index > class tnlFastCSRMatrix;
 template< typename Real, tnlDevice device, typename Index > class tnlEllpackMatrix;
 
@@ -187,6 +188,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    Index last_nonzero_element;
 
    friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
+   friend class tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index >;
    friend class tnlFastCSRMatrix< Real, tnlHost, Index >;
    friend class tnlEllpackMatrix< Real, tnlHost, Index >;
 };

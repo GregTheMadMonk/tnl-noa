@@ -112,7 +112,7 @@ class tnlMatrix : public tnlObject
 		                const tnlString& format,
 		                int verbose = 0 );
 
-   virtual void printOut( ostream& stream, const Index lines = 0 ) const{};
+   virtual void printOut( ostream& stream, const Index lines = 0 ) const {};
 
    virtual ~tnlMatrix()
    {};

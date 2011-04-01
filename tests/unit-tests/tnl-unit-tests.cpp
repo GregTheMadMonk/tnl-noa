@@ -80,9 +80,9 @@ int main( int argc, char* argv[] )
 
    runner. addTest( tnlMPIMeshTester< float > :: suite() );
 
-   runner. addTest( tnlSharedMemoryTester< tnlHost > :: suite() );
+   //runner. addTest( tnlSharedMemoryTester< tnlHost > :: suite() );
 
-   runner. addTest( tnlCommunicatorTester< tnlHost > :: suite() );
+   //runner. addTest( tnlCommunicatorTester< tnlHost > :: suite() );
 
 
 

@@ -52,7 +52,7 @@ extern int __tnldbg_mpi_i_proc;
       std :: cout << "#TNLDBG# MPI proc. " << __tnldbg_mpi_i_proc << " | "            \
       << _tnldbg_debug_class_name << " :: "                                    \
       << _tnldbg_debug_func_name << " @ "                                      \
-      << __LINE__ << " | " << args << std :: std :: endl << std :: std :: flush;
+      << __LINE__ << " | " << args << std :: endl << std :: flush;
 
 #define dbgExpr( expr )                                                        \
    MPI_Comm_rank( MPI_COMM_WORLD, &__tnldbg_mpi_i_proc );                      \

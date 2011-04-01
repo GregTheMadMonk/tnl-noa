@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 headers = \
+     tnlAdaptiveRgCSRMatrix.h \
      tnlMatrix.h \
 	  tnlRgCSRMatrix.h \
 	  tnlFastRgCSRMatrix.h \

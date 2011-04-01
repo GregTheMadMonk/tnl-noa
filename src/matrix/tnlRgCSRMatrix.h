@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 
-#ifndef TNLRgCSRMATRIX_H_
-#define TNLRgCSRMATRIX_H_
+#ifndef TNLRGCSRMATRIX_H
+#define TNLRGCSRMATRIX_H
 
 #include <iostream>
 #include <iomanip>
