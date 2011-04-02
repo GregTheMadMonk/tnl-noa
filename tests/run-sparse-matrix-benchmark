@@ -4,7 +4,7 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
 PWD=`pwd`
 IWD="$PWD"
-SPARSE_MATRIX_BENCHMARK="$IWD/sparse-matrix-benchmark"
+SPARSE_MATRIX_BENCHMARK="$IWD/sparse-matrix-benchmark-dbg"
 STOP_TIME="1"
 
 source ../tnl-env-variables

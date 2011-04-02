@@ -18,6 +18,8 @@
 #ifndef SPARSEMATRIXBENCHMARK_H_
 #define SPARSEMATRIXBENCHMARK_H_
 
+#define HAVE_CUDA
+
 #include <fstream>
 #include <iomanip>
 #include <matrix/tnlCSRMatrix.h>
@@ -31,6 +33,8 @@
 #include <core/tnlTimerRT.h>
 #include <core/mfuncs.h>
 #include <config.h>
+
+
 
 #ifdef HAVE_CUSP
 #include <cusp-test.h>
@@ -329,6 +333,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
 
    tnlAdaptiveRgCSRMatrix< REAL, tnlHost > argcsr_matrix( "argcsr-matrix" );
+   argcsr_matrix. setCUDABlockSize( 128 );
    if( argcsr_matrix. copyFrom( csr_matrix ) )
    {
       /*time = stop_time;
@@ -352,9 +357,9 @@ bool benchmarkMatrix( const tnlString& input_file,
          //spmv_cuda_coa_csr_gflops[ block_iter ] = -1.0;
          //return false;
       }
-      else
+      else*/
          if( verbose )
-            cout << right << setw( 12 ) << "OK." << endl;*/
+            cout << right << setw( 12 ) << "OK." << endl;
 
    }
    else
@@ -373,6 +378,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
 
    tnlAdaptiveRgCSRMatrix< REAL, tnlCuda > cuda_argcsr_matrix( "cuda-argcsr-matrix" );
+   cuda_argcsr_matrix. setCUDABlockSize( 128 );
 
    if( cuda_argcsr_matrix. copyFrom( argcsr_matrix ) )
    {

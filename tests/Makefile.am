@@ -74,9 +74,9 @@ matrix_solvers_benchmark_dbg_LDADD = ../src/libtnl-0.1.la \
 endif
 
 #if BUILD_CUDA
-matrix_formats_test_CXXFLAGS = "-DHAVE_CUDA"
-sparse_matrix_benchmark_CXXFLAGS += "-DHAVE_CUDA"
-tnl_benchmarks_CXXFLAGS = "-DHAVE_CUDA"
+matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
+sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
+tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
 #endif
 
 

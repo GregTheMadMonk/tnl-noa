@@ -225,6 +225,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
+   tnlAssert( elements !=0, );
    if( ! nonzero_elements.setSize(elements) ||  ! columns.setSize(elements) )
       return false;
    nonzero_elements.setValue( 0.0 );
@@ -249,6 +250,7 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& mat )
 {
 	dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
+	tnlAssert( cudaBlockSize != 0, );
 	if( ! this -> setSize( mat.getSize() ) )
 		return false;
 	
