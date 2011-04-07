@@ -37,7 +37,7 @@ using namespace std;
  *
  *
  * For the educative and also testing/debuging reasons we have 6 version of this algorithm here.
- * Version 1 is the slowest and version 6 is the fastest - tested on CUDA architecture 1.0 - 1.3.
+ * Version 1 is the slowest and version 6 is the fastest (can be found in cuda-long-vector-kernels.h)- tested on CUDA architecture 1.0 - 1.3.
  * Another improvements are possible for the future devices.
  *
  */
