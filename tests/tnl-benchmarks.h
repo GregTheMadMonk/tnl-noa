@@ -19,7 +19,8 @@
 #define TNLBENCHMARKS_H_
 
 #include <core/mfuncs.h>
-#include <core/tnlTimerCUDA.h>
+#include <core/tnlTimerCPU.h>
+#include <../tests/unit-tests/core/tnl-cuda-kernels.h>
 
 template< class T >
 bool transferBenchmark( const int size,
@@ -41,7 +42,7 @@ bool transferBenchmark( const int size,
    long int bytes = cycles * size * sizeof( int );
    long int mega_byte = 1 << 20;
 
-   tnlTimerCUDA timer;
+   tnlTimerCPU timer;
    timer. Reset();
    for( int i = 0; i < cycles; i ++ )
       if( ! host_vector2. copyFrom( host_vector ) )
@@ -147,87 +148,87 @@ void reductionBenchmark( const int size,
             tnlCPUReductionMax( host_vector, sum );
          case 1:
             tnlCUDASimpleReduction1Sum( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         sum,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction1Min( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         min,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction1Max( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         max,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             break;
          case 2:
             tnlCUDASimpleReduction2Sum( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         sum,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction2Min( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         min,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction2Max( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         max,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             break;
          case 3:
             tnlCUDASimpleReduction3Sum( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         sum,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction3Min( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         min,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction3Max( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         max,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             break;
          case 4:
             tnlCUDASimpleReduction4Sum( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         sum,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction4Min( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         min,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction4Max( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         max,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             break;
          case 5:
             tnlCUDASimpleReduction5Sum( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         sum,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction5Min( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         min,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             tnlCUDASimpleReduction5Max( size,
-                                        device_vector. Data(),
+                                        device_vector. getVector(),
                                         max,
-                                        device_aux. Data() );
+                                        device_aux. getVector() );
             break;
          default:
             tnlCUDAReductionSum( size,
-                                 device_vector. Data(),
+                                 device_vector. getVector(),
                                  sum,
-                                 device_aux. Data() );
+                                 device_aux. getVector() );
             tnlCUDAReductionMin( size,
-                                 device_vector. Data(),
+                                 device_vector. getVector(),
                                  min,
-                                 device_aux. Data() );
+                                 device_aux. getVector() );
             tnlCUDAReductionMax( size,
-                                 device_vector. Data(),
+                                 device_vector. getVector(),
                                  max,
-                                 device_aux. Data() );
+                                 device_aux. getVector() );
 
       }
    }

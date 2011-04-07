@@ -18,8 +18,7 @@
 
 #include <core/tnlLongVectorHost.h>
 #include <core/tnlLongVectorCUDA.h>
-#include <../tests/unit-tests/core/tnl-cuda-kernels.h>
-//#include <tnl-benchmarks.h>
+#include <tnl-benchmarks.h>
 
 
 int main( int argc, char* argv[] )
@@ -33,7 +32,7 @@ int main( int argc, char* argv[] )
    double host_to_device_band_width;
    double device_to_host_band_width;
    double device_to_device_band_width;
-/*
+
    transferBenchmark< int >( size,
                              host_to_host_band_width,
                              host_to_device_band_width,
@@ -52,7 +51,7 @@ int main( int argc, char* argv[] )
    cout << "Benchmarking reduction of double ..." << endl;
    for( int i = 0; i <= 6; i ++ )
       reductionBenchmark< double >( size / 2, i );
-      */
+
 #endif
    return EXIT_SUCCESS;
 }
