@@ -29,6 +29,14 @@
 
 using namespace std;
 
+struct tnlARGCSRGroupProperties
+{
+   int numRows;
+   int numUsedThreads;
+   int numRounds;
+   int idxFirstRow;
+   int idxFirstValue;
+};
 
 //! Matrix storing the non-zero elements in the Row-grouped CSR (Compressed Sparse Row) format
 /*!
@@ -40,8 +48,8 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! Basic constructor
    tnlAdaptiveRgCSRMatrix( const tnlString& name, 
                            Index _groupSize = 128,
-			   Index _groupSizeStep = 16, 
-			   Index _targetNonzeroesPerGroup = 2048 );
+			                  Index _groupSizeStep = 16,
+			                  Index _targetNonzeroesPerGroup = 2048 );
 
    const tnlString& getMatrixClass() const;
 
@@ -113,19 +121,21 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
     */
    bool insertBlock( );
 
-   tnlLongVector< Real, Device, Index > nonzero_elements;
+   tnlLongVector< Real, Device, Index > nonzeroElements;
 
    tnlLongVector< Index, Device, Index > columns;
 
-   tnlLongVector< Index, Device, Index > block_info; // size 4*number of groups; index of first row in group, nuber of rows in group, 
-																				//	number of rounds, index of first nz element in group
+   tnlLongVector< Index, Device, Index > threads;
 
-   tnlLongVector< Index, Device, Index > threads_per_row;
+   tnlLongVector< tnlARGCSRGroupProperties, Device, Index > blockInfo;  // size 4*number of groups; index of first row in group, nuber of rows in group,
+																				             //	number of rounds, index of first nz element in group
+
+
 
    Index maxGroupSize, groupSizeStep;
    Index targetNonzeroesPerGroup;
 
-   Index number_of_groups;
+   Index numberOfGroups;
 
    Index cudaBlockSize;
 
@@ -142,30 +152,30 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
 template< class Real, typename Index, bool useCache >
 __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target, 
-    						        const Real* vect, 
-							const Real* matrxValues, 
-							const Index* matrxColumni, 
-							const Index* _blockInfo, 
-							const Index* _threadsInfo, 
-							const Index numBlocks);
+    				                           		        const Real* vect,
+							                                   const Real* matrxValues,
+							                                   const Index* matrxColumni,
+							                                   const Index* _blockInfo,
+							                                   const Index* _threadsInfo,
+							                                   const Index numBlocks );
 
 #endif
 
 
 template< typename Real, tnlDevice Device, typename Index >
 tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const tnlString& name,
-	                                                                 Index _maxGroupSize, 
-								         Index _groupSizeStep, 
-									 Index _targetNonzeroesPerGroup )
+	                                                                      Index _maxGroupSize,
+		                                             						    Index _groupSizeStep,
+									                                              Index _targetNonzeroesPerGroup )
 : tnlMatrix< Real, Device, Index >( name ),
-  nonzero_elements( "nonzero-elements" ),
+  nonzeroElements( "nonzero-elements" ),
   columns( "columns" ),
-  block_info( "block-info" ),
-  threads_per_row( "threads-per-row" ),
+  blockInfo( "block-info" ),
+  threads( "threads-per-row" ),
   maxGroupSize( _maxGroupSize ),
   groupSizeStep(_groupSizeStep),
   targetNonzeroesPerGroup(_targetNonzeroesPerGroup),
-  number_of_groups( 0 ),
+  numberOfGroups( 0 ),
   cudaBlockSize( 0 ),
   artificial_zeros( 0 ),
   last_nonzero_element( 0 )
@@ -214,10 +224,10 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    this -> size = new_size;
-   if( ! block_info.setSize(this->size) ||  ! threads_per_row.setSize(this->size) )
+   if( ! blockInfo.setSize(this->size) ||  ! threads.setSize(this->size) )
       return false;
-   block_info.setValue( 0 );
-   threads_per_row.setValue( 0 );
+   blockInfo.setValue( 0 );
+   threads.setValue( 0 );
    last_nonzero_element = 0;
    return true;
 };
@@ -226,9 +236,9 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    tnlAssert( elements !=0, );
-   if( ! nonzero_elements.setSize(elements) ||  ! columns.setSize(elements) )
+   if( ! nonzeroElements.setSize(elements) ||  ! columns.setSize(elements) )
       return false;
-   nonzero_elements.setValue( 0.0 );
+   nonzeroElements.setValue( 0.0 );
    columns.setValue( -1 );
    return true;
 };
@@ -236,8 +246,8 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index 
 template< typename Real, tnlDevice Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
-   tnlAssert( nonzero_elements. getSize() > artificial_zeros, );
-	return nonzero_elements. getSize() - artificial_zeros;
+   tnlAssert( nonzeroElements. getSize() > artificial_zeros, );
+	return nonzeroElements. getSize() - artificial_zeros;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -283,8 +293,10 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 		/****
 		 * Now, compute the number of threads per each row
 		 */
-		block_info[4*blkIdx] = blkBegin;     // group begining
-		block_info[4*blkIdx+1] = rowsInBlk;  // number of the rows in the group
+		//blockInfo[4*blkIdx] = blkBegin;     // group begining
+		//blockInfo[4*blkIdx+1] = rowsInBlk;  // number of the rows in the group
+		blockInfo[ blkIdx ]. idxFirstValue = blkBegin;
+		blockInfo[ blkIdx ]. numRows = rowsInBlk;
 
 		uint freeThreads = cudaBlockSize - rowsInBlk;  // T -r 
 		uint usedThreads = 0;
@@ -295,9 +307,9 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 		for(uint i=0; i<threadsLeft; i++) {
 			threadsPerRow[i]++;
 		}
-		threads_per_row[blkBegin]=0;
+		threads[blkBegin]=0;
 		for(uint i=blkBegin+1; i<blkEnd; i++) {
-			threads_per_row[i] = threads_per_row[i-1] + threadsPerRow[i-blkBegin-1];
+			threads[i] = threads[i-1] + threadsPerRow[i-blkBegin-1];
 		}			
 
 		/****
@@ -308,14 +320,16 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 			rounds = ceil(((double) mat.row_offsets[i+1] - mat.row_offsets[i]) / threadsPerRow[i-blkBegin]);
 			roundsFinal = (rounds>roundsFinal) ? rounds : roundsFinal;
 		}
-		block_info[4*blkIdx+2] = roundsFinal;
-		block_info[4*blkIdx+3] = numStoredValues;
+		/*blockInfo[4*blkIdx+2] = roundsFinal;
+		blockInfo[4*blkIdx+3] = numStoredValues;*/
+		blockInfo[ blkIdx ]. numRounds = roundsFinal;
+		//blockInfo[ blkIdx ]. ?????????????????????????????????????
 		blkIdx++;
 		numStoredValues += cudaBlockSize * roundsFinal;
 		blkBegin = blkEnd;
 
 		if(blkBegin == this->size) {
-			number_of_groups = blkIdx;
+			numberOfGroups = blkIdx;
 			break;
 		}
 	}
@@ -336,27 +350,27 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 		uint counters[128];
 		uint NZperRow[128];
 		uint index, baseRow;
-		for(uint i=0; i<number_of_groups; i++) {
-			baseRow = block_info[4*i];
-			index = block_info[4*i+3];
-			for(uint j=0; j<block_info[4*i+1]; j++) {
-				NZperRow[j] = mat.row_offsets[block_info[4*i]+j+1] - mat.row_offsets[block_info[4*i]+j];
-				if(j<block_info[4*i+1]-1) {
-					threadsPerRow[j] = threads_per_row[block_info[4*i]+j+1] - threads_per_row[block_info[4*i]+j];
+		for(uint i=0; i<numberOfGroups; i++) {
+			baseRow = blockInfo[4*i];
+			index = blockInfo[4*i+3];
+			for(uint j=0; j<blockInfo[4*i+1]; j++) {
+				NZperRow[j] = mat.row_offsets[blockInfo[4*i]+j+1] - mat.row_offsets[blockInfo[4*i]+j];
+				if(j<blockInfo[4*i+1]-1) {
+					threadsPerRow[j] = threads[blockInfo[4*i]+j+1] - threads[blockInfo[4*i]+j];
 				}
-				else threadsPerRow[j] = cudaBlockSize - threads_per_row[block_info[4*i]+j];
+				else threadsPerRow[j] = cudaBlockSize - threads[blockInfo[4*i]+j];
 				counters[j] = 0;
 			}
-			for(uint k=0; k<block_info[4*i+2]; k++) {
-				for(uint j=0; j<block_info[4*i+1]; j++) {
+			for(uint k=0; k<blockInfo[4*i+2]; k++) {
+				for(uint j=0; j<blockInfo[4*i+1]; j++) {
 					for(uint l=0; l<threadsPerRow[j]; l++) {
 						if(counters[j]<NZperRow[j]) {
-							nonzero_elements[index] = mat.nonzero_elements[ mat.row_offsets[baseRow+j]+counters[j] ];
+							nonzeroElements[index] = mat.nonzeroElements[ mat.row_offsets[baseRow+j]+counters[j] ];
 							columns[index] = mat.columns[ mat.row_offsets[baseRow+j]+counters[j] ];
 						}
 						else {
 							columns[index] = -1;
-							nonzero_elements[index] = 0.0;
+							nonzeroElements[index] = 0.0;
 						}
 						counters[j]++;
 						index++;
@@ -385,7 +399,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
    targetNonzeroesPerGroup = adaptiveRgCSRMatrix.targetNonzeroesPerGroup;
    cudaBlockSize = adaptiveRgCSRMatrix.cudaBlockSize;
    last_nonzero_element = adaptiveRgCSRMatrix.last_nonzero_element;
-   number_of_groups = adaptiveRgCSRMatrix.number_of_groups;
+   numberOfGroups = adaptiveRgCSRMatrix.numberOfGroups;
   
 
    if( ! this -> setSize( adaptiveRgCSRMatrix. getSize() ) )
@@ -401,14 +415,13 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
       return false;
    artificial_zeros = total_elements - adaptiveRgCSRMatrix. getNonzeroElements();
 
-   nonzero_elements = adaptiveRgCSRMatrix.nonzero_elements;
+   nonzeroElements = adaptiveRgCSRMatrix.nonzeroElements;
    columns = adaptiveRgCSRMatrix.columns;
-   block_info = adaptiveRgCSRMatrix.block_info;
-   threads_per_row = adaptiveRgCSRMatrix.threads_per_row;
+   blockInfo = adaptiveRgCSRMatrix.blockInfo;
+   threads = adaptiveRgCSRMatrix.threads;
 
    return true;
 };
-
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
@@ -426,7 +439,40 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
    if( Device == tnlHost )
    {
-      abort();
+      int idx[TB_SIZE];
+      Real psum[TB_SIZE];        //partial sums for each thread
+      int limits[MAX_ROWS + 1];  //indices of first threads for each row + index of first unused thread
+      Real results[MAX_ROWS];
+
+      for(int group = 0; group < mat.numberOfGroups; group++) {                     //for each group of rows
+
+         for(int thread = 0; thread < mat.blockInfo[group].numUsedThreads; thread++) { //for each used thread in group
+            idx[thread] = mat.blockInfo[group].idxFirstValue + thread;
+            psum[thread] = 0;
+
+            for(int j = 0; j < mat.blockInfo[group].numRounds; j++) {
+               psum[thread] += mat.nonzeroElements[idx[thread]] * in[mat.columns[idx[thread]]];
+               idx[j] += TB_SIZE;
+            }
+         }
+
+         for(int thread = 0; thread < mat.blockInfo[group].numRows; thread++) {        //for threads corresponding to rows in group
+            limits[thread] = mat.threads[mat.blockInfo[group].idxFirstRow + thread];   //make a local copy of info about threads
+         }
+         limits[mat.blockInfo[group].numRows] = mat.blockInfo[group].numUsedThreads;      //for convenience, add the index of first unused row
+
+         //reduction of partial sums and writing to the output
+         for(int thread = 0; thread < mat.blockInfo[group].numRows; thread++) {        //for threads corresponding to rows in group
+
+            results[thread] = 0;
+
+            for(int j = limits[thread]; j < limits[thread+1]; j++) {             //sum up partial sums belonging to that row
+               results[thread] += psum[j];
+            }
+
+            out[mat.blockInfo[group].idxFirstRow + thread] = results[thread];
+         }
+      }
    }
    if( Device == tnlCuda )
    {
@@ -435,7 +481,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
    const Index size = this -> getSize();
 
    Index desGridSize;
-	desGridSize = this->number_of_groups;
+	desGridSize = this->numberOfGroups;
 	desGridSize = (desGridSize < 16384) ? desGridSize : 16384;
 
    cudaThreadSynchronize();
@@ -443,12 +489,12 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
    dim3 gridDim( gridSize ), blockDim( blockSize );
 
    AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( result. getVector(),
-											  vec. getVector(),
-                                                                                          nonzero_elements. getVector(),
+						                                                        					   vec. getVector(),
+                                                                                          nonzeroElements. getVector(),
                                                                                           columns. getVector(),
-                                                                                          block_info. getVector(),
-                                                                                          threads_per_row. getVector(),
-											  number_of_groups );
+                                                                                          blockInfo. getVector(),
+                                                                                          threads. getVector(),
+											                                                         numberOfGroups );
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;
 #else
@@ -465,7 +511,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 //   str << "Structure of tnlAdaptiveRgCSRMatrix" << endl;
 //   str << "Matrix name:" << this -> getName() << endl;
 //   str << "Matrix size:" << this -> getSize() << endl;
-//   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
+//   str << "Allocated elements:" << nonzeroElements. getSize() << endl;
 //   str << "Matrix blocks: " << block_offsets. getSize() << endl;
 //
 //   Index print_lines = lines;
@@ -490,7 +536,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 //	        k < block_offsets. getElement( i + 1 );
 //	        k ++ )
 //		   str << setprecision( 5 ) << setw( 8 )
-//		       << nonzero_elements. getElement( k ) << " ";
+//		       << nonzeroElements. getElement( k ) << " ";
 //	   str << endl << "Columns: ";
 //	   for( Index k = block_offsets. getElement( i );
 //	        k < block_offsets. getElement( i + 1 );
