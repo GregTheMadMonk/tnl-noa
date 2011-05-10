@@ -68,7 +68,7 @@ class tnlMatrix : public tnlObject
 
    virtual Index getArtificialZeroElements() const;
 
-   bool setRowsReordering( const tnlLongVector< Index, tnlDevice, Index >& reorderingPermutation );
+   bool setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation );
 
    virtual Real getElement( Index row, Index column ) const = 0;
 
@@ -113,7 +113,7 @@ class tnlMatrix : public tnlObject
     * Computes permutation of the rows such that the rows would be
     * ordered decreasingly by the number of the non-zero elements.
     */
-   bool reorderDecreasingly( const tnlLongVector< Real, tnlHost, Index >& permutation );
+   bool reorderDecreasingly( const tnlLongVector< Index, Device, Index >& permutation );
 
    virtual bool read( istream& str,
 		                int verbose = 0 );
@@ -134,7 +134,7 @@ class tnlMatrix : public tnlObject
 
    Index size;
 
-   tnlLongVector< Index, tnlDevice, Index > rowsReorderingPermutation;
+   tnlLongVector< Index, Device, Index > rowsReorderingPermutation;
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -154,7 +154,7 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 };
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: setRowsReordering( const tnlLongVector< Index, tnlDevice, Index >& reorderingPermutation )
+bool tnlMatrix< Real, Device, Index > :: setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation )
 {
    if( ! rowsReorderingPermutation. setSize( reorderingPermutation. getSize() ) )
       return false;
@@ -357,7 +357,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: reorderDecreasingly( const tnlLongVector< Index, tnlHost, Index >& permutation )
+bool tnlMatrix< Real, Device, Index > :: reorderDecreasingly( const tnlLongVector< Index, Device, Index >& permutation )
 {
    /*
     * We use bucketsort to sort the rows by the number of the non-zero elements.
@@ -380,7 +380,7 @@ bool tnlMatrix< Real, Device, Index > :: reorderDecreasingly( const tnlLongVecto
       buckets[ i ] = buckets[ i - 1 ] + permutation[ i ];
 
    for( Index i = 1; i < this -> getSize(); i ++ )
-      permutations[ buckets[ this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
+      permutation[ buckets[ this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
