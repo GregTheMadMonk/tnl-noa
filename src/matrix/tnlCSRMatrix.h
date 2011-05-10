@@ -66,6 +66,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    Index getNonzeroElements() const;
 
+   Index getNonzeroElementsInRow( const Index& row ) const;
+
    //! This method explicitly computes the number of the non-zero elements.
    Index checkNonzeroElements() const;
 
@@ -246,6 +248,14 @@ template< typename Real, tnlDevice Device, typename Index >
 Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
 	return nonzero_elements. getSize();
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
+{
+   tnlAssert( row >= 0 && row < this -> getSize(),
+              cerr << "row = " << row << " this -> getSize() = " << this -> getSize() );
+   return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
 template< typename Real, tnlDevice Device, typename Index >

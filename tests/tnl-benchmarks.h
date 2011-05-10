@@ -135,7 +135,7 @@ void reductionBenchmark( const int size,
    device_vector = host_vector;
 
    T sum, min, max;
-   const long int reducing_cycles( 10 );
+   const long int reducing_cycles( 1 );
 
    tnlTimerCPU timer;
    timer. Reset();

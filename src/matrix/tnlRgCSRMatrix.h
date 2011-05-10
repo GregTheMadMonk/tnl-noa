@@ -283,7 +283,16 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 		return false;
 
 	/****
-	 *  First compute the number of non-zero elements in each row
+	 * First prepare permutation of rows to allow some matrix reorderings.
+	 */
+	tnlLongVector< Index, tnlHost, Index > permutation( "tnlRgCSRMatrix::copyFrom:permutation" );
+	if( ! permutation. setSize( this -> getSize() ) )
+	   return false;
+
+
+
+	/****
+	 *  Now compute the number of non-zero elements in each row
 	 *  and compute number of elements which are necessary allocate.
 	 */
 	Index total_elements( 0 );

@@ -482,19 +482,19 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
    Index desGridSize;
 	desGridSize = this->numberOfGroups;
-	desGridSize = (desGridSize < 16384) ? desGridSize : 16384;
+	desGridSize = (desGridSize < 4096) ? desGridSize : 4096;
 
    cudaThreadSynchronize();
    int gridSize = (int) desGridSize;
    dim3 gridDim( gridSize ), blockDim( blockSize );
 
    AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( result. getVector(),
-						                                                        					   vec. getVector(),
-                                                                                          nonzeroElements. getVector(),
+											                                                         vec. getVector(),
+                                                                                          nonzero_elements. getVector(),
                                                                                           columns. getVector(),
-                                                                                          blockInfo. getVector(),
-                                                                                          threads. getVector(),
-											                                                         numberOfGroups );
+                                                                                          block_info. getVector(),
+                                                                                          threads_per_row. getVector(),
+											                                                         number_of_groups );
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;
 #else
