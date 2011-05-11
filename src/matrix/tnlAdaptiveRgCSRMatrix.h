@@ -38,6 +38,11 @@ struct tnlARGCSRGroupProperties
    int idxFirstValue;
 };
 
+inline tnlString GetParameterType( const tnlARGCSRGroupProperties& a )
+{
+   return tnlString( "tnlARGCSRGroupProperties" );
+}
+
 //! Matrix storing the non-zero elements in the Row-grouped CSR (Compressed Sparse Row) format
 /*!
  */
@@ -226,7 +231,6 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    this -> size = new_size;
    if( ! blockInfo.setSize(this->size) ||  ! threads.setSize(this->size) )
       return false;
-   blockInfo.setValue( 0 );
    threads.setValue( 0 );
    last_nonzero_element = 0;
    return true;
@@ -236,7 +240,7 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    tnlAssert( elements !=0, );
-   if( ! nonzeroElements.setSize(elements) ||  ! columns.setSize(elements) )
+   if( ! nonzeroElements.setSize(elements) || ! columns.setSize( elements ) )
       return false;
    nonzeroElements.setValue( 0.0 );
    columns.setValue( -1 );
@@ -347,7 +351,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 	dbgCout( "Inserting data " );
 	if( Device == tnlHost )
 	{
-		uint counters[128];
+	/*	uint counters[128];
 		uint NZperRow[128];
 		uint index, baseRow;
 		for(uint i=0; i<numberOfGroups; i++) {
@@ -377,7 +381,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 					}
 				}				
 			}
-		}
+		}*/
 	}
 	if( Device == tnlCuda )
 	{
@@ -439,7 +443,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
    if( Device == tnlHost )
    {
-      int idx[TB_SIZE];
+     /* int idx[TB_SIZE];
       Real psum[TB_SIZE];        //partial sums for each thread
       int limits[MAX_ROWS + 1];  //indices of first threads for each row + index of first unused thread
       Real results[MAX_ROWS];
@@ -472,7 +476,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
             out[mat.blockInfo[group].idxFirstRow + thread] = results[thread];
          }
-      }
+      }*/
    }
    if( Device == tnlCuda )
    {

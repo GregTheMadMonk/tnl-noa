@@ -18,7 +18,7 @@
 #ifndef SPARSEMATRIXBENCHMARK_H_
 #define SPARSEMATRIXBENCHMARK_H_
 
-#define HAVE_CUDA
+//#define HAVE_CUDA
 
 #include <fstream>
 #include <iomanip>
@@ -41,6 +41,108 @@
 #endif
 
 using namespace std;
+
+class tnlSpmvBenchmark
+{
+   public:
+
+   template< typename Real, typename Index>
+   virtual void runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
+
+   void writeProgress( const tnlString& matrixFormat,
+                       const int cudaBlockSize,
+                       const double& time,
+                       const int iterations,
+                       const double& gflops,
+                       bool check,
+                       const tnlString& info );
+
+   void writeLog( ostream& str ) const = 0;
+
+   bool getBenchmarkWasSuccesful() const;
+
+   void setBenchmarkWasSuccesful( bool benchmarkWasSuccesful );
+
+   bool benchmarkWasSuccesful;
+};
+
+tnlSpmvBenchmark :: tnlSpmvBenchmark()
+   : benchmarkWasSuccesful( false )
+{
+
+}
+
+bool tnlSpmvBenchmark :: getBenchmarkWasSuccesful() const
+{
+   return benchmarkWasSuccesful;
+}
+
+void tnlSpmvBenchmark :: setBenchmarkWasSuccesful( bool benchmarkWasSuccesful )
+{
+   this -> benchmarkWasSuccesful = benchmarkWasSuccesful;
+}
+
+void tnlSpmvBenchmark :: writeProgress( const tnlString& matrixFormat,
+                                        const int cudaBlockSize,
+                                        const double& time,
+                                        const int iterations,
+                                        const double& gflops,
+                                        bool check,
+                                        const tnlString& info )
+{
+   if( ! cudaBlockSize )
+      cout << left << setw( 30 ) << matrixFormat;
+   else
+      cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
+   cout << right << setw( 12 ) << setprecision( 2 ) << time
+        << right << setw( 15 ) << iterations
+        << right << setw( 12 ) << setprecision( 2 ) << gflops;
+   if( check )
+        cout << left << setw( 12 ) << "   OK  ";
+   else
+        cout << left << setw( 12 ) << "FAILED ";
+   cout << info << endl;
+}
+
+template< typename Real, tnlDevice device, typename Index >
+void benchmarkSpMV( const tnlMatrix< Real, device, Index >& matrix,
+                    const tnlLongVector< Real, device, Index >& x,
+                    const int nonzero_elements,
+                    tnlLongVector< Real, device, Index >& b,
+                    double& time,
+                    double& gflops,
+                    int& iterations )
+{
+   tnlTimerRT rt_timer;
+   rt_timer. Reset();
+
+   {
+      for( int i = 0; i < 10; i ++ )
+         matrix. vectorProduct( x, b );
+      iterations += 10;
+   }
+
+   time = rt_timer. GetTime();
+   double flops = 2.0 * iterations * nonzero_elements;
+   gflops = flops / time * 1.0e-9;
+}
+
+class tnlSpmvBenchmarkCSRFormat : public tnlSpmvBenchmark
+{
+   public:
+
+   template< typename Real, typename Index>
+   void runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+
+   double gflops;
+
+};
+
+template< typename Real, typename Index>
+void tnlSpmvBenchmarkCSRFormat :: runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+{
+
+};
 
 class spmvBenchmarkStatistics
 {
@@ -145,14 +247,17 @@ bool spmvBenchmarkStatistics :: writeToLog( ostream& log_file,
                                             long int nonzero_elements,
                                             const double& all_elements )
 {
-   log_file << "| " << left << setw( 98 ) << input_file << right
-            << "| " << setw( 7 ) << right << size
-            << " | " << setw( 10 ) << right << nonzero_elements
-            << " | " << setw( 8 ) << right << setprecision( 2 ) << ( double ) nonzero_elements / all_elements << " %"
-            << " | " << setw( 6 ) << setprecision( 2 ) << spmv_csr_gflops
-            << " | " << setw( 6 ) << setprecision( 2 ) << spmv_hyb_gflops
-            << " | " << setw( 8 ) << setprecision( 2 ) << spmv_hyb_gflops / spmv_csr_gflops;
-   for( int i = 0; i < 6; i ++ )
+   log_file << "          <tr>" << endl;
+   log_file << "             <td> " << input_file << "</td>" << endl;
+   log_file << "             <td> " << size << "</td>" << endl;
+   log_file << "             <td> " << nonzero_elements << "</td>" << endl;
+   log_file << "             <td> " << ( double ) nonzero_elements / all_elements << " %" << "</td>" << endl;
+   log_file << "             <td> " << spmv_csr_gflops << "</td>" << endl;
+   log_file << "             <td> " << spmv_hyb_gflops << "</td>" << endl;
+   log_file << "             <td> " << spmv_hyb_gflops / spmv_csr_gflops << "</td>" << endl;
+   log_file << "          </tr>" << endl;
+
+/*   for( int i = 0; i < 6; i ++ )
    {
       log_file << " | " << setw( 10 ) << setprecision( 2 ) << fixed << coa_csr_artificial_zeros[ i ] << " %"
                << " | " << setw( 6 ) << setprecision( 2 ) << spmv_coacsr_gflops[ i ]
@@ -177,32 +282,10 @@ bool spmvBenchmarkStatistics :: writeToLog( ostream& log_file,
                << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ]
                << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ] / spmv_csr_gflops;
    }
-   log_file << " |" << endl;
+   log_file << " |" << endl;*/
 }
 
-template< typename Real, tnlDevice device, typename Index >
-void benchmarkSpMV( const tnlMatrix< Real, device, Index >& matrix,
-                    const tnlLongVector< Real, device, Index >& x,
-                    const int nonzero_elements,
-                    tnlLongVector< Real, device, Index >& b,
-                    double& time,
-                    double& gflops,
-                    int& iterations )
-{
-   tnlTimerRT rt_timer;
-   rt_timer. Reset();
 
-   //while( rt_timer. GetTime() < time )
-   {
-      for( int i = 0; i < 10; i ++ )
-         matrix. vectorProduct( x, b );
-      iterations += 10;
-   }
-
-   time = rt_timer. GetTime();
-   double flops = 2.0 * iterations * nonzero_elements;
-   gflops = flops / time * 1.0e-9;
-}
 
 template< class REAL >
 bool benchmarkMatrix( const tnlString& input_file,

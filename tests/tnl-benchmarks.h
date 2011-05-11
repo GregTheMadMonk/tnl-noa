@@ -147,6 +147,7 @@ void reductionBenchmark( const int size,
             tnlCPUReductionSum( host_vector, sum );
             tnlCPUReductionMin( host_vector, sum );
             tnlCPUReductionMax( host_vector, sum );
+#ifdef HAVE_CUDA
          case 1:
             tnlCUDASimpleReduction1< T, tnlParallelReductionSum >( size,
                                                                    device_vector. getVector(),
@@ -236,6 +237,7 @@ void reductionBenchmark( const int size,
                                                                               max,
                                                                               0.0,
                                                                               device_aux. getVector() );
+#endif
 
       }
    }

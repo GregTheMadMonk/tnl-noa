@@ -61,7 +61,7 @@ class tnlMatrix : public tnlObject
    //! Allocates the arrays for the non-zero elements
    virtual bool setNonzeroElements( int n ) = 0;
 
-   virtual Index getNonzeroElementsInRow( const Index& row ) const = 0;
+   virtual Index getNonzeroElementsInRow( const Index& row ) const;
 
    //! Returns the number of the nonzero elements.
    virtual Index getNonzeroElements() const = 0;
@@ -152,6 +152,15 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
    return 0;
 };
+
+template< typename Real, tnlDevice Device, typename Index >
+Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
+{
+   tnlAssert( false, "not implemented yet" );
+   /*
+    * TODO: this method should be abstract
+    */
+}
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation )

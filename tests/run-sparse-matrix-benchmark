@@ -23,31 +23,113 @@ export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-m
 #./tnl-sparse-matrix-check-dbg --input-file matrices/MatrixMarket2/misc/cylshell/s3dkq4m2.mtx
 #exit
 
-echo "+---------------------------------------------------------------------------------------------------------------------------------------+--------+-------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+---------------------------------------+---------------------------------------+---------------------------------------+---------------------------------------+------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+------------------------------------------------------+" > sparse-matrix-benchmark-float.log
-echo "|                                                                                                                                       |        |                   |                 COALESCED CSR BLOCK SIZE 16          |                 COALESCED CSR BLOCK SIZE 32          |                 COALESCED CSR BLOCK SIZE 64          |                 COALESCED CSR BLOCK SIZE 128         |                 COALESCED CSR BLOCK SIZE 256         |                              RgCSR  GROUP SIZE 16                             |                              RgCSR  GROUP SIZE 32                             |                  |           COALESCED FAST CSR BLOCK SIZE 32           |           COALESCED FAST CSR BLOCK SIZE 64           |           COALESCED FAST CSR BLOCK SIZE 128          |           COALESCED FAST CSR BLOCK SIZE 256          |           COALESCED FAST CSR BLOCK SIZE 512          |" >> sparse-matrix-benchmark-float.log
-echo "|                                               TESTING MATRIX                                                                          |  CSR   |       HYB         |--------------+-------------------+-------------------|--------------+-------------------+-------------------+--------------+-------------------+-------------------+--------------+-------------------+-------------------+--------------+-------------------+-------------------+-------------------+-------------------+-------------------+-------------------+-------------------+-------------------+-------------------+-------------------+      FAST CSR    +--------------+-------------------+-------------------+--------------+-------------------+-------------------+--------------+-------------------+-------------------+--------------+-------------------+-------------------+--------------+-------------------+-------------------+" >> sparse-matrix-benchmark-float.log
-echo "|                                                                                                                                       |        |                   |              |       CPU         |       CUDA        |              |       CPU         |       CUDA        |              |       CPU         |       CUDA        |              |       CPU         |       CUDA        |              |       CPU         |       CUDA        |       32          |       64          |       128         |       256         |       32          |       64          |       128         |       256         |                  |              |       CPU         |        CUDA       |              |       CPU         |        CUDA       |              |       CPU         |        CUDA       |              |       CPU         |        CUDA       |              |       CPU         |        CUDA       |" >> sparse-matrix-benchmark-float.log
-echo "+---------------------------------------------------------------------------------------------------+---------+------------+------------+--------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+---------+--------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+" >> sparse-matrix-benchmark-float.log
-echo "| NAME                                                                                              |  SIZE   | NONZEROS N.| NONZEROS % | GFLOPS | GFLOPS | SPEED-UP | ARTIF. ZEROS | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | ARTIF. ZEROS | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | ARTIF. ZEROS | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | ARTIF. ZEROS | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | ARTIF. ZEROS | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | CMP.EF. | GFLOPS | DICTN. SIZE  | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | DICTN. SIZE  | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | DICTN. SIZE  | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | DICTN. SIZE  | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP | DICTN. SIZE  | GFLOPS | SPEED-UP | GFLOPS | SPEED-UP |" >> sparse-matrix-benchmark-float.log
-echo "+---------------------------------------------------------------------------------------------------+---------+------------+------------+--------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+---------+--------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+--------------+--------+----------+--------+----------+" >> sparse-matrix-benchmark-float.log
+write_header()
+{
+   echo "<html>" > $1
+   echo "   <body>" >> $1
+   echo "      <table border=1>" >> $1
+   echo "          <tr>" >> $1
+   echo "             <td rowspan=4 colspan=4 align=center>Matrix</td>" >> $1
+   echo "             <td rowspan=4 align=center>CSR</td>" >> $1
+   echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
+   echo "             <td colspan=33 align=center>Row-Grouped CSR</td>" >> $1
+   echo "          </tr>" >> $1
+   
+   echo "          <tr>" >> $1
+   echo "             <td colspan=11>Group Size = 16</td>" >> $1
+   echo "             <td colspan=11>Group Size = 32</td>" >> $1
+   echo "             <td colspan=11>Group Size = 64</td>" >> $1   
+   echo "          </tr>" >> $1
+   
+   echo "          <tr>" >> $1
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 16
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 32
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1   
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 64
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1         
+   echo "          </tr>" >> $1
+   
+   echo "          <tr>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 16
+   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 32
+   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 64
+   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+            
+   echo "          </tr>" >> $1      
+         
+   echo "          <tr>" >> $1
+   echo "             <td>Name</td>" >> $1                      # Matrix description
+   echo "             <td>Size</td>" >> $1
+   echo "             <td>NonZeros No.</td>" >> $1
+   echo "             <td>NonZeros %</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1                    # CSR format on CPU
+   echo "             <td>GFlops</td>" >> $1                    # Hybrid format Bell, Garland on GPU
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 16
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 32
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 64
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   
+   
+   
+   
+   
+}
 
-cp -f sparse-matrix-benchmark-float.log sparse-matrix-benchmark-double.log 
-cp -f sparse-matrix-benchmark-float.log sparse-matrix-benchmark-descend-float.log 
-cp -f sparse-matrix-benchmark-float.log sparse-matrix-benchmark-descend-double.log 
-cp -f sparse-matrix-benchmark-float.log sparse-matrix-benchmark-amd-float.log 
-cp -f sparse-matrix-benchmark-float.log sparse-matrix-benchmark-amd-double.log 
+write_closing()
+{
+   echo "      </table>" >> $1
+   echo "   </body>" >> $1
+   echo "</html>" >> $1
+}
 
-echo "+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+-----------------------------------------------------------+" > sparse-matrix-profiling-float.log
-echo "|                                                                                                   |                    COALESCED CSR BLOCK SIZE 32            |                    COALESCED CSR BLOCK SIZE 64            |                    COALESCED CSR BLOCK SIZE 128           |                    COALESCED CSR BLOCK SIZE 256           |            RgCSR GROUP SIZE 16 BLOCK SIZE 32              |            RgCSR GROUP SIZE 16 BLOCK SIZE 64              |            RgCSR GROUP SIZE 16 BLOCK SIZE 128             |            RgCSR GROUP SIZE 16 BLOCK SIZE 256             |            RgCSR GROUP SIZE 32 BLOCK SIZE 32              |            RgCSR GROUP SIZE 32 BLOCK SIZE 64              |            RgCSR GROUP SIZE 32 BLOCK SIZE 128             |            RgCSR GROUP SIZE 32 BLOCK SIZE 256             |" >> sparse-matrix-profiling-float.log
-echo "|                                        TESTING MATRIX                                             |-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------|-----------+-----------+-----------+-----------+-----------+" >> sparse-matrix-profiling-float.log
-echo "|                                                                                                   | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. | Occupancy | Cache Hit |Cache Miss | GldIncoh. | GstIncoh. |" >> sparse-matrix-profiling-float.log
-echo "+---------------------------------------------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+" >> sparse-matrix-profiling-float.log
+write_header sparse-matrix-benchmark-float.log.html
+write_header sparse-matrix-benchmark-double.log.html
 
-cp -f sparse-matrix-profiling-float.log sparse-matrix-profiling-double.log 
-cp -f sparse-matrix-profiling-float.log sparse-matrix-profiling-descend-float.log 
-cp -f sparse-matrix-profiling-float.log sparse-matrix-profiling-descend-double.log 
-cp -f sparse-matrix-profiling-float.log sparse-matrix-profiling-amd-float.log 
-cp -f sparse-matrix-profiling-float.log sparse-matrix-profiling-amd-double.log 
+
+
+
 
 for link in $MM_MATRICES;
 do
@@ -67,7 +149,7 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in single precision ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log --stop-time $STOP_TIME --verbose 1
+         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1
          perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
          gzip $unzipped_matrix
       fi
@@ -79,7 +161,7 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in double precison ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-double.log --stop-time $STOP_TIME --verbose 1
+         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1
          gzip $unzipped_matrix
       fi
       #######
@@ -147,14 +229,14 @@ do
             echo "Missing $file.float.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-float.log --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1                        
          fi
          if test ! -e $file.double.bin.bz2;
          then
             echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-double.log --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1                        
          fi                           
          #######
          ## Descend ordering
@@ -193,4 +275,8 @@ do
          rm $file         
       done
    fi
+   
+   write_closing sparse-matrix-benchmark-float.log.html.html
+   write_closing sparse-matrix-benchmark-double.log.html.html
+   
 done
