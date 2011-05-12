@@ -42,12 +42,19 @@
 
 using namespace std;
 
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
 class tnlSpmvBenchmark
 {
    public:
 
-   template< typename Real, typename Index>
-   virtual void runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
+   tnlSpmvBenchmark();
+
+   virtual bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+
+   void runBenchmark();
 
    void writeProgress( const tnlString& matrixFormat,
                        const int cudaBlockSize,
@@ -61,34 +68,84 @@ class tnlSpmvBenchmark
 
    bool getBenchmarkWasSuccesful() const;
 
-   void setBenchmarkWasSuccesful( bool benchmarkWasSuccesful );
+   double getGflops() const;
+
+   double getTime() const;
+
+   Index getArtificialZeros() const;
+
+   protected:
 
    bool benchmarkWasSuccesful;
+
+   double gflops;
+
+   double time;
+
+   Index artificialZeros;
+
+   Matrix< Real, Device, Index > matrix;
 };
 
-tnlSpmvBenchmark :: tnlSpmvBenchmark()
-   : benchmarkWasSuccesful( false )
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
+   : benchmarkWasSuccesful( false ),
+     gflops( 0.0 ),
+     artificialZeros( 0 )
 {
 
 }
 
-bool tnlSpmvBenchmark :: getBenchmarkWasSuccesful() const
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBenchmarkWasSuccesful() const
 {
-   return benchmarkWasSuccesful;
+   return this -> benchmarkWasSuccesful;
 }
 
-void tnlSpmvBenchmark :: setBenchmarkWasSuccesful( bool benchmarkWasSuccesful )
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getGflops() const
 {
-   this -> benchmarkWasSuccesful = benchmarkWasSuccesful;
+   return this -> gflops;
 }
 
-void tnlSpmvBenchmark :: writeProgress( const tnlString& matrixFormat,
-                                        const int cudaBlockSize,
-                                        const double& time,
-                                        const int iterations,
-                                        const double& gflops,
-                                        bool check,
-                                        const tnlString& info )
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getTime() const
+{
+   return this -> time;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+Index tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getArtificialZeros() const
+{
+   return this -> artificialZeros;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgress( const tnlString& matrixFormat,
+                                                               const int cudaBlockSize,
+                                                               const double& time,
+                                                               const int iterations,
+                                                               const double& gflops,
+                                                               bool check,
+                                                               const tnlString& info )
 {
    if( ! cudaBlockSize )
       cout << left << setw( 30 ) << matrixFormat;
@@ -104,14 +161,13 @@ void tnlSpmvBenchmark :: writeProgress( const tnlString& matrixFormat,
    cout << info << endl;
 }
 
-template< typename Real, tnlDevice device, typename Index >
-void benchmarkSpMV( const tnlMatrix< Real, device, Index >& matrix,
-                    const tnlLongVector< Real, device, Index >& x,
-                    const int nonzero_elements,
-                    tnlLongVector< Real, device, Index >& b,
-                    double& time,
-                    double& gflops,
-                    int& iterations )
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmarkSpMV( const tnlLongVector< Real, Device, Index >& x,
+                                                                          const tnlLongVector< Real, tnlHost, Index >& refB )
 {
    tnlTimerRT rt_timer;
    rt_timer. Reset();
@@ -122,19 +178,33 @@ void benchmarkSpMV( const tnlMatrix< Real, device, Index >& matrix,
       iterations += 10;
    }
 
+   Real maxErr( 0.0 );
+   for( Index j = 0; j < size; j ++ )
+   {
+      //f << ref_b[ j ] << " - " << host_b[ j ] << " = "  << ref_b[ j ] - host_b[ j ] <<  endl;
+      if( refB[ j ] != 0.0 )
+         maxErr = Max( maxErr, ( Real ) fabs( refB[ j ] - b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
+      else
+         maxErr = Max( maxErr, ( Real ) fabs( refB[ j ] ) );
+   }
+
    time = rt_timer. GetTime();
-   double flops = 2.0 * iterations * nonzero_elements;
+   double flops = 2.0 * iterations * matrix. getNonzeroElements();
    gflops = flops / time * 1.0e-9;
+   artificialZeros = matrix. getArtificialZeros();
 }
 
-class tnlSpmvBenchmarkCSRFormat : public tnlSpmvBenchmark
+
+
+template< typename Real, typename Index>
+class tnlSpmvBenchmarkCSRFormat : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >
 {
    public:
 
-   template< typename Real, typename Index>
+
    void runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
 
-   double gflops;
+
 
 };
 
