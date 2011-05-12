@@ -59,29 +59,20 @@ int main( int argc, char* argv[] )
       cout << object_type << " detected ... " << endl;
    binaryFile. close();
 
-   spmvBenchmarkStatistics benchmarkStatistics;
-
-   int size, nonzero_elements;
-
    if( object_type == "tnlCSRMatrix< float, tnlHost >")
       benchmarkMatrix< float >( str_input_file,
-               str_input_mtx_file,
-               verbose,
-               stop_time,
-               size,
-               nonzero_elements,
-               benchmarkStatistics );
+                                str_input_mtx_file,
+                                log_file_name,
+                                verbose );
 
    if( object_type == "tnlCSRMatrix< double, tnlHost >" )
    {
 #if CUDA_ARCH > 12
       benchmarkMatrix< double >( str_input_file,
-               str_input_mtx_file,
-               verbose,
-               stop_time,
-               size,
-               nonzero_elements,
-               benchmarkStatistics );
+                                 str_input_mtx_file,
+                                 log_file_name,
+                                 verbose );
+
 #else
    cerr << "Skipping double precision test because this CUDA device does not support the double precision." << endl;
 #endif
@@ -89,22 +80,6 @@ int main( int argc, char* argv[] )
    //binaryFile. close();
 
 
-   fstream log_file;
-   if( log_file_name )
-   {
-      log_file. open( log_file_name. getString(), ios :: out | ios :: app );
-      if( ! log_file )
-      {
-         cerr << "Unable to open log file " << log_file_name << " for appending logs." << endl;
-         return EXIT_FAILURE;
-      }
-      cout << "Writing to log file " << log_file_name << "..." << endl;
-      double all_elements = ( double ) size;
-      benchmarkStatistics. writeToLog( log_file,
-                                       str_input_file,
-                                       size,
-                                       nonzero_elements,
-                                       all_elements * all_elements );
-   }
+
    return EXIT_SUCCESS;
 }

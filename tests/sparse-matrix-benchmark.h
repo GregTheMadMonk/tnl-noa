@@ -52,9 +52,13 @@ class tnlSpmvBenchmark
 
    tnlSpmvBenchmark();
 
-   virtual bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+   virtual bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
 
-   void runBenchmark();
+   void runBenchmark( const tnlLongVector< Real, Device, Index >& x,
+                      const tnlLongVector< Real, tnlHost, Index >& refB );
+
+   virtual void tearDown() = 0;
+
 
    void writeProgress( const tnlString& matrixFormat,
                        const int cudaBlockSize,
@@ -64,13 +68,15 @@ class tnlSpmvBenchmark
                        bool check,
                        const tnlString& info );
 
-   void writeLog( ostream& str ) const = 0;
+   //void writeLog( ostream& str ) const = 0;
 
    bool getBenchmarkWasSuccesful() const;
 
    double getGflops() const;
 
    double getTime() const;
+
+   int getIterations() const;
 
    Index getArtificialZeros() const;
 
@@ -81,6 +87,8 @@ class tnlSpmvBenchmark
    double gflops;
 
    double time;
+
+   int iterations;
 
    Index artificialZeros;
 
@@ -94,6 +102,8 @@ template< typename Real,
 tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
    : benchmarkWasSuccesful( false ),
      gflops( 0.0 ),
+     time( 0.0 ),
+     iterations( 0.0 ),
      artificialZeros( 0 )
 {
 
@@ -130,6 +140,16 @@ template< typename Real,
           tnlDevice Device,
           typename Index,
           template< typename Real, tnlDevice Device, typename Index > class Matrix >
+int tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getIterations() const
+{
+   return this -> iterations;
+}
+
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
 Index tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getArtificialZeros() const
 {
    return this -> artificialZeros;
@@ -140,12 +160,12 @@ template< typename Real,
           typename Index,
           template< typename Real, tnlDevice Device, typename Index > class Matrix >
 void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgress( const tnlString& matrixFormat,
-                                                               const int cudaBlockSize,
-                                                               const double& time,
-                                                               const int iterations,
-                                                               const double& gflops,
-                                                               bool check,
-                                                               const tnlString& info )
+                                                                       const int cudaBlockSize,
+                                                                       const double& time,
+                                                                       const int iterations,
+                                                                       const double& gflops,
+                                                                       bool check,
+                                                                       const tnlString& info )
 {
    if( ! cudaBlockSize )
       cout << left << setw( 30 ) << matrixFormat;
@@ -166,9 +186,13 @@ template< typename Real,
           tnlDevice Device,
           typename Index,
           template< typename Real, tnlDevice Device, typename Index > class Matrix >
-void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmarkSpMV( const tnlLongVector< Real, Device, Index >& x,
-                                                                          const tnlLongVector< Real, tnlHost, Index >& refB )
+void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlLongVector< Real, Device, Index >& x,
+                                                                      const tnlLongVector< Real, tnlHost, Index >& refB )
 {
+   benchmarkWasSuccesful = false;
+   tnlLongVector< Real, Device, Index > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   if( ! b. setSize( refB. getSize() ) )
+      return;
    tnlTimerRT rt_timer;
    rt_timer. Reset();
 
@@ -179,9 +203,9 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmarkSpMV( const 
    }
 
    Real maxErr( 0.0 );
-   for( Index j = 0; j < size; j ++ )
+   for( Index j = 0; j < refB. getSize(); j ++ )
    {
-      //f << ref_b[ j ] << " - " << host_b[ j ] << " = "  << ref_b[ j ] - host_b[ j ] <<  endl;
+      //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
       if( refB[ j ] != 0.0 )
          maxErr = Max( maxErr, ( Real ) fabs( refB[ j ] - b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
       else
@@ -192,6 +216,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmarkSpMV( const 
    double flops = 2.0 * iterations * matrix. getNonzeroElements();
    gflops = flops / time * 1.0e-9;
    artificialZeros = matrix. getArtificialZeros();
+   benchmarkWasSuccesful = true;
 }
 
 
@@ -201,175 +226,31 @@ class tnlSpmvBenchmarkCSRFormat : public tnlSpmvBenchmark< Real, tnlHost, Index,
 {
    public:
 
+   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
 
-   void runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
-
-
+   void tearDown();
 
 };
 
 template< typename Real, typename Index>
-void tnlSpmvBenchmarkCSRFormat :: runBenchmark( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkCSRFormat< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-
-};
-
-class spmvBenchmarkStatistics
-{
-   public:
-
-   spmvBenchmarkStatistics();
-
-   void reset();
-
-   bool writeToLog( ostream& log_file,
-                    const tnlString& input_file,
-                    long int size,
-                    long int nonzero_elements,
-                    const double& all_elements );
-
-
-   int spmv_csr_iter,
-       spmv_hyb_iter,
-       spmv_coacsr_iter[ 6 ],
-       spmv_cuda_coacsr_iter[ 6 ],
-       spmv_cuda_rgcsr_iter[ 10 ],
-       spmv_ellpack_iter,
-       spmv_fast_csr_iter,
-       spmv_coa_fast_csr_iter[ 6 ],
-       spmv_cuda_coa_fast_csr_iter[ 6 ],
-       spmv_cuda_arg_csr_iter,
-       coa_fast_csr_max_cs_dict_size[ 6 ],
-       coacsr_artificial_zeros[ 6 ];
-   double spmv_csr_gflops,
-          spmv_hyb_gflops,
-          spmv_coacsr_gflops[ 6 ],
-          spmv_cuda_coacsr_gflops[ 6 ],
-          spmv_cuda_rgcsr_gflops[ 10 ],
-          spmv_ellpack_gflops,
-          spmv_fast_csr_gflops,
-          spmv_coa_fast_csr_gflops[ 6 ],
-          spmv_cuda_coa_fast_csr_gflops[ 6 ],
-          spmv_cuda_arg_csr_gflops;
-   double coa_csr_artificial_zeros[ 7 ],
-          ellpack_artificial_zeros,
-          fast_csr_compression,
-          coa_fast_csr_compression[ 5 ];
-};
-
-spmvBenchmarkStatistics :: spmvBenchmarkStatistics()
-: spmv_csr_iter( 0 ),
-  spmv_hyb_iter( 0 ),
-  spmv_ellpack_iter( 0 ),
-  spmv_fast_csr_iter( 0 ),
-  spmv_cuda_arg_csr_iter( 0 ),
-  spmv_csr_gflops( 0.0 ),
-  spmv_hyb_gflops( 0.0 ),
-  spmv_ellpack_gflops( 0.0 ),
-  spmv_fast_csr_gflops( 0.0 ),
-  spmv_cuda_arg_csr_gflops( 0.0 ),
-  ellpack_artificial_zeros( 0 ),
-  fast_csr_compression( 0 )
-{
-
+   this -> matrix = matrix;
 }
 
-void spmvBenchmarkStatistics :: reset()
+template< typename Real, typename Index>
+void tnlSpmvBenchmarkCSRFormat< Real, Index > :: tearDown()
 {
-   spmv_csr_iter = 0;
-   spmv_fast_csr_iter = 0;
-   spmv_ellpack_iter = 0;
-   spmv_cuda_arg_csr_iter = 0;
-
-   spmv_csr_gflops = 0.0;
-   spmv_fast_csr_gflops = 0.0;
-   spmv_ellpack_gflops = 0.0;
-   spmv_cuda_arg_csr_gflops = 0.0;
-
-   for( int i = 0; i < 6; i ++ )
-   {
-      spmv_coacsr_iter[ i ] = 0;
-      spmv_cuda_coacsr_iter[ i ] = 0;
-      spmv_coa_fast_csr_iter[ i ] = 0;
-      spmv_cuda_coa_fast_csr_iter[ i ] = 0;
-      spmv_coacsr_gflops[ i ] = 0.0;
-      spmv_cuda_coacsr_gflops[ i ] = 0.0;
-      spmv_coa_fast_csr_gflops[ i ] = 0.0;
-      spmv_cuda_coa_fast_csr_gflops[ i ] = 0.0;
-      coa_csr_artificial_zeros[ i ] = 0.0;
-      coa_fast_csr_compression[ i ] = 0.0;
-      coa_fast_csr_max_cs_dict_size[ i ] = 0;
-      coacsr_artificial_zeros[ i ] = 0;
-   }
-   /*for( int i = 0; i < 10; i ++ )
-   {
-      spmv_cuda_rg_csr_iter[ i ] = 0;
-      spmv_cuda_rg_csr_iter[ i ] = 0;
-      spmv_cuda_rg_csr_gflops[ i ] = 0.0;
-      spmv_cuda_rg_csr_gflops[ i ] = 0.0;
-   }*/
-
+   this -> matrix. setSize( 0 );
 }
 
-bool spmvBenchmarkStatistics :: writeToLog( ostream& log_file,
-                                            const tnlString& input_file,
-                                            long int size,
-                                            long int nonzero_elements,
-                                            const double& all_elements )
-{
-   log_file << "          <tr>" << endl;
-   log_file << "             <td> " << input_file << "</td>" << endl;
-   log_file << "             <td> " << size << "</td>" << endl;
-   log_file << "             <td> " << nonzero_elements << "</td>" << endl;
-   log_file << "             <td> " << ( double ) nonzero_elements / all_elements << " %" << "</td>" << endl;
-   log_file << "             <td> " << spmv_csr_gflops << "</td>" << endl;
-   log_file << "             <td> " << spmv_hyb_gflops << "</td>" << endl;
-   log_file << "             <td> " << spmv_hyb_gflops / spmv_csr_gflops << "</td>" << endl;
-   log_file << "          </tr>" << endl;
-
-/*   for( int i = 0; i < 6; i ++ )
-   {
-      log_file << " | " << setw( 10 ) << setprecision( 2 ) << fixed << coa_csr_artificial_zeros[ i ] << " %"
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_coacsr_gflops[ i ]
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_coacsr_gflops[ i ] / spmv_csr_gflops
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_coacsr_gflops[ i ]
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_coacsr_gflops[ i ] / spmv_csr_gflops;
-   }
-   for( int i = 0; i < 8; i ++ )
-   {
-      log_file << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_rgcsr_gflops[ i ]
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_rgcsr_gflops[ i ] / spmv_csr_gflops;
-   }
-
-
-   log_file << " | " << setw( 5 ) << setprecision( 2 ) << fixed << fast_csr_compression << " %"
-            << " | " << setw( 6 ) << setprecision( 2 ) << spmv_fast_csr_gflops;
-   for( int i = 0; i < 5; i ++ )
-   {
-      log_file << " | " << setw( 12 ) << setprecision( 2 ) << coa_fast_csr_max_cs_dict_size[ i ]
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_coa_fast_csr_gflops[ i ]
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_coa_fast_csr_gflops[ i ] / spmv_csr_gflops
-               << " | " << setw( 6 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ]
-               << " | " << setw( 8 ) << setprecision( 2 ) << spmv_cuda_coa_fast_csr_gflops[ i ] / spmv_csr_gflops;
-   }
-   log_file << " |" << endl;*/
-}
-
-
-
-template< class REAL >
+template< class Real >
 bool benchmarkMatrix( const tnlString& input_file,
                       const tnlString& input_mtx_file,
-                      int verbose,
-                      const double&	stop_time,
-                      int& size,
-                      int& nonzero_elements,
-                      spmvBenchmarkStatistics& benchmarkStatistics )
+                      const tnlString& logFileName,
+                      int verbose )
 {
-
-   benchmarkStatistics. reset();
-
-   /*
+   /****
     * Write teminal table header
     */
    if( verbose )
@@ -384,7 +265,10 @@ bool benchmarkMatrix( const tnlString& input_file,
            << setfill( ' ');
 
 
-   tnlCSRMatrix< REAL > csr_matrix( "csr-matrix" );
+   /****
+    * Read the CSR matrix ...
+    */
+   tnlCSRMatrix< Real > csrMatrix( "csr-matrix" );
    tnlFile binaryFile;
    if( ! binaryFile. open( input_file, tnlReadMode ) )
    {
@@ -393,7 +277,7 @@ bool benchmarkMatrix( const tnlString& input_file,
    }
    if( verbose )
       cout << "Reading the CSR matrix ... " << flush;
-   if( ! csr_matrix. load( binaryFile ) )
+   if( ! csrMatrix. load( binaryFile ) )
    {
       cerr << "Unable to restore the CSR matrix." << endl;
       return false;
@@ -402,36 +286,66 @@ bool benchmarkMatrix( const tnlString& input_file,
       cout << " OK." << endl;
    binaryFile. close();
 
-   nonzero_elements = csr_matrix. checkNonzeroElements();
-   if( nonzero_elements != csr_matrix. getNonzeroElements() )
-      cerr << "WARNING: The matrix reports " << csr_matrix. getNonzeroElements() << " but actually there are " << nonzero_elements << " non-zero elements." << endl;
+   /****
+    * Check the real number of the non-zero elements
+    */
+   const long int nonzeroElements = csrMatrix. checkNonzeroElements();
+   if( nonzeroElements != csrMatrix. getNonzeroElements() )
+      cerr << "WARNING: The matrix reports " << csrMatrix. getNonzeroElements() << " but actually there are " << nonzeroElements << " non-zero elements." << endl;
    if( verbose )
-      cout << "Matrix size: " << csr_matrix. getSize()
-           << " Non-zero elements: " << nonzero_elements << endl;
+      cout << "Matrix size: " << csrMatrix. getSize()
+           << " Non-zero elements: " << nonzeroElements << endl;
 
-   size = csr_matrix. getSize();
-   nonzero_elements = csr_matrix. getNonzeroElements();
-   tnlLongVector< REAL, tnlHost > ref_x( "ref-x", size ), ref_b( "ref-b", size);
-   tnlLongVector< REAL, tnlHost > host_x( "host-x", size ), host_b( "host-b", size);
-   tnlLongVector< REAL, tnlCuda > cuda_x( "cuda-x", size ), cuda_b( "cuda-b", size);
+   const long int size = csrMatrix. getSize();
+   tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
    for( int i = 0; i < size; i ++ )
-      ref_x[ i ] = 1.0; //( REAL ) i * 1.0 / ( REAL ) size;
-   ref_b. setValue( 0.0 );
-   host_x = ref_x;
-   host_b. setValue( 0.0 );
-#ifdef HAVE_CUDA
-   cuda_x = ref_x;
-   cuda_b. setValue( 0.0 );
-#endif
+      refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
+   csrMatrix. vectorProduct( refX, refB );
 
+   /****
+    * CSR format benchmark
+    */
+   tnlSpmvBenchmarkCSRFormat< Real, int > csrFormatBenchmark;
+   csrFormatBenchmark. setup( csrMatrix );
+   csrFormatBenchmark. runBenchmark( refX, refB );
+   csrFormatBenchmark. tearDown();
+
+   /****
+    * Open and write one line to the log file
+    */
+   fstream logFile;
+   if( logFileName )
+   {
+      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      if( ! logFile )
+      {
+         cerr << "Unable to open log file " << logFileName << " for appending logs." << endl;
+         return false;
+      }
+      cout << "Writing to log file " << logFileName << "..." << endl;
+      long int allElements = csrMatrix -> getSize() * csrMatrix -> getSize();
+      logFile << "          <tr>" << endl;
+      logFile << "             <td> " << input_file << "</td>" << endl;
+      logFile << "             <td> " << csrMatrix -> getSize() << "</td>" << endl;
+      logFile << "             <td> " << nonzeroElements << "</td>" << endl;
+      logFile << "             <td> " << ( double ) nonzeroElements / allElements << " %" << "</td>" << endl;
+      logFile << "             <td> " << csrFormatBenchmark. getGflops() << "</td>" << endl;
+      //logFile << "             <td> " << spmv_hyb_gflops << "</td>" << endl;
+      //logFile << "             <td> " << spmv_hyb_gflops / spmv_csr_gflops << "</td>" << endl;
+      logFile << "          </tr>" << endl;
+      logFile. close();
+   }
+}
+
+#ifdef UNDEF
 
    if( verbose )
       cout << left << setw( 30 ) << "CSR " << flush;
    double time = stop_time;
-   benchmarkSpMV< REAL, tnlHost >( csr_matrix,
-                                   ref_x,
+   benchmarkSpMV< Real, tnlHost >( csrMatrix,
+                                   refX,
                                    nonzero_elements,
-                                   ref_b,
+                                   refB,
                                    time,
                                    benchmarkStatistics. spmv_csr_gflops,
                                    benchmarkStatistics. spmv_csr_iter );
@@ -450,7 +364,7 @@ bool benchmarkMatrix( const tnlString& input_file,
          cout << left << setw( 30 ) << "Hybrid (CUSP) " << flush;
 
       time = stop_time;
-      tnlLongVector< REAL, tnlHost > hyb_b( "hyb-b", size );
+      tnlLongVector< Real, tnlHost > hyb_b( "hyb-b", size );
 
       cuspSpMVTest( input_mtx_file. getString(),
                     time,
@@ -459,14 +373,14 @@ bool benchmarkMatrix( const tnlString& input_file,
                     spmv_hyb_gflops,
                     hyb_b );
 
-      REAL max_err( 0.0 );
+      Real max_err( 0.0 );
       for( int j = 0; j < size; j ++ )
       {
-         //f << ref_b[ j ] << " - " << host_b[ j ] << " = "  << ref_b[ j ] - host_b[ j ] <<  endl;
-         if( ref_b[ j ] != 0.0 )
-            max_err = Max( max_err, ( REAL ) fabs( ref_b[ j ] - hyb_b[ j ] ) /  ( REAL ) fabs( ref_b[ j ] ) );
+         //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
+         if( refB[ j ] != 0.0 )
+            max_err = Max( max_err, ( Real ) fabs( refB[ j ] - hyb_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
          else
-            max_err = Max( max_err, ( REAL ) fabs( hyb_b[ j ] ) );
+            max_err = Max( max_err, ( Real ) fabs( hyb_b[ j ] ) );
       }
       //f. close();
 
@@ -485,12 +399,12 @@ bool benchmarkMatrix( const tnlString& input_file,
    if( verbose )
       cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
 
-   tnlAdaptiveRgCSRMatrix< REAL, tnlHost > argcsr_matrix( "argcsr-matrix" );
-   argcsr_matrix. setCUDABlockSize( 128 );
-   if( argcsr_matrix. copyFrom( csr_matrix ) )
+   tnlAdaptiveRgCSRMatrix< Real, tnlHost > argcsrMatrix( "argcsr-matrix" );
+   argcsrMatrix. setCUDABlockSize( 128 );
+   if( argcsrMatrix. copyFrom( csrMatrix ) )
    {
       /*time = stop_time;
-      benchmarkSpMV< REAL, tnlCuda >( cuda_coacsr_matrix,
+      benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
                                       cuda_x,
                                       nonzero_elements,
                                       cuda_b,
@@ -503,7 +417,7 @@ bool benchmarkMatrix( const tnlString& input_file,
               << right << setw( 15 ) << spmv_cuda_coa_csr_iter[ block_iter ]
               << right << setw( 12 ) << setprecision( 2 ) << spmv_cuda_coa_csr_gflops[ block_iter ];
 
-      if( ref_b != cuda_b )
+      if( refB != cuda_b )
       {
          if( verbose )
             cout << right << setw( 12 ) << "FAILED." << endl;
@@ -530,13 +444,13 @@ bool benchmarkMatrix( const tnlString& input_file,
    if( verbose )
       cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
 
-   tnlAdaptiveRgCSRMatrix< REAL, tnlCuda > cuda_argcsr_matrix( "cuda-argcsr-matrix" );
-   cuda_argcsr_matrix. setCUDABlockSize( 128 );
+   tnlAdaptiveRgCSRMatrix< Real, tnlCuda > cuda_argcsrMatrix( "cuda-argcsr-matrix" );
+   cuda_argcsrMatrix. setCUDABlockSize( 128 );
 
-   if( cuda_argcsr_matrix. copyFrom( argcsr_matrix ) )
+   if( cuda_argcsrMatrix. copyFrom( argcsrMatrix ) )
    {
       time = stop_time;
-      benchmarkSpMV< REAL, tnlCuda >( cuda_argcsr_matrix,
+      benchmarkSpMV< Real, tnlCuda >( cuda_argcsrMatrix,
                                       cuda_x,
                                       nonzero_elements,
                                       cuda_b,
@@ -549,7 +463,7 @@ bool benchmarkMatrix( const tnlString& input_file,
               << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_arg_csr_iter
               << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_arg_csr_gflops;
 
-      if( ref_b != cuda_b )
+      if( refB != cuda_b )
       {
          if( verbose )
             cout << right << setw( 12 ) << "FAILED." << endl;
@@ -578,14 +492,14 @@ bool benchmarkMatrix( const tnlString& input_file,
       if( verbose )
          cout << left << setw( 25 ) << "Row-grouped CSR " << setw( 5 ) << block_size << flush;
 
-      tnlRgCSRMatrix< REAL, tnlHost, int > coacsr_matrix( "coacsr-matrix", block_size );
+      tnlRgCSRMatrix< Real, tnlHost, int > coacsrMatrix( "coacsr-matrix", block_size );
 
-      if( coacsr_matrix. copyFrom( csr_matrix ) )
+      if( coacsrMatrix. copyFrom( csrMatrix ) )
       {
-         benchmarkStatistics. coa_csr_artificial_zeros[ block_iter ] = 100.0 * ( double ) coacsr_matrix. getArtificialZeroElements() / ( double ) coacsr_matrix. getNonzeroElements();
+         benchmarkStatistics. coa_csr_artificial_zeros[ block_iter ] = 100.0 * ( double ) coacsrMatrix. getArtificialZeroElements() / ( double ) coacsrMatrix. getNonzeroElements();
 
          time = stop_time;
-         benchmarkSpMV< REAL, tnlHost >( coacsr_matrix,
+         benchmarkSpMV< Real, tnlHost >( coacsrMatrix,
                                          host_x,
                                          nonzero_elements,
                                          host_b,
@@ -598,7 +512,7 @@ bool benchmarkMatrix( const tnlString& input_file,
                  << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_coacsr_gflops[ block_iter ] << flush;
 
 
-         if( ref_b != host_b )
+         if( refB != host_b )
          {
             if( verbose )
                cout << right << setw( 12 ) << "FAILED." << endl;
@@ -621,12 +535,12 @@ bool benchmarkMatrix( const tnlString& input_file,
       if( verbose )
          cout << left << setw( 25 ) << "Row-grouped CSR CUDA" << setw( 5 ) << block_size << flush;
 
-      tnlRgCSRMatrix< REAL, tnlCuda > cuda_coacsr_matrix( "cuda-coacsr-matrix" );
+      tnlRgCSRMatrix< Real, tnlCuda > cuda_coacsrMatrix( "cuda-coacsr-matrix" );
 
-      if( cuda_coacsr_matrix. copyFrom( coacsr_matrix ) )
+      if( cuda_coacsrMatrix. copyFrom( coacsrMatrix ) )
       {
          time = stop_time;
-         benchmarkSpMV< REAL, tnlCuda >( cuda_coacsr_matrix,
+         benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
                                          cuda_x,
                                          nonzero_elements,
                                          cuda_b,
@@ -639,7 +553,7 @@ bool benchmarkMatrix( const tnlString& input_file,
                  << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ]
                  << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ];
 
-         if( ref_b != cuda_b )
+         if( refB != cuda_b )
 			{
 				if( verbose )
 					cout << right << setw( 12 ) << "FAILED." << endl;
@@ -653,14 +567,14 @@ bool benchmarkMatrix( const tnlString& input_file,
 			fstream f;
 			f. open( "spmv-test-2", ios ::out );
 			host_b = cuda_b;
-			REAL max_err( 0.0 );
+			Real max_err( 0.0 );
 			for( int j = 0; j < size; j ++ )
 			{
-			   if( ref_b[ j ] != 0.0 )
-			      max_err = Max( max_err, ( REAL ) fabs( ref_b[ j ] - host_b[ j ] ) /  ( REAL ) fabs( ref_b[ j ] ) );
+			   if( refB[ j ] != 0.0 )
+			      max_err = Max( max_err, ( Real ) fabs( refB[ j ] - host_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
 			   else
-			      max_err = Max( max_err, ( REAL ) fabs( host_b[ j ] ) );
-			   f << ref_b[ j ] << "  " << host_b[ j ] << endl;
+			      max_err = Max( max_err, ( Real ) fabs( host_b[ j ] ) );
+			   f << refB[ j ] << "  " << host_b[ j ] << endl;
 			}
 			f. close();
 			if( verbose )
@@ -692,14 +606,14 @@ bool benchmarkMatrix( const tnlString& input_file,
       if( verbose )
          cout << left << setw( 30 ) << "Fast CSR " << flush;
 
-      tnlFastCSRMatrix< REAL > fast_csr_matrix( "fast-csr-matrix" );
+      tnlFastCSRMatrix< Real > fast_csrMatrix( "fast-csr-matrix" );
 
-      if( fast_csr_matrix. copyFrom( csr_matrix ) )
+      if( fast_csrMatrix. copyFrom( csrMatrix ) )
       {
-         benchmarkStatistics. fast_csr_compression = 100.0 * ( 1.0 -  ( double ) fast_csr_matrix. getColumnSequencesLength() / ( double ) fast_csr_matrix. getNonzeroElements() );
+         benchmarkStatistics. fast_csr_compression = 100.0 * ( 1.0 -  ( double ) fast_csrMatrix. getColumnSequencesLength() / ( double ) fast_csrMatrix. getNonzeroElements() );
 
          time = stop_time;
-         benchmarkSpMV< REAL, tnlHost >( fast_csr_matrix,
+         benchmarkSpMV< Real, tnlHost >( fast_csrMatrix,
                                          host_x,
                                          nonzero_elements,
                                          host_b,
@@ -711,13 +625,13 @@ bool benchmarkMatrix( const tnlString& input_file,
                  << right << setw( 15 ) << benchmarkStatistics. spmv_fast_csr_iter
                  << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_fast_csr_gflops << flush;
 
-         if( ref_b != host_b )
+         if( refB != host_b )
          {
             if( verbose )
                cout << right << setw( 12 ) << "FAILED." << endl;
-            REAL max_err( 0.0 );
+            Real max_err( 0.0 );
             for( int i = 0; i < size; i ++ )
-               max_err = Max( max_err, ( REAL ) fabs( host_b[ i ] - ref_b[ i ] ) );
+               max_err = Max( max_err, ( Real ) fabs( host_b[ i ] - refB[ i ] ) );
             if( verbose )
                cout << left << setw( 12 ) <<  "  Max. err. is " << max_err << endl;
             benchmarkStatistics. spmv_fast_csr_gflops = -1.0;
@@ -739,14 +653,14 @@ bool benchmarkMatrix( const tnlString& input_file,
          if( verbose )
             cout << left << setw( 25 ) << "Colesced Fast CSR " << setw( 5 ) << block_size << flush;
 
-         tnlFastRgCSRMatrix< REAL > coa_fast_csr_matrix( "coa_fast-csr-matrix", block_size );
+         tnlFastRgCSRMatrix< Real > coa_fast_csrMatrix( "coa_fast-csr-matrix", block_size );
 
-         if( coa_fast_csr_matrix. copyFrom( fast_csr_matrix ) )
+         if( coa_fast_csrMatrix. copyFrom( fast_csrMatrix ) )
          {
-            //coa_fast_csr_compression = 100.0 * ( 1.0 -  ( double ) coa_fast_csr_matrix. getColumnSequencesLength() / ( double ) coa_fast_csr_matrix. getNonzeroElements() );
-            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize();
+            //coa_fast_csr_compression = 100.0 * ( 1.0 -  ( double ) coa_fast_csrMatrix. getColumnSequencesLength() / ( double ) coa_fast_csrMatrix. getNonzeroElements() );
+            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csrMatrix. getMaxColumnSequenceDictionarySize();
             time = stop_time;
-            benchmarkSpMV< REAL, tnlHost >( coa_fast_csr_matrix,
+            benchmarkSpMV< Real, tnlHost >( coa_fast_csrMatrix,
                                             host_x,
                                             nonzero_elements,
                                             host_b,
@@ -758,7 +672,7 @@ bool benchmarkMatrix( const tnlString& input_file,
                     << right << setw( 15 ) << benchmarkStatistics. spmv_coa_fast_csr_iter[ block_iter ]
                     << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_coa_fast_csr_gflops[ block_iter ] << flush;
 
-            if( ref_b != host_b )
+            if( refB != host_b )
             {
                if( verbose )
                   cout << right << setw( 12 ) << "FAILED." << endl;
@@ -770,7 +684,7 @@ bool benchmarkMatrix( const tnlString& input_file,
          }
          else
          {
-            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize();
+            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csrMatrix. getMaxColumnSequenceDictionarySize();
             if( verbose )
                cout << "Format transfer failed!!!" << endl;
             continue;
@@ -784,13 +698,13 @@ bool benchmarkMatrix( const tnlString& input_file,
          if( verbose )
             cout << left << setw( 25 ) << "Coalesced Fast CSR CUDA" << setw( 5 ) << block_size << flush;
 
-         tnlFastRgCSRMatrix< REAL, tnlCuda > cuda_coa_fast_csr_matrix( "cuda-coa-fast-csr-matrix" );
+         tnlFastRgCSRMatrix< Real, tnlCuda > cuda_coa_fast_csrMatrix( "cuda-coa-fast-csr-matrix" );
 
-         if( cuda_coa_fast_csr_matrix. copyFrom( coa_fast_csr_matrix ) )
+         if( cuda_coa_fast_csrMatrix. copyFrom( coa_fast_csrMatrix ) )
          {
             time = stop_time;
             cuda_b. setValue( -1.0 );
-            benchmarkSpMV< REAL, tnlCuda >( cuda_coa_fast_csr_matrix,
+            benchmarkSpMV< Real, tnlCuda >( cuda_coa_fast_csrMatrix,
                                             cuda_x,
                                             nonzero_elements,
                                             cuda_b,
@@ -803,7 +717,7 @@ bool benchmarkMatrix( const tnlString& input_file,
                     << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_coa_fast_csr_iter[ block_iter ]
                     << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_coa_fast_csr_gflops[ block_iter ] << endl;
 
-            //if( ref_b != cuda_b )
+            //if( refB != cuda_b )
 				// {
 				//	if( verbose )
 				//	   cout << right << setw( 12 ) << "FAILED." << endl;
@@ -833,26 +747,26 @@ bool benchmarkMatrix( const tnlString& input_file,
       if( verbose )
          cout << left << setw( 25 ) << "Row grouped CSR " << setw( 5 ) << groupSize << flush;
 
-         tnlRgCSRMatrix< REAL > coacsr_matrix( "coacsr-matrix", groupSize );
+         tnlRgCSRMatrix< Real > coacsrMatrix( "coacsr-matrix", groupSize );
 
-         if( coacsr_matrix. copyFrom( csr_matrix ) )
+         if( coacsrMatrix. copyFrom( csrMatrix ) )
          {
-            double artifZeros = 100.0 * ( double ) coacsr_matrix. getArtificialZeroElements() / ( double ) coacsr_matrix. getNonzeroElements();
+            double artifZeros = 100.0 * ( double ) coacsrMatrix. getArtificialZeroElements() / ( double ) coacsrMatrix. getNonzeroElements();
             if( verbose )
                cout << left << setw( 12 ) << "  OK."
                     << right << setw( 14 ) << "Artif.zeros: " << fixed << artifZeros << "%" << endl;
 
-            tnlRgCSRMatrix< REAL, tnlCuda > cuda_coacsr_matrix( "cuda-coacsr-matrix" );
-            if( cuda_coacsr_matrix. copyFrom( coacsr_matrix ) )
+            tnlRgCSRMatrix< Real, tnlCuda > cuda_coacsrMatrix( "cuda-coacsr-matrix" );
+            if( cuda_coacsrMatrix. copyFrom( coacsrMatrix ) )
             {
                for( int blockSize = 32; blockSize < 512; blockSize *= 2 )
                {
                   if( verbose )
                      cout << left << setw( 25 ) << " Row grouped CSR " << setw( 5 ) << blockSize << flush;
 
-                  cuda_coacsr_matrix. setCUDABlockSize( blockSize );
+                  cuda_coacsrMatrix. setCUDABlockSize( blockSize );
                   time = stop_time;
-                  benchmarkSpMV< REAL, tnlCuda >( cuda_coacsr_matrix,
+                  benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
                                                   cuda_x,
                                                   nonzero_elements,
                                                   cuda_b,
@@ -883,15 +797,15 @@ bool benchmarkMatrix( const tnlString& input_file,
          cout << "Benchmarking ELLPACK format ... " << flush;
 
       int max_row_length, min_row_length, average_row_length;
-      csr_matrix. getRowStatistics( min_row_length,
+      csrMatrix. getRowStatistics( min_row_length,
                                     max_row_length,
                                     average_row_length );
       double alpha= 1.0;
       int ellpack_row_length = ( 1.0 - alpha ) * average_row_length +
                                alpha * max_row_length;
-      tnlEllpackMatrix< REAL, tnlHost > ellpack_matrix( "ellpack-matrix", ellpack_row_length );
+      tnlEllpackMatrix< Real, tnlHost > ellpack_matrix( "ellpack-matrix", ellpack_row_length );
       ellpack_artificial_zeros = 100.0 * ( double ) ellpack_matrix. getArtificialZeroElements() / ( double ) ellpack_matrix. getNonzeroElements();
-      ellpack_matrix. copyFrom( csr_matrix );
+      ellpack_matrix. copyFrom( csrMatrix );
       if( verbose )
            cout << "Min row length = " << min_row_length << endl
                 << "Max row length = " << max_row_length << endl
@@ -901,7 +815,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       time = stop_time;
       host_x. setValue( 1.0 );
       host_b. setValue( 0.0 );
-      benchmarkSpMV< REAL, tnlHost >( ellpack_matrix,
+      benchmarkSpMV< Real, tnlHost >( ellpack_matrix,
                                       host_x,
                                       host_b,
                                       time,
@@ -912,7 +826,7 @@ bool benchmarkMatrix( const tnlString& input_file,
          cout << time << " sec. " << spmv_ellpack_iter << " iterations " << spmv_ellpack_gflops << " GFLOPS." << endl;
       if( verbose )
          cout << "Comparing results ... ";
-      if( ref_b != host_b )
+      if( refB != host_b )
       {
          if( verbose )
             cout << "FAILED." << endl;
@@ -929,5 +843,6 @@ bool benchmarkMatrix( const tnlString& input_file,
    return true;           
 
 }
+#endif
 
 #endif /* SPARSEMATRIXBENCHMARK_H_ */
