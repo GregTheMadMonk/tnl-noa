@@ -52,13 +52,13 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
    void diagonalMatrixTest()
    {
       tnlCSRMatrix< T > csr_matrix( "test-matrix:Diagonal" );
-      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Diagonal", 4 );
+      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Diagonal" );
       csr_matrix. setSize( 12 );
       csr_matrix. setNonzeroElements( 12 );
       for( int i = 0; i < 12; i ++ )
          csr_matrix. setElement( i, i, T( i + 1 ) );
       //cerr << "Copying data to coalesced CSR matrix." << endl;
-      coacsr_matrix. copyFrom( csr_matrix );
+      coacsr_matrix. copyFrom( csr_matrix, 4 );
       //coacsr_matrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < 12; i ++ )
@@ -70,7 +70,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
    void triDiagonalMatrixTest()
    {
       tnlCSRMatrix< T > csr_matrix( "test-matrix:Tridiagonal" );
-      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Tridiagonal", 4 );
+      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Tridiagonal" );
       int size = 12;
       csr_matrix. setSize( size );
       csr_matrix. setNonzeroElements( size * 3 - 2 );
@@ -84,7 +84,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
                                 i,      // first column
                                 offsets );
       }
-      coacsr_matrix. copyFrom( csr_matrix );
+      coacsr_matrix. copyFrom( csr_matrix, 4 );
       //cerr << "----------------" << endl;
       //coacsr_matrix. printOut( cout );
       bool error( false );

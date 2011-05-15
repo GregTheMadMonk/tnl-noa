@@ -121,8 +121,8 @@ bool testMatrixFormats( const tnlString& input_file_name,
 		delete full_matrix;
 	}
 
-	coacsr_matrix = new tnlRgCSRMatrix< T >( "coacsr-matrix", 32 );
-	coacsr_matrix -> copyFrom( *csr_matrix );
+	coacsr_matrix = new tnlRgCSRMatrix< T >( "coacsr-matrix" );
+	coacsr_matrix -> copyFrom( *csr_matrix, 32 );
 
 	/*if( verbose )
 		cout << "Comparing the CSR and the Coalesced CSR matrix ... " << flush;

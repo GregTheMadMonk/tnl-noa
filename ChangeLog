@@ -1,3 +1,24 @@
+2011-05-15  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* tests/cusp-test.h: Removed.
+	* tests/tnlSpmvBenchmark.h: New file.
+	* tests/tnlSpmvBenchmarkCSRMatrix.h: New file.
+	* tests/tnlSpmvBenchmarkHybridMatrix.h: New file.
+	* tests/tnlSpmvBenchmarkRgCSRMatrix.h: New file.
+	* src/core/tnlLongVectorCUDA.h: Adding operator =, denying copy constructors
+	* src/core/tnlLongVectorHost.h: Adding operator =, denying copy constructors 
+	* src/matrix/tnlCSRMatrix.h: Adding reorderRows
+	* src/matrix/tnlMatrix.h: Adding sortRowsDecreasignly
+	* src/matrix/tnlRgCSRMatrix.h:  
+	* tests/Makefile.am:  
+	* tests/matrix-formats-test.h: 
+	* tests/run-sparse-matrix-benchmark: Adding debug
+	* tests/sparse-matrix-benchmark.cpp (main): 
+	* tests/sparse-matrix-benchmark.h: refactoring
+	* tests/unit-tests/Makefile.am:  
+	* tests/unit-tests/matrix/tnlRgCSRMatrixTester.h (triDiagonalMatrixTest): 
+	(diagonalMatrixTest): 
+
 2011-03-09  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* configure.ac: 

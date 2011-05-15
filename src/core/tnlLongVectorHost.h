@@ -29,6 +29,14 @@ template< typename Real, typename Index > class tnlLongVector< Real, tnlHost, In
    //! We do not allow constructor without parameters.
    tnlLongVector(){};
 
+   /****
+    * We do not allow copy constructors as well to avoid having two
+    * vectors with the same name.
+    */
+   tnlLongVector( const tnlLongVector< Real, tnlHost, Index >& v ){};
+
+   tnlLongVector( const tnlLongVector< Real, tnlCuda, Index >& v ){};
+
    public:
 
    //! Basic constructor with given size
@@ -259,8 +267,12 @@ void tnlLongVector< Real, tnlHost, Index > :: swap( tnlLongVector< Real, tnlHost
                    << "The first one is " << this -> getName() << " with size " << this -> getSize()
                    << " while the second one is " << v. getName() << " with size " << v. getSize() << "." );
 
-   std :: swap( this -> data, v. data );
-   std :: swap( this -> shared_data, v. shared_data );
+   Real* auxData = this -> data;
+   this -> data = v. data;
+   v. data = auxData;
+   bool auxShared = this -> shared_data;
+   this -> shared_data = v. shared_data;
+   v. shared_data = auxShared;
 };
 
 template< typename Real, typename Index >

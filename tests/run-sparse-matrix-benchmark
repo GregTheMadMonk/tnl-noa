@@ -4,7 +4,9 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
 PWD=`pwd`
 IWD="$PWD"
-SPARSE_MATRIX_BENCHMARK="$IWD/sparse-matrix-benchmark-dbg"
+DEBUG="no"
+SPARSE_MATRIX_BENCHMARK="$IWD/sparse-matrix-benchmark"
+SPARSE_MATRIX_BENCHMARK_DBG="$IWD/.libs/sparse-matrix-benchmark-dbg"
 STOP_TIME="1"
 
 source ../tnl-env-variables
@@ -33,12 +35,16 @@ write_header()
    echo "             <td rowspan=4 align=center>CSR</td>" >> $1
    echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
    echo "             <td colspan=33 align=center>Row-Grouped CSR</td>" >> $1
+   echo "             <td colspan=33 align=center>Row-Grouped CSR (Rows sorted decreasingly by the number of the non-zero elements)</td>" >> $1
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
-   echo "             <td colspan=11>Group Size = 16</td>" >> $1
+   echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
-   echo "             <td colspan=11>Group Size = 64</td>" >> $1   
+   echo "             <td colspan=11>Group Size = 64</td>" >> $1
+   echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR rows sorted decreasingly
+   echo "             <td colspan=11>Group Size = 32</td>" >> $1
+   echo "             <td colspan=11>Group Size = 64</td>" >> $1         
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -50,22 +56,45 @@ write_header()
    echo "             <td colspan=8>GPU</td>" >> $1   
    echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 64
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1         
+   echo "             <td colspan=8>GPU</td>" >> $1
+   
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 16
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 32
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1   
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 64
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1            
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 16
-   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 32
-   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1         
-   echo "          <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 64
-   echo "          <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "          <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 16
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 32
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size = 64
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size = 16
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size = 32
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size = 64
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1                    
             
    echo "          </tr>" >> $1      
          
@@ -111,6 +140,39 @@ write_header()
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 16
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 32
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 64
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
    
    
    
@@ -149,7 +211,16 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in single precision ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1
+         if test x$DEBUG = xyes;
+         then
+             rm -f .gdbinit
+             echo "file $SPARSE_MATRIX_BENCHMARK_DBG" > .gdbinit
+             echo "" >> .gdbinit
+             echo -n "run --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1" >> .gdbinit
+             gdb
+         else
+            $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1
+         fi
          perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
          gzip $unzipped_matrix
       fi

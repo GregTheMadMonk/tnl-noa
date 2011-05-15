@@ -38,7 +38,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
    //! Basic constructor
-   tnlRgCSRMatrix( const tnlString& name, Index _groupSize = 128 );
+   tnlRgCSRMatrix( const tnlString& name );
 
    const tnlString& getMatrixClass() const;
 
@@ -71,7 +71,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
                       const Real& value )
    { abort(); };
 
-   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix );
+   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix, Index groupSize );
 
    template< tnlDevice Device2 >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -187,18 +187,17 @@ __global__ void sparseCSRMatrixVectorProductKernel( Index size,
 
 
 template< typename Real, tnlDevice Device, typename Index >
-tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name, Index _groupSize )
+tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
 : tnlMatrix< Real, Device, Index >( name ),
   nonzero_elements( "nonzero-elements" ),
   columns( "columns" ),
   block_offsets( "block-offsets" ),
   nonzeros_in_row( "nonzeros-in-row" ),
-  groupSize( _groupSize ),
+  groupSize( 0 ),
   cudaBlockSize( 0 ),
   artificial_zeros( 0 ),
   last_nonzero_element( 0 )
 {
-	tnlAssert( groupSize > 0, );
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -276,9 +275,12 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
+bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix, Index groupSize )
 {
 	dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "copyFrom" );
+	this -> groupSize = groupSize;
+	tnlAssert( this -> groupSize > 0, );
+
 	if( ! this -> setSize( csr_matrix. getSize() ) )
 		return false;
 

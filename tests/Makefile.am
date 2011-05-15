@@ -9,14 +9,17 @@ check_PROGRAMS = matrix-formats-test \
                  reorder-csr
 
 matrix_formats_test_sources = matrix-formats-test.h
-sparse_matrix_benchmark_sources = sparse-matrix-benchmark.h
+sparse_matrix_benchmark_sources = sparse-matrix-benchmark.h \
+                                  tnlSpmvBenchmark.h \
+                                  tnlSpmvBenchmarkCSRMatrix.h \
+                                  tnlSpmvBenchmarkHybridMatrix.h \
+                                  tnlSpmvBenchmarkRgCSRMatrix.h
 matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h
 tnl_benchmarks_sources = tnl-benchmarks.h
 
 #if BUILD_CUDA
 #matrix_formats_test_sources += matrix-formats-test-cuda.cu
-#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu \
-#                                   cusp-test.h
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
 #matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
 #tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else

@@ -52,7 +52,7 @@ class tnlObject
 
    //! Constructor with name
    tnlObject( const tnlString& name );
-   
+
    //! Type getter
    /*!
     * This returns the type in C++ style - for example the returned value

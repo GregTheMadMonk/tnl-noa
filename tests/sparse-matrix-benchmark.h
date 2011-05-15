@@ -22,15 +22,15 @@
 
 #include <fstream>
 #include <iomanip>
-#include <matrix/tnlCSRMatrix.h>
+#include <tnlSpmvBenchmarkCSRMatrix.h>
+#include <tnlSpmvBenchmarkHybridMatrix.h>
+#include <tnlSpmvBenchmarkRgCSRMatrix.h>
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
-#include <matrix/tnlRgCSRMatrix.h>
 #include <matrix/tnlFastCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrixCUDA.h>
 #include <matrix/tnlEllpackMatrix.h>
 #include <matrix/tnlEllpackMatrixCUDA.h>
-#include <core/tnlTimerRT.h>
 #include <core/mfuncs.h>
 #include <config.h>
 
@@ -42,206 +42,70 @@
 
 using namespace std;
 
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-class tnlSpmvBenchmark
+template< typename Real >
+void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
+                           const tnlLongVector< Real, tnlHost >& refX,
+                           const tnlLongVector< Real, tnlCuda >& cudaX,
+                           tnlLongVector< Real, tnlHost >& refB,
+                           const tnlSpmvBenchmarkCSRMatrix< Real, int >& csrMatrixBenchmark,
+                           bool verbose,
+                           const tnlString& logFileName,
+                           fstream& logFile )
 {
-   public:
-
-   tnlSpmvBenchmark();
-
-   virtual bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
-
-   void runBenchmark( const tnlLongVector< Real, Device, Index >& x,
-                      const tnlLongVector< Real, tnlHost, Index >& refB );
-
-   virtual void tearDown() = 0;
-
-
-   void writeProgress( const tnlString& matrixFormat,
-                       const int cudaBlockSize,
-                       const double& time,
-                       const int iterations,
-                       const double& gflops,
-                       bool check,
-                       const tnlString& info );
-
-   //void writeLog( ostream& str ) const = 0;
-
-   bool getBenchmarkWasSuccesful() const;
-
-   double getGflops() const;
-
-   double getTime() const;
-
-   int getIterations() const;
-
-   Index getArtificialZeros() const;
-
-   protected:
-
-   bool benchmarkWasSuccesful;
-
-   double gflops;
-
-   double time;
-
-   int iterations;
-
-   Index artificialZeros;
-
-   Matrix< Real, Device, Index > matrix;
-};
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
-   : benchmarkWasSuccesful( false ),
-     gflops( 0.0 ),
-     time( 0.0 ),
-     iterations( 0.0 ),
-     artificialZeros( 0 )
-{
-
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBenchmarkWasSuccesful() const
-{
-   return this -> benchmarkWasSuccesful;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getGflops() const
-{
-   return this -> gflops;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getTime() const
-{
-   return this -> time;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-int tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getIterations() const
-{
-   return this -> iterations;
-}
-
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-Index tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getArtificialZeros() const
-{
-   return this -> artificialZeros;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgress( const tnlString& matrixFormat,
-                                                                       const int cudaBlockSize,
-                                                                       const double& time,
-                                                                       const int iterations,
-                                                                       const double& gflops,
-                                                                       bool check,
-                                                                       const tnlString& info )
-{
-   if( ! cudaBlockSize )
-      cout << left << setw( 30 ) << matrixFormat;
-   else
-      cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
-   cout << right << setw( 12 ) << setprecision( 2 ) << time
-        << right << setw( 15 ) << iterations
-        << right << setw( 12 ) << setprecision( 2 ) << gflops;
-   if( check )
-        cout << left << setw( 12 ) << "   OK  ";
-   else
-        cout << left << setw( 12 ) << "FAILED ";
-   cout << info << endl;
-}
-
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index,
-          template< typename Real, tnlDevice Device, typename Index > class Matrix >
-void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlLongVector< Real, Device, Index >& x,
-                                                                      const tnlLongVector< Real, tnlHost, Index >& refB )
-{
-   benchmarkWasSuccesful = false;
-   tnlLongVector< Real, Device, Index > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
-   if( ! b. setSize( refB. getSize() ) )
-      return;
-   tnlTimerRT rt_timer;
-   rt_timer. Reset();
-
+   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+   for( int groupSize = 16; groupSize <= 64; groupSize *= 2 )
    {
-      for( int i = 0; i < 10; i ++ )
-         matrix. vectorProduct( x, b );
-      iterations += 10;
+      hostRgCsrMatrixBenchmark. setGroupSize( groupSize );
+      hostRgCsrMatrixBenchmark. setup( csrMatrix );
+      hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+      hostRgCsrMatrixBenchmark. tearDown();
+
+      if( logFileName )
+      {
+         if( hostRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+         {
+            tnlString bgColor;
+            switch( groupSize )
+            {
+               case 16: bgColor = "#55FF55"; break;
+               case 32: bgColor = "#99FF99"; break;
+               case 64: bgColor = "#CCFFCC"; break;
+               default: bgColor = "#FFFFFF";
+            }
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getArtificialZeroElements() << "</td>" << endl;
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+         }
+         else
+         {
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+         }
+      }
+      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+      cudaRgCsrMatrixBenchmark. setGroupSize( groupSize );
+      cudaRgCsrMatrixBenchmark. setup( csrMatrix );
+      for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
+      {
+         cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         if( logFileName )
+         {
+            if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+            {
+               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+            }
+            else
+            {
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+            }
+         }
+      }
+      cudaRgCsrMatrixBenchmark. tearDown();
    }
-
-   Real maxErr( 0.0 );
-   for( Index j = 0; j < refB. getSize(); j ++ )
-   {
-      //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
-      if( refB[ j ] != 0.0 )
-         maxErr = Max( maxErr, ( Real ) fabs( refB[ j ] - b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
-      else
-         maxErr = Max( maxErr, ( Real ) fabs( refB[ j ] ) );
-   }
-
-   time = rt_timer. GetTime();
-   double flops = 2.0 * iterations * matrix. getNonzeroElements();
-   gflops = flops / time * 1.0e-9;
-   artificialZeros = matrix. getArtificialZeros();
-   benchmarkWasSuccesful = true;
-}
-
-
-
-template< typename Real, typename Index>
-class tnlSpmvBenchmarkCSRFormat : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >
-{
-   public:
-
-   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix ) = 0;
-
-   void tearDown();
-
-};
-
-template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCSRFormat< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
-{
-   this -> matrix = matrix;
-}
-
-template< typename Real, typename Index>
-void tnlSpmvBenchmarkCSRFormat< Real, Index > :: tearDown()
-{
-   this -> matrix. setSize( 0 );
 }
 
 template< class Real >
@@ -250,21 +114,6 @@ bool benchmarkMatrix( const tnlString& input_file,
                       const tnlString& logFileName,
                       int verbose )
 {
-   /****
-    * Write teminal table header
-    */
-   if( verbose )
-      cout << left << setw( 25 ) << "MATRIX FORMAT"
-           << left << setw( 5 ) << "BLOCK"
-           << right << setw( 12 ) << "TIME"
-           << right << setw( 15 ) << "ITERATIONS"
-           << right << setw( 12 ) << "GFLOPS"
-           << right << setw( 12 ) << "CHECK"
-           << left << setw( 20 ) << " INFO" << endl
-           << setfill( '-' ) << setw( 105 ) << "--" << endl
-           << setfill( ' ');
-
-
    /****
     * Read the CSR matrix ...
     */
@@ -287,7 +136,7 @@ bool benchmarkMatrix( const tnlString& input_file,
    binaryFile. close();
 
    /****
-    * Check the real number of the non-zero elements
+    * Check the number of the non-zero elements
     */
    const long int nonzeroElements = csrMatrix. checkNonzeroElements();
    if( nonzeroElements != csrMatrix. getNonzeroElements() )
@@ -298,17 +147,27 @@ bool benchmarkMatrix( const tnlString& input_file,
 
    const long int size = csrMatrix. getSize();
    tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
+   tnlLongVector< Real, tnlCuda > cudaX( "cudaX", size );
    for( int i = 0; i < size; i ++ )
       refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
+   cudaX = refX;
    csrMatrix. vectorProduct( refX, refB );
 
    /****
     * CSR format benchmark
     */
-   tnlSpmvBenchmarkCSRFormat< Real, int > csrFormatBenchmark;
-   csrFormatBenchmark. setup( csrMatrix );
-   csrFormatBenchmark. runBenchmark( refX, refB );
-   csrFormatBenchmark. tearDown();
+   tnlSpmvBenchmarkCSRMatrix< Real, int > csrMatrixBenchmark;
+
+   /****
+    * Use the first instance of tnlSpmvBenchmark which we have
+    * to write the progress-table header.
+    */
+   if( verbose )
+      csrMatrixBenchmark. writeProgressTableHeader();
+
+   csrMatrixBenchmark. setup( csrMatrix );
+   csrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   csrMatrixBenchmark. tearDown();
 
    /****
     * Open and write one line to the log file
@@ -322,77 +181,102 @@ bool benchmarkMatrix( const tnlString& input_file,
          cerr << "Unable to open log file " << logFileName << " for appending logs." << endl;
          return false;
       }
-      cout << "Writing to log file " << logFileName << "..." << endl;
-      long int allElements = csrMatrix -> getSize() * csrMatrix -> getSize();
+      long int allElements = csrMatrix. getSize() * csrMatrix. getSize();
       logFile << "          <tr>" << endl;
       logFile << "             <td> " << input_file << "</td>" << endl;
-      logFile << "             <td> " << csrMatrix -> getSize() << "</td>" << endl;
+      logFile << "             <td> " << csrMatrix. getSize() << "</td>" << endl;
       logFile << "             <td> " << nonzeroElements << "</td>" << endl;
-      logFile << "             <td> " << ( double ) nonzeroElements / allElements << " %" << "</td>" << endl;
-      logFile << "             <td> " << csrFormatBenchmark. getGflops() << "</td>" << endl;
-      //logFile << "             <td> " << spmv_hyb_gflops << "</td>" << endl;
-      //logFile << "             <td> " << spmv_hyb_gflops / spmv_csr_gflops << "</td>" << endl;
+      logFile << "             <td> " << ( double ) nonzeroElements / allElements * 100.0 << "</td>" << endl;
+      if( csrMatrixBenchmark. getBenchmarkWasSuccesful() )
+         logFile << "             <td> " << csrMatrixBenchmark. getGflops() << "</td>" << endl;
+      else
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+   }
+
+   /****
+    * Hybrid format benchmark
+    */
+   tnlSpmvBenchmarkHybridMatrix< Real, int > hybridMatrixBenchmark;
+   hybridMatrixBenchmark. setFileName( input_mtx_file );
+   hybridMatrixBenchmark. setup( csrMatrix );
+   hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   hybridMatrixBenchmark. tearDown();
+
+   if( logFileName )
+   {
+      if( hybridMatrixBenchmark. getBenchmarkWasSuccesful() )
+      {
+         logFile << "             <td> " << hybridMatrixBenchmark. getGflops() << "</td>" << endl;
+         logFile << "             <td> " << hybridMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+      }
+      else
+      {
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+
+      }
+   }
+
+   /****
+    * Row-Grouped CSR format
+    */
+   benchmarkRgCSRFormat( csrMatrix,
+                         refX,
+                         cudaX,
+                         refB,
+                         csrMatrixBenchmark,
+                         verbose,
+                         logFileName,
+                         logFile );
+
+
+   /****
+    * Row-Grouped CSR format with reordered rows
+    * The rows are now sorted decreasingly by the number of the nonzero elements
+    */
+   tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
+   {
+      tnlCSRMatrix< Real, tnlHost > orderedCsrMatrix( "orderedCsrMatrix" );
+      csrMatrix. sortRowsDecreasingly( rowPermutation );
+
+      /****
+       * Check if the ordering is OK.
+       */
+      int rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ 0 ] );
+      bool rowSortingError = false;
+      for( int i = 1; i < csrMatrix. getSize(); i ++ )
+      {
+         //cout << csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) << endl;
+         if( rowSize < csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) )
+         {
+            cerr << "The rows are not sorted properly. Error is at row number " << i << endl;
+            rowSortingError = true;
+         }
+         rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] );
+      }
+      orderedCsrMatrix. reorderRows( rowPermutation, csrMatrix );
+      orderedCsrMatrix. vectorProduct( refX, refB );
+      benchmarkRgCSRFormat( orderedCsrMatrix,
+                            refX,
+                            cudaX,
+                            refB,
+                            csrMatrixBenchmark,
+                            verbose,
+                            logFileName,
+                            logFile );
+   }
+   csrMatrix. vectorProduct( refX, refB );
+
+   if( logFileName )
+   {
       logFile << "          </tr>" << endl;
       logFile. close();
    }
+
 }
 
 #ifdef UNDEF
 
-   if( verbose )
-      cout << left << setw( 30 ) << "CSR " << flush;
-   double time = stop_time;
-   benchmarkSpMV< Real, tnlHost >( csrMatrix,
-                                   refX,
-                                   nonzero_elements,
-                                   refB,
-                                   time,
-                                   benchmarkStatistics. spmv_csr_gflops,
-                                   benchmarkStatistics. spmv_csr_iter );
-   if( verbose )
-      cout << right << setw( 12 ) << setprecision( 2 ) << time
-           << right << setw( 15 ) << benchmarkStatistics. spmv_csr_iter
-           << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_csr_gflops
-           << left << setw( 12 ) << "  N/A" << endl;
-
-#ifdef HAVE_CUSP
-   /*
-    * Benchmark of the Hybrid format implemented in the CUSP library
-    */
-   {
-      if( verbose )
-         cout << left << setw( 30 ) << "Hybrid (CUSP) " << flush;
-
-      time = stop_time;
-      tnlLongVector< Real, tnlHost > hyb_b( "hyb-b", size );
-
-      cuspSpMVTest( input_mtx_file. getString(),
-                    time,
-                    nonzero_elements,
-                    spmv_hyb_iter,
-                    spmv_hyb_gflops,
-                    hyb_b );
-
-      Real max_err( 0.0 );
-      for( int j = 0; j < size; j ++ )
-      {
-         //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
-         if( refB[ j ] != 0.0 )
-            max_err = Max( max_err, ( Real ) fabs( refB[ j ] - hyb_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
-         else
-            max_err = Max( max_err, ( Real ) fabs( hyb_b[ j ] ) );
-      }
-      //f. close();
-
-
-
-      if( verbose )
-         cout << right << setw( 12 ) << setprecision( 2 ) << time
-              << right << setw( 15 ) << spmv_hyb_iter
-              << right << setw( 12 ) << setprecision( 2 ) << spmv_hyb_gflops
-              << left << setw( 12 ) << "  Max.err. is " << setprecision( 12 ) << max_err << endl;
-   }
-#endif
    /***
     * Benchmark of the Adaptive Row-grouped CSR format.
     */
@@ -527,76 +411,6 @@ bool benchmarkMatrix( const tnlString& input_file,
       else
          if( verbose )
             cout << "Format transfer failed!!!" << endl;
-
-#ifdef HAVE_CUDA
-      /****
-       * Benchmark of the Row-grouped CSR format on the CUDA device.
-       */
-      if( verbose )
-         cout << left << setw( 25 ) << "Row-grouped CSR CUDA" << setw( 5 ) << block_size << flush;
-
-      tnlRgCSRMatrix< Real, tnlCuda > cuda_coacsrMatrix( "cuda-coacsr-matrix" );
-
-      if( cuda_coacsrMatrix. copyFrom( coacsrMatrix ) )
-      {
-         time = stop_time;
-         benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
-                                         cuda_x,
-                                         nonzero_elements,
-                                         cuda_b,
-                                         time,
-                                         benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ],
-                                         benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ] );
-
-         if( verbose )
-            cout << right << setw( 12 ) << setprecision( 2 ) << time
-                 << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ]
-                 << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ];
-
-         if( refB != cuda_b )
-			{
-				if( verbose )
-					cout << right << setw( 12 ) << "FAILED." << endl;
-				//spmv_cuda_coa_csr_gflops[ block_iter ] = -1.0;
-				//return false;
-		  	}
-			else
-				if( verbose )
-					cout << right << setw( 12 ) << "OK." << endl;
-
-			fstream f;
-			f. open( "spmv-test-2", ios ::out );
-			host_b = cuda_b;
-			Real max_err( 0.0 );
-			for( int j = 0; j < size; j ++ )
-			{
-			   if( refB[ j ] != 0.0 )
-			      max_err = Max( max_err, ( Real ) fabs( refB[ j ] - host_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
-			   else
-			      max_err = Max( max_err, ( Real ) fabs( host_b[ j ] ) );
-			   f << refB[ j ] << "  " << host_b[ j ] << endl;
-			}
-			f. close();
-			if( verbose )
-			   cout << left << setw( 12 ) << "  Max.err. is " << setprecision(12 )  << max_err << endl;
-			//cerr << "Press ENTER." << endl;
-			//getchar();
-
-      }
-      else
-      {
-         if( verbose )
-            cout << "Format transfer failed!!!" << endl;
-         benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ] = -1.0;
-         benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ] = 0;
-      }
-#endif
-      block_iter ++;
-   }
-   if( verbose )
-      cout << setfill( '-' ) << setw( 95 ) << "--" << endl
-           << setfill( ' ');
-   return true;
 
 
    /*
@@ -736,58 +550,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       }
    }
 
-#ifdef HAVE_CUDA
-   /*
-    * Benchmark of RgCSR format with fixed group size and variable CUDA block size
-    * NOTE: RgCSR is the same as RgCSR just allows different groupSize and CUDA blockSize.
-    */
-   block_iter = 0;
-   for( int groupSize = 16; groupSize < 64; groupSize *= 2 )
-   {
-      if( verbose )
-         cout << left << setw( 25 ) << "Row grouped CSR " << setw( 5 ) << groupSize << flush;
 
-         tnlRgCSRMatrix< Real > coacsrMatrix( "coacsr-matrix", groupSize );
-
-         if( coacsrMatrix. copyFrom( csrMatrix ) )
-         {
-            double artifZeros = 100.0 * ( double ) coacsrMatrix. getArtificialZeroElements() / ( double ) coacsrMatrix. getNonzeroElements();
-            if( verbose )
-               cout << left << setw( 12 ) << "  OK."
-                    << right << setw( 14 ) << "Artif.zeros: " << fixed << artifZeros << "%" << endl;
-
-            tnlRgCSRMatrix< Real, tnlCuda > cuda_coacsrMatrix( "cuda-coacsr-matrix" );
-            if( cuda_coacsrMatrix. copyFrom( coacsrMatrix ) )
-            {
-               for( int blockSize = 32; blockSize < 512; blockSize *= 2 )
-               {
-                  if( verbose )
-                     cout << left << setw( 25 ) << " Row grouped CSR " << setw( 5 ) << blockSize << flush;
-
-                  cuda_coacsrMatrix. setCUDABlockSize( blockSize );
-                  time = stop_time;
-                  benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
-                                                  cuda_x,
-                                                  nonzero_elements,
-                                                  cuda_b,
-                                                  time,
-                                                  benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ],
-                                                  benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ] );
-
-                  if( verbose )
-                     cout << right << setw( 12 ) << setprecision( 2 ) << time
-                          << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_coacsr_iter[ block_iter ]
-                          << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_coacsr_gflops[ block_iter ] << endl;
-                  block_iter ++;
-               }
-            }
-         }
-         else
-            if( verbose )
-               cout << "Format transfer failed!!!" << endl;
-
-   }
-#endif
 
    /*
 	 * Benchmarks of the ELLPACK format.

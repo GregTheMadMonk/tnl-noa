@@ -67,15 +67,10 @@ int main( int argc, char* argv[] )
 
    if( object_type == "tnlCSRMatrix< double, tnlHost >" )
    {
-#if CUDA_ARCH > 12
       benchmarkMatrix< double >( str_input_file,
                                  str_input_mtx_file,
                                  log_file_name,
                                  verbose );
-
-#else
-   cerr << "Skipping double precision test because this CUDA device does not support the double precision." << endl;
-#endif
    }
    //binaryFile. close();
 

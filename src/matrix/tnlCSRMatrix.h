@@ -61,6 +61,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
 
+   bool setLike( const tnlCSRMatrix< Real, Device, Index >& matrix );
+
    //! Allocate memory for the nonzero elements.
    bool setNonzeroElements( Index elements );
 
@@ -111,6 +113,9 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    Real getRowL1Norm( Index row ) const;
 
+   bool reorderRows( const tnlLongVector< Index, Device, Index >& rowPermutation,
+                     const tnlCSRMatrix< Real, Device, Index >& csrMatrix );
+
    void multiplyRow( Index row, const Real& value );
 
    bool read( istream& str, int verbose = 0 );
@@ -124,6 +129,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    bool save( const tnlString& fileName ) const;
 
    bool load( const tnlString& fileName );
+
+   tnlCSRMatrix< Real, Device, Index >& operator = ( const tnlCSRMatrix< Real, Device, Index >& csrMatrix );
 
    //! Prints out the matrix structure
    void printOut( ostream& str,
@@ -190,6 +197,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    Index last_nonzero_element;
 
    friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
+   friend class tnlRgCSRMatrix< Real, tnlCuda, Index >;
    friend class tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index >;
    friend class tnlFastCSRMatrix< Real, tnlHost, Index >;
    friend class tnlEllpackMatrix< Real, tnlHost, Index >;
@@ -198,9 +206,9 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 template< typename Real, tnlDevice Device, typename Index >
 tnlCSRMatrix< Real, Device, Index > :: tnlCSRMatrix( const tnlString& name )
    : tnlMatrix< Real, Device, Index >( name ),
-     nonzero_elements( "tnlCSRMatrix< Real, Device, Index > :: nonzero-elements" ),
-     columns( "tnlCSRMatrix< Real, Device, Index > :: columns" ),
-     row_offsets( "tnlCSRMatrix< Real, Device, Index > :: row_offsets" ),
+     nonzero_elements( name + " : nonzero-elements" ),
+     columns( name + " : columns" ),
+     row_offsets( name + " : row_offsets" ),
      last_nonzero_element( 0 )
 {
 };
@@ -231,6 +239,19 @@ bool tnlCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    last_nonzero_element = 0;
    return true;
 };
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setLike( const tnlCSRMatrix< Real, Device, Index >& matrix )
+{
+   this -> size = matrix. getSize();
+   if( ! nonzero_elements. setLike( matrix. nonzero_elements ) ||
+       ! columns. setLike( matrix. columns ) ||
+       ! row_offsets. setLike( matrix. row_offsets ) )
+      return false;
+   row_offsets. setValue( 0 );
+   last_nonzero_element = 0;
+   return true;
+}
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
@@ -276,8 +297,8 @@ Index tnlCSRMatrix< Real, Device, Index > :: getRowLength( Index row ) const
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
-                                                     Index row,
-                                                     Index shift )
+                                                           Index row,
+                                                           Index shift )
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "shiftElements" );
    dbgCout( "Shifting non-zero elements by " << shift << " elements." );
@@ -589,6 +610,29 @@ void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& 
       els[ i ] *= value;
 };
 
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlLongVector< Index, Device, Index >& rowPermutation,
+                                                         const tnlCSRMatrix< Real, Device, Index >& inputCsrMatrix )
+{
+   last_nonzero_element = 0;
+   if( ! this -> setLike( inputCsrMatrix ) )
+   {
+      cerr << "I am not able to allocate new memory for matrix reordering." << endl;
+      return false;
+   }
+   for( Index i = 0; i < this -> getSize(); i ++ )
+   {
+      row_offsets[ i ] = last_nonzero_element;
+      Index row = rowPermutation[ i ];
+      Index j = inputCsrMatrix. row_offsets[ row ];
+      while( j < inputCsrMatrix. row_offsets[ row + 1 ] )
+      {
+         nonzero_elements[ last_nonzero_element ] = inputCsrMatrix. nonzero_elements[ j ];
+         columns[ last_nonzero_element ++ ] = inputCsrMatrix. columns[ j ++ ];
+      }
+   }
+   return true;
+}
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: save( tnlFile& file ) const
@@ -624,6 +668,23 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: operator = ( const tnlCSRMatrix< Real, Device, Index >& csrMatrix )
+{
+   if( ! nonzero_elements. setSize( csrMatrix. nonzero_elements. getSize() ) ||
+       ! columns. setSize( csrMatrix. columns. getSize() ) ||
+       ! row_offsets. setSize( csrMatrix. row_offsets. getSize() ) )
+   {
+      cerr << "I am unable to allocate memory for new matrix!" << endl;
+      abort();
+   }
+   nonzero_elements = csrMatrix. nonzero_elements;
+   columns = csrMatrix. columns;
+   row_offsets = csrMatrix. row_offsets;
+   tnlMatrix< Real, Device, Index > :: operator = ( csrMatrix );
+   return * this;
 }
 
 template< typename Real, tnlDevice Device, typename Index >

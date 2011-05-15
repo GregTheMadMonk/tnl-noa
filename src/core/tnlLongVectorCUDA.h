@@ -49,6 +49,14 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
    //! We do not allow constructor without parameters.
    tnlLongVector(){};
 
+   /****
+    * We do not allow copy constructors as well to avoid having two
+    * vectors with the same name.
+    */
+   tnlLongVector( const tnlLongVector< Real, tnlHost, Index >& v ){};
+
+   tnlLongVector( const tnlLongVector< Real, tnlCuda, Index >& v ){};
+
    public:
 
    //! Basic constructor
@@ -349,7 +357,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
    }
    return true;
 #else
-   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   //cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;
 #endif
 };
@@ -744,7 +752,7 @@ tnlLongVector< Real, tnlCuda, Index > :: ~tnlLongVector()
       }
    }
 #else
-   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   //cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
 };
 

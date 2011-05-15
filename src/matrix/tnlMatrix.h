@@ -68,7 +68,7 @@ class tnlMatrix : public tnlObject
 
    virtual Index getArtificialZeroElements() const;
 
-   bool setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation );
+   //bool setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation );
 
    virtual Real getElement( Index row, Index column ) const = 0;
 
@@ -109,11 +109,13 @@ class tnlMatrix : public tnlObject
 
    bool load( const tnlString& fileName );
 
+   tnlMatrix< Real, Device, Index >& operator = ( const tnlMatrix< Real, Device, Index >& matrix );
+
    /*!
     * Computes permutation of the rows such that the rows would be
     * ordered decreasingly by the number of the non-zero elements.
     */
-   bool reorderDecreasingly( const tnlLongVector< Index, Device, Index >& permutation );
+   bool sortRowsDecreasingly( tnlLongVector< Index, Device, Index >& permutation );
 
    virtual bool read( istream& str,
 		                int verbose = 0 );
@@ -134,7 +136,7 @@ class tnlMatrix : public tnlObject
 
    Index size;
 
-   tnlLongVector< Index, Device, Index > rowsReorderingPermutation;
+   //tnlLongVector< Index, Device, Index > rowsReorderingPermutation;
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -142,8 +144,8 @@ ostream& operator << ( ostream& o_str, const tnlMatrix< Real, Device, Index >& A
 
 template< typename Real, tnlDevice Device, typename Index >
 tnlMatrix< Real, Device, Index > :: tnlMatrix( const tnlString& name )
-: tnlObject( name ),
-  rowsReorderingPermutation( "tnlMatrix::rowsReorderingPermutation" )
+: tnlObject( name )
+  //rowsReorderingPermutation( "tnlMatrix::rowsReorderingPermutation" )
 {
 };
 
@@ -162,14 +164,14 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
     */
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+/*template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation )
 {
    if( ! rowsReorderingPermutation. setSize( reorderingPermutation. getSize() ) )
       return false;
    rowsReorderingPermutation = reorderingPermutation;
    return true;
-};
+};*/
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
@@ -233,6 +235,18 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real, Device, Index >& matrix )
+{
+   this -> size = matrix. getSize();
+   /*if( ! rowsReorderingPermutation. setSize( matrix. rowsReorderingPermutation. getSize() ) )
+   {
+      cerr << "I am not able to allocat the row permutation vector for the new matrix." << endl;
+      abort();
+   }
+   rowsReorderingPermutation = matrix. rowsReorderingPermutation;*/
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -366,30 +380,31 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: reorderDecreasingly( const tnlLongVector< Index, Device, Index >& permutation )
+bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< Index, Device, Index >& permutation )
 {
-   /*
+   /****
     * We use bucketsort to sort the rows by the number of the non-zero elements.
     */
    if( ! permutation. setSize( this -> getSize() ) )
       return false;
    permutation. setValue( 0 );
 
-   /*
+   /****
     * The permutation vector is now used to compute the buckets
     */
    for( Index i = 0; i < this -> getSize(); i ++ )
       permutation[ this -> getNonzeroElementsInRow( i ) ] ++;
 
    tnlLongVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderDecreasingly:buckets" );
+   buckets. setSize( this -> getSize() );
    buckets. setValue( 0 );
 
    buckets[ 0 ] = 0;
-   for( Index i = 1; i < this -> getSize; i ++ )
-      buckets[ i ] = buckets[ i - 1 ] + permutation[ i ];
-
    for( Index i = 1; i < this -> getSize(); i ++ )
-      permutation[ buckets[ this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
+      buckets[ i ] = buckets[ i - 1 ] + permutation[ this -> getSize() - i ];
+
+   for( Index i = 0; i < this -> getSize(); i ++ )
+      permutation[ buckets[ this -> getSize() - this -> getNonzeroElementsInRow( i ) - 1 ] ++ ] = i;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
