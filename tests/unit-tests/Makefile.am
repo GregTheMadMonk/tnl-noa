@@ -21,6 +21,7 @@ headers = core/tnl-cuda-kernels.h \
           matrix/tnlCSRMatrixTester.h \
           matrix/tnlEllpackMatrixTester.h \
           matrix/tnlRgCSRMatrixTester.h \
+          matrix/tnlAdaptiveRgCSRMatrixTester.h \
           solver/tnlMersonSolverTester.h
 
 
@@ -66,7 +67,7 @@ endif
 #                                 ../../src/debug/libtnldebug-dbg-0.1.la                            
 #endif
 
-TESTS = tnl-unit-tests
+TESTS = tnl-unit-tests-dbg
 
 #if BUILD_CUDA
 #TESTS += tnl-cuda-unit-tests

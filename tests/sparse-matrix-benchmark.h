@@ -235,17 +235,53 @@ bool benchmarkMatrix( const tnlString& input_file,
                          logFileName,
                          logFile );
 
-   benchmarkRgCSRFormat( csrMatrix,
-                         refX,
-                         cudaX,
-                         refB,
-                         true,
-                         tnlAdaptiveGroupSizeStrategyByAverageRowSize,
-                         csrMatrixBenchmark,
-                         verbose,
-                         logFileName,
-                         logFile );
-
+   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+   hostRgCsrMatrixBenchmark. setGroupSize( 16 );
+   hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+   hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
+   hostRgCsrMatrixBenchmark. setup( csrMatrix );
+   hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   hostRgCsrMatrixBenchmark. tearDown();
+   if( logFileName )
+   {
+      if( hostRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+      {
+         tnlString bgColor( "#55FF55" );
+         logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getArtificialZeroElements() << "</td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+      }
+      else
+      {
+         logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+         logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+         logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+      }
+   }
+   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+   cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
+   cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+   cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
+   cudaRgCsrMatrixBenchmark. setup( csrMatrix );
+   for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
+   {
+      cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      if( logFileName )
+      {
+         if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+         {
+            logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+            logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+         }
+         else
+         {
+            logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+            logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+         }
+      }
+   }
+   cudaRgCsrMatrixBenchmark. tearDown();
 
 
    /****
@@ -284,16 +320,56 @@ bool benchmarkMatrix( const tnlString& input_file,
                             verbose,
                             logFileName,
                             logFile );
-      benchmarkRgCSRFormat( orderedCsrMatrix,
-                            refX,
-                            cudaX,
-                            refB,
-                            true,
-                            tnlAdaptiveGroupSizeStrategyByFirstGroup,
-                            csrMatrixBenchmark,
-                            verbose,
-                            logFileName,
-                            logFile );
+
+      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+      hostRgCsrMatrixBenchmark. setGroupSize( 16 );
+      hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+      hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
+      hostRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
+      hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+      hostRgCsrMatrixBenchmark. tearDown();
+      if( logFileName )
+      {
+         if( hostRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+         {
+            tnlString bgColor( "#55FF55" );
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getArtificialZeroElements() << "</td>" << endl;
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+            logFile << "             <td bgcolor=" << bgColor << "> " << hostRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+         }
+         else
+         {
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+            logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
+         }
+      }
+      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+      cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
+      cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+      cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
+      cudaRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
+      for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
+      {
+         cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         if( logFileName )
+         {
+            if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+            {
+               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+            }
+            else
+            {
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+            }
+         }
+      }
+      cudaRgCsrMatrixBenchmark. tearDown();
+
+
    }
    csrMatrix. vectorProduct( refX, refB );
 

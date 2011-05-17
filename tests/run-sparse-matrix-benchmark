@@ -34,25 +34,19 @@ write_header()
    echo "             <td rowspan=4 colspan=4 align=center>Matrix</td>" >> $1
    echo "             <td rowspan=4 align=center>CSR</td>" >> $1
    echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
-   echo "             <td colspan=33 align=center>Row-Grouped CSR</td>" >> $1
-   echo "             <td colspan=33 align=center>Row-Grouped CSR with adaptive group size set by average number of nonzeros in row</td>" >> $1   
-   echo "             <td colspan=33 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1
-   echo "             <td colspan=33 align=center>Row-Grouped CSR woth rows sorted decreasingly by the number of the nonzeros and adaptiove group size set by the first group</td>" >> $1   
+   echo "             <td colspan=44 align=center>Row-Grouped CSR</td>" >> $1   
+   echo "             <td colspan=44 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
-   echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR
+   echo "             <td colspan=11>Group Size = 16</td>" >> $1       # RgCSR
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
    echo "             <td colspan=11>Group Size = 64</td>" >> $1
-   echo "             <td colspan=11>Group Size cca. 16</td>" >> $1      # RgCSR adaptive group size
-   echo "             <td colspan=11>Group Size cca. 32</td>" >> $1
-   echo "             <td colspan=11>Group Size cca. 64</td>" >> $1   
-   echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR rows sorted decreasingly
+   echo "             <td colspan=11>Group Size Variable</td>" >> $1    # RgCSR adaptive group size
+   echo "             <td colspan=11>Group Size = 16</td>" >> $1       # RgCSR rows sorted decreasingly
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
    echo "             <td colspan=11>Group Size = 64</td>" >> $1
-   echo "             <td colspan=11>Group Size >= 16</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
-   echo "             <td colspan=11>Group Size >= 32</td>" >> $1
-   echo "             <td colspan=11>Group Size >= 64</td>" >> $1                     
+   echo "             <td colspan=11>Group Size Variable</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -66,13 +60,7 @@ write_header()
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
 
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 16
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 32
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1   
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 64
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the variable group size 
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
    
@@ -86,15 +74,9 @@ write_header()
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
       
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 16
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with variable group size
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 32
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1   
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 64
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1            
                   
    echo "          </tr>" >> $1
    
@@ -113,14 +95,6 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
    
    echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 16
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 32
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 64
    echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
@@ -143,14 +117,6 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size >= 32
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size >= 64
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1                                          
             
    echo "          </tr>" >> $1      
          

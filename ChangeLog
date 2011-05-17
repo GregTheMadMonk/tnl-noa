@@ -1,3 +1,15 @@
+2011-05-17  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* tests/unit-tests/matrix/tnlAdaptiveRgCSRMatrixTester.h: New file.
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 
+	  - conversion from CSR format
+	  - SpMV operation
+	* tests/run-sparse-matrix-benchmark: 
+	* tests/sparse-matrix-benchmark.h:
+	  - changed benchmarks of the RgCSR format with variable group size   
+	* tests/unit-tests/tnl-unit-tests.cpp (main):
+	  - added test of tnlAdaptiveRgCSRMatrix
+
 2011-05-15  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* tests/cusp-test.h: Removed.

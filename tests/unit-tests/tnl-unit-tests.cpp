@@ -28,6 +28,7 @@
 #include <core/tnlCommunicatorTester.h>
 #include <matrix/tnlCSRMatrixTester.h>
 #include <matrix/tnlRgCSRMatrixTester.h>
+#include <matrix/tnlAdaptiveRgCSRMatrixTester.h>
 #include <matrix/tnlEllpackMatrixTester.h>
 #include <diff/tnlMPIMeshTester.h>
 
@@ -74,6 +75,9 @@ int main( int argc, char* argv[] )
 
    runner. addTest( tnlRgCSRMatrixTester< float > :: suite() );
    runner. addTest( tnlRgCSRMatrixTester< double > :: suite() );
+
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double > :: suite() );
 
    runner. addTest( tnlEllpackMatrixTester< float > :: suite() );
    runner. addTest( tnlEllpackMatrixTester< double > :: suite() );

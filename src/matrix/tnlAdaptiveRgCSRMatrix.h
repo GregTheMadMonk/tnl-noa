@@ -32,7 +32,7 @@ using namespace std;
 struct tnlARGCSRGroupProperties
 {
    int numRows;
-   int numUsedThreads;
+   //int numUsedThreads;
    int numRounds;
    int idxFirstRow;
    int idxFirstValue;
@@ -97,7 +97,9 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    void vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
                        tnlLongVector< Real, Device, Index >& result ) const;
 
-   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix );
+   bool copyFrom( const tnlCSRMatrix< Real, tnlHost,
+                  Index >& csr_matrix,
+                  const Index cudaBlockSize = 256 );
 
    template< tnlDevice Device2 >
    bool copyFrom( const tnlAdaptiveRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -132,8 +134,9 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlLongVector< Index, Device, Index > threads;
 
-   tnlLongVector< tnlARGCSRGroupProperties, Device, Index > blockInfo;  // size 4*number of groups; index of first row in group, nuber of rows in group,
-																				             //	number of rounds, index of first nz element in group
+   tnlLongVector< tnlARGCSRGroupProperties, Device, Index > groupInfo;
+
+   tnlLongVector< Index, tnlHost, Index > usedThreadsInGroup;
 
 
 
@@ -160,7 +163,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
     				                           		        const Real* vect,
 							                                   const Real* matrxValues,
 							                                   const Index* matrxColumni,
-							                                   const Index* _blockInfo,
+							                                   const Index* _groupInfo,
 							                                   const Index* _threadsInfo,
 							                                   const Index numBlocks );
 
@@ -173,10 +176,11 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const t
 		                                             						    Index _groupSizeStep,
 									                                              Index _targetNonzeroesPerGroup )
 : tnlMatrix< Real, Device, Index >( name ),
-  nonzeroElements( "nonzero-elements" ),
-  columns( "columns" ),
-  blockInfo( "block-info" ),
-  threads( "threads-per-row" ),
+  nonzeroElements( name + " : nonzeroElements" ),
+  columns( name + " : columns" ),
+  threads( name + " : threads" ),
+  groupInfo( name + ": groupInfo" ),
+  usedThreadsInGroup( name + " : usedThreadsInGroup" ),
   maxGroupSize( _maxGroupSize ),
   groupSizeStep(_groupSizeStep),
   targetNonzeroesPerGroup(_targetNonzeroesPerGroup),
@@ -219,19 +223,15 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getCUDABlockSize() const
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setCUDABlockSize( Index blockSize )
-{
-   tnlAssert( blockSize >= maxGroupSize, );
-   cudaBlockSize = blockSize;
-}
-
-template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    this -> size = new_size;
-   if( ! blockInfo.setSize(this->size) ||  ! threads.setSize(this->size) )
+   if( ! groupInfo. setSize( this -> getSize()) ||
+       ! usedThreadsInGroup. setSize( this -> getSize() ) ||
+       ! threads. setSize( this -> getSize() ) )
       return false;
-   threads.setValue( 0 );
+   threads. setValue( 0 );
+   usedThreadsInGroup. setValue( 0 );
    last_nonzero_element = 0;
    return true;
 };
@@ -239,11 +239,12 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
-   tnlAssert( elements !=0, );
-   if( ! nonzeroElements.setSize(elements) || ! columns.setSize( elements ) )
+   tnlAssert( elements != 0, );
+   if( ! nonzeroElements. setSize( elements ) ||
+       ! columns. setSize( elements ) )
       return false;
-   nonzeroElements.setValue( 0.0 );
-   columns.setValue( -1 );
+   nonzeroElements. setValue( 0.0 );
+   columns. setValue( -1 );
    return true;
 };
 
@@ -261,79 +262,119 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& mat )
+bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost,
+                                                                Index >& mat,
+                                                                const Index cudaBlockSize )
 {
 	dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	tnlAssert( cudaBlockSize != 0, );
+	this -> cudaBlockSize = cudaBlockSize;
 	if( ! this -> setSize( mat.getSize() ) )
 		return false;
 	
-	uint blkNZ = 0, blkBegin = 0, blkEnd = 0, rowsInBlk = 0;
-	uint blkIdx = 0;
+	Index nonzerosInGroup( 0 );
+	Index groupBegin( 0 );
+	Index groupEnd( 0 );
+	Index rowsInGroup( 0 );
+	Index groupId( 0 );
 
-	uint numStoredValues = 0;
-	uint threadsPerRow[128];
+	Index numberOfStoredValues( 0 );
+	Index threadsPerRow[ 128 ];
 	
 	/****
-	 * This loop computes sizes of the groups  the number of threads per one row
+	 * This loop computes sizes of the groups and the number of threads per one row
 	 */
-	while(true) 
+	while( true )
 	{
 		/****
-		 * First compute the group size such that the number of the non-zero elemnts in each group is
+		 * First compute the group size such that the number of the non-zero elements in each group is
 		 * approximately the same.
 		 */
-		blkEnd += 16;
-		if(blkEnd > this->size) {
-			blkEnd = this->size;
-		}
-		blkNZ = mat.row_offsets[blkEnd] - mat.row_offsets[blkBegin];
-		rowsInBlk = blkEnd - blkBegin;
+		groupEnd += 16;
+		if( groupEnd > this -> getSize() )
+		   groupEnd = this -> getSize();
 
-		if(blkNZ < targetNonzeroesPerGroup && blkEnd < this->size && rowsInBlk < maxGroupSize) {
-			continue;
-		}
+		nonzerosInGroup = mat. row_offsets[ groupEnd ] - mat. row_offsets[ groupBegin ];
+		rowsInGroup = groupEnd - groupBegin;
+
+		if( nonzerosInGroup < targetNonzeroesPerGroup &&
+		    groupEnd < this -> getSize() &&
+		    rowsInGroup < maxGroupSize)
+		   continue;
+
+		dbgExpr( groupBegin );
+		dbgExpr( groupEnd );
+		dbgExpr( nonzerosInGroup );
 
 		/****
-		 * Now, compute the number of threads per each row
+		 * Now, compute the number of threads per each row.
+		 * Each row get one thread by default.
+		 * Then each row will get additional threads relatively to the
+		 * number of the nonzero elements in the row.
 		 */
-		//blockInfo[4*blkIdx] = blkBegin;     // group begining
-		//blockInfo[4*blkIdx+1] = rowsInBlk;  // number of the rows in the group
-		blockInfo[ blkIdx ]. idxFirstValue = blkBegin;
-		blockInfo[ blkIdx ]. numRows = rowsInBlk;
+		Index freeThreads = cudaBlockSize - rowsInGroup;
+		Index usedThreads = 0;
+		for( Index i = groupBegin; i < groupEnd; i++ )
+		{
+		   double nonzerosInRow = mat. getNonzeroElementsInRow( i );
+		   double nonzerosInRowRatio = nonzerosInRow / ( double ) nonzerosInGroup;
+		   usedThreads += threadsPerRow[ i - groupBegin ] = floor( freeThreads * nonzerosInRowRatio );
+			//usedThreads += ( threadsPerRow[ i - groupBegin ] = floor( freeThreads * ( ( double ) mat. row_offsets[ i + 1 ] - mat.row_offsets[ i ] ) / nonzerosInGroup ) + 1 );
+		}
+		/****
+		 * If there are some threads left distribute them to the rows from the group begining.
+		 */
+		Index threadsLeft = cudaBlockSize - usedThreads;
+		dbgExpr( usedThreads );
+		dbgExpr( threadsLeft );
+		for( Index i=0; i < threadsLeft; i++)
+			threadsPerRow[ i ]++;
 
-		uint freeThreads = cudaBlockSize - rowsInBlk;  // T -r 
-		uint usedThreads = 0;
-		for(uint i=blkBegin; i<blkEnd; i++) {
-			usedThreads += (threadsPerRow[i-blkBegin] = floor(freeThreads * ((double) mat.row_offsets[i+1] - mat.row_offsets[i]) / blkNZ) + 1);
+		/****
+		 * Compute prefix-sum on threadsPerRow and store it in threads
+		 */
+		threads[ groupBegin ] = 0;
+		for( Index i = groupBegin + 1; i< groupEnd; i++ )
+		{
+			threads[ i ] = threads[ i - 1 ] + threadsPerRow[ i - groupBegin - 1 ];
+			dbgExpr( threads[ i ] );
 		}
-		uint threadsLeft = cudaBlockSize - usedThreads;
-		for(uint i=0; i<threadsLeft; i++) {
-			threadsPerRow[i]++;
-		}
-		threads[blkBegin]=0;
-		for(uint i=blkBegin+1; i<blkEnd; i++) {
-			threads[i] = threads[i-1] + threadsPerRow[i-blkBegin-1];
-		}			
+		usedThreadsInGroup[ groupId ] = threads[ groupEnd - groupBegin - 1 ]; // ???????/
+		dbgExpr( usedThreadsInGroup[ groupId ] );
 
 		/****
 		 * Now, compute the number of rounds
 		 */
-		uint rounds = 0, roundsFinal = 0;
-		for(uint i=blkBegin; i<blkEnd; i++) {
-			rounds = ceil(((double) mat.row_offsets[i+1] - mat.row_offsets[i]) / threadsPerRow[i-blkBegin]);
-			roundsFinal = (rounds>roundsFinal) ? rounds : roundsFinal;
+		Index rounds( 0 ), roundsFinal( 0 );
+		for( Index i = groupBegin; i < groupEnd; i++ )
+		{
+		   double nonzerosInRow = mat. getNonzeroElementsInRow( i );
+		   rounds = ceil( nonzerosInRow / ( double ) threadsPerRow[ i - groupBegin ] );
+			//rounds = ceil(((double) mat.row_offsets[i+1] - mat.row_offsets[i]) / threadsPerRow[i-groupBegin]);
+			//roundsFinal = (rounds>roundsFinal) ? rounds : roundsFinal;
+		   roundsFinal = Max( rounds, roundsFinal );
 		}
-		/*blockInfo[4*blkIdx+2] = roundsFinal;
-		blockInfo[4*blkIdx+3] = numStoredValues;*/
-		blockInfo[ blkIdx ]. numRounds = roundsFinal;
-		//blockInfo[ blkIdx ]. ?????????????????????????????????????
-		blkIdx++;
-		numStoredValues += cudaBlockSize * roundsFinal;
-		blkBegin = blkEnd;
+		dbgExpr( roundsFinal );
+		/*groupInfo[4*groupId+2] = roundsFinal;
+		groupInfo[4*groupId+3] = numStoredValues;*/
+      //groupInfo[4*groupId] = groupBegin;     // group begining
+      //groupInfo[4*groupId+1] = rowsInGroup;  // number of the rows in the group
+		groupInfo[ groupId ]. numRows = rowsInGroup;
+      groupInfo[ groupId ]. idxFirstRow = groupBegin;
+      groupInfo[ groupId ]. idxFirstValue = numberOfStoredValues;
+		groupInfo[ groupId ]. numRounds = roundsFinal;
 
-		if(blkBegin == this->size) {
-			numberOfGroups = blkIdx;
+		dbgExpr( groupInfo[ groupId ]. numRows );
+		dbgExpr( groupInfo[ groupId ]. idxFirstRow );
+		dbgExpr( groupInfo[ groupId ]. idxFirstValue );
+		dbgExpr( groupInfo[ groupId ]. numRounds );
+
+		groupId++;
+		numberOfStoredValues += cudaBlockSize * roundsFinal;
+		groupBegin = groupEnd;
+
+		if( groupBegin == this -> getSize() )
+		{
+			numberOfGroups = groupId;
 			break;
 		}
 	}
@@ -341,47 +382,58 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 	/****
 	 * Allocate the non-zero elements (they contains some artificial zeros.)
 	 */
-	dbgCout( "Allocating " << numStoredValues << " elements.");
-	if( ! setNonzeroElements( numStoredValues ) )
+	dbgCout( "Allocating " << numberOfStoredValues << " elements.");
+	if( ! setNonzeroElements( numberOfStoredValues ) )
 		return false;
-	artificial_zeros = numStoredValues - mat.getNonzeroElements();
+	artificial_zeros = numberOfStoredValues - mat. getNonzeroElements();
 
-	last_nonzero_element = numStoredValues;
+	last_nonzero_element = numberOfStoredValues;
 
 	dbgCout( "Inserting data " );
 	if( Device == tnlHost )
 	{
-	/*	uint counters[128];
-		uint NZperRow[128];
-		uint index, baseRow;
-		for(uint i=0; i<numberOfGroups; i++) {
-			baseRow = blockInfo[4*i];
-			index = blockInfo[4*i+3];
-			for(uint j=0; j<blockInfo[4*i+1]; j++) {
-				NZperRow[j] = mat.row_offsets[blockInfo[4*i]+j+1] - mat.row_offsets[blockInfo[4*i]+j];
-				if(j<blockInfo[4*i+1]-1) {
-					threadsPerRow[j] = threads[blockInfo[4*i]+j+1] - threads[blockInfo[4*i]+j];
-				}
-				else threadsPerRow[j] = cudaBlockSize - threads[blockInfo[4*i]+j];
-				counters[j] = 0;
+	   Index counters[ 128 ];
+		Index NZperRow[ 128 ];
+		Index index, baseRow;
+		for( Index i = 0; i < numberOfGroups; i++ )
+		{
+			baseRow = groupInfo[ i ]. idxFirstRow;
+			index = groupInfo[ i ]. idxFirstValue;
+			/****
+			 * First compute number of threads for each row.
+			 */
+			for( Index j = 0; j < groupInfo[ i ]. numRows; j++ )
+			{
+				//NZperRow[ j ] = mat.row_offsets[groupInfo[4*i]+j+1] - mat.row_offsets[groupInfo[4*i]+j];
+			   NZperRow[ j ] = mat. getNonzeroElementsInRow( baseRow + j );
+				if( j < groupInfo[ i ]. numRows - 1 )
+					threadsPerRow[ j ] = threads[ baseRow + j + 1 ] - threads[ baseRow + j ];
+				else
+				   threadsPerRow[ j ] = cudaBlockSize - threads[ baseRow + j ];
+				counters[ j ] = 0;
 			}
-			for(uint k=0; k<blockInfo[4*i+2]; k++) {
-				for(uint j=0; j<blockInfo[4*i+1]; j++) {
-					for(uint l=0; l<threadsPerRow[j]; l++) {
-						if(counters[j]<NZperRow[j]) {
-							nonzeroElements[index] = mat.nonzeroElements[ mat.row_offsets[baseRow+j]+counters[j] ];
-							columns[index] = mat.columns[ mat.row_offsets[baseRow+j]+counters[j] ];
+			/****
+			 * Now do the insertion
+			 */
+			for( Index k = 0; k < groupInfo[ i ]. numRounds; k ++ )
+				for( Index j = 0; j < groupInfo[ i ]. numRows; j ++ )
+					for( Index l = 0; l < threadsPerRow[ j ]; l ++ )
+					{
+						if( counters[ j ] < NZperRow[ j ] )
+						{
+						   Index pos = mat. row_offsets[ baseRow + j ] + counters[ j ];
+							nonzeroElements[ index ] = mat. nonzero_elements[ pos ];
+							columns[ index ] = mat.columns[ pos ];
 						}
-						else {
-							columns[index] = -1;
-							nonzeroElements[index] = 0.0;
+						else
+						{
+							columns[ index ] = -1;
+							nonzeroElements[ index ] = 0.0;
 						}
-						counters[j]++;
-						index++;
+						counters[ j ] ++;
+						index ++;
 					}
-				}				
-			}
-		}*/
+		}
 	}
 	if( Device == tnlCuda )
 	{
@@ -421,7 +473,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
 
    nonzeroElements = adaptiveRgCSRMatrix.nonzeroElements;
    columns = adaptiveRgCSRMatrix.columns;
-   blockInfo = adaptiveRgCSRMatrix.blockInfo;
+   groupInfo = adaptiveRgCSRMatrix.groupInfo;
    threads = adaptiveRgCSRMatrix.threads;
 
    return true;
@@ -441,42 +493,53 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                    << "The matrix size is " << this -> getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
+
+   const Index TB_SIZE = 256;
+   const Index MAX_ROWS = 128;
    if( Device == tnlHost )
    {
-     /* int idx[TB_SIZE];
+      Index idx[TB_SIZE];
       Real psum[TB_SIZE];        //partial sums for each thread
-      int limits[MAX_ROWS + 1];  //indices of first threads for each row + index of first unused thread
+      Index limits[MAX_ROWS + 1];  //indices of first threads for each row + index of first unused thread
       Real results[MAX_ROWS];
 
-      for(int group = 0; group < mat.numberOfGroups; group++) {                     //for each group of rows
-
-         for(int thread = 0; thread < mat.blockInfo[group].numUsedThreads; thread++) { //for each used thread in group
-            idx[thread] = mat.blockInfo[group].idxFirstValue + thread;
+      for( Index group = 0; group < this -> numberOfGroups; group ++ )                     //for each group of rows
+      {
+         for( Index thread = 0;
+              thread < this -> usedThreadsInGroup[ group ];
+              thread ++ )                                                              //for each used thread in group
+         {
+            idx[ thread ] = this -> groupInfo[ group ]. idxFirstValue + thread;
             psum[thread] = 0;
 
-            for(int j = 0; j < mat.blockInfo[group].numRounds; j++) {
-               psum[thread] += mat.nonzeroElements[idx[thread]] * in[mat.columns[idx[thread]]];
-               idx[j] += TB_SIZE;
+            for( Index j = 0;
+                 j < this -> groupInfo[ group ]. numRounds;
+                 j ++ )
+            {
+               psum[ thread ] += this -> nonzeroElements[ idx[ thread ] ] * vec[ this -> columns[ idx[ thread ] ] ];
+               idx[ j ] += TB_SIZE;
             }
          }
 
-         for(int thread = 0; thread < mat.blockInfo[group].numRows; thread++) {        //for threads corresponding to rows in group
-            limits[thread] = mat.threads[mat.blockInfo[group].idxFirstRow + thread];   //make a local copy of info about threads
-         }
-         limits[mat.blockInfo[group].numRows] = mat.blockInfo[group].numUsedThreads;      //for convenience, add the index of first unused row
+         for( Index thread = 0;
+              thread < this -> groupInfo[ group ]. numRows;
+              thread ++ ) //for threads corresponding to rows in group
+            limits[ thread ] = this -> threads[ this -> groupInfo[ group ]. idxFirstRow + thread ];   //make a local copy of info about threads
+         limits[ this -> groupInfo[ group ]. numRows ] = this -> usedThreadsInGroup[ group ];      //for convenience, add the index of first unused row
 
          //reduction of partial sums and writing to the output
-         for(int thread = 0; thread < mat.blockInfo[group].numRows; thread++) {        //for threads corresponding to rows in group
-
-            results[thread] = 0;
-
-            for(int j = limits[thread]; j < limits[thread+1]; j++) {             //sum up partial sums belonging to that row
-               results[thread] += psum[j];
-            }
-
-            out[mat.blockInfo[group].idxFirstRow + thread] = results[thread];
+         for( Index thread = 0;
+              thread < this -> groupInfo[ group ]. numRows;
+              thread ++)         //for threads corresponding to rows in group
+         {
+            results[ thread ] = 0;
+            for( Index j = limits[ thread ];
+                 j < limits[ thread + 1 ];
+                 j++ )              //sum up partial sums belonging to that row
+               results[ thread ] += psum[ j ];
+            result[ this -> groupInfo[ group ]. idxFirstRow + thread ] = results[ thread ];
          }
-      }*/
+      }
    }
    if( Device == tnlCuda )
    {
@@ -558,7 +621,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
                                                         const Real* vect,
                                                         const Real* matrxValues,
                                                         const Index* matrxColumni,
-                                                        const Index* _blockInfo,
+                                                        const Index* _groupInfo,
                                                         const Index* _threadsInfo, 
                                                         const Index numBlocks )
 {
@@ -572,7 +635,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 
 	for(Index bId = blockIdx.x; bId < numBlocks; bId += gridDim.x) {
 		if(threadIdx.x < 4) {
-			info[threadIdx.x] = _blockInfo[4*bId + threadIdx.x];
+			info[threadIdx.x] = _groupInfo[4*bId + threadIdx.x];
 		}
 		__syncthreads();
 
