@@ -74,6 +74,8 @@ class tnlSpmvBenchmark
 
    Real maxError;
 
+   Index firstErrorOccurence;
+
    Matrix< Real, Device, Index > matrix;
 
    /****
@@ -105,6 +107,7 @@ tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
      iterations( 0.0 ),
      artificialZeros( 0 ),
      maxError( 0.0 ),
+     firstErrorOccurence( 0 ),
      matrix( "tnlSpmvBenchmark::matrix" ),
      formatColumnWidth( 32 ),
      timeColumnWidth( 12 ),
@@ -204,6 +207,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    }
    time = rt_timer. GetTime();
 
+   firstErrorOccurence = 0;
    for( Index j = 0; j < refB. getSize(); j ++ )
    {
       //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
@@ -211,11 +215,17 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
          this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] - b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
       else
          this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] ) );
+
+      if( this -> maxError < 1.0e-12)
+         benchmarkWasSuccesful = true;
+      else
+      {
+         benchmarkWasSuccesful = false;
+         firstErrorOccurence = j;
+         cerr << " j = " << j << endl;
+         abort();
+      }
    }
-   if( this -> maxError < 1.0e-12)
-      benchmarkWasSuccesful = true;
-   else
-      benchmarkWasSuccesful = false;
 
    double flops = 2.0 * iterations * matrix. getNonzeroElements();
    gflops = flops / time * 1.0e-9;

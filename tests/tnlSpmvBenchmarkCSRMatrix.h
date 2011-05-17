@@ -37,6 +37,7 @@ template< typename Real, typename Index>
 bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
    this -> matrix = matrix;
+   return true;
 }
 
 template< typename Real, typename Index>

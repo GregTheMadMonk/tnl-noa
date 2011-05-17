@@ -47,6 +47,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            const tnlLongVector< Real, tnlHost >& refX,
                            const tnlLongVector< Real, tnlCuda >& cudaX,
                            tnlLongVector< Real, tnlHost >& refB,
+                           const bool useAdaptiveGroupSize,
+                           const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy,
                            const tnlSpmvBenchmarkCSRMatrix< Real, int >& csrMatrixBenchmark,
                            bool verbose,
                            const tnlString& logFileName,
@@ -56,6 +58,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
    for( int groupSize = 16; groupSize <= 64; groupSize *= 2 )
    {
       hostRgCsrMatrixBenchmark. setGroupSize( groupSize );
+      hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( useAdaptiveGroupSize );
+      hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( adaptiveGroupSizeStrategy );
       hostRgCsrMatrixBenchmark. setup( csrMatrix );
       hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
@@ -224,10 +228,24 @@ bool benchmarkMatrix( const tnlString& input_file,
                          refX,
                          cudaX,
                          refB,
+                         false,
+                         tnlAdaptiveGroupSizeStrategyByAverageRowSize,
                          csrMatrixBenchmark,
                          verbose,
                          logFileName,
                          logFile );
+
+   benchmarkRgCSRFormat( csrMatrix,
+                         refX,
+                         cudaX,
+                         refB,
+                         true,
+                         tnlAdaptiveGroupSizeStrategyByAverageRowSize,
+                         csrMatrixBenchmark,
+                         verbose,
+                         logFileName,
+                         logFile );
+
 
 
    /****
@@ -260,6 +278,18 @@ bool benchmarkMatrix( const tnlString& input_file,
                             refX,
                             cudaX,
                             refB,
+                            false,
+                            tnlAdaptiveGroupSizeStrategyByAverageRowSize,
+                            csrMatrixBenchmark,
+                            verbose,
+                            logFileName,
+                            logFile );
+      benchmarkRgCSRFormat( orderedCsrMatrix,
+                            refX,
+                            cudaX,
+                            refB,
+                            true,
+                            tnlAdaptiveGroupSizeStrategyByFirstGroup,
                             csrMatrixBenchmark,
                             verbose,
                             logFileName,
@@ -272,6 +302,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       logFile << "          </tr>" << endl;
       logFile. close();
    }
+   return true;
 
 }
 

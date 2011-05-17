@@ -36,24 +36,7 @@ do
       else
          echo "Matrix $unzipped_matrix.float.bin.bz2 was already converted."         
       fi
-      #######
-      ## Descend ordering
-      ###
-      if test ! -e $unzipped_matrix.descend.float.bin.bz2;
-      then
-         #echo "Converting $unzipped_matrix.descend.float.bin.bz2 ..."
-         gunzip -f $matrix
-         if test ! -e $unzipped_matrix.descend;
-         then 
-            echo "Ordering the matrix ..."
-            ./reorder-csr -D -g 32 -i $unzipped_matrix -o $unzipped_matrix.descend
-         fi        
-         $TNL_MATRIX_CONVERT --input-file $unzipped_matrix.descend --output-file $unzipped_matrix.descend.float.bin.bz2 --precision float --verbose yes --verify no
-         #rm $unzipped_matrix.descend
-         gzip $unzipped_matrix
-      else
-         echo "Matrix descend-$unzipped_matrix.float.bin.bz2 was already converted."         
-      fi
+      
       #######
       ## AMD ordering
       ###      
@@ -83,24 +66,6 @@ do
          echo "Matrix $unzipped_matrix.double.bin.bz2 was already converted."         
       fi
 
-      #######
-      ## Descend ordering
-      ###
-      if test ! -e $unzipped_matrix.descend.double.bin.bz2;
-      then
-         #echo "Converting $unzipped_matrix.descend.double.bin.bz2 ..."
-         gunzip -f $matrix
-         if test ! -e $unzipped_matrix.descend;
-         then 
-            echo "Ordering the matrix ..."
-            ./reorder-csr -D -g 32 -i $unzipped_matrix -o $unzipped_matrix.descend
-         fi        
-         $TNL_MATRIX_CONVERT --input-file $unzipped_matrix.descend --output-file $unzipped_matrix.descend.double.bin.bz2 --precision double --verbose yes --verify no
-         #rm $unzipped_matrix.descend
-         gzip $unzipped_matrix
-      else
-         echo "Matrix $unzipped_matrix.descend.double.bin.bz2 was already converted."         
-      fi
       #######
       ## AMD ordering
       ###      

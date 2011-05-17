@@ -42,7 +42,7 @@ check_PROGRAMS = tnl-unit-tests$(EXEEXT) $(am__EXEEXT_1) \
 	$(am__EXEEXT_2)
 @BUILD_CUDA_TRUE@am__append_1 = tnl-cuda-unit-tests
 @BUILD_DBG_TRUE@am__append_2 = tnl-unit-tests-dbg
-TESTS = tnl-unit-tests-dbg$(EXEEXT)
+TESTS = tnl-unit-tests$(EXEEXT)
 subdir = tests/unit-tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

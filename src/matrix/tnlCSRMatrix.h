@@ -984,3 +984,4 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
 }
 
 #endif /* TNLCSRMATRIX_H_ */
+

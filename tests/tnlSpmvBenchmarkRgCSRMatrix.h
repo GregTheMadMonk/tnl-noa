@@ -38,6 +38,10 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 
    void setCudaBlockSize( const Index cudaBlockSize );
 
+   void setUseAdaptiveGroupSize( bool useAdaptiveGroupSize );
+
+   void setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy );
+
    Index getArtificialZeroElements() const;
 
    protected:
@@ -45,6 +49,10 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
    Index groupSize;
 
    Index cudaBlockSize;
+
+   bool useAdaptiveGroupSize;
+
+   tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy;
 };
 
 template< typename Real,
@@ -52,7 +60,10 @@ template< typename Real,
           typename Index>
 tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatrix()
  : groupSize( 0 ),
-   cudaBlockSize( 0 )
+   cudaBlockSize( 0 ),
+   useAdaptiveGroupSize( false ),
+   adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize )
+
 {
 }
 
@@ -64,16 +75,22 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
    tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
    {
-      this -> matrix. copyFrom( matrix, groupSize );
+      if( ! this -> matrix. copyFrom( matrix,
+                                      groupSize,
+                                      this -> useAdaptiveGroupSize,
+                                      this -> adaptiveGroupSizeStrategy ) )
+         return false;
    }
    if( Device == tnlCuda )
    {
 #ifdef HAVE_CUDA
       tnlRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. copyFrom( matrix, groupSize );
-      this -> matrix. copyFrom( hostMatrix );
+      if( ! this -> matrix. copyFrom( hostMatrix ) )
+         return false;
 #endif
    }
+   return true;
 }
 
 template< typename Real,
@@ -127,6 +144,22 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( con
    this -> matrix. setCUDABlockSize( cudaBlockSize );
 #endif
    this -> cudaBlockSize = cudaBlockSize;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index >
+void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setUseAdaptiveGroupSize( bool useAdaptiveGroupSize )
+{
+   this -> useAdaptiveGroupSize = useAdaptiveGroupSize;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index >
+void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy )
+{
+   this -> adaptiveGroupSizeStrategy = adaptiveGroupSizeStrategy;
 }
 
 template< typename Real,

@@ -117,7 +117,9 @@ sparse_matrix_benchmark_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__sparse_matrix_benchmark_dbg_SOURCES_DIST =  \
-	sparse-matrix-benchmark.h sparse-matrix-benchmark.cpp
+	sparse-matrix-benchmark.h tnlSpmvBenchmark.h \
+	tnlSpmvBenchmarkCSRMatrix.h tnlSpmvBenchmarkHybridMatrix.h \
+	tnlSpmvBenchmarkRgCSRMatrix.h sparse-matrix-benchmark.cpp
 am__objects_6 =  \
 	sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.$(OBJEXT)
 @BUILD_DBG_TRUE@am_sparse_matrix_benchmark_dbg_OBJECTS =  \
@@ -345,14 +347,15 @@ SUBDIRS = unit-tests
 
 #if BUILD_CUDA
 #matrix_formats_test_sources += matrix-formats-test-cuda.cu
-#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu \
-#                                   cusp-test.h
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
 #matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
 #tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else
 matrix_formats_test_sources = matrix-formats-test.h \
 	matrix-formats-test.cpp
 sparse_matrix_benchmark_sources = sparse-matrix-benchmark.h \
+	tnlSpmvBenchmark.h tnlSpmvBenchmarkCSRMatrix.h \
+	tnlSpmvBenchmarkHybridMatrix.h tnlSpmvBenchmarkRgCSRMatrix.h \
 	sparse-matrix-benchmark.cpp
 matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h \
 	matrix-solvers-benchmark.cpp

@@ -19,6 +19,7 @@
 
 #include "sparse-matrix-benchmark.h"
 #include <string.h>
+#include <debug/tnlDebug.h>
 #include <core/tnlObject.h>
 #include <core/tnlFile.h>
 #include <config/tnlConfigDescription.h>
@@ -26,6 +27,9 @@
 
 int main( int argc, char* argv[] )
 {
+   dbgFunctionName( "", "main" );
+   dbgInit( "" );
+
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 

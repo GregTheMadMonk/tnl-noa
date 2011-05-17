@@ -35,16 +35,24 @@ write_header()
    echo "             <td rowspan=4 align=center>CSR</td>" >> $1
    echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
    echo "             <td colspan=33 align=center>Row-Grouped CSR</td>" >> $1
-   echo "             <td colspan=33 align=center>Row-Grouped CSR (Rows sorted decreasingly by the number of the non-zero elements)</td>" >> $1
+   echo "             <td colspan=33 align=center>Row-Grouped CSR with adaptive group size set by average number of nonzeros in row</td>" >> $1   
+   echo "             <td colspan=33 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1
+   echo "             <td colspan=33 align=center>Row-Grouped CSR woth rows sorted decreasingly by the number of the nonzeros and adaptiove group size set by the first group</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
    echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
    echo "             <td colspan=11>Group Size = 64</td>" >> $1
+   echo "             <td colspan=11>Group Size cca. 16</td>" >> $1      # RgCSR adaptive group size
+   echo "             <td colspan=11>Group Size cca. 32</td>" >> $1
+   echo "             <td colspan=11>Group Size cca. 64</td>" >> $1   
    echo "             <td colspan=11>Group Size = 16</td>" >> $1      # RgCSR rows sorted decreasingly
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
-   echo "             <td colspan=11>Group Size = 64</td>" >> $1         
+   echo "             <td colspan=11>Group Size = 64</td>" >> $1
+   echo "             <td colspan=11>Group Size >= 16</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
+   echo "             <td colspan=11>Group Size >= 32</td>" >> $1
+   echo "             <td colspan=11>Group Size >= 64</td>" >> $1                     
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -57,6 +65,16 @@ write_header()
    echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 64
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
+
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 16
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 32
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1   
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size cca. 64
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
    
    echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 16
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
@@ -66,7 +84,18 @@ write_header()
    echo "             <td colspan=8>GPU</td>" >> $1   
    echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 64
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
+      
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 16
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 32
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
+   echo "             <td colspan=8>GPU</td>" >> $1   
+   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size >= 64
+   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1            
+                  
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -83,6 +112,20 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
    
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 16
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 32
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR format with the group size cca 64
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   
+   
    echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size = 16
    echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
@@ -94,7 +137,20 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size = 64
    echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1                    
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size >= 16
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size >= 32
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # RgCSR (sorted rows) format with the group size >= 64
+   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1                                          
             
    echo "          </tr>" >> $1      
          
@@ -104,8 +160,10 @@ write_header()
    echo "             <td>NonZeros No.</td>" >> $1
    echo "             <td>NonZeros %</td>" >> $1
    echo "             <td>GFlops</td>" >> $1                    # CSR format on CPU
+   
    echo "             <td>GFlops</td>" >> $1                    # Hybrid format Bell, Garland on GPU
    echo "             <td>Speed-up</td>" >> $1
+   
    echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 16
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
@@ -129,6 +187,40 @@ write_header()
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1      
    echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 64
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 16
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 32
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 64
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
@@ -174,6 +266,39 @@ write_header()
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 16
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 32
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 64
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
    
    
    
@@ -235,25 +360,7 @@ do
          $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1
          gzip $unzipped_matrix
       fi
-      #######
-      ## Descend ordering
-      ###  
-      if test ! -e $unzipped_matrix.descend.float.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.descend.float.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.descend in single precision ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.descend.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.descend.float.bin.bz2 --input-mtx-file $unzipped_matrix.descend --log-file sparse-matrix-benchmark-descend-float.log --stop-time $STOP_TIME --verbose 1
-      fi
-      if test ! -e $unzipped_matrix.descend.double.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.descend.double.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.descend in double precison ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.descend.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.descend.double.bin.bz2 --input-mtx-file $unzipped_matrix.descend --log-file sparse-matrix-benchmark-descend-double.log --stop-time $STOP_TIME --verbose 1
-      fi
+
       #######
       ## AMD ordering
       ###  
@@ -309,23 +416,7 @@ do
             echo "Checking with the matrix $file ..."
             $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1                        
          fi                           
-         #######
-         ## Descend ordering
-         ###  
-         if test ! -e $file.descend.float.bin.bz2;
-         then
-            echo "Missing $file.descend.float.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file.descend ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.descend.float.bin.bz2 --input-mtx-file $file.descend --log-file sparse-matrix-benchmark-descend-float.log --stop-time $STOP_TIME --verbose 1                        
-         fi
-         if test ! -e $file.descend.double.bin.bz2;
-         then
-            echo "Missing $file.descend.double.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.descend.double.bin.bz2 --input-mtx-file $file.descend --log-file sparse-matrix-benchmark-descend-double.log --stop-time $STOP_TIME --verbose 1                        
-         fi                           
+         
          #######
          ## AMD ordering
          ###  
