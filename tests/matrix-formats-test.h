@@ -23,6 +23,7 @@
 #include <matrix/tnlFullMatrix.h>
 #include <matrix/tnlCSRMatrix.h>
 #include <matrix/tnlRgCSRMatrix.h>
+#include <matrix/tnlAdaptiveRgCSRMatrix.h>
 #include <matrix/tnlFastCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrixCUDA.h>
@@ -36,9 +37,11 @@ bool testMatrixFormats( const tnlString& input_file_name,
 		        const tnlString& input_mtx_file_name,
 		        int verbose,
 		        bool& have_full_matrix,
-   	                bool& test_full_csr,
+		        bool& test_full_csr,
 		        bool& test_coa_csr,
 		        bool& test_cuda_coa_csr,
+              bool& test_arg_csr,
+              bool& test_cuda_arg_csr,
 		        bool& test_fast_csr,
 		        bool& test_coa_fast_csr,
 		        bool& test_cuda_coa_fast_csr,
@@ -48,6 +51,8 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	tnlCSRMatrix< T >* csr_matrix;
 	tnlRgCSRMatrix< T >* coacsr_matrix;
 	tnlRgCSRMatrix< T, tnlCuda >* cuda_coacsr_matrix;
+   tnlAdaptiveRgCSRMatrix< T >* adaptiveRgCsrMatrix;
+   tnlAdaptiveRgCSRMatrix< T, tnlCuda >* cuda_adaptiveRgCsrMatrix;
 	tnlFastCSRMatrix< T >* fast_csr_matrix;
 	tnlFastRgCSRMatrix< T >* coa_fast_csr_matrix;
 	tnlFastRgCSRMatrix< T, tnlCuda >* cuda_coa_fast_csr_matrix;
@@ -177,6 +182,68 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	delete cuda_coacsr_matrix;
 #endif
 	delete coacsr_matrix;
+
+   adaptiveRgCsrMatrix = new tnlAdaptiveRgCSRMatrix< T >( "adaptiveRgCsrMatrix" );
+   adaptiveRgCsrMatrix -> copyFrom( *csr_matrix );
+
+   if( verbose )
+      cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << flush;
+   if( *adaptiveRgCsrMatrix == *csr_matrix )
+   {
+      test_arg_csr = true;
+      if( verbose )
+         cout << "OK." << endl;
+   }
+   else
+      if( verbose )
+         cout << "FAILED." << endl;
+   adaptiveRgCsrMatrix -> printOut( cout, 10 );
+   //csr_matrix -> printOut( cout, 10 );
+
+#ifdef HAVE_CUDA
+   if( verbose )
+      cout << "Comparing the CSR and the Coalesced CSR CUDA matrix by SpMV ... ";
+   cuda_adaptiveRgCsrMatrix = new tnlRgCSRMatrix< T, tnlCuda >( "cuda_adaptiveRgCsrMatrix" );
+   cuda_adaptiveRgCsrMatrix -> copyFrom( *adaptiveRgCsrMatrix );
+
+   int k( 0 );
+   test_cuda_arg_csr = true;
+   while( k < size && test_cuda_coa_csr == true )
+   {
+      if( verbose )
+         cout << "\rComparing the CSR and the Coalesced CSR CUDA matrix by SpMV ... " << k << " / " << size << "        " << flush;
+      if( k > 0 )
+         host_x[ k - 1 ] = 0.0;
+      host_x[ k ] = k;
+      cuda_x = host_x;
+      csr_matrix -> vectorProduct( host_x,
+                         ref_b );
+
+      cuda_coacsr_matrix -> vectorProduct( cuda_x,
+                                 cuda_b );
+      if( ref_b != cuda_b )
+         test_cuda_coa_csr = false;
+      k ++;
+   }
+   if( verbose )
+      if( test_cuda_coa_csr == true )
+         cout << "\rComparing the CSR and the Coalesced CSR CUDA matrix by SpMV ... " << size << " / " << size << " OK.       " << endl;
+      else
+      {
+         cout << "FAILED at " << k << "th test. " << endl;
+         fstream f;
+         f. open( "spmv-test", ios ::out );
+         host_b = cuda_b;
+         for( int j = 0; j < size; j ++ )
+            f << ref_b[ j ] << " - " << host_b[ j ] << " = "  << ref_b[ j ] - host_b[ j ] <<  endl;
+         f. close();
+      }
+   delete cuda_coacsr_matrix;
+#endif
+   delete coacsr_matrix;
+
+
+
 
 
 	fast_csr_matrix = new tnlFastCSRMatrix< T >( "fast-csr-matrix" );

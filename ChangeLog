@@ -1,3 +1,20 @@
+2011-05-18  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h:
+	  - implementing getElement method  
+	* src/matrix/tnlRgCSRMatrix.h:  
+	* tests/matrix-formats-test.cpp (main): 
+	* tests/matrix-formats-test.h: 
+	  - adding test of tnlAdaptiveRgCSRMatrix
+	* tests/run-matrix-formats-test: 
+	* tests/unit-tests/Makefile.am: 
+	* tests/unit-tests/matrix/tnlAdaptiveRgCSRMatrixTester.h (triDiagonalMatrixTest): 
+	(upperTriangularMatrixTest): 
+	(diagonalMatrixTest): 
+	(suite): 
+	* tests/unit-tests/tnl-unit-tests.cpp (main):
+	  - adding tests of tnlAdaptiveRgCSRMatrix 
+
 2011-05-17  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* tests/unit-tests/matrix/tnlAdaptiveRgCSRMatrixTester.h: New file.

@@ -67,7 +67,7 @@ endif
 #                                 ../../src/debug/libtnldebug-dbg-0.1.la                            
 #endif
 
-TESTS = tnl-unit-tests-dbg
+TESTS = tnl-unit-tests
 
 #if BUILD_CUDA
 #TESTS += tnl-cuda-unit-tests

@@ -45,6 +45,11 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
                                "triDiagonalMatrixTest",
                                & tnlAdaptiveRgCSRMatrixTester< T > :: triDiagonalMatrixTest )
                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlAdaptiveRgCSRMatrixTester< T > >(
+                               "upperTriangularMatrixTest",
+                               & tnlAdaptiveRgCSRMatrixTester< T > :: upperTriangularMatrixTest )
+                             );
+
 
             return suiteOfTests;
    }
@@ -52,17 +57,17 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
    void diagonalMatrixTest()
    {
       tnlCSRMatrix< T > csr_matrix( "test-matrix:Diagonal" );
-      tnlAdaptiveRgCSRMatrix< T > coacsr_matrix( "test-matrix:Diagonal" );
+      tnlAdaptiveRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
       csr_matrix. setSize( 12 );
       csr_matrix. setNonzeroElements( 12 );
       for( int i = 0; i < 12; i ++ )
          csr_matrix. setElement( i, i, T( i + 1 ) );
       //cerr << "Copying data to coalesced CSR matrix." << endl;
-      coacsr_matrix. copyFrom( csr_matrix );
-      //coacsr_matrix. printOut( cout );
+      argcsrMatrix. copyFrom( csr_matrix );
+      argcsrMatrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < 12; i ++ )
-         if( coacsr_matrix. getElement( i, i ) != T( i + 1 ) )
+         if( argcsrMatrix. getElement( i, i ) != T( i + 1 ) )
             error = true;
       CPPUNIT_ASSERT( ! error );
    };
@@ -70,7 +75,7 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
    void triDiagonalMatrixTest()
    {
       tnlCSRMatrix< T > csr_matrix( "test-matrix:Tridiagonal" );
-      tnlAdaptiveRgCSRMatrix< T > coacsr_matrix( "test-matrix:Tridiagonal" );
+      tnlAdaptiveRgCSRMatrix< T > argcsr_matrix( "test-matrix:Tridiagonal" );
       int size = 12;
       csr_matrix. setSize( size );
       csr_matrix. setNonzeroElements( size * 3 - 2 );
@@ -84,22 +89,40 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
                                 i,      // first column
                                 offsets );
       }
-      coacsr_matrix. copyFrom( csr_matrix );
-      //cerr << "----------------" << endl;
-      //coacsr_matrix. printOut( cout );
+      argcsr_matrix. copyFrom( csr_matrix );
+      //argcsr_matrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < size; i ++ )
-      {
-         if( csr_matrix. getElement( i, i ) != T( 2.0 ) )
-            error = true;
-         if( i > 0 && csr_matrix. getElement( i, i - 1 ) != T( -1.0 ) )
-            error = true;
-         if( i < size - 1 && csr_matrix. getElement( i, i + 1 ) != T( -1.0 ) )
-            error = true;
-      }
+         for( int j = 0; j < size; j ++ )
+            if( csr_matrix. getElement( i, j ) != argcsr_matrix. getElement( i, j ) )
+               error = true;
       CPPUNIT_ASSERT( ! error );
 
    }
+   void upperTriangularMatrixTest()
+   {
+      tnlCSRMatrix< T > csr_matrix( "test-matrix:upperTriangular" );
+      tnlAdaptiveRgCSRMatrix< T > argcsr_matrix( "test-matrix:upperTriangular" );
+      int size = 12;
+      csr_matrix. setSize( size );
+      csr_matrix. setNonzeroElements( size * size );
+      for( int i = 0; i < size; i ++ )
+         for( int j = i; j < size; j ++ )
+            csr_matrix. setElement( i, j, 1.0 );
+
+      argcsr_matrix. copyFrom( csr_matrix );
+      //cerr << "----------------" << endl;
+      argcsr_matrix. printOut( cout );
+      bool error( false );
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( csr_matrix. getElement( i, j ) != argcsr_matrix. getElement( i, j ) )
+               error = true;
+
+      CPPUNIT_ASSERT( ! error );
+
+   }
+
 };
 
 #endif /* TNLAdaptiveRgCSRMATRIXTESTER_H_ */

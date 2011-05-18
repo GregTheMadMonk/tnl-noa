@@ -57,6 +57,8 @@ int main( int argc, char* argv[] )
     bool test_full_csr( false );
     bool test_coa_csr( false );
     bool test_cuda_coa_csr( false );
+    bool test_arg_csr( false );
+    bool test_cuda_arg_csr( false );
     bool test_fast_csr( false );
     bool test_coa_fast_csr( false );
     bool test_cuda_coa_fast_csr( false );
@@ -70,23 +72,27 @@ int main( int argc, char* argv[] )
 								                  test_full_csr,
 								                  test_coa_csr,
 								                  test_cuda_coa_csr,
+								                  test_arg_csr,
+								                  test_cuda_arg_csr,
 								                  test_fast_csr,
 								                  test_coa_fast_csr,
 								                  test_cuda_coa_fast_csr,
-      								              test_ellpack );
+      								            test_ellpack );
 
     if( object_type == "tnlCSRMatrix< double, tnlHost >")
 	   test_result = testMatrixFormats< double >( input_file,
-		           			        			  input_mtx_file,
-						          	        	  verbose,
-								                  have_full_matrix,
-								                  test_full_csr,
-								                  test_coa_csr,
-								                  test_cuda_coa_csr,
-								                  test_fast_csr,
-								                  test_coa_fast_csr,
-								                  test_cuda_coa_fast_csr,
-								                  test_ellpack );
+		           			        			          input_mtx_file,
+						          	        	          verbose,
+                                                 have_full_matrix,
+                                                 test_full_csr,
+                                                 test_coa_csr,
+                                                 test_cuda_coa_csr,
+                                                 test_arg_csr,
+                                                 test_cuda_arg_csr,
+                                                 test_fast_csr,
+                                                 test_coa_fast_csr,
+                                                 test_cuda_coa_fast_csr,
+                                                 test_ellpack );
 
 
    fstream log_file;

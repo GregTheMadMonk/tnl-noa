@@ -672,7 +672,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    str << "Matrix name:" << this -> getName() << endl;
    str << "Matrix size:" << this -> getSize() << endl;
    str << "Allocated elements:" << nonzeroElements. getSize() << endl;
-   str << "Matrix blocks: " << groupOffsets. getSize() << endl;
+   str << "Number of groups: " << groupOffsets. getSize() << endl;
 
    Index print_lines = lines;
    if( ! print_lines )

@@ -18,15 +18,15 @@ matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h
 tnl_benchmarks_sources = tnl-benchmarks.h
 
 #if BUILD_CUDA
-matrix_formats_test_sources += matrix-formats-test-cuda.cu
-sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
-matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
-tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
+#matrix_formats_test_sources += matrix-formats-test-cuda.cu
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
+#matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
+#tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else
-#matrix_formats_test_sources += matrix-formats-test.cpp
-#sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
-#matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
-#tnl_benchmarks_sources += tnl-benchmarks.cpp                               
+matrix_formats_test_sources += matrix-formats-test.cpp
+sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
+matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
+tnl_benchmarks_sources += tnl-benchmarks.cpp                               
 #endif
 
 matrix_formats_test_SOURCES = $(matrix_formats_test_sources)
@@ -77,9 +77,9 @@ matrix_solvers_benchmark_dbg_LDADD = ../src/libtnl-0.1.la \
 endif
 
 #if BUILD_CUDA
-matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
-sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
-tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
+#matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
+#sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
+#tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
 #endif
 
 
