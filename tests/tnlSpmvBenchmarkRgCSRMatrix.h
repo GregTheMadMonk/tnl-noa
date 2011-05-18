@@ -88,6 +88,8 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
       hostMatrix. copyFrom( matrix, groupSize );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
+#else
+      return false;
 #endif
    }
    return true;
@@ -120,8 +122,8 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
    else
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "FAILED ";
-   if( Device == tnlCuda )
 #ifndef HAVE_CUDA
+   if( Device == tnlCuda )
       cout << "CUDA support is missing.";
 #endif
       cout << endl;

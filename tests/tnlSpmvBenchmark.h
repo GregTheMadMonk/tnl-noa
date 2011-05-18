@@ -20,6 +20,12 @@
 
 #include <matrix/tnlCSRMatrix.h>
 #include <core/tnlTimerRT.h>
+#include <core/mfuncs.h>
+
+
+double tnlSpmvBenchmarkPrecision( const double& ) { return 1.0e-12; }
+float tnlSpmvBenchmarkPrecision( const float& ) { return 1.0e-4; }
+
 
 template< typename Real,
           tnlDevice Device,
@@ -183,8 +189,8 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
                                                                       bool verbose )
 {
    benchmarkWasSuccesful = false;
-   if( Device == tnlCuda )
 #ifndef HAVE_CUDA
+   if( Device == tnlCuda )
    {
       if( verbose )
          writeProgress();
@@ -208,22 +214,30 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    time = rt_timer. GetTime();
 
    firstErrorOccurence = 0;
+   tnlLongVector< Real, tnlHost, Index > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   if( ! resB. setSize( b. getSize() ) )
+   {
+      cerr << "I am not able to allocate copy of vector b on the host." << endl;
+      return;
+   }
+   resB = b;
    for( Index j = 0; j < refB. getSize(); j ++ )
    {
       //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
+      Real error( 0.0 );
       if( refB[ j ] != 0.0 )
-         this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] - b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
+         error = ( Real ) fabs( refB[ j ] - resB[ j ] ) /  ( Real ) fabs( refB[ j ] );
       else
-         this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] ) );
+         error = ( Real ) fabs( refB[ j ] );
+      this -> maxError = Max( this -> maxError, error );
 
-      if( this -> maxError < 1.0e-12)
+      if( error < tnlSpmvBenchmarkPrecision( error ) )
          benchmarkWasSuccesful = true;
       else
       {
          benchmarkWasSuccesful = false;
          firstErrorOccurence = j;
-         cerr << " j = " << j << endl;
-         abort();
+         //cerr << " b[ " << j << " ] = " << resB[ j ] << " while refB[ " << j << " ] = " << refB[ j ] << endl;
       }
    }
 

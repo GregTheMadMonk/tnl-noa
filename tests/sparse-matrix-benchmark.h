@@ -153,7 +153,7 @@ bool benchmarkMatrix( const tnlString& input_file,
    tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
    tnlLongVector< Real, tnlCuda > cudaX( "cudaX", size );
    for( int i = 0; i < size; i ++ )
-      refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
+      refX[ i ] = ( Real ) i * 1.0 / ( Real ) size;
    cudaX = refX;
    csrMatrix. vectorProduct( refX, refB );
 

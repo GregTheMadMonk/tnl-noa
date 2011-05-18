@@ -122,9 +122,9 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	}
 
 	coacsr_matrix = new tnlRgCSRMatrix< T >( "coacsr-matrix" );
-	coacsr_matrix -> copyFrom( *csr_matrix, 32 );
+	coacsr_matrix -> copyFrom( *csr_matrix, 16 );
 
-	/*if( verbose )
+	if( verbose )
 		cout << "Comparing the CSR and the Coalesced CSR matrix ... " << flush;
 	if( *coacsr_matrix == *csr_matrix )
 	{
@@ -135,7 +135,7 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	else
 		if( verbose )
 			cout << "FAILED." << endl;
-	*/
+
 #ifdef HAVE_CUDA
 	if( verbose )
 		cout << "Comparing the CSR and the Coalesced CSR CUDA matrix by SpMV ... ";

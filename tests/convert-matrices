@@ -118,34 +118,6 @@ do
             $TNL_MATRIX_CONVERT --input-file $file --output-file $file.double.bin.bz2 --precision double --verbose yes --verify no
          else
             echo "Matrix $file.double.bin.bz2 was already converted."             
-         fi
-
-         #######
-         ## Descend ordering
-         ###         
-         if test ! -e $file.descend.float.bin.bz2;
-         then
-            echo "Converting matrix $file.descend.float.bin.bz2 ..."
-            if test ! -e $file.descend;
-            then 
-               ./reorder-csr -D -g 32 -i $file -o $file.descend
-            fi
-            $TNL_MATRIX_CONVERT --input-file $file.descend --output-file $file.descend.float.bin.bz2 --precision float --verbose yes --verify no
-            #rm $file.descend
-         else
-            echo "Matrix $file.descend.float.bin.bz2 was already converted."             
-         fi
-         if test ! -e $file.descend.double.bin.bz2;
-         then
-            echo "Converting matrix $file.descend.double.bin.bz2 ..."
-            if test ! -e $file.descend;
-            then 
-               ./reorder-csr -D -g 32 -i $file -o $file.descend
-            fi
-            $TNL_MATRIX_CONVERT --input-file $file.descend --output-file $file.descend.double.bin.bz2 --precision double --verbose yes --verify no
-            #rm $file.descend
-         else
-            echo "Matrix $file.descend.double.bin.bz2 was already converted."             
          fi         
 
          #######

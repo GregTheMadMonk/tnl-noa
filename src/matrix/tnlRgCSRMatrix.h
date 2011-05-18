@@ -456,6 +456,7 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
+
    groupSize = rgCSRMatrix. getGroupSize();
    if( ! this -> setSize( rgCSRMatrix. getSize() ) )
       return false;
@@ -635,7 +636,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
    int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
    dim3 gridDim( gridSize ), blockDim( blockSize );
    if( useCache )
-      sparseOldCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
+      sparseCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
                                                                                         this -> getGroupSize(),
                                                                                         nonzeroElements. getVector(),
                                                                                         columns. getVector(),
@@ -644,7 +645,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                                                                                         vec. getVector(),
                                                                                         result. getVector() );
    else
-      sparseOldCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
+      sparseCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
                                                                                         this -> getGroupSize(),
                                                                                         nonzeroElements. getVector(),
                                                                                         columns. getVector(),
@@ -653,7 +654,8 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                                                                                         vec. getVector(),
                                                                                         result. getVector() );
     cudaThreadSynchronize();
-    unbindRgCSRMatrixCUDATexture( vec. getVector() );
+    if( useCache )
+       unbindRgCSRMatrixCUDATexture( vec. getVector() );
     CHECK_CUDA_ERROR;
 #else
    cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
