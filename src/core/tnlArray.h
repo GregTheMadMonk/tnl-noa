@@ -197,7 +197,11 @@ bool tnlArray< Dimensions, Real, device, Index > :: setDimensions( const tnlVect
       }
       size *= arrayDimensions[ i ];
    }
-   return this -> setSize( size );
+   /****
+    * Do not remove this with this -> setSize().
+    * This makes problems in case multiple inheritance - like in tnlFullMatrix.
+    */
+   return tnlLongVector< Real, device, Index > :: setSize( size );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >

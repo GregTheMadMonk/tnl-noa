@@ -56,10 +56,10 @@ class tnlMatrix : public tnlObject
    virtual Index getSize() const { return size; };
 
    //! Use this to change the number of the rows and columns.
-   virtual bool setSize( int new_size ) = 0;
+   virtual bool setSize( Index new_size ) = 0;
 
    //! Allocates the arrays for the non-zero elements
-   virtual bool setNonzeroElements( int n ) = 0;
+   virtual bool setNonzeroElements( Index n ) = 0;
 
    virtual Index getNonzeroElementsInRow( const Index& row ) const;
 
@@ -323,7 +323,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
       if( ! dimensions_line )
       {
          parsed_line. EraseAll();
-        line. parse( parsed_line );
+         line. parse( parsed_line );
          if( parsed_line. getSize() != 3 )
          {
            cerr << "Wrong number of parameters in the matrix header." << endl;

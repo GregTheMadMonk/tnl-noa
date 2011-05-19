@@ -184,7 +184,9 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	delete coacsr_matrix;
 
    adaptiveRgCsrMatrix = new tnlAdaptiveRgCSRMatrix< T >( "adaptiveRgCsrMatrix" );
+   cerr << "XXXXXXXXXXXXXX" << endl;
    adaptiveRgCsrMatrix -> copyFrom( *csr_matrix );
+   cerr << "YYYYYYYYYYYYYY" << endl;
 
    if( verbose )
       cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << flush;
