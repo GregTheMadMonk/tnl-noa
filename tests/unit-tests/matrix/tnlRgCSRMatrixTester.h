@@ -58,7 +58,8 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 12; i ++ )
          csr_matrix. setElement( i, i, T( i + 1 ) );
       //cerr << "Copying data to coalesced CSR matrix." << endl;
-      coacsr_matrix. copyFrom( csr_matrix, 4 );
+      coacsr_matrix. tuneFormat( 4 );
+      coacsr_matrix. copyFrom( csr_matrix );
       //coacsr_matrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < 12; i ++ )
@@ -84,7 +85,8 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
                                 i,      // first column
                                 offsets );
       }
-      coacsr_matrix. copyFrom( csr_matrix, 4 );
+      coacsr_matrix. tuneFormat( 4 );
+      coacsr_matrix. copyFrom( csr_matrix );
       //cerr << "----------------" << endl;
       //coacsr_matrix. printOut( cout );
       bool error( false );

@@ -4,7 +4,9 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
 PWD=`pwd`
 IWD="$PWD"
+DEBUG="no"
 MATRIX_FORMATS_TEST="$IWD/matrix-formats-test-dbg"
+MATRIX_FORMATS_TEST_DBG="$IWD/.libs/lt-matrix-formats-test-dbg"
 
 source ../tnl-env-variables
 source $TNL_SOURCE_DIR/tests/matrix-market
@@ -14,8 +16,19 @@ export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-m
 #MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/bcsstruc4/bcsstm27.mtx.gz"
 #FLORIDA_MM_MATRICES=""
 
-#./tnl-sparse-matrix-check-dbg --input-file matrices/MatrixMarket2/misc/cylshell/s3dkq4m2.mtx
-#exit
+run_test()
+{
+   if test x$DEBUG == xyes;
+   then
+      rm .gdbinit
+      echo  "file $MATRIX_FORMATS_TEST_DBG" > .gdbinit
+      echo "" >> .gdbinit
+      echo -n "run $@" >> .gdbinit
+      gdb
+   else
+      $MATRIX_FORMATS_TEST $@
+   fi
+}
 
 echo "+---------------------------------------------------------------------------------------------------+------------+-------------+-------------+-------------+-------------+-------------+" > matrix-formats-test.log
 echo "| Testing matrix                                                                                    | Full.Mat.  | CSR x FULL  | CSR x COA   |CSRxCUDA COA |CSR x FastCSR|CSR x CoaFCSR|" >> matrix-formats-test.log
@@ -23,7 +36,7 @@ echo "+-------------------------------------------------------------------------
 
 for link in $MM_MATRICES;
 do
-   echo "###############################################################################"
+   echo "*******************************************************************************"
    matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
    unzipped_matrix=`echo $matrix | sed 's/.gz//'`
    if test ! -e $matrix;
@@ -38,9 +51,10 @@ do
       else
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in single precision ..."
-         $MATRIX_FORMATS_TEST --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file matrix-formats-test.log --verbose 1
+         run_test --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file matrix-formats-test.log --verbose 1
          gzip $unzipped_matrix
-      fi
+      fi    
+      echo "-------------------------------------------------------------------------------"
       if test ! -e $unzipped_matrix.double.bin.bz2;
       then
          echo "Missing $unzipped_matrix.double.bin.bz2 !!! Run the script 'convert-matrices'."
@@ -48,7 +62,7 @@ do
       else
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in double precison ..." 
-         $MATRIX_FORMATS_TEST --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file matrix-formats-test.log --verbose 1
+         run_test --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file matrix-formats-test.log --verbose 1
          gzip $unzipped_matrix
       fi      
    fi
@@ -78,7 +92,7 @@ do
             echo "Missing $file.float.bin.bz2 !!! Run the script 'convert-matrices'." >> matrix-formats-test.log
          else   
             echo "Checking with the matrix $file ..."
-            $MATRIX_FORMATS_TEST --input-file $file.float.bin.bz2 --input-mtx-file $file --log-file matrix-formats-test.log --verbose 1                        
+            run_test --input-file $file.float.bin.bz2 --input-mtx-file $file --log-file matrix-formats-test.log --verbose 1                        
          fi
          if test ! -e $file.double.bin.bz2;
          then
@@ -86,7 +100,7 @@ do
             echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'." >> matrix-formats-test.log
          else   
             echo "Checking with the matrix $file ..."
-            $MATRIX_FORMATS_TEST --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file matrix-formats-test.log --verbose 1
+            run_test --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file matrix-formats-test.log --verbose 1
          fi 
          rm $file                          
       done

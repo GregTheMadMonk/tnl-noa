@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSpmvBenchmarkRgCSRMatrix.h  -  description
+                          tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h  -  description
                              -------------------
     begin                : May 15, 2011
     copyright            : (C) 2011 by Tomas Oberhuber
@@ -15,18 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSPMVBENCHMARKRGCSRMATRIX_H_
-#define TNLSPMVBENCHMARKRGCSRMATRIX_H_
+#ifndef TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
+#define TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 
 #include <tnlSpmvBenchmark.h>
-#include <matrix/tnlRgCSRMatrix.h>
+#include <matrix/tnlAdaptiveRgCSRMatrix.h>
 
 template< typename Real, tnlDevice Device, typename Index>
-class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index, tnlRgCSRMatrix >
+class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index, tnlAdaptiveRgCSRMatrix >
 {
    public:
 
-   tnlSpmvBenchmarkRgCSRMatrix();
+   tnlSpmvBenchmarkAdaptiveRgCSRMatrix();
 
    bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
 
@@ -37,10 +37,6 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
    void setGroupSize( const Index groupSize );
 
    void setCudaBlockSize( const Index cudaBlockSize );
-
-   void setUseAdaptiveGroupSize( bool useAdaptiveGroupSize );
-
-   void setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy );
 
    Index getArtificialZeroElements() const;
 
@@ -58,7 +54,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 template< typename Real,
           tnlDevice Device,
           typename Index>
-tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatrix()
+tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAdaptiveRgCSRMatrix()
  : groupSize( 0 ),
    cudaBlockSize( 0 ),
    useAdaptiveGroupSize( false ),
@@ -70,21 +66,18 @@ tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatri
 template< typename Real,
           tnlDevice Device,
           typename Index>
-bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
    tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
    {
-      this -> matrix. tuneFormat( groupSize,
-                                  this -> useAdaptiveGroupSize,
-                                  this -> adaptiveGroupSizeStrategy );
       if( ! this -> matrix. copyFrom( matrix ) )
          return false;
    }
    if( Device == tnlCuda )
    {
 #ifdef HAVE_CUDA
-      tnlRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
+      tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. copyFrom( matrix, groupSize );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
@@ -98,7 +91,7 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
 template< typename Real,
           tnlDevice Device,
           typename Index>
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tearDown()
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
    //this -> matrix. setSize( 0 );
    //this -> matrix. setNonzeroElements( 0 );
@@ -107,7 +100,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tearDown()
 template< typename Real,
           tnlDevice Device,
           typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
    cout << left << setw( this -> formatColumnWidth - 15 ) << "Row-grouped CSR ";
    if( Device == tnlCuda )
@@ -132,7 +125,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 template< typename Real,
           tnlDevice Device,
           typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setGroupSize( const Index groupSize )
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setGroupSize( const Index groupSize )
 {
    this -> groupSize = groupSize;
 }
@@ -140,7 +133,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setGroupSize( const I
 template< typename Real,
           tnlDevice Device,
           typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
 #ifdef HAVE_CUDA
    this -> matrix. setCUDABlockSize( cudaBlockSize );
@@ -151,27 +144,9 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( con
 template< typename Real,
           tnlDevice Device,
           typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setUseAdaptiveGroupSize( bool useAdaptiveGroupSize )
-{
-   this -> useAdaptiveGroupSize = useAdaptiveGroupSize;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy )
-{
-   this -> adaptiveGroupSizeStrategy = adaptiveGroupSizeStrategy;
-}
-
-template< typename Real,
-          tnlDevice Device,
-          typename Index >
-Index tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
+Index tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
    return this -> matrix. getArtificialZeroElements();
 }
 
-
-
-#endif /* TNLSPMVBENCHMARKRGCSRMATRIX_H_ */
+#endif /* TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_ */

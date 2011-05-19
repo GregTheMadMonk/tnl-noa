@@ -26,7 +26,7 @@
 int main( int argc, char* argv[] )
 {
    dbgFunctionName( "", "main" );
-   dbgInit( "" );
+   //dbgInit( "" );
 
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;

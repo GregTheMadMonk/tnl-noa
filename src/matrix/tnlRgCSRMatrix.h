@@ -73,10 +73,17 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
                       const Real& value )
    { abort(); };
 
-   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix,
-                  const Index groupSize,
-                  const bool useAdaptiveGroupSize = false,
-                  const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy = tnlAdaptiveGroupSizeStrategyByAverageRowSize );
+   /****
+    * This method sets parameters of the format.
+    * If it is called after method copyFrom, the matrix will be broken.
+    * TODO: Add state ensuring that this situation will lead to error.
+    */
+   void tuneFormat( const Index groupSize,
+                    const bool useAdaptiveGroupSize = false,
+                    const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy = tnlAdaptiveGroupSizeStrategyByAverageRowSize );
+
+   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix );
+
 
    template< tnlDevice Device2 >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -122,6 +129,8 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    bool insertBlock( );
 
    bool useAdaptiveGroupSize;
+
+   tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy;
 
    tnlLongVector< Real, Device, Index > nonzeroElements;
 
@@ -214,11 +223,12 @@ template< typename Real, tnlDevice Device, typename Index >
 tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
 : tnlMatrix< Real, Device, Index >( name ),
   useAdaptiveGroupSize( false ),
+  adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize ),
   nonzeroElements( name + " : nonzeroElements" ),
   columns( name + " : columns" ),
   groupOffsets( name + " : block-offsets" ),
   nonzeroElementsInRow( name + " : nonzerosInRow" ),
-  groupSize( 0 ),
+  groupSize( 16 ),
   adaptiveGroupSizes( name + "adaptiveGroupSizes" ),
   numberOfGroups( 0 ),
   cudaBlockSize( 0 ),
@@ -305,15 +315,21 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix,
-                                                        const Index groupSize,
-                                                        const bool useAdaptiveGroupSize,
-                                                        const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy )
+void tnlRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index groupSize,
+                                                          const bool useAdaptiveGroupSize,
+                                                          const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy )
+{
+   tnlAssert( this -> groupSize > 0, );
+   this -> groupSize = groupSize;
+   this -> useAdaptiveGroupSize = useAdaptiveGroupSize;
+   this -> adaptiveGroupSizeStrategy = adaptiveGroupSizeStrategy;
+}
+
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
 {
 	dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	this -> groupSize = groupSize;
-	tnlAssert( this -> groupSize > 0, );
-	this -> useAdaptiveGroupSize = useAdaptiveGroupSize;
 
 	if( ! this -> setSize( csr_matrix. getSize() ) )
 		return false;
@@ -323,14 +339,14 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	 * In case of adaptive group sizes compute maximum number of the non-zero elements in group.
 	 */
 	Index maxNonzeroElementsInGroup( 0 );
-	if( useAdaptiveGroupSize )
+	if( this -> useAdaptiveGroupSize )
 	{
-	   if( adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByAverageRowSize )
+	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByAverageRowSize )
 	   {
 	      const Index averageRowSize = ceil( ( float ) csr_matrix. getNonzeroElements() / ( float ) csr_matrix. getSize() );
 	      maxNonzeroElementsInGroup = averageRowSize * groupSize;
 	   }
-	   if( adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByFirstGroup )
+	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByFirstGroup )
 	      for( Index row = 0; row < groupSize; row ++ )
 	         maxNonzeroElementsInGroup += csr_matrix. getNonzeroElementsInRow( row );
 	}
@@ -351,9 +367,9 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 		if( i > 0 && i % groupSize == 0 )
 		{
 		   currentGroupSize += groupSize;
-		   if( ! useAdaptiveGroupSize || nonzeroElementsInGroup > maxNonzeroElementsInGroup )
+		   if( ! this -> useAdaptiveGroupSize || nonzeroElementsInGroup > maxNonzeroElementsInGroup )
 		   {
-		      if( useAdaptiveGroupSize )
+		      if( this -> useAdaptiveGroupSize )
 		         adaptiveGroupSizes[ numberOfGroups ] = currentGroupSize;
 
 		      dbgCout( numberOfGroups << "-th group size is " << currentGroupSize );

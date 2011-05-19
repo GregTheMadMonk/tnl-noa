@@ -96,9 +96,14 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    void vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
                        tnlLongVector< Real, Device, Index >& result ) const;
 
-   bool copyFrom( const tnlCSRMatrix< Real, tnlHost,
-                  Index >& csr_matrix,
-                  const Index cudaBlockSize = 256 );
+   /****
+    * This method sets parameters of the format.
+    * If it is called after method copyFrom, the matrix will be broken.
+    * TODO: Add state ensuring that this situation will lead to error.
+    */
+   void tuneFormat( const Index cudaBlockSize );
+
+   bool copyFrom( const tnlCSRMatrix< Real, tnlHost,Index >& csr_matrix );
 
    template< tnlDevice Device2 >
    bool copyFrom( const tnlAdaptiveRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -186,7 +191,7 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const t
   groupSizeStep(_groupSizeStep),
   targetNonzeroesPerGroup(_targetNonzeroesPerGroup),
   numberOfGroups( 0 ),
-  cudaBlockSize( 0 ),
+  cudaBlockSize( 256 ),
   artificial_zeros( 0 ),
   last_nonzero_element( 0 )
 {
@@ -265,11 +270,15 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& mat,
-                                                                const Index cudaBlockSize )
+void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index cudaBlockSize )
+{
+   this -> cudaBlockSize = cudaBlockSize;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& mat )
 {
 	dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	this -> cudaBlockSize = cudaBlockSize;
 	if( ! this -> setSize( mat.getSize() ) )
 		return false;
 	
@@ -280,7 +289,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 	Index groupId( 0 );
 
 	Index numberOfStoredValues( 0 );
-	Index threadsPerRow[ 128 ];
+	Index threadsPerRow[ 1024 ];
 	
 	/****
 	 * This loop computes sizes of the groups and the number of threads per one row
@@ -484,24 +493,32 @@ template< typename Real, tnlDevice Device, typename Index >
 Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
                                                                   Index column ) const
 {
+   dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getElement" );
    tnlAssert( 0 <= row && row < this -> getSize(),
-            cerr << "The row is outside the matrix." );
+              cerr << "The row is outside the matrix." );
    if( Device == tnlHost )
    {
       Index groupId = rowToGroupMapping[ row ];
-      Index groupRow = row - groupInfo[ groupId ]. idxFirstRow;
-      Index groupOffset = groupInfo[ groupId ]. idxFirstValue;
-      Index firstThread = 0;
-      if( row > 0 )
-         firstThread = threads[ row - 1 ];
-      const Index lastThread = threads[ row ];
-      const Index chunkSize = groupInfo[ groupId ]. numRounds;
-      for( Index thread = firstThread; thread < lastThread; thread ++ )
-         for( Index i = 0; i < chunkSize; i ++ )
+      Index groupBaseRow = groupInfo[ groupId ]. idxFirstRow;
+      Index pointer = groupInfo[ groupId ]. idxFirstValue;
+
+      for( Index round = 0; round < groupInfo[ groupId ]. numRounds; round ++ )
+         for( Index currentRow = 0; currentRow < groupInfo[ groupId ]. numRows; currentRow ++ )
          {
-            Index pos = thread * chunkSize + i + groupInfo[ groupId ]. idxFirstValue;
-            if( columns[ pos ] == column )
-               return nonzeroElements[ pos ];
+            Index threadsPerRow;
+            if( currentRow > 0 )
+               threadsPerRow = threads[ groupBaseRow + currentRow ] - threads[ groupBaseRow + currentRow - 1 ];
+            else
+               threadsPerRow = threads[ groupBaseRow ];
+            if( currentRow + groupBaseRow != row )
+               pointer += threadsPerRow;
+            else
+               for( Index i = 0; i < threadsPerRow; i ++ )
+               {
+                  if( columns[ pointer ] == column )
+                     return nonzeroElements[ pointer ];
+                  pointer ++;
+                  }
          }
       return 0.0;
    }
@@ -647,20 +664,26 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
 		   str << threads. getElement( row ) << "  ";
 	   str << endl;
       str << " Group offset: " << groupInfo[ groupId ]. idxFirstValue <<  endl;
-      for( Index row = firstRow; row < lastRow; row ++ )
+      Index pointer = groupInfo[ groupId ]. idxFirstValue;
+      Index groupBaseRow = groupInfo[ groupId ]. idxFirstRow;
+      for( Index round = 0; round < groupInfo[ groupId ]. numRounds; round ++ )
       {
-         str << " Data for row number " << row << ": ";
-         Index firstThread = 0;
-         if( row > 0 )
-            firstThread = threads[ row - 1 ];
-         Index lastThread = threads[ row ];
-         const Index chunkSize = groupInfo[ groupId ]. numRounds;
-         for( Index thread = firstThread; thread < lastThread; thread ++ )
-            for( Index i = 0; i < chunkSize; i ++ )
+         str << "Round number: " << round << endl;
+         for( Index row = firstRow; row < lastRow; row ++ )
+         {
+            Index threadsPerRow;
+            if( row > 0 )
+               threadsPerRow = threads[ groupBaseRow + row ] - threads[ groupBaseRow + row - 1 ];
+            else
+               threadsPerRow = threads[ groupBaseRow ];
+            str << "Row number " << row << " ( " << threadsPerRow << " threads) : ";
+            for( Index thread = 0; thread < threadsPerRow; thread ++ )
             {
-               Index pos = thread * chunkSize + i + groupInfo[ groupId ]. idxFirstValue;
-               str << nonzeroElements[ pos ] << " ( " << columns[ pos ] << " ) ";
+               str << nonzeroElements[ pointer ] << " ( " << columns[ pointer ] << " ) ";
+               pointer ++;
             }
+            str << endl;
+         }
          str << endl;
       }
    }

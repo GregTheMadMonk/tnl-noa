@@ -64,7 +64,7 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
          csr_matrix. setElement( i, i, T( i + 1 ) );
       //cerr << "Copying data to coalesced CSR matrix." << endl;
       argcsrMatrix. copyFrom( csr_matrix );
-      argcsrMatrix. printOut( cout );
+      //argcsrMatrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < 12; i ++ )
          if( argcsrMatrix. getElement( i, i ) != T( i + 1 ) )
@@ -112,7 +112,7 @@ template< class T > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestC
 
       argcsr_matrix. copyFrom( csr_matrix );
       //cerr << "----------------" << endl;
-      argcsr_matrix. printOut( cout );
+      //argcsr_matrix. printOut( cout );
       bool error( false );
       for( int i = 0; i < size; i ++ )
          for( int j = 0; j < size; j ++ )
