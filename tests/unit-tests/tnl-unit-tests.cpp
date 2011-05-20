@@ -76,11 +76,11 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlRgCSRMatrixTester< float > :: suite() );
    runner. addTest( tnlRgCSRMatrixTester< double > :: suite() );
 
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double > :: suite() );
-
    runner. addTest( tnlEllpackMatrixTester< float > :: suite() );
    runner. addTest( tnlEllpackMatrixTester< double > :: suite() );
+
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double > :: suite() );
 
    runner. addTest( tnlMPIMeshTester< float > :: suite() );
 

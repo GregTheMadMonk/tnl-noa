@@ -238,6 +238,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
          benchmarkWasSuccesful = false;
          firstErrorOccurence = j;
          //cerr << " b[ " << j << " ] = " << resB[ j ] << " while refB[ " << j << " ] = " << refB[ j ] << endl;
+         //abort();
       }
    }
 

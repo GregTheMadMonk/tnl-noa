@@ -221,6 +221,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       }
    }
 
+#ifdef UNDEF
    /****
     * Row-Grouped CSR format
     */
@@ -371,6 +372,7 @@ bool benchmarkMatrix( const tnlString& input_file,
 
 
    }
+#endif
    csrMatrix. vectorProduct( refX, refB );
 
    /****

@@ -59,7 +59,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const tnlString
 template< typename Real, typename Index>
 bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-
+   return true;
 }
 
 template< typename Real,

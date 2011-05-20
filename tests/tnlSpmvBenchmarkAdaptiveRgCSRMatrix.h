@@ -68,7 +68,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
+   //tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
    {
       if( ! this -> matrix. copyFrom( matrix ) )
@@ -102,7 +102,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth - 15 ) << "Row-grouped CSR ";
+   cout << left << setw( this -> formatColumnWidth - 15 ) << "Adaptive Row-grouped CSR ";
    if( Device == tnlCuda )
       cout << setw( 5 ) << this -> groupSize
            << setw( 10 ) << this -> cudaBlockSize;
