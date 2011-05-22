@@ -54,15 +54,21 @@ CONFIG_CLEAN_VPATH_FILES =
 @BUILD_DBG_TRUE@am__EXEEXT_1 = matrix-formats-test-dbg$(EXEEXT) \
 @BUILD_DBG_TRUE@	matrix-solvers-benchmark-dbg$(EXEEXT) \
 @BUILD_DBG_TRUE@	sparse-matrix-benchmark-dbg$(EXEEXT)
-am__objects_1 = matrix-formats-test.$(OBJEXT)
+am__objects_1 =  \
+	matrix_formats_test-matrix-formats-test-cuda.$(OBJEXT)
 am_matrix_formats_test_OBJECTS = $(am__objects_1)
 matrix_formats_test_OBJECTS = $(am_matrix_formats_test_OBJECTS)
 matrix_formats_test_DEPENDENCIES = ../src/libtnl-0.1.la \
 	../src/core/libtnlcore-0.1.la \
 	../src/matrix/libtnlmatrix-0.1.la
+matrix_formats_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(matrix_formats_test_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__matrix_formats_test_dbg_SOURCES_DIST = matrix-formats-test.h \
-	matrix-formats-test.cpp
-am__objects_2 = matrix_formats_test_dbg-matrix-formats-test.$(OBJEXT)
+	matrix-formats-test-cuda.cu
+am__objects_2 =  \
+	matrix_formats_test_dbg-matrix-formats-test-cuda.$(OBJEXT)
 @BUILD_DBG_TRUE@am_matrix_formats_test_dbg_OBJECTS = $(am__objects_2)
 matrix_formats_test_dbg_OBJECTS =  \
 	$(am_matrix_formats_test_dbg_OBJECTS)
@@ -74,8 +80,7 @@ matrix_formats_test_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am__objects_3 =  \
-	matrix_solvers_benchmark-matrix-solvers-benchmark.$(OBJEXT)
+am__objects_3 = matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.$(OBJEXT)
 am_matrix_solvers_benchmark_OBJECTS = $(am__objects_3)
 matrix_solvers_benchmark_OBJECTS =  \
 	$(am_matrix_solvers_benchmark_OBJECTS)
@@ -87,8 +92,8 @@ matrix_solvers_benchmark_LINK = $(LIBTOOL) --tag=CXX \
 	$(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__matrix_solvers_benchmark_dbg_SOURCES_DIST =  \
-	matrix-solvers-benchmark.h matrix-solvers-benchmark.cpp
-am__objects_4 = matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.$(OBJEXT)
+	matrix-solvers-benchmark.h matrix-solvers-benchmark-cuda.cu
+am__objects_4 = matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.$(OBJEXT)
 @BUILD_DBG_TRUE@am_matrix_solvers_benchmark_dbg_OBJECTS =  \
 @BUILD_DBG_TRUE@	$(am__objects_4)
 matrix_solvers_benchmark_dbg_OBJECTS =  \
@@ -104,8 +109,7 @@ matrix_solvers_benchmark_dbg_LINK = $(LIBTOOL) --tag=CXX \
 am_reorder_csr_OBJECTS = ReorderCSR.$(OBJEXT)
 reorder_csr_OBJECTS = $(am_reorder_csr_OBJECTS)
 reorder_csr_LDADD = $(LDADD)
-am__objects_5 =  \
-	sparse_matrix_benchmark-sparse-matrix-benchmark.$(OBJEXT)
+am__objects_5 = sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.$(OBJEXT)
 am_sparse_matrix_benchmark_OBJECTS = $(am__objects_5)
 sparse_matrix_benchmark_OBJECTS =  \
 	$(am_sparse_matrix_benchmark_OBJECTS)
@@ -119,9 +123,8 @@ sparse_matrix_benchmark_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 am__sparse_matrix_benchmark_dbg_SOURCES_DIST =  \
 	sparse-matrix-benchmark.h tnlSpmvBenchmark.h \
 	tnlSpmvBenchmarkCSRMatrix.h tnlSpmvBenchmarkHybridMatrix.h \
-	tnlSpmvBenchmarkRgCSRMatrix.h sparse-matrix-benchmark.cpp
-am__objects_6 =  \
-	sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.$(OBJEXT)
+	tnlSpmvBenchmarkRgCSRMatrix.h sparse-matrix-benchmark-cuda.cu
+am__objects_6 = sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.$(OBJEXT)
 @BUILD_DBG_TRUE@am_sparse_matrix_benchmark_dbg_OBJECTS =  \
 @BUILD_DBG_TRUE@	$(am__objects_6)
 sparse_matrix_benchmark_dbg_OBJECTS =  \
@@ -134,10 +137,14 @@ sparse_matrix_benchmark_dbg_LINK = $(LIBTOOL) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_7 = tnl-benchmarks.$(OBJEXT)
+am__objects_7 = tnl_benchmarks-tnl-benchmarks-cuda.$(OBJEXT)
 am_tnl_benchmarks_OBJECTS = $(am__objects_7)
 tnl_benchmarks_OBJECTS = $(am_tnl_benchmarks_OBJECTS)
 tnl_benchmarks_DEPENDENCIES = ../src/libtnl-0.1.la
+tnl_benchmarks_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(tnl_benchmarks_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -346,27 +353,28 @@ top_srcdir = @top_srcdir@
 SUBDIRS = unit-tests
 
 #if BUILD_CUDA
-#matrix_formats_test_sources += matrix-formats-test-cuda.cu
-#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
-#matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
-#tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
-#else
 matrix_formats_test_sources = matrix-formats-test.h \
-	matrix-formats-test.cpp
+	matrix-formats-test-cuda.cu
 sparse_matrix_benchmark_sources = sparse-matrix-benchmark.h \
 	tnlSpmvBenchmark.h tnlSpmvBenchmarkCSRMatrix.h \
 	tnlSpmvBenchmarkHybridMatrix.h tnlSpmvBenchmarkRgCSRMatrix.h \
-	sparse-matrix-benchmark.cpp
+	sparse-matrix-benchmark-cuda.cu
 matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h \
-	matrix-solvers-benchmark.cpp
-tnl_benchmarks_sources = tnl-benchmarks.h tnl-benchmarks.cpp
+	matrix-solvers-benchmark-cuda.cu
+tnl_benchmarks_sources = tnl-benchmarks.h tnl-benchmarks-cuda.cu
+#else
+#matrix_formats_test_sources += matrix-formats-test.cpp
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
+#matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
+#tnl_benchmarks_sources += tnl-benchmarks.cpp                               
 #endif
 matrix_formats_test_SOURCES = $(matrix_formats_test_sources)
 matrix_formats_test_LDADD = ../src/libtnl-0.1.la \
                             ../src/core/libtnlcore-0.1.la \
                             ../src/matrix/libtnlmatrix-0.1.la 
 
-sparse_matrix_benchmark_CXXFLAGS = $(OPTIMISECXXFLAGS) $(CUSP_CXXFLAGS)
+sparse_matrix_benchmark_CXXFLAGS = $(OPTIMISECXXFLAGS) \
+	$(CUSP_CXXFLAGS) -DHAVE_CUDA
 sparse_matrix_benchmark_SOURCES = $(sparse_matrix_benchmark_sources)
 sparse_matrix_benchmark_LDADD = ../src/libtnl-0.1.la \
                                 ../src/core/libtnlcore-0.1.la \
@@ -401,9 +409,8 @@ reorder_csr_SOURCES = ReorderCSR.cpp
 
 
 #if BUILD_CUDA
-#matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
-#sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
-#tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
+matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
+tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
 #endif
 check_SCRIPTS = get-matrices \
                 convert-matrices \
@@ -426,7 +433,7 @@ EXTRADIST = get-matrices \
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .cpp .cu .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -468,7 +475,7 @@ clean-checkPROGRAMS:
 	rm -f $$list
 matrix-formats-test$(EXEEXT): $(matrix_formats_test_OBJECTS) $(matrix_formats_test_DEPENDENCIES) 
 	@rm -f matrix-formats-test$(EXEEXT)
-	$(CXXLINK) $(matrix_formats_test_OBJECTS) $(matrix_formats_test_LDADD) $(LIBS)
+	$(matrix_formats_test_LINK) $(matrix_formats_test_OBJECTS) $(matrix_formats_test_LDADD) $(LIBS)
 matrix-formats-test-dbg$(EXEEXT): $(matrix_formats_test_dbg_OBJECTS) $(matrix_formats_test_dbg_DEPENDENCIES) 
 	@rm -f matrix-formats-test-dbg$(EXEEXT)
 	$(matrix_formats_test_dbg_LINK) $(matrix_formats_test_dbg_OBJECTS) $(matrix_formats_test_dbg_LDADD) $(LIBS)
@@ -489,7 +496,7 @@ sparse-matrix-benchmark-dbg$(EXEEXT): $(sparse_matrix_benchmark_dbg_OBJECTS) $(s
 	$(sparse_matrix_benchmark_dbg_LINK) $(sparse_matrix_benchmark_dbg_OBJECTS) $(sparse_matrix_benchmark_dbg_LDADD) $(LIBS)
 tnl-benchmarks$(EXEEXT): $(tnl_benchmarks_OBJECTS) $(tnl_benchmarks_DEPENDENCIES) 
 	@rm -f tnl-benchmarks$(EXEEXT)
-	$(CXXLINK) $(tnl_benchmarks_OBJECTS) $(tnl_benchmarks_LDADD) $(LIBS)
+	$(tnl_benchmarks_LINK) $(tnl_benchmarks_OBJECTS) $(tnl_benchmarks_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -498,13 +505,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReorderCSR.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix-formats-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl-benchmarks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -527,75 +534,124 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-matrix_formats_test_dbg-matrix-formats-test.o: matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test.o -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test.o `test -f 'matrix-formats-test.cpp' || echo '$(srcdir)/'`matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test.cpp' object='matrix_formats_test_dbg-matrix-formats-test.o' libtool=no @AMDEPBACKSLASH@
+matrix_formats_test-matrix-formats-test-cuda.o: matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test-matrix-formats-test-cuda.o -MD -MP -MF $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Tpo -c -o matrix_formats_test-matrix-formats-test-cuda.o `test -f 'matrix-formats-test-cuda.cu' || echo '$(srcdir)/'`matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Tpo $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test-cuda.cu' object='matrix_formats_test-matrix-formats-test-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test.o `test -f 'matrix-formats-test.cpp' || echo '$(srcdir)/'`matrix-formats-test.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test-matrix-formats-test-cuda.o `test -f 'matrix-formats-test-cuda.cu' || echo '$(srcdir)/'`matrix-formats-test-cuda.cu
 
-matrix_formats_test_dbg-matrix-formats-test.obj: matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test.obj -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test.obj `if test -f 'matrix-formats-test.cpp'; then $(CYGPATH_W) 'matrix-formats-test.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test.cpp' object='matrix_formats_test_dbg-matrix-formats-test.obj' libtool=no @AMDEPBACKSLASH@
+matrix_formats_test-matrix-formats-test-cuda.obj: matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test-matrix-formats-test-cuda.obj -MD -MP -MF $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Tpo -c -o matrix_formats_test-matrix-formats-test-cuda.obj `if test -f 'matrix-formats-test-cuda.cu'; then $(CYGPATH_W) 'matrix-formats-test-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Tpo $(DEPDIR)/matrix_formats_test-matrix-formats-test-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test-cuda.cu' object='matrix_formats_test-matrix-formats-test-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test.obj `if test -f 'matrix-formats-test.cpp'; then $(CYGPATH_W) 'matrix-formats-test.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test-matrix-formats-test-cuda.obj `if test -f 'matrix-formats-test-cuda.cu'; then $(CYGPATH_W) 'matrix-formats-test-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test-cuda.cu'; fi`
 
-matrix_solvers_benchmark-matrix-solvers-benchmark.o: matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark-matrix-solvers-benchmark.o -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Tpo -c -o matrix_solvers_benchmark-matrix-solvers-benchmark.o `test -f 'matrix-solvers-benchmark.cpp' || echo '$(srcdir)/'`matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Tpo $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark.cpp' object='matrix_solvers_benchmark-matrix-solvers-benchmark.o' libtool=no @AMDEPBACKSLASH@
+matrix_formats_test_dbg-matrix-formats-test-cuda.o: matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test-cuda.o -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test-cuda.o `test -f 'matrix-formats-test-cuda.cu' || echo '$(srcdir)/'`matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test-cuda.cu' object='matrix_formats_test_dbg-matrix-formats-test-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark-matrix-solvers-benchmark.o `test -f 'matrix-solvers-benchmark.cpp' || echo '$(srcdir)/'`matrix-solvers-benchmark.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test-cuda.o `test -f 'matrix-formats-test-cuda.cu' || echo '$(srcdir)/'`matrix-formats-test-cuda.cu
 
-matrix_solvers_benchmark-matrix-solvers-benchmark.obj: matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark-matrix-solvers-benchmark.obj -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Tpo -c -o matrix_solvers_benchmark-matrix-solvers-benchmark.obj `if test -f 'matrix-solvers-benchmark.cpp'; then $(CYGPATH_W) 'matrix-solvers-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Tpo $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark.cpp' object='matrix_solvers_benchmark-matrix-solvers-benchmark.obj' libtool=no @AMDEPBACKSLASH@
+matrix_formats_test_dbg-matrix-formats-test-cuda.obj: matrix-formats-test-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test-cuda.obj -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test-cuda.obj `if test -f 'matrix-formats-test-cuda.cu'; then $(CYGPATH_W) 'matrix-formats-test-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test-cuda.cu' object='matrix_formats_test_dbg-matrix-formats-test-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark-matrix-solvers-benchmark.obj `if test -f 'matrix-solvers-benchmark.cpp'; then $(CYGPATH_W) 'matrix-solvers-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test-cuda.obj `if test -f 'matrix-formats-test-cuda.cu'; then $(CYGPATH_W) 'matrix-formats-test-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test-cuda.cu'; fi`
 
-matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.o: matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.o -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Tpo -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.o `test -f 'matrix-solvers-benchmark.cpp' || echo '$(srcdir)/'`matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Tpo $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark.cpp' object='matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.o' libtool=no @AMDEPBACKSLASH@
+matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.o: matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.o -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Tpo -c -o matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.o `test -f 'matrix-solvers-benchmark-cuda.cu' || echo '$(srcdir)/'`matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Tpo $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark-cuda.cu' object='matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.o `test -f 'matrix-solvers-benchmark.cpp' || echo '$(srcdir)/'`matrix-solvers-benchmark.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.o `test -f 'matrix-solvers-benchmark-cuda.cu' || echo '$(srcdir)/'`matrix-solvers-benchmark-cuda.cu
 
-matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.obj: matrix-solvers-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.obj -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Tpo -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.obj `if test -f 'matrix-solvers-benchmark.cpp'; then $(CYGPATH_W) 'matrix-solvers-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Tpo $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark.cpp' object='matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.obj' libtool=no @AMDEPBACKSLASH@
+matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.obj: matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.obj -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Tpo -c -o matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.obj `if test -f 'matrix-solvers-benchmark-cuda.cu'; then $(CYGPATH_W) 'matrix-solvers-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Tpo $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark-cuda.cu' object='matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.obj `if test -f 'matrix-solvers-benchmark.cpp'; then $(CYGPATH_W) 'matrix-solvers-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark-matrix-solvers-benchmark-cuda.obj `if test -f 'matrix-solvers-benchmark-cuda.cu'; then $(CYGPATH_W) 'matrix-solvers-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark-cuda.cu'; fi`
 
-sparse_matrix_benchmark-sparse-matrix-benchmark.o: sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark-sparse-matrix-benchmark.o -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Tpo -c -o sparse_matrix_benchmark-sparse-matrix-benchmark.o `test -f 'sparse-matrix-benchmark.cpp' || echo '$(srcdir)/'`sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Tpo $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark.cpp' object='sparse_matrix_benchmark-sparse-matrix-benchmark.o' libtool=no @AMDEPBACKSLASH@
+matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.o: matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.o -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Tpo -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.o `test -f 'matrix-solvers-benchmark-cuda.cu' || echo '$(srcdir)/'`matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Tpo $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark-cuda.cu' object='matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark-sparse-matrix-benchmark.o `test -f 'sparse-matrix-benchmark.cpp' || echo '$(srcdir)/'`sparse-matrix-benchmark.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.o `test -f 'matrix-solvers-benchmark-cuda.cu' || echo '$(srcdir)/'`matrix-solvers-benchmark-cuda.cu
 
-sparse_matrix_benchmark-sparse-matrix-benchmark.obj: sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark-sparse-matrix-benchmark.obj -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Tpo -c -o sparse_matrix_benchmark-sparse-matrix-benchmark.obj `if test -f 'sparse-matrix-benchmark.cpp'; then $(CYGPATH_W) 'sparse-matrix-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Tpo $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark.cpp' object='sparse_matrix_benchmark-sparse-matrix-benchmark.obj' libtool=no @AMDEPBACKSLASH@
+matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.obj: matrix-solvers-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.obj -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Tpo -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.obj `if test -f 'matrix-solvers-benchmark-cuda.cu'; then $(CYGPATH_W) 'matrix-solvers-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Tpo $(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-solvers-benchmark-cuda.cu' object='matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark-sparse-matrix-benchmark.obj `if test -f 'sparse-matrix-benchmark.cpp'; then $(CYGPATH_W) 'sparse-matrix-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_solvers_benchmark_dbg-matrix-solvers-benchmark-cuda.obj `if test -f 'matrix-solvers-benchmark-cuda.cu'; then $(CYGPATH_W) 'matrix-solvers-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/matrix-solvers-benchmark-cuda.cu'; fi`
 
-sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.o: sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.o -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Tpo -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.o `test -f 'sparse-matrix-benchmark.cpp' || echo '$(srcdir)/'`sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Tpo $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark.cpp' object='sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.o' libtool=no @AMDEPBACKSLASH@
+sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.o: sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.o -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Tpo -c -o sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.o `test -f 'sparse-matrix-benchmark-cuda.cu' || echo '$(srcdir)/'`sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Tpo $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark-cuda.cu' object='sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.o `test -f 'sparse-matrix-benchmark.cpp' || echo '$(srcdir)/'`sparse-matrix-benchmark.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.o `test -f 'sparse-matrix-benchmark-cuda.cu' || echo '$(srcdir)/'`sparse-matrix-benchmark-cuda.cu
 
-sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.obj: sparse-matrix-benchmark.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.obj -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Tpo -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.obj `if test -f 'sparse-matrix-benchmark.cpp'; then $(CYGPATH_W) 'sparse-matrix-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Tpo $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark.cpp' object='sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.obj' libtool=no @AMDEPBACKSLASH@
+sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.obj: sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.obj -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Tpo -c -o sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.obj `if test -f 'sparse-matrix-benchmark-cuda.cu'; then $(CYGPATH_W) 'sparse-matrix-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Tpo $(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark-cuda.cu' object='sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.obj `if test -f 'sparse-matrix-benchmark.cpp'; then $(CYGPATH_W) 'sparse-matrix-benchmark.cpp'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark-sparse-matrix-benchmark-cuda.obj `if test -f 'sparse-matrix-benchmark-cuda.cu'; then $(CYGPATH_W) 'sparse-matrix-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark-cuda.cu'; fi`
+
+sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.o: sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.o -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Tpo -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.o `test -f 'sparse-matrix-benchmark-cuda.cu' || echo '$(srcdir)/'`sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Tpo $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark-cuda.cu' object='sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.o `test -f 'sparse-matrix-benchmark-cuda.cu' || echo '$(srcdir)/'`sparse-matrix-benchmark-cuda.cu
+
+sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.obj: sparse-matrix-benchmark-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -MT sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.obj -MD -MP -MF $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Tpo -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.obj `if test -f 'sparse-matrix-benchmark-cuda.cu'; then $(CYGPATH_W) 'sparse-matrix-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Tpo $(DEPDIR)/sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='sparse-matrix-benchmark-cuda.cu' object='sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) -c -o sparse_matrix_benchmark_dbg-sparse-matrix-benchmark-cuda.obj `if test -f 'sparse-matrix-benchmark-cuda.cu'; then $(CYGPATH_W) 'sparse-matrix-benchmark-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/sparse-matrix-benchmark-cuda.cu'; fi`
+
+tnl_benchmarks-tnl-benchmarks-cuda.o: tnl-benchmarks-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_benchmarks_CXXFLAGS) $(CXXFLAGS) -MT tnl_benchmarks-tnl-benchmarks-cuda.o -MD -MP -MF $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Tpo -c -o tnl_benchmarks-tnl-benchmarks-cuda.o `test -f 'tnl-benchmarks-cuda.cu' || echo '$(srcdir)/'`tnl-benchmarks-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Tpo $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-benchmarks-cuda.cu' object='tnl_benchmarks-tnl-benchmarks-cuda.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_benchmarks_CXXFLAGS) $(CXXFLAGS) -c -o tnl_benchmarks-tnl-benchmarks-cuda.o `test -f 'tnl-benchmarks-cuda.cu' || echo '$(srcdir)/'`tnl-benchmarks-cuda.cu
+
+tnl_benchmarks-tnl-benchmarks-cuda.obj: tnl-benchmarks-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_benchmarks_CXXFLAGS) $(CXXFLAGS) -MT tnl_benchmarks-tnl-benchmarks-cuda.obj -MD -MP -MF $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Tpo -c -o tnl_benchmarks-tnl-benchmarks-cuda.obj `if test -f 'tnl-benchmarks-cuda.cu'; then $(CYGPATH_W) 'tnl-benchmarks-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-benchmarks-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Tpo $(DEPDIR)/tnl_benchmarks-tnl-benchmarks-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-benchmarks-cuda.cu' object='tnl_benchmarks-tnl-benchmarks-cuda.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_benchmarks_CXXFLAGS) $(CXXFLAGS) -c -o tnl_benchmarks-tnl-benchmarks-cuda.obj `if test -f 'tnl-benchmarks-cuda.cu'; then $(CYGPATH_W) 'tnl-benchmarks-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-benchmarks-cuda.cu'; fi`
+
+.cu.o:
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
+
+.cu.obj:
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cu.lo:
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo

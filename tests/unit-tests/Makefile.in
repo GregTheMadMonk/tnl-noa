@@ -38,11 +38,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = tnl-unit-tests$(EXEEXT) $(am__EXEEXT_1) \
-	$(am__EXEEXT_2)
-@BUILD_CUDA_TRUE@am__append_1 = tnl-cuda-unit-tests
-@BUILD_DBG_TRUE@am__append_2 = tnl-unit-tests-dbg
-TESTS = tnl-unit-tests-dbg$(EXEEXT)
+check_PROGRAMS = tnl-unit-tests$(EXEEXT) $(am__EXEEXT_1)
+#endif
+@BUILD_DBG_TRUE@am__append_1 = tnl-unit-tests-dbg
+TESTS = tnl-unit-tests$(EXEEXT)
 subdir = tests/unit-tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,32 +52,32 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@BUILD_CUDA_TRUE@am__EXEEXT_1 = tnl-cuda-unit-tests$(EXEEXT)
-@BUILD_DBG_TRUE@am__EXEEXT_2 = tnl-unit-tests-dbg$(EXEEXT)
-am__tnl_cuda_unit_tests_SOURCES_DIST = tnl-cuda-unit-tests.cu
-am__objects_1 = tnl_cuda_unit_tests-tnl-cuda-unit-tests.$(OBJEXT)
-@BUILD_CUDA_TRUE@am_tnl_cuda_unit_tests_OBJECTS = $(am__objects_1)
-tnl_cuda_unit_tests_OBJECTS = $(am_tnl_cuda_unit_tests_OBJECTS)
-@BUILD_CUDA_TRUE@tnl_cuda_unit_tests_DEPENDENCIES =  \
-@BUILD_CUDA_TRUE@	../../src/libtnl-0.1.la \
-@BUILD_CUDA_TRUE@	../../src/core/libcore-tests.la \
-@BUILD_CUDA_TRUE@	../../src/diff/libdiff-tests.la \
-@BUILD_CUDA_TRUE@	../../src/debug/libtnldebug-0.1.la
-tnl_cuda_unit_tests_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(tnl_cuda_unit_tests_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-am__objects_2 = tnl-unit-tests.$(OBJEXT)
-am__objects_3 =
-am_tnl_unit_tests_OBJECTS = $(am__objects_2) $(am__objects_3)
+@BUILD_DBG_TRUE@am__EXEEXT_1 = tnl-unit-tests-dbg$(EXEEXT)
+am__objects_1 =
+am_tnl_unit_tests_OBJECTS = $(am__objects_1) \
+	tnl_unit_tests-tnl-unit-tests-cuda.$(OBJEXT)
 tnl_unit_tests_OBJECTS = $(am_tnl_unit_tests_OBJECTS)
 tnl_unit_tests_DEPENDENCIES = ../../src/libtnl-0.1.la \
 	../../src/core/libcore-tests.la \
 	../../src/diff/libdiff-tests.la \
 	../../src/debug/libtnldebug-0.1.la
-am__tnl_unit_tests_dbg_SOURCES_DIST = tnl-unit-tests.cpp
-am__objects_4 = tnl_unit_tests_dbg-tnl-unit-tests.$(OBJEXT)
-@BUILD_DBG_TRUE@am_tnl_unit_tests_dbg_OBJECTS = $(am__objects_4)
+tnl_unit_tests_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(tnl_unit_tests_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am__tnl_unit_tests_dbg_SOURCES_DIST = core/tnl-cuda-kernels.h \
+	core/tnlArrayTester.h core/tnlCUDAKernelsTester.h \
+	core/tnlCommunicatorTester.h core/tnlFileTester.h \
+	core/tnlGridTester.h core/tnlLongVectorCUDATester.h \
+	core/tnlLongVectorHostTester.h core/tnlRealTester.h \
+	core/tnlSharedMemoryTester.h core/tnlVectorTester.h \
+	diff/tnlMPIMeshTester.h diff/tnlMersonSolverCUDATester.cu.h \
+	matrix/tnlMatrixTester.h matrix/tnlCSRMatrixTester.h \
+	matrix/tnlEllpackMatrixTester.h matrix/tnlRgCSRMatrixTester.h \
+	matrix/tnlAdaptiveRgCSRMatrixTester.h \
+	solver/tnlMersonSolverTester.h tnl-unit-tests.cpp
+@BUILD_DBG_TRUE@am_tnl_unit_tests_dbg_OBJECTS = $(am__objects_1) \
+@BUILD_DBG_TRUE@	tnl_unit_tests_dbg-tnl-unit-tests.$(OBJEXT)
 tnl_unit_tests_dbg_OBJECTS = $(am_tnl_unit_tests_dbg_OBJECTS)
 @BUILD_DBG_TRUE@tnl_unit_tests_dbg_DEPENDENCIES =  \
 @BUILD_DBG_TRUE@	../../src/libtnl-dbg-0.1.la \
@@ -111,10 +110,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(tnl_cuda_unit_tests_SOURCES) $(tnl_unit_tests_SOURCES) \
-	$(tnl_unit_tests_dbg_SOURCES)
-DIST_SOURCES = $(am__tnl_cuda_unit_tests_SOURCES_DIST) \
-	$(tnl_unit_tests_SOURCES) \
+SOURCES = $(tnl_unit_tests_SOURCES) $(tnl_unit_tests_dbg_SOURCES)
+DIST_SOURCES = $(tnl_unit_tests_SOURCES) \
 	$(am__tnl_unit_tests_dbg_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
@@ -262,28 +259,29 @@ headers = core/tnl-cuda-kernels.h \
 	       core/tnlVectorTester.h \
           diff/tnlMPIMeshTester.h \
           diff/tnlMersonSolverCUDATester.cu.h \
+          matrix/tnlMatrixTester.h \
           matrix/tnlCSRMatrixTester.h \
           matrix/tnlEllpackMatrixTester.h \
           matrix/tnlRgCSRMatrixTester.h \
           matrix/tnlAdaptiveRgCSRMatrixTester.h \
           solver/tnlMersonSolverTester.h
 
-tnl_unit_tests_sources = tnl-unit-tests.cpp
-tnl_cuda_unit_tests_sources = tnl-cuda-unit-tests.cu
-tnl_unit_tests_SOURCES = $(tnl_unit_tests_sources) $(headers)
+
+#tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests.cpp
+#tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
+#                       ../../src/core/libcore-tests.la \
+#                       ../../src/diff/libdiff-tests.la \
+#                       ../../src/debug/libtnldebug-0.1.la
+
+#if BUILD_CUDA
+tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests-cuda.cu
+tnl_unit_tests_CXXFLAGS = "-DHAVE_CUDA"
 tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
-                       ../../src/core/libcore-tests.la \
-                       ../../src/diff/libdiff-tests.la \
-                       ../../src/debug/libtnldebug-0.1.la
+                           ../../src/core/libcore-tests.la \
+                           ../../src/diff/libdiff-tests.la \
+                           ../../src/debug/libtnldebug-0.1.la
 
-@BUILD_CUDA_TRUE@tnl_cuda_unit_tests_SOURCES = $(tnl_cuda_unit_tests_sources)
-@BUILD_CUDA_TRUE@tnl_cuda_unit_tests_CXXFLAGS = "-DHAVE_CUDA"
-@BUILD_CUDA_TRUE@tnl_cuda_unit_tests_LDADD = ../../src/libtnl-0.1.la \
-@BUILD_CUDA_TRUE@                           ../../src/core/libcore-tests.la \
-@BUILD_CUDA_TRUE@                           ../../src/diff/libdiff-tests.la \
-@BUILD_CUDA_TRUE@                           ../../src/debug/libtnldebug-0.1.la
-
-@BUILD_DBG_TRUE@tnl_unit_tests_dbg_SOURCES = $(tnl_unit_tests_sources)
+@BUILD_DBG_TRUE@tnl_unit_tests_dbg_SOURCES = $(headers) tnl-unit-tests.cpp
 @BUILD_DBG_TRUE@tnl_unit_tests_dbg_CXXFLAGS = $(DBGCXXFLAGS)
 @BUILD_DBG_TRUE@tnl_unit_tests_dbg_LDADD = ../../src/libtnl-dbg-0.1.la \
 @BUILD_DBG_TRUE@                            ../../src/core/libcore-tests-dbg.la \
@@ -333,12 +331,9 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-tnl-cuda-unit-tests$(EXEEXT): $(tnl_cuda_unit_tests_OBJECTS) $(tnl_cuda_unit_tests_DEPENDENCIES) 
-	@rm -f tnl-cuda-unit-tests$(EXEEXT)
-	$(tnl_cuda_unit_tests_LINK) $(tnl_cuda_unit_tests_OBJECTS) $(tnl_cuda_unit_tests_LDADD) $(LIBS)
 tnl-unit-tests$(EXEEXT): $(tnl_unit_tests_OBJECTS) $(tnl_unit_tests_DEPENDENCIES) 
 	@rm -f tnl-unit-tests$(EXEEXT)
-	$(CXXLINK) $(tnl_unit_tests_OBJECTS) $(tnl_unit_tests_LDADD) $(LIBS)
+	$(tnl_unit_tests_LINK) $(tnl_unit_tests_OBJECTS) $(tnl_unit_tests_LDADD) $(LIBS)
 tnl-unit-tests-dbg$(EXEEXT): $(tnl_unit_tests_dbg_OBJECTS) $(tnl_unit_tests_dbg_DEPENDENCIES) 
 	@rm -f tnl-unit-tests-dbg$(EXEEXT)
 	$(tnl_unit_tests_dbg_LINK) $(tnl_unit_tests_dbg_OBJECTS) $(tnl_unit_tests_dbg_LDADD) $(LIBS)
@@ -349,8 +344,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl-unit-tests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tnl_unit_tests_dbg-tnl-unit-tests.Po@am__quote@
 
 .cpp.o:
@@ -374,19 +368,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-tnl_cuda_unit_tests-tnl-cuda-unit-tests.o: tnl-cuda-unit-tests.cu
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_cuda_unit_tests_CXXFLAGS) $(CXXFLAGS) -MT tnl_cuda_unit_tests-tnl-cuda-unit-tests.o -MD -MP -MF $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Tpo -c -o tnl_cuda_unit_tests-tnl-cuda-unit-tests.o `test -f 'tnl-cuda-unit-tests.cu' || echo '$(srcdir)/'`tnl-cuda-unit-tests.cu
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Tpo $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-cuda-unit-tests.cu' object='tnl_cuda_unit_tests-tnl-cuda-unit-tests.o' libtool=no @AMDEPBACKSLASH@
+tnl_unit_tests-tnl-unit-tests-cuda.o: tnl-unit-tests-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_unit_tests_CXXFLAGS) $(CXXFLAGS) -MT tnl_unit_tests-tnl-unit-tests-cuda.o -MD -MP -MF $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Tpo -c -o tnl_unit_tests-tnl-unit-tests-cuda.o `test -f 'tnl-unit-tests-cuda.cu' || echo '$(srcdir)/'`tnl-unit-tests-cuda.cu
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Tpo $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-unit-tests-cuda.cu' object='tnl_unit_tests-tnl-unit-tests-cuda.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_cuda_unit_tests_CXXFLAGS) $(CXXFLAGS) -c -o tnl_cuda_unit_tests-tnl-cuda-unit-tests.o `test -f 'tnl-cuda-unit-tests.cu' || echo '$(srcdir)/'`tnl-cuda-unit-tests.cu
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_unit_tests_CXXFLAGS) $(CXXFLAGS) -c -o tnl_unit_tests-tnl-unit-tests-cuda.o `test -f 'tnl-unit-tests-cuda.cu' || echo '$(srcdir)/'`tnl-unit-tests-cuda.cu
 
-tnl_cuda_unit_tests-tnl-cuda-unit-tests.obj: tnl-cuda-unit-tests.cu
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_cuda_unit_tests_CXXFLAGS) $(CXXFLAGS) -MT tnl_cuda_unit_tests-tnl-cuda-unit-tests.obj -MD -MP -MF $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Tpo -c -o tnl_cuda_unit_tests-tnl-cuda-unit-tests.obj `if test -f 'tnl-cuda-unit-tests.cu'; then $(CYGPATH_W) 'tnl-cuda-unit-tests.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-cuda-unit-tests.cu'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Tpo $(DEPDIR)/tnl_cuda_unit_tests-tnl-cuda-unit-tests.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-cuda-unit-tests.cu' object='tnl_cuda_unit_tests-tnl-cuda-unit-tests.obj' libtool=no @AMDEPBACKSLASH@
+tnl_unit_tests-tnl-unit-tests-cuda.obj: tnl-unit-tests-cuda.cu
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_unit_tests_CXXFLAGS) $(CXXFLAGS) -MT tnl_unit_tests-tnl-unit-tests-cuda.obj -MD -MP -MF $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Tpo -c -o tnl_unit_tests-tnl-unit-tests-cuda.obj `if test -f 'tnl-unit-tests-cuda.cu'; then $(CYGPATH_W) 'tnl-unit-tests-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-unit-tests-cuda.cu'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Tpo $(DEPDIR)/tnl_unit_tests-tnl-unit-tests-cuda.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tnl-unit-tests-cuda.cu' object='tnl_unit_tests-tnl-unit-tests-cuda.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_cuda_unit_tests_CXXFLAGS) $(CXXFLAGS) -c -o tnl_cuda_unit_tests-tnl-cuda-unit-tests.obj `if test -f 'tnl-cuda-unit-tests.cu'; then $(CYGPATH_W) 'tnl-cuda-unit-tests.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-cuda-unit-tests.cu'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_unit_tests_CXXFLAGS) $(CXXFLAGS) -c -o tnl_unit_tests-tnl-unit-tests-cuda.obj `if test -f 'tnl-unit-tests-cuda.cu'; then $(CYGPATH_W) 'tnl-unit-tests-cuda.cu'; else $(CYGPATH_W) '$(srcdir)/tnl-unit-tests-cuda.cu'; fi`
 
 tnl_unit_tests_dbg-tnl-unit-tests.o: tnl-unit-tests.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tnl_unit_tests_dbg_CXXFLAGS) $(CXXFLAGS) -MT tnl_unit_tests_dbg-tnl-unit-tests.o -MD -MP -MF $(DEPDIR)/tnl_unit_tests_dbg-tnl-unit-tests.Tpo -c -o tnl_unit_tests_dbg-tnl-unit-tests.o `test -f 'tnl-unit-tests.cpp' || echo '$(srcdir)/'`tnl-unit-tests.cpp
@@ -721,10 +715,6 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am
 
-
-#if BUILD_CUDA
-#TESTS += tnl-cuda-unit-tests
-#endif
 
 #        tnl-benchmarks
 

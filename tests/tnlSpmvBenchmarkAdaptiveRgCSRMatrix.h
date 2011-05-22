@@ -20,6 +20,7 @@
 
 #include <tnlSpmvBenchmark.h>
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
+#include <core/tnlAssert.h>
 
 template< typename Real, tnlDevice Device, typename Index>
 class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index, tnlAdaptiveRgCSRMatrix >
@@ -55,8 +56,8 @@ template< typename Real,
           tnlDevice Device,
           typename Index>
 tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAdaptiveRgCSRMatrix()
- : groupSize( 0 ),
-   cudaBlockSize( 0 ),
+ : groupSize( 16 ),
+   cudaBlockSize( 32 ),
    useAdaptiveGroupSize( false ),
    adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize )
 
@@ -71,6 +72,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
    //tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
    {
+      this -> matrix. tuneFormat( groupSize, cudaBlockSize );
       if( ! this -> matrix. copyFrom( matrix ) )
          return false;
    }
@@ -78,7 +80,8 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
    {
 #ifdef HAVE_CUDA
       tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
-      hostMatrix. copyFrom( matrix, groupSize );
+      hostMatrix. tuneFormat( groupSize, cudaBlockSize );
+      hostMatrix. copyFrom( matrix );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
 #else
@@ -102,7 +105,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth - 15 ) << "Adaptive Row-grouped CSR ";
+   cout << left << setw( this -> formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
    if( Device == tnlCuda )
       cout << setw( 5 ) << this -> groupSize
            << setw( 10 ) << this -> cudaBlockSize;
@@ -135,9 +138,6 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
-#ifdef HAVE_CUDA
-   this -> matrix. setCUDABlockSize( cudaBlockSize );
-#endif
    this -> cudaBlockSize = cudaBlockSize;
 }
 

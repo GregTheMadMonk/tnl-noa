@@ -43,7 +43,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlGridTester 
                               );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridTester< Real, device, Index > >(
                                "testSetDomain",
-                               & tnlGridTester< Real, device, Index > :: testSetDimensions )
+                               & tnlGridTester< Real, device, Index > :: testSetDomain )
                               );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridTester< Real, device, Index > >(
                                "testSaveAndLoad",

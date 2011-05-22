@@ -402,7 +402,7 @@ void tnlLongVector< Real, tnlCuda, Index > :: swap( tnlLongVector< Real, tnlCuda
 template< typename Real, typename Index >
 tnlString tnlLongVector< Real, tnlCuda, Index > :: getType() const
 {
-    Real t = ( Real ) 0;
+    Real t;
     return tnlString( "tnlLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( ", tnlCuda >" );
 };
 
@@ -481,8 +481,9 @@ Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )
    cerr << endl;
    cerr << "Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
    cerr << endl;
+   cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
-   cerr << "on the CUDA device. Therefore we cannot return reference poointing to the" << endl;
+   cerr << "on the CUDA device. Therefore we cannot return reference pointing to the" << endl;
    cerr << "different memory space. You may use the method getElement or setElement" << endl;
    cerr << "which are however very slow. You may also write specialised kernel for your task." << endl;
    abort();
@@ -495,6 +496,7 @@ const Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i ) cons
    cerr << endl;
    cerr << "Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
    cerr << endl;
+   cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
    cerr << "on the CUDA device. Therefore we cannot return reference poointing to the" << endl;
    cerr << "different memory space. You may use the method getElement or setElement" << endl;

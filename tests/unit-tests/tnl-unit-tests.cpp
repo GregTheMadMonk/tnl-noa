@@ -79,8 +79,8 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlEllpackMatrixTester< float > :: suite() );
    runner. addTest( tnlEllpackMatrixTester< double > :: suite() );
 
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double > :: suite() );
+   //runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlHost > :: suite() );
 
    runner. addTest( tnlMPIMeshTester< float > :: suite() );
 
@@ -89,6 +89,35 @@ int main( int argc, char* argv[] )
    //runner. addTest( tnlCommunicatorTester< tnlHost > :: suite() );
 
 
+#ifdef HAVE_CUDA
+   runner. addTest( tnlFileTester :: suite() );
+
+   /*runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
+   runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
+   if( CUDA_ARCH == 13 )
+      runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
+
+   runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );
+   if( CUDA_ARCH == 13 )
+      runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
+
+   runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
+   if( CUDA_ARCH == 13 )
+      runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
+
+   runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
+   runner.addTest( tnlCUDAKernelsTester< float > :: suite() );
+   if( CUDA_ARCH == 13 )
+      runner.addTest( tnlCUDAKernelsTester< double > :: suite() );
+
+   runner.addTest( tnlMersonSolverTester< float, tnlCuda, int > :: suite() );
+   if( CUDA_ARCH == 13 )
+      runner.addTest( tnlMersonSolverTester< double, tnlCuda, int > :: suite() );*/
+
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlCuda > :: suite() );
+#endif
 
    
    runner.run();

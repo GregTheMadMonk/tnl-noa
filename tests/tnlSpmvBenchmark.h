@@ -115,7 +115,7 @@ tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
      maxError( 0.0 ),
      firstErrorOccurence( 0 ),
      matrix( "tnlSpmvBenchmark::matrix" ),
-     formatColumnWidth( 32 ),
+     formatColumnWidth( 40 ),
      timeColumnWidth( 12 ),
      iterationsColumnWidth( 15 ),
      gflopsColumnWidth( 12 ),

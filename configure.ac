@@ -152,6 +152,7 @@ dnl   then
    then
       CUSP_CXXFLAGS="-I$WITH_CUSP_DIR -I$WITH_CUSP_DIR/cusp -I$WITH_CUSP_DIR/thrust"
       AC_SUBST(CUSP_CXXFLAGS)
+      CUDA_CXXFLAGS="$CUDA_CXXFLAGS -DHAVE_CUSP"
 dnl AC_DEFINE(HAVE_CUSP, [1], [Define to 1 if you have the CUSP library is installed on this system.])
    fi 
    
@@ -507,7 +508,7 @@ echo "#define CONFIG_DESCRIPTION_FILE \"$TNL_SOURCE_DIR/tests/matrix-solvers-ben
 CXXFLAGS="$CXXFLAGS  $BZIP2_CXXFLAGS $OPENMPFLAGS $CUDA_CXXFLAGS -I../src/debug -I../src/core -I../src/diff -I../../src -I../../../src"
 CXXFLAGS="$CXXFLAGS -I../../src -I../../src/debug -I../src/debug"
 CPPFLAGS="$CPPFLAGS $CUDA_CPPFLAGS"
-LDFLAGS="$LDFLAGS $CUDA_LDFLAGS -L/usr/local/lib -lamd"
+LDFLAGS="$LDFLAGS $CUDA_LDFLAGS -L/usr/lib -L/usr/local/lib -lamd"
 OPTIMISECXXFLAGS="-O3"
 
 AC_SUBST(OPTIMISECXXFLAGS)
@@ -581,13 +582,22 @@ echo "#endif" >> tnl-config.h
 
 cp -f tools/src/tnl-err-norms.cpp tools/src/tnl-err-norms-cuda.cu
 cp -f ../tools/src/tnl-err-norms.cpp tools/src/tnl-err-norms-cuda.cu
+
 cp -f tools/src/tnl-grid-view.cpp tools/src/tnl-grid-view-cuda.cu
 cp -f ../tools/src/tnl-grid-view.cpp tools/src/tnl-grid-view-cuda.cu
-cp -f ../tests/matrix-formats-test.cpp tests/matrix-formats-test-cuda.cu
+
+cp -f tests/unit-tests/tnl-unit-tests.cpp tests/unit-tests/tnl-unit-tests-cuda.cu
+cp -f ../tests/unit-tests/tnl-unit-tests.cpp tests/unit-tests/tnl-unit-tests-cuda.cu
+
 cp -f tests/matrix-formats-test.cpp tests/matrix-formats-test-cuda.cu
-cp -f ../tests/sparse-matrix-benchmark.cpp tests/sparse-matrix-benchmark-cuda.cu
+cp -f ../tests/matrix-formats-test.cpp tests/matrix-formats-test-cuda.cu
+
 cp -f tests/sparse-matrix-benchmark.cpp tests/sparse-matrix-benchmark-cuda.cu
-cp -f ../tests/matrix-solvers-benchmark.cpp tests/matrix-solvers-benchmark-cuda.cu
+cp -f ../tests/sparse-matrix-benchmark.cpp tests/sparse-matrix-benchmark-cuda.cu
+
 cp -f tests/matrix-solvers-benchmark.cpp tests/matrix-solvers-benchmark-cuda.cu
-cp -f ../tests/tnl-benchmarks.cpp tests/tnl-benchmarks-cuda.cu
+cp -f ../tests/matrix-solvers-benchmark.cpp tests/matrix-solvers-benchmark-cuda.cu
+
 cp -f tests/tnl-benchmarks.cpp tests/tnl-benchmarks-cuda.cu
+cp -f ../tests/tnl-benchmarks.cpp tests/tnl-benchmarks-cuda.cu
+

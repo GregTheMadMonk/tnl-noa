@@ -153,4 +153,4 @@ MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcca.m
 
 #MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcfe.mtx.gz"
 #MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcca.mtx.gz"
-#MM_MATRICES="  ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/bcsstruc3/bcsstk20.mtx.gz"
+MM_MATRICES="  ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/bcsstruc3/bcsstk20.mtx.gz"

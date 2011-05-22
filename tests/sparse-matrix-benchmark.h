@@ -34,12 +34,6 @@
 #include <core/mfuncs.h>
 #include <config.h>
 
-
-
-#ifdef HAVE_CUSP
-#include <cusp-test.h>
-#endif
-
 using namespace std;
 
 template< typename Real >
@@ -153,7 +147,7 @@ bool benchmarkMatrix( const tnlString& input_file,
    tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
    tnlLongVector< Real, tnlCuda > cudaX( "cudaX", size );
    for( int i = 0; i < size; i ++ )
-      refX[ i ] = ( Real ) i * 1.0 / ( Real ) size;
+      refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
    cudaX = refX;
    csrMatrix. vectorProduct( refX, refB );
 
@@ -202,6 +196,7 @@ bool benchmarkMatrix( const tnlString& input_file,
     */
    tnlSpmvBenchmarkHybridMatrix< Real, int > hybridMatrixBenchmark;
    hybridMatrixBenchmark. setFileName( input_mtx_file );
+   hybridMatrixBenchmark. setNonzeroElements( csrMatrix. getNonzeroElements() );
    hybridMatrixBenchmark. setup( csrMatrix );
    hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hybridMatrixBenchmark. tearDown();
@@ -221,7 +216,6 @@ bool benchmarkMatrix( const tnlString& input_file,
       }
    }
 
-#ifdef UNDEF
    /****
     * Row-Grouped CSR format
     */
@@ -369,10 +363,7 @@ bool benchmarkMatrix( const tnlString& input_file,
          }
       }
       cudaRgCsrMatrixBenchmark. tearDown();
-
-
    }
-#endif
    csrMatrix. vectorProduct( refX, refB );
 
    /****
@@ -380,9 +371,12 @@ bool benchmarkMatrix( const tnlString& input_file,
     */
 
    tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > hostArgCsrMatrixBenchmark;
+   hostArgCsrMatrixBenchmark. setGroupSize( 16 );
+   hostArgCsrMatrixBenchmark. setCudaBlockSize( 32 );
    hostArgCsrMatrixBenchmark. setup( csrMatrix );
    hostArgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hostArgCsrMatrixBenchmark. tearDown();
+
    if( logFileName )
    {
       if( hostArgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
@@ -399,15 +393,13 @@ bool benchmarkMatrix( const tnlString& input_file,
          logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
       }
    }
-   /*tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
-   cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
-   cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
-   cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
-   cudaRgCsrMatrixBenchmark. setup( csrMatrix );
+   tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
+   cudaArgCsrMatrixBenchmark. setGroupSize( 16 );
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
-      cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+      cudaArgCsrMatrixBenchmark. setup( csrMatrix );
+      cudaArgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
       if( logFileName )
       {
          if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
@@ -422,7 +414,7 @@ bool benchmarkMatrix( const tnlString& input_file,
          }
       }
    }
-   cudaRgCsrMatrixBenchmark. tearDown();*/
+   cudaRgCsrMatrixBenchmark. tearDown();
 
 
 

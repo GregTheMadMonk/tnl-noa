@@ -404,8 +404,8 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	/****
 	 * Allocate the non-zero elements (they contains some artificial zeros.)
 	 */
-	dbgCout( "Allocating " << total_elements << " elements.");
-	if( ! setNonzeroElements( total_elements ) )
+	dbgCout( "Allocating " << Max( 1, total_elements ) << " elements.");
+	if( ! setNonzeroElements( Max( 1, total_elements ) ) )
 		return false;
 	artificial_zeros = total_elements - csr_matrix. getNonzeroElements();
 

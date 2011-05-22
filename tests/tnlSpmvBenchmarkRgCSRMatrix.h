@@ -85,7 +85,10 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
    {
 #ifdef HAVE_CUDA
       tnlRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
-      hostMatrix. copyFrom( matrix, groupSize );
+      hostMatrix. tuneFormat( groupSize,
+                              this -> useAdaptiveGroupSize,
+                              this -> adaptiveGroupSizeStrategy );
+      hostMatrix. copyFrom( matrix );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
 #else

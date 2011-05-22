@@ -63,6 +63,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
       tnlArray< 3, Real, device, Index > array2( "tnlArrayTester :: array2", array );
       Real testData[ 1000 ];
       array2. setSharedData( testData, tnlVector< 3, Index >( 10 ) );
+      CPPUNIT_ASSERT( array2. getDimensions() == ( tnlVector< 3, Index >( 10 ) ) );
    };
 
    void testSetDimensions()

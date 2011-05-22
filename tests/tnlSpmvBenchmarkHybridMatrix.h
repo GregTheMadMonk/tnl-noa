@@ -44,9 +44,13 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
 
    void writeProgress() const;
 
+   void setNonzeroElements( const Index nonzeroElements );
+
    protected:
 
    tnlString fileName;
+
+   Index nonzeroElements;
 };
 
 template< typename Real, typename Index>
@@ -72,7 +76,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: tearDown()
 template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongVector< Real, tnlHost, Index >& _x,
-                                                                  const tnlLongVector< Real, tnlHost, Index >& _refB,
+                                                                  const tnlLongVector< Real, tnlHost, Index >& refB,
                                                                   bool verbose )
 {
 #ifdef HAVE_CUSP
@@ -80,7 +84,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
    cusp::hyb_matrix< Index, Real, cusp::device_memory > A;
 
    // load a matrix stored in MatrixMarket format
-   cusp::io::read_matrix_market_file( A, this -> fileName(). getString() );
+   cusp::io::read_matrix_market_file( A, this -> fileName. getString() );
 
    // allocate storage for solution (x) and right hand side (b)
    cusp::array1d< Real, cusp::device_memory > x( A.num_rows, 1 );
@@ -97,7 +101,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
       this -> iterations += 10;
    }
 
-   cusp::array1d< REAL, cusp::host_memory > host_b( b );
+   cusp::array1d< Real, cusp::host_memory > host_b( b );
    host_b = b;
 
    for( Index j = 0; j < refB. getSize(); j ++ )
@@ -113,9 +117,9 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
    else
       this -> benchmarkWasSuccesful = false;
 
-   time = rt_timer. GetTime();
-   double flops = 2.0 * iterations * nonzero_elements;
-   gflops = flops / time * 1.0e-9;
+   this -> time = rt_timer. GetTime();
+   double flops = 2.0 * iterations * nonzeroElements;
+   this -> gflops = flops / this -> time * 1.0e-9;
 #else
    this -> benchmarkWasSuccesful = false;
 #endif
@@ -139,6 +143,13 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeProgress() const
    cout << "CUSP library is missing.";
 #endif
    cout << endl;
+}
+
+template< typename Real,
+          typename Index >
+void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setNonzeroElements( const Index nonzeroElements )
+{
+   this -> nonzeroElements = nonzeroElements;
 }
 
 #endif /* TNLSPMVBENCHMARKHYBRIDMATRIX_H_ */

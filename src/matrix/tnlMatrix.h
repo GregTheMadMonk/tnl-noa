@@ -192,12 +192,7 @@ bool tnlMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, De
    for( Index i = 0; i < size; i ++ )
       for( Index j = 0; j < size; j ++ )
          if( this -> getElement( i, j ) != m. getElement( i, j ) )
-         {
-        	 cerr << "Matrices differ at element ( " << i << ", " << j << " )." << endl;
-        	 cerr << this -> getName() << " = " << this -> getElement( i, j ) << endl;
-        	 cerr << m. getName() << " = " << m. getElement( i, j ) << endl;
              return false;
-         }
    return true;
 }
 

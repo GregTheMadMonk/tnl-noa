@@ -189,6 +189,18 @@ bool testMatrixFormats( const tnlString& input_file_name,
 
    if( verbose )
       cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << flush;
+
+   for( int i = 0; i < adaptiveRgCsrMatrix -> getSize(); i ++ )
+      for( int j = 0; j < adaptiveRgCsrMatrix -> getSize(); j ++ )
+         if( adaptiveRgCsrMatrix -> getElement( i, j ) != csr_matrix -> getElement( i, j ) )
+         {
+            cerr << "Matrices differ at element ( " << i << ", " << j << " )." << endl;
+            cerr << adaptiveRgCsrMatrix -> getName() << " = " << adaptiveRgCsrMatrix -> getElement( i, j ) << endl;
+            cerr << csr_matrix -> getName() << " = " << csr_matrix -> getElement( i, j ) << endl;
+            test_arg_csr = false;
+            return false;
+         }
+
    if( *adaptiveRgCsrMatrix == *csr_matrix )
    {
       test_arg_csr = true;
@@ -204,11 +216,11 @@ bool testMatrixFormats( const tnlString& input_file_name,
    return true;
 #ifdef HAVE_CUDA
    if( verbose )
-      cout << "Comparing the CSR and the Coalesced CSR CUDA matrix by SpMV ... ";
-   cuda_adaptiveRgCsrMatrix = new tnlRgCSRMatrix< T, tnlCuda >( "cuda_adaptiveRgCsrMatrix" );
+      cout << "Comparing the CSR and the Adaptive RgCSR CUDA matrix by SpMV ... ";
+   cuda_adaptiveRgCsrMatrix = new tnlAdaptiveRgCSRMatrix< T, tnlCuda >( "cuda_adaptiveRgCsrMatrix" );
    cuda_adaptiveRgCsrMatrix -> copyFrom( *adaptiveRgCsrMatrix );
 
-   int k( 0 );
+   k = 0;
    test_cuda_arg_csr = true;
    while( k < size && test_cuda_coa_csr == true )
    {

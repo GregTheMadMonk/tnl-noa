@@ -23,9 +23,11 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <matrix/tnlCSRMatrix.h>
+#include <matrix/tnlMatrixTester.h>
 #include <matrix/tnlRgCSRMatrix.h>
 
-template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
+template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
+                                                 public tnlMatrixTester< T >
 {
    public:
    tnlRgCSRMatrixTester(){};
@@ -38,70 +40,270 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlRgCSRMatrixTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
-                               "diagonalMatrixTest",
-                               & tnlRgCSRMatrixTester< T > :: diagonalMatrixTest )
+                               "ifEmptyMatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifEmptyMatrixIsStoredProperly )
                              );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
-                               "triDiagonalMatrixTest",
-                               & tnlRgCSRMatrixTester< T > :: triDiagonalMatrixTest )
+                               "ifDiagonalMatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifDiagonalMatrixIsStoredProperly )
                              );
-
-            return suiteOfTests;
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifTriDiagonalMatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifTriDiagonalMatrixIsStoredProperly )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithEmptyMatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithEmptyMatrixWorks )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifUpperTriangularMatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifUpperTriangularMatrixIsStoredProperly )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifFullMatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifFullMatrixIsStoredProperly )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifBcsstk20MatrixIsStoredProperly",
+                               & tnlRgCSRMatrixTester< T > :: ifBcsstk20MatrixIsStoredProperly )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithDiagonalMatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithDiagonalMatrixWorks )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithTriDiagonalMatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithTriDiagonalMatrixWorks )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithUpperTriangularMatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithUpperTriangularMatrixWorks  )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithFullMatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithFullMatrixWorks  )
+                             );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRgCSRMatrixTester< T > >(
+                               "ifSpmvWithBcsstk20MatrixWorks",
+                               & tnlRgCSRMatrixTester< T > :: ifSpmvWithBcsstk20MatrixWorks )
+                             );
+      return suiteOfTests;
    }
 
-   void diagonalMatrixTest()
+   void ifEmptyMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csr_matrix( "test-matrix:Diagonal" );
-      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Diagonal" );
-      csr_matrix. setSize( 12 );
-      csr_matrix. setNonzeroElements( 12 );
-      for( int i = 0; i < 12; i ++ )
-         csr_matrix. setElement( i, i, T( i + 1 ) );
-      //cerr << "Copying data to coalesced CSR matrix." << endl;
-      coacsr_matrix. tuneFormat( 4 );
-      coacsr_matrix. copyFrom( csr_matrix );
-      //coacsr_matrix. printOut( cout );
+      const int size = 12;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:Empty" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Empty" );
+      setEmptyMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
       bool error( false );
-      for( int i = 0; i < 12; i ++ )
-         if( coacsr_matrix. getElement( i, i ) != T( i + 1 ) )
-            error = true;
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( argcsrMatrix. getElement( i, j ) != 0 )
+               error = true;
       CPPUNIT_ASSERT( ! error );
    };
 
-   void triDiagonalMatrixTest()
+   void ifDiagonalMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csr_matrix( "test-matrix:Tridiagonal" );
-      tnlRgCSRMatrix< T > coacsr_matrix( "test-matrix:Tridiagonal" );
-      int size = 12;
-      csr_matrix. setSize( size );
-      csr_matrix. setNonzeroElements( size * 3 - 2 );
-      T data[] = { -1.0, 2.0, -1.0 };
-      int offsets[] = { -1, 0, 1 };
-      for( int i = 0; i < size; i ++ )
-      {
-         csr_matrix. insertRow( i,      // row
-                                3,      // elements
-                                data,   // data
-                                i,      // first column
-                                offsets );
-      }
-      coacsr_matrix. tuneFormat( 4 );
-      coacsr_matrix. copyFrom( csr_matrix );
-      //cerr << "----------------" << endl;
-      //coacsr_matrix. printOut( cout );
+      const int size = 12;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      setDiagonalMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
       bool error( false );
       for( int i = 0; i < size; i ++ )
-      {
-         if( csr_matrix. getElement( i, i ) != T( 2.0 ) )
-            error = true;
-         if( i > 0 && csr_matrix. getElement( i, i - 1 ) != T( -1.0 ) )
-            error = true;
-         if( i < size - 1 && csr_matrix. getElement( i, i + 1 ) != T( -1.0 ) )
-            error = true;
-      }
+         for( int j = 0; j < size; j ++ )
+            if( argcsrMatrix. getElement( i, j ) != csrMatrix. getElement( i, j ) )
+               error = true;
+      CPPUNIT_ASSERT( ! error );
+   };
+
+   void ifTriDiagonalMatrixIsStoredProperly()
+   {
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:Tridiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Tridiagonal" );
+      int size = 12;
+      setTridiagonalMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      bool error( false );
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( csrMatrix. getElement( i, j ) != argcsrMatrix. getElement( i, j ) )
+               error = true;
       CPPUNIT_ASSERT( ! error );
 
    }
+
+   void ifUpperTriangularMatrixIsStoredProperly()
+   {
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      const int size = 12;
+      setUpperTriangularMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      bool error( false );
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( csrMatrix. getElement( i, j ) != argcsrMatrix. getElement( i, j ) )
+               error = true;
+
+      CPPUNIT_ASSERT( ! error );
+   }
+
+   void ifFullMatrixIsStoredProperly()
+   {
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      const int size = 12;
+      setUpperTriangularMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      bool error( false );
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( csrMatrix. getElement( i, j ) != argcsrMatrix. getElement( i, j ) )
+               error = true;
+
+      CPPUNIT_ASSERT( ! error );
+   }
+
+   void ifBcsstk20MatrixIsStoredProperly()
+   {
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      const int size = 12;
+      setBcsstk20Matrix( csrMatrix );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      bool error( false );
+      for( int i = 0; i < size; i ++ )
+         for( int j = 0; j < size; j ++ )
+            if( csrMatrix. getElement( i, j ) != argcsrMatrix. getElement( i, j ) )
+               error = true;
+
+      CPPUNIT_ASSERT( ! error );
+   }
+
+   void ifSpmvWithEmptyMatrixWorks()
+   {
+      const int size = 35;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      setEmptyMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
+   void ifSpmvWithDiagonalMatrixWorks()
+   {
+      const int size = 35;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      setDiagonalMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
+   void ifSpmvWithTriDiagonalMatrixWorks()
+   {
+      const int size = 12;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      setTridiagonalMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
+   void ifSpmvWithUpperTriangularMatrixWorks()
+   {
+      const int size = 12;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      setUpperTriangularMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
+   void ifSpmvWithFullMatrixWorks()
+   {
+      const int size = 12;
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      setFullMatrix( csrMatrix, size );
+      argcsrMatrix. copyFrom( csrMatrix );
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
+   void ifSpmvWithBcsstk20MatrixWorks()
+   {
+      tnlCSRMatrix< T > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      setBcsstk20Matrix( csrMatrix );
+      argcsrMatrix. copyFrom( csrMatrix );
+      const int size = csrMatrix. getSize();
+
+      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      x. setSize( size );
+      b1. setSize( size );
+      b2. setSize( size );
+      x. setValue( 1.0 );
+      csrMatrix. vectorProduct( x, b1 );
+      argcsrMatrix. vectorProduct( x, b2 );
+
+      CPPUNIT_ASSERT( b1 == b2 );
+   }
+
 };
 
 #endif /* TNLRgCSRMATRIXTESTER_H_ */

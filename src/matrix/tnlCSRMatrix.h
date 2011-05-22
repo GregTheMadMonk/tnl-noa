@@ -199,6 +199,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
    friend class tnlRgCSRMatrix< Real, tnlCuda, Index >;
    friend class tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index >;
+   friend class tnlAdaptiveRgCSRMatrix< Real, tnlCuda, Index >;
    friend class tnlFastCSRMatrix< Real, tnlHost, Index >;
    friend class tnlEllpackMatrix< Real, tnlHost, Index >;
 };
