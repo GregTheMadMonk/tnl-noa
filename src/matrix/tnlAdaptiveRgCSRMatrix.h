@@ -649,6 +649,9 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
    cerr << "gridSize = " << gridDim. x << endl;
    cerr << "blockSize = " << blockDim. x << endl;
+   cerr << "threads = " << threads. getVector() << endl;
+   cerr << " threads size = " << threads. getSize() << endl;
+   cerr << threads << endl;
 
    AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim, blockDim. x * sizeof( Real ) >>>( result. getVector(),
                                                                                           vec. getVector(),
@@ -749,9 +752,11 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 
    tnlARGCSRGroupProperties groupInfo;
 
-	Index idx, begin, end, column;
+	Index idx, column;
 	Real vectVal, sum;
 
+	if( threadIdx. x == 0 )
+	   printf( "threads = %p \n", globalThreadsMapping );
 	//for( Index bId = blockIdx.x; bId < numBlocks; bId += gridDim.x)
 	{
 	   Index bId = blockIdx.x;
@@ -815,13 +820,25 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 			sum = 0;
 			//begin = threadsMapping[ threadIdx.x ];
 			//end = threadsMapping[ threadIdx.x + 1 ];
-			/*if( threadIdx. x == 0 )
-			   begin = 0;
-			else
+			/*printf( "Tid. %d, groupInfo. firstRow + threadIdx. x = %d, globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] = %d \n",
+			         threadIdx. x,
+			         groupInfo. firstRow + threadIdx. x,
+			         globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] );*/
+			Index begin( 0 );
+			if( threadIdx. x > 0 )
+			{
 			   begin = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1];
-			end = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ];
+			   printf( "Tid. %d begin = %d globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1] %d \n", threadIdx, begin, globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1] );
+			}
+			Index end = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ];
+			printf( "Tid. %d end = %d globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] %d, groupInfo. firstRow + threadIdx. x = %d \n",
+			         threadIdx,
+			         end,
+			         globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ],
+			         groupInfo. firstRow + threadIdx. x );
+			printf( "Tid. %d begin = %d end = %d \n", threadIdx, begin, end );
 			for( Index i = begin; i < end; i++ )
-				sum += partialSums[ i ];*/
+				sum += partialSums[ i ];
 
 			target[ groupInfo. firstRow + threadIdx. x ] = sum;
 			printf( "Summing by thread %d sum = %f \n", threadIdx. x, sum );
