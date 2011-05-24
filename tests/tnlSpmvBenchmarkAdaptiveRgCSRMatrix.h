@@ -43,7 +43,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    protected:
 
-   Index groupSize;
+   Index desiredChunkSize;
 
    Index cudaBlockSize;
 
@@ -56,7 +56,7 @@ template< typename Real,
           tnlDevice Device,
           typename Index>
 tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAdaptiveRgCSRMatrix()
- : groupSize( 16 ),
+ : desiredChunkSize( 4 ),
    cudaBlockSize( 32 ),
    useAdaptiveGroupSize( false ),
    adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize )

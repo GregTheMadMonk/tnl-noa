@@ -148,7 +148,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    Index maxGroupSize, groupSizeStep;
 
-   Index targetNonzeroesPerGroup;
+   Index desiredChunkSize;
 
    Index numberOfGroups;
 
@@ -187,7 +187,7 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const t
   rowToGroupMapping( name + " : rowToGroupMapping" ),
   maxGroupSize( 16 ),
   groupSizeStep( 16 ),
-  targetNonzeroesPerGroup( 2048 ),
+  desiredChunkSize( 4 ),
   numberOfGroups( 0 ),
   cudaBlockSize( 32 ),
   artificialZeros( 0 ),
@@ -266,11 +266,11 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index maxGroupSize,
+void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index desiredChunkSize,
                                                                   const Index cudaBlockSize )
 {
-   this -> maxGroupSize = maxGroupSize;
-   this -> cudaBlockSize = Max( maxGroupSize, cudaBlockSize );
+   this -> desiredChunkSize = desiredChunkSize;
+   this -> cudaBlockSize = cudaBlockSize;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -327,9 +327,9 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          nonzerosInGroup = csrMatrix. row_offsets[ groupEnd ] - csrMatrix. row_offsets[ groupBegin ];
          rowsInGroup = groupEnd - groupBegin;
 
-         if( nonzerosInGroup < targetNonzeroesPerGroup &&
+         if( nonzerosInGroup < cudaBlockSize * desiredChunkSize &&
              groupEnd < this -> getSize() &&
-             rowsInGroup < Min( maxGroupSize, cudaBlockSize ) )
+             rowsInGroup < cudaBlockSize )
             continue;
 
          dbgCout( " groupBegin = " << groupBegin
