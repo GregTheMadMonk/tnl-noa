@@ -223,10 +223,6 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       csrMatrix. vectorProduct( x1, b1 );
       argcsrMatrix. vectorProduct( x2, b2 );
 
-      cerr << b1 << endl;
-
-      cerr << b2 << endl;
-
       CPPUNIT_ASSERT( b1 == b2 );
    }
 

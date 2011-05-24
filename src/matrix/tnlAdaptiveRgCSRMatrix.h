@@ -647,19 +647,21 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
    int gridSize = (int) desGridSize;
    dim3 gridDim( gridSize ), blockDim( blockSize );
 
-   cerr << "gridSize = " << gridDim. x << endl;
-   cerr << "blockSize = " << blockDim. x << endl;
-   cerr << "threads = " << threads. getVector() << endl;
-   cerr << " threads size = " << threads. getSize() << endl;
-   cerr << threads << endl;
+   //cerr << "gridSize = " << gridDim. x << endl;
+   //cerr << "blockSize = " << blockDim. x << endl;
+   size_t allocatedSharedMemory = blockDim. x * sizeof( Real ) +
+                                  sizeof( tnlARGCSRGroupProperties ) +
+                                  blockDim. x * sizeof( int );
 
-   AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim, blockDim. x * sizeof( Real ) >>>( result. getVector(),
-                                                                                          vec. getVector(),
-                                                                                          nonzeroElements. getVector(),
-                                                                                          columns. getVector(),
-                                                                                          groupInfo. getVector(),
-                                                                                          threads. getVector(),
-                                                                                          1 );
+   AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false >
+                                         <<< gridDim, blockDim, allocatedSharedMemory >>>
+                                         ( result. getVector(),
+                                           vec. getVector(),
+                                           nonzeroElements. getVector(),
+                                           columns. getVector(),
+                                           groupInfo. getVector(),
+                                           threads. getVector(),
+                                           1 );
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;
 #else
@@ -741,107 +743,70 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 {
 
    extern __shared__ int sdata[];
-   //const int* globalGroupInfoPointer = reinterpret_cast< const int* >( globalGroupInfo );
-   //tnlARGCSRGroupProperties* groupInfo = reinterpret_cast< tnlARGCSRGroupProperties* >( &sdata[ 0 ] );
-   //Index* threadsMapping = reinterpret_cast< Index* >( sdata );
-   //Real* partialSums = reinterpret_cast< Real* >( &sdata[ ( blockDim. x * sizeof( Index ) ) / sizeof( int ) ] );
-   Real* partialSums = reinterpret_cast< Real* >( sdata );
-	/*__shared__ Real partialSums[ 256 ];
-	__shared__ Index info[ 4 ];			// first row index, number of rows assigned to the block, number of "rounds", first value and col index
-	__shared__ Index threadsInfo[ 129 ];*/
 
-   tnlARGCSRGroupProperties groupInfo;
+   const int* globalGroupInfoPointer = reinterpret_cast< const int* >( globalGroupInfo );
+   tnlARGCSRGroupProperties* groupInfo = reinterpret_cast< tnlARGCSRGroupProperties* >( &sdata[ 0 ] );
 
-	Index idx, column;
-	Real vectVal, sum;
+   Index* threadsMapping = reinterpret_cast< Index* >( &sdata[ 4 ] );
 
-	if( threadIdx. x == 0 )
-	   printf( "threads = %p \n", globalThreadsMapping );
+   Real* partialSums = reinterpret_cast< Real* >( &sdata[ 4 + blockDim. x] );
+
 	//for( Index bId = blockIdx.x; bId < numBlocks; bId += gridDim.x)
 	{
 	   Index bId = blockIdx.x;
 	   /****
 	    * Read the group info from the global memory
 	    */
-	   groupInfo = globalGroupInfo[ bId ];
-	   if( threadIdx. x == 0 )
-	   {
-	      printf( "Group ( %d) size = %d \n", bId, groupInfo. size );
-	      printf( "Group ( %d) Chunk size = %d \n", bId, groupInfo. chunkSize );
-	      printf( "Group ( %d) first row = %d \n", bId, groupInfo. firstRow );
-	      printf( "Group ( %d) offset = %d \n", bId, groupInfo. offset );
-	   }
-
-		/*if( threadIdx.x < 4 )
-		{
-		   printf( "globalGroupInfoPointer[ 4 * bId + threadIdx.x ] = %d \n", globalGroupInfoPointer[ 4 * bId + threadIdx.x ] );
+		if( threadIdx.x < 4 )
 			sdata[ threadIdx.x ] = globalGroupInfoPointer[ 4 * bId + threadIdx.x ];
-			printf( "sdata[ threadIdx.x ] = %d \n", sdata[ threadIdx.x ] );
-		}
-		__syncthreads();*/
-
-
-
+		__syncthreads();
+		/*if( threadIdx. x == 0 )
+		{
+		   printf( "Group ( %d) size = %d \n", bId, groupInfo -> size );
+		   printf( "Group ( %d) Chunk size = %d \n", bId, groupInfo -> chunkSize );
+		   printf( "Group ( %d) first row = %d \n", bId, groupInfo -> firstRow );
+		   printf( "Group ( %d) offset = %d \n", bId, groupInfo -> offset );
+		}*/
 
 		/****
 		 * Read mapping of threads to rows.
 		 * It says IDs of threads that will work on each row.
 		 */
-		/*threadsMapping[ 0 ] = 0;
-		if( threadIdx. x > 0 )
-		   threadsMapping[ threadIdx. x ] = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ];*/
+		threadsMapping[ threadIdx. x ] = globalThreadsMapping[ groupInfo -> firstRow + threadIdx. x ];
 
 		/****
 		 * Each thread now computes partial sum in its chunk
 		 */
-		sum = 0;
-		for( Index i = 0; i < groupInfo. chunkSize; i ++ )
+		Real sum = 0;
+		for( Index i = 0; i < groupInfo -> chunkSize; i ++ )
 		{
-			idx = threadIdx. x + i * blockDim. x + groupInfo. offset;
-			column = columns[ idx ];
+			const Index offset = threadIdx. x + i * blockDim. x + groupInfo -> offset;
+			const Index column = columns[ offset ];
 			if( column != -1 )
-			{
-				vectVal = vect[ column ];
-				sum += nonzeroElements[ idx ] * vectVal;
-			}
+				sum += nonzeroElements[ offset ] * vect[ column ];
 		}
-		//partialSums[ threadIdx. x ] = sum;
+		partialSums[ threadIdx. x ] = sum;
 		__syncthreads();
-		printf( "thread %d psum = %f \n", threadIdx. x, sum ); //partialSums[ threadIdx. x ] );
-
-
+		//printf( "Thread %d psum = %f \n", threadIdx. x, sum );
 
 
 		/****
 		 * Now sum the partial sums in each row
 		 */
-		if( threadIdx. x < groupInfo. size )
+		if( threadIdx. x < groupInfo -> size )
 		{
 			sum = 0;
-			//begin = threadsMapping[ threadIdx.x ];
-			//end = threadsMapping[ threadIdx.x + 1 ];
-			/*printf( "Tid. %d, groupInfo. firstRow + threadIdx. x = %d, globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] = %d \n",
-			         threadIdx. x,
-			         groupInfo. firstRow + threadIdx. x,
-			         globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] );*/
 			Index begin( 0 );
+			const Index row = groupInfo -> firstRow + threadIdx. x;
 			if( threadIdx. x > 0 )
-			{
-			   begin = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1];
-			   printf( "Tid. %d begin = %d globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1] %d \n", threadIdx, begin, globalThreadsMapping[ groupInfo. firstRow + threadIdx. x - 1] );
-			}
-			Index end = globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ];
-			printf( "Tid. %d end = %d globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ] %d, groupInfo. firstRow + threadIdx. x = %d \n",
-			         threadIdx,
-			         end,
-			         globalThreadsMapping[ groupInfo. firstRow + threadIdx. x ],
-			         groupInfo. firstRow + threadIdx. x );
-			printf( "Tid. %d begin = %d end = %d \n", threadIdx, begin, end );
+			   begin = threadsMapping[ threadIdx. x - 1];
+			Index end = threadsMapping[ threadIdx. x ];
+			//printf( "Row. %d begin = %d end = %d  \n", row, begin, end );
 			for( Index i = begin; i < end; i++ )
 				sum += partialSums[ i ];
 
-			target[ groupInfo. firstRow + threadIdx. x ] = sum;
-			printf( "Summing by thread %d sum = %f \n", threadIdx. x, sum );
+			target[ row ] = sum;
+			//printf( "Summing by thread %d sum = %f \n", threadIdx. x, sum );
 		}
 	}
 }

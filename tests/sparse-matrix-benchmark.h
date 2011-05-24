@@ -393,28 +393,32 @@ bool benchmarkMatrix( const tnlString& input_file,
          logFile << "             <td bgcolor=#FFFFFF> N/A </td>" << endl;
       }
    }
-   tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
-   cudaArgCsrMatrixBenchmark. setGroupSize( 16 );
-   for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
+
+   for( int groupSize = 16; goupSize < 128; groupSize *= 2 )
    {
-      cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      cudaArgCsrMatrixBenchmark. setup( csrMatrix );
-      cudaArgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
-      if( logFileName )
+      tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
+      cudaArgCsrMatrixBenchmark. setGroupSize( 16 );
+      for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
-         if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+         cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         cudaArgCsrMatrixBenchmark. setup( csrMatrix );
+         cudaArgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         if( logFileName )
          {
-            logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
-            logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
-         }
-         else
-         {
-            logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-            logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+            if( cudaArgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
+            {
+               logFile << "             <td> " << cudaArgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
+               logFile << "             <td> " << cudaArgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+            }
+            else
+            {
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+               logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+            }
          }
       }
+      cudaRgCsrMatrixBenchmark. tearDown();
    }
-   cudaRgCsrMatrixBenchmark. tearDown();
 
 
 
