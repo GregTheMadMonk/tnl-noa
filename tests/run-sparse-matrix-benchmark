@@ -220,7 +220,7 @@ write_header()
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 16
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size variable
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
@@ -231,28 +231,6 @@ write_header()
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 32
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size cca 64
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
    
    echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 16
    echo "             <td>GFlops</td>" >> $1
@@ -288,7 +266,7 @@ write_header()
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 16
+   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size variable
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
@@ -299,28 +277,6 @@ write_header()
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 32
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size >= 64
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
    
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 1
    echo "             <td>GFlops</td>" >> $1

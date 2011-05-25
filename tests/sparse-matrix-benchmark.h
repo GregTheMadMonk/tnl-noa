@@ -370,7 +370,7 @@ bool benchmarkMatrix( const tnlString& input_file,
     * Adaptive Row-Grouped CSR format
     */
 
-   for( int desiredChunkSize = 1; desiredChunkSize < 32; desiredChunkSize *= 2 )
+   for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
    {
 
       tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > hostArgCsrMatrixBenchmark;
@@ -385,6 +385,16 @@ bool benchmarkMatrix( const tnlString& input_file,
          if( hostArgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
          {
             tnlString bgColor( "#55FF55" );
+            switch( desiredChunkSize )
+            {
+               case 1: bgColor = "#55FF55"; break;
+               case 2: bgColor = "#66FF66"; break;
+               case 4: bgColor = "#77FF77"; break;
+               case 8: bgColor = "#88FF88"; break;
+               case 16: bgColor = "#99FF99"; break;
+               case 32: bgColor = "#AAFFAA"; break;
+               default: bgColor = "#FFFFFF";
+            }
             logFile << "             <td bgcolor=" << bgColor << "> " << hostArgCsrMatrixBenchmark. getArtificialZeroElements() << "</td>" << endl;
             logFile << "             <td bgcolor=" << bgColor << "> " << hostArgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
             logFile << "             <td bgcolor=" << bgColor << "> " << hostArgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
