@@ -370,11 +370,11 @@ bool benchmarkMatrix( const tnlString& input_file,
     * Adaptive Row-Grouped CSR format
     */
 
-   for( int groupSize = 16; groupSize < 128; groupSize *= 2 )
+   for( int desiredChunkSize = 1; desiredChunkSize < 32; desiredChunkSize *= 2 )
    {
 
       tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > hostArgCsrMatrixBenchmark;
-      hostArgCsrMatrixBenchmark. setGroupSize( groupSize );
+      hostArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
       hostArgCsrMatrixBenchmark. setCudaBlockSize( 32 );
       hostArgCsrMatrixBenchmark. setup( csrMatrix );
       hostArgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
@@ -398,7 +398,7 @@ bool benchmarkMatrix( const tnlString& input_file,
       }
 
       tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
-      cudaArgCsrMatrixBenchmark. setGroupSize( groupSize );
+      cudaArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
@@ -433,143 +433,6 @@ bool benchmarkMatrix( const tnlString& input_file,
 }
 
 #ifdef UNDEF
-
-   /***
-    * Benchmark of the Adaptive Row-grouped CSR format.
-    */
-   if( verbose )
-      cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
-
-   tnlAdaptiveRgCSRMatrix< Real, tnlHost > argcsrMatrix( "argcsr-matrix" );
-   argcsrMatrix. setCUDABlockSize( 128 );
-   if( argcsrMatrix. copyFrom( csrMatrix ) )
-   {
-      /*time = stop_time;
-      benchmarkSpMV< Real, tnlCuda >( cuda_coacsrMatrix,
-                                      cuda_x,
-                                      nonzero_elements,
-                                      cuda_b,
-                                      time,
-                                      spmv_cuda_coa_csr_gflops[ block_iter ],
-                                      spmv_cuda_coa_csr_iter[ block_iter ] );
-
-      if( verbose )
-         cout << right << setw( 12 ) << setprecision( 2 ) << time
-              << right << setw( 15 ) << spmv_cuda_coa_csr_iter[ block_iter ]
-              << right << setw( 12 ) << setprecision( 2 ) << spmv_cuda_coa_csr_gflops[ block_iter ];
-
-      if( refB != cuda_b )
-      {
-         if( verbose )
-            cout << right << setw( 12 ) << "FAILED." << endl;
-         //spmv_cuda_coa_csr_gflops[ block_iter ] = -1.0;
-         //return false;
-      }
-      else*/
-         if( verbose )
-            cout << right << setw( 12 ) << "OK." << endl;
-
-   }
-   else
-   {
-      if( verbose )
-         cout << "Format transfer failed!!!" << endl;
-   }
-
-
-
-#ifdef HAVE_CUDA
-   /***
-    * Benchmark of the Adaptive Row-grouped CSR format on the CUDA device.
-    */
-   if( verbose )
-      cout << left << setw( 25 ) << "AdaptiveRow-grouped CSR " << setw( 5 ) << flush;
-
-   tnlAdaptiveRgCSRMatrix< Real, tnlCuda > cuda_argcsrMatrix( "cuda-argcsr-matrix" );
-   cuda_argcsrMatrix. setCUDABlockSize( 128 );
-
-   if( cuda_argcsrMatrix. copyFrom( argcsrMatrix ) )
-   {
-      time = stop_time;
-      benchmarkSpMV< Real, tnlCuda >( cuda_argcsrMatrix,
-                                      cuda_x,
-                                      nonzero_elements,
-                                      cuda_b,
-                                      time,
-                                      benchmarkStatistics. spmv_cuda_arg_csr_gflops,
-                                      benchmarkStatistics. spmv_cuda_arg_csr_iter );
-
-      if( verbose )
-         cout << right << setw( 12 ) << setprecision( 2 ) << time
-              << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_arg_csr_iter
-              << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_arg_csr_gflops;
-
-      if( refB != cuda_b )
-      {
-         if( verbose )
-            cout << right << setw( 12 ) << "FAILED." << endl;
-         //spmv_cuda_coa_csr_gflops[ block_iter ] = -1.0;
-         //return false;
-      }
-      else
-         if( verbose )
-            cout << right << setw( 12 ) << "OK." << endl;
-
-   }
-   else
-   {
-      if( verbose )
-         cout << "Format transfer failed!!!" << endl;
-   }
-
-#endif
-
-   int block_iter = 0;
-   for( int block_size = 16; block_size < 512; block_size *= 2 )
-   {
-      /***
-       * Benchmark of the Row-grouped CSR format.
-       */
-      if( verbose )
-         cout << left << setw( 25 ) << "Row-grouped CSR " << setw( 5 ) << block_size << flush;
-
-      tnlRgCSRMatrix< Real, tnlHost, int > coacsrMatrix( "coacsr-matrix", block_size );
-
-      if( coacsrMatrix. copyFrom( csrMatrix ) )
-      {
-         benchmarkStatistics. coa_csr_artificial_zeros[ block_iter ] = 100.0 * ( double ) coacsrMatrix. getArtificialZeroElements() / ( double ) coacsrMatrix. getNonzeroElements();
-
-         time = stop_time;
-         benchmarkSpMV< Real, tnlHost >( coacsrMatrix,
-                                         host_x,
-                                         nonzero_elements,
-                                         host_b,
-                                         time,
-                                         benchmarkStatistics. spmv_coacsr_gflops[ block_iter ],
-                                         benchmarkStatistics. spmv_coacsr_iter[ block_iter ] );
-         if( verbose )
-            cout << right << setw( 12 ) << setprecision( 2 ) << time
-                 << right << setw( 15 ) << benchmarkStatistics. spmv_coacsr_iter[ block_iter ]
-                 << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_coacsr_gflops[ block_iter ] << flush;
-
-
-         if( refB != host_b )
-         {
-            if( verbose )
-               cout << right << setw( 12 ) << "FAILED." << endl;
-            benchmarkStatistics. spmv_coacsr_gflops[ block_iter ] = -1.0;
-            //return false;
-         }
-         if( verbose )
-            cout << left << setw( 12 ) << "  OK."
-                 << right << setw( 14 ) << "Artif.zeros: " << fixed << benchmarkStatistics. coacsr_artificial_zeros[ block_iter ] << "%" << endl;
-
-      }
-      else
-         if( verbose )
-            cout << "Format transfer failed!!!" << endl;
-
-
    /*
     * Benchmark of the Fast CSR format.
     */

@@ -35,7 +35,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    void writeProgress() const;
 
-   void setGroupSize( const Index groupSize );
+   void setDesiredChunkSize( const Index desiredChunkSize );
 
    void setCudaBlockSize( const Index cudaBlockSize );
 
@@ -72,7 +72,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
    //tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
    {
-      this -> matrix. tuneFormat( groupSize, cudaBlockSize );
+      this -> matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( ! this -> matrix. copyFrom( matrix ) )
          return false;
    }
@@ -80,7 +80,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
    {
 #ifdef HAVE_CUDA
       tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
-      hostMatrix. tuneFormat( groupSize, cudaBlockSize );
+      hostMatrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       hostMatrix. copyFrom( matrix );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
@@ -107,10 +107,10 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress
 {
    cout << left << setw( this -> formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
    if( Device == tnlCuda )
-      cout << setw( 5 ) << this -> groupSize
+      cout << setw( 5 ) << this -> desiredChunkSize
            << setw( 10 ) << this -> cudaBlockSize;
    else
-      cout << setw( 15 ) << this -> groupSize;
+      cout << setw( 15 ) << this -> desiredChunkSize;
    cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
         << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
         << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
@@ -128,9 +128,9 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress
 template< typename Real,
           tnlDevice Device,
           typename Index >
-void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setGroupSize( const Index groupSize )
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setDesiredChunkSize( const Index desiredChunkSize )
 {
-   this -> groupSize = groupSize;
+   this -> desiredChunkSize = desiredChunkSize;
 }
 
 template< typename Real,

@@ -497,7 +497,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, Device, Index >", "copyFrom" );
    maxGroupSize = adaptiveRgCSRMatrix. maxGroupSize;
    groupSizeStep = adaptiveRgCSRMatrix. groupSizeStep;
-   targetNonzeroesPerGroup = adaptiveRgCSRMatrix. targetNonzeroesPerGroup;
+   desiredChunkSize = adaptiveRgCSRMatrix. desiredChunkSize;
    cudaBlockSize = adaptiveRgCSRMatrix. cudaBlockSize;
    lastNonzeroElement = adaptiveRgCSRMatrix. lastNonzeroElement;
    numberOfGroups = adaptiveRgCSRMatrix. numberOfGroups;
