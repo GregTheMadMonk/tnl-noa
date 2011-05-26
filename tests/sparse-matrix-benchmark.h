@@ -36,6 +36,25 @@
 
 using namespace std;
 
+tnlString getBgColorBySpeedUp( const double& speedUp )
+{
+   if( speedUp >= 30.0 )
+      return tnlString( "#FF9900" );
+   if( speedUp >= 25.0 )
+      return tnlString( "#FFAA00" );
+   if( speedUp >= 20.0 )
+      return tnlString( "#FFBB00" );
+   if( speedUp >= 15.0 )
+      return tnlString( "#FFCC00" );
+   if( speedUp >= 10.0 )
+      return tnlString( "#FFDD00" );
+   if( speedUp >= 5.0 )
+      return tnlString( "#FFEE00" );
+   if( speedUp >= 1.0 )
+      return tnlString( "#FFFF00" );
+   return tnlString( "#FFFFFF" );
+}
+
 template< typename Real >
 void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            const tnlLongVector< Real, tnlHost >& refX,
@@ -93,7 +112,9 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
             if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
             {
                logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
-               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+               double speedUp = cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops();
+               tnlString bgColor = getBgColorBySpeedUp( speedUp );
+               logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
             }
             else
             {
@@ -206,7 +227,9 @@ bool benchmarkMatrix( const tnlString& input_file,
       if( hybridMatrixBenchmark. getBenchmarkWasSuccesful() )
       {
          logFile << "             <td> " << hybridMatrixBenchmark. getGflops() << "</td>" << endl;
-         logFile << "             <td> " << hybridMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+         double speedUp = hybridMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops();;
+         tnlString bgColor = getBgColorBySpeedUp( speedUp );
+         logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
       }
       else
       {
@@ -267,7 +290,10 @@ bool benchmarkMatrix( const tnlString& input_file,
          if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
          {
             logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
-            logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+            double speedUp = cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops();
+            tnlString bgColor = getBgColorBySpeedUp( speedUp );
+            logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+
          }
          else
          {
@@ -353,7 +379,10 @@ bool benchmarkMatrix( const tnlString& input_file,
             if( cudaRgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
             {
                logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
-               logFile << "             <td> " << cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+               double speedUp = cudaRgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops();
+               tnlString bgColor = getBgColorBySpeedUp( speedUp );
+               logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+
             }
             else
             {
@@ -387,12 +416,12 @@ bool benchmarkMatrix( const tnlString& input_file,
             tnlString bgColor( "#55FF55" );
             switch( desiredChunkSize )
             {
-               case 1: bgColor = "#55FF55"; break;
-               case 2: bgColor = "#66FF66"; break;
-               case 4: bgColor = "#77FF77"; break;
-               case 8: bgColor = "#88FF88"; break;
-               case 16: bgColor = "#99FF99"; break;
-               case 32: bgColor = "#AAFFAA"; break;
+               case 1: bgColor = "#5555FF"; break;
+               case 2: bgColor = "#6666FF"; break;
+               case 4: bgColor = "#7777FF"; break;
+               case 8: bgColor = "#8888FF"; break;
+               case 16: bgColor = "#9999FF"; break;
+               case 32: bgColor = "#AAAAFF"; break;
                default: bgColor = "#FFFFFF";
             }
             logFile << "             <td bgcolor=" << bgColor << "> " << hostArgCsrMatrixBenchmark. getArtificialZeroElements() << "</td>" << endl;
@@ -419,7 +448,10 @@ bool benchmarkMatrix( const tnlString& input_file,
             if( cudaArgCsrMatrixBenchmark. getBenchmarkWasSuccesful() )
             {
                logFile << "             <td> " << cudaArgCsrMatrixBenchmark. getGflops() << "</td>" << endl;
-               logFile << "             <td> " << cudaArgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops() << "</td>" << endl;
+               double speedUp = cudaArgCsrMatrixBenchmark. getGflops() / csrMatrixBenchmark. getGflops();
+               tnlString bgColor = getBgColorBySpeedUp( speedUp );
+               logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+
             }
             else
             {

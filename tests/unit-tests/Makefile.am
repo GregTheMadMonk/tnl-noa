@@ -28,19 +28,19 @@ headers = core/tnl-cuda-kernels.h \
 
 check_PROGRAMS = tnl-unit-tests
                   
-tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests.cpp
-tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
-                       ../../src/core/libcore-tests.la \
-                       ../../src/diff/libdiff-tests.la \
-                       ../../src/debug/libtnldebug-0.1.la
+#tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests.cpp
+#tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
+#                       ../../src/core/libcore-tests.la \
+#                       ../../src/diff/libdiff-tests.la \
+#                       ../../src/debug/libtnldebug-0.1.la
 
 #if BUILD_CUDA
-#tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests-cuda.cu
-#tnl_unit_tests_CXXFLAGS = "-DHAVE_CUDA"
-#tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
-#                          ../../src/core/libcore-tests.la \
-#                           ../../src/diff/libdiff-tests.la \
-#                           ../../src/debug/libtnldebug-0.1.la
+tnl_unit_tests_SOURCES = $(headers) tnl-unit-tests-cuda.cu
+tnl_unit_tests_CXXFLAGS = "-DHAVE_CUDA"
+tnl_unit_tests_LDADD = ../../src/libtnl-0.1.la \
+                          ../../src/core/libcore-tests.la \
+                           ../../src/diff/libdiff-tests.la \
+                           ../../src/debug/libtnldebug-0.1.la
 #endif
 
 
