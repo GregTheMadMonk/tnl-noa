@@ -165,7 +165,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
 #ifdef HAVE_CUDA
 
-template< class Real, typename Index, bool useCache >
+template< class Real, typename Index >
 __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
                                                         const Real* vect,
                                                         const Real* nonzeroElements,
@@ -354,12 +354,31 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          }
          /****
           * If there are some threads left distribute them to the rows from the group beginning.
+          * TODO: add the free threads to the longest rows
+          *  - find row with the largest chunks and add one thread to this row
+          *  - repeat it
           */
          Index threadsLeft = cudaBlockSize - usedThreads;
          dbgExpr( usedThreads );
          dbgExpr( threadsLeft );
          for( Index i = 0; i < threadsLeft; i++)
             threadsPerRow[ i % rowsInGroup ] ++;
+         /*while( usedThreads < cudaBlockSize )
+         {
+            Index maxChunkSize( 0 ), maxChunkSizeRow;
+            for( Index row = groupBegin; row < groupEnd; row++ )
+            {
+               double nonzerosInRow = csrMatrix. getNonzeroElementsInRow( row );
+               const Index chunkSize = ceil( nonzerosInRow / ( double ) threadsPerRow[ row - groupBegin ] );
+               if( chunkSize > maxChunkSize )
+               {
+                  maxChunkSize = chunkSize;
+                  maxChunkSizeRow = row;
+               }
+            }
+            threadsPerRow[ maxChunkSizeRow ] ++;
+            usedThreads ++;
+         }*/
 
          /****
           * Compute prefix-sum on threadsPerRow and store it in threads
@@ -653,15 +672,16 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                                   sizeof( tnlARGCSRGroupProperties ) +
                                   blockDim. x * sizeof( int );
 
-   AdaptiveRgCSRMatrixVectorProductKernel< Real, Index, false >
-                                         <<< gridDim, blockDim, allocatedSharedMemory >>>
-                                         ( result. getVector(),
-                                           vec. getVector(),
-                                           nonzeroElements. getVector(),
-                                           columns. getVector(),
-                                           groupInfo. getVector(),
-                                           threads. getVector(),
-                                           1 );
+   //cudaThreadSetCacheConfig( cudaFuncCachePreferL1 );
+   AdaptiveRgCSRMatrixVectorProductKernel< Real, Index >
+                                            <<< gridDim, blockDim, allocatedSharedMemory >>>
+                                            ( result. getVector(),
+                                              vec. getVector(),
+                                              nonzeroElements. getVector(),
+                                              columns. getVector(),
+                                              groupInfo. getVector(),
+                                              threads. getVector(),
+                                              1 );
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;
 #else
@@ -732,7 +752,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
 
 #ifdef HAVE_CUDA
 
-template< class Real, typename Index, bool useCache >
+template< class Real, typename Index >
 __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
                                                         const Real* vect,
                                                         const Real* nonzeroElements,

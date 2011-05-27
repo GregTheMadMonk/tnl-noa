@@ -190,12 +190,12 @@ bool __inline__ unbindRgCSRMatrixCUDATexture( const float* dummy_pointer );
 bool __inline__ unbindRgCSRMatrixCUDATexture( const double* dummy_pointer );
 
 template< bool UseCache, typename Index >
-static __inline__ __device__ float fetchVecX( const Index i,
-                                              const float* x );
+static __inline__ __device__ float fetchRgCSRVecX( const Index i,
+                                                   const float* x );
 
 template< bool UseCache, typename Index >
-static __inline__ __device__ double fetchVecX( const Index i,
-                                               const double* x );
+static __inline__ __device__ double fetchRgCSRVecX( const Index i,
+                                                    const double* x );
 
 template< class Real, typename Index, bool useCache >
 __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
@@ -646,7 +646,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
    const Index size = this -> getSize();
 
    bool useCache = bindRgCSRMatrixCUDATexture( vec. getVector(),
-                                               vec. getSize() );
+                                 vec. getSize() );
 
    cudaThreadSynchronize();
    int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
@@ -794,8 +794,8 @@ bool bindRgCSRMatrixCUDATexture( const double* data,
 };
 
 template< bool UseCache, typename Index >
-static __inline__ __device__ float fetchVecX( const Index i,
-                                              const float* x )
+static __inline__ __device__ float fetchRgCSRVecX( const Index i,
+                                                   const float* x )
 {
     if( UseCache )
         return tex1Dfetch( tnlRgCSRMatrixCUDA_floatTexRef, i );
@@ -804,8 +804,8 @@ static __inline__ __device__ float fetchVecX( const Index i,
 };
 
 template< bool UseCache, typename Index >
-static __inline__ __device__ double fetchVecX( const Index i,
-                                               const double* x )
+static __inline__ __device__ double fetchRgCSRVecX( const Index i,
+                                                    const double* x )
 {
 #if ( CUDA_ARCH >= 13 )
     if( UseCache )
@@ -864,7 +864,7 @@ __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
    for( Index i = 0; i < nonzeros; i ++ )
    {
       //product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
-      product += nonzeroElements[ pos ] * fetchVecX< useCache >( columns[ pos ], vec_x );
+      product += nonzeroElements[ pos ] * fetchRgCSRVecX< useCache >( columns[ pos ], vec_x );
       pos += current_block_size;
    }
    vec_b[ row ] = product;
@@ -904,7 +904,7 @@ __global__ void sparseCSRMatrixVectorProductKernel( Index size,
    const Index nonzeros = nonzerosInRow[ rowIndex ];
    for( Index i = 0; i < nonzeros; i ++ )
    {
-      product += nonzeroElements[ pos ] * fetchVecX< useCache >( columns[ pos ], vec_x );
+      product += nonzeroElements[ pos ] * fetchRgCSRVecX< useCache >( columns[ pos ], vec_x );
       pos += currentGroupSize;
    }
    vec_b[ rowIndex ] = product;

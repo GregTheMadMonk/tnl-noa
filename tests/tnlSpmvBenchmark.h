@@ -207,9 +207,11 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    tnlTimerRT rt_timer;
    rt_timer. Reset();
    {
-      for( int i = 0; i < 10; i ++ )
+      for( int i = 0; i < 50; i ++ )
+      {
          matrix. vectorProduct( x, b );
-      iterations += 10;
+         iterations ++;
+      }
    }
    time = rt_timer. GetTime();
 

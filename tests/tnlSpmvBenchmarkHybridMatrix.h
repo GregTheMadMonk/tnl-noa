@@ -112,13 +112,13 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
       else
          this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] ) );
    }
-   if( this -> maxError < 1.0e-12)
+   if( this -> maxError < tnlSpmvBenchmarkPrecision( this -> maxError ) )
       this -> benchmarkWasSuccesful = true;
    else
       this -> benchmarkWasSuccesful = false;
 
    this -> time = rt_timer. GetTime();
-   double flops = 2.0 * iterations * nonzeroElements;
+   double flops = 2.0 * iterations * this -> nonzeroElements;
    this -> gflops = flops / this -> time * 1.0e-9;
 #else
    this -> benchmarkWasSuccesful = false;
@@ -138,7 +138,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeProgress() const
    if( this -> getBenchmarkWasSuccesful() )
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "FAILED ";
+        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError;
 #ifndef HAVE_CUSP
    cout << "CUSP library is missing.";
 #endif
