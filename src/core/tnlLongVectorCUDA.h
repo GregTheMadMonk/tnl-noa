@@ -470,7 +470,7 @@ Real tnlLongVector< Real, tnlCuda, Index > :: getElement( Index i ) const
    return result;
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-   return 0.0;
+   return Real();
 #endif
 };
 

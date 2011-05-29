@@ -1450,6 +1450,6 @@ http://www.cise.ufl.edu/research/sparse/MM/Zitney/rdist3a.tar.gz"
 #FLORIDA_MM_MATRICES="http://www.cise.ufl.edu/research/sparse/MM/Oberwolfach/piston.tar.gz"
 #FLORIDA_MM_MATRICES="http://www.cise.ufl.edu/research/sparse/MM/TSOPF/TSOPF_RS_b2383_c1.tar.gz"
 #FLORIDA_MM_MATRICES="http://www.cise.ufl.edu/research/sparse/MM/Oberwolfach/piston.tar.gz"
-#FLORIDA_MM_MATRICES=""
+FLORIDA_MM_MATRICES=""
 
 

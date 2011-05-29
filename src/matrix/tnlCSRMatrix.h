@@ -134,6 +134,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    //! Prints out the matrix structure
    void printOut( ostream& str,
+                  const tnlString& format = tnlString( "" ),
 		            const Index lines = 0 ) const;
 
    //! This method tells the minimum, the maximum and the average number of non-zero elements in row.
@@ -187,6 +188,11 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
                               const Real& value,
                               Index insertedElements = 0 );
 
+   void writePostscriptBody( ostream& str,
+                             const int elementSize,
+                             bool verbose ) const;
+
+
    tnlLongVector< Real, Device, Index > nonzero_elements;
 
    tnlLongVector< Index, Device, Index > columns;
@@ -196,6 +202,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! The last non-zero element is at the position last_non_zero_element - 1
    Index last_nonzero_element;
 
+   friend class tnlMatrix< Real, tnlHost, Index >;
+   friend class tnlMatrix< Real, tnlCuda, Index >;
    friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
    friend class tnlRgCSRMatrix< Real, tnlCuda, Index >;
    friend class tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index >;
@@ -480,7 +488,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: addToElement( Index row,
 
 template< typename Real, tnlDevice Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: getElement( Index row,
-                                                         Index column ) const
+                                                        Index column ) const
 {
    const Real* els = nonzero_elements. getVector();
    const Index* cols = columns. getVector();
@@ -690,7 +698,8 @@ tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: oper
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
-		                                        const Index lines ) const
+                                                      const tnlString& format,
+		                                                const Index lines ) const
 {
    str << "Structure of tnlCSRMatrix" << endl;
    str << "Matrix name:" << this -> getName() << endl;
@@ -983,6 +992,35 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
    }
    return true;
 }
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
+                                                                 const int elementSize,
+                                                                 bool verbose ) const
+{
+   const double scale = elementSize * this -> getSize();
+   double hx = scale / ( double ) this -> getSize();
+   Index lastRow( 0 ), lastColumn( 0 );
+   for( Index row = 0; row < this -> getSize(); row ++ )
+   {
+      for( Index i = this -> row_offsets[ row ]; i < this -> row_offsets[ row + 1 ]; i ++ )
+      {
+         Real elementValue = this -> nonzero_elements[ i ];
+         if(  elementValue != ( Real ) 0.0 )
+         {
+            Index column = this -> columns[ i ];
+            str << ( column - lastColumn ) * elementSize
+                << " " << -( row - lastRow ) * elementSize
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;
+            lastColumn = column;
+            lastRow = row;
+         }
+      }
+      if( verbose )
+         cout << "Drawing the row " << row << "      \r" << flush;
+   }
+}
+
 
 #endif /* TNLCSRMATRIX_H_ */
 

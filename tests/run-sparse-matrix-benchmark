@@ -37,7 +37,7 @@ write_header()
    echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
    echo "             <td colspan=44 align=center>Row-Grouped CSR</td>" >> $1   
    echo "             <td colspan=44 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1
-   echo "             <td colspan=66 align=center>Adaptive Row-Grouped CSR</td>" >> $1   
+   echo "             <td colspan=72 align=center>Adaptive Row-Grouped CSR</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -49,12 +49,12 @@ write_header()
    echo "             <td colspan=11>Group Size = 32</td>" >> $1
    echo "             <td colspan=11>Group Size = 64</td>" >> $1
    echo "             <td colspan=11>Group Size Variable</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
-   echo "             <td colspan=11>Chunk Size = 1</td>" >> $1          # Adaptive RgCSR 
-   echo "             <td colspan=11>Chunk Size = 2</td>" >> $1
-   echo "             <td colspan=11>Chunk Size = 4</td>" >> $1
-   echo "             <td colspan=11>Chunk Size = 8</td>" >> $1
-   echo "             <td colspan=11>Chunk Size = 16</td>" >> $1
-   echo "             <td colspan=11>Chunk Size = 32</td>" >> $1   
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 1</td>" >> $1          # Adaptive RgCSR 
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 2</td>" >> $1
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 4</td>" >> $1
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 8</td>" >> $1
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 16</td>" >> $1
+   echo "             <td rowspan=2 colspan=12>Chunk Size = 32</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
@@ -86,24 +86,12 @@ write_header()
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
    
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 1
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 2
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1   
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 4
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 8
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 16
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # Adaptive RgCSR format with the chunk size 32
-   echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
-   echo "             <td colspan=8>GPU</td>" >> $1
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 1
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 2
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 4
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 8
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 16
+#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 32
    
    
    
@@ -148,30 +136,30 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
    
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 1
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 2
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1         
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 4
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 8
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1  
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 16
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1  
-   echo "             <td colspan=2>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 32
-   echo "             <td colspan=2>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 1
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 2
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 4
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 8
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 16
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 32
+   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
      
             
    echo "          </tr>" >> $1      
@@ -281,72 +269,75 @@ write_header()
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 2
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 4
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 8
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 16
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 32
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   
-   
-   
+   echo "             <td>Speed-up</td>" >> $1   
 }
 
 write_closing()
@@ -389,7 +380,7 @@ do
              echo -n "run --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1" >> .gdbinit
              gdb
          else
-            $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1
+            $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1
          fi
          perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
          gzip $unzipped_matrix
@@ -402,7 +393,7 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in double precison ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1
+         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1
          gzip $unzipped_matrix
       fi
 
@@ -415,7 +406,7 @@ do
       else
          echo "Checking with the matrix $unzipped_matrix.amd in single precision ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.amd.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.float.bin.bz2 --input-mtx-file $unzipped_matrix.amd --log-file sparse-matrix-benchmark-amd-float.log --stop-time $STOP_TIME --verbose 1
+         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.float.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --verbose 1
       fi
       if test ! -e $unzipped_matrix.amd.double.bin.bz2;
       then
@@ -423,7 +414,7 @@ do
       else
          echo "Checking with the matrix $unzipped_matrix.amd in double precison ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.amd.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.double.bin.bz2 --input-mtx-file $unzipped_matrix.amd --log-file sparse-matrix-benchmark-amd-double.log --stop-time $STOP_TIME --verbose 1
+         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.double.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --verbose 1
       fi
           
    fi
@@ -452,14 +443,14 @@ do
             echo "Missing $file.float.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --verbose 1                        
          fi
          if test ! -e $file.double.bin.bz2;
          then
             echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --verbose 1                        
          fi                           
          
          #######
@@ -470,14 +461,14 @@ do
             echo "Missing $file.amd.float.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file.amd ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.float.bin.bz2 --input-mtx-file $file.amd --log-file sparse-matrix-benchmark-amd-float.log --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.float.bin.bz2 --input-mtx-file $file.amd --pdf-file $file.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --verbose 1                        
          fi
          if test ! -e $file.amd.double.bin.bz2;
          then
             echo "Missing $file.amd.double.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.double.bin.bz2 --input-mtx-file $file.amd --log-file sparse-matrix-benchmark-amd-double.log --stop-time $STOP_TIME --verbose 1                        
+            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.double.bin.bz2 --input-mtx-file $file.amd --pdf-file $file.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --verbose 1                        
          fi                           
          rm $file         
       done

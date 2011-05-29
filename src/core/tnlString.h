@@ -78,6 +78,11 @@ class tnlString
    //! Operator for accesing particular chars of the string
    char& operator[]( int i );
 
+   /****
+    * TODO: the operators do not work properly
+    * for example tnlString + const char*
+    */
+
    //! Operator =
    tnlString& operator = ( const tnlString& str );
 
@@ -92,6 +97,9 @@ class tnlString
  
    //! Operator +
    tnlString operator + ( const tnlString& str );
+
+   //! Operator +
+   tnlString operator + ( const char* str );
 
    //! Comparison operator 
    bool operator == ( const tnlString& str ) const;

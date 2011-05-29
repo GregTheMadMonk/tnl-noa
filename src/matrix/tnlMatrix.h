@@ -40,6 +40,8 @@ class tnlMatrixClass
    static const tnlString petsc;
 };
 
+template< typename Real, tnlDevice device, typename Index > class tnlCSRMatrix;
+
 template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
 class tnlMatrix : public tnlObject
 {
@@ -120,11 +122,18 @@ class tnlMatrix : public tnlObject
    virtual bool read( istream& str,
 		                int verbose = 0 );
 
+   /****
+    * If we draw sparse matrix it is much faster if we now positions of the non-zero elements.
+    * They are best accessible from the CSR format. Therefore we may pass pointer to tnlCSRMatrix.
+    */
    virtual bool draw( ostream& str,
 		                const tnlString& format,
+		                tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
 		                int verbose = 0 );
 
-   virtual void printOut( ostream& stream, const Index lines = 0 ) const {};
+   virtual void printOut( ostream& stream,
+                          const tnlString& format = tnlString( "" ),
+                          const Index lines = 0 ) const {};
 
    virtual ~tnlMatrix()
    {};
@@ -134,9 +143,14 @@ class tnlMatrix : public tnlObject
    bool checkMtxHeader( const tnlString& header,
 		                  bool& symmetric );
 
-   Index size;
+   void writePostscriptHeader( ostream& str,
+                               const int elementSize ) const;
 
-   //tnlLongVector< Index, Device, Index > rowsReorderingPermutation;
+   virtual void writePostscriptBody( ostream& str,
+                                     const int elementSize,
+                                     bool verbose ) const;
+
+   Index size;
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -145,7 +159,6 @@ ostream& operator << ( ostream& o_str, const tnlMatrix< Real, Device, Index >& A
 template< typename Real, tnlDevice Device, typename Index >
 tnlMatrix< Real, Device, Index > :: tnlMatrix( const tnlString& name )
 : tnlObject( name )
-  //rowsReorderingPermutation( "tnlMatrix::rowsReorderingPermutation" )
 {
 };
 
@@ -162,16 +175,8 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
    /*
     * TODO: this method should be abstract
     */
+   abort();
 }
-
-/*template< typename Real, tnlDevice Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation )
-{
-   if( ! rowsReorderingPermutation. setSize( reorderingPermutation. getSize() ) )
-      return false;
-   rowsReorderingPermutation = reorderingPermutation;
-   return true;
-};*/
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
@@ -405,6 +410,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< In
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 		                                         const tnlString& format,
+		                                         tnlCSRMatrix< Real, Device, Index >* csrMatrix,
 		                                         int verbose )
 {
 	if( format == "gnuplot" )
@@ -424,8 +430,64 @@ bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 			cout << endl;
 		return true;
 	}
-	cerr << "Uknown format " << format << " drawing the matrix." << endl;
+	if( format == "eps" )
+	{
+	   const int elementSize = 10;
+	   this -> writePostscriptHeader( str, elementSize );
+	   if( csrMatrix )
+	      csrMatrix -> writePostscriptBody( str, elementSize, verbose );
+	   else
+	      this -> writePostscriptBody( str, elementSize, verbose );
+
+	   str << "showpage" << endl;
+      str << "%%EOF" << endl;
+
+      if( verbose )
+         cout << endl;
+      return true;
+	}
+	cerr << "Unknown format " << format << " for drawing the matrix." << endl;
 	return false;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( ostream& str,
+                                                                const int elementSize ) const
+{
+   const int scale = elementSize * this -> getSize();
+   str << "%!PS-Adobe-2.0 EPSF-2.0" << endl;
+   str << "%%BoundingBox: 0 0 " << scale << " " << scale << endl;
+   str << "%%Creator: TNL" << endl;
+   str << "%%LanguageLevel: 2" << endl;
+   str << "%%EndComments" << endl << endl;
+   str << "0 " << scale << " translate" << endl;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
+                                                              const int elementSize,
+                                                              bool verbose ) const
+{
+   const double scale = elementSize * this -> getSize();
+   double hx = scale / ( double ) this -> getSize();
+   Index lastRow( 0 ), lastColumn( 0 );
+   for( Index row = 0; row < getSize(); row ++ )
+   {
+      for( Index column = 0; column < getSize(); column ++ )
+      {
+         Real elementValue = getElement( row, column );
+         if(  elementValue != ( Real ) 0.0 )
+         {
+            str << ( column - lastColumn ) * elementSize
+                << " " << -( row - lastRow ) * elementSize
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;
+            lastColumn = column;
+            lastRow = row;
+         }
+      }
+      if( verbose )
+         cout << "Drawing the row " << row << "      \r" << flush;
+   }
 }
 
 //! Operator <<

@@ -21,6 +21,8 @@
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
 #include <matrix/tnlCSRMatrix.h>
+#include <matrix/tnlRgCSRMatrix.h>
+#include <matrix/tnlAdaptiveRgCSRMatrix.h>
 #include <mesh/tnlGrid.h>
 #include <fstream>
 
@@ -176,7 +178,13 @@ bool ProcessCSRMatrix( const tnlString& file_name,
                        const tnlString& output_file_format )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
+   const tnlString matrixFormat = parameters. GetParameter< tnlString >( "matrix-format" );
+   const int groupSize = parameters. GetParameter< int >( "matrix-group-size" );
+   const int desiredChunkSize = parameters. GetParameter< int >( "desired-matrix-chunk-size" );
+   const int cudaBlockSize = parameters. GetParameter< int >( "cuda-block-size" );
+   bool sortMatrix = parameters. GetParameter< bool >( "sort-matrix" );
    tnlCSRMatrix< Real > matrix( "tnl-view:matrix" );
+   tnlCSRMatrix< Real >* inputMatrix( &matrix );
    tnlFile file;
    if( ! file. open( file_name, tnlReadMode ) )
       return false;
@@ -187,18 +195,61 @@ bool ProcessCSRMatrix( const tnlString& file_name,
       return false;
    }
    file. close();
+   tnlCSRMatrix< Real > sortedMatrix( "tnl-view:sortedMatrix" );
+   /*if( sortMatrix )
+   {
+      if( verbose )
+         cout << "Sorting the matrix rows..." << endl;
+
+      tnlCSRMatrix< Real > sortedMatrix( "tnl-view:sortedMatrix" );
+      tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
+      matrix. sortRowsDecreasingly( rowPermutation );
+      sortedMatrix. reorderRows( rowPermutation, matrix );
+      inputMatrix = & sortedMatrix;
+   }*/
 
    if( verbose )
       cout << " writing " << output_file_name << " ... " << endl;
    fstream outFile;
    outFile. open( output_file_name. getString(), ios :: out );
-   if( ! matrix. draw( outFile, output_file_format. getString(), verbose ) )
+   if( matrixFormat == "" || matrixFormat == "csr" )
    {
-      cerr << " unable to write to " << output_file_name << endl;
+      if( ! inputMatrix -> draw( outFile, output_file_format. getString(), inputMatrix, verbose ) )
+         cerr << " unable to write to " << output_file_name << endl;
+      else
+         if( verbose )
+            cout << " ... OK " << endl;
    }
-   else
+   if( matrixFormat == "rg-csr" )
+   {
+      tnlRgCSRMatrix< Real > rgCsrMatrix( "rgCsrMatrix" );
+      rgCsrMatrix. tuneFormat( groupSize );
       if( verbose )
-         cout << " ... OK " << endl;
+         cout << "Converting CSR format to Row-grouped CSR ..." << endl;
+      if( ! rgCsrMatrix. copyFrom( *inputMatrix ) )
+         cerr << "I am not able to convert the CSR matrix to Row-grouped CSR format." << endl;
+      else
+         if( ! rgCsrMatrix. draw( outFile, output_file_format. getString(), inputMatrix, verbose ) )
+            cerr << " unable to write to " << output_file_name << endl;
+         else
+            if( verbose )
+               cout << " ... OK " << endl;
+   }
+   if( matrixFormat == "arg-csr" )
+   {
+      tnlAdaptiveRgCSRMatrix< Real > adaptiveRgCsrMatrix( "adaptiveRgCsrMatrix" );
+      adaptiveRgCsrMatrix. tuneFormat( desiredChunkSize, cudaBlockSize );
+      if( verbose )
+         cout << "Converting CSR format to Row-grouped CSR ..." << endl;
+      if( ! adaptiveRgCsrMatrix. copyFrom( *inputMatrix ) )
+         cerr << "I am not able to convert the CSR matrix to Row-grouped CSR format." << endl;
+      else
+         if( ! adaptiveRgCsrMatrix. draw( outFile, output_file_format. getString(), inputMatrix, verbose ) )
+            cerr << " unable to write to " << output_file_name << endl;
+         else
+            if( verbose )
+               cout << " ... OK " << endl;
+   }
    outFile. close();
    return true;
 }

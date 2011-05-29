@@ -59,7 +59,6 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const tnlString
    this -> fileName = fileName;
 }
 
-
 template< typename Real, typename Index>
 bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
@@ -96,9 +95,11 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
    int iterations( 0 );
    //while( rt_timer. GetTime() < time )
    {
-      for( int i = 0; i < 10; i ++ )
-         cusp::multiply(A, x, b);
-      this -> iterations += 10;
+      for( int i = 0; i < this -> maxIterations; i ++ )
+      {
+         cusp :: multiply( A, x, b );
+         this -> iterations ++;
+      }
    }
 
    cusp::array1d< Real, cusp::host_memory > host_b( b );
@@ -138,7 +139,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeProgress() const
    if( this -> getBenchmarkWasSuccesful() )
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError;
+        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError << ". ";
 #ifndef HAVE_CUSP
    cout << "CUSP library is missing.";
 #endif

@@ -46,7 +46,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlString getType() const;
 
-   Index getGroupSize() const;
+   Index getGroupSize( const Index groupId ) const;
 
    Index getCUDABlockSize() const;
 
@@ -105,7 +105,13 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    //! Prints out the matrix structure
    void printOut( ostream& str,
-		          const Index lines = 0 ) const;
+                  const tnlString& format = tnlString( "" ),
+		            const Index lines = 0 ) const;
+
+   bool draw( ostream& str,
+              const tnlString& format,
+              tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
+              int verbose = 0 );
 
    protected:
 
@@ -127,6 +133,8 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
     *  The elements which do not fit to the matrix are omitted.
     */
    bool insertBlock( );
+
+
 
    bool useAdaptiveGroupSize;
 
@@ -257,9 +265,22 @@ tnlString tnlRgCSRMatrix< Real, Device, Index > :: getType() const
 };
 
 template< typename Real, tnlDevice Device, typename Index >
-Index tnlRgCSRMatrix< Real, Device, Index > :: getGroupSize() const
+Index tnlRgCSRMatrix< Real, Device, Index > :: getGroupSize( const Index groupId ) const
 {
-   return groupSize;
+   /****
+    * If we use adaptive group sizes they are stored explicitly.
+    */
+   if( this -> useAdaptiveGroupSize )
+      return this -> adaptiveGroupSizes. getElement( groupId );
+   /****
+    * The last group may be smaller even if we have constant group size.
+    */
+   if( groupId * this -> groupSize > this -> getSize() )
+      return this -> getSize() % this -> groupSize;
+   /***
+    * If it is not the last group, return the common group size.
+    */
+   return this -> groupSize;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -682,46 +703,127 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+                                                        const tnlString& format,
 		                                                  const Index lines ) const
 {
-   str << "Structure of tnlRgCSRMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
-   str << "Allocated elements:" << nonzeroElements. getSize() << endl;
-   str << "Number of groups: " << groupOffsets. getSize() << endl;
-
-   Index print_lines = lines;
-   if( ! print_lines )
-	   print_lines = this -> getSize();
-
-   for( Index i = 0; i < this -> groupOffsets. getSize() - 1; i ++ )
+   if( format == "" || format == "text" )
    {
-	   if( i * groupSize > print_lines )
-		   return;
-	   str << endl << "Block number: " << i << endl;
-	   str << " Lines: " << i * groupSize << " -- " << ( i + 1 ) * groupSize << endl;
-	   str << " Lines non-zeros: ";
-	   for( Index k = i * groupSize; k < ( i + 1 ) * groupSize && k < this -> getSize(); k ++ )
-		   str << nonzeroElementsInRow. getElement( k ) << "  ";
-	   str << endl;
-	   str << " Block data: "
-	       << groupOffsets. getElement( i ) << " -- "
-	       << groupOffsets. getElement( i + 1 ) << endl;
-	   str << " Data:   ";
-	   for( Index k = groupOffsets. getElement( i );
-	        k < groupOffsets. getElement( i + 1 );
-	        k ++ )
-		   str << setprecision( 5 ) << setw( 8 )
-		       << nonzeroElements. getElement( k ) << " ";
-	   str << endl << "Columns: ";
-	   for( Index k = groupOffsets. getElement( i );
-	        k < groupOffsets. getElement( i + 1 );
-	        k ++ )
-		   str << setprecision( 5 ) << setw( 8 )
-		       << columns. getElement( k ) << " ";
+      str << "Structure of tnlRgCSRMatrix" << endl;
+      str << "Matrix name:" << this -> getName() << endl;
+      str << "Matrix size:" << this -> getSize() << endl;
+      str << "Allocated elements:" << nonzeroElements. getSize() << endl;
+      str << "Number of groups: " << groupOffsets. getSize() << endl;
+
+      Index print_lines = lines;
+      if( ! print_lines )
+         print_lines = this -> getSize();
+
+      for( Index i = 0; i < this -> numberOfGroups; i ++ )
+      {
+         if( i * groupSize > print_lines )
+            return;
+         str << endl << "Block number: " << i << endl;
+         str << " Group size: " << this -> getGroupSize( i ) << endl;
+         str << " Group non-zeros: ";
+         for( Index k = i * groupSize; k < ( i + 1 ) * groupSize && k < this -> getSize(); k ++ )
+            str << nonzeroElementsInRow. getElement( k ) << "  ";
+         str << endl;
+         str << " Group data: "
+             << groupOffsets. getElement( i ) << " -- "
+             << groupOffsets. getElement( i + 1 ) << endl;
+         str << " Data:   ";
+         for( Index k = groupOffsets. getElement( i );
+              k < groupOffsets. getElement( i + 1 );
+              k ++ )
+            str << setprecision( 5 ) << setw( 8 )
+                << nonzeroElements. getElement( k ) << " ";
+         str << endl << "Columns: ";
+         for( Index k = groupOffsets. getElement( i );
+              k < groupOffsets. getElement( i + 1 );
+              k ++ )
+            str << setprecision( 5 ) << setw( 8 )
+                << columns. getElement( k ) << " ";
+      }
+      str << endl;
+      return;
    }
-   str << endl;
+   if( format == "html" )
+   {
+      str << "<h1>Structure of tnlRgCSRMatrix</h1>" << endl;
+      str << "<b>Matrix name:</b> " << this -> getName() << "<p>" << endl;
+      str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
+      str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
+      str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;
+      str << "<table>" << endl;
+      str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << endl;
+      Index print_lines = lines;
+      if( ! print_lines )
+         print_lines = this -> getSize();
+
+      for( Index i = 0; i < this -> numberOfGroups; i ++ )
+      {
+         if( i * groupSize > print_lines )
+            return;
+         double filling = ( double ) ( this -> groupOffsets. getElement( i + 1 ) - this -> groupOffsets. getElement( i ) ) /
+                          ( double ) this -> nonzeroElements. getSize();
+         str << "<tr> <td> " << i << "</td> <td>" << this -> getGroupSize( i ) << " </td> <td> " << 100.0 * filling << "% </td></tr>" << endl;
+      }
+      str << "</table>" << endl;
+      str << endl;
+   }
 };
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
+                                                    const tnlString& format,
+                                                    tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+                                                    int verbose )
+{
+   if( Device == tnlCuda )
+   {
+      cerr << "Drawing of matrices stored on the GPU is not supported yet." << endl;
+      return false;
+   }
+   if( format == "gnuplot" )
+      return tnlMatrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
+   if( format == "eps" )
+   {
+      const int elementSize = 10;
+      this -> writePostscriptHeader( str, elementSize );
+
+      /****
+       * Draw the groups
+       */
+      for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
+      {
+         const Index groupSize = getCurrentGroupSize( groupId );
+         if( groupId % 2 == 0 )
+            str << "0.9 0.9 0.9 setrgbcolor" << endl;
+         else
+            str << "0.8 0.8 0.8 setrgbcolor" << endl;
+         str << "0 -" << groupSize * elementSize
+             << " translate newpath 0 0 " << this -> getSize() * elementSize
+             << " " << groupSize * elementSize << " rectfill" << endl;
+      }
+      /****
+       * Restore black color and the origin of the coordinates
+       */
+      str << "0 0 0 setrgbcolor" << endl;
+      str << "0 " << this -> getSize() * elementSize << " translate" << endl;
+
+      if( csrMatrix )
+         csrMatrix -> writePostscriptBody( str, elementSize, verbose );
+      else
+         this -> writePostscriptBody( str, elementSize, verbose );
+
+      str << "showpage" << endl;
+      str << "%%EOF" << endl;
+
+      if( verbose )
+         cout << endl;
+      return true;
+   }
+}
 
 template< typename Real, tnlDevice Device, typename Index >
 Index tnlRgCSRMatrix< Real, Device, Index > :: getCurrentGroupSize( const Index groupId ) const

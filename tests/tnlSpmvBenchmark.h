@@ -58,6 +58,8 @@ class tnlSpmvBenchmark
 
    double getTime() const;
 
+   void setMaxIterations( const int maxIterations );
+
    int getIterations() const;
 
    Index getArtificialZeros() const;
@@ -74,6 +76,14 @@ class tnlSpmvBenchmark
 
    double time;
 
+   /****
+    * Max number of SpMV repetitions.
+    */
+   int maxIterations;
+
+   /****
+    * Real number of repetitions.
+    */
    int iterations;
 
    Index artificialZeros;
@@ -110,11 +120,12 @@ tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
    : benchmarkWasSuccesful( false ),
      gflops( 0.0 ),
      time( 0.0 ),
+     maxIterations( 0 ),
      iterations( 0.0 ),
      artificialZeros( 0 ),
      maxError( 0.0 ),
      firstErrorOccurence( 0 ),
-     matrix( "tnlSpmvBenchmark::matrix" ),
+     matrix( "spmvBenchmark::matrix" ),
      formatColumnWidth( 40 ),
      timeColumnWidth( 12 ),
      iterationsColumnWidth( 15 ),
@@ -150,6 +161,15 @@ template< typename Real,
 double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getTime() const
 {
    return this -> time;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: setMaxIterations( const int maxIterations )
+{
+   this -> maxIterations = maxIterations;
 }
 
 template< typename Real,
@@ -207,7 +227,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    tnlTimerRT rt_timer;
    rt_timer. Reset();
    {
-      for( int i = 0; i < 50; i ++ )
+      for( int i = 0; i < maxIterations; i ++ )
       {
          matrix. vectorProduct( x, b );
          iterations ++;

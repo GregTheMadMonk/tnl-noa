@@ -162,6 +162,11 @@ tnlString tnlString :: operator + ( const tnlString& str )
    return tnlString( *this ) += str;
 }
 //---------------------------------------------------------------------------
+tnlString tnlString :: operator + ( const char* str )
+{
+   return tnlString( *this ) += str;
+}
+//---------------------------------------------------------------------------
 bool tnlString :: operator == ( const tnlString& str ) const
 {
    assert( string && str. string );

@@ -1,3 +1,32 @@
+2011-05-29  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* tests/cusp-test.cu: Removed.
+	* tests/draw-matrices: New file.
+	  - creating script for drawing testing matrices
+	* src/core/tnlLongVectorCUDA.h:
+	  - fixing problem of initiliazing the type Real by 0.0 which does not work for general types 
+	* src/core/tnlString.cpp (tnlString::operator +):  
+	* src/core/tnlString.h (tnlString): 
+	  - adding operator + for const char*
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 
+	* src/matrix/tnlCSRMatrix.h: 
+	* src/matrix/tnlMatrix.h (printOut): 
+	* src/matrix/tnlRgCSRMatrix.h:
+	  - implementing drawing of matrices in Postscript 
+	* tests/run-sparse-matrix-benchmark: 
+	* tests/sparse-matrix-benchmark.cfg.desc: 
+	* tests/sparse-matrix-benchmark.cpp (main): 
+	* tests/sparse-matrix-benchmark.h: 
+	* tests/tnlSpmvBenchmark.h: 
+	* tests/tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h: 
+	* tests/tnlSpmvBenchmarkHybridMatrix.h: 
+	* tests/tnlSpmvBenchmarkRgCSRMatrix.h: 
+	* tools/share/mgrid-view.cfg.desc:
+	  - adding new command line arguments for drawing matrices 
+	* tools/src/tnl-grid-view.cpp (main): 
+	* tools/src/tnl-grid-view.h:
+	  - implementing drawing of matrices 
+
 2011-05-18  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* src/matrix/tnlAdaptiveRgCSRMatrix.h:

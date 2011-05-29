@@ -40,17 +40,19 @@ int main( int argc, char* argv[] )
       conf_desc. PrintUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString str_input_file = parameters. GetParameter< tnlString >( "input-file" );
-   tnlString str_input_mtx_file = parameters. GetParameter< tnlString >( "input-mtx-file" );
-   tnlString log_file_name = parameters. GetParameter< tnlString >( "log-file" );
+   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
+   tnlString inputMtxFile = parameters. GetParameter< tnlString >( "input-mtx-file" );
+   tnlString pdfFile = parameters. GetParameter< tnlString >( "pdf-file" );
+   tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
    double stop_time = parameters. GetParameter< double >( "stop-time" );
+   int maxIterations = parameters. GetParameter< int >( "max-iterations" );
    int verbose = parameters. GetParameter< int >( "verbose");
-   char* input_file = str_input_file. getString();
+
 
    tnlFile binaryFile;
-   if( ! binaryFile. open( str_input_file, tnlReadMode ) )
+   if( ! binaryFile. open( inputFile, tnlReadMode ) )
    {
-      cerr << "I am not able to open the file " << str_input_file << "." << endl;
+      cerr << "I am not able to open the file " << inputFile << "." << endl;
       return 1;
    }
    tnlString object_type;
@@ -64,16 +66,20 @@ int main( int argc, char* argv[] )
    binaryFile. close();
 
    if( object_type == "tnlCSRMatrix< float, tnlHost >")
-      benchmarkMatrix< float >( str_input_file,
-                                str_input_mtx_file,
-                                log_file_name,
+      benchmarkMatrix< float >( inputFile,
+                                inputMtxFile,
+                                pdfFile,
+                                logFileName,
+                                maxIterations,
                                 verbose );
 
    if( object_type == "tnlCSRMatrix< double, tnlHost >" )
    {
-      benchmarkMatrix< double >( str_input_file,
-                                 str_input_mtx_file,
-                                 log_file_name,
+      benchmarkMatrix< double >( inputFile,
+                                 inputMtxFile,
+                                 pdfFile,
+                                 logFileName,
+                                 maxIterations,
                                  verbose );
    }
    //binaryFile. close();

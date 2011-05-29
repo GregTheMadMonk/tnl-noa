@@ -94,7 +94,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
     * If it is called after method copyFrom, the matrix will be broken.
     * TODO: Add state ensuring that this situation will lead to error.
     */
-   void tuneFormat( const Index maxGroupSize,
+   void tuneFormat( const Index desiredChunkSize,
                     const Index cudaBlockSize );
 
    bool copyFrom( const tnlCSRMatrix< Real, tnlHost,Index >& csr_matrix );
@@ -111,6 +111,12 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! Prints out the matrix structure
    void printOut( ostream& str,
 		          const Index lines = 0 ) const;
+
+   bool draw( ostream& str,
+              const tnlString& format,
+              tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+              int verbose = 0 );
+
 
    protected:
 
@@ -749,6 +755,59 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    }
    str << endl;
 };
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
+                                                            const tnlString& format,
+                                                            tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+                                                            int verbose )
+{
+   if( Device == tnlCuda )
+   {
+      cerr << "Drawing of matrices stored on the GPU is not supported yet." << endl;
+      return false;
+   }
+   if( format == "gnuplot" )
+      return tnlMatrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
+   if( format == "eps" )
+   {
+      const int elementSize = 10;
+      this -> writePostscriptHeader( str, elementSize );
+
+      /****
+       * Draw the groups
+       */
+      for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
+      {
+         const Index groupSize = this -> groupInfo. getElement( groupId ). size;
+         if( groupId % 2 == 0 )
+            str << "0.9 0.9 0.9 setrgbcolor" << endl;
+         else
+            str << "0.8 0.8 0.8 setrgbcolor" << endl;
+         str << "0 -" << groupSize * elementSize
+             << " translate newpath 0 0 " << this -> getSize() * elementSize
+             << " " << groupSize * elementSize << " rectfill" << endl;
+      }
+      /****
+       * Restore black color and the origin of the coordinates
+       */
+      str << "0 0 0 setrgbcolor" << endl;
+      str << "0 " << this -> getSize() * elementSize << " translate" << endl;
+
+      if( csrMatrix )
+         csrMatrix -> writePostscriptBody( str, elementSize, verbose );
+      else
+         this -> writePostscriptBody( str, elementSize, verbose );
+
+      str << "showpage" << endl;
+      str << "%%EOF" << endl;
+
+      if( verbose )
+         cout << endl;
+      return true;
+   }
+}
+
 
 #ifdef HAVE_CUDA
 
