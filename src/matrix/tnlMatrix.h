@@ -171,7 +171,7 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 template< typename Real, tnlDevice Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
-   tnlAssert( false, "not implemented yet" );
+   tnlAssert( false, cerr << "not implemented yet - matrix name is " << this -> getName() );
    /*
     * TODO: this method should be abstract
     */
@@ -251,7 +251,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header,
-		                                   bool& symmetric )
+		                                                   bool& symmetric )
 {
 	tnlList< tnlString > parsed_line;
     header. parse( parsed_line );
@@ -385,26 +385,27 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< In
    /****
     * We use bucketsort to sort the rows by the number of the non-zero elements.
     */
-   if( ! permutation. setSize( this -> getSize() ) )
+   const Index matrixSize = tnlMatrix< Real, Device, Index > :: getSize();
+   if( ! permutation. setSize( matrixSize ) )
       return false;
    permutation. setValue( 0 );
 
    /****
     * The permutation vector is now used to compute the buckets
     */
-   for( Index i = 0; i < this -> getSize(); i ++ )
+   for( Index i = 0; i < matrixSize; i ++ )
       permutation[ this -> getNonzeroElementsInRow( i ) ] ++;
 
    tnlLongVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderDecreasingly:buckets" );
-   buckets. setSize( this -> getSize() );
+   buckets. setSize( matrixSize );
    buckets. setValue( 0 );
 
    buckets[ 0 ] = 0;
-   for( Index i = 1; i < this -> getSize(); i ++ )
-      buckets[ i ] = buckets[ i - 1 ] + permutation[ this -> getSize() - i ];
+   for( Index i = 1; i < matrixSize; i ++ )
+      buckets[ i ] = buckets[ i - 1 ] + permutation[ matrixSize - i ];
 
-   for( Index i = 0; i < this -> getSize(); i ++ )
-      permutation[ buckets[ this -> getSize() - this -> getNonzeroElementsInRow( i ) - 1 ] ++ ] = i;
+   for( Index i = 0; i < matrixSize; i ++ )
+      permutation[ buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ] ++ ] = i;
 }
 
 template< typename Real, tnlDevice Device, typename Index >

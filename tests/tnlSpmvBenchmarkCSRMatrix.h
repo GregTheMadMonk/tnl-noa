@@ -31,6 +31,12 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
    void tearDown();
 
    void writeProgress() const;
+
+   void writeToLogTable( ostream& logFile,
+                         const double& csrGflops,
+                         const tnlString& inputMtxFile,
+                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         bool writeMatrixInfo  ) const;
 };
 
 template< typename Real, typename Index>
@@ -60,6 +66,20 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
    else
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "FAILED ";
    cout << endl;
+}
+
+template< typename Real,
+          typename Index >
+void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
+                                                                  const double& csrGflops,
+                                                                  const tnlString& inputMtxFile,
+                                                                  const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                  bool writeMatrixInfo  ) const
+{
+   if( this -> getBenchmarkWasSuccesful() )
+      logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
+   else
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
 }
 
 #endif /* TNLSPMVBENCHMARKCSRMATRIX_H_ */

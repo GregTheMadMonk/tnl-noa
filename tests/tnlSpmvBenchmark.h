@@ -68,7 +68,26 @@ class tnlSpmvBenchmark
 
    void writeProgressTableHeader();
 
+   virtual void writeToLogTable( ostream& logFile,
+                                 const double& csrGflops,
+                                 const tnlString& inputMtxFile,
+                                 const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                 bool writeMatrixInfo  ) const = 0;
+
+
    protected:
+
+   /****
+    * This is helper method for generating HTML table with benchmark results
+    */
+   tnlString getBgColorBySpeedUp( const double& speedUp ) const;
+
+   /****
+    * Helper method for writing matrix statistics and information to HTML
+    */
+   bool printMatrixInHtml( const tnlString& fileName,
+                           tnlMatrix< Real >& matrix ) const;
+
 
    bool benchmarkWasSuccesful;
 
@@ -294,6 +313,54 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgressTableHeader
         << left << setw(  this -> infoColumnWidth ) << " INFO" << endl
         << setfill( '-' ) << setw( totalWidth ) << "--" << endl
         << setfill( ' ');
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+tnlString tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBgColorBySpeedUp( const double& speedUp ) const
+{
+   if( speedUp >= 30.0 )
+      return tnlString( "#FF9900" );
+   if( speedUp >= 25.0 )
+      return tnlString( "#FFAA00" );
+   if( speedUp >= 20.0 )
+      return tnlString( "#FFBB00" );
+   if( speedUp >= 15.0 )
+      return tnlString( "#FFCC00" );
+   if( speedUp >= 10.0 )
+      return tnlString( "#FFDD00" );
+   if( speedUp >= 5.0 )
+      return tnlString( "#FFEE00" );
+   if( speedUp >= 1.0 )
+      return tnlString( "#FFFF00" );
+   return tnlString( "#FFFFFF" );
+}
+
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: printMatrixInHtml( const tnlString& fileName,
+                                                                           tnlMatrix< Real >& matrix ) const
+{
+   //cout << "Writing to file " << fileName << endl;
+   fstream file;
+   file. open( fileName. getString(), ios :: out );
+   if( ! file )
+   {
+      cerr << "I am not able to open the file " << fileName << endl;
+      return false;
+   }
+   file << "<html>" << endl;
+   file << "   <body>" << endl;
+   matrix. printOut( file, "html" );
+   file << "   </body>" << endl;
+   file << "</html>" << endl;
+   file. close();
+   return true;
 }
 
 #endif /* TNLSPMVBENCHMARK_H_ */

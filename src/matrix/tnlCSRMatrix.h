@@ -252,6 +252,9 @@ bool tnlCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: setLike( const tnlCSRMatrix< Real, Device, Index >& matrix )
 {
+   dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "setLike" );
+   dbgCout( "Setting size to " << matrix. getSize() << "." );
+
    this -> size = matrix. getSize();
    if( ! nonzero_elements. setLike( matrix. nonzero_elements ) ||
        ! columns. setLike( matrix. columns ) ||
@@ -623,6 +626,7 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlLongVector< Index, Device, Index >& rowPermutation,
                                                          const tnlCSRMatrix< Real, Device, Index >& inputCsrMatrix )
 {
+   dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "reorderRows" );
    last_nonzero_element = 0;
    if( ! this -> setLike( inputCsrMatrix ) )
    {
@@ -631,6 +635,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlLongVector< In
    }
    for( Index i = 0; i < this -> getSize(); i ++ )
    {
+      tnlAssert( last_nonzero_element < nonzero_elements. getSize(), );
+      tnlAssert( last_nonzero_element < columns. getSize(), );
       row_offsets[ i ] = last_nonzero_element;
       Index row = rowPermutation[ i ];
       Index j = inputCsrMatrix. row_offsets[ row ];
@@ -640,6 +646,11 @@ bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlLongVector< In
          columns[ last_nonzero_element ++ ] = inputCsrMatrix. columns[ j ++ ];
       }
    }
+   tnlAssert( last_nonzero_element <= nonzero_elements. getSize(), );
+   tnlAssert( last_nonzero_element <= columns. getSize(), );
+   row_offsets[ this -> getSize() ] = last_nonzero_element;
+   dbgExpr( row_offsets[ this -> getSize() ] );
+   dbgExpr( this -> getSize() );
    return true;
 }
 

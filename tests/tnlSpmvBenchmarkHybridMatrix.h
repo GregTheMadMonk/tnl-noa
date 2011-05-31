@@ -19,7 +19,7 @@
 #define TNLSPMVBENCHMARKHYBRIDMATRIX_H_
 
 #include <tnlSpmvBenchmark.h>
-#ifdef HAVE_CUSP
+#ifdef HAVE_CUSP && HAVE_CUDA
    #include <hyb_matrix.h>
    #include <io/matrix_market.h>
    #include <multiply.h>
@@ -43,6 +43,12 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
                       bool verbose );
 
    void writeProgress() const;
+
+   void writeToLogTable( ostream& logFile,
+                         const double& csrGflops,
+                         const tnlString& inputMtxFile,
+                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
 
@@ -145,6 +151,29 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeProgress() const
 #endif
    cout << endl;
 }
+
+template< typename Real,
+          typename Index >
+void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
+                                                                     const double& csrGflops,
+                                                                     const tnlString& inputMtxFile,
+                                                                     const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                     bool writeMatrixInfo  ) const
+{
+   if( this -> getBenchmarkWasSuccesful() )
+   {
+      logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
+      double speedUp = this -> getGflops() / csrGflops;
+      logFile << "             <td bgcolor=" << this -> getBgColorBySpeedUp( speedUp ) << "> " << speedUp << "</td>" << endl;
+   }
+   else
+   {
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+
+   }
+}
+
 
 template< typename Real,
           typename Index >

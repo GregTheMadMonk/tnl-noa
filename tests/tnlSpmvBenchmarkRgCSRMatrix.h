@@ -1,4 +1,4 @@
-/***************************************************************************
+ /***************************************************************************
                           tnlSpmvBenchmarkRgCSRMatrix.h  -  description
                              -------------------
     begin                : May 15, 2011
@@ -33,6 +33,12 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
    void tearDown();
 
    void writeProgress() const;
+
+   void writeToLogTable( ostream& logFile,
+                         const double& csrGflops,
+                         const tnlString& inputMtxFile,
+                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         bool writeMatrixInfo ) const;
 
    void setGroupSize( const Index groupSize );
 
@@ -174,6 +180,59 @@ Index tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: getArtificialZeroEle
    return this -> matrix. getArtificialZeroElements();
 }
 
+template< typename Real,
+          tnlDevice Device,
+          typename Index >
+void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostream& logFile,
+                                                                            const double& csrGflops,
+                                                                            const tnlString& inputMtxFile,
+                                                                            const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                            bool writeMatrixInfo ) const
+{
+   if( this -> getBenchmarkWasSuccesful() )
+   {
+      tnlString bgColor;
+      switch( groupSize )
+      {
+         case 16: bgColor = "#5555FF"; break;
+         case 32: bgColor = "#9999FF"; break;
+         case 64: bgColor = "#CCCCFF"; break;
+         default: bgColor = "#FFFFFF";
+      }
+      if( writeMatrixInfo )
+      {
+         tnlString baseFileName( inputMtxFile );
+         baseFileName += tnlString( ".rgcsr-");
+         baseFileName += tnlString( groupSize );
+         tnlString matrixPdfFile( baseFileName );
+         matrixPdfFile += tnlString( ".pdf" );
+         tnlString matrixHtmlFile( baseFileName );
+         matrixHtmlFile += tnlString( ".html" );
+         tnlRgCSRMatrix< Real > rgCsrMatrix( inputMtxFile );
+         rgCsrMatrix. tuneFormat( this -> groupSize,
+                                  this -> useAdaptiveGroupSize,
+                                  this -> adaptiveGroupSizeStrategy );
+         rgCsrMatrix. copyFrom( csrMatrix );
+         printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
+         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF<a>,<a href=\"" << matrixHtmlFile << "\"> HTML </td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
+      }
+      const double speedUp = this -> getGflops() / csrGflops;
+      bgColor =  this -> getBgColorBySpeedUp( speedUp );
+      logFile << "             <td bgcolor=" <<  bgColor << "> " << this -> getGflops() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+   }
+   else
+   {
+      if( writeMatrixInfo )
+      {
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      }
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+   }
+}
 
 
 #endif /* TNLSPMVBENCHMARKRGCSRMATRIX_H_ */

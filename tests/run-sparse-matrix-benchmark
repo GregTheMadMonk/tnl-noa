@@ -35,63 +35,63 @@ write_header()
    echo "             <td rowspan=4 colspan=4 align=center>Matrix</td>" >> $1
    echo "             <td rowspan=4 align=center>CSR</td>" >> $1
    echo "             <td rowspan=4 colspan=2 align=center>Hybrid</td>" >> $1
-   echo "             <td colspan=44 align=center>Row-Grouped CSR</td>" >> $1   
-   echo "             <td colspan=44 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1
-   echo "             <td colspan=72 align=center>Adaptive Row-Grouped CSR</td>" >> $1   
+   echo "             <td colspan=48 align=center>Row-Grouped CSR</td>" >> $1   
+   echo "             <td colspan=48 align=center>Row-Grouped CSR with rows sorted decreasingly by the number of the nonzeros</td>" >> $1
+   echo "             <td colspan=96 align=center>Adaptive Row-Grouped CSR</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
-   echo "             <td colspan=11>Group Size = 16</td>" >> $1       # RgCSR
-   echo "             <td colspan=11>Group Size = 32</td>" >> $1
-   echo "             <td colspan=11>Group Size = 64</td>" >> $1
-   echo "             <td colspan=11>Group Size Variable</td>" >> $1    # RgCSR adaptive group size
-   echo "             <td colspan=11>Group Size = 16</td>" >> $1       # RgCSR rows sorted decreasingly
-   echo "             <td colspan=11>Group Size = 32</td>" >> $1
-   echo "             <td colspan=11>Group Size = 64</td>" >> $1
-   echo "             <td colspan=11>Group Size Variable</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 1</td>" >> $1          # Adaptive RgCSR 
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 2</td>" >> $1
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 4</td>" >> $1
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 8</td>" >> $1
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 16</td>" >> $1
-   echo "             <td rowspan=2 colspan=12>Chunk Size = 32</td>" >> $1   
+   echo "             <td colspan=12>Group Size = 16</td>" >> $1       # RgCSR
+   echo "             <td colspan=12>Group Size = 32</td>" >> $1
+   echo "             <td colspan=12>Group Size = 64</td>" >> $1
+   echo "             <td colspan=12>Group Size Variable</td>" >> $1    # RgCSR adaptive group size
+   echo "             <td colspan=12>Group Size = 16</td>" >> $1       # RgCSR rows sorted decreasingly
+   echo "             <td colspan=12>Group Size = 32</td>" >> $1
+   echo "             <td colspan=12>Group Size = 64</td>" >> $1
+   echo "             <td colspan=12>Group Size Variable</td>" >> $1      # RgCSR rows sorted decreasingly, adaptive group size
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 1</td>" >> $1          # Adaptive RgCSR 
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 2</td>" >> $1
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 4</td>" >> $1
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 8</td>" >> $1
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 16</td>" >> $1
+   echo "             <td rowspan=2 colspan=16>Chunk Size = 32</td>" >> $1   
    echo "          </tr>" >> $1
    
    echo "          <tr>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 16
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR format with the group size = 16
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 32
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR format with the group size = 32
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1   
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the group size = 64
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR format with the group size = 64
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
 
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR format with the variable group size 
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR format with the variable group size 
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
    
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 16
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 16
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 32
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 32
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1   
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 64
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR (sorted rows) format with the group size = 64
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
       
-   echo "             <td rowspan=2></td>" >> $1                         # RgCSR (sorted rows) format with variable group size
+   echo "             <td rowspan=2 colspan=2></td>" >> $1                         # RgCSR (sorted rows) format with variable group size
    echo "             <td rowspan=2 colspan=2>CPU</td>" >> $1
    echo "             <td colspan=8>GPU</td>" >> $1
    
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 1
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 2
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 4
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 8
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 16
-#   echo "             <td colspan=12>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 32
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 1
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 2
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 4
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 8
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 16
+#   echo "             <td colspan=16>GPU</td>" >> $1                     # Adaptive RgCSR format with the chunk size 32
    
    
    
@@ -136,30 +136,30 @@ write_header()
    echo "             <td colspan=2>CUDA Block Size = 128</td>" >> $1
    echo "             <td colspan=2>CUDA Block Size = 256</td>" >> $1
    
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 1
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 2
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1         
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 4
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 8
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 16
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
-   echo "             <td colspan=3>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 32
-   echo "             <td colspan=3>CUDA Block Size = 64</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 128</td>" >> $1
-   echo "             <td colspan=3>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 1
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 2
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1         
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 4
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 8
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 16
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1  
+   echo "             <td colspan=4>CUDA Block Size = 32</td>" >> $1        # Adaptive RgCSR format with the chunk size = 32
+   echo "             <td colspan=4>CUDA Block Size = 64</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 128</td>" >> $1
+   echo "             <td colspan=4>CUDA Block Size = 256</td>" >> $1  
      
             
    echo "          </tr>" >> $1      
@@ -174,7 +174,8 @@ write_header()
    echo "             <td>GFlops</td>" >> $1                    # Hybrid format Bell, Garland on GPU
    echo "             <td>Speed-up</td>" >> $1
    
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 16
+   echo "             <td>Info</td>" >> $1                      # RgCSR format with the group size = 16
+   echo "             <td>Artificial Zeros</td>" >> $1      
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
@@ -185,156 +186,187 @@ write_header()
    echo "             <td>Speed-up</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 32
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size = 64
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR format with the group size variable
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 16
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 32
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size = 64
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   
-   echo "             <td>Artificial Zeros</td>" >> $1          # RgCSR (sorted rows) format with the group size variable
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1      
-   
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 1
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                      # RgCSR format with the group size = 32
    echo "             <td>Artificial Zeros</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 2
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Info</td>" >> $1                      # RgCSR format with the group size = 64   
+   echo "             <td>Artificial Zeros</td>" >> $1          
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 4
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 8
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 16
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1   
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
-   echo "             <td>Artificial Zeros</td>" >> $1          # Adaptive RgCSR format with the chunk size = 32
-   echo "             <td>GFlops</td>" >> $1
-   echo "             <td>Speed-up</td>" >> $1
+   
+   echo "             <td>Info</td>" >> $1                        # RgCSR format with the group size variable
    echo "             <td>Artificial Zeros</td>" >> $1
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   
+   echo "             <td>Info</td>" >> $1                        # RgCSR (sorted rows) format with the group size = 16
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Info</td>" >> $1                        # RgCSR (sorted rows) format with the group size = 32   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   echo "             <td>Info</td>" >> $1                         # RgCSR (sorted rows) format with the group size = 64   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   
+   echo "             <td>Info</td>" >> $1                          # RgCSR (sorted rows) format with the group size variable
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1      
+   
+   echo "             <td>Info</td>" >> $1                         # Adaptive RgCSR format with the chunk size = 1
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
    echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                         # Adaptive RgCSR format with the chunk size = 2   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                        # Adaptive RgCSR format with the chunk size = 4   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                        # Adaptive RgCSR format with the chunk size = 8   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                        # Adaptive RgCSR format with the chunk size = 16   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1                        # Adaptive RgCSR format with the chunk size = 32   
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
+   echo "             <td>Artificial Zeros</td>" >> $1   
+   echo "             <td>GFlops</td>" >> $1
+   echo "             <td>Speed-up</td>" >> $1
+   echo "             <td>Info</td>" >> $1
    echo "             <td>Artificial Zeros</td>" >> $1   
    echo "             <td>GFlops</td>" >> $1
    echo "             <td>Speed-up</td>" >> $1   

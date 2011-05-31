@@ -171,6 +171,13 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
 }
 
 template< typename Real >
+bool drawCSRMatrix( const tnlString& output_file_name,
+                    const tnlString& output_file_format )
+{
+
+}
+
+template< typename Real >
 bool ProcessCSRMatrix( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
@@ -196,17 +203,16 @@ bool ProcessCSRMatrix( const tnlString& file_name,
    }
    file. close();
    tnlCSRMatrix< Real > sortedMatrix( "tnl-view:sortedMatrix" );
-   /*if( sortMatrix )
+   if( sortMatrix )
    {
       if( verbose )
          cout << "Sorting the matrix rows..." << endl;
 
-      tnlCSRMatrix< Real > sortedMatrix( "tnl-view:sortedMatrix" );
       tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
       matrix. sortRowsDecreasingly( rowPermutation );
       sortedMatrix. reorderRows( rowPermutation, matrix );
       inputMatrix = & sortedMatrix;
-   }*/
+   }
 
    if( verbose )
       cout << " writing " << output_file_name << " ... " << endl;
@@ -241,7 +247,7 @@ bool ProcessCSRMatrix( const tnlString& file_name,
       adaptiveRgCsrMatrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( verbose )
          cout << "Converting CSR format to Row-grouped CSR ..." << endl;
-      if( ! adaptiveRgCsrMatrix. copyFrom( *inputMatrix ) )
+      if( ! adaptiveRgCsrMatrix. copyFrom( * inputMatrix ) )
          cerr << "I am not able to convert the CSR matrix to Row-grouped CSR format." << endl;
       else
          if( ! adaptiveRgCsrMatrix. draw( outFile, output_file_format. getString(), inputMatrix, verbose ) )

@@ -110,7 +110,8 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    //! Prints out the matrix structure
    void printOut( ostream& str,
-		          const Index lines = 0 ) const;
+                  const tnlString& format,
+		            const Index lines = 0 ) const;
 
    bool draw( ostream& str,
               const tnlString& format,
@@ -233,9 +234,10 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getCUDABlockSize() const
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
+bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
 {
-   this -> size = new_size;
+   tnlAssert( newSize > 0, cerr << "newSize = " << newSize );
+   this -> size = newSize;
    if( ! groupInfo. setSize( this -> getSize() ) ||
        ! threads. setSize( this -> getSize() ) ||
        ! rowToGroupMapping. setSize( this -> getSize() ) )
@@ -302,7 +304,7 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
 	dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	if( ! this -> setSize( csrMatrix.getSize() ) )
+	if( ! this -> setSize( csrMatrix. getSize() ) )
 		return false;
 	
 	if( Device == tnlHost )
@@ -699,61 +701,100 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+                                                                const tnlString& format,
 		                                                          const Index lines ) const
 {
    /*****
     * THIS IS NOT CORRECT
     */
-   cerr << "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut is not correct" << endl;
-   abort();
-   str << "Structure of tnlAdaptiveRgCSRMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
-   str << "Allocated elements:" << nonzeroElements. getSize() << endl;
-   str << "Number of groups: " << numberOfGroups << endl;
-
-   Index print_lines = lines;
-   if( ! print_lines )
-	   print_lines = this -> getSize();
-
-   for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
+   if( format == "" || format == "text" )
    {
-      const Index firstRow = groupInfo[ groupId ]. firstRow;
-      const Index lastRow = firstRow + groupInfo[ groupId ]. size;
-	   if( firstRow  > print_lines )
-		   return;
-	   str << endl << "Group number: " << groupId << endl;
-	   str << " Rows: " << firstRow << " -- " << lastRow << endl;
-	   str << " Chunk size: " << groupInfo[ groupId ]. chunkSize << endl;
-	   str << " Threads per row: ";
-	   for( Index row = firstRow; row < lastRow; row ++ )
-		   str << threads. getElement( row ) << "  ";
-	   str << endl;
-      str << " Group offset: " << groupInfo[ groupId ]. offset <<  endl;
-      Index pointer = groupInfo[ groupId ]. offset;
-      Index groupBaseRow = groupInfo[ groupId ]. firstRow;
-      for( Index chunkOffset = 0; chunkOffset < groupInfo[ groupId ]. chunkSize; chunkOffset ++ )
+      cerr << "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut is not correct" << endl;
+      abort();
+      str << "Structure of tnlAdaptiveRgCSRMatrix" << endl;
+      str << "Matrix name:" << this -> getName() << endl;
+      str << "Matrix size:" << this -> getSize() << endl;
+      str << "Allocated elements:" << nonzeroElements. getSize() << endl;
+      str << "Number of groups: " << numberOfGroups << endl;
+
+      Index print_lines = lines;
+      if( ! print_lines )
+         print_lines = this -> getSize();
+
+      for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
       {
-         str << "Round number: " << chunkOffset << endl;
+         const Index firstRow = groupInfo[ groupId ]. firstRow;
+         const Index lastRow = firstRow + groupInfo[ groupId ]. size;
+         if( firstRow  > print_lines )
+            return;
+         str << endl << "Group number: " << groupId << endl;
+         str << " Rows: " << firstRow << " -- " << lastRow << endl;
+         str << " Chunk size: " << groupInfo[ groupId ]. chunkSize << endl;
+         str << " Threads per row: ";
          for( Index row = firstRow; row < lastRow; row ++ )
+            str << threads. getElement( row ) << "  ";
+         str << endl;
+         str << " Group offset: " << groupInfo[ groupId ]. offset <<  endl;
+         Index pointer = groupInfo[ groupId ]. offset;
+         Index groupBaseRow = groupInfo[ groupId ]. firstRow;
+         for( Index chunkOffset = 0; chunkOffset < groupInfo[ groupId ]. chunkSize; chunkOffset ++ )
          {
-            Index threadsPerRow;
-            if( row > 0 )
-               threadsPerRow = threads[ groupBaseRow + row ] - threads[ groupBaseRow + row - 1 ];
-            else
-               threadsPerRow = threads[ groupBaseRow ];
-            str << "Row number " << row << " ( " << threadsPerRow << " threads) : ";
-            for( Index thread = 0; thread < threadsPerRow; thread ++ )
+            str << "Round number: " << chunkOffset << endl;
+            for( Index row = firstRow; row < lastRow; row ++ )
             {
-               str << nonzeroElements[ pointer ] << " ( " << columns[ pointer ] << " ) ";
-               pointer ++;
+               Index threadsPerRow;
+               if( row > 0 )
+                  threadsPerRow = threads[ groupBaseRow + row ] - threads[ groupBaseRow + row - 1 ];
+               else
+                  threadsPerRow = threads[ groupBaseRow ];
+               str << "Row number " << row << " ( " << threadsPerRow << " threads) : ";
+               for( Index thread = 0; thread < threadsPerRow; thread ++ )
+               {
+                  str << nonzeroElements[ pointer ] << " ( " << columns[ pointer ] << " ) ";
+                  pointer ++;
+               }
+               str << endl;
             }
             str << endl;
          }
-         str << endl;
       }
+      str << endl;
    }
-   str << endl;
+   if( format == "html" )
+   {
+      str << "<h1>Structure of tnlAdaptiveRgCSRMatrix</h1>" << endl;
+      str << "<b>Matrix name:</b> " << this -> getName() << "<p>" << endl;
+      str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
+      str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
+      str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;
+      str << "<table border=1>" << endl;
+      str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> Chunk size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << endl;
+      Index print_lines = lines;
+      if( ! print_lines )
+         print_lines = this -> getSize();
+
+      Index minGroupSize( this -> getSize() );
+      Index maxGroupSize( 0 );
+      for( Index i = 0; i < this -> numberOfGroups; i ++ )
+      {
+         const Index groupSize = this -> groupInfo. getElement( i ). size;
+         minGroupSize = Min( groupSize, minGroupSize );
+         maxGroupSize = Max( groupSize, maxGroupSize );
+         const Index chunkSize = this -> groupInfo. getElement( i ). chunkSize;
+         const Index allElements = chunkSize * this -> cudaBlockSize;
+         double filling = ( double ) ( allElements ) /
+                          ( double ) this -> nonzeroElements. getSize();
+         str << "<tr> <td> " << i
+            << "</td> <td> " << groupSize
+            << "</td> <td> " << chunkSize
+            << " </td> <td> " << 100.0 * filling << "% </td></tr>" << endl;
+      }
+      str << "</table>" << endl;
+      str << "<b> Min. group size:</b> " << minGroupSize << "<p>" << endl;
+      str << "<b> Max. group size:</b> " << maxGroupSize << "<p>" << endl;
+      str << "<b> Ratio:</b> " << ( double ) maxGroupSize / ( double ) minGroupSize << endl;
+      str << endl;
+   }
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -798,6 +839,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
          csrMatrix -> writePostscriptBody( str, elementSize, verbose );
       else
          this -> writePostscriptBody( str, elementSize, verbose );
+
 
       str << "showpage" << endl;
       str << "%%EOF" << endl;

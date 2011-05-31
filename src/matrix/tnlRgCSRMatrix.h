@@ -292,7 +292,7 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getCUDABlockSize() const
 template< typename Real, tnlDevice Device, typename Index >
 void tnlRgCSRMatrix< Real, Device, Index > :: setCUDABlockSize( Index blockSize )
 {
-   tnlAssert( blockSize % this -> getGroupSize() == 0, )
+   tnlAssert( blockSize % this -> groupSize == 0, )
    cudaBlockSize = blockSize;
 }
 
@@ -494,7 +494,10 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
 
-   groupSize = rgCSRMatrix. getGroupSize();
+   /****
+    * TODO: add variable group size support
+    */
+   groupSize = rgCSRMatrix. groupSize;
    if( ! this -> setSize( rgCSRMatrix. getSize() ) )
       return false;
 
@@ -662,19 +665,22 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
    {
 #ifdef HAVE_CUDA
    Index blockSize = this -> getCUDABlockSize();
-   if( ! blockSize )
-      blockSize = this -> getGroupSize();
+   //if( ! blockSize )
+   //   blockSize = this -> getGroupSize();
    const Index size = this -> getSize();
 
    bool useCache = bindRgCSRMatrixCUDATexture( vec. getVector(),
                                  vec. getSize() );
 
+   /****
+    * The following works only with constant group size
+    */
    cudaThreadSynchronize();
    int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
    dim3 gridDim( gridSize ), blockDim( blockSize );
    if( useCache )
       sparseCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
-                                                                                        this -> getGroupSize(),
+                                                                                        this -> groupSize,
                                                                                         nonzeroElements. getVector(),
                                                                                         columns. getVector(),
                                                                                         groupOffsets. getVector(),
@@ -683,7 +689,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                                                                                         result. getVector() );
    else
       sparseCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
-                                                                                        this -> getGroupSize(),
+                                                                                        this -> groupSize,
                                                                                         nonzeroElements. getVector(),
                                                                                         columns. getVector(),
                                                                                         groupOffsets. getVector(),
@@ -754,7 +760,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
       str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
       str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
       str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;
-      str << "<table>" << endl;
+      str << "<table border=1>" << endl;
       str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << endl;
       Index print_lines = lines;
       if( ! print_lines )
