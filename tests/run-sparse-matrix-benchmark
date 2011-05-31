@@ -381,10 +381,8 @@ write_closing()
 
 write_header sparse-matrix-benchmark-float.log.html
 write_header sparse-matrix-benchmark-double.log.html
-
-
-
-
+write_header sparse-matrix-benchmark-amd-float.log.html
+write_header sparse-matrix-benchmark-amd-double.log.html
 
 for link in $MM_MATRICES;
 do
