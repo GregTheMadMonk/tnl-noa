@@ -51,6 +51,8 @@ class tnlFastRgCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHo
    //! Allocate memory for the nonzero elements.
    bool setNonzeroElements( Index elements );
 
+   void reset();
+
    Index getNonzeroElements() const;
 
    Index getArtificialZeroElements() const;
@@ -207,6 +209,21 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: setNonzeroElements( Index ele
    nonzero_elements. setValue( 0.0 );
    return true;
 };
+
+template< typename Real, typename Index >
+void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: reset()
+{
+   nonzero_elements. reset();
+   block_offsets. reset();
+   column_sequences. reset();
+   columns_sequences_offsets. reset();
+   columns_sequences_blocks_offsets. reset();
+   column_sequences_in_block. reset();
+   column_sequences_lengths. reset();
+   block_size = 0;
+   artificial_zeros = 0;
+   column_sequences_length = 0;
+}
 
 template< typename Real, typename Index >
 Index tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getNonzeroElements() const

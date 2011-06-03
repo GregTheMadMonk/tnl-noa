@@ -244,6 +244,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    iterations = 0;
 
    tnlTimerRT rt_timer;
+   maxIterations = 1;
    rt_timer. Reset();
    {
       for( int i = 0; i < maxIterations; i ++ )
@@ -262,6 +263,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
       return;
    }
    resB = b;
+   benchmarkWasSuccesful = true;
    for( Index j = 0; j < refB. getSize(); j ++ )
    {
       //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
@@ -272,9 +274,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
          error = ( Real ) fabs( refB[ j ] );
       this -> maxError = Max( this -> maxError, error );
 
-      if( error < tnlSpmvBenchmarkPrecision( error ) )
-         benchmarkWasSuccesful = true;
-      else
+      if( error > tnlSpmvBenchmarkPrecision( error ) )
       {
          benchmarkWasSuccesful = false;
          firstErrorOccurence = j;
@@ -282,6 +282,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
          //abort();
       }
    }
+   cout << "First error was on " << firstErrorOccurence << endl;
 
    double flops = 2.0 * iterations * matrix. getNonzeroElements();
    gflops = flops / time * 1.0e-9;

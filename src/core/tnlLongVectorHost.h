@@ -21,6 +21,7 @@
 #include <core/mfuncs.h>
 #include <core/tnlAssert.h>
 #include <core/tnlLongVectorBase.h>
+#include <debug/tnlDebug.h>
 
 template< typename Real, typename Index > class tnlLongVector< Real, tnlCuda, Index >;
 
@@ -62,6 +63,11 @@ template< typename Real, typename Index > class tnlLongVector< Real, tnlHost, In
 
    //! Set size of the vector using another vector as a template
    bool setLike( const tnlLongVector< Real, tnlCuda, Index >& v );
+
+   /*!**
+    * Free allocated memory
+    */
+   void reset();
 
    void swap( tnlLongVector< Real, tnlHost, Index >& u );
 
@@ -199,10 +205,12 @@ tnlLongVector< Real, tnlHost, Index > :: tnlLongVector( const tnlString& name, c
 
 template< typename Real, typename Index > bool tnlLongVector< Real, tnlHost, Index > :: setSize( Index _size )
 {
+   dbgFunctionName( "tnlLongVector< Real, tnlHost, Index >", "setSize" );
    tnlAssert( _size >= 0,
             cerr << "You try to set size of tnlLongVector to negative value."
                  << "Vector name: " << this -> getName() << endl
                  << "New size: " << _size << endl );
+   dbgExpr( this -> getName() );
    /* In the case that we run without active macro tnlAssert
     * we will write at least warning.
     */
@@ -211,7 +219,7 @@ template< typename Real, typename Index > bool tnlLongVector< Real, tnlHost, Ind
       cerr << "Negative size " << _size << " was passed to tnlLongVector " << this -> getName() << "." << endl;
       return false;
    }
-   if( this -> size == _size && ! this -> shared_data ) return true;
+   if( this -> size && this -> size == _size && ! this -> shared_data ) return true;
    if( this -> data && ! this -> shared_data )
    {
       delete[] -- this -> data;
@@ -240,7 +248,7 @@ void tnlLongVector< Real, tnlHost, Index > :: setSharedData( Real* _data, const 
     */
    Real a = _data[ _size - 1 ];
 
-   if( this -> data && ! this -> shared_data ) delete -- this -> data;
+   if( this -> data && ! this -> shared_data ) delete[] -- this -> data;
    this -> data = _data;
    this -> shared_data = true;
    this -> size = _size;
@@ -257,6 +265,23 @@ bool tnlLongVector< Real, tnlHost, Index > :: setLike( const tnlLongVector< Real
 {
    return setSize( v. getSize() );
 };
+
+template< typename Real, typename Index >
+void tnlLongVector< Real, tnlHost, Index > :: reset()
+{
+   dbgFunctionName( "tnlLongVector< Real, tnlHost, Index >", "reset" );
+   dbgExpr( this -> getName() );
+   setSize( 0 );
+   /*cerr << "XXXXXXXXXXXXXXXXXX" << endl;
+   if( this -> data && ! this -> shared_data ) delete[] -- this -> data;
+   cerr << "YYYYYYYYYYYYYYY" << endl;
+   this -> shared_data = false;
+   this -> size = 0;
+   this -> data = new Real[ this -> size + 1 ];
+   this -> data ++;
+   cerr << "ZZZZZZZZZZZZZZZZZZZZZ" << endl;*/
+};
+
 
 template< typename Real, typename Index >
 void tnlLongVector< Real, tnlHost, Index > :: swap( tnlLongVector< Real, tnlHost, Index >& v )

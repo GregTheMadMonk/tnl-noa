@@ -63,6 +63,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool setLike( const tnlCSRMatrix< Real, Device, Index >& matrix );
 
+   void reset();
+
    //! Allocate memory for the nonzero elements.
    bool setNonzeroElements( Index elements );
 
@@ -263,6 +265,15 @@ bool tnlCSRMatrix< Real, Device, Index > :: setLike( const tnlCSRMatrix< Real, D
    row_offsets. setValue( 0 );
    last_nonzero_element = 0;
    return true;
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: reset()
+{
+   nonzero_elements. reset();
+   columns. reset();
+   row_offsets. reset();
+   last_nonzero_element = 0;
 }
 
 template< typename Real, tnlDevice Device, typename Index >

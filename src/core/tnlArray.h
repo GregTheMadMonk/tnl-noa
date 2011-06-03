@@ -53,6 +53,8 @@ class tnlArray : public tnlLongVector< Real, device, Index >
    //! Set dimensions of the array using another array as a template
    bool setLike( const tnlArray< Dimensions, Real, tnlCuda, Index >& v );
 
+   void reset();
+
    const tnlVector< Dimensions, Index >& getDimensions() const;
 
    tnlString getType() const;
@@ -214,6 +216,13 @@ template< int Dimensions, typename Real, tnlDevice device, typename Index >
 bool tnlArray< Dimensions, Real, device, Index > :: setLike( const tnlArray< Dimensions, Real, tnlCuda, Index >& v )
 {
    return setDimensions( v. getDimensions() );
+}
+
+template< int Dimensions, typename Real, tnlDevice device, typename Index >
+void tnlArray< Dimensions, Real, device, Index > :: reset()
+{
+   tnlLongVector< Real, device, Index > :: reset();
+   setDimensions( tnlVector< Dimensions, Index >( 0 ) );
 }
 
 

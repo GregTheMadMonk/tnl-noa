@@ -91,6 +91,8 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
       this -> matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( ! this -> matrix. copyFrom( matrix ) )
          return false;
+      //matrix. printOut( cout, "text", 30 );
+      //this -> matrix. printOut( cout, "text", 30 );
    }
    if( Device == tnlCuda )
    {

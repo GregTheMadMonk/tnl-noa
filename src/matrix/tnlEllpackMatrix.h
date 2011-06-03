@@ -52,6 +52,8 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
 
    bool setNonzeroElements( Index elements );
 
+   void reset();
+
    Index getNonzeroElements() const;
 
    Index getArtificialZeroElements() const;
@@ -134,6 +136,15 @@ bool tnlEllpackMatrix< Real, tnlHost, Index > :: setSize( Index new_size )
    ellpack_columns. setValue( -1 );
    return true;
 };
+
+template< typename Real, typename Index >
+void tnlEllpackMatrix< Real, tnlHost, Index > :: reset()
+{
+   ellpack_nonzero_elements. reset();
+   ellpack_columns. reset();
+   row_length = 0;
+   artificial_zeros = 0;
+}
 
 template< typename Real, typename Index >
 Index tnlEllpackMatrix< Real, tnlHost, Index > :: getRowLength() const

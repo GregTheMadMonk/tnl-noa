@@ -63,6 +63,8 @@ class tnlMatrix : public tnlObject
    //! Allocates the arrays for the non-zero elements
    virtual bool setNonzeroElements( Index n ) = 0;
 
+   virtual void reset() = 0;
+
    virtual Index getNonzeroElementsInRow( const Index& row ) const;
 
    //! Returns the number of the nonzero elements.
@@ -100,6 +102,12 @@ class tnlMatrix : public tnlObject
    bool operator == ( const tnlMatrix< Real, Device, Index >& m ) const;
 
    bool operator != ( const tnlMatrix< Real, Device, Index >& m ) const;
+
+   /*!***
+    * This method is the same as operator == but it can work in verbose mode
+    * which is useful when comparing large matrices.
+    */
+   bool compare( const tnlMatrix< Real, Device, Index >& m, bool verbose = true ) const;
 
    //! Method for saving the matrix to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -191,13 +199,23 @@ bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, Device, Index >& m ) const
 {
+   return compare( m, false );
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device, Index >& m, bool verbose ) const
+{
    if( this -> getSize() != m. getSize() )
       return false;
    const Index size = this -> getSize();
    for( Index i = 0; i < size; i ++ )
       for( Index j = 0; j < size; j ++ )
+      {
+         if( verbose )
+            cout << "Comparing: " << i << " / " << size << "\r";
          if( this -> getElement( i, j ) != m. getElement( i, j ) )
              return false;
+      }
    return true;
 }
 

@@ -90,6 +90,11 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
    //! Set size of the vector using another vector as a template
    bool setLike( const tnlLongVector< Real, tnlCuda, Index >& v );
 
+   /*!**
+    * Free allocated memory
+    */
+   void reset();
+
    void swap( tnlLongVector< Real, tnlCuda, Index >& u );
 
    //! Returns type of this vector written in a form of C++ template type.
@@ -384,6 +389,24 @@ template< typename Real, typename Index >
 bool tnlLongVector< Real, tnlCuda, Index > :: setLike( const tnlLongVector< Real, tnlCuda, Index >& v )
 {
    return setSize( v. getSize() );
+};
+
+template< typename Real, typename Index >
+void tnlLongVector< Real, tnlCuda, Index > :: reset()
+{
+#ifdef HAVE_CUDA
+   dbgFunctionName( "tnlLongVectorCUDA", "reset" );
+   if( this -> data && ! this -> shared_data )
+   {
+      dbgCout( "Freeing allocated memory on CUDA device of " << this -> getName() );
+      cudaFree( this -> data );
+      if( ! checkCUDAError( __FILE__, __LINE__ ) )
+      this -> data = NULL;
+   }
+   this -> size = 0;
+   this -> shared_data = false;
+   this -> data = 0;
+#endif
 };
 
 template< typename Real, typename Index >

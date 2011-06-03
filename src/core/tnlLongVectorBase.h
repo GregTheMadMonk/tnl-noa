@@ -61,6 +61,8 @@ template< typename Real, typename Index = int > class tnlLongVectorBase : public
 
    virtual bool setSize( Index _size ) = 0;
 
+   virtual void reset() = 0;
+
    Index getSize() const
    {
       return size;

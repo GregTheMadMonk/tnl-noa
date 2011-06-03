@@ -108,8 +108,7 @@ template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
-   //this -> matrix. setSize( 0 );
-   //this -> matrix. setNonzeroElements( 0 );
+   this -> matrix. reset();
 }
 
 template< typename Real,
@@ -214,7 +213,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
                                   this -> adaptiveGroupSizeStrategy );
          rgCsrMatrix. copyFrom( csrMatrix );
          printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
-         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF<a>,<a href=\"" << matrixHtmlFile << "\"> HTML </td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
          logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
       }
       const double speedUp = this -> getGflops() / csrGflops;

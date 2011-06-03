@@ -59,6 +59,8 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! Allocate memory for the nonzero elements.
    bool setNonzeroElements( Index elements );
 
+   void reset();
+
    Index getNonzeroElements() const;
 
    Index getArtificialZeroElements() const;
@@ -323,6 +325,20 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements
 };
 
 template< typename Real, tnlDevice Device, typename Index >
+void tnlRgCSRMatrix< Real, Device, Index > :: reset()
+{
+   this -> size = 0;
+   nonzeroElements. reset();
+   columns. reset();
+   groupOffsets. reset();
+   nonzeroElementsInRow. reset();
+   adaptiveGroupSizes. reset();
+   useAdaptiveGroupSize = false;
+   last_nonzero_element = 0;
+};
+
+
+template< typename Real, tnlDevice Device, typename Index >
 Index tnlRgCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
    tnlAssert( nonzeroElements. getSize() > artificial_zeros, );
@@ -451,34 +467,31 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
          for( Index k = 0; k < currentGroupSize; k ++ )
          {
             /****
-             * We start with the offset k within the block and
-             * we insert the data with a stride equal to the block size.
+             * We start with the offset k within the group and
+             * we insert the data with a stride equal to the group size.
              * j - is the element position in the nonzeroElements in this matrix
              */
             Index j = groupOffsets[ groupId ] + k;                   // position of the first element of the row
-            //dbgExpr( element_row );
-            if( elementRow < this -> getSize() )
-            {
 
-               /****
-                * Get the element position
-                */
-               Index elementPos = csr_matrix. row_offsets[ elementRow ];
-               while( elementPos < csr_matrix. row_offsets[ elementRow + 1 ] )
-               {
-                  dbgCout( "Inserting on position " << j
-                         << " data " << csr_matrix. nonzero_elements[ elementPos ]
-                         << " at column " << csr_matrix. columns[ elementPos ] );
-                  nonzeroElements[ j ] = csr_matrix. nonzero_elements[ elementPos ];
-                  columns[ j ] = csr_matrix. columns[ elementPos ];
-                  elementPos ++;
-                  j += currentGroupSize;
-               }
-               elementRow ++;
+            /****
+             * Get the element position
+             */
+            tnlAssert( elementRow < this -> getSize(), cerr << "Element row = " << elementRow );
+            Index elementPos = csr_matrix. row_offsets[ elementRow ];
+            while( elementPos < csr_matrix. row_offsets[ elementRow + 1 ] )
+            {
+               dbgCout( "Inserting on position " << j
+                      << " data " << csr_matrix. nonzero_elements[ elementPos ]
+                      << " at column " << csr_matrix. columns[ elementPos ] );
+               nonzeroElements[ j ] = csr_matrix. nonzero_elements[ elementPos ];
+               columns[ j ] = csr_matrix. columns[ elementPos ];
+               elementPos ++;
+               j += currentGroupSize;
             }
+            elementRow ++;
          }
       }
-	}
+  	}
 	if( Device == tnlCuda )
 	{
 	   tnlAssert( false,
@@ -516,7 +529,6 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    groupOffsets = rgCSRMatrix. groupOffsets;
    nonzeroElementsInRow = rgCSRMatrix. nonzeroElementsInRow;
    last_nonzero_element = rgCSRMatrix. last_nonzero_element;
-
    return true;
 };
 
@@ -613,6 +625,58 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
 
    if( Device == tnlHost )
    {
+//#ifdef UNDEF
+      /****
+       * This is exact emulation of the CUDA kernel
+       */
+      Index blockSize = 256; //this -> getCUDABlockSize();
+      const Index size = this -> getSize();
+      Index gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
+      for( Index blockIdx = 0; blockIdx < gridSize; blockIdx ++ )
+         for( Index threadIdx = 0; threadIdx < blockSize; threadIdx ++ )
+         {
+            const Index rowIndex = blockIdx * blockSize + threadIdx;
+            if( rowIndex >= size )
+               continue;
+
+            const Index groupIndex = floor( threadIdx / this -> groupSize );
+            const Index globalGroupIndex = blockIdx * ( blockSize / groupSize ) + groupIndex;
+            const Index rowOffsetInGroup = rowIndex % this -> groupSize ;
+
+            /****
+             * The last block may be smaller then the global block_size.
+             * We store it in the current_block_size
+             */
+            Index currentGroupSize = this -> groupSize;
+            if( ( globalGroupIndex + 1 ) * this -> groupSize > size )
+               currentGroupSize =  size % this -> groupSize;
+
+            Real product( 0.0 );
+            Index pos = groupOffsets[ globalGroupIndex ] + rowOffsetInGroup;
+            const Index nonzeros = nonzeroElementsInRow[ rowIndex ];
+
+            for( Index i = 0; i < nonzeros; i ++ )
+            {
+               //if( columns[ pos ] < 0 || columns[ pos ] >= size )
+               //   printf( "rowIndex = %d currentGroupSize = %d groupSize = %d columns[ pos ] = %d\n", rowIndex, currentGroupSize, groupSize, columns[ pos ] );
+               Index column = columns[ pos ];
+               if( column != -1 )
+                  product += nonzeroElements[ pos ] * vec[ column ];
+               else
+                  cerr << "row = " << rowIndex
+                       << " globalGroupId = " << globalGroupIndex
+                       << " i = " << i
+                       << " group size = " << currentGroupSize
+                       << " offset = " << pos
+                       << " nonzeros = " <<  nonzeros << endl;
+               pos += currentGroupSize;
+            }
+            //printf( "rowIndex = %d \n", rowIndex );
+            //Real* x = const_cast< Real* >( vec_x );
+            result[ rowIndex ] = product;
+         }
+//#endif
+#ifdef UNDEF
       const Index blocks_num = groupOffsets. getSize() - 1;
       const Index* row_lengths = nonzeroElementsInRow. getVector();
       const Real* values = nonzeroElements. getVector();
@@ -660,48 +724,49 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
          }
          firstRowOfGroup += currentGroupSize;
       }
+#endif
    }
    if( Device == tnlCuda )
    {
 #ifdef HAVE_CUDA
-   Index blockSize = this -> getCUDABlockSize();
-   //if( ! blockSize )
-   //   blockSize = this -> getGroupSize();
-   const Index size = this -> getSize();
+      if( this -> useAdaptiveGroupSize )
+         return;
+      Index blockSize = this -> getCUDABlockSize();
+      const Index size = this -> getSize();
 
-   bool useCache = bindRgCSRMatrixCUDATexture( vec. getVector(),
-                                 vec. getSize() );
+      bool useCache = false; //bindRgCSRMatrixCUDATexture( vec. getVector(),
+                             //             vec. getSize() );
 
-   /****
-    * The following works only with constant group size
-    */
-   cudaThreadSynchronize();
-   int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
-   dim3 gridDim( gridSize ), blockDim( blockSize );
-   if( useCache )
-      sparseCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
-                                                                                        this -> groupSize,
-                                                                                        nonzeroElements. getVector(),
-                                                                                        columns. getVector(),
-                                                                                        groupOffsets. getVector(),
-                                                                                        nonzeroElementsInRow. getVector(),
-                                                                                        vec. getVector(),
-                                                                                        result. getVector() );
-   else
-      sparseCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
-                                                                                        this -> groupSize,
-                                                                                        nonzeroElements. getVector(),
-                                                                                        columns. getVector(),
-                                                                                        groupOffsets. getVector(),
-                                                                                        nonzeroElementsInRow. getVector(),
-                                                                                        vec. getVector(),
-                                                                                        result. getVector() );
-    cudaThreadSynchronize();
-    if( useCache )
-       unbindRgCSRMatrixCUDATexture( vec. getVector() );
-    CHECK_CUDA_ERROR;
+      /****
+       * The following works only with constant group size
+       */
+      //cudaThreadSynchronize();
+      int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
+      dim3 gridDim( gridSize ), blockDim( blockSize );
+      if( useCache )
+         sparseCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
+                                                                                           this -> groupSize,
+                                                                                           nonzeroElements. getVector(),
+                                                                                           columns. getVector(),
+                                                                                           groupOffsets. getVector(),
+                                                                                           nonzeroElementsInRow. getVector(),
+                                                                                           vec. getVector(),
+                                                                                           result. getVector() );
+      else
+         sparseCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
+                                                                                           this -> groupSize,
+                                                                                           nonzeroElements. getVector(),
+                                                                                           columns. getVector(),
+                                                                                           groupOffsets. getVector(),
+                                                                                           nonzeroElementsInRow. getVector(),
+                                                                                           vec. getVector(),
+                                                                                           result. getVector() );
+       cudaThreadSynchronize();
+       //if( useCache )
+       //   unbindRgCSRMatrixCUDATexture( vec. getVector() );
+       CHECK_CUDA_ERROR;
 #else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+       cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
    }
 
@@ -749,6 +814,13 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
               k ++ )
             str << setprecision( 5 ) << setw( 8 )
                 << columns. getElement( k ) << " ";
+         str << endl << "Offsets: ";
+         for( Index k = groupOffsets. getElement( i );
+              k < groupOffsets. getElement( i + 1 );
+              k ++ )
+            str << setprecision( 5 ) << setw( 8 )
+                << k << " ";
+
       }
       str << endl;
       return;
@@ -996,23 +1068,28 @@ __global__ void sparseCSRMatrixVectorProductKernel( Index size,
    if( rowIndex >= size )
       return;
 
-   const Index groupIndex = threadIdx . x / groupSize ;
+   const Index groupIndex = threadIdx. x / groupSize ;
    const Index rowOffsetInGroup = rowIndex % groupSize ;
+   const Index globalGroupIndex = rowIndex / groupSize;
 
    /****
     * The last block may be smaller then the global block_size.
     * We store it in the current_block_size
     */
    Index currentGroupSize = groupSize;
-   if( ( blockIdx. x + 1 ) * blockDim. x > size )
+   if( ( globalGroupIndex + 1 ) * groupSize > size )
       currentGroupSize =  size % groupSize;
 
    Real product( 0.0 );
-   Index pos = groupOffsets[ rowIndex / groupSize ] + rowOffsetInGroup;
+   Index pos = groupOffsets[ globalGroupIndex ] + rowOffsetInGroup;
    const Index nonzeros = nonzerosInRow[ rowIndex ];
    for( Index i = 0; i < nonzeros; i ++ )
    {
-      product += nonzeroElements[ pos ] * fetchRgCSRVecX< useCache >( columns[ pos ], vec_x );
+      //Index column = columns[ pos ];
+      //if( column != -1 )
+         product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
+      //else
+      //   printf( "rowIndex = %d currentGroupSize = %d groupSize = %d columns[ pos ] = %d\n", rowIndex, currentGroupSize, groupSize, columns[ pos ] );
       pos += currentGroupSize;
    }
    vec_b[ rowIndex ] = product;

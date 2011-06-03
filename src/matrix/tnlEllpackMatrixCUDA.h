@@ -34,6 +34,8 @@ class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
 
+   void reset();
+
    Index getRowLength() const;
 
    bool setNonzeroElements( Index elements );
@@ -193,6 +195,19 @@ bool tnlEllpackMatrix< Real, tnlCuda, Index > :: setNonzeroCOOElements( Index el
    coo_columns. setValue( -1 );
    last_coo_nonzero_element = 0;
    return true;
+};
+
+template< typename Real, typename Index >
+void tnlEllpackMatrix< Real, tnlCuda, Index > :: reset()
+{
+   ellpack_nonzero_elements. reset();
+   ellpack_columns. reset();
+   coo_nonzero_elements. reset();
+   coo_rows. reset();
+   coo_columns. reset();
+   row_length = 0;
+   artificial_zeros = 0;
+   last_coo_nonzero_element = 0;
 };
 
 template< typename Real, typename Index >

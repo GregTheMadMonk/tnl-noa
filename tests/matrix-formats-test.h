@@ -110,8 +110,8 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	if( have_full_matrix )
 	{
 		if( verbose )
-			cout << "Comparing the FULL and the CSR matrix ... " << flush;
-		if( *full_matrix == *csr_matrix )
+			cout << "Comparing the FULL and the CSR matrix ... " << endl;
+		/*if( full_matrix -> compare( *csr_matrix, true ) )
 		{
 			test_full_csr = true;
 			if( verbose )
@@ -122,7 +122,7 @@ bool testMatrixFormats( const tnlString& input_file_name,
 		   csr_matrix -> printOut( cout, 10 );
 			if( verbose )
 				cout << "FAILED." << endl;
-		}
+		}*/
 		delete full_matrix;
 	}
 
@@ -131,8 +131,8 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	coacsr_matrix -> copyFrom( *csr_matrix );
 
 	if( verbose )
-		cout << "Comparing the CSR and the Coalesced CSR matrix ... " << flush;
-	if( *coacsr_matrix == *csr_matrix )
+		cout << "Comparing the CSR and the Coalesced CSR matrix ... " << endl;
+	/*if( coacsr_matrix -> compare( *csr_matrix, true ) )
 	{
 		test_coa_csr = true;
 		if( verbose )
@@ -140,7 +140,7 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	}
 	else
 		if( verbose )
-			cout << "FAILED." << endl;
+			cout << "FAILED." << endl;*/
 
 #ifdef HAVE_CUDA
 	if( verbose )
@@ -188,9 +188,10 @@ bool testMatrixFormats( const tnlString& input_file_name,
    adaptiveRgCsrMatrix -> copyFrom( *csr_matrix );
 
    if( verbose )
-      cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << flush;
+      cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << endl;
 
    for( int i = 0; i < adaptiveRgCsrMatrix -> getSize(); i ++ )
+   {
       for( int j = 0; j < adaptiveRgCsrMatrix -> getSize(); j ++ )
          if( adaptiveRgCsrMatrix -> getElement( i, j ) != csr_matrix -> getElement( i, j ) )
          {
@@ -200,8 +201,10 @@ bool testMatrixFormats( const tnlString& input_file_name,
             test_arg_csr = false;
             return false;
          }
+      cout << "Comparing: " << i << " / " << size << "\r";
+   }
 
-   if( *adaptiveRgCsrMatrix == *csr_matrix )
+   if( adaptiveRgCsrMatrix -> compare( *csr_matrix, true ) )
    {
       test_arg_csr = true;
       if( verbose )

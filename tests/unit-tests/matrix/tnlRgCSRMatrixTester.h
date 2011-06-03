@@ -301,6 +301,8 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       csrMatrix. vectorProduct( x, b1 );
       argcsrMatrix. vectorProduct( x, b2 );
 
+
+
       CPPUNIT_ASSERT( b1 == b2 );
    }
 

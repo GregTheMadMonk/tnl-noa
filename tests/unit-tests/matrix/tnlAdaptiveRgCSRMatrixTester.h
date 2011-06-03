@@ -180,8 +180,8 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
 
    void ifBcsstk20MatrixIsStoredProperly()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
-      tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
+      tnlCSRMatrix< Real > csrMatrix( "test-matrix:bcsstk20" );
+      tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:bcsstk20" );
       const int size = 12;
       setBcsstk20Matrix( csrMatrix );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -200,8 +200,8 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
    void ifSpmvWithEmptyMatrixWorks()
    {
       const int size = 35;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
-      tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
+      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
+      tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
       setEmptyMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
@@ -241,7 +241,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
-      
+
       tnlLongVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
       tnlLongVector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );

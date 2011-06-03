@@ -46,6 +46,8 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
 
    bool setNonzeroElements( Index n );
 
+   void reset();
+
    Index getNonzeroElements() const;
 
    Index getSize() const;
@@ -126,6 +128,12 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: setNonzeroElements( Index n )
 {
    return true;
+};
+
+template< typename Real, tnlDevice Device, typename Index >
+void tnlFullMatrix< Real, Device, Index > :: reset()
+{
+   tnlArray< 2, Real, Device, Index > :: reset();
 };
 
 template< typename Real, tnlDevice Device, typename Index >

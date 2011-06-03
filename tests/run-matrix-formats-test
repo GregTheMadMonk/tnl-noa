@@ -4,7 +4,7 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
 PWD=`pwd`
 IWD="$PWD"
-DEBUG="yes"
+DEBUG="no"
 MATRIX_FORMATS_TEST="$IWD/matrix-formats-test-dbg"
 #MATRIX_FORMATS_TEST_DBG="$IWD/.libs/lt-matrix-formats-test-dbg"
 

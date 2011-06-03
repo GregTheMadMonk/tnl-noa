@@ -430,22 +430,22 @@ do
       #######
       ## AMD ordering
       ###  
-      if test ! -e $unzipped_matrix.amd.float.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.amd.float.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.amd in single precision ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.amd.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.float.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --verbose 1
-      fi
-      if test ! -e $unzipped_matrix.amd.double.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.amd.double.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.amd in double precison ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.amd.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.double.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --verbose 1
-      fi
+      #if test ! -e $unzipped_matrix.amd.float.bin.bz2;
+      #then
+      #   echo "Missing $unzipped_matrix.amd.float.bin.bz2 !!! Run the script 'convert-matrices'."
+      #else
+      #   echo "Checking with the matrix $unzipped_matrix.amd in single precision ..."
+      #   export CUDA_PROFILE_LOG=$unzipped_matrix.amd.float.log
+      #   $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.float.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --verbose 1
+      #fi
+      #if test ! -e $unzipped_matrix.amd.double.bin.bz2;
+      #then
+      #   echo "Missing $unzipped_matrix.amd.double.bin.bz2 !!! Run the script 'convert-matrices'."
+      #else
+      #   echo "Checking with the matrix $unzipped_matrix.amd in double precison ..."
+      #   export CUDA_PROFILE_LOG=$unzipped_matrix.amd.double.log 
+      #   $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.double.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --verbose 1
+      #fi
           
    fi
 done

@@ -61,6 +61,8 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
    //! Allocate memory for the nonzero elements.
    bool setNonzeroElements( Index elements );
 
+   void reset();
+
    Index getNonzeroElements() const;
 
    //! Return the lengths of the column sequences dictionary.
@@ -226,6 +228,18 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: setNonzeroElements( Index eleme
    column_sequences_length = 0;
    return true;
 };
+
+template< typename Real, typename Index >
+void tnlFastCSRMatrix< Real, tnlHost, Index > :: reset()
+{
+   nonzero_elements. reset();
+   row_offsets. reset();
+   column_sequences. reset();
+   columns_sequences_offsets. reset();
+   column_sequences_lengths. reset();
+   last_nonzero_element = 0;
+   column_sequences_length = 0;
+}
 
 template< typename Real, typename Index >
 Index tnlFastCSRMatrix< Real, tnlHost, Index > :: getNonzeroElements() const
