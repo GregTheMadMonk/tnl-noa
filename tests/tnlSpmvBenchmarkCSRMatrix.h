@@ -37,12 +37,40 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
                          const tnlString& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
+   Real getForwardBackwardDifference() const;
+
+   protected:
+
+   /*!***
+    * This measures the difference between SpMV result when used forward or bakward
+    * matrix columns ordering.
+    */
+   Real forwardBackwardDifference;
 };
 
 template< typename Real, typename Index>
 bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
    this -> matrix = matrix;
+
+   const Index size = matrix. getSize();
+   tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
+   refX. setValue( 1.0 );
+   this -> matrix. vectorProduct( refX, refB );
+   this -> matrix. setBackwardSpMV( true );
+   this -> matrix. vectorProduct( refX, backwardRefB );
+   this -> matrix. setBackwardSpMV( false );
+   Real error( 0.0 ), maxError( 0.0 );
+   for( Index j = 0; j < refB. getSize(); j ++ )
+   {
+      if( refB[ j ] != 0.0 && backwardRefB[ j ] != 0.0 )
+         error = ( Real ) fabs( refB[ j ] - backwardRefB[ j ] ) / Min( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
+      else
+         error = Max( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
+      maxError = Max( error, maxError );
+   }
+   forwardBackwardDifference = maxError;
+
    return true;
 }
 
@@ -62,9 +90,9 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
         << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
         << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
    if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
+        cout << right << setw( this -> benchmarkStatusColumnWidth ) << " OK - SpMV diff. " << getForwardBackwardDifference();
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "FAILED ";
+        cout << right << setw( this -> benchmarkStatusColumnWidth ) << " FAILED ";
    cout << endl;
 }
 
@@ -80,6 +108,13 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFi
       logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
    else
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+}
+
+template< typename Real,
+          typename Index >
+Real tnlSpmvBenchmarkCSRMatrix< Real, Index > :: getForwardBackwardDifference() const
+{
+   return forwardBackwardDifference;
 }
 
 #endif /* TNLSPMVBENCHMARKCSRMATRIX_H_ */

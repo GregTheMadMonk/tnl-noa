@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 
-#ifndef TNLRgCSRMATRIX_H_
-#define TNLRgCSRMATRIX_H_
+#ifndef TNLARgCSRMATRIX_H_
+#define TNLARgCSRMATRIX_H_
 
 #include <iostream>
 #include <iomanip>
@@ -663,8 +663,8 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                const Index column = columns[ offset ];
                if( column != -1 )
                {
-                  sum += nonzeroElements[ offset ] * vec[ column ];
-                  //cout << "Adding " << nonzeroElements[ offset ] * vec[ column ] << endl;
+                  sum += nonzeroElements[ offset ]; // * vec[ column ]; TODO:!!!!!!
+                  //cout << "A. Chunk = " << threadIdx << " Value = " << setprecision( 10 ) << nonzeroElements[ offset ] << endl;
                }
             }
             partialSums[ threadIdx ] = sum;
@@ -678,26 +678,99 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
          {
             if( threadIdx < groupInfo[ bId ]. size )
             {
-               Real sum = 0;
                const Index row = groupInfo[ bId ]. firstRow + threadIdx;
                Index firstChunk = getFirstThreadInRow( row, groupId );
                Index lastChunk = getLastThreadInRow( row, groupId );
                dbgCout( "firstChunk = " << firstChunk << " lastChunk = " << lastChunk );
+
+               Real sum = 0;
                for( Index i = firstChunk; i < lastChunk; i++ )
                   sum += partialSums[ i ];
-
-
                result[ row ] = sum;
-               Real result2( 0.0 );
+
+#ifdef TNLARgCSRMATRIX_CHECK_SPMV
+               /****
+                * Check the partial sums
+                */
+               if( ! groupInfo[ bId ]. chunkSize )
+                  continue;
+               Index rowCounter( 0 ), chunkCounter( firstChunk );
+               Real partialSum( 0.0 );
+               for( Index j = 0; j < this -> getSize(); j ++)
+               {
+                  const Real val = this -> getElement( row, j );
+                  if( val != 0 )
+                  {
+                     if( row == 2265 )
+                        cerr << "A. col = " << j << " val = " << val << endl;
+                     partialSum += val; // * vec[ j ]; TODO:!!!!!!!!!!!!!!!!!!
+                     rowCounter ++;
+                     //cout << "B. Chunk = " << chunkCounter << " Value = " << setprecision( 10 ) << val << endl;
+                     if( rowCounter % groupInfo[ bId ]. chunkSize == 0 )
+                     {
+                        if( chunkCounter >= lastChunk )
+                           cerr << "I found more chunks ( ID. " << chunkCounter << " ) than I expected ( max. ID " << lastChunk << ") on the line " << row << endl;
+                        if( partialSum != partialSums[ chunkCounter ] )
+                        {
+                           cerr << "Partial sum error: row = " << row
+                                << " chunk = " << chunkCounter
+                                << " partialSums[ " << chunkCounter << " ] = " << partialSums[ chunkCounter ]
+                                << " partialSum = " << partialSum << endl;
+                           partialSums[ chunkCounter ] = partialSum;
+                        }
+                        chunkCounter ++;
+                        partialSum = 0;
+                     }
+                  }
+               }
+               if( partialSum )
+               {
+                  if( partialSum != partialSums[ chunkCounter ] )
+                  {
+                     cerr << "Partial sum error: row = " << row
+                          << " chunk = " << chunkCounter
+                          << " partialSums[ " << chunkCounter << " ] = " << partialSums[ chunkCounter ]
+                          << " partialSum = " << partialSum << endl;
+                     partialSums[ chunkCounter ] = partialSum;
+                  }
+                  chunkCounter ++;
+               }
+               if( chunkCounter < lastChunk - 1 )
+               {
+                  cerr << "I found wrong number of chunks ( ID. " << chunkCounter << " ) than I expected ( max. ID " << lastChunk << ") on the line " << row << endl;
+                  for( Index i = chunkCounter; i < lastChunk; i ++ )
+                  {
+                     cerr << "   partialSums[ " << i << " ] = " << partialSums[ i ] << endl;
+                     //partialSums[ i ] = 0.0;
+                  }
+               }
+
+
+               /****
+                * Check the result with the method getElement
+                */
+               Real result2( 0.0 ), result3( 0.0 );
                for( Index i = 0; i < this -> getSize(); i ++ )
-                  result2 += this -> getElement( row, i ) * vec[ i ];
+               {
+                  result2 += this -> getElement( row, i );// * vec[ i ];
+                  result3 += this -> getElement( row, this -> getSize() - i );
+                  if( row == 2265 && this -> getElement( row, i ) != 0.0 )
+                     cerr << "B. col = " << i << " val = " << this -> getElement( row, i ) << endl;
+               }
+
                if( result2 != sum )
                {
-                  cerr << "row = " << row << " sum = " << sum << " result2 = " << result2 << endl;
-                  result[ row ] = result2;
+                  cerr << "row = " << row << " sum = " << sum << " result2 = " << result2 << " diff = " << sum - result2 << endl;
+                  //result[ row ] = result2;
                }
+               if( result2 != result3 )
+               {
+                  cerr << "!!!!!!! row = " << row << " result2 = " << result2 << " result3 = " << result3 << " diff = " << result2 - result3 << endl;
+                  //result[ row ] = result2;
+               }
+
                //cerr << "result[" << row << "] = " << result[ row ] << endl;
-               // TODO: zkusit nasobeni pomoci getElement
+#endif // TNLARgCSRMATRIX_CHECK_SPMV
             }
          }
       }
@@ -1029,4 +1102,4 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 #endif // ifdef HAVE_CUDA
 
 
-#endif /* TNLRgCSRMATRIX_H_ */
+#endif /* TNLARgCSRMATRIX_H_ */

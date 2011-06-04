@@ -185,7 +185,6 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                            false );
    }
 
-#ifdef UNDEF
    /****
     * Hybrid format benchmark
     */
@@ -229,7 +228,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
    hostRgCsrMatrixBenchmark. setup( csrMatrix );
    hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-   //hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hostRgCsrMatrixBenchmark. tearDown();
    if( logFileName )
       hostRgCsrMatrixBenchmark. writeToLogTable( logFile,
@@ -246,7 +245,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
       if( logFileName )
          cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                     csrMatrixBenchmark. getGflops(),
@@ -255,7 +254,6 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                                     false );
    }
    cudaRgCsrMatrixBenchmark. tearDown();
-
 
    /****
     * Row-Grouped CSR format with reordered rows
@@ -304,7 +302,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       hostRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
-      //hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+      hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
       if( logFileName )
          hostRgCsrMatrixBenchmark. writeToLogTable( logFile,
@@ -321,7 +319,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-         //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                        csrMatrixBenchmark. getGflops(),
@@ -333,18 +331,17 @@ bool benchmarkMatrix( const tnlString& inputFile,
    }
    csrMatrix. vectorProduct( refX, refB );
 
-#endif
    /****
     * Adaptive Row-Grouped CSR format
     */
 
-   //for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
-   for( int desiredChunkSize = 1; desiredChunkSize <= 1; desiredChunkSize *= 2 )
+   for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
+   //for( int desiredChunkSize = 1; desiredChunkSize <= 1; desiredChunkSize *= 2 )
    {
       tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > cudaArgCsrMatrixBenchmark;
       cudaArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
-      //for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
-      for( int cudaBlockSize = 32; cudaBlockSize <= 32; cudaBlockSize *= 2 )
+      for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
+      //for( int cudaBlockSize = 32; cudaBlockSize <= 32; cudaBlockSize *= 2 )
       {
          cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          cudaArgCsrMatrixBenchmark. setup( csrMatrix );
@@ -358,7 +355,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                                         csrMatrix,
                                                         true );
       }
-      //cudaRgCsrMatrixBenchmark. tearDown();
+      cudaRgCsrMatrixBenchmark. tearDown();
    }
 
 

@@ -107,6 +107,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    void vectorProduct( const tnlLongVector< Real, Device, Index >& x,
                        tnlLongVector< Real, Device, Index >& b ) const;
 
+   void setBackwardSpMV( bool backwardSpMV );
+
    bool performSORIteration( const Real& omega,
                              const tnlLongVector< Real, Device, Index >& b,
                              tnlLongVector< Real, Device, Index >& x,
@@ -204,6 +206,13 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    //! The last non-zero element is at the position last_non_zero_element - 1
    Index last_nonzero_element;
 
+   /*!***
+    * In floating point arithmetics there can be significant difference if we
+    * multiply matrix and vector with columns indexed increasingly and decreasingly.
+    * One can switch these two approaches by setting the following variable.
+    */
+   bool backwardSpMV;
+
    friend class tnlMatrix< Real, tnlHost, Index >;
    friend class tnlMatrix< Real, tnlCuda, Index >;
    friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
@@ -220,7 +229,8 @@ tnlCSRMatrix< Real, Device, Index > :: tnlCSRMatrix( const tnlString& name )
      nonzero_elements( name + " : nonzero-elements" ),
      columns( name + " : columns" ),
      row_offsets( name + " : row_offsets" ),
-     last_nonzero_element( 0 )
+     last_nonzero_element( 0 ),
+     backwardSpMV( false )
 {
 };
 
@@ -575,7 +585,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
-                                                            tnlLongVector< Real, Device, Index >& result ) const
+                                                           tnlLongVector< Real, Device, Index >& result ) const
 {
    tnlAssert( vec. getSize() == this -> getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
@@ -594,18 +604,36 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
 #endif
    for( Index row = 0; row < this -> size; row ++ )
    {
-	   Index i = rw_offsets[ row ];
-	   Index last_in_row = rw_offsets[ row + 1 ];
-	   Real product( 0.0 );
-	   while( i < last_in_row )
+      Real product( 0.0 );
+      if( ! backwardSpMV )
       {
-	      product += els[ i ] * vec[ cols[ i ] ];
-	      i ++;
+         Index i = rw_offsets[ row ];
+         Index last_in_row = rw_offsets[ row + 1 ];
+         while( i < last_in_row )
+         {
+            product += els[ i ] * vec[ cols[ i ] ];
+            i ++;
+         }
+      }
+      else
+      {
+         Index i = rw_offsets[ row + 1 ] - 1;
+         Index first_in_row = rw_offsets[ row ];
+         while( i >= first_in_row )
+         {
+            product += els[ i ] * vec[ cols[ i ] ];
+            i --;
+         }
       }
 	   result[ row ] = product;
    }
 };
 
+template< typename Real, tnlDevice Device, typename Index >
+void tnlCSRMatrix< Real, Device, Index > :: setBackwardSpMV( bool backwardSpMV )
+{
+   this -> backwardSpMV = backwardSpMV;
+}
 
 template< typename Real, tnlDevice Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const

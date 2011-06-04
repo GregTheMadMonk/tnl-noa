@@ -625,7 +625,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
 
    if( Device == tnlHost )
    {
-//#ifdef UNDEF
+#ifdef UNDEF
       /****
        * This is exact emulation of the CUDA kernel
        */
@@ -675,8 +675,8 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
             //Real* x = const_cast< Real* >( vec_x );
             result[ rowIndex ] = product;
          }
-//#endif
-#ifdef UNDEF
+#endif
+//#ifdef UNDEF
       const Index blocks_num = groupOffsets. getSize() - 1;
       const Index* row_lengths = nonzeroElementsInRow. getVector();
       const Real* values = nonzeroElements. getVector();
@@ -706,7 +706,9 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
             //const Index row = first_row + block_row;
             result[ row ] = 0.0;
             if( csr_col < row_lengths[ row ] )
+            {
                result[ row ] += values[ block_begining ] * vec[ cols[ block_begining ] ];
+            }
             block_begining ++;
             row ++;
          }
@@ -717,14 +719,18 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
             {
                //const Index row = first_row + block_row;
                if( csr_col < row_lengths[ row ] )
+               {
                   result[ row ] += values[ block_begining ] * vec[ cols[ block_begining ] ];
+                  if( cols[ block_begining ] < 0 )
+                     cerr << "XXX" << endl;
+               }
                block_begining ++;
                row ++;
             }
          }
          firstRowOfGroup += currentGroupSize;
       }
-#endif
+//#endif
    }
    if( Device == tnlCuda )
    {
