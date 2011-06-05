@@ -188,8 +188,9 @@ bool testMatrixFormats( const tnlString& input_file_name,
    adaptiveRgCsrMatrix -> copyFrom( *csr_matrix );
 
    if( verbose )
-      cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... " << endl;
+      cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... \r";
 
+   test_arg_csr = true;
    for( int i = 0; i < adaptiveRgCsrMatrix -> getSize(); i ++ )
    {
       for( int j = 0; j < adaptiveRgCsrMatrix -> getSize(); j ++ )
@@ -201,18 +202,19 @@ bool testMatrixFormats( const tnlString& input_file_name,
             test_arg_csr = false;
             return false;
          }
-      cout << "Comparing: " << i << " / " << size << "\r";
+      if( verbose )
+         cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ...  " << i << " / " << size << "\r" << flush;
    }
 
-   if( adaptiveRgCsrMatrix -> compare( *csr_matrix, true ) )
+   //if( adaptiveRgCsrMatrix -> compare( *csr_matrix, true ) )
+   if( test_arg_csr == true )
    {
-      test_arg_csr = true;
       if( verbose )
-         cout << "OK." << endl;
+         cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... OK.               " << endl;
    }
    else
       if( verbose )
-         cout << "FAILED." << endl;
+         cout << "Comparing the CSR and the Adaptive Row-grouped CSR matrix ... FAILED.            " << endl;
    //adaptiveRgCsrMatrix -> printOut( cout, 10 );
    //csr_matrix -> printOut( cout, 10 );
 

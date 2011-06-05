@@ -392,24 +392,32 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          Index threadsLeft = cudaBlockSize - usedThreads;
          dbgExpr( usedThreads );
          dbgExpr( threadsLeft );
-         for( Index i = 0; i < threadsLeft; i++)
-            threadsPerRow[ i % rowsInGroup ] ++;
-         /*while( usedThreads < cudaBlockSize )
+         //for( Index i = 0; i < threadsLeft; i++)
+         //   threadsPerRow[ i % rowsInGroup ] ++;
+         while( usedThreads < cudaBlockSize )
          {
-            Index maxChunkSize( 0 ), maxChunkSizeRow;
-            for( Index row = groupBegin; row < groupEnd; row++ )
+            Index maxChunkSize( 0 );
+            for( Index row = groupBegin; row < groupEnd; row ++ )
             {
                double nonzerosInRow = csrMatrix. getNonzeroElementsInRow( row );
-               const Index chunkSize = ceil( nonzerosInRow / ( double ) threadsPerRow[ row - groupBegin ] );
-               if( chunkSize > maxChunkSize )
+               Index chunkSize( 0 );
+               if( threadsPerRow[ row - groupBegin ] != 0 )
+                  chunkSize = ceil( nonzerosInRow / ( double ) threadsPerRow[ row - groupBegin ] );
+               maxChunkSize = Max( chunkSize, maxChunkSize );
+            }
+            for( Index row = groupBegin; row < groupEnd; row ++ )
+            {
+               double nonzerosInRow = csrMatrix. getNonzeroElementsInRow( row );
+               Index chunkSize( 0 );
+               if( threadsPerRow[ row - groupBegin ] != 0 )
+                  chunkSize = ceil( nonzerosInRow / ( double ) threadsPerRow[ row - groupBegin ] );
+               if( chunkSize == maxChunkSize && usedThreads < cudaBlockSize )
                {
-                  maxChunkSize = chunkSize;
-                  maxChunkSizeRow = row;
+                  threadsPerRow[ row - groupBegin ] ++;
+                  usedThreads ++;
                }
             }
-            threadsPerRow[ maxChunkSizeRow ] ++;
-            usedThreads ++;
-         }*/
+         }
 
          /****
           * Compute prefix-sum on threadsPerRow and store it in threads
@@ -468,10 +476,6 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
       lastNonzeroElement = numberOfStoredValues;
 
       dbgCout( "Inserting data " );
-      tnlLongVector< Index, tnlHost, Index > counters( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : counters" );
-      tnlLongVector< Index, tnlHost, Index > nonzerosInRow( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : nonZerosInRow" );
-      counters. setSize( cudaBlockSize );
-      nonzerosInRow. setSize( cudaBlockSize );
 
       Index index, baseRow;
       for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
@@ -484,22 +488,10 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 
          baseRow = groupInfo[ groupId ]. firstRow;
          index = groupInfo[ groupId ]. offset;
-         /****
-          * First compute number of threads for each row.
-          */
-         for( Index j = 0; j < groupInfo[ groupId ]. size; j++ )
-         {
-            nonzerosInRow[ j ] = csrMatrix. getNonzeroElementsInRow( baseRow + j );
-            if( j > 0 )
-               threadsPerRow[ j ] = threads[ baseRow + j ] - threads[ baseRow + j - 1 ];
-            else
-               threadsPerRow[ j ] = threads[ baseRow ];
-            counters[ j ] = 0;
-         }
+
          /****
           * Now do the insertion
           */
-
          for( Index groupRow = 0; groupRow < groupInfo[ groupId ]. size; groupRow ++ )
          {
             const Index matrixRow = groupRow + baseRow;
@@ -536,6 +528,42 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
                }
             }
          }
+
+         /*
+         tnlLongVector< Index, tnlHost, Index > counters( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : counters" );
+         counters. setSize( cudaBlockSize );
+         counters. setValue( 0 );
+         for( Index k = 0; k < groupInfo[ groupId ]. chunkSize; k ++ )
+            for( Index row = 0; row < groupInfo[ groupId ]. size; row ++ )
+            {
+               const Index matrixRow = groupRow + baseRow;
+               dbgCout( "group row = " << row <<
+                        " firstThreadInRow = " << this -> getFirstThreadInRow( matrixRow, groupId ) <<
+                        " lastThreadInRow = " << this -> getLastThreadInRow( matrixRow, groupId ) <<
+                        " inserting offset = " << index );
+               for( Index thread = this -> getFirstThreadInRow( matrixRow, groupId );
+                    thread < this -> getLastThreadInRow( matrixRow, groupId );
+                    thread ++ )
+               {
+                  tnlAssert( index < numberOfStoredValues, cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
+                  if( counters[ row ] < csrMatrix. getNonzeroElementsInRow( matrixRow ) )
+                  {
+                     Index pos = csrMatrix. row_offsets[ matrixRow ] + counters[ row ];
+                     //dbgCout( "Inserting data from CSR format at position " << pos << " to AdaptiveRgCSR at " << index );
+                     nonzeroElements[ index ] = csrMatrix. nonzero_elements[ pos ];
+                     columns[ index ] = csrMatrix. columns[ pos ];
+                  }
+                  else
+                  {
+                     //dbgCout( "Inserting artificial zero to AdaptiveRgCSR at " << index );
+                     columns[ index ] = -1;
+                     nonzeroElements[ index ] = 0.0;
+                  }
+                  counters[ row ] ++;
+                  index ++;
+               }
+            }*/
+
       }
 	}
 	if( Device == tnlCuda )
@@ -663,7 +691,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                const Index column = columns[ offset ];
                if( column != -1 )
                {
-                  sum += nonzeroElements[ offset ]; // * vec[ column ]; TODO:!!!!!!
+                  sum += nonzeroElements[ offset ] * vec[ column ];
                   //cout << "A. Chunk = " << threadIdx << " Value = " << setprecision( 10 ) << nonzeroElements[ offset ] << endl;
                }
             }
@@ -703,7 +731,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                   {
                      if( row == 2265 )
                         cerr << "A. col = " << j << " val = " << val << endl;
-                     partialSum += val; // * vec[ j ]; TODO:!!!!!!!!!!!!!!!!!!
+                     partialSum += val * vec[ j ];
                      rowCounter ++;
                      //cout << "B. Chunk = " << chunkCounter << " Value = " << setprecision( 10 ) << val << endl;
                      if( rowCounter % groupInfo[ bId ]. chunkSize == 0 )
@@ -749,24 +777,14 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                /****
                 * Check the result with the method getElement
                 */
-               Real result2( 0.0 ), result3( 0.0 );
+               Real checkSum( 0.0 );
                for( Index i = 0; i < this -> getSize(); i ++ )
-               {
-                  result2 += this -> getElement( row, i );// * vec[ i ];
-                  result3 += this -> getElement( row, this -> getSize() - i );
-                  if( row == 2265 && this -> getElement( row, i ) != 0.0 )
-                     cerr << "B. col = " << i << " val = " << this -> getElement( row, i ) << endl;
-               }
+                  checkSum += this -> getElement( row, i );// * vec[ i ];
 
-               if( result2 != sum )
+               if( checkSum != sum )
                {
-                  cerr << "row = " << row << " sum = " << sum << " result2 = " << result2 << " diff = " << sum - result2 << endl;
-                  //result[ row ] = result2;
-               }
-               if( result2 != result3 )
-               {
-                  cerr << "!!!!!!! row = " << row << " result2 = " << result2 << " result3 = " << result3 << " diff = " << result2 - result3 << endl;
-                  //result[ row ] = result2;
+                  cerr << "row = " << row << " sum = " << sum << " checkSum = " << checkSum << " diff = " << sum - checkSum << endl;
+                  //result[ row ] = checkSum;
                }
 
                //cerr << "result[" << row << "] = " << result[ row ] << endl;

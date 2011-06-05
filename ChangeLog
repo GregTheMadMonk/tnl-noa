@@ -1,3 +1,11 @@
+2011-06-05  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 
+	   - better threads to rows distribution for smaller chunks 
+	* tests/matrix-formats-test.h: 
+	* tests/sparse-matrix-benchmark.h: 
+	* tests/tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h: 
+
 2011-05-29  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* tests/cusp-test.cu: Removed.

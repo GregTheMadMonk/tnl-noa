@@ -245,7 +245,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
       if( logFileName )
          cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                     csrMatrixBenchmark. getGflops(),
@@ -319,7 +319,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                        csrMatrixBenchmark. getGflops(),
@@ -336,12 +336,10 @@ bool benchmarkMatrix( const tnlString& inputFile,
     */
 
    for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
-   //for( int desiredChunkSize = 1; desiredChunkSize <= 1; desiredChunkSize *= 2 )
    {
       tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > cudaArgCsrMatrixBenchmark;
       cudaArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
-      //for( int cudaBlockSize = 32; cudaBlockSize <= 32; cudaBlockSize *= 2 )
       {
          cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          cudaArgCsrMatrixBenchmark. setup( csrMatrix );
