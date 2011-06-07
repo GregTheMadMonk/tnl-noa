@@ -75,7 +75,7 @@ tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatri
 template< typename Real,
           tnlDevice Device,
           typename Index>
-bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
    tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
    if( Device == tnlHost )
@@ -83,7 +83,7 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
       this -> matrix. tuneFormat( groupSize,
                                   this -> useAdaptiveGroupSize,
                                   this -> adaptiveGroupSizeStrategy );
-      if( ! this -> matrix. copyFrom( matrix ) )
+      if( ! this -> matrix. copyFrom( csrMatrix ) )
          return false;
    }
    if( Device == tnlCuda )
@@ -93,7 +93,7 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
       hostMatrix. tuneFormat( groupSize,
                               this -> useAdaptiveGroupSize,
                               this -> adaptiveGroupSizeStrategy );
-      hostMatrix. copyFrom( matrix );
+      hostMatrix. copyFrom( csrMatrix );
       if( ! this -> matrix. copyFrom( hostMatrix ) )
          return false;
 #else
@@ -101,6 +101,7 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
 #endif
    }
    this -> setupOk = true;
+   testMatrix( csrMatrix, true );
    return true;
 }
 

@@ -80,7 +80,7 @@ class tnlSpmvBenchmark
     * tested by SpMV with complete basis made of vectors e_0, \ldots e_{N-1}.
     */
    virtual bool testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix,
-                            bool verbose ) const;
+                            int verbose ) const;
 
    protected:
 
@@ -377,12 +377,18 @@ template< typename Real,
           tnlDevice Device,
           typename Index,
           template< typename Real, tnlDevice Device, typename Index > class Matrix >
-bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix, bool verbose ) const
+bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix,
+                                                                    int verbose ) const
 {
-   if(  this -> setupOk )
+   if( this -> setupOk )
       return false;
-   cerr << this -> matrix. getSize() << endl;
-   const Index size = this -> matrix. getSize();
+
+#ifndef HAVE_CUDA
+   if( Device == tnlCuda )
+      return false;
+#endif
+
+   const Index size = matrix. getSize();
    if( size != testMatrix. getSize() )
    {
       cerr << "Both matrices " << this -> matrix. getName() << " and " << testMatrix. getName()
@@ -406,6 +412,7 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
    }
    if( Device == tnlCuda )
    {
+#ifdef HAVE_CUDA
       tnlLongVector< Real, Device, Index > x( "x" ), b( "b" );
       if( ! x. setSize( size ) || ! b. setSize( size ) )
          return false;
@@ -424,7 +431,10 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
          if( verbose )
             cout << "Comparing with testing matrix: " << j << " / " << size << "           \r" << flush;
       }
+#endif
    }
+   if( verbose )
+      cout << endl;
    return true;
 }
 

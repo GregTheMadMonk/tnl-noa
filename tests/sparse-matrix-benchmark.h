@@ -270,7 +270,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
       if( logFileName )
          cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                     csrMatrixBenchmark. getGflops(),

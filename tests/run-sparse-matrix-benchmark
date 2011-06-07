@@ -8,7 +8,7 @@ DEBUG="no"
 SPARSE_MATRIX_BENCHMARK="$IWD/sparse-matrix-benchmark"
 SPARSE_MATRIX_BENCHMARK_DBG="$IWD/.libs/sparse-matrix-benchmark-dbg"
 #SPARSE_MATRIX_BENCHMARK="$IWD/.libs/sparse-matrix-benchmark-dbg"
-FORMAT_TEST="no"
+FORMAT_TEST="yes"
 STOP_TIME="1"
 
 source ../tnl-env-variables
