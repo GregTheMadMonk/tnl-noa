@@ -106,6 +106,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
       return false;
 #endif
    }
+   this -> setupOk = true;
    return true;
 }
 
@@ -191,6 +192,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
 
       bgColor = this -> getBgColorBySpeedUp( speedUp );
       tnlString textColor = "#000000"; //getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this -> getTime() << "</font></td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this -> getGflops() << "</font></td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << speedUp << "</font></td>" << endl;
 
@@ -202,6 +204,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
          logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
          logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       }
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
    }

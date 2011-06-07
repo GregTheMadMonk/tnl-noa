@@ -26,6 +26,7 @@
 #include <tnlSpmvBenchmarkHybridMatrix.h>
 #include <tnlSpmvBenchmarkRgCSRMatrix.h>
 #include <tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h>
+#include <matrix/tnlFullMatrix.h>
 #include <matrix/tnlFastCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrixCUDA.h>
@@ -43,6 +44,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            const tnlLongVector< Real, tnlHost >& refX,
                            const tnlLongVector< Real, tnlCuda >& cudaX,
                            tnlLongVector< Real, tnlHost >& refB,
+                           bool formatTest,
                            const int maxIterations,
                            const bool useAdaptiveGroupSize,
                            const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy,
@@ -59,6 +61,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( useAdaptiveGroupSize );
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( adaptiveGroupSizeStrategy );
       hostRgCsrMatrixBenchmark. setup( csrMatrix );
+      if( formatTest )
+         hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
@@ -73,6 +77,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
       cudaRgCsrMatrixBenchmark. setGroupSize( groupSize );
       cudaRgCsrMatrixBenchmark. setup( csrMatrix );
+      if( formatTest )
+         cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
@@ -95,6 +101,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
                       const tnlString& inputMtxFile,
                       const tnlString& pdfFile,
                       const tnlString& logFileName,
+                      bool formatTest,
                       int maxIterations,
                       int verbose )
 {
@@ -153,6 +160,19 @@ bool benchmarkMatrix( const tnlString& inputFile,
       csrMatrixBenchmark. writeProgressTableHeader();
 
    csrMatrixBenchmark. setup( csrMatrix );
+   if( formatTest )
+   {
+      if( verbose )
+            cout << "Reading the FULL matrix ... " << endl;
+      tnlFullMatrix< Real, tnlHost, int > fullMatrix( "full-matrix" );
+      fstream mtxFile;
+      mtxFile. open( inputMtxFile. getString(), ios :: in );
+      if( ! fullMatrix. read( mtxFile, verbose ) )
+         cerr << "Unable to get the FULL matrix." << endl;
+      else
+         csrMatrixBenchmark. testMatrix( fullMatrix, verbose );
+      mtxFile. close();
+   }
    csrMatrixBenchmark. setMaxIterations( maxIterations );
    csrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    csrMatrixBenchmark. tearDown();
@@ -193,7 +213,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    hybridMatrixBenchmark. setNonzeroElements( csrMatrix. getNonzeroElements() );
    hybridMatrixBenchmark. setup( csrMatrix );
    hybridMatrixBenchmark. setMaxIterations( maxIterations );
-   hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   //hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hybridMatrixBenchmark. tearDown();
 
    if( logFileName )
@@ -213,6 +233,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
                          refX,
                          cudaX,
                          refB,
+                         formatTest,
                          maxIterations,
                          false,
                          tnlAdaptiveGroupSizeStrategyByAverageRowSize,
@@ -227,6 +248,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
    hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true ); // TODO: fix with true - not implemented yet
    hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
    hostRgCsrMatrixBenchmark. setup( csrMatrix );
+   if( formatTest )
+      hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
    hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
    hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hostRgCsrMatrixBenchmark. tearDown();
@@ -242,6 +265,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
    cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
    cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
    cudaRgCsrMatrixBenchmark. setup( csrMatrix );
+   if( formatTest )
+      cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
@@ -287,6 +312,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
                             refX,
                             cudaX,
                             refB,
+                            formatTest,
                             maxIterations,
                             false,
                             tnlAdaptiveGroupSizeStrategyByAverageRowSize,
@@ -302,6 +328,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       hostRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
+      if( formatTest )
+         hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
       if( logFileName )
@@ -315,6 +343,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
       cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
       cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
       cudaRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
+      if( formatTest )
+         cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
@@ -337,14 +367,16 @@ bool benchmarkMatrix( const tnlString& inputFile,
 
    for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
    {
-      tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlHost, int > cudaArgCsrMatrixBenchmark;
+      tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
       cudaArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaArgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          cudaArgCsrMatrixBenchmark. setup( csrMatrix );
+         if( formatTest )
+            cudaArgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
          cudaArgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-         cudaArgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+         cudaArgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          cudaArgCsrMatrixBenchmark. setBestRgCSRGflops( bestCudaRgCSRGflops );
          if( logFileName )
             cudaArgCsrMatrixBenchmark. writeToLogTable( logFile,

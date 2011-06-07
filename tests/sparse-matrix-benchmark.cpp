@@ -45,6 +45,7 @@ int main( int argc, char* argv[] )
    tnlString pdfFile = parameters. GetParameter< tnlString >( "pdf-file" );
    tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
    double stop_time = parameters. GetParameter< double >( "stop-time" );
+   bool formatTest = parameters. GetParameter< bool >( "format-test" );
    int maxIterations = parameters. GetParameter< int >( "max-iterations" );
    int verbose = parameters. GetParameter< int >( "verbose");
 
@@ -70,6 +71,7 @@ int main( int argc, char* argv[] )
                                 inputMtxFile,
                                 pdfFile,
                                 logFileName,
+                                formatTest,
                                 maxIterations,
                                 verbose );
 
@@ -79,6 +81,7 @@ int main( int argc, char* argv[] )
                                  inputMtxFile,
                                  pdfFile,
                                  logFileName,
+                                 formatTest,
                                  maxIterations,
                                  verbose );
    }

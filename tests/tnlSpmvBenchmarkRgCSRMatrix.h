@@ -100,6 +100,7 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
       return false;
 #endif
    }
+   this -> setupOk = true;
    return true;
 }
 
@@ -218,7 +219,8 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
       }
       const double speedUp = this -> getGflops() / csrGflops;
       bgColor =  this -> getBgColorBySpeedUp( speedUp );
-      logFile << "             <td bgcolor=" <<  bgColor << "> " << this -> getGflops() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getTime() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this -> getGflops() << "</td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
    }
    else
@@ -228,6 +230,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
          logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
          logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       }
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
    }

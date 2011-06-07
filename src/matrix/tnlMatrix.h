@@ -400,11 +400,12 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< Index, Device, Index >& permutation )
 {
+   dbgFunctionName( "tnlMatrix< Real, Device, Index >", "sortRowsDecreasingly" );
    /****
     * We use bucketsort to sort the rows by the number of the non-zero elements.
     */
    const Index matrixSize = tnlMatrix< Real, Device, Index > :: getSize();
-   if( ! permutation. setSize( matrixSize ) )
+   if( ! permutation. setSize( matrixSize + 1 ) )
       return false;
    permutation. setValue( 0 );
 
@@ -412,18 +413,32 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< In
     * The permutation vector is now used to compute the buckets
     */
    for( Index i = 0; i < matrixSize; i ++ )
+   {
+      tnlAssert( this -> getNonzeroElementsInRow( i ) <= matrixSize,
+                 cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i ) 
+                      << "; matrixSize = " << matrixSize );
       permutation[ this -> getNonzeroElementsInRow( i ) ] ++;
+   }
 
-   tnlLongVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderDecreasingly:buckets" );
-   buckets. setSize( matrixSize );
+   tnlLongVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
+   buckets. setSize( matrixSize + 1 );
    buckets. setValue( 0 );
 
    buckets[ 0 ] = 0;
-   for( Index i = 1; i < matrixSize; i ++ )
-      buckets[ i ] = buckets[ i - 1 ] + permutation[ matrixSize - i ];
+   for( Index i = 1; i <= matrixSize; i ++ )
+   {
+      tnlAssert( matrixSize - i >= 0 && matrixSize - i <= matrixSize, );
+      buckets[ i ] = buckets[ i - 1 ] + permutation[ matrixSize - i + 1 ];
+   }
 
    for( Index i = 0; i < matrixSize; i ++ )
-      permutation[ buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ] ++ ] = i;
+   {
+      tnlAssert( buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] <= matrixSize,
+               cerr << "buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ]
+                    << "; matrixSize = " << matrixSize );
+      dbgExpr( buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] );
+      permutation[ buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
+   }
 }
 
 template< typename Real, tnlDevice Device, typename Index >

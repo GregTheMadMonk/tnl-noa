@@ -132,7 +132,7 @@ bool testMatrixFormats( const tnlString& input_file_name,
 
 	if( verbose )
 		cout << "Comparing the CSR and the Coalesced CSR matrix ... " << endl;
-	/*if( coacsr_matrix -> compare( *csr_matrix, true ) )
+	if( coacsr_matrix -> compare( *csr_matrix, true ) )
 	{
 		test_coa_csr = true;
 		if( verbose )
@@ -140,7 +140,7 @@ bool testMatrixFormats( const tnlString& input_file_name,
 	}
 	else
 		if( verbose )
-			cout << "FAILED." << endl;*/
+			cout << "FAILED." << endl;
 
 #ifdef HAVE_CUDA
 	if( verbose )

@@ -70,7 +70,7 @@ bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real
       maxError = Max( error, maxError );
    }
    forwardBackwardDifference = maxError;
-
+   this -> setupOk = true;
    return true;
 }
 
@@ -105,9 +105,15 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFi
                                                                   bool writeMatrixInfo  ) const
 {
    if( this -> getBenchmarkWasSuccesful() )
+   {
+      logFile << "             <td> " << this -> getTime() << "</font></td>" << endl;
       logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
+   }
    else
+   {
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+   }
 }
 
 template< typename Real,

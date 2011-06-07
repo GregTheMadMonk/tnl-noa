@@ -84,56 +84,66 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
                                                                   const tnlLongVector< Real, tnlHost, Index >& refB,
                                                                   bool verbose )
 {
+   this -> benchmarkWasSuccesful = false;
 #ifdef HAVE_CUSP
-   // create an empty sparse matrix structure (HYB format)
-   cusp::hyb_matrix< Index, Real, cusp::device_memory > A;
-
-   // load a matrix stored in MatrixMarket format
-   cusp::io::read_matrix_market_file( A, this -> fileName. getString() );
-
-   // allocate storage for solution (x) and right hand side (b)
-   cusp::array1d< Real, cusp::host_memory > host_x( A.num_rows, 1 );
-   cusp::array1d< Real, cusp::device_memory > x( A.num_rows, 1 );
-   cusp::array1d< Real, cusp::device_memory > b( A.num_rows, 0 );
-
-   for( Index j = 0; j < refB. getSize(); j ++ )
-      host_x[ j ] = _x[ j ];
-
-   x = host_x;
-
-   tnlTimerRT rt_timer;
-   rt_timer. Reset();
-
-   this -> iterations = 0;
-   //while( rt_timer. GetTime() < time )
+   try
    {
-      for( int i = 0; i < this -> maxIterations; i ++ )
+      // create an empty sparse matrix structure (HYB format)
+      cusp::hyb_matrix< Index, Real, cusp::device_memory > A;
+
+      // load a matrix stored in MatrixMarket format
+      cusp::io::read_matrix_market_file( A, this -> fileName. getString() );
+
+      // allocate storage for solution (x) and right hand side (b)
+      cusp::array1d< Real, cusp::host_memory > host_x( A.num_rows, 1 );
+      cusp::array1d< Real, cusp::device_memory > x( A.num_rows, 1 );
+      cusp::array1d< Real, cusp::device_memory > b( A.num_rows, 0 );
+
+      for( Index j = 0; j < refB. getSize(); j ++ )
+         host_x[ j ] = _x[ j ];
+
+      x = host_x;
+
+      tnlTimerRT rt_timer;
+      rt_timer. Reset();
+
+      this -> iterations = 0;
+      //while( rt_timer. GetTime() < time )
       {
-         cusp :: multiply( A, x, b );
-         this -> iterations ++;
+         for( int i = 0; i < this -> maxIterations; i ++ )
+         {
+            cusp :: multiply( A, x, b );
+            this -> iterations ++;
+         }
       }
+      this -> time = rt_timer. GetTime();
+
+      cusp::array1d< Real, cusp::host_memory > host_b( b );
+      host_b = b;
+
+      for( Index j = 0; j < refB. getSize(); j ++ )
+      {
+         //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
+         if( refB[ j ] != 0.0 )
+            this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] - host_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
+         else
+            this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] ) );
+      }
+      //if( this -> maxError < 1.0 )
+         this -> benchmarkWasSuccesful = true;
+      //else
+      //   this -> benchmarkWasSuccesful = false;
+
+
+      double flops = 2.0 * this -> iterations * this -> nonzeroElements;
+      this -> gflops = flops / this -> time * 1.0e-9;
+
    }
-   this -> time = rt_timer. GetTime();
-
-   cusp::array1d< Real, cusp::host_memory > host_b( b );
-   host_b = b;
-
-   for( Index j = 0; j < refB. getSize(); j ++ )
+   catch( std::bad_alloc )
    {
-      //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
-      if( refB[ j ] != 0.0 )
-         this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] - host_b[ j ] ) /  ( Real ) fabs( refB[ j ] ) );
-      else
-         this -> maxError = Max( this -> maxError, ( Real ) fabs( refB[ j ] ) );
+      writeProgress();
+      return;
    }
-   //if( this -> maxError < 1.0 )
-      this -> benchmarkWasSuccesful = true;
-   //else
-   //   this -> benchmarkWasSuccesful = false;
-
-
-   double flops = 2.0 * this -> iterations * this -> nonzeroElements;
-   this -> gflops = flops / this -> time * 1.0e-9;
 #else
    this -> benchmarkWasSuccesful = false;
 #endif
@@ -169,15 +179,18 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeToLogTable( ostream& lo
 {
    if( this -> getBenchmarkWasSuccesful() )
    {
-      logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
       double speedUp = this -> getGflops() / csrGflops;
-      logFile << "             <td bgcolor=" << this -> getBgColorBySpeedUp( speedUp ) << "> " << speedUp << "</td>" << endl;
+      tnlString bgColor = this -> getBgColorBySpeedUp( speedUp );
+      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getTime() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getGflops() << "</td>" << endl;
+
+      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
    }
    else
    {
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
    }
 }
 

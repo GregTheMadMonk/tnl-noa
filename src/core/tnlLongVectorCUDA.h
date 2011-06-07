@@ -338,7 +338,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
    }
 #ifdef HAVE_CUDA
    dbgCout( "Setting new size to " << _size << " for " << this -> getName() );
-   if( this -> size == _size && ! this -> shared_data ) return true;
+   if( this -> size && this -> size == _size && ! this -> shared_data ) return true;
    if( this -> data && ! this -> shared_data )
    {
       dbgCout( "Freeing allocated memory on CUDA device of " << this -> getName() );
@@ -353,7 +353,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
                    ( size_t ) this -> size * sizeof( Real ) ) != cudaSuccess )
    {
       cerr << "I am not able to allocate new long vector with size "
-           << this -> size * sizeof( Real ) << " on CUDA device for "
+           << ( double ) this -> size * sizeof( Real ) / 1.0e9 << " GB on CUDA device for "
            << this -> getName() << "." << endl;
       checkCUDAError( __FILE__, __LINE__ );
       this -> data = NULL;

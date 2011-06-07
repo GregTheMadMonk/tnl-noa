@@ -74,6 +74,13 @@ class tnlSpmvBenchmark
                                  const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                  bool writeMatrixInfo  ) const = 0;
 
+   /*!***
+    * This method test if the matrix is stored properly usually against full or CSR matrix.
+    * It is useful test for more complicated formats. Matrices stored on CUDA device are
+    * tested by SpMV with complete basis made of vectors e_0, \ldots e_{N-1}.
+    */
+   virtual bool testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix,
+                            bool verbose ) const;
 
    protected:
 
@@ -90,6 +97,8 @@ class tnlSpmvBenchmark
 
 
    bool benchmarkWasSuccesful;
+
+   bool setupOk;
 
    double gflops;
 
@@ -137,6 +146,7 @@ template< typename Real,
           template< typename Real, tnlDevice Device, typename Index > class Matrix >
 tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
    : benchmarkWasSuccesful( false ),
+     setupOk( false ),
      gflops( 0.0 ),
      time( 0.0 ),
      maxIterations( 0 ),
@@ -228,6 +238,8 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
                                                                       bool verbose )
 {
    benchmarkWasSuccesful = false;
+   if( ! setupOk )
+      return;
 #ifndef HAVE_CUDA
    if( Device == tnlCuda )
    {
@@ -358,6 +370,61 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: printMatrixInHtml( const
    file << "   </body>" << endl;
    file << "</html>" << endl;
    file. close();
+   return true;
+}
+
+template< typename Real,
+          tnlDevice Device,
+          typename Index,
+          template< typename Real, tnlDevice Device, typename Index > class Matrix >
+bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix, bool verbose ) const
+{
+   if(  this -> setupOk )
+      return false;
+   cerr << this -> matrix. getSize() << endl;
+   const Index size = this -> matrix. getSize();
+   if( size != testMatrix. getSize() )
+   {
+      cerr << "Both matrices " << this -> matrix. getName() << " and " << testMatrix. getName()
+           << " have different sizes: " << size << " and " << testMatrix. getSize() << "." << endl;
+      return false;
+   }
+   if( Device == tnlHost )
+   {
+      for( Index i = 0; i < size; i ++ )
+      {
+         for( Index j = 0; j < size; j ++ )
+            if( matrix. getElement( i, j ) != testMatrix. getElement( i, j ) )
+            {
+               if( verbose )
+                  cout << "Comparing with testing matrix: " << i << " / " << size << " error at column " << j << "." << endl;
+               return false;
+            }
+         if( verbose )
+            cout << "Comparing with testing matrix: " << i << " / " << size << "           \r" << flush;
+      }
+   }
+   if( Device == tnlCuda )
+   {
+      tnlLongVector< Real, Device, Index > x( "x" ), b( "b" );
+      if( ! x. setSize( size ) || ! b. setSize( size ) )
+         return false;
+      for( Index j = 0; j < size; j ++ )
+      {
+         x. setValue( 0 );
+         x. setElement( j, 1.0 );
+         this -> matrix. vectorProduct( x, b );
+         for( Index i = 0; i < size; i ++ )
+            if( b. getElement( i ) != testMatrix. getElement( i, j ) )
+            {
+               if( verbose )
+                  cout << "Comparing with testing matrix: " << j << " / " << size << " error at line " << i << "." << endl;
+               return false;
+            }
+         if( verbose )
+            cout << "Comparing with testing matrix: " << j << " / " << size << "           \r" << flush;
+      }
+   }
    return true;
 }
 

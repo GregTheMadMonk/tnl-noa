@@ -230,7 +230,9 @@ template< typename Real, typename Index > bool tnlLongVector< Real, tnlHost, Ind
    this -> shared_data = false;
    if( ! this -> data )
    {
-      cerr << "Unable to allocate new long vector " << this -> getName() << " with size " << this -> size << "." << endl;
+      cerr << "I am not able to allocate new long vector with size "
+           << ( double ) this -> size * sizeof( Real ) / 1.0e9 << " GB on host for "
+           << this -> getName() << "." << endl;
       this -> size = 0;
       return false;
    }
@@ -272,14 +274,6 @@ void tnlLongVector< Real, tnlHost, Index > :: reset()
    dbgFunctionName( "tnlLongVector< Real, tnlHost, Index >", "reset" );
    dbgExpr( this -> getName() );
    setSize( 0 );
-   /*cerr << "XXXXXXXXXXXXXXXXXX" << endl;
-   if( this -> data && ! this -> shared_data ) delete[] -- this -> data;
-   cerr << "YYYYYYYYYYYYYYY" << endl;
-   this -> shared_data = false;
-   this -> size = 0;
-   this -> data = new Real[ this -> size + 1 ];
-   this -> data ++;
-   cerr << "ZZZZZZZZZZZZZZZZZZZZZ" << endl;*/
 };
 
 

@@ -126,16 +126,16 @@ do
       cd $IWD
       SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
       rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usually in array format
-     for file in $DIRNAME/$SUBDIRNAME/*.mtx;
-     do
-         if test ! -e $file.double.bin.bz2;
+      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
+      do
+         if test -e $file.double.bin.bz2;
          then
             draw_matrix $file
          else
             echo "Matrix $file.double.bin.bz2 is missing - run the script convert-matrices first."             
          fi
          
-         if test ! -e $file.amd.double.bin.bz2;
+         if test -e $file.amd.double.bin.bz2;
          then
             draw_matrix $file.amd
          else
