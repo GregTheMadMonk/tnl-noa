@@ -380,7 +380,7 @@ template< typename Real,
 bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix,
                                                                     int verbose ) const
 {
-   if( this -> setupOk )
+   if( ! this -> setupOk )
       return false;
 
 #ifndef HAVE_CUDA
@@ -403,11 +403,11 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
             if( matrix. getElement( i, j ) != testMatrix. getElement( i, j ) )
             {
                if( verbose )
-                  cout << "Comparing with testing matrix: " << i << " / " << size << " error at column " << j << "." << endl;
+                  cout << "Comparing with testing matrix: " << i + 1 << " / " << size << " error at column " << j << "." << endl;
                return false;
             }
          if( verbose )
-            cout << "Comparing with testing matrix: " << i << " / " << size << "           \r" << flush;
+            cout << "Comparing with testing matrix: " << i + 1 << " / " << size << "           \r" << flush;
       }
    }
    if( Device == tnlCuda )
@@ -418,23 +418,23 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
          return false;
       for( Index j = 0; j < size; j ++ )
       {
-         x. setValue( 0 );
+         x. setValue( 0.0 );
          x. setElement( j, 1.0 );
          this -> matrix. vectorProduct( x, b );
          for( Index i = 0; i < size; i ++ )
             if( b. getElement( i ) != testMatrix. getElement( i, j ) )
             {
                if( verbose )
-                  cout << "Comparing with testing matrix: " << j << " / " << size << " error at line " << i << "." << endl;
+                  cout << "Comparing with testing matrix: " << j + 1 << " / " << size << " error at line " << i << "." << endl;
                return false;
             }
          if( verbose )
-            cout << "Comparing with testing matrix: " << j << " / " << size << "           \r" << flush;
+            cout << "Comparing with testing matrix: " << j + 1 << " / " << size << "           \r" << flush;
       }
 #endif
    }
-   if( verbose )
-      cout << endl;
+   //if( verbose )
+   //   cout << endl;
    return true;
 }
 

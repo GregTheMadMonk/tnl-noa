@@ -57,6 +57,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
    tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
    for( int groupSize = 16; groupSize <= 64; groupSize *= 2 )
    {
+
       hostRgCsrMatrixBenchmark. setGroupSize( groupSize );
       hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( useAdaptiveGroupSize );
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( adaptiveGroupSizeStrategy );
@@ -77,12 +78,12 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
       cudaRgCsrMatrixBenchmark. setGroupSize( groupSize );
       cudaRgCsrMatrixBenchmark. setup( csrMatrix );
-      if( formatTest )
-         cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         if( formatTest )
+            cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
          cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
@@ -213,7 +214,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    hybridMatrixBenchmark. setNonzeroElements( csrMatrix. getNonzeroElements() );
    hybridMatrixBenchmark. setup( csrMatrix );
    hybridMatrixBenchmark. setMaxIterations( maxIterations );
-   //hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hybridMatrixBenchmark. tearDown();
 
    if( logFileName )
@@ -245,7 +246,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
 
    tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
    hostRgCsrMatrixBenchmark. setGroupSize( 16 );
-   hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true ); // TODO: fix with true - not implemented yet
+   hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
    hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
    hostRgCsrMatrixBenchmark. setup( csrMatrix );
    if( formatTest )
@@ -285,7 +286,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
     * The rows are now sorted decreasingly by the number of the nonzero elements
     */
    if( verbose )
-      cout << "------------ Test with sorted matrix ---------------" << endl;
+      cout << "          ------------------------------- Test with sorted matrix ----------------------------------          " << endl;
+
    tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
    {
       tnlCSRMatrix< Real, tnlHost > orderedCsrMatrix( "orderedCsrMatrix" );
@@ -343,13 +345,13 @@ bool benchmarkMatrix( const tnlString& inputFile,
       cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
       cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
       cudaRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
-      if( formatTest )
-         cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-         //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         if( formatTest )
+            cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                        csrMatrixBenchmark. getGflops(),

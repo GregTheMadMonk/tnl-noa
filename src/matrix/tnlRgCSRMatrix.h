@@ -174,38 +174,6 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 };
 
 #ifdef HAVE_CUDA
-/****
- *  The CUDA documentation says: "A texture reference is declared at file scope as a variable of type texture".
- *  It cannot be passed as a reference otherwise we get ptx error:
- *   State space mismatch between instruction and address in instruction 'tex'.
- *  Therefore we keep texture as global variable handled by tnlCudaTextureBinder
- */
-texture< float, 1 > tnlRgCSRMatrixCUDA_floatTexRef;
-texture< int2, 1 > tnlRgCSRMatrixCUDA_doubleTexRef;
-
-bool bindRgCSRMatrixCUDATexture( const float* data,
-                                        size_t size );
-
-bool bindRgCSRMatrixCUDATexture( const double* data,
-                                        size_t size );
-
-/****
- * The pointer here is dummy. It is only for knowing what type of texture we want to unbind - float or double.
- */
-bool __inline__ unbindRgCSRMatrixCUDATexture( const float* dummy_pointer );
-
-/****
- * The pointer here is dummy. It is only for knowing what type of texture we want to unbind - float or double.
- */
-bool __inline__ unbindRgCSRMatrixCUDATexture( const double* dummy_pointer );
-
-template< bool UseCache, typename Index >
-static __inline__ __device__ float fetchRgCSRVecX( const Index i,
-                                                   const float* x );
-
-template< bool UseCache, typename Index >
-static __inline__ __device__ double fetchRgCSRVecX( const Index i,
-                                                    const double* x );
 
 template< class Real, typename Index, bool useCache >
 __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
@@ -217,15 +185,25 @@ __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
                                                        const Real* vec_x,
                                                        Real* vec_b );
 
-template< class Real, typename Index, bool useCache >
-__global__ void sparseCSRMatrixVectorProductKernel( Index size,
-                                                    Index groupSize,
-                                                    const Real* nonzeroElements,
-                                                    const Index* columns,
-                                                    const Index* groupOffsets,
-                                                    const Index* nonzerosInRow,
-                                                    const Real* vec_x,
-                                                    Real* vec_b );
+template< class Real, typename Index >
+__global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
+                                                   Index groupSize,
+                                                   const Real* nonzeroElements,
+                                                   const Index* columns,
+                                                   const Index* groupOffsets,
+                                                   const Index* nonzerosInRow,
+                                                   const Real* vec_x,
+                                                   Real* vec_b );
+
+template< class Real, typename Index >
+__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
+                                                                    const Index* groupSize,
+                                                                    const Real* nonzeroElements,
+                                                                    const Index* columns,
+                                                                    const Index* groupOffsets,
+                                                                    const Index* nonzerosInRow,
+                                                                    const Real* vec_x,
+                                                                    Real* vec_b );
 #endif
 
 
@@ -304,7 +282,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    this -> size = new_size;
    if( ! groupOffsets. setSize( this -> getSize() / groupSize + ( this -> getSize() % groupSize != 0 ) + 1 ) ||
 	    ! nonzeroElementsInRow. setSize( this -> getSize() ) ||
-	    ! adaptiveGroupSizes. setSize( this -> getSize() ) )
+	    ! adaptiveGroupSizes. setSize( this -> getSize() + 1 ) )
       return false;
    groupOffsets. setValue( 0 );
    nonzeroElementsInRow. setValue( 0 );
@@ -407,7 +385,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 		   if( ! this -> useAdaptiveGroupSize || nonzeroElementsInGroup > maxNonzeroElementsInGroup )
 		   {
 		      if( this -> useAdaptiveGroupSize )
-		         adaptiveGroupSizes[ numberOfGroups ] = currentGroupSize;
+		         adaptiveGroupSizes[ numberOfGroups + 1 ] = currentGroupSize;
 
 		      dbgCout( numberOfGroups << "-th group size is " << currentGroupSize );
 		      dbgCout( "Elements in this group " << max_row_in_block * currentGroupSize );
@@ -433,7 +411,15 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	total_elements += max_row_in_block * ( currentGroupSize );
 	groupOffsets[ numberOfGroups + 1 ] = total_elements;
    if( useAdaptiveGroupSize )
-       adaptiveGroupSizes[ numberOfGroups ] = currentGroupSize;
+   {
+       adaptiveGroupSizes[ numberOfGroups + 1 ] = currentGroupSize;
+
+       /****
+        * Compute prefix sum on group sizes
+        */
+       for( Index i = 1; i < adaptiveGroupSizes; i ++ )
+          adaptiveGroupSizes[ i ] += adaptiveGroupSizes[ i - 1 ];
+   }
 	dbgCout( numberOfGroups << "-th group size is " << currentGroupSize );
 	numberOfGroups ++;
 
@@ -528,6 +514,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    columns = rgCSRMatrix. columns;
    groupOffsets = rgCSRMatrix. groupOffsets;
    nonzeroElementsInRow = rgCSRMatrix. nonzeroElementsInRow;
+   adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
    last_nonzero_element = rgCSRMatrix. last_nonzero_element;
    return true;
 };
@@ -697,7 +684,9 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
          Index block_begining = groupOffset[ groupId ];
          const Index block_length = groupOffset[ groupId + 1 ] - block_begining;
          const Index max_row_length = block_length / currentGroupSize;
-         const Index first_row = groupId * groupSize;
+         Index first_row = groupId * groupSize;
+         if( useAdaptiveGroupSize )
+            first_row = adaptiveGroupSizes. getElement( groupId );
 
          Index csr_col = 0;
          Index row = firstRowOfGroup;
@@ -721,8 +710,6 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                if( csr_col < row_lengths[ row ] )
                {
                   result[ row ] += values[ block_begining ] * vec[ cols[ block_begining ] ];
-                  if( cols[ block_begining ] < 0 )
-                     cerr << "XXX" << endl;
                }
                block_begining ++;
                row ++;
@@ -735,41 +722,34 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
    if( Device == tnlCuda )
    {
 #ifdef HAVE_CUDA
-      if( this -> useAdaptiveGroupSize )
-         return;
       Index blockSize = this -> getCUDABlockSize();
       const Index size = this -> getSize();
-
-      bool useCache = false; //bindRgCSRMatrixCUDATexture( vec. getVector(),
-                             //             vec. getSize() );
 
       /****
        * The following works only with constant group size
        */
-      //cudaThreadSynchronize();
       int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
       dim3 gridDim( gridSize ), blockDim( blockSize );
-      if( useCache )
-         sparseCSRMatrixVectorProductKernel< Real, Index, true ><<< gridDim, blockDim >>>( size,
-                                                                                           this -> groupSize,
-                                                                                           nonzeroElements. getVector(),
-                                                                                           columns. getVector(),
-                                                                                           groupOffsets. getVector(),
-                                                                                           nonzeroElementsInRow. getVector(),
-                                                                                           vec. getVector(),
-                                                                                           result. getVector() );
+
+      if( this -> useAdaptiveGroupSize )
+         tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( size,
+                                                             adaptiveGroupSizes. getVector(),
+                                                             nonzeroElements. getVector(),
+                                                             columns. getVector(),
+                                                             groupOffsets. getVector(),
+                                                             nonzeroElementsInRow. getVector(),
+                                                             vec. getVector(),
+                                                             result. getVector() );
       else
-         sparseCSRMatrixVectorProductKernel< Real, Index, false ><<< gridDim, blockDim >>>( size,
-                                                                                           this -> groupSize,
-                                                                                           nonzeroElements. getVector(),
-                                                                                           columns. getVector(),
-                                                                                           groupOffsets. getVector(),
-                                                                                           nonzeroElementsInRow. getVector(),
-                                                                                           vec. getVector(),
-                                                                                           result. getVector() );
+         sparseRgCSRMatrixVectorProductKernel< Real, Index ><<< gridDim, blockDim >>>( size,
+                                                                                       this -> groupSize,
+                                                                                       nonzeroElements. getVector(),
+                                                                                       columns. getVector(),
+                                                                                       groupOffsets. getVector(),
+                                                                                       nonzeroElementsInRow. getVector(),
+                                                                                       vec. getVector(),
+                                                                                       result. getVector() );
        cudaThreadSynchronize();
-       //if( useCache )
-       //   unbindRgCSRMatrixCUDATexture( vec. getVector() );
        CHECK_CUDA_ERROR;
 #else
        cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
@@ -931,91 +911,6 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getCurrentGroupSize( const Index 
 }
 
 #ifdef HAVE_CUDA
-bool bindRgCSRMatrixCUDATexture( const float* data,
-                                 size_t size )
-{
-#if CUDA_ARCH > 12
-   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc< float >();
-   size_t offset( -1 );
-   cudaBindTexture( &offset,
-                    &tnlRgCSRMatrixCUDA_floatTexRef,
-                    data,
-                    &channelDesc,
-                    size * sizeof( float ) );
-   if( ! checkCUDAError( __FILE__, __LINE__ ) )
-      return false;
-   if( offset != 0 )
-   {
-      std :: cerr << "Unable to bind the vector x into a texture!!!" << endl;
-      return false;
-   }
-   return true;
-#else
-   return false;
-#endif
-};
-
-bool bindRgCSRMatrixCUDATexture( const double* data,
-                                 size_t size )
-{
-#if CUDA_ARCH > 12
-   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc< int2 >();
-   size_t offset( -1 );
-   cudaBindTexture( &offset,
-                    &tnlRgCSRMatrixCUDA_doubleTexRef,
-                    data,
-                    &channelDesc,
-                    size * sizeof( double ) );
-   if( ! checkCUDAError( __FILE__, __LINE__ ) )
-      return false;
-   if( offset != 0 )
-   {
-      std :: cerr << "Unable to bind the vector x into a texture!!!" << endl;
-      return false;
-   }
-   return true;
-#else
-   return false;
-#endif
-};
-
-template< bool UseCache, typename Index >
-static __inline__ __device__ float fetchRgCSRVecX( const Index i,
-                                                   const float* x )
-{
-    if( UseCache )
-        return tex1Dfetch( tnlRgCSRMatrixCUDA_floatTexRef, i );
-    else
-        return x[ i ];
-};
-
-template< bool UseCache, typename Index >
-static __inline__ __device__ double fetchRgCSRVecX( const Index i,
-                                                    const double* x )
-{
-#if ( CUDA_ARCH >= 13 )
-    if( UseCache )
-    {
-       int2 v=  tex1Dfetch( tnlRgCSRMatrixCUDA_doubleTexRef, i );
-       return __hiloint2double(v.y, v.x);
-    }
-    else
-        return x[ i ];
-#endif
-};
-
-bool __inline__ unbindRgCSRMatrixCUDATexture( const float* dummy_pointer )
-{
-   cudaUnbindTexture( &tnlRgCSRMatrixCUDA_floatTexRef );
-   return checkCUDAError( __FILE__, __LINE__ );
-};
-
-bool __inline__ unbindRgCSRMatrixCUDATexture( const double* dummy_pointer )
-{
-   cudaUnbindTexture( &tnlRgCSRMatrixCUDA_doubleTexRef );
-   return checkCUDAError( __FILE__, __LINE__ );
-};
-
 
 template< typename Real, typename Index, bool useCache >
 __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
@@ -1050,14 +945,14 @@ __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
    for( Index i = 0; i < nonzeros; i ++ )
    {
       //product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
-      product += nonzeroElements[ pos ] * fetchRgCSRVecX< useCache >( columns[ pos ], vec_x );
+      product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
       pos += current_block_size;
    }
    vec_b[ row ] = product;
 }
 
 
-template< class Real, typename Index, bool useCache >
+template< class Real, typename Index >
 __global__ void sparseCSRMatrixVectorProductKernel( Index size,
                                                     Index groupSize,
                                                     const Real* nonzeroElements,
@@ -1068,7 +963,8 @@ __global__ void sparseCSRMatrixVectorProductKernel( Index size,
                                                     Real* vec_b )
 {
    /****
-    * Each thread process one matrix row
+    * This kernel assumes that all groups are equal sized. One block
+    * can process more groups and there is always one thread mapped to one row.
     */
    const Index rowIndex = blockIdx. x * blockDim. x + threadIdx. x;
    if( rowIndex >= size )
@@ -1091,15 +987,54 @@ __global__ void sparseCSRMatrixVectorProductKernel( Index size,
    const Index nonzeros = nonzerosInRow[ rowIndex ];
    for( Index i = 0; i < nonzeros; i ++ )
    {
-      //Index column = columns[ pos ];
-      //if( column != -1 )
          product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
-      //else
-      //   printf( "rowIndex = %d currentGroupSize = %d groupSize = %d columns[ pos ] = %d\n", rowIndex, currentGroupSize, groupSize, columns[ pos ] );
       pos += currentGroupSize;
    }
    vec_b[ rowIndex ] = product;
 }
+
+template< class Real, typename Index >
+__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
+                                                                    const Index* groupSize,
+                                                                    const Real* nonzeroElements,
+                                                                    const Index* columns,
+                                                                    const Index* groupOffsets,
+                                                                    const Index* nonzerosInRow,
+                                                                    const Real* vec_x,
+                                                                    Real* vec_b )
+{
+   /****
+    * Now the group size is variable and one group is processed
+    * by one block.
+    */
+   const Index rowIndex = blockIdx. x * blockDim. x + threadIdx. x;
+   if( rowIndex >= size )
+      return;
+
+   const Index groupIndex = threadIdx. x / groupSize ;
+   const Index rowOffsetInGroup = rowIndex % groupSize ;
+   const Index globalGroupIndex = rowIndex / groupSize;
+
+   /****
+    * The last block may be smaller then the global block_size.
+    * We store it in the current_block_size
+    */
+   Index currentGroupSize = groupSize;
+   if( ( globalGroupIndex + 1 ) * groupSize > size )
+      currentGroupSize =  size % groupSize;
+
+   Real product( 0.0 );
+   Index pos = groupOffsets[ globalGroupIndex ] + rowOffsetInGroup;
+   const Index nonzeros = nonzerosInRow[ rowIndex ];
+   for( Index i = 0; i < nonzeros; i ++ )
+   {
+         product += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
+      pos += currentGroupSize;
+   }
+   vec_b[ rowIndex ] = product;
+}
+
+
 
 #endif // ifdef HAVE_CUDA
 

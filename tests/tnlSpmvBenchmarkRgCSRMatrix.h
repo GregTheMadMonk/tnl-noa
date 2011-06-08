@@ -101,7 +101,6 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
 #endif
    }
    this -> setupOk = true;
-   testMatrix( csrMatrix, true );
    return true;
 }
 
@@ -151,9 +150,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
-#ifdef HAVE_CUDA
    this -> matrix. setCUDABlockSize( cudaBlockSize );
-#endif
    this -> cudaBlockSize = cudaBlockSize;
 }
 

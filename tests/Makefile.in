@@ -33,12 +33,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = matrix-formats-test$(EXEEXT) \
-	sparse-matrix-benchmark$(EXEEXT) \
+check_PROGRAMS = sparse-matrix-benchmark$(EXEEXT) \
 	matrix-solvers-benchmark$(EXEEXT) tnl-benchmarks$(EXEEXT) \
 	reorder-csr$(EXEEXT) $(am__EXEEXT_1)
-@BUILD_DBG_TRUE@am__append_1 = matrix-formats-test-dbg \
-@BUILD_DBG_TRUE@                  matrix-solvers-benchmark-dbg \
+@BUILD_DBG_TRUE@am__append_1 = matrix-solvers-benchmark-dbg \
 @BUILD_DBG_TRUE@                  sparse-matrix-benchmark-dbg
 
 subdir = tests
@@ -51,32 +49,11 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@BUILD_DBG_TRUE@am__EXEEXT_1 = matrix-formats-test-dbg$(EXEEXT) \
-@BUILD_DBG_TRUE@	matrix-solvers-benchmark-dbg$(EXEEXT) \
+@BUILD_DBG_TRUE@am__EXEEXT_1 = matrix-solvers-benchmark-dbg$(EXEEXT) \
 @BUILD_DBG_TRUE@	sparse-matrix-benchmark-dbg$(EXEEXT)
-am__objects_1 = matrix-formats-test.$(OBJEXT)
-am_matrix_formats_test_OBJECTS = $(am__objects_1)
-matrix_formats_test_OBJECTS = $(am_matrix_formats_test_OBJECTS)
-matrix_formats_test_DEPENDENCIES = ../src/libtnl-0.1.la \
-	../src/core/libtnlcore-0.1.la \
-	../src/matrix/libtnlmatrix-0.1.la
-am__matrix_formats_test_dbg_SOURCES_DIST = matrix-formats-test.h \
-	matrix-formats-test.cpp
-am__objects_2 = matrix_formats_test_dbg-matrix-formats-test.$(OBJEXT)
-@BUILD_DBG_TRUE@am_matrix_formats_test_dbg_OBJECTS = $(am__objects_2)
-matrix_formats_test_dbg_OBJECTS =  \
-	$(am_matrix_formats_test_dbg_OBJECTS)
-@BUILD_DBG_TRUE@matrix_formats_test_dbg_DEPENDENCIES =  \
-@BUILD_DBG_TRUE@	../src/libtnl-dbg-0.1.la \
-@BUILD_DBG_TRUE@	../src/core/libtnlcore-dbg-0.1.la \
-@BUILD_DBG_TRUE@	../src/matrix/libtnlmatrix-dbg-0.1.la
-matrix_formats_test_dbg_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-am__objects_3 =  \
+am__objects_1 =  \
 	matrix_solvers_benchmark-matrix-solvers-benchmark.$(OBJEXT)
-am_matrix_solvers_benchmark_OBJECTS = $(am__objects_3)
+am_matrix_solvers_benchmark_OBJECTS = $(am__objects_1)
 matrix_solvers_benchmark_OBJECTS =  \
 	$(am_matrix_solvers_benchmark_OBJECTS)
 matrix_solvers_benchmark_DEPENDENCIES = ../src/libtnl-0.1.la \
@@ -88,9 +65,9 @@ matrix_solvers_benchmark_LINK = $(LIBTOOL) --tag=CXX \
 	$(LDFLAGS) -o $@
 am__matrix_solvers_benchmark_dbg_SOURCES_DIST =  \
 	matrix-solvers-benchmark.h matrix-solvers-benchmark.cpp
-am__objects_4 = matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.$(OBJEXT)
+am__objects_2 = matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.$(OBJEXT)
 @BUILD_DBG_TRUE@am_matrix_solvers_benchmark_dbg_OBJECTS =  \
-@BUILD_DBG_TRUE@	$(am__objects_4)
+@BUILD_DBG_TRUE@	$(am__objects_2)
 matrix_solvers_benchmark_dbg_OBJECTS =  \
 	$(am_matrix_solvers_benchmark_dbg_OBJECTS)
 @BUILD_DBG_TRUE@matrix_solvers_benchmark_dbg_DEPENDENCIES =  \
@@ -104,9 +81,9 @@ matrix_solvers_benchmark_dbg_LINK = $(LIBTOOL) --tag=CXX \
 am_reorder_csr_OBJECTS = ReorderCSR.$(OBJEXT)
 reorder_csr_OBJECTS = $(am_reorder_csr_OBJECTS)
 reorder_csr_LDADD = $(LDADD)
-am__objects_5 =  \
+am__objects_3 =  \
 	sparse_matrix_benchmark-sparse-matrix-benchmark.$(OBJEXT)
-am_sparse_matrix_benchmark_OBJECTS = $(am__objects_5)
+am_sparse_matrix_benchmark_OBJECTS = $(am__objects_3)
 sparse_matrix_benchmark_OBJECTS =  \
 	$(am_sparse_matrix_benchmark_OBJECTS)
 sparse_matrix_benchmark_DEPENDENCIES = ../src/libtnl-0.1.la \
@@ -120,10 +97,10 @@ am__sparse_matrix_benchmark_dbg_SOURCES_DIST =  \
 	sparse-matrix-benchmark.h tnlSpmvBenchmark.h \
 	tnlSpmvBenchmarkCSRMatrix.h tnlSpmvBenchmarkHybridMatrix.h \
 	tnlSpmvBenchmarkRgCSRMatrix.h sparse-matrix-benchmark.cpp
-am__objects_6 =  \
+am__objects_4 =  \
 	sparse_matrix_benchmark_dbg-sparse-matrix-benchmark.$(OBJEXT)
 @BUILD_DBG_TRUE@am_sparse_matrix_benchmark_dbg_OBJECTS =  \
-@BUILD_DBG_TRUE@	$(am__objects_6)
+@BUILD_DBG_TRUE@	$(am__objects_4)
 sparse_matrix_benchmark_dbg_OBJECTS =  \
 	$(am_sparse_matrix_benchmark_dbg_OBJECTS)
 @BUILD_DBG_TRUE@sparse_matrix_benchmark_dbg_DEPENDENCIES =  \
@@ -134,8 +111,8 @@ sparse_matrix_benchmark_dbg_LINK = $(LIBTOOL) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(sparse_matrix_benchmark_dbg_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_7 = tnl-benchmarks.$(OBJEXT)
-am_tnl_benchmarks_OBJECTS = $(am__objects_7)
+am__objects_5 = tnl-benchmarks.$(OBJEXT)
+am_tnl_benchmarks_OBJECTS = $(am__objects_5)
 tnl_benchmarks_OBJECTS = $(am_tnl_benchmarks_OBJECTS)
 tnl_benchmarks_DEPENDENCIES = ../src/libtnl-0.1.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -160,16 +137,12 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(matrix_formats_test_SOURCES) \
-	$(matrix_formats_test_dbg_SOURCES) \
-	$(matrix_solvers_benchmark_SOURCES) \
+SOURCES = $(matrix_solvers_benchmark_SOURCES) \
 	$(matrix_solvers_benchmark_dbg_SOURCES) $(reorder_csr_SOURCES) \
 	$(sparse_matrix_benchmark_SOURCES) \
 	$(sparse_matrix_benchmark_dbg_SOURCES) \
 	$(tnl_benchmarks_SOURCES)
-DIST_SOURCES = $(matrix_formats_test_SOURCES) \
-	$(am__matrix_formats_test_dbg_SOURCES_DIST) \
-	$(matrix_solvers_benchmark_SOURCES) \
+DIST_SOURCES = $(matrix_solvers_benchmark_SOURCES) \
 	$(am__matrix_solvers_benchmark_dbg_SOURCES_DIST) \
 	$(reorder_csr_SOURCES) $(sparse_matrix_benchmark_SOURCES) \
 	$(am__sparse_matrix_benchmark_dbg_SOURCES_DIST) \
@@ -346,13 +319,10 @@ top_srcdir = @top_srcdir@
 SUBDIRS = unit-tests
 
 #if BUILD_CUDA
-#matrix_formats_test_sources += matrix-formats-test-cuda.cu
 #sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
 #matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
 #tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else
-matrix_formats_test_sources = matrix-formats-test.h \
-	matrix-formats-test.cpp
 sparse_matrix_benchmark_sources = sparse-matrix-benchmark.h \
 	tnlSpmvBenchmark.h tnlSpmvBenchmarkCSRMatrix.h \
 	tnlSpmvBenchmarkHybridMatrix.h tnlSpmvBenchmarkRgCSRMatrix.h \
@@ -361,11 +331,6 @@ matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h \
 	matrix-solvers-benchmark.cpp
 tnl_benchmarks_sources = tnl-benchmarks.h tnl-benchmarks.cpp
 #endif
-matrix_formats_test_SOURCES = $(matrix_formats_test_sources)
-matrix_formats_test_LDADD = ../src/libtnl-0.1.la \
-                            ../src/core/libtnlcore-0.1.la \
-                            ../src/matrix/libtnlmatrix-0.1.la 
-
 sparse_matrix_benchmark_CXXFLAGS = $(OPTIMISECXXFLAGS) $(CUSP_CXXFLAGS)
 sparse_matrix_benchmark_SOURCES = $(sparse_matrix_benchmark_sources)
 sparse_matrix_benchmark_LDADD = ../src/libtnl-0.1.la \
@@ -381,12 +346,6 @@ matrix_solvers_benchmark_LDADD = ../src/libtnl-0.1.la \
 tnl_benchmarks_SOURCES = $(tnl_benchmarks_sources)
 tnl_benchmarks_LDADD = ../src/libtnl-0.1.la
 reorder_csr_SOURCES = ReorderCSR.cpp
-@BUILD_DBG_TRUE@matrix_formats_test_dbg_SOURCES = $(matrix_formats_test_sources)
-@BUILD_DBG_TRUE@matrix_formats_test_dbg_CXXFLAGS = $(DBGCXXFLAGS)
-@BUILD_DBG_TRUE@matrix_formats_test_dbg_LDADD = ../src/libtnl-dbg-0.1.la \
-@BUILD_DBG_TRUE@                                ../src/core/libtnlcore-dbg-0.1.la \
-@BUILD_DBG_TRUE@                                ../src/matrix/libtnlmatrix-dbg-0.1.la
-
 @BUILD_DBG_TRUE@sparse_matrix_benchmark_dbg_SOURCES = $(sparse_matrix_benchmark_sources)
 @BUILD_DBG_TRUE@sparse_matrix_benchmark_dbg_CXXFLAGS = $(DBGCXXFLAGS) $(CUSP_CXXFLAGS)                               
 @BUILD_DBG_TRUE@sparse_matrix_benchmark_dbg_LDADD = ../src/libtnl-0.1.la \
@@ -401,13 +360,11 @@ reorder_csr_SOURCES = ReorderCSR.cpp
 
 
 #if BUILD_CUDA
-#matrix_formats_test_CXXFLAGS = -DHAVE_CUDA
 #sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
 #tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
 #endif
 check_SCRIPTS = get-matrices \
                 convert-matrices \
-                run-matrix-formats-test \
                 run-sparse-matrix-benchmark \
                 tnl-sparse-matrix-test 
 
@@ -419,7 +376,6 @@ check_DATA = tnl-sparse-matrix-check.cfg.desc \
 
 EXTRADIST = get-matrices \
             convert-matrices \
-            run-matrix-formats-test \
             run-sparse-matrix-benchmark \
             tnl-sparse-matrix-test 
 
@@ -466,12 +422,6 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-matrix-formats-test$(EXEEXT): $(matrix_formats_test_OBJECTS) $(matrix_formats_test_DEPENDENCIES) 
-	@rm -f matrix-formats-test$(EXEEXT)
-	$(CXXLINK) $(matrix_formats_test_OBJECTS) $(matrix_formats_test_LDADD) $(LIBS)
-matrix-formats-test-dbg$(EXEEXT): $(matrix_formats_test_dbg_OBJECTS) $(matrix_formats_test_dbg_DEPENDENCIES) 
-	@rm -f matrix-formats-test-dbg$(EXEEXT)
-	$(matrix_formats_test_dbg_LINK) $(matrix_formats_test_dbg_OBJECTS) $(matrix_formats_test_dbg_LDADD) $(LIBS)
 matrix-solvers-benchmark$(EXEEXT): $(matrix_solvers_benchmark_OBJECTS) $(matrix_solvers_benchmark_DEPENDENCIES) 
 	@rm -f matrix-solvers-benchmark$(EXEEXT)
 	$(matrix_solvers_benchmark_LINK) $(matrix_solvers_benchmark_OBJECTS) $(matrix_solvers_benchmark_LDADD) $(LIBS)
@@ -498,8 +448,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReorderCSR.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix-formats-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix_solvers_benchmark_dbg-matrix-solvers-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparse_matrix_benchmark-sparse-matrix-benchmark.Po@am__quote@
@@ -526,20 +474,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
-
-matrix_formats_test_dbg-matrix-formats-test.o: matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test.o -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test.o `test -f 'matrix-formats-test.cpp' || echo '$(srcdir)/'`matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test.cpp' object='matrix_formats_test_dbg-matrix-formats-test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test.o `test -f 'matrix-formats-test.cpp' || echo '$(srcdir)/'`matrix-formats-test.cpp
-
-matrix_formats_test_dbg-matrix-formats-test.obj: matrix-formats-test.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -MT matrix_formats_test_dbg-matrix-formats-test.obj -MD -MP -MF $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo -c -o matrix_formats_test_dbg-matrix-formats-test.obj `if test -f 'matrix-formats-test.cpp'; then $(CYGPATH_W) 'matrix-formats-test.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Tpo $(DEPDIR)/matrix_formats_test_dbg-matrix-formats-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix-formats-test.cpp' object='matrix_formats_test_dbg-matrix-formats-test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_formats_test_dbg_CXXFLAGS) $(CXXFLAGS) -c -o matrix_formats_test_dbg-matrix-formats-test.obj `if test -f 'matrix-formats-test.cpp'; then $(CYGPATH_W) 'matrix-formats-test.cpp'; else $(CYGPATH_W) '$(srcdir)/matrix-formats-test.cpp'; fi`
 
 matrix_solvers_benchmark-matrix-solvers-benchmark.o: matrix-solvers-benchmark.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(matrix_solvers_benchmark_CXXFLAGS) $(CXXFLAGS) -MT matrix_solvers_benchmark-matrix-solvers-benchmark.o -MD -MP -MF $(DEPDIR)/matrix_solvers_benchmark-matrix-solvers-benchmark.Tpo -c -o matrix_solvers_benchmark-matrix-solvers-benchmark.o `test -f 'matrix-solvers-benchmark.cpp' || echo '$(srcdir)/'`matrix-solvers-benchmark.cpp
