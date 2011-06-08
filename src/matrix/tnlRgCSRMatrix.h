@@ -466,7 +466,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
             Index elementPos = csr_matrix. row_offsets[ elementRow ];
             while( elementPos < csr_matrix. row_offsets[ elementRow + 1 ] )
             {
-               dbgCout( "Inserting on position " << j
+               dbgCoutLine( "Inserting on position " << j
                       << " data " << csr_matrix. nonzero_elements[ elementPos ]
                       << " at column " << csr_matrix. columns[ elementPos ] );
                nonzeroElements[ j ] = csr_matrix. nonzero_elements[ elementPos ];
@@ -612,7 +612,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
 
    if( Device == tnlHost )
    {
-#ifdef UNDEF
+//#ifdef UNDEF
       /****
        * This is exact emulation of the CUDA kernel
        */
@@ -662,8 +662,8 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
             //Real* x = const_cast< Real* >( vec_x );
             result[ rowIndex ] = product;
          }
-#endif
-//#ifdef UNDEF
+//#endif
+#ifdef UNDEF
       const Index blocks_num = groupOffsets. getSize() - 1;
       const Index* row_lengths = nonzeroElementsInRow. getVector();
       const Real* values = nonzeroElements. getVector();
@@ -717,7 +717,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
          }
          firstRowOfGroup += currentGroupSize;
       }
-//#endif
+#endif
    }
    if( Device == tnlCuda )
    {
