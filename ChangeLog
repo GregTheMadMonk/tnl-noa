@@ -1,3 +1,12 @@
+2011-06-09  oberhuber  <oberhuber@yvonne>
+
+	* src/matrix/tnlCSRMatrix.h: 
+	* src/matrix/tnlRgCSRMatrix.h: 
+	* tests/sparse-matrix-benchmark.h: 
+	* tests/tnlSpmvBenchmarkHybridMatrix.h: 
+	* tests/tnlSpmvBenchmarkRgCSRMatrix.h:
+	 - working on the adaptive groups 
+
 2011-06-05  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
 	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 

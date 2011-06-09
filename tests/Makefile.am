@@ -16,13 +16,13 @@ matrix_solvers_benchmark_sources = matrix-solvers-benchmark.h
 tnl_benchmarks_sources = tnl-benchmarks.h
 
 #if BUILD_CUDA
-#sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
-#matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
-#tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
+sparse_matrix_benchmark_sources += sparse-matrix-benchmark-cuda.cu                                    
+matrix_solvers_benchmark_sources += matrix-solvers-benchmark-cuda.cu                                   
+tnl_benchmarks_sources += tnl-benchmarks-cuda.cu                               
 #else
-sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
-matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
-tnl_benchmarks_sources += tnl-benchmarks.cpp                               
+#sparse_matrix_benchmark_sources += sparse-matrix-benchmark.cpp
+#matrix_solvers_benchmark_sources += matrix-solvers-benchmark.cpp
+#tnl_benchmarks_sources += tnl-benchmarks.cpp                               
 #endif
 
 sparse_matrix_benchmark_CXXFLAGS = $(OPTIMISECXXFLAGS) $(CUSP_CXXFLAGS)
@@ -61,8 +61,8 @@ matrix_solvers_benchmark_dbg_LDADD = ../src/libtnl-0.1.la \
 endif
 
 #if BUILD_CUDA
-#sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
-#tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
+sparse_matrix_benchmark_CXXFLAGS += -DHAVE_CUDA
+tnl_benchmarks_CXXFLAGS = -DHAVE_CUDA
 #endif
 
 

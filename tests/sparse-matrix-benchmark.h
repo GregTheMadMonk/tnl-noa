@@ -331,7 +331,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       hostRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
       if( formatTest )
-         hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+         hostRgCsrMatrixBenchmark. testMatrix( orderedCsrMatrix, verbose );
       hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
       if( logFileName )

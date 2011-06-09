@@ -119,15 +119,25 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
    cout << left << setw( this -> formatColumnWidth - 15 ) << "Row-grouped CSR ";
    if( Device == tnlCuda )
-      cout << setw( 5 ) << this -> groupSize
-           << setw( 10 ) << this -> cudaBlockSize;
+   {
+      if( useAdaptiveGroupSize )
+         cout << setw( 5 ) << "Var.";
+      else
+         cout << setw( 5 ) << this -> groupSize;
+      cout << setw( 10 ) << this -> cudaBlockSize;
+   }
    else
-      cout << setw( 15 ) << this -> groupSize;
+   {
+      if( useAdaptiveGroupSize )
+         cout << setw( 15 ) << "Var.";
+      else
+         cout << setw( 15 ) << this -> groupSize;
+   }
    cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
         << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
         << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
    if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
+        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  OK  - maxError is " << this -> maxError << ". ";
    else
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError << ". ";
 #ifndef HAVE_CUDA

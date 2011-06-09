@@ -546,44 +546,6 @@ Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
-                                                                 const tnlLongVector< Real, Device, Index >& b,
-                                                                 tnlLongVector< Real, Device, Index >& x,
-                                                                 Index firstRow,
-                                                                 Index lastRow ) const
-{
-   tnlAssert( firstRow >=0 && firstRow < this -> getSize(),
-              cerr << "Wrong parameter firstRow. Should be in 0..." << this -> getSize()
-                   << " but it equals " << firstRow << endl; );
-   tnlAssert( lastRow >=0 && lastRow < this -> getSize(),
-              cerr << "Wrong parameter lastRow. Should be in 0..." << this -> getSize()
-                   << " but it equals " << lastRow << endl; );
-
-   if( lastRow == 0 )
-      lastRow = this -> getSize();
-   for( Index i = firstRow; i < lastRow; i ++ )
-   {
-      Real diagonal( 0.0 );
-      Real update = b[ i ];
-      for( Index j = this -> row_offsets[ i ]; j < this -> row_offsets[ i + 1 ]; j ++ )
-      {
-         const Index column = this -> columns[ j ];
-         if( column == i )
-            diagonal = this -> nonzero_elements[ j ];
-         else
-            update -= this -> nonzero_elements[ j ] * x[ column ];
-      }
-      if( diagonal == ( Real ) 0.0 )
-      {
-         cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << endl;
-         return false;
-      }
-      x[ i ] = ( 1.0 - omega ) * x[ i ] + omega / diagonal * update;
-   }
-   return true;
-}
-
-template< typename Real, tnlDevice Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
                                                            tnlLongVector< Real, Device, Index >& result ) const
 {
@@ -627,7 +589,46 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
       }
 	   result[ row ] = product;
    }
-};
+}
+
+template< typename Real, tnlDevice Device, typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
+                                                                 const tnlLongVector< Real, Device, Index >& b,
+                                                                 tnlLongVector< Real, Device, Index >& x,
+                                                                 Index firstRow,
+                                                                 Index lastRow ) const
+{
+   tnlAssert( firstRow >=0 && firstRow < this -> getSize(),
+              cerr << "Wrong parameter firstRow. Should be in 0..." << this -> getSize()
+                   << " but it equals " << firstRow << endl; );
+   tnlAssert( lastRow >=0 && lastRow < this -> getSize(),
+              cerr << "Wrong parameter lastRow. Should be in 0..." << this -> getSize()
+                   << " but it equals " << lastRow << endl; );
+
+   if( lastRow == 0 )
+      lastRow = this -> getSize();
+   for( Index i = firstRow; i < lastRow; i ++ )
+   {
+      Real diagonal( 0.0 );
+      Real update = b[ i ];
+      for( Index j = this -> row_offsets[ i ]; j < this -> row_offsets[ i + 1 ]; j ++ )
+      {
+         const Index column = this -> columns[ j ];
+         if( column == i )
+            diagonal = this -> nonzero_elements[ j ];
+         else
+            update -= this -> nonzero_elements[ j ] * x[ column ];
+      }
+      if( diagonal == ( Real ) 0.0 )
+      {
+         cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << endl;
+         return false;
+      }
+      x[ i ] = ( 1.0 - omega ) * x[ i ] + omega / diagonal * update;
+   }
+   return true;
+}
+
 
 template< typename Real, tnlDevice Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: setBackwardSpMV( bool backwardSpMV )
