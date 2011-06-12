@@ -17,7 +17,6 @@
 
 #include <cstring>
 #include <string.h>
-#include <config.h>
 #include <core/tnlString.h>
 #include <debug/tnlDebug.h>
 #include <core/tnlAssert.h>

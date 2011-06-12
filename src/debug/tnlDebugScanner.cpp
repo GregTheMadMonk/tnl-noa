@@ -545,7 +545,7 @@ static yyconst flex_int16_t yy_rule_linenum[11] =
    #include "tnlDebugParser.h"
    #include <iostream>
 
-   //int yywrap();
+   int yywrap();
 #line 550 "tnlDebugScanner.cpp"
 
 #define INITIAL 0
@@ -1944,11 +1944,11 @@ void tnlDebugfree (void * ptr )
 
 
 
-int tnlDebugFlexLexer::yywrap()
+/*int tnlDebugFlexLexer::yywrap()
 {
    return 1;
-}
+}*/
 
-//extern int yywrap();
+int yywrap(){};
 
 

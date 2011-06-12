@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tnl-config.h>
 #include <core/tnlFile.h>
 
 int tnlFile :: verbose = 0;

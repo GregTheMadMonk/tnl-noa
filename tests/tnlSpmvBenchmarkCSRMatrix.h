@@ -18,7 +18,7 @@
 #ifndef TNLSPMVBENCHMARKCSRMATRIX_H_
 #define TNLSPMVBENCHMARKCSRMATRIX_H_
 
-#include <tnlSpmvBenchmark.h>
+#include "tnlSpmvBenchmark.h"
 #include <matrix/tnlCSRMatrix.h>
 
 template< typename Real, typename Index>

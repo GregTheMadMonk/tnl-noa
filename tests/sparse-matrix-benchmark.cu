@@ -1,8 +1,8 @@
 /***************************************************************************
-                          debug.h  -  description
+                          sparse-matrix-benchmark.cu  -  description
                              -------------------
-    begin                : 2005/07/02
-    copyright            : (C) 2005 by Tomas Oberhuber
+    begin                : Jul 27, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,23 +15,5 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef debugH
-#define debugH
 
-#include <config.h>
-
-#ifdef HAVE_POUND_H
-#include <pound.h>
-#else
-   #define DBG_INIT( file_name )
-   #define dbgFunctionName( _class, _func )
-   #define dbgCout( args )
-   #define dbgExpr( expr )
-   #define DBG_PRINTF( expr )
-   #define DBG_COND_COUT( condition, args )
-   #define DBG_COND_EXPR( condition, expr )
-   #define DBG_COND_PRINTF( condition, expr )
-   #define DBG_MPI_BARRIER
-#endif
-
-#endif
+#include "sparse-matrix-benchmark.h"

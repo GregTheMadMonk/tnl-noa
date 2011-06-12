@@ -8,5 +8,5 @@ tnltools_data_DATA = tnlcurve2gnuplot.cfg.desc \
 
 EXTRA_DIST = tnlcurve2gnuplot.cfg.desc \
              mdiff-err-norms.cfg.desc \
-             mgrid-view.cfg.desc \
+             tnl-grid-view.cfg.desc \
              tnl-matrix-convert.cfg.desc

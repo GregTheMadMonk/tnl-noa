@@ -18,7 +18,7 @@
 #ifndef TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 #define TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 
-#include <tnlSpmvBenchmark.h>
+#include "tnlSpmvBenchmark.h"
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
 #include <core/tnlAssert.h>
 

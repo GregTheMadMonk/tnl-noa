@@ -24,10 +24,11 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
-
-#include "../../mdiff-err-norms-def.h"
-
 #include "tnl-err-norms.h"
+
+#include "configDirectory.h"
+const char configFile[] = CONFIG_DIRECTORY "tnl-err-norms.cfg.desc";
+
 
 void WriteHeader( ostream& stream,
                   const double& tau )
@@ -104,7 +105,7 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
 
    dbgCout( "Parsing config description file ... " );
-   if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {

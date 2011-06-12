@@ -17,6 +17,7 @@
 
 #ifndef TNLCOMMUNICATORTESTER_H_
 #define TNLCOMMUNICATORTESTER_H_
+
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>

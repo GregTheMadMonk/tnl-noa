@@ -273,6 +273,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: setElement( Index row,
                                                              const Real& value )
 {
 	tnlAssert( false, );
+	return true;
 }
 
 template< typename Real, typename Index >
@@ -281,6 +282,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: addToElement( Index row,
                                                                const Real& value )
 {
 	tnlAssert( false, );
+	return true;
 }
 
 template< typename Real, typename Index >
@@ -459,6 +461,7 @@ template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( ostream& file ) const
 {
 	tnlAssert( false, );
+	return true;
 };
 
 
@@ -466,6 +469,7 @@ template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Load( istream& file )
 {
 	tnlAssert( false, );
+	return true;
 };
 
 template< typename Real, typename Index >

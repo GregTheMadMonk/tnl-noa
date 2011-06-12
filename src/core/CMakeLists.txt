@@ -1,7 +1,12 @@
+INCLUDE_DIRECTORIES( low-level )
+
+add_subdirectory( low-level )
+
 set (headers tnlAssert.h  
     	     tnlCurve.h 
     	     tnlCudaSupport.h
-		     tnlDataElement.h 
+		     tnlDataElement.h
+		     tnlFile.h 
 		     tnlFlopsCounter.h 
 		     tnlList.h 
 		     tnlLongVectorBase.h 
@@ -11,21 +16,18 @@ set (headers tnlAssert.h
 		     tnlObject.h 
 		     tnlStack.h 
 		     tnlString.h 
-		     tnlReal.h 
-		     tnlRealTester.h 
+		     tnlReal.h
 		     tnlTimerCPU.h  
 		     tnlTimerRT.h  
 		     tnlVector.h 
-		     tnl-cuda-kernels.h  
-		     tnlCUDAKernelsTester.h
-			 tnlCudaSupport.h
-		     compress-file.h 
+			 tnlCudaSupport.h 
 		     mfilename.h 
 		     mfuncs.h 
 		     mpi-supp.h 
 		     param-types.h
     )
 set( sources tnlCudaSupport.cpp 
+             tnlFile.cpp
              tnlFlopsCounter.cpp 
              tnlLogger.cpp 
         	 tnlObject.cpp 
@@ -36,15 +38,15 @@ set( sources tnlCudaSupport.cpp
         	 mpi-supp.cpp 
     )
 
-set (libmcoreincludedir ${TNL_INCLUDE_DIR}/core )
-set (libmcoreinclude_HEADERS ${headers} )
+set( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
+set( libtnlcoreinclude_HEADERS ${headers} )
 
-if (BUILD_CUDA)
-  CUDA_ADD_LIBRARY(libtnlcore${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} debug.h tnlLongVectorCUDA.cu tnl-cuda-kernels.cu )
-else()
-  ADD_LIBRARY(libtnlcore${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} debug.h)
-endif()
+ADD_LIBRARY(libtnlcore${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} )
+
 if (BUILD_MPI)
-  target_link_libraries(libtnlcore${mpiExt}${debugExt}-0.1 mpi)
+  target_link_libraries(libtnlcore${mpiExt}${debugExt}-0.1 mpi
+                                                            ${BZIP2_LIBRARIES}  )
+else()
+    target_link_libraries(libtnlcore${mpiExt}${debugExt}-0.1 ${BZIP2_LIBRARIES} )
 endif()
 

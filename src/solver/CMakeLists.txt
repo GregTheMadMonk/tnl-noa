@@ -16,7 +16,7 @@ set( sources )
 set( libtnlsolverincludedir ${TNL_INCLUDE_DIR}/mesh )
 set( libtnlsolverinclude_HEADERS ${headers} )
 
-ADD_LIBRARY(libtnlsolver${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers})    #${OPTIMISECXXFLAGS}
+add_library(libtnlsolver${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} ../dummy.cpp)    #${OPTIMISECXXFLAGS}
 
 if( BUILD_MPI )
   target_link_libraries( libtnlsolver-0.1 mpi )

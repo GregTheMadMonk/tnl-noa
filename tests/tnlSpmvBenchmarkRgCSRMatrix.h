@@ -18,7 +18,7 @@
 #ifndef TNLSPMVBENCHMARKRGCSRMATRIX_H_
 #define TNLSPMVBENCHMARKRGCSRMATRIX_H_
 
-#include <tnlSpmvBenchmark.h>
+#include "tnlSpmvBenchmark.h"
 #include <matrix/tnlRgCSRMatrix.h>
 
 template< typename Real, tnlDevice Device, typename Index>

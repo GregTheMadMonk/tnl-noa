@@ -18,7 +18,7 @@
 #ifndef TNLSPMVBENCHMARKHYBRIDMATRIX_H_
 #define TNLSPMVBENCHMARKHYBRIDMATRIX_H_
 
-#include <tnlSpmvBenchmark.h>
+#include "tnlSpmvBenchmark.h"
 #ifdef HAVE_CUSP
    #include <hyb_matrix.h>
    #include <io/matrix_market.h>

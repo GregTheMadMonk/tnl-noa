@@ -265,6 +265,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
       abort();
    }
    rowsReorderingPermutation = matrix. rowsReorderingPermutation;*/
+   return * this;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -439,6 +440,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< In
       dbgExpr( buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] );
       permutation[ buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
    }
+   return true;
 }
 
 template< typename Real, tnlDevice Device, typename Index >

@@ -18,9 +18,32 @@
 
 project(libtnl)
 
-cmake_minimum_required(VERSION 2.8)
-FIND_PACKAGE(CUDA)
-#Najdem CPPUNIT tohle by bylo hezci mit mimo, aby slo jen volat find_package(cppunit), ale to bych to zase ztratil
+cmake_minimum_required( VERSION 2.8 )
+
+#####
+# Check for bzip2
+#
+FIND_PACKAGE(BZip2)
+if( BZIP2_FOUND )
+    set( HAVE_LIBBZ2 "" )
+    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
+else( BZIP2_FOUND )
+    set( HAVE_LIBBZ2 "//" )
+endif( BZIP2_FOUND )
+
+#####
+# Check for CUDA
+#
+FIND_PACKAGE( CUDA )
+if( CUDA_FOUND )
+    set( BUILD_CUDA TRUE)
+else( CUDA_FOUND )
+    
+endif( CUDA_FOUND )
+
+####
+# Check for cppunit
+#
 FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
   /usr/local/include
   /usr/include
@@ -67,13 +90,15 @@ ENABLE_TESTING()	#zapneme moznost testovani
 
 #Nastaveni kam davat vysledne soubory pro debug/release verzi
 IF( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib)
-	set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin)
-	set(debugExt -dbg)
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
+	set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
+	set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
+	set( debugExt -dbg )
 else()
-	set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
-	set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-	set (addAlsoSubdirs TRUE)
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
+	set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
+	set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
+	set( addAlsoSubdirs TRUE)
 endif()
 
 if (BUILD_MPI)		#Pokud to ma byt za pouziti MPI nastavime si koncovku -mpi, a spravne prekladace
@@ -84,12 +109,14 @@ endif()
 
 
 set (Config_Directory \"${EXECUTABLE_OUTPUT_PATH}/config/\")
-configure_file ("configDirectory.h.in"  "${PROJECT_BINARY_DIR}/headers/configDirectory.h" )
+configure_file( "configDirectory.h.in"  "${PROJECT_BINARY_DIR}/headers/configDirectory.h" )
+configure_file( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
-INCLUDE_DIRECTORIES(src)
-INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR}/headers)
-LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
+INCLUDE_DIRECTORIES( src )
+INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
+INCLUDE_DIRECTORIES( ${PROJECT_BINARY_DIR}/headers )
+LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
 add_subdirectory (src)

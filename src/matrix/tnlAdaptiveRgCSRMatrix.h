@@ -649,6 +649,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
       //TODO: implement this
 
    }
+   return 0.0; // this is only to avoid a compiler warning
 }
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -665,9 +666,6 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                    << "The matrix size is " << this -> getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
-
-   const Index TB_SIZE = 256;
-   const Index MAX_ROWS = 256;
    if( Device == tnlHost )
    {
 

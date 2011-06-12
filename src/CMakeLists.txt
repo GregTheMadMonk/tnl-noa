@@ -19,8 +19,11 @@ set( libtnl_0_1_la_LIBADD
      libtnlsolver${mpiExt}${debugExt}-0.1
     )
 
-ADD_LIBRARY( libtnl${mpiExt}${debugExt}-0.1 SHARED )
+add_library( libtnl${mpiExt}${debugExt}-0.1 SHARED dummy.cpp )
+
 target_link_libraries( libtnl${mpiExt}${debugExt}-0.1 ${libtnl_0_1_la_LIBADD} )
 if (BUILD_MPI)
   target_link_libraries(libtnl${mpiExt}${debugExt}-0.1 mpi)
 endif()
+
+

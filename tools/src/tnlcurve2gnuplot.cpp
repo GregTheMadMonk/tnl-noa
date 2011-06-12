@@ -15,18 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlcurve2gnuplot-def.h"
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
 #include <core/tnlVector.h>
 
+#include "configDirectory.h"
+const char configFile[] = CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {

@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "mgrid-view-def.h"
 #include "tnl-grid-view.h"
 #include <core/tnlCurve.h>
 #include <core/tnlFile.h>
@@ -24,13 +23,16 @@
 #include <config/tnlParameterContainer.h>
 #include <diff/curve-ident.h>
 
+#include "configDirectory.h"
+const char configFile[] = CONFIG_DIRECTORY "tnl-grid-view.cfg.desc";
+
 int main( int argc, char* argv[] )
 {
    dbgFunctionName( "", "main" );
    dbgInit( "" );
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( MGRID_VIEW_CONFIG_DESCRIPTION_FILE ) != 0 )
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {

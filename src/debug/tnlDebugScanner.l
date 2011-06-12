@@ -5,7 +5,7 @@
    #include "tnlDebugParser.h"
    #include <iostream>
 
-   //int yywrap();
+   int yywrap();
 %}
  
 %option c++ outfile="tnlDebugScanner.cpp" header-file="tnlDebugScanner.h" prefix="tnlDebug" debug
@@ -41,10 +41,10 @@ default-debug                                 { //cout << "DEFAULT" << endl;
 .                                             { return yytext[ 0 ]; }
 %%
 
-int tnlDebugFlexLexer::yywrap()
+/*int tnlDebugFlexLexer::yywrap()
 {
    return 1;
-}
+}*/
 
-//extern int yywrap();
+int yywrap(){};
 

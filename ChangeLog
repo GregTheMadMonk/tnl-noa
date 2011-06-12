@@ -1,3 +1,66 @@
+2011-06-12  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+
+    The following chages reflects conversion of the project
+    from the autools to CMake. 
+
+	* src/diff/mdiff-config.h: Removed.
+	* tests/tnl-sparse-matrix-check.cfg.desc: Removed.
+	* tests/tnl-sparse-matrix-test: Removed.
+	* tools/share/mgrid-view.cfg.desc: Removed.
+	* tools/src/bin2gnuplot.cpp: Removed.
+	* tools/src/compare-files.h: Removed.
+	* tools/src/debug.h: Removed.
+	* tools/src/diff-norm.cpp: Removed.
+	* tools/src/functions-benchmark-cuda.cu.h: Removed.
+	* tools/src/mdiff-err-norms.cpp: Removed.
+	* tools/src/mgrid2gnuplot.cpp: Removed.
+	* tools/src/read-file.h: Removed.
+	* src/core/low-level/CMakeLists.txt: New file.
+	* src/dummy.cpp: New file.
+	* tests/sparse-matrix-benchmark.cu: New file.
+	* tnlConfig.h.in: New file.
+	* tools/share/tnl-grid-view.cfg.desc: New file.
+	* buildAll: 
+	* CMakeLists.txt: 
+	* src/CMakeLists.txt: 
+	* src/config/CMakeLists.txt: 
+	* src/core/CMakeLists.txt: 
+	* src/core/tnlFile.cpp: 
+	* src/core/tnlFile.h: 
+	* src/core/tnlString.cpp: 
+	* src/core/tnlTimerCPU.cpp: 
+	* src/core/tnlTimerRT.cpp: 
+	* src/debug/CMakeLists.txt: 
+	* src/debug/parse.cc: 
+	* src/debug/tnlDebugParserbase.h: 
+	* src/debug/tnlDebugScanner.cpp: 
+	* src/debug/tnlDebugScanner.l: 
+	* src/diff/CMakeLists.txt: 
+	* src/matrix/CMakeLists.txt: 
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 
+	* src/matrix/tnlFastCSRMatrix.h: 
+	* src/matrix/tnlMatrix.h: 
+	* src/matrix/tnlRgCSRMatrix.h: 
+	* src/mesh/CMakeLists.txt: 
+	* src/solver/CMakeLists.txt: 
+	* tests/CMakeLists.txt: 
+	* tests/sparse-matrix-benchmark.cpp: 
+	* tests/sparse-matrix-benchmark.h (main): 
+	* tests/tnlSpmvBenchmark.h: 
+	* tests/tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h: 
+	* tests/tnlSpmvBenchmarkCSRMatrix.h: 
+	* tests/tnlSpmvBenchmarkHybridMatrix.h: 
+	* tests/tnlSpmvBenchmarkRgCSRMatrix.h: 
+	* tests/unit-tests/core/tnlCommunicatorTester.h: 
+	* tools/share/CMakeLists.txt: 
+	* tools/share/Makefile.am: 
+	* tools/src/CMakeLists.txt: 
+	* tools/src/tnl-err-norms.cpp (WriteHeader): 
+	(main): 
+	* tools/src/tnl-grid-view.cpp (main): 
+	* tools/src/tnl-matrix-convert.cpp (main): 
+	* tools/src/tnlcurve2gnuplot.cpp (main): 
+
 2011-06-09  oberhuber  <oberhuber@yvonne>
 
 	* src/matrix/tnlCSRMatrix.h: 

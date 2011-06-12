@@ -15,13 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnl-matrix-convert-def.h"
 #include "tnl-matrix-convert.h"
 #include <string.h>
 #include <debug/tnlDebug.h>
 #include <core/tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+
+#include "configDirectory.h"
+const char configFile[] = CONFIG_DIRECTORY "tnl-matrix-convert.cfg.desc";
 
 int main( int argc, char* argv[] )
 {
@@ -31,7 +33,7 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
-   if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {

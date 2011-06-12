@@ -18,14 +18,11 @@
 #ifndef SPARSEMATRIXBENCHMARK_H_
 #define SPARSEMATRIXBENCHMARK_H_
 
-//#define HAVE_CUDA
 
 #include <fstream>
 #include <iomanip>
-#include <tnlSpmvBenchmarkCSRMatrix.h>
-#include <tnlSpmvBenchmarkHybridMatrix.h>
-#include <tnlSpmvBenchmarkRgCSRMatrix.h>
-#include <tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <matrix/tnlFullMatrix.h>
 #include <matrix/tnlFastCSRMatrix.h>
 #include <matrix/tnlFastRgCSRMatrix.h>
@@ -33,7 +30,14 @@
 #include <matrix/tnlEllpackMatrix.h>
 #include <matrix/tnlEllpackMatrixCUDA.h>
 #include <core/mfuncs.h>
-#include <config.h>
+#include "tnlSpmvBenchmarkCSRMatrix.h"
+#include "tnlSpmvBenchmarkHybridMatrix.h"
+#include "tnlSpmvBenchmarkRgCSRMatrix.h"
+#include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"
+
+#include "configDirectory.h"
+const char configFile[] = CONFIG_DIRECTORY "tnl-sparse-matrix-check.cfg.desc";
+
 
 using namespace std;
 
@@ -297,14 +301,12 @@ bool benchmarkMatrix( const tnlString& inputFile,
        * Check if the ordering is OK.
        */
       int rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ 0 ] );
-      bool rowSortingError = false;
       for( int i = 1; i < csrMatrix. getSize(); i ++ )
       {
          //cout << csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) << endl;
          if( rowSize < csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) )
          {
             cerr << "The rows are not sorted properly. Error is at row number " << i << endl;
-            rowSortingError = true;
          }
          rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] );
       }
@@ -596,5 +598,74 @@ bool benchmarkMatrix( const tnlString& inputFile,
 
 }
 #endif
+
+
+int main( int argc, char* argv[] )
+{
+   dbgFunctionName( "", "main" );
+   dbgInit( "" );
+
+   tnlParameterContainer parameters;
+   tnlConfigDescription conf_desc;
+
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+      return 1;
+   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   {
+      conf_desc. PrintUsage( argv[ 0 ] );
+      return 1;
+   }
+   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
+   tnlString inputMtxFile = parameters. GetParameter< tnlString >( "input-mtx-file" );
+   tnlString pdfFile = parameters. GetParameter< tnlString >( "pdf-file" );
+   tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   double stop_time = parameters. GetParameter< double >( "stop-time" );
+   bool formatTest = parameters. GetParameter< bool >( "format-test" );
+   int maxIterations = parameters. GetParameter< int >( "max-iterations" );
+   int verbose = parameters. GetParameter< int >( "verbose");
+
+
+   tnlFile binaryFile;
+   if( ! binaryFile. open( inputFile, tnlReadMode ) )
+   {
+      cerr << "I am not able to open the file " << inputFile << "." << endl;
+      return 1;
+   }
+   tnlString object_type;
+   if( ! getObjectType( binaryFile, object_type ) )
+   {
+      cerr << "Unknown object ... SKIPPING!" << endl;
+      return EXIT_FAILURE;
+   }
+   if( verbose )
+      cout << object_type << " detected ... " << endl;
+   binaryFile. close();
+
+   if( object_type == "tnlCSRMatrix< float, tnlHost >")
+      benchmarkMatrix< float >( inputFile,
+                                inputMtxFile,
+                                pdfFile,
+                                logFileName,
+                                formatTest,
+                                maxIterations,
+                                verbose );
+
+   if( object_type == "tnlCSRMatrix< double, tnlHost >" )
+   {
+      benchmarkMatrix< double >( inputFile,
+                                 inputMtxFile,
+                                 pdfFile,
+                                 logFileName,
+                                 formatTest,
+                                 maxIterations,
+                                 verbose );
+   }
+   //binaryFile. close();
+
+
+
+   return EXIT_SUCCESS;
+}
+
 
 #endif /* SPARSEMATRIXBENCHMARK_H_ */

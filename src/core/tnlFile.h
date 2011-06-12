@@ -21,6 +21,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <tnlConfig.h>
 #ifdef HAVE_BZIP2
    #include <bzlib.h>
 #endif
@@ -264,7 +265,6 @@ bool tnlFile ::  write( const Type* buffer,
                       ( void* ) buf,
                       elements * sizeof( Type ) );
          return checkBz2Error( bzerror );
-         break;
       case tnlCuda:
 #ifdef HAVE_CUDA
          /*!***
@@ -313,7 +313,6 @@ bool tnlFile ::  write( const Type* buffer,
          cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
          return false;
 #endif
-         break;
       case tnlOpenCL:
          tnlAssert( false, cerr << "Not implemented yet!" << endl );
          break;

@@ -11,7 +11,7 @@ fi
 
 cd Debug
 cmake .. -DCMAKE_BUILD_TYPE=Debug
-make
+make VERBOSE=1
 cd ../Release
 cmake ..
 make

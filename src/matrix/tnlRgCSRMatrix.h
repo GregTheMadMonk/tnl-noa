@@ -878,6 +878,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
          cout << endl;
       return true;
    }
+   cerr << "The format " << format << " is not supported for matrix drawing." << endl;
 }
 
 template< typename Real, tnlDevice Device, typename Index >
