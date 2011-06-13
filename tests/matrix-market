@@ -152,6 +152,6 @@ MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcca.m
 #               ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/bcsstruc2/bcsstk15.mtx.gz \
 
 #MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcfe.mtx.gz"
-MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcca.mtx.gz"
+#MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/astroph/mcca.mtx.gz"
 #MM_MATRICES="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/bcsstruc4/bcsstk28.mtx.gz"
 #MM_MATRICES=""

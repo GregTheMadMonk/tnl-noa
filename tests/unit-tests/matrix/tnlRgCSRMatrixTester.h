@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlMatrixTester.h>
+#include "tnlMatrixTester.h"
 #include <matrix/tnlRgCSRMatrix.h>
 
 template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,

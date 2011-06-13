@@ -328,7 +328,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
 
       tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
       hostRgCsrMatrixBenchmark. setGroupSize( 16 );
-      hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true ); // TODO: fix with true - not implemented yet
+      hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( false ); // TODO: fix with true - not implemented yet
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       hostRgCsrMatrixBenchmark. setup( orderedCsrMatrix );

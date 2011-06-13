@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnl-unit-tests.cpp  -  description
+                          tnl-cuda-unit-tests.cu  -  description
                              -------------------
-    begin                : Nov 21, 2009
-    copyright            : (C) 2009 by Tomas Oberhuber
+    begin                : Oct 28, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,4 +15,4 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnl-unit-test.h"
+#include "tnl-unit-tests.h"

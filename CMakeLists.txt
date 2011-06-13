@@ -84,8 +84,8 @@ ENDIF(CPPUNIT_INCLUDE_DIR)
 
 #-------------------------Skutecny zacatek-----------------------------
 
-ENABLE_TESTING()	#zapneme moznost testovani
-# set (BUILD_CUDA)
+ENABLE_TESTING()
+
 # set (BUILD_MPI)
 
 #Nastaveni kam davat vysledne soubory pro debug/release verzi
@@ -101,8 +101,8 @@ else()
 	set( addAlsoSubdirs TRUE)
 endif()
 
-if (BUILD_MPI)		#Pokud to ma byt za pouziti MPI nastavime si koncovku -mpi, a spravne prekladace
-  set(mpiExt -mpi)
+if( BUILD_MPI )		#Pokud to ma byt za pouziti MPI nastavime si koncovku -mpi, a spravne prekladace
+  SET(mpiExt -mpi)
   SET(CMAKE_C_COMPILER mpicc)
   SET(CMAKE_CXX_COMPILER mpicxx)
 endif()
@@ -119,7 +119,7 @@ INCLUDE_DIRECTORIES( ${PROJECT_BINARY_DIR}/headers )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
-add_subdirectory (src)
-add_subdirectory (tests)
-add_subdirectory (tools)
+add_subdirectory( src )
+add_subdirectory( tests )
+add_subdirectory( tools )
 

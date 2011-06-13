@@ -1,4 +1,6 @@
-file( COPY matrix-market DESTINATION ${EXECUTABLE_OUTPUT_PATH}/config )
+ADD_SUBDIRECTORY( unit-tests )
+
+FILE( COPY matrix-market DESTINATION ${EXECUTABLE_OUTPUT_PATH}/config )
 file( COPY florida-matrix-market DESTINATION ${EXECUTABLE_OUTPUT_PATH}/config )
 
 file( COPY get-matrices DESTINATION ${EXECUTABLE_OUTPUT_PATH} )
@@ -22,14 +24,15 @@ set( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
 #sparse_matrix_benchmark_CXXFLAGS = $(OPTIMISECXXFLAGS)
 
 if( BUILD_CUDA )
-cuda_add_executable( sparse_matrix_benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cu )
-target_link_libraries( sparse_matrix_benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
+cuda_add_executable( sparse-matrix-benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cu )
+target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
                                                                    libtnlcore${mpiExt}${debugExt}-0.1
                                                                    libtnlconfig${mpiExt}${debugExt}-0.1 )
 else()
-add_executable( sparse_matrix_benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cpp )
-target_link_libraries( sparse_matrix_benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
+add_executable( sparse-matrix-benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cpp )
+target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
                                                                    libtnlcore${mpiExt}${debugExt}-0.1
                                                                    libtnlconfig${mpiExt}${debugExt}-0.1 )
 endif()
+
                                                                    

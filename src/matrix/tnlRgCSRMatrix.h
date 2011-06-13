@@ -492,7 +492,8 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
     * Allocate the non-zero elements (they contains some artificial zeros.)
     */
    Index total_elements = rgCSRMatrix. getNonzeroElements() + 
-                          rgCSRMatrix. getArtificialZeroElements() ;
+                          rgCSRMatrix. getArtificialZeroElements();
+   cerr << total_elements << endl;
    dbgCout( "Allocating " << total_elements << " elements.");
    if( ! setNonzeroElements( total_elements ) )
       return false;
