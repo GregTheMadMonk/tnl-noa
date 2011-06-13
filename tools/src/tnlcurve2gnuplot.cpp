@@ -19,7 +19,7 @@
 #include <core/tnlCurve.h>
 #include <core/tnlVector.h>
 
-#include "configDirectory.h"
+#include "tnlConfig.h"
 const char configFile[] = CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
 
 //--------------------------------------------------------------------------

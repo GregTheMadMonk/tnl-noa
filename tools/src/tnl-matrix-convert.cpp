@@ -22,7 +22,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
-#include "configDirectory.h"
+#include "tnlConfig.h"
 const char configFile[] = CONFIG_DIRECTORY "tnl-matrix-convert.cfg.desc";
 
 int main( int argc, char* argv[] )

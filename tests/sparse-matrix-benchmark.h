@@ -35,7 +35,7 @@
 #include "tnlSpmvBenchmarkRgCSRMatrix.h"
 #include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"
 
-#include "configDirectory.h"
+#include "tnlConfig.h"
 const char configFile[] = CONFIG_DIRECTORY "tnl-sparse-matrix-check.cfg.desc";
 
 

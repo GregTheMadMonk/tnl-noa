@@ -1,13 +1,18 @@
-set( headers tnlDistributedGrid.h
-             tnlGrid.h  
-   )
-set( sources )
+SET( headers tnlDistributedGrid.h
+             tnlGrid.h )
 
-set( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/mesh )
-set( libtnlmeshinclude_HEADERS ${headers} )
+SET( sources ../dummy.cpp )   
 
-add_library(libtnlmesh${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} ../dummy.cpp)	#${OPTIMISECXXFLAGS}
+SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/mesh )
+SET( libtnlmeshinclude_HEADERS ${headers} )
 
-if (BUILD_MPI)
-  target_link_libraries(libtnldiff-0.1 mpi)
-endif()
+ADD_LIBRARY( libtnlmesh${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( libtnlmesh${debugExt}-${tnlVersion} )
+
+IF( BUILD_MPI )
+    ADD_LIBRARY( libtnlmesh-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( libtnlmesh-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+ENDIF()
+
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

@@ -25,12 +25,12 @@ set( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
 
 if( BUILD_CUDA )
 cuda_add_executable( sparse-matrix-benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cu )
-target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
+target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} tnl${mpiExt}${debugExt}-0.1
                                                                    libtnlcore${mpiExt}${debugExt}-0.1
                                                                    libtnlconfig${mpiExt}${debugExt}-0.1 )
 else()
 add_executable( sparse-matrix-benchmark${mpiExt}${debugExt} sparse-matrix-benchmark.cpp )
-target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} libtnl${mpiExt}${debugExt}-0.1
+target_link_libraries( sparse-matrix-benchmark${mpiExt}${debugExt} tnl${mpiExt}${debugExt}-0.1
                                                                    libtnlcore${mpiExt}${debugExt}-0.1
                                                                    libtnlconfig${mpiExt}${debugExt}-0.1 )
 endif()

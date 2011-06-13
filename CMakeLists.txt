@@ -1,32 +1,17 @@
-#Libtnl
-
-#Je potreba prenest vsechny Cmakelisty
-#PrelozVse
-#configDirectory.h.in - podle nej se vytvori hlavickovy soubor s informacemi o umisteni konfiguracnich souboru
-#src/dummy.cpp
-#src/core/config.h
-#src/core/tnlFieldCUDA2D.h
-#src/debug/parse.cc - zmena na include tnlDebugParser.h misto
-#src/debug/tnlDebugScanner.l	a jeho projeti skrz sflex++
-
-#tests/matrix-formats-test.cpp
-#tests/sparse-matrix-benchmark.cpp
-#tools/src/mdiff-err-norms.cpp
-#tools/src/tnlcurve2gnuplot.cpp
-#tools/src/tnl-grid-view.cpp
-#tools/src/tnl/matrix-convert.cpp
-
-project(libtnl)
+PROJECT( libtnl )
 
 cmake_minimum_required( VERSION 2.8 )
+
+SET( tnlVersion "0.1" )
+
+
 
 #####
 # Check for bzip2
 #
 FIND_PACKAGE(BZip2)
 if( BZIP2_FOUND )
-    set( HAVE_LIBBZ2 "" )
-    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
+    set( HAVE_LIBBZ2 "" )    
 else( BZIP2_FOUND )
     set( HAVE_LIBBZ2 "//" )
 endif( BZIP2_FOUND )
@@ -37,10 +22,18 @@ endif( BZIP2_FOUND )
 FIND_PACKAGE( CUDA )
 if( CUDA_FOUND )
     set( BUILD_CUDA TRUE)
+    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
 else( CUDA_FOUND )
     
 endif( CUDA_FOUND )
 
+####
+# Check for MPI
+#
+FIND_PACKAGE( MPI )
+IF( MPI_FOUND )
+    SET( BUILD_MPI TRUE )
+ENDIF()
 ####
 # Check for cppunit
 #
@@ -81,12 +74,8 @@ ${CMAKE_DL_LIBS})
 ENDIF(CPPUNIT_INCLUDE_DIR)
 
 
-
-#-------------------------Skutecny zacatek-----------------------------
-
 ENABLE_TESTING()
-
-# set (BUILD_MPI)
+INCLUDE( Dart )
 
 #Nastaveni kam davat vysledne soubory pro debug/release verzi
 IF( CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -101,16 +90,8 @@ else()
 	set( addAlsoSubdirs TRUE)
 endif()
 
-if( BUILD_MPI )		#Pokud to ma byt za pouziti MPI nastavime si koncovku -mpi, a spravne prekladace
-  SET(mpiExt -mpi)
-  SET(CMAKE_C_COMPILER mpicc)
-  SET(CMAKE_CXX_COMPILER mpicxx)
-endif()
-
-
-set (Config_Directory \"${EXECUTABLE_OUTPUT_PATH}/config/\")
-configure_file( "configDirectory.h.in"  "${PROJECT_BINARY_DIR}/headers/configDirectory.h" )
-configure_file( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
+SET( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}\")
+CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
@@ -123,3 +104,27 @@ add_subdirectory( src )
 add_subdirectory( tests )
 add_subdirectory( tools )
 
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
+SET(CPACK_PACKAGE_VENDOR "MMG")
+#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
+#SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
+IF(WIN32 AND NOT UNIX)
+  # There is a bug in NSI that does not handle full unix paths properly. Make
+  # sure there is at least one set of four (4) backlasshes.
+  #SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
+  #SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Template Numerical Library")
+  SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
+  SET(CPACK_NSIS_CONTACT "tomas.oberhuber@fjfi.cvut.cz")
+  SET(CPACK_NSIS_MODIFY_PATH ON)
+ELSE(WIN32 AND NOT UNIX)
+#  SET(CPACK_STRIP_FILES "bin/MyExecutable")
+  SET(CPACK_SOURCE_STRIP_FILES "")
+ENDIF(WIN32 AND NOT UNIX)
+#SET(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
+INCLUDE( CPack )

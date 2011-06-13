@@ -26,7 +26,7 @@
 #include <core/tnlCurve.h>
 #include "tnl-err-norms.h"
 
-#include "configDirectory.h"
+#include "tnlConfig.h"
 const char configFile[] = CONFIG_DIRECTORY "tnl-err-norms.cfg.desc";
 
 

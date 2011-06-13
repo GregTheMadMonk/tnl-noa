@@ -1,15 +1,20 @@
-set( headers tnlMPIMesh.h
+SET( headers tnlMPIMesh.h
              tnlMPIMesh2D.h 
              tnlMPIMesh3D.h  
-             curve-ident.h 
-	)
-set( sources )
+             curve-ident.h )
+             
+SET( sources ../dummy.cpp )             
 
-set( libtnldiffincludedir ${TNL_INCLUDE_DIR}/diff )
-set( libtnldiffinclude_HEADERS ${headers} )
+SET( libtnldiffincludedir ${TNL_INCLUDE_DIR}/diff )
+SET( libtnldiffinclude_HEADERS ${headers} )
 
-add_library( libtnldiff${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} ../dummy.cpp )	#${OPTIMISECXXFLAGS}
+ADD_LIBRARY( libtnldiff${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( libtnldiff${debugExt}-${tnlVersion} )
 
-if( BUILD_MPI )
-  target_link_libraries( libtnldiff-0.1 mpi )
-endif()
+IF( BUILD_MPI )
+    ADD_LIBRARY( libtnldiff-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( libtnldiff-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+ENDIF()
+
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/diff )

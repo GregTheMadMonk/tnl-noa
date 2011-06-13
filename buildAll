@@ -1,5 +1,5 @@
 #!/bin/bash
-#Pokud nemam potrebne adresare (Debug, Release), tak si je vytvorim
+
 if [ ! -d Debug ];
 then
    mkdir Debug
@@ -12,6 +12,8 @@ fi
 cd Debug
 cmake .. -DCMAKE_BUILD_TYPE=Debug
 make VERBOSE=1
+make test
 cd ../Release
 cmake ..
 make
+make test

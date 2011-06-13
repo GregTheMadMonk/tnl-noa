@@ -23,7 +23,7 @@
 #include <config/tnlParameterContainer.h>
 #include <diff/curve-ident.h>
 
-#include "configDirectory.h"
+#include "tnlConfig.h"
 const char configFile[] = CONFIG_DIRECTORY "tnl-grid-view.cfg.desc";
 
 int main( int argc, char* argv[] )

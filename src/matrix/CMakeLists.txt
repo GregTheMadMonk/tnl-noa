@@ -14,9 +14,13 @@ SET( sources tnlMatrix.cpp )
 SET( libtnlmatrixincludedir  ${TNL_INCLUDE_DIR}/matrix )
 SET( libtnlmatrixinclude_HEADERS ${headers} )
 
-ADD_LIBRARY( libtnlmatrix${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers})
+ADD_LIBRARY( libtnlmatrix${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( libtnlmatrix${debugExt}-${tnlVersion} )
 
-if( BUILD_MPI )
-  target_link_libraries(libtnlmatrix${mpiExt}${debugExt}-0.1 mpi)
-endif()
+IF( BUILD_MPI )
+    ADD_LIBRARY( libtnlmatrix-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( libtnlmatrix-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+ENDIF()
 
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/matrix )

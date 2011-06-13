@@ -1,4 +1,4 @@
-set( headers tnlBICGSolver.h
+SET( headers tnlBICGSolver.h
              tnlBICGStabSolver.h
              tnlCGSolver.h
              tnlEulerSolver.h
@@ -11,15 +11,20 @@ set( headers tnlBICGSolver.h
              tnlPreconditioner.h
              tnlSORSolver.h
    )
-set( sources )
+   
+SET( sources ../dummy.cpp )   
 
-set( libtnlsolverincludedir ${TNL_INCLUDE_DIR}/mesh )
-set( libtnlsolverinclude_HEADERS ${headers} )
+SET( libtnlsolverincludedir ${TNL_INCLUDE_DIR}/mesh )
+SET( libtnlsolverinclude_HEADERS ${headers} )
 
-add_library(libtnlsolver${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} ../dummy.cpp)    #${OPTIMISECXXFLAGS}
+ADD_LIBRARY( libtnlsolver${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( libtnlsolver${debugExt}-${tnlVersion} )
 
-if( BUILD_MPI )
-  target_link_libraries( libtnlsolver-0.1 mpi )
-endif()
+IF( BUILD_MPI )
+    ADD_LIBRARY( libtnlsolver-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( libtnlsolver-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+ENDIF()
 
 
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solver )

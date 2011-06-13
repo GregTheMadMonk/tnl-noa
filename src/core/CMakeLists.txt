@@ -38,15 +38,17 @@ set( sources tnlCudaSupport.cpp
         	 mpi-supp.cpp 
     )
 
-set( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
-set( libtnlcoreinclude_HEADERS ${headers} )
+SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
+SET( libtnlcoreinclude_HEADERS ${headers} )
 
-ADD_LIBRARY(libtnlcore${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} )
+ADD_LIBRARY( libtnlcore${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( libtnlcore${debugExt}-${tnlVersion} ${BZIP2_LIBRARIES} )
 
-if (BUILD_MPI)
-  target_link_libraries(libtnlcore${mpiExt}${debugExt}-0.1 mpi
-                                                            ${BZIP2_LIBRARIES}  )
-else()
-    target_link_libraries(libtnlcore${mpiExt}${debugExt}-0.1 ${BZIP2_LIBRARIES} )
-endif()
+IF( BUILD_MPI )
+    ADD_LIBRARY( libtnlcore-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( libtnlcore-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
+                                                                   ${BZIP2_LIBRARIES}  )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+ENDIF()
 
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core )

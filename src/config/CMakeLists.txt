@@ -1,8 +1,8 @@
-set( EXTRA_DIST tnlConfigDescriptionParser.y 
+SET( EXTRA_DIST tnlConfigDescriptionParser.y 
 	            tnlConfigDescriptionScanner.l 	            
     )
 
-set( headers tnlConfigDescription.h     	    
+SET( headers tnlConfigDescription.h     	    
  		     tnlConfigDescriptionParser.h 
 		     tnlConfigDescriptionParserbase.h 
 		     tnlConfigDescriptionParser.ih 
@@ -10,19 +10,22 @@ set( headers tnlConfigDescription.h
 		     tnlParameterContainer.h
 		     FlexLexer.h 
     )
-set( sources tnlConfigDescription.cpp 
+SET( sources tnlConfigDescription.cpp 
         	 tnlConfigDescriptionScanner.cpp 
         	 tnlConfigDescriptionParser.cpp 
         	 tnlParameterContainer.cpp 
         	 parse.cc
     )
 
-set( libmconfigincludedir ${TNL_INCLUDE_DIR}/config )
-set( libmconfiginclude_HEADERS ${headers} )
+SET( libmconfigincludedir ${TNL_INCLUDE_DIR}/config )
+SET( libmconfiginclude_HEADERS ${headers} )
 
-add_library( libtnlconfig${mpiExt}${debugExt}-0.1 SHARED ${sources} ${headers} )
+ADD_LIBRARY( libtnlconfig${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/config )
 
 if( BUILD_MPI )
-  target_link_libraries( libtnlcore${mpiExt}${debugExt}-0.1 mpi )
+    ADD_LIBRARY( libtnlconfig-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
 endif()
+
 
