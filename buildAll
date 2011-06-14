@@ -10,10 +10,13 @@ then
 fi
 
 cd Debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make VERBOSE=1
-make test
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0
+make -j6 #VERBOSE=1
+make -j6 test
+make -j6 install
+
 cd ../Release
-cmake ..
-make
-make test
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0
+make -j6
+make -j6 test
+make -j6 install

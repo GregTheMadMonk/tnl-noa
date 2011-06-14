@@ -19,11 +19,12 @@
 #define TNLSPMVBENCHMARKHYBRIDMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
+#include <tnlConfig.h>
 #ifdef HAVE_CUSP
-   #include <hyb_matrix.h>
-   #include <io/matrix_market.h>
-   #include <multiply.h>
-   #include <print.h>
+   #include <cusp/hyb_matrix.h>
+   #include <cusp/io/matrix_market.h>
+   #include <cusp/multiply.h>
+   #include <cusp/print.h>
 #endif
 
 

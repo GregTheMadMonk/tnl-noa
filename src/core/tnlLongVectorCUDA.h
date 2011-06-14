@@ -394,8 +394,9 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setLike( const tnlLongVector< Real
 template< typename Real, typename Index >
 void tnlLongVector< Real, tnlCuda, Index > :: reset()
 {
-#ifdef HAVE_CUDA
    dbgFunctionName( "tnlLongVectorCUDA", "reset" );
+   cerr << "CUDA LV RESET " << endl;
+#ifdef HAVE_CUDA
    if( this -> data && ! this -> shared_data )
    {
       dbgCout( "Freeing allocated memory on CUDA device of " << this -> getName() );

@@ -17,13 +17,15 @@ SET( sources ../dummy.cpp )
 SET( libtnlsolverincludedir ${TNL_INCLUDE_DIR}/mesh )
 SET( libtnlsolverinclude_HEADERS ${headers} )
 
-ADD_LIBRARY( libtnlsolver${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-TARGET_LINK_LIBRARIES( libtnlsolver${debugExt}-${tnlVersion} )
+ADD_LIBRARY( tnlsolver${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( tnlsolver${debugExt}-${tnlVersion} )
+INSTALL( TARGETS tnlsolver${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 
 IF( BUILD_MPI )
-    ADD_LIBRARY( libtnlsolver-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-    TARGET_LINK_LIBRARIES( libtnlsolver-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
-    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+    ADD_LIBRARY( tnlsolver-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( tnlsolver-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}  )
+    SET_TARGET_PROPERTIES( tnlsolver-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
+    INSTALL( TARGETS tnlsolver-mpi${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 ENDIF()
 
 

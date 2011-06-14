@@ -214,12 +214,12 @@ tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
 : tnlMatrix< Real, Device, Index >( name ),
   useAdaptiveGroupSize( false ),
   adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize ),
-  nonzeroElements( name + " : nonzeroElements" ),
-  columns( name + " : columns" ),
-  groupOffsets( name + " : block-offsets" ),
-  nonzeroElementsInRow( name + " : nonzerosInRow" ),
+  nonzeroElements( tnlString( name ) + ":nonzeroElements" ),
+  columns( tnlString( name ) + ":columns" ),
+  groupOffsets( tnlString( name ) + ":block-offsets" ),
+  nonzeroElementsInRow( tnlString( name ) + ":nonzerosInRow" ),
   groupSize( 16 ),
-  adaptiveGroupSizes( name + "adaptiveGroupSizes" ),
+  adaptiveGroupSizes( tnlString( name ) + ":adaptiveGroupSizes" ),
   numberOfGroups( 0 ),
   cudaBlockSize( 256 ),
   artificial_zeros( 0 ),
@@ -266,7 +266,10 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    if( ! groupOffsets. setSize( this -> getSize() / groupSize + ( this -> getSize() % groupSize != 0 ) + 1 ) ||
 	    ! nonzeroElementsInRow. setSize( this -> getSize() ) ||
 	    ! adaptiveGroupSizes. setSize( this -> getSize() + 1 ) )
+   {
+      cerr << "EEEEEEEEEERRRRRRRRRRRRRR" << endl;
       return false;
+   }
    groupOffsets. setValue( 0 );
    nonzeroElementsInRow. setValue( 0 );
    adaptiveGroupSizes. setValue( 0 );
@@ -289,6 +292,7 @@ template< typename Real, tnlDevice Device, typename Index >
 void tnlRgCSRMatrix< Real, Device, Index > :: reset()
 {
    this -> size = 0;
+   cerr << "RRRRRRRRRRESET" << endl;
    nonzeroElements. reset();
    columns. reset();
    groupOffsets. reset();
@@ -328,6 +332,14 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
 {
 	dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "copyFrom" );
+
+   if( Device == tnlCuda )
+   {
+      tnlAssert( false,
+                 cerr << "Conversion from tnlCSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
+      //TODO: implement this
+      return false;
+   }
 
 	if( ! this -> setSize( csr_matrix. getSize() ) )
 		return false;
@@ -466,12 +478,6 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
          }
       }
   	}
-	if( Device == tnlCuda )
-	{
-	   tnlAssert( false,
-	              cerr << "Conversion from tnlCSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
-	   //TODO: implement this
-	}
 	return true;
 };
 
@@ -480,7 +486,9 @@ template< typename Real, tnlDevice Device, typename Index >
 bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
+   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " < rgCSRMatrix. getName() << " with non-positiove size." );
 
+   cerr << "XXXXXXXXXXXXXXXXXXXXX  " << rgCSRMatrix. getSize() << endl;
    /****
     * TODO: add variable group size support
     */
@@ -488,12 +496,13 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    if( ! this -> setSize( rgCSRMatrix. getSize() ) )
       return false;
 
+   cerr << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << endl;
    /****
     * Allocate the non-zero elements (they contains some artificial zeros.)
     */
    Index total_elements = rgCSRMatrix. getNonzeroElements() + 
                           rgCSRMatrix. getArtificialZeroElements();
-   cerr << total_elements << endl;
+   cerr << "*****************************" << total_elements << endl;
    dbgCout( "Allocating " << total_elements << " elements.");
    if( ! setNonzeroElements( total_elements ) )
       return false;

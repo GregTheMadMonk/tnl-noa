@@ -1,3 +1,89 @@
+2011-06-14  oberhuber  <oberhuber@yvonne>
+
+    - converting project to CMake
+	* Makefile.am: Removed.
+	* tests/convert-matrices: Removed.
+	* tests/cuda-profiler.conf: Removed.
+	* tests/draw-matrices: Removed.
+	* tests/florida-matrix-market: Removed.
+	* tests/get-matrices: Removed.
+	* tests/matrix-formats-test.cfg.desc: Removed.
+	* tests/matrix-market: Removed.
+	* tests/matrix-solvers-benchmark.cfg.desc: Removed.
+	* tests/matrix-solvers-benchmark.cpp: Removed.
+	* tests/matrix-solvers-benchmark.h: Removed.
+	* tests/process-cuda-profile.pl: Removed.
+	* tests/ReorderCSR.cpp: Removed.
+	* tests/run-matrix-solvers-benchmark: Removed.
+	* tests/run-sparse-matrix-benchmark: Removed.
+	* tests/sparse-matrix-benchmark.cfg.desc: Removed.
+	* tests/sparse-matrix-benchmark.cpp: Removed.
+	* tests/sparse-matrix-benchmark.cu: Removed.
+	* tests/sparse-matrix-benchmark.h: Removed.
+	* tests/tnl-benchmarks.cpp: Removed.
+	* tests/tnl-benchmarks.h: Removed.
+	* tests/tnlSpmvBenchmark.h: Removed.
+	* tests/tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h: Removed.
+	* tests/tnlSpmvBenchmarkCSRMatrix.h: Removed.
+	* tests/tnlSpmvBenchmarkHybridMatrix.h: Removed.
+	* tests/tnlSpmvBenchmarkRgCSRMatrix.h: Removed.
+	* src/config/Makefile: New file.
+	* src/core/low-level/Makefile: New file.
+	* src/core/Makefile: New file.
+	* src/debug/Makefile: New file.
+	* src/diff/Makefile: New file.
+	* src/mesh/Makefile: New file.
+	* src/solver/Makefile: New file.
+	* tests/benchmarks/CMakeLists.txt: New file.
+	* tests/benchmarks/matrix-solvers-benchmark.cpp: New file.
+	* tests/benchmarks/matrix-solvers-benchmark.h: New file.
+	* tests/benchmarks/ReorderCSR.cpp: New file.
+	* tests/benchmarks/share/CMakeLists.txt: New file.
+	* tests/benchmarks/share/convert-matrices: New file.
+	* tests/benchmarks/share/cuda-profiler.conf: New file.
+	* tests/benchmarks/share/draw-matrices: New file.
+	* tests/benchmarks/share/florida-matrix-market: New file.
+	* tests/benchmarks/share/get-matrices: New file.
+	* tests/benchmarks/share/matrix-market: New file.
+	* tests/benchmarks/share/matrix-solvers-benchmark.cfg.desc: New file.
+	* tests/benchmarks/share/process-cuda-profile.pl: New file.
+	* tests/benchmarks/share/run-matrix-solvers-benchmark: New file.
+	* tests/benchmarks/share/run-sparse-matrix-benchmark: New file.
+	* tests/benchmarks/share/tnl-sparse-matrix-benchmark.cfg.desc: New file.
+	* tests/benchmarks/sparse-matrix-benchmark.cpp: New file.
+	* tests/benchmarks/sparse-matrix-benchmark.cu: New file.
+	* tests/benchmarks/sparse-matrix-benchmark.h: New file.
+	* tests/benchmarks/tnl-benchmarks.cpp: New file.
+	* tests/benchmarks/tnl-benchmarks.h: New file.
+	* tests/benchmarks/tnlSpmvBenchmark.h: New file.
+	* tests/benchmarks/tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h: New file.
+	* tests/benchmarks/tnlSpmvBenchmarkCSRMatrix.h: New file.
+	* tests/benchmarks/tnlSpmvBenchmarkHybridMatrix.h: New file.
+	* tests/benchmarks/tnlSpmvBenchmarkRgCSRMatrix.h: New file.
+	* tests/Makefile: New file.
+	* tests/unit-tests/Makefile: New file.
+	* tools/Makefile: New file.
+	* tools/share/Makefile: New file.
+	* tools/src/Makefile: New file. 
+	* buildAll: 
+	* CMakeLists.txt: 
+	* src/CMakeLists.txt: 
+	* src/config/CMakeLists.txt: 
+	* src/core/CMakeLists.txt: 
+	* src/core/tnlLongVectorCUDA.h: 
+	* src/debug/CMakeLists.txt: 
+	* src/diff/CMakeLists.txt: 
+	* src/matrix/CMakeLists.txt: 
+	* src/matrix/tnlRgCSRMatrix.h: 
+	* src/mesh/CMakeLists.txt: 
+	* src/solver/CMakeLists.txt: 
+	* tests/CMakeLists.txt: 
+	* tests/unit-tests/CMakeLists.txt: 
+	* tests/unit-tests/matrix/tnlAdaptiveRgCSRMatrixTester.h: 
+	* tests/unit-tests/matrix/tnlRgCSRMatrixTester.h: 
+	* tnlConfig.h.in: 
+	* tools/share/CMakeLists.txt: 
+
 2011-06-12  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
 
     The following chages reflects conversion of the project

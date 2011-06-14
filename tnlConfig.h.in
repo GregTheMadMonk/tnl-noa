@@ -1,3 +1,5 @@
-@HAVE_LIBBZ2@ #define HAVE_BZIP2
+@HAVE_LIBBZ2@
+
+@HAVE_CUSP@
 
 #define CONFIG_DIRECTORY @configDirectory@

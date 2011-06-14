@@ -20,12 +20,14 @@ SET( sources tnlConfigDescription.cpp
 SET( libmconfigincludedir ${TNL_INCLUDE_DIR}/config )
 SET( libmconfiginclude_HEADERS ${headers} )
 
-ADD_LIBRARY( libtnlconfig${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+ADD_LIBRARY( tnlconfig${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/config )
+INSTALL( TARGETS tnlconfig${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 
 if( BUILD_MPI )
-    ADD_LIBRARY( libtnlconfig-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+    ADD_LIBRARY( tnlconfig-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    SET_TARGET_PROPERTIES( tnlconfig-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
+    INSTALL( TARGETS tnlconfig-mpi${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 endif()
 
 

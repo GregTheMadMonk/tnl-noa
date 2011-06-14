@@ -109,6 +109,7 @@ template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
+   cerr << "TEAR DOWN" << endl;
    this -> matrix. reset();
 }
 

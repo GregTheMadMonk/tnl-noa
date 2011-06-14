@@ -10,25 +10,25 @@ ADD_SUBDIRECTORY( solver )
 
 
 ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED dummy.cpp )
-TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} libtnlconfig${debugExt}-${tnlVersion}
-                                                    libtnlcore${debugExt}-${tnlVersion}
-                                                    libtnldebug${debugExt}-${tnlVersion}
-                                                    libtnldiff${debugExt}-${tnlVersion}
-                                                    libtnlmatrix${debugExt}-${tnlVersion}
-                                                    libtnlmesh${debugExt}-${tnlVersion}
-                                                    libtnlsolver${debugExt}-${tnlVersion} )
+TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} tnlconfig${debugExt}-${tnlVersion}
+                                                    tnlcore${debugExt}-${tnlVersion}
+                                                    tnldebug${debugExt}-${tnlVersion}
+                                                    tnldiff${debugExt}-${tnlVersion}
+                                                    tnlmatrix${debugExt}-${tnlVersion}
+                                                    tnlmesh${debugExt}-${tnlVersion}
+                                                    tnlsolver${debugExt}-${tnlVersion} )
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 
 IF( BUILD_MPI )
   ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED dummy.cpp )
   TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
-                                                             libtnlconfig-mpi${debugExt}-${tnlVersion}
-                                                             libtnlcore-mpi${debugExt}-${tnlVersion}
-                                                             libtnldebug-mpi${debugExt}-${tnlVersion}
-                                                             libtnldiff-mpi${debugExt}-${tnlVersion}
-                                                             libtnlmatrix-mpi${debugExt}-${tnlVersion}
-                                                             libtnlmesh-mpi${debugExt}-${tnlVersion}
-                                                             libtnlsolver-mpi${debugExt}-${tnlVersion} )
+                                                             tnlconfig-mpi${debugExt}-${tnlVersion}
+                                                             tnlcore-mpi${debugExt}-${tnlVersion}
+                                                             tnldebug-mpi${debugExt}-${tnlVersion}
+                                                             tnldiff-mpi${debugExt}-${tnlVersion}
+                                                             tnlmatrix-mpi${debugExt}-${tnlVersion}
+                                                             tnlmesh-mpi${debugExt}-${tnlVersion}
+                                                             tnlsolver-mpi${debugExt}-${tnlVersion} )
    INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )                                                             
 ENDIF()
 

@@ -1,39 +1,86 @@
-PROJECT( libtnl )
+project( libtnl )
 
 cmake_minimum_required( VERSION 2.8 )
 
-SET( tnlVersion "0.1" )
-
-
+set( tnlVersion "0.1" )
 
 #####
 # Check for bzip2
 #
-FIND_PACKAGE(BZip2)
+find_package(BZip2)
 if( BZIP2_FOUND )
-    set( HAVE_LIBBZ2 "" )    
+    set( HAVE_LIBBZ2 "#define HAVE_BZIP2" )    
 else( BZIP2_FOUND )
-    set( HAVE_LIBBZ2 "//" )
+    set( HAVE_LIBBZ2 "// #define HAVE_BZIP2" )
 endif( BZIP2_FOUND )
 
 #####
 # Check for CUDA
 #
-FIND_PACKAGE( CUDA )
+find_package( CUDA )
 if( CUDA_FOUND )
     set( BUILD_CUDA TRUE)
     set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
-else( CUDA_FOUND )
-    
+    if( CUDA_ARCHITECTURE STREQUAL "1.0" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_10;-DCUDA_ARCH=10)
+    endif()
+    if( CUDA_ARCHITECTURE STREQUAL "1.1" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_11;-DCUDA_ARCH=11)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "1.2" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_12;-DCUDA_ARCH=12)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "1.3" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_13;-DCUDA_ARCH=13)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "2.0" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_20;-DCUDA_ARCH=20)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "2.1" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_21;-DCUDA_ARCH=21)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "2.2" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_22;-DCUDA_ARCH=22)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "2.3" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_23;-DCUDA_ARCH=23)
+    endif()    
+    if( CUDA_ARCHITECTURE STREQUAL "3.0" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30;-DCUDA_ARCH=30)
+    endif()    
+
+    ####
+    # Check for CUSP
+    #
+    find_path( CUSP_INCLUDE_DIR cusp/hyb_matrix.h  
+               DOC "CUSP headers." )
+    if( ${CUSP_INCLUDE_DIR} STREQUAL "CUSP_INCLUDE_DIR-NOTFOUND" )
+        message( "CUSP not found." )
+        set( HAVE_CUSP "//#define HAVE_CUSP" )
+    else()      
+        message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
+        set( HAVE_CUSP "#define HAVE_CUSP" )
+        cuda_include_directories( ${CUSP_INCLUDE_DIR} )
+    endif()    
+
 endif( CUDA_FOUND )
+
+####
+# Check for OpenMP
+#
+find_package( OpenMP ) 
+if( OPENMP_FOUND )
+# TODO: finish this
+endif()
 
 ####
 # Check for MPI
 #
-FIND_PACKAGE( MPI )
-IF( MPI_FOUND )
-    SET( BUILD_MPI TRUE )
-ENDIF()
+find_package( MPI )
+if( MPI_FOUND )
+    set( BUILD_MPI TRUE )
+endif()
+
 ####
 # Check for cppunit
 #
@@ -43,7 +90,7 @@ FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
 )
 
 # With Win32, important to have both
-IF(WIN32)
+if(WIN32)
   FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
                ${CPPUNIT_INCLUDE_DIR}/../lib
                /usr/local/lib
@@ -52,7 +99,7 @@ IF(WIN32)
                ${CPPUNIT_INCLUDE_DIR}/../lib
                /usr/local/lib
                /usr/lib)
-ELSE(WIN32)
+else(WIN32)
   # On unix system, debug and release have the same name
   FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
                ${CPPUNIT_INCLUDE_DIR}/../lib
@@ -62,23 +109,23 @@ ELSE(WIN32)
                ${CPPUNIT_INCLUDE_DIR}/../lib
                /usr/local/lib
                /usr/lib)
-ENDIF(WIN32)
+endif(WIN32)
 
-IF(CPPUNIT_INCLUDE_DIR)
-  IF(CPPUNIT_LIBRARY)
-    SET(CPPUNIT_FOUND "YES")
-    SET(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
-    SET(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
+if(CPPUNIT_INCLUDE_DIR)
+  if(CPPUNIT_LIBRARY)
+    set(CPPUNIT_FOUND "YES")
+    set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
+    set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
 ${CMAKE_DL_LIBS})
-  ENDIF(CPPUNIT_LIBRARY)
-ENDIF(CPPUNIT_INCLUDE_DIR)
+  endif(CPPUNIT_LIBRARY)
+endif(CPPUNIT_INCLUDE_DIR)
 
 
 ENABLE_TESTING()
 INCLUDE( Dart )
 
 #Nastaveni kam davat vysledne soubory pro debug/release verzi
-IF( CMAKE_BUILD_TYPE STREQUAL "Debug")
+if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
 	set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
 	set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
@@ -90,7 +137,7 @@ else()
 	set( addAlsoSubdirs TRUE)
 endif()
 
-SET( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}\")
+set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
@@ -104,27 +151,27 @@ add_subdirectory( src )
 add_subdirectory( tests )
 add_subdirectory( tools )
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
-SET(CPACK_PACKAGE_VENDOR "MMG")
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
-#SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
-SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
-IF(WIN32 AND NOT UNIX)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
+set(CPACK_PACKAGE_VENDOR "MMG")
+#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
+#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
+if(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
-  #SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-  #SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Template Numerical Library")
-  SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
-  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
-  SET(CPACK_NSIS_CONTACT "tomas.oberhuber@fjfi.cvut.cz")
-  SET(CPACK_NSIS_MODIFY_PATH ON)
-ELSE(WIN32 AND NOT UNIX)
-#  SET(CPACK_STRIP_FILES "bin/MyExecutable")
-  SET(CPACK_SOURCE_STRIP_FILES "")
-ENDIF(WIN32 AND NOT UNIX)
-#SET(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
+  #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
+  #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Template Numerical Library")
+  set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
+  set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
+  set(CPACK_NSIS_CONTACT "tomas.oberhuber@fjfi.cvut.cz")
+  set(CPACK_NSIS_MODIFY_PATH ON)
+else(WIN32 AND NOT UNIX)
+#  set(CPACK_STRIP_FILES "bin/MyExecutable")
+  set(CPACK_SOURCE_STRIP_FILES "")
+endif(WIN32 AND NOT UNIX)
+#set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 INCLUDE( CPack )

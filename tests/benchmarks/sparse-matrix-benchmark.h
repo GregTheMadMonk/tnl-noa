@@ -36,7 +36,7 @@
 #include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"
 
 #include "tnlConfig.h"
-const char configFile[] = CONFIG_DIRECTORY "tnl-sparse-matrix-check.cfg.desc";
+const char configFile[] = CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.desc";
 
 
 using namespace std;
@@ -69,7 +69,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       if( formatTest )
          hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-      hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+      //hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
 
       if( logFileName )
@@ -86,8 +86,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-         if( formatTest )
-            cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+         //if( formatTest )
+         //   cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
          cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,

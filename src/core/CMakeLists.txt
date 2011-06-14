@@ -41,14 +41,16 @@ set( sources tnlCudaSupport.cpp
 SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 SET( libtnlcoreinclude_HEADERS ${headers} )
 
-ADD_LIBRARY( libtnlcore${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-TARGET_LINK_LIBRARIES( libtnlcore${debugExt}-${tnlVersion} ${BZIP2_LIBRARIES} )
+ADD_LIBRARY( tnlcore${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+TARGET_LINK_LIBRARIES( tnlcore${debugExt}-${tnlVersion} ${BZIP2_LIBRARIES} )
+INSTALL( TARGETS tnlcore${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 
 IF( BUILD_MPI )
-    ADD_LIBRARY( libtnlcore-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-    TARGET_LINK_LIBRARIES( libtnlcore-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
+    ADD_LIBRARY( tnlcore-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
+    TARGET_LINK_LIBRARIES( tnlcore-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
                                                                    ${BZIP2_LIBRARIES}  )
-    ADD_DEFINITIONS( ${MPI_COMPILE_FLAGS} )
+    SET_TARGET_PROPERTIES( tnlcore-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
+    INSTALL( TARGETS tnlcore-mpi${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 ENDIF()
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core )
