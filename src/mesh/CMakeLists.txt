@@ -7,7 +7,7 @@ SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/mesh )
 SET( libtnlmeshinclude_HEADERS ${headers} )
 
 ADD_LIBRARY( tnlmesh${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-TARGET_LINK_LIBRARIES( libtnlmesh${debugExt}-${tnlVersion} )
+TARGET_LINK_LIBRARIES( tnlmesh${debugExt}-${tnlVersion} )
 INSTALL( TARGETS tnlmesh${debugExt}-${tnlVersion} LIBRARY DESTINATION lib )
 
 IF( BUILD_MPI )

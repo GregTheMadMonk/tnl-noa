@@ -10,15 +10,15 @@ SET( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cu )
-    TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${mpiExt}${debugExt}-0.1
-                                                                  tnlcore${mpiExt}${debugExt}-0.1
-                                                                  tnlconfig${mpiExt}${debugExt}-0.1 )
+    TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${debugExt}-${tnlVersion}
+                                                                  tnlcore${debugExt}-${tnlVersion}
+                                                                  tnlconfig${debugExt}-${tnlVersion} )
     
 ELSE()
     ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cpp )
-    TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${mpiExt}${debugExt}-0.1
-                                                                  tnlcore${mpiExt}${debugExt}-0.1
-                                                                  tnlconfig${mpiExt}${debugExt}-0.1 )
+    TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${debugExt}-${tnlVersion}
+                                                                  tnlcore${debugExt}-${tnlVersion}
+                                                                  tnlconfig${debugExt}-${tnlVersion} )
 ENDIF()
 
 INSTALL( TARGETS tnl-sparse-matrix-benchmark${debugExt}

@@ -139,11 +139,11 @@ endif()
 
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/tnlConfig.h )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
-INCLUDE_DIRECTORIES( ${PROJECT_BINARY_DIR}/headers )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
