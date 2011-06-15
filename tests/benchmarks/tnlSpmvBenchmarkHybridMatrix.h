@@ -114,6 +114,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlLongV
          for( int i = 0; i < this -> maxIterations; i ++ )
          {
             cusp :: multiply( A, x, b );
+            cudaThreadSynchronize();
             this -> iterations ++;
          }
       }
