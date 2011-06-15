@@ -344,22 +344,23 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
       dbgCout( "Freeing allocated memory on CUDA device of " << this -> getName() );
       cudaFree( this -> data );
       if( ! checkCUDAError( __FILE__, __LINE__ ) )
-       return false;
+      return false;
       this -> data = NULL;
    }
    this -> size = _size;
    this -> shared_data = false;
-   if( cudaMalloc( ( void** ) & this -> data,
-                   ( size_t ) this -> size * sizeof( Real ) ) != cudaSuccess )
-   {
-      cerr << "I am not able to allocate new long vector with size "
-           << ( double ) this -> size * sizeof( Real ) / 1.0e9 << " GB on CUDA device for "
-           << this -> getName() << "." << endl;
-      checkCUDAError( __FILE__, __LINE__ );
-      this -> data = NULL;
-      this -> size = 0;
-      return false;
-   }
+   if( this -> getSize() != 0 )
+      if( cudaMalloc( ( void** ) & this -> data,
+                      ( size_t ) this -> size * sizeof( Real ) ) != cudaSuccess )
+      {
+         cerr << "I am not able to allocate new long vector with size " << this -> size * sizeof( Real ) << " ("
+              << ( double ) this -> size * sizeof( Real ) / 1.0e9 << " GB) on CUDA device for "
+              << this -> getName() << "." << endl;
+         checkCUDAError( __FILE__, __LINE__ );
+         this -> data = NULL;
+         this -> size = 0;
+         return false;
+      }
    return true;
 #else
    //cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
@@ -395,7 +396,6 @@ template< typename Real, typename Index >
 void tnlLongVector< Real, tnlCuda, Index > :: reset()
 {
    dbgFunctionName( "tnlLongVectorCUDA", "reset" );
-   cerr << "CUDA LV RESET " << endl;
 #ifdef HAVE_CUDA
    if( this -> data && ! this -> shared_data )
    {

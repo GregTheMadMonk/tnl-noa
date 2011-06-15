@@ -27,7 +27,7 @@
 #include "tnl-err-norms.h"
 
 #include "tnlConfig.h"
-const char configFile[] = CONFIG_DIRECTORY "tnl-err-norms.cfg.desc";
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-err-norms.cfg.desc";
 
 
 void WriteHeader( ostream& stream,

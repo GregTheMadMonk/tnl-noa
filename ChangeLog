@@ -1,3 +1,23 @@
+2011-06-15  oberhuber  <oberhuber@yvonne>
+
+	* src/core/tnlCudaSupport.cpp: Removed.
+	* CMakeLists.txt: 
+	* src/core/CMakeLists.txt: 
+	* src/core/tnlCudaSupport.h (checkCUDAError):
+	  - adding new error codes 
+	* src/core/tnlLongVectorCUDA.h: 
+	* src/matrix/tnlRgCSRMatrix.h:
+	  - fixing copying to device - useAdaptiveGroupSize was not copied 
+	* tests/benchmarks/sparse-matrix-benchmark.h: 
+	* tests/benchmarks/tnlSpmvBenchmark.h: 
+	* tests/benchmarks/tnlSpmvBenchmarkRgCSRMatrix.h: 
+	* tnlConfig.h.in:
+	  - adding prefix TNL to CONFIG_DIRECTORY 
+	* tools/src/tnl-err-norms.cpp: 
+	* tools/src/tnl-grid-view.cpp: 
+	* tools/src/tnl-matrix-convert.cpp: 
+	* tools/src/tnlcurve2gnuplot.cpp: 
+
 2011-06-14  oberhuber  <oberhuber@yvonne>
 
     - converting project to CMake

@@ -26,8 +26,7 @@ set (headers tnlAssert.h
 		     mpi-supp.h 
 		     param-types.h
     )
-set( sources tnlCudaSupport.cpp 
-             tnlFile.cpp
+set( sources tnlFile.cpp
              tnlFlopsCounter.cpp 
              tnlLogger.cpp 
         	 tnlObject.cpp 

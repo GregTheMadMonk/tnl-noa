@@ -20,7 +20,7 @@
 #include <core/tnlVector.h>
 
 #include "tnlConfig.h"
-const char configFile[] = CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
 
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )

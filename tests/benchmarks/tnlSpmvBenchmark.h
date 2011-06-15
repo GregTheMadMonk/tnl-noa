@@ -257,6 +257,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
 
    tnlTimerRT rt_timer;
    rt_timer. Reset();
+   //maxIterations = 1;
    {
       for( int i = 0; i < maxIterations; i ++ )
       {

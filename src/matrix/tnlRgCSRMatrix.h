@@ -216,7 +216,7 @@ tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
   adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize ),
   nonzeroElements( tnlString( name ) + ":nonzeroElements" ),
   columns( tnlString( name ) + ":columns" ),
-  groupOffsets( tnlString( name ) + ":block-offsets" ),
+  groupOffsets( tnlString( name ) + ":groupOffsets" ),
   nonzeroElementsInRow( tnlString( name ) + ":nonzerosInRow" ),
   groupSize( 16 ),
   adaptiveGroupSizes( tnlString( name ) + ":adaptiveGroupSizes" ),
@@ -266,10 +266,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    if( ! groupOffsets. setSize( this -> getSize() / groupSize + ( this -> getSize() % groupSize != 0 ) + 1 ) ||
 	    ! nonzeroElementsInRow. setSize( this -> getSize() ) ||
 	    ! adaptiveGroupSizes. setSize( this -> getSize() + 1 ) )
-   {
-      cerr << "EEEEEEEEEERRRRRRRRRRRRRR" << endl;
       return false;
-   }
    groupOffsets. setValue( 0 );
    nonzeroElementsInRow. setValue( 0 );
    adaptiveGroupSizes. setValue( 0 );
@@ -292,7 +289,6 @@ template< typename Real, tnlDevice Device, typename Index >
 void tnlRgCSRMatrix< Real, Device, Index > :: reset()
 {
    this -> size = 0;
-   cerr << "RRRRRRRRRRESET" << endl;
    nonzeroElements. reset();
    columns. reset();
    groupOffsets. reset();
@@ -488,32 +484,32 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
    tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " < rgCSRMatrix. getName() << " with non-positiove size." );
 
-   cerr << "XXXXXXXXXXXXXXXXXXXXX  " << rgCSRMatrix. getSize() << endl;
    /****
     * TODO: add variable group size support
     */
-   groupSize = rgCSRMatrix. groupSize;
+   this -> groupSize = rgCSRMatrix. groupSize;
    if( ! this -> setSize( rgCSRMatrix. getSize() ) )
       return false;
 
-   cerr << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << endl;
    /****
     * Allocate the non-zero elements (they contains some artificial zeros.)
     */
    Index total_elements = rgCSRMatrix. getNonzeroElements() + 
                           rgCSRMatrix. getArtificialZeroElements();
-   cerr << "*****************************" << total_elements << endl;
    dbgCout( "Allocating " << total_elements << " elements.");
    if( ! setNonzeroElements( total_elements ) )
       return false;
-   artificial_zeros = total_elements - rgCSRMatrix. getNonzeroElements();
+   this -> artificial_zeros = total_elements - rgCSRMatrix. getNonzeroElements();
 
-   nonzeroElements = rgCSRMatrix. nonzeroElements;
-   columns = rgCSRMatrix. columns;
-   groupOffsets = rgCSRMatrix. groupOffsets;
-   nonzeroElementsInRow = rgCSRMatrix. nonzeroElementsInRow;
-   adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
-   last_nonzero_element = rgCSRMatrix. last_nonzero_element;
+   this -> nonzeroElements = rgCSRMatrix. nonzeroElements;
+   this -> columns = rgCSRMatrix. columns;
+   this -> groupOffsets = rgCSRMatrix. groupOffsets;
+   this -> nonzeroElementsInRow = rgCSRMatrix. nonzeroElementsInRow;
+   this -> last_nonzero_element = rgCSRMatrix. last_nonzero_element;
+
+   this -> adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
+   this -> useAdaptiveGroupSize = rgCSRMatrix. useAdaptiveGroupSize;
+   this -> adaptiveGroupSizeStrategy = rgCSRMatrix. adaptiveGroupSizeStrategy;
    return true;
 };
 
@@ -740,6 +736,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                                                              result. getVector() );
       }
       else
+      {
           tnlRgCSRMatrixVectorProductKernel< Real, Index >
                                            <<< gridDim, blockDim >>>
                                            ( size,
@@ -750,8 +747,10 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
                                                nonzeroElementsInRow. getVector(),
                                                vec. getVector(),
                                                result. getVector() );
+      }
        cudaThreadSynchronize();
        CHECK_CUDA_ERROR;
+
 #else
        cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -1036,6 +1035,7 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
     * Now the group size is variable and one group is processed
     * by one block. We assume that the groupSize divides the blockDim. x
     */
+
    const Index firstRowInGroup = groupsToRowsMapping[ blockIdx. x ];
    const Index groupSize = groupsToRowsMapping[ blockIdx. x + 1 ] - firstRowInGroup;
    const Index threadsPerRow = blockDim. x / groupSize;
@@ -1045,16 +1045,26 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
    if( rowIndex >= size )
       return;
 
+   //printf( "threadIdx.x = %d blockIdx. x = %d firstRowInGroup = %d groupSize = %d threadsPerRow = %d threadIndexInRow = %d rowOffsetInGroup = %d rowIndex = %d \n",
+   //         threadIdx.x, blockIdx. x, firstRowInGroup, groupSize, threadsPerRow, threadIndexInRow, rowOffsetInGroup, rowIndex );
+
    partialSums[ threadIdx. x ] = 0.0;
-   Index pos = groupOffsets[ blockIdx. x ] + rowOffsetInGroup + threadIndexInRow * groupSize;
+   Index pos = groupOffsets[ blockIdx. x ] + threadIdx. x; //rowOffsetInGroup + threadIndexInRow * groupSize;
    const Index nonzeros = nonzerosInRow[ rowIndex ];
+
+   printf( "threadIdx.x = %d nonzeros = %d \n", threadIdx. x, nonzeros );
    for( Index i = 0; i < nonzeros; i += threadsPerRow )
    {
-      partialSums[ threadIdx. x ] += nonzeroElements[ pos ] * vec_x[ columns[ pos ] ];
-      pos += groupSize * threadsPerRow;
+      const Index column = columns[ pos ];
+      if( column == -1 )
+         printf( "* rowIndex = %d \n", rowIndex );
+      if( column != -1 )
+         partialSums[ threadIdx. x ] += nonzeroElements[ pos ] * vec_x[ column ];
+      pos += blockDim.x;
    }
+   //printf( "blockIdx. x = %d partialSum[ %d ] = %f \n", blockIdx. x, threadIdx. x, partialSums[ threadIdx. x] );
 
-   if( threadsPerRow > 1 && threadIndexInRow + 1 < threadsPerRow )
+   /*if( threadsPerRow > 1 && threadIndexInRow + 1 < threadsPerRow )
       partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1 ];
    if( threadsPerRow > 2 && threadIndexInRow + 2 < threadsPerRow )
       partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 2 ];
@@ -1075,10 +1085,10 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
    if( threadsPerRow > 512 && threadIndexInRow + 512 < threadsPerRow )
       partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 512 ];
    if( threadsPerRow > 1024 && threadIndexInRow + 1024 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1024 ];
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1024 ];*/
 
-   if( threadIndexInRow == 0 )
-      vec_b[ rowIndex ] = partialSums[ threadIndexInRow ];
+   //if( threadIndexInRow == 0 )
+    //  vec_b[ rowIndex ] = partialSums[ threadIndexInRow ];
 }
 
 
