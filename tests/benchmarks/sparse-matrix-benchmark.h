@@ -270,14 +270,12 @@ bool benchmarkMatrix( const tnlString& inputFile,
    cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
    cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
    cudaRgCsrMatrixBenchmark. setup( csrMatrix );
-   if( formatTest )
-      cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-      //if( formatTest )
-      //   cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
-      //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+      if( formatTest )
+         cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+      cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
       if( logFileName )
          cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                     csrMatrixBenchmark. getGflops(),
@@ -305,7 +303,6 @@ bool benchmarkMatrix( const tnlString& inputFile,
       int rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ 0 ] );
       for( int i = 1; i < csrMatrix. getSize(); i ++ )
       {
-         //cout << csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) << endl;
          if( rowSize < csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) )
          {
             cerr << "The rows are not sorted properly. Error is at row number " << i << endl;
@@ -352,10 +349,10 @@ bool benchmarkMatrix( const tnlString& inputFile,
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
-         //cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
-         //if( formatTest )
-         //   cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
-         //cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+         cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         if( formatTest )
+            cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+         cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,
                                                        csrMatrixBenchmark. getGflops(),
@@ -404,203 +401,6 @@ bool benchmarkMatrix( const tnlString& inputFile,
    return true;
 
 }
-
-#ifdef UNDEF
-   /*
-    * Benchmark of the Fast CSR format.
-    */
-   {
-      if( verbose )
-         cout << left << setw( 30 ) << "Fast CSR " << flush;
-
-      tnlFastCSRMatrix< Real > fast_csrMatrix( "fast-csr-matrix" );
-
-      if( fast_csrMatrix. copyFrom( csrMatrix ) )
-      {
-         benchmarkStatistics. fast_csr_compression = 100.0 * ( 1.0 -  ( double ) fast_csrMatrix. getColumnSequencesLength() / ( double ) fast_csrMatrix. getNonzeroElements() );
-
-         time = stop_time;
-         benchmarkSpMV< Real, tnlHost >( fast_csrMatrix,
-                                         host_x,
-                                         nonzero_elements,
-                                         host_b,
-                                         time,
-                                         benchmarkStatistics. spmv_fast_csr_gflops,
-                                         benchmarkStatistics. spmv_fast_csr_iter );
-         if( verbose )
-            cout << right << setw( 12 ) << setprecision( 2 ) << time
-                 << right << setw( 15 ) << benchmarkStatistics. spmv_fast_csr_iter
-                 << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_fast_csr_gflops << flush;
-
-         if( refB != host_b )
-         {
-            if( verbose )
-               cout << right << setw( 12 ) << "FAILED." << endl;
-            Real max_err( 0.0 );
-            for( int i = 0; i < size; i ++ )
-               max_err = Max( max_err, ( Real ) fabs( host_b[ i ] - refB[ i ] ) );
-            if( verbose )
-               cout << left << setw( 12 ) <<  "  Max. err. is " << max_err << endl;
-            benchmarkStatistics. spmv_fast_csr_gflops = -1.0;
-            return false;
-         }
-         if( verbose )
-            cout << left << setw( 12 ) << "  OK."
-                 << right << setw( 14 ) << "Compression: " << benchmarkStatistics. fast_csr_compression << "%" << endl;
-      }
-      else
-         if( verbose )
-            cout << "Format transfer failed!!!" << endl;
-      /*
-       * Benchmark Coalesced Fast CSR format.
-       */
-      block_iter = 0;
-      for( int block_size = 16; block_size < 64; block_size *= 2 )
-      {
-         if( verbose )
-            cout << left << setw( 25 ) << "Colesced Fast CSR " << setw( 5 ) << block_size << flush;
-
-         tnlFastRgCSRMatrix< Real > coa_fast_csrMatrix( "coa_fast-csr-matrix", block_size );
-
-         if( coa_fast_csrMatrix. copyFrom( fast_csrMatrix ) )
-         {
-            //coa_fast_csr_compression = 100.0 * ( 1.0 -  ( double ) coa_fast_csrMatrix. getColumnSequencesLength() / ( double ) coa_fast_csrMatrix. getNonzeroElements() );
-            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csrMatrix. getMaxColumnSequenceDictionarySize();
-            time = stop_time;
-            benchmarkSpMV< Real, tnlHost >( coa_fast_csrMatrix,
-                                            host_x,
-                                            nonzero_elements,
-                                            host_b,
-                                            time,
-                                            benchmarkStatistics. spmv_coa_fast_csr_gflops[ block_iter ],
-                                            benchmarkStatistics. spmv_coa_fast_csr_iter[ block_iter ] );
-            if( verbose )
-               cout << right << setw( 12 ) << setprecision( 2 ) << time
-                    << right << setw( 15 ) << benchmarkStatistics. spmv_coa_fast_csr_iter[ block_iter ]
-                    << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_coa_fast_csr_gflops[ block_iter ] << flush;
-
-            if( refB != host_b )
-            {
-               if( verbose )
-                  cout << right << setw( 12 ) << "FAILED." << endl;
-               benchmarkStatistics. spmv_coa_fast_csr_gflops[ block_iter ] = -1.0;
-               return false;
-            }
-            if( verbose )
-               cout << left << setw( 12 ) << "  OK." << endl;
-         }
-         else
-         {
-            benchmarkStatistics. coa_fast_csr_max_cs_dict_size[ block_iter ] = coa_fast_csrMatrix. getMaxColumnSequenceDictionarySize();
-            if( verbose )
-               cout << "Format transfer failed!!!" << endl;
-            continue;
-         }
-
-#ifdef HAVE_CUDA
-         /*
-          * Benchmark Coalesced Fast CSR format on the CUDA device.
-          */
-
-         if( verbose )
-            cout << left << setw( 25 ) << "Coalesced Fast CSR CUDA" << setw( 5 ) << block_size << flush;
-
-         tnlFastRgCSRMatrix< Real, tnlCuda > cuda_coa_fast_csrMatrix( "cuda-coa-fast-csr-matrix" );
-
-         if( cuda_coa_fast_csrMatrix. copyFrom( coa_fast_csrMatrix ) )
-         {
-            time = stop_time;
-            cuda_b. setValue( -1.0 );
-            benchmarkSpMV< Real, tnlCuda >( cuda_coa_fast_csrMatrix,
-                                            cuda_x,
-                                            nonzero_elements,
-                                            cuda_b,
-                                            time,
-                                            benchmarkStatistics. spmv_cuda_coa_fast_csr_gflops[ block_iter ],
-                                            benchmarkStatistics. spmv_cuda_coa_fast_csr_iter[ block_iter ] );
-
-            if( verbose )
-               cout << right << setw( 12 ) << setprecision( 2 ) << time
-                    << right << setw( 15 ) << benchmarkStatistics. spmv_cuda_coa_fast_csr_iter[ block_iter ]
-                    << right << setw( 12 ) << setprecision( 2 ) << benchmarkStatistics. spmv_cuda_coa_fast_csr_gflops[ block_iter ] << endl;
-
-            //if( refB != cuda_b )
-				// {
-				//	if( verbose )
-				//	   cout << right << setw( 12 ) << "FAILED." << endl;
-				//	//spmv_cuda_coa_fast_csr_gflops[ block_iter ] = -1.0;
-				//	return false;
-				// }
-				// else
-				// 	if( verbose )
-				//		cout << right << setw( 12 ) << "OK." << endl;
-         }
-         else
-            if( verbose )
-               cout << "Format transfer failed!!!" << endl;
-#endif
-         block_iter ++;
-      }
-   }
-
-
-
-   /*
-	 * Benchmarks of the ELLPACK format.
-	 */
-	/*{
-      if( verbose )
-         cout << "Benchmarking ELLPACK format ... " << flush;
-
-      int max_row_length, min_row_length, average_row_length;
-      csrMatrix. getRowStatistics( min_row_length,
-                                    max_row_length,
-                                    average_row_length );
-      double alpha= 1.0;
-      int ellpack_row_length = ( 1.0 - alpha ) * average_row_length +
-                               alpha * max_row_length;
-      tnlEllpackMatrix< Real, tnlHost > ellpack_matrix( "ellpack-matrix", ellpack_row_length );
-      ellpack_artificial_zeros = 100.0 * ( double ) ellpack_matrix. getArtificialZeroElements() / ( double ) ellpack_matrix. getNonzeroElements();
-      ellpack_matrix. copyFrom( csrMatrix );
-      if( verbose )
-           cout << "Min row length = " << min_row_length << endl
-                << "Max row length = " << max_row_length << endl
-                << "Average row length = " << average_row_length << endl
-                << "Ellpack row length = " << ellpack_row_length << endl
-                << "COO elements = " << ellpack_matrix. getCOONonzeroElements() << endl;
-      time = stop_time;
-      host_x. setValue( 1.0 );
-      host_b. setValue( 0.0 );
-      benchmarkSpMV< Real, tnlHost >( ellpack_matrix,
-                                      host_x,
-                                      host_b,
-                                      time,
-                                      spmv_ellpack_gflops,
-                                      spmv_ellpack_iter );
-
-      if( verbose )
-         cout << time << " sec. " << spmv_ellpack_iter << " iterations " << spmv_ellpack_gflops << " GFLOPS." << endl;
-      if( verbose )
-         cout << "Comparing results ... ";
-      if( refB != host_b )
-      {
-         if( verbose )
-            cout << "FAILED." << endl;
-         return false;
-      }
-      if( verbose )
-         cout << "OK." << endl;
-
-	}*/
-
-   if( verbose )
-      cout << setfill( '-' ) << setw( 95 ) << "--" << endl
-           << setfill( ' ');
-   return true;           
-
-}
-#endif
-
 
 int main( int argc, char* argv[] )
 {

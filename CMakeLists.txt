@@ -4,6 +4,19 @@ cmake_minimum_required( VERSION 2.8 )
 
 set( tnlVersion "0.1" )
 
+# Settings foro debug/release version
+if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
+    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
+    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
+    set( debugExt -dbg )
+else()
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
+    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
+    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
+    set( addAlsoSubdirs TRUE)
+endif()
+
 #####
 # Check for bzip2
 #
@@ -17,53 +30,55 @@ endif( BZIP2_FOUND )
 #####
 # Check for CUDA
 #
-find_package( CUDA )
-if( CUDA_FOUND )
-    set( BUILD_CUDA TRUE)
-    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
-    if( CUDA_ARCHITECTURE STREQUAL "1.0" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_10;-DCUDA_ARCH=10)
-    endif()
-    if( CUDA_ARCHITECTURE STREQUAL "1.1" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_11;-DCUDA_ARCH=11)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "1.2" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_12;-DCUDA_ARCH=12)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "1.3" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_13;-DCUDA_ARCH=13)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "2.0" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_20;-DCUDA_ARCH=20)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "2.1" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_21;-DCUDA_ARCH=21)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "2.2" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_22;-DCUDA_ARCH=22)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "2.3" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_23;-DCUDA_ARCH=23)
-    endif()    
-    if( CUDA_ARCHITECTURE STREQUAL "3.0" )
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30;-DCUDA_ARCH=30)
-    endif()    
-
-    ####
-    # Check for CUSP
-    #
-    find_path( CUSP_INCLUDE_DIR cusp/hyb_matrix.h  
-               DOC "CUSP headers." )
-    if( ${CUSP_INCLUDE_DIR} STREQUAL "CUSP_INCLUDE_DIR-NOTFOUND" )
-        message( "CUSP not found." )
-        set( HAVE_CUSP "//#define HAVE_CUSP" )
-    else()      
-        message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
-        set( HAVE_CUSP "#define HAVE_CUSP" )
-        cuda_include_directories( ${CUSP_INCLUDE_DIR} )
-    endif()    
-
-endif( CUDA_FOUND )
+if( NOT WITH_CUDA STREQUAL "no" )
+    find_package( CUDA )
+    if( CUDA_FOUND )
+        set( BUILD_CUDA TRUE)
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA )
+        if( CUDA_ARCHITECTURE STREQUAL "1.0" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_10;-DCUDA_ARCH=10)
+        endif()
+        if( CUDA_ARCHITECTURE STREQUAL "1.1" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_11;-DCUDA_ARCH=11)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "1.2" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_12;-DCUDA_ARCH=12)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "1.3" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_13;-DCUDA_ARCH=13)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "2.0" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_20;-DCUDA_ARCH=20)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "2.1" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_21;-DCUDA_ARCH=21)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "2.2" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_22;-DCUDA_ARCH=22)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "2.3" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_23;-DCUDA_ARCH=23)
+        endif()    
+        if( CUDA_ARCHITECTURE STREQUAL "3.0" )
+            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30;-DCUDA_ARCH=30)
+        endif()    
+    
+        ####
+        # Check for CUSP
+        #
+        find_path( CUSP_INCLUDE_DIR cusp/hyb_matrix.h  
+                   DOC "CUSP headers." )
+        if( ${CUSP_INCLUDE_DIR} STREQUAL "CUSP_INCLUDE_DIR-NOTFOUND" )
+            message( "CUSP not found." )
+            set( HAVE_CUSP "//#define HAVE_CUSP" )
+        else()      
+            message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
+            set( HAVE_CUSP "#define HAVE_CUSP" )
+            cuda_include_directories( ${CUSP_INCLUDE_DIR} )
+        endif()    
+    
+    endif( CUDA_FOUND )
+endif( NOT WITH_CUDA STREQUAL "no" )    
 
 ####
 # Check for OpenMP
@@ -123,19 +138,6 @@ endif(CPPUNIT_INCLUDE_DIR)
 
 ENABLE_TESTING()
 INCLUDE( Dart )
-
-#Nastaveni kam davat vysledne soubory pro debug/release verzi
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
-	set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
-	set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
-	set( debugExt -dbg )
-else()
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
-	set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
-	set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-	set( addAlsoSubdirs TRUE)
-endif()
 
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )

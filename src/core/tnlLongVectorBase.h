@@ -27,18 +27,6 @@
 
 #ifdef HAVE_CUDA
 #include <cuda_runtime.h>
-/*void tnlLongVectorCUDASetValue( int* data,
-                                const int size,
-                                const int& v );
-
-void tnlLongVectorCUDASetValue( float* data,
-                                const int size,
-                                const float& v );
-
-void tnlLongVectorCUDASetValue( double* data,
-                                const int size,
-                                const double& v );
-*/
 #else
 #include <iostream>
 using namespace std;
@@ -105,7 +93,8 @@ template< typename Real, typename Index = int > class tnlLongVectorBase : public
     */
    void touch( long int touches = 1 ) const
    {
-     defaultTnlStatistics. addTransferedBytes( touches * getSize() * sizeof( Real ) );
+     // TODO: fix this
+     //defaultTnlStatistics. addTransferedBytes( touches * getSize() * sizeof( Real ) );
    };
 
    virtual ~tnlLongVectorBase(){};

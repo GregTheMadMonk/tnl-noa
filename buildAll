@@ -1,5 +1,9 @@
 #!/bin/bash
 
+CPUS=`grep -c processor /proc/cpuinfo`
+
+echo "Bulding TNL using $CPUS processors."
+
 if [ ! -d Debug ];
 then
    mkdir Debug
@@ -10,13 +14,13 @@ then
 fi
 
 cd Debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0
-make -j6 #VERBOSE=1
-make -j6 test
-make -j6 install
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=no
+make -j${CPUS} #VERBOSE=1
+make -j${CPUS} test
+make -j${CPUS} install
 
 cd ../Release
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0
-make -j6
-make -j6 test
-make -j6 install
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=no
+make -j${CPUS}
+make -j${CPUS} test
+make -j${CPUS} install
