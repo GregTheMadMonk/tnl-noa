@@ -265,14 +265,14 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                                  csrMatrix,
                                                  true );
    tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
-   cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
-   cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
-   cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
-   cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-   cudaRgCsrMatrixBenchmark. setup( csrMatrix );
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+      cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
+      cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+      cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
+      cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
+      cudaRgCsrMatrixBenchmark. setup( csrMatrix );
       if( formatTest )
          cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
@@ -341,15 +341,16 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                                     inputMtxSortedFile,
                                                     csrMatrix,
                                                     true );
-      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
-      cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
-      cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
-      cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
-      cudaRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
-      cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
+         tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+         cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
+         cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
+         cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
+         cudaRgCsrMatrixBenchmark. setup( orderedCsrMatrix );
+         cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
+
          if( formatTest )
             cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
          cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );

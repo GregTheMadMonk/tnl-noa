@@ -14,13 +14,13 @@ then
 fi
 
 cd Debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=no
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=yes
 make -j${CPUS} #VERBOSE=1
 make -j${CPUS} test
 make -j${CPUS} install
 
 cd ../Release
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=no
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=2.0 -DWITH_CUDA=yes
 make -j${CPUS}
 make -j${CPUS} test
 make -j${CPUS} install

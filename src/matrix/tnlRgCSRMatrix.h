@@ -484,9 +484,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
    tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " < rgCSRMatrix. getName() << " with non-positiove size." );
 
-   /****
-    * TODO: add variable group size support
-    */
+   this -> cudaBlockSize = rgCSRMatrix. cudaBlockSize;
    this -> groupSize = rgCSRMatrix. groupSize;
    if( ! this -> setSize( rgCSRMatrix. getSize() ) )
       return false;
@@ -507,6 +505,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    this -> nonzeroElementsInRow = rgCSRMatrix. nonzeroElementsInRow;
    this -> last_nonzero_element = rgCSRMatrix. last_nonzero_element;
 
+   this -> numberOfGroups = rgCSRMatrix. numberOfGroups;
    this -> adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
    this -> useAdaptiveGroupSize = rgCSRMatrix. useAdaptiveGroupSize;
    this -> adaptiveGroupSizeStrategy = rgCSRMatrix. adaptiveGroupSizeStrategy;
@@ -715,14 +714,10 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
       Index blockSize = this -> getCUDABlockSize();
       const Index size = this -> getSize();
 
-      /****
-       * The following works only with constant group size
-       */
-      int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
-      dim3 gridDim( gridSize ), blockDim( blockSize );
-
       if( this -> useAdaptiveGroupSize )
       {
+         int gridSize = this -> numberOfGroups;
+         dim3 gridDim( gridSize ), blockDim( blockSize );
          size_t sharedBytes = blockDim. x * sizeof( Real );
          tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
                                                            <<< gridDim, blockDim, sharedBytes >>>
@@ -737,9 +732,12 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
       }
       else
       {
-          tnlRgCSRMatrixVectorProductKernel< Real, Index >
-                                           <<< gridDim, blockDim >>>
-                                           ( size,
+         int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
+         dim3 gridDim( gridSize ), blockDim( blockSize );
+
+         tnlRgCSRMatrixVectorProductKernel< Real, Index >
+                                          <<< gridDim, blockDim >>>
+                                          ( size,
                                              this -> groupSize,
                                                nonzeroElements. getVector(),
                                                columns. getVector(),
@@ -1038,31 +1036,68 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
 
    const Index firstRowInGroup = groupsToRowsMapping[ blockIdx. x ];
    const Index groupSize = groupsToRowsMapping[ blockIdx. x + 1 ] - firstRowInGroup;
-   const Index threadsPerRow = blockDim. x / groupSize;
-   const Index threadIndexInRow = threadIdx. x / groupSize;
-   const Index rowOffsetInGroup = threadIdx. x % groupSize;
-   const Index rowIndex =  firstRowInGroup + rowOffsetInGroup;
-   if( rowIndex >= size )
-      return;
 
-   //printf( "threadIdx.x = %d blockIdx. x = %d firstRowInGroup = %d groupSize = %d threadsPerRow = %d threadIndexInRow = %d rowOffsetInGroup = %d rowIndex = %d \n",
-   //         threadIdx.x, blockIdx. x, firstRowInGroup, groupSize, threadsPerRow, threadIndexInRow, rowOffsetInGroup, rowIndex );
+   /****
+    * The last group in the matrix is usually smaller and it does
+    * not divide the BlockDim. x. In this case we leave the number
+    * of threads per row 1.
+    */
+   Index threadsPerRow( 1 ), threadIndexInRow( 0 ), rowInGroup( threadIdx. x ), activeThreads( groupSize );
+   if( blockDim. x % groupSize == 0 )
+   {
+      threadsPerRow = blockDim. x / groupSize;
+      threadIndexInRow = threadIdx. x / groupSize;
+      rowInGroup = threadIdx. x % groupSize;
+      activeThreads = blockDim. x;
+   }
+   const Index rowInMatrix = firstRowInGroup + rowInGroup;
 
+   /****
+    * We need to call __syncthreads() later so we cannot do:
+    * if( rowInMatrix >= size ) return;
+    */
+   Index nonzeros( 0 );
+   if( rowInMatrix < size )
+      nonzeros = nonzerosInRow[ rowInMatrix ];
+   Index pos = groupOffsets[ blockIdx. x ] + rowInGroup + threadIndexInRow * groupSize;
+
+   /****
+    * Compute the partial sums
+    */
    partialSums[ threadIdx. x ] = 0.0;
-   Index pos = groupOffsets[ blockIdx. x ] + threadIdx. x; //rowOffsetInGroup + threadIndexInRow * groupSize;
-   const Index nonzeros = nonzerosInRow[ rowIndex ];
-
-   printf( "threadIdx.x = %d nonzeros = %d \n", threadIdx. x, nonzeros );
-   for( Index i = 0; i < nonzeros; i += threadsPerRow )
+   for( Index i = threadIndexInRow; i < nonzeros; i += threadsPerRow )
    {
       const Index column = columns[ pos ];
       if( column == -1 )
-         printf( "* rowIndex = %d \n", rowIndex );
+         printf( "* rowInMatrix = %d blockIdx. x = %d threadIdx. x = %d threadIndexInRow = %d i = %d \n",
+                rowInMatrix, blockIdx. x, threadIdx. x, threadIndexInRow, i );
       if( column != -1 )
          partialSums[ threadIdx. x ] += nonzeroElements[ pos ] * vec_x[ column ];
-      pos += blockDim.x;
+      //if( rowInMatrix == 0 )
+      //   printf( "partialSums[ %d ] = %f \n", threadIdx. x, partialSums[ threadIdx. x ] );
+      pos += activeThreads;
    }
-   //printf( "blockIdx. x = %d partialSum[ %d ] = %f \n", blockIdx. x, threadIdx. x, partialSums[ threadIdx. x] );
+   __syncthreads();
+
+   /****
+    * There will be no other __syncthreads() so we may quit inactive threads.
+    */
+   if( rowInMatrix >= size )
+      return;
+
+   /****
+    * Sum up the partial sums
+    */
+   if( threadIndexInRow == 0 )
+      for( Index i = 1; i < threadsPerRow; i ++  )
+      {
+         partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + i * groupSize ];
+         //if( rowInMatrix == 0 )
+         //   printf( "partialSums[ %d ] = %f i = %d \n", threadIdx. x, partialSums[ threadIdx. x ], i );
+
+      }
+
+
 
    /*if( threadsPerRow > 1 && threadIndexInRow + 1 < threadsPerRow )
       partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1 ];
@@ -1087,8 +1122,11 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
    if( threadsPerRow > 1024 && threadIndexInRow + 1024 < threadsPerRow )
       partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1024 ];*/
 
-   //if( threadIndexInRow == 0 )
-    //  vec_b[ rowIndex ] = partialSums[ threadIndexInRow ];
+   if( threadIndexInRow == 0 )
+   {
+      //printf( "partialSums[ %d ] =  %f rowInMatrix = %d \n ", threadIdx. x, partialSums[ threadIdx. x ], rowInMatrix );
+      vec_b[ rowInMatrix ] = partialSums[ threadIdx. x ];
+   }
 }
 
 

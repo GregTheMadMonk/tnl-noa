@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-
-BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
 DEBUG="no"
+FORMAT_TEST="yes"
+STOP_TIME="1"
+export CUDA_PROFILE=0
+
+
+PWD=`pwd`
+IWD="$PWD"
+BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
 SPARSE_MATRIX_BENCHMARK="tnl-sparse-matrix-benchmark"
 SPARSE_MATRIX_BENCHMARK_DBG="tnl-sparse-matrix-benchmark-dbg"
 #SPARSE_MATRIX_BENCHMARK="tnl-sparse-matrix-benchmark-dbg"
-FORMAT_TEST="yes"
-STOP_TIME="1"
 
-export CUDA_PROFILE=0
+
 export CUDA_PROFILE_CONFIG="$TNL_SOURCE_DIR/tests/cuda-profiler.conf"
 PROCESS_CUDA_PROFILE="$TNL_SOURCE_DIR/tests/process-cuda-profile.pl"
 source matrix-market

@@ -2,9 +2,9 @@
 
 BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
                 
-#PWD=`pwd`
+PWD=`pwd`
 TNL_MATRIX_CONVERT="tnl-matrix-convert --verify no"
-#IWD="$PWD"
+IWD="$PWD"
 
 #source ../tnl-env-variables
 #export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-matrix-check.cfg.desc"
