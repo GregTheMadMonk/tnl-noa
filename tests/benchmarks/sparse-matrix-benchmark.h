@@ -343,8 +343,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
                                                     true );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
-         cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+         cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
          cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
          cudaRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );

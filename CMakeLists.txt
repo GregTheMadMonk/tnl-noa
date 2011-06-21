@@ -4,7 +4,9 @@ cmake_minimum_required( VERSION 2.8 )
 
 set( tnlVersion "0.1" )
 
-# Settings foro debug/release version
+####
+# Settings for debug/release version
+#
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
@@ -104,7 +106,9 @@ FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
   /usr/include
 )
 
+####
 # With Win32, important to have both
+#
 if(WIN32)
   FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
                ${CPPUNIT_INCLUDE_DIR}/../lib
