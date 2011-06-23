@@ -69,7 +69,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       if( formatTest )
          hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
       hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-      hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+      //hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
       hostRgCsrMatrixBenchmark. tearDown();
 
       if( logFileName )
@@ -256,7 +256,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    if( formatTest )
       hostRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
    hostRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
-   hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
+   //hostRgCsrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hostRgCsrMatrixBenchmark. tearDown();
    if( logFileName )
       hostRgCsrMatrixBenchmark. writeToLogTable( logFile,
@@ -352,7 +352,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
          cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
 
          if( formatTest )
-            cudaRgCsrMatrixBenchmark. testMatrix( csrMatrix, verbose );
+            cudaRgCsrMatrixBenchmark. testMatrix( orderedCsrMatrix, verbose );
          cudaRgCsrMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
          if( logFileName )
             cudaRgCsrMatrixBenchmark. writeToLogTable( logFile,

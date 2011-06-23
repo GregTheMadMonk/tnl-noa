@@ -166,6 +166,8 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    Index cudaBlockSize;
 
+   int maxCudaGridSize;
+
    Index artificial_zeros;
 
    //! The last non-zero element is at the position last_non_zero_element - 1
@@ -188,7 +190,9 @@ __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
                                                        Real* vec_b );
 
 template< class Real, typename Index >
-__global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
+__global__ void tnlRgCSRMatrixVectorProductKernel( const Index gridNumber,
+                                                   const Index maxGridSize,
+                                                   Index size,
                                                    Index groupSize,
                                                    const Real* nonzeroElements,
                                                    const Index* columns,
@@ -198,7 +202,9 @@ __global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
                                                    Real* vec_b );
 
 template< class Real, typename Index >
-__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
+__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( const Index gridNumber,
+                                                                    const Index maxGridSize,
+                                                                    Index size,
                                                                     const Index* groupSize,
                                                                     const Real* nonzeroElements,
                                                                     const Index* columns,
@@ -225,6 +231,13 @@ tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
   artificial_zeros( 0 ),
   last_nonzero_element( 0 )
 {
+#ifdef HAVE_CUDA
+   int cudaDevice;
+   cudaGetDevice( &cudaDevice );
+   cudaDeviceProp deviceProperties;
+   cudaGetDeviceProperties( &deviceProperties, cudaDevice );
+   this -> maxCudaGridSize = deviceProperties. maxGridSize[ 0 ];
+#endif
 };
 
 template< typename Real, tnlDevice Device, typename Index >
@@ -349,7 +362,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	{
 	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByAverageRowSize )
 	   {
-	      const Index averageRowSize = ceil( ( float ) csr_matrix. getNonzeroElements() / ( float ) csr_matrix. getSize() );
+	      const Index averageRowSize = ceil( ( double ) csr_matrix. getNonzeroElements() / ( double ) csr_matrix. getSize() );
 	      maxNonzeroElementsInGroup = averageRowSize * groupSize;
 	   }
 	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByFirstGroup )
@@ -509,6 +522,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    this -> adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
    this -> useAdaptiveGroupSize = rgCSRMatrix. useAdaptiveGroupSize;
    this -> adaptiveGroupSizeStrategy = rgCSRMatrix. adaptiveGroupSizeStrategy;
+   this -> maxCudaGridSize = rgCSRMatrix. maxCudaGridSize;
    return true;
 };
 
@@ -717,34 +731,54 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector
       if( this -> useAdaptiveGroupSize )
       {
          int gridSize = this -> numberOfGroups;
-         dim3 gridDim( gridSize ), blockDim( blockSize );
-         size_t sharedBytes = blockDim. x * sizeof( Real );
-         tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
-                                                           <<< gridDim, blockDim, sharedBytes >>>
-                                                           ( size,
-                                                             adaptiveGroupSizes. getVector(),
-                                                             nonzeroElements. getVector(),
-                                                             columns. getVector(),
-                                                             groupOffsets. getVector(),
-                                                             nonzeroElementsInRow. getVector(),
-                                                             vec. getVector(),
-                                                             result. getVector() );
+         int numberOfGrids = gridSize / maxCudaGridSize + ( gridSize % maxCudaGridSize != 0 );
+         int gridNumber( 0 );
+         while( gridSize > 0 )
+         {
+            int currentGridSize = Min( gridSize, maxCudaGridSize );
+            //cerr << "Current grid size = " << currentGridSize << endl;
+            dim3 gridDim( currentGridSize ), blockDim( blockSize );
+            size_t sharedBytes = blockDim. x * sizeof( Real );
+            tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
+                                                              <<< gridDim, blockDim, sharedBytes >>>
+                                                              ( gridNumber,
+                                                                this -> maxCudaGridSize,
+                                                                size,
+                                                                adaptiveGroupSizes. getVector(),
+                                                                nonzeroElements. getVector(),
+                                                                columns. getVector(),
+                                                                groupOffsets. getVector(),
+                                                                nonzeroElementsInRow. getVector(),
+                                                                vec. getVector(),
+                                                                result. getVector() );
+            gridSize -= currentGridSize;
+            gridNumber ++;
+         }
       }
       else
       {
          int gridSize = size / blockSize + ( size % blockSize != 0 ) + 1;
-         dim3 gridDim( gridSize ), blockDim( blockSize );
-
-         tnlRgCSRMatrixVectorProductKernel< Real, Index >
-                                          <<< gridDim, blockDim >>>
-                                          ( size,
-                                             this -> groupSize,
+         int gridNumber( 0 );
+         while( gridSize > 0 )
+         {
+            int currentGridSize = Min( gridSize, this -> maxCudaGridSize );
+            //cerr << "Current grid size = " << currentGridSize << endl;
+            dim3 gridDim( currentGridSize ), blockDim( blockSize );
+            tnlRgCSRMatrixVectorProductKernel< Real, Index >
+                                             <<< gridDim, blockDim >>>
+                                             ( gridNumber,
+                                               this -> maxCudaGridSize,
+                                               size,
+                                               this -> groupSize,
                                                nonzeroElements. getVector(),
                                                columns. getVector(),
                                                groupOffsets. getVector(),
                                                nonzeroElementsInRow. getVector(),
                                                vec. getVector(),
                                                result. getVector() );
+            gridSize -= currentGridSize;
+            gridNumber ++;
+         }
       }
        cudaThreadSynchronize();
        CHECK_CUDA_ERROR;
@@ -977,7 +1011,9 @@ __global__ void sparseOldCSRMatrixVectorProductKernel( Index size,
 
 
 template< class Real, typename Index >
-__global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
+__global__ void tnlRgCSRMatrixVectorProductKernel( const Index gridNumber,
+                                                   const Index maxGridSize,
+                                                   Index size,
                                                    Index groupSize,
                                                    const Real* nonzeroElements,
                                                    const Index* columns,
@@ -990,7 +1026,7 @@ __global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
     * This kernel assumes that all groups are equal sized. One block
     * can process more groups and there is always one thread mapped to one row.
     */
-   const Index rowIndex = blockIdx. x * blockDim. x + threadIdx. x;
+   const Index rowIndex = gridNumber * maxGridSize * blockDim. x + blockIdx. x * blockDim. x + threadIdx. x;
    if( rowIndex >= size )
       return;
 
@@ -1018,7 +1054,9 @@ __global__ void tnlRgCSRMatrixVectorProductKernel( Index size,
 }
 
 template< class Real, typename Index >
-__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
+__global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( const Index gridNumber,
+                                                                    const Index maxGridSize,
+                                                                    Index size,
                                                                     const Index* groupsToRowsMapping,
                                                                     const Real* nonzeroElements,
                                                                     const Index* columns,
@@ -1034,8 +1072,9 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
     * by one block. We assume that the groupSize divides the blockDim. x
     */
 
-   const Index firstRowInGroup = groupsToRowsMapping[ blockIdx. x ];
-   const Index groupSize = groupsToRowsMapping[ blockIdx. x + 1 ] - firstRowInGroup;
+   const Index blockIndex = blockIdx. x + gridNumber * maxGridSize;
+   const Index firstRowInGroup = groupsToRowsMapping[ blockIndex ];
+   const Index groupSize = groupsToRowsMapping[ blockIndex + 1 ] - firstRowInGroup;
 
    /****
     * The last group in the matrix is usually smaller and it does
@@ -1059,7 +1098,7 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
    Index nonzeros( 0 );
    if( rowInMatrix < size )
       nonzeros = nonzerosInRow[ rowInMatrix ];
-   Index pos = groupOffsets[ blockIdx. x ] + rowInGroup + threadIndexInRow * groupSize;
+   Index pos = groupOffsets[ blockIndex ] + rowInGroup + threadIndexInRow * groupSize;
 
    /****
     * Compute the partial sums
@@ -1070,7 +1109,7 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( Index size,
       const Index column = columns[ pos ];
       if( column == -1 )
          printf( "* rowInMatrix = %d blockIdx. x = %d threadIdx. x = %d threadIndexInRow = %d i = %d \n",
-                rowInMatrix, blockIdx. x, threadIdx. x, threadIndexInRow, i );
+                rowInMatrix, blockIndex, threadIdx. x, threadIndexInRow, i );
       if( column != -1 )
          partialSums[ threadIdx. x ] += nonzeroElements[ pos ] * vec_x[ column ];
       //if( rowInMatrix == 0 )

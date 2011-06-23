@@ -7,6 +7,7 @@ INSTALL( FILES matrix-market
                draw-matrices
                run-sparse-matrix-benchmark
                run-matrix-solvers-benchmark
+               cuda-profiler.conf
                process-cuda-profile.pl 
                DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
 

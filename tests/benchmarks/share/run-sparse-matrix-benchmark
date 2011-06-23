@@ -5,7 +5,6 @@ FORMAT_TEST="yes"
 STOP_TIME="1"
 export CUDA_PROFILE=0
 
-
 PWD=`pwd`
 IWD="$PWD"
 BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
@@ -13,12 +12,10 @@ SPARSE_MATRIX_BENCHMARK="tnl-sparse-matrix-benchmark"
 SPARSE_MATRIX_BENCHMARK_DBG="tnl-sparse-matrix-benchmark-dbg"
 #SPARSE_MATRIX_BENCHMARK="tnl-sparse-matrix-benchmark-dbg"
 
-
-export CUDA_PROFILE_CONFIG="$TNL_SOURCE_DIR/tests/cuda-profiler.conf"
-PROCESS_CUDA_PROFILE="$TNL_SOURCE_DIR/tests/process-cuda-profile.pl"
+export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
+PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
 source matrix-market
 source florida-matrix-market
-
 
 write_header()
 {
@@ -564,7 +561,9 @@ do
       done
    fi
    
-   write_closing sparse-matrix-benchmark-float.log.html.html
-   write_closing sparse-matrix-benchmark-double.log.html.html
+   write_closing sparse-matrix-benchmark-float.log.html
+   write_closing sparse-matrix-benchmark-double.log.html
+   write_closing sparse-matrix-benchmark-amd-float.log.html
+   write_closing sparse-matrix-benchmark-amd-double.log.html   
    
 done
