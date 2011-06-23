@@ -9,7 +9,7 @@ ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( solver )
 
 
-ADD_LIBRARY( tnl${debugExt}-${tnlVersion} dummy.cpp )
+ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED dummy.cpp )
 TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} tnlconfig${debugExt}-${tnlVersion}
                                                     tnlcore${debugExt}-${tnlVersion}
                                                     tnldebug${debugExt}-${tnlVersion}
@@ -20,7 +20,7 @@ TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} tnlconfig${debugExt}-${tnlVe
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 
 IF( BUILD_MPI )
-  ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} dummy.cpp )
+  ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED dummy.cpp )
   TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
                                                           tnlconfig-mpi${debugExt}-${tnlVersion}
                                                           tnlcore-mpi${debugExt}-${tnlVersion}

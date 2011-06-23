@@ -2,7 +2,7 @@
 
 CPUS=`grep -c processor /proc/cpuinfo`
 
-echo "Bulding TNL using $CPUS processors."
+echo "Building TNL using $CPUS processors."
 
 if [ ! -d Debug ];
 then

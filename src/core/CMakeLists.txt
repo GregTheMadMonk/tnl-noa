@@ -42,12 +42,12 @@ set( sources tnlFile.cpp
 SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 SET( libtnlcoreinclude_HEADERS ${headers} )
 
-ADD_LIBRARY( tnlcore${debugExt}-${tnlVersion} ${sources} ${headers} )
+ADD_LIBRARY( tnlcore${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
 TARGET_LINK_LIBRARIES( tnlcore${debugExt}-${tnlVersion} ${BZIP2_LIBRARIES} )
 INSTALL( TARGETS tnlcore${debugExt}-${tnlVersion} DESTINATION lib )
 
 IF( BUILD_MPI )
-    ADD_LIBRARY( tnlcore-mpi${debugExt}-${tnlVersion} ${sources} ${headers} )
+    ADD_LIBRARY( tnlcore-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
     TARGET_LINK_LIBRARIES( tnlcore-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
                                                                 ${BZIP2_LIBRARIES}  )
     SET_TARGET_PROPERTIES( tnlcore-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )

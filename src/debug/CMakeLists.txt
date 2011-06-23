@@ -18,13 +18,13 @@ SET(headers tnlDbgDataElement.h
             tnlDebugScanner.h 
             tnlDebugStructure.h )
 
-ADD_LIBRARY( tnldebug${debugExt}-${tnlVersion} ${sources} ${headers} )
+ADD_LIBRARY( tnldebug${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
 ADD_EXECUTABLE( tnl-debug-test tnl-debug-test.cpp )
 TARGET_LINK_LIBRARIES( tnl-debug-test tnldebug${debugExt}-${tnlVersion})
 INSTALL( TARGETS tnldebug${debugExt}-${tnlVersion} DESTINATION lib )
 
 IF( BUILD_MPI )
-    ADD_LIBRARY( tnldebug-mpi${debugExt}-${tnlVersion} ${sources} ${headers} )
+    ADD_LIBRARY( tnldebug-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
     SET_TARGET_PROPERTIES( tnldebug-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
     
     ADD_EXECUTABLE( tnl-debug-test-mpi tnl-debug-test.cpp )
