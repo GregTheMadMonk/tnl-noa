@@ -561,14 +561,15 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
    const Index* cols = columns. getVector();
    const Index* rw_offsets = row_offsets. getVector();
    const Real* els = nonzero_elements. getVector();
+
+   if( ! backwardSpMV )
+   {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for
 #endif
-   for( Index row = 0; row < this -> size; row ++ )
-   {
-      Real product( 0.0 );
-      if( ! backwardSpMV )
+      for( Index row = 0; row < this -> size; row ++ )
       {
+         Real product( 0.0 );
          Index i = rw_offsets[ row ];
          Index last_in_row = rw_offsets[ row + 1 ];
          while( i < last_in_row )
@@ -576,9 +577,17 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
             product += els[ i ] * vec[ cols[ i ] ];
             i ++;
          }
+         result[ row ] = product;
       }
-      else
+   }
+   else
+   {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif
+      for( Index row = 0; row < this -> size; row ++ )
       {
+         Real product( 0.0 );
          Index i = rw_offsets[ row + 1 ] - 1;
          Index first_in_row = rw_offsets[ row ];
          while( i >= first_in_row )
@@ -586,8 +595,8 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
             product += els[ i ] * vec[ cols[ i ] ];
             i --;
          }
+         result[ row ] = product;
       }
-	   result[ row ] = product;
    }
 }
 

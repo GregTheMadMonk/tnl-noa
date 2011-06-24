@@ -197,34 +197,34 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
                                                                             const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                             bool writeMatrixInfo ) const
 {
+   tnlString bgColor;
+   switch( groupSize )
+   {
+      case 16: bgColor = "#5555FF"; break;
+      case 32: bgColor = "#9999FF"; break;
+      case 64: bgColor = "#CCCCFF"; break;
+      default: bgColor = "#FFFFFF";
+   }
+   if( writeMatrixInfo )
+   {
+      tnlString baseFileName( inputMtxFile );
+      baseFileName += tnlString( ".rgcsr-");
+      baseFileName += tnlString( groupSize );
+      tnlString matrixPdfFile( baseFileName );
+      matrixPdfFile += tnlString( ".pdf" );
+      tnlString matrixHtmlFile( baseFileName );
+      matrixHtmlFile += tnlString( ".html" );
+      tnlRgCSRMatrix< Real > rgCsrMatrix( inputMtxFile );
+      rgCsrMatrix. tuneFormat( this -> groupSize,
+                               this -> useAdaptiveGroupSize,
+                               this -> adaptiveGroupSizeStrategy );
+      rgCsrMatrix. copyFrom( csrMatrix );
+      printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
+      logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
+   }
    if( this -> getBenchmarkWasSuccesful() )
    {
-      tnlString bgColor;
-      switch( groupSize )
-      {
-         case 16: bgColor = "#5555FF"; break;
-         case 32: bgColor = "#9999FF"; break;
-         case 64: bgColor = "#CCCCFF"; break;
-         default: bgColor = "#FFFFFF";
-      }
-      if( writeMatrixInfo )
-      {
-         tnlString baseFileName( inputMtxFile );
-         baseFileName += tnlString( ".rgcsr-");
-         baseFileName += tnlString( groupSize );
-         tnlString matrixPdfFile( baseFileName );
-         matrixPdfFile += tnlString( ".pdf" );
-         tnlString matrixHtmlFile( baseFileName );
-         matrixHtmlFile += tnlString( ".html" );
-         tnlRgCSRMatrix< Real > rgCsrMatrix( inputMtxFile );
-         rgCsrMatrix. tuneFormat( this -> groupSize,
-                                  this -> useAdaptiveGroupSize,
-                                  this -> adaptiveGroupSizeStrategy );
-         rgCsrMatrix. copyFrom( csrMatrix );
-         printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
-         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
-         logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
-      }
       const double speedUp = this -> getGflops() / csrGflops;
       bgColor =  this -> getBgColorBySpeedUp( speedUp );
       logFile << "             <td bgcolor=" << bgColor << ">" << this -> getTime() << "</td>" << endl;
@@ -233,11 +233,6 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
    }
    else
    {
-      if( writeMatrixInfo )
-      {
-         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      }
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
       logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
