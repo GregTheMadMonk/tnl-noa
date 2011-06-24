@@ -258,14 +258,14 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    tnlTimerRT rt_timer;
    rt_timer. Reset();
    //maxIterations = 1;
+
+   for( int i = 0; i < maxIterations; i ++ )
    {
-      for( int i = 0; i < maxIterations; i ++ )
-      {
-         matrix. vectorProduct( x, b );
-         iterations ++;
-      }
+      matrix. vectorProduct( x, b );
+      iterations ++;
    }
-   time = rt_timer. GetTime();
+
+   this -> time = rt_timer. GetTime();
 
    firstErrorOccurence = 0;
    tnlLongVector< Real, tnlHost, Index > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
@@ -295,7 +295,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    //cout << "First error was on " << firstErrorOccurence << endl;
 
    double flops = 2.0 * iterations * matrix. getNonzeroElements();
-   gflops = flops / time * 1.0e-9;
+   this -> gflops = flops / time * 1.0e-9;
    artificialZeros = matrix. getArtificialZeroElements();
 
    if( verbose )

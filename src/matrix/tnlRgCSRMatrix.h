@@ -1127,42 +1127,58 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( const Index 
    /****
     * Sum up the partial sums
     */
+   /*Real pSum( 0.0 );
    if( threadIndexInRow == 0 )
+   {
+       pSum = partialSums[ threadIdx. x ];
       for( Index i = 1; i < threadsPerRow; i ++  )
       {
-         partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + i * groupSize ];
+         pSum += partialSums[ threadIdx. x + i * groupSize ];
          //if( rowInMatrix == 0 )
          //   printf( "partialSums[ %d ] = %f i = %d \n", threadIdx. x, partialSums[ threadIdx. x ], i );
 
       }
+   }*/
 
 
 
-   /*if( threadsPerRow > 1 && threadIndexInRow + 1 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1 ];
-   if( threadsPerRow > 2 && threadIndexInRow + 2 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 2 ];
-   if( threadsPerRow > 4 && threadIndexInRow + 4 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 4 ];
-   if( threadsPerRow > 8 && threadIndexInRow + 8 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 8 ];
-   if( threadsPerRow > 16 && threadIndexInRow + 16 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 16 ];
-   if( threadsPerRow > 32 && threadIndexInRow + 32 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 32 ];
-   if( threadsPerRow > 64 && threadIndexInRow + 64 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 64 ];
-   if( threadsPerRow > 128 && threadIndexInRow + 128 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 128 ];
-   if( threadsPerRow > 256 && threadIndexInRow + 256 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 256 ];
-   if( threadsPerRow > 512 && threadIndexInRow + 512 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 512 ];
-   if( threadsPerRow > 1024 && threadIndexInRow + 1024 < threadsPerRow )
-      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1024 ];*/
+   if( threadIndexInRow + 1 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1 * groupSize ];
+
+   if( threadIndexInRow + 2 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 2 * groupSize ];
+
+   if( threadIndexInRow + 4 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 4 * groupSize ];
+
+   if( threadIndexInRow + 8 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 8 * groupSize ];
+
+   if( threadIndexInRow + 16 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 16 * groupSize ];
+
+   if( threadIndexInRow + 32 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 32 * groupSize ];
+
+   if( threadIndexInRow + 64 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 64 * groupSize ];
+
+   if( threadIndexInRow + 128 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 128 * groupSize ];
+
+   if( threadIndexInRow + 256 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 256  * groupSize];
+
+   if( threadIndexInRow + 512 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 512 * groupSize ];
+
+   if( threadIndexInRow + 1024 < threadsPerRow )
+      partialSums[ threadIdx. x ] += partialSums[ threadIdx. x + 1024 * groupSize ];
 
    if( threadIndexInRow == 0 )
    {
+      //if( pSum != partialSums[ threadIdx. x ] )
+      //   printf( "!!! pSum = %f partialSum = %f threadsPerRow = %d groupSize = %d rowInMatrix = %d\n", pSum, partialSums[ threadIdx. x ], threadsPerRow, groupSize, rowInMatrix );
       //printf( "partialSums[ %d ] =  %f rowInMatrix = %d \n ", threadIdx. x, partialSums[ threadIdx. x ], rowInMatrix );
       vec_b[ rowInMatrix ] = partialSums[ threadIdx. x ];
    }

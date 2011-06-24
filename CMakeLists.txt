@@ -1,8 +1,12 @@
-project( libtnl )
-
 cmake_minimum_required( VERSION 2.8 )
 
+project( tnl )
+
 set( tnlVersion "0.1" )
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include( OptimizeForArchitecture )
 
 ####
 # Settings for debug/release version
@@ -16,7 +20,8 @@ else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-    set( addAlsoSubdirs TRUE)
+    #set( CXX_OPTIMIZE_FLAGS "-O3")
+    OptimizeForArchitecture()
 endif()
 
 #####
