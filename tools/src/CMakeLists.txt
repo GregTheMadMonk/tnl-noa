@@ -13,22 +13,28 @@ SET( tnlfunctionsbenchmarksources functions-benchmark.cpp
 SET( tnlmatrixconvertsources tnl-matrix-convert.cpp
                              tnl-matrix-convert.h )
 
-ADD_EXECUTABLE( tnl-functions-benchmark ${tnlfunctionsbenchmarksources} )
-target_link_libraries( tnl-functions-benchmark tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} ${tnlfunctionsbenchmarksources} )
+target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-err-norms ${tnlerrnormssources})
-target_link_libraries (tnl-err-norms tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-err-norms${debugExt} ${tnlerrnormssources})
+target_link_libraries (tnl-err-norms${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnlgrid-view ${tnlgridviewsources})
-target_link_libraries (tnlgrid-view tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-grid-view${debugExt} ${tnlgridviewsources})
+target_link_libraries (tnl-grid-view${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnlcurve2gnuplot ${tnlcurve2gnuplotsources})
-target_link_libraries (tnlcurve2gnuplot tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-curve2gnuplot${debugExt} ${tnlcurve2gnuplotsources})
+target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-matrix-convert ${tnlmatrixconvertsources})
-target_link_libraries (tnl-matrix-convert tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
+target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
-INSTALL( TARGETS tnl-err-norms
-                 tnlgrid-view
-                 tnl-matrix-convert
-         RUNTIME DESTINATION bin )
+INSTALL( TARGETS tnl-err-norms${debugExt}
+                 tnl-grid-view${debugExt}
+                 tnl-curve2gnuplot${debugExt}
+                 tnl-matrix-convert${debugExt}
+         RUNTIME DESTINATION bin
+         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+         
+INSTALL( FILES tnl-err2eoc.py
+         DESTINATION bin
+         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )         
