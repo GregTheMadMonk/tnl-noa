@@ -9,12 +9,14 @@ SET( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
      
 
 IF( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cu )        
+    CUDA_ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cu )
+    #SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )        
 ELSE()
     ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cpp )
+    #SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
 ENDIF()
 TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
-SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
+
 
 INSTALL( TARGETS tnl-sparse-matrix-benchmark${debugExt}
          RUNTIME DESTINATION bin )

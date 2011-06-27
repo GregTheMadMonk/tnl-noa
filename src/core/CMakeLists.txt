@@ -2,13 +2,15 @@ INCLUDE_DIRECTORIES( low-level )
 
 add_subdirectory( low-level )
 
-set (headers tnlAssert.h  
+set (headers tnlArray.h
+             tnlAssert.h               
     	     tnlCurve.h 
     	     tnlCudaSupport.h
 		     tnlDataElement.h
 		     tnlFile.h 
 		     tnlFlopsCounter.h 
 		     tnlList.h 
+		     tnlLongVector.h
 		     tnlLongVectorBase.h 
 		     tnlLongVectorHost.h 
 		     tnlLongVectorCUDA.h  

@@ -564,9 +564,9 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
 
    if( ! backwardSpMV )
    {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
       for( Index row = 0; row < this -> size; row ++ )
       {
          Real product( 0.0 );
@@ -582,9 +582,9 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< 
    }
    else
    {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
       for( Index row = 0; row < this -> size; row ++ )
       {
          Real product( 0.0 );
