@@ -1,3 +1,12 @@
+2011-06-29  oberhuber  <oberhuber@yvonne>
+
+	* cmake/AddCompilerFlag.cmake: New file.
+	* cmake/MacroEnsureVersion.cmake: New file.
+	* cmake/OptimizeForArchitecture.cmake: New file.
+	* src/matrix/.tnlRgCSRMatrix.h.swp: New file.
+	* src/matrix/tnlAdaptiveRgCSRMatrix.h: 
+	 - optimizing Adaptive Rg CSR format by adding break to SpMV loop.
+
 2011-06-15  oberhuber  <oberhuber@yvonne>
 
 	* src/core/tnlCudaSupport.cpp: Removed.

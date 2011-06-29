@@ -1088,6 +1088,8 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 			const Index column = columns[ offset ];
 			if( column != -1 )
 				sum += nonzeroElements[ offset ] * vect[ column ];
+			else
+			   break;
 		}
 		partialSums[ threadIdx. x ] = sum;
 		__syncthreads();
