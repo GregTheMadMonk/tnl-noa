@@ -560,10 +560,10 @@ do
          rm $file         
       done
    fi
-   
-   write_closing sparse-matrix-benchmark-float.log.html
-   write_closing sparse-matrix-benchmark-double.log.html
-   write_closing sparse-matrix-benchmark-amd-float.log.html
-   write_closing sparse-matrix-benchmark-amd-double.log.html   
-   
 done
+
+write_closing sparse-matrix-benchmark-float.log.html
+write_closing sparse-matrix-benchmark-double.log.html
+write_closing sparse-matrix-benchmark-amd-float.log.html
+write_closing sparse-matrix-benchmark-amd-double.log.html   
+

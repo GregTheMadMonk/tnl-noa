@@ -16,14 +16,14 @@
  ***************************************************************************/
 
 #include "tnlTimerRT.h"
-//#include "config.h"
-//#ifdef HAVE_STDDEF_H TODO: fix this
-//   #ifdef HAVE_SYS_TIME_H
-      #include <stddef.h>
-      #include <sys/time.h>
-      #define HAVE_TIME
-//   #endif
-//#endif
+#include "tnlConfig.h"
+
+#ifdef HAVE_SYS_TIME_H
+   #include <stddef.h>
+   #include <sys/time.h>
+   #define HAVE_TIME
+#endif
+
 
 tnlTimerRT default_mcore_rt_timer;
 //--------------------------------------------------------------------------

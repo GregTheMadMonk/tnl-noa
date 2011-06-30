@@ -105,6 +105,32 @@ if( MPI_FOUND )
 endif()
 
 ####
+# Check for some system header
+#
+find_path( SYS_TIME_INCLUDE_DIR sys/time.h  
+           DOC "System timer headers." )
+if( ${SYS_TIME_INCLUDE_DIR} STREQUAL "SYS_TIME_INCLUDE_DIR-NOTFOUND" )
+    message(  "Missing header file sys/time.h" )
+    set( HAVE_SYS_TIME_H "//#define HAVE_SYS_TIME_H" )
+else()
+    include_directories( ${SYS_TIME_INCLUDE_DIR}/tnl-${tnlVersion} )
+    set( HAVE_SYS_TIME_H "#define HAVE_SYS_TIME_H" )
+endif()
+
+find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h  
+           DOC "System resources headers." )
+if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
+    message( "Missing header file sys/time.h" )
+    set( HAVE_SYS_RESOURCE_H "//#define HAVE_SYS_RESOURCE_H" )
+else()
+    include_directories( ${SYS_RESOURCE_INCLUDE_DIR}/tnl-${tnlVersion} )
+    set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H" )
+endif()
+
+  
+
+
+####
 # Check for cppunit
 #
 FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h

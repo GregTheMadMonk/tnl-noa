@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-//#include "config.h"
-//#ifdef HAVE_SYS_RESOURCE_H TODO: fix this by testing the header in cmake
+#include "tnlConfig.h"
+#ifdef HAVE_SYS_RESOURCE_H
    #include <sys/resource.h>
-//#endif
+#endif
 #include "tnlTimerCPU.h"
 
 tnlTimerCPU default_mcore_cpu_timer;

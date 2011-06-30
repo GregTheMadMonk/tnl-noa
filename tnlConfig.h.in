@@ -2,4 +2,8 @@
 
 @HAVE_CUSP@
 
+@HAVE_SYS_TIME_H@
+
+@HAVE_SYS_RESOURCE_H@
+
 #define TNL_CONFIG_DIRECTORY @configDirectory@
