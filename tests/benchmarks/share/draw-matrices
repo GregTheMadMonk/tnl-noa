@@ -2,9 +2,9 @@
 
 VERBOSE="yes"
 
-#PWD=`pwd`
-TNL_MATRIX_DRAW="tnlgrid-view"
-#IWD="$PWD"
+PWD=`pwd`
+TNL_MATRIX_DRAW="tnl-grid-view"
+IWD="$PWD"
 
 #source ../tnl-env-variables
 #export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-matrix-check.cfg.desc"

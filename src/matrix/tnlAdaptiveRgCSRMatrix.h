@@ -392,9 +392,9 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          Index threadsLeft = cudaBlockSize - usedThreads;
          dbgExpr( usedThreads );
          dbgExpr( threadsLeft );
-         for( Index i = 0; i < threadsLeft; i++)
-            threadsPerRow[ i % rowsInGroup ] ++;
-         /*while( usedThreads < cudaBlockSize )
+         //for( Index i = 0; i < threadsLeft; i++)
+         //   threadsPerRow[ i % rowsInGroup ] ++;
+         while( usedThreads < cudaBlockSize )
          {
             Index maxChunkSize( 0 );
             for( Index row = groupBegin; row < groupEnd; row ++ )
@@ -417,7 +417,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
                   usedThreads ++;
                }
             }
-         }*/
+         }
 
          /****
           * Compute prefix-sum on threadsPerRow and store it in threads
@@ -862,7 +862,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
                                   sizeof( tnlARGCSRGroupProperties ) +
                                   blockDim. x * sizeof( int );
 
-   //cudaThreadSetCacheConfig( cudaFuncCachePreferL1 );
+   cudaThreadSetCacheConfig( cudaFuncCachePreferL1 );
    AdaptiveRgCSRMatrixVectorProductKernel< Real, Index >
                                             <<< gridDim, blockDim, allocatedSharedMemory >>>
                                             ( result. getVector(),
