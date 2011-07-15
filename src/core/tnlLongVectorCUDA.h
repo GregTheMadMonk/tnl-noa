@@ -350,6 +350,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
    this -> size = _size;
    this -> shared_data = false;
    if( this -> getSize() != 0 )
+   {
       if( cudaMalloc( ( void** ) & this -> data,
                       ( size_t ) this -> size * sizeof( Real ) ) != cudaSuccess )
       {
@@ -361,6 +362,9 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
          this -> size = 0;
          return false;
       }
+   }
+   else
+      this -> data = NULL;
    return true;
 #else
    //cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
