@@ -749,7 +749,6 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Scatter( const tnlGrid< 3, Real, De
                                                       int root ) const
 {
    dbgFunctionName( "tnlMPIMesh3D", "Scatter" );
-   assert( sub_u );
 #ifdef HAVE_MPI
    dbgMPIBarrier;
    if( MPIGetRank( original_comm ) == root )
