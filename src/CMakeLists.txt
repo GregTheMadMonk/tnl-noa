@@ -33,8 +33,7 @@ IF( BUILD_MPI )
                                                           tnlmatrix-mpi${debugExt}-${tnlVersion}
                                                           tnlmesh-mpi${debugExt}-${tnlVersion}
                                                           tnlsolver-mpi${debugExt}-${tnlVersion} )
-   INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} LIBRARY DESTINATION lib
-                                                     ARCHIVE DESTINATION lib )                                                             
+   INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )                                                             
 ENDIF()
 
 
