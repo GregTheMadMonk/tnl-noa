@@ -24,7 +24,7 @@
 
 /****
  * In this code we do not use constants and references as we would like to.
- * OpenMP then complains that
+ * OpenMP would complain that
  *
  *  error: ‘some-variable’ is predetermined ‘shared’ for ‘firstprivate’
  *
