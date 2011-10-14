@@ -365,7 +365,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
          cls[ i ] = -1;
       }
    }
-   else // if( shift > 0 ) - note shift mus be < 0 now
+   else // if( shift > 0 ) - note shift must be < 0 now
    {
       for( Index i = position; i < last_nonzero_element; i ++ )
       {

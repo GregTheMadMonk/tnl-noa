@@ -6,6 +6,7 @@ SET( headers tnlAdaptiveRgCSRMatrix.h
 	         tnlFastRgCSRMatrix.h
 	         tnlFullMatrix.h
 	         tnlMatrix.h
+	         tnlMultiDiagonalMatrix.h
 	         tnlPETSCMatrix.h
 	         tnlRgCSRMatrix.h
 	)

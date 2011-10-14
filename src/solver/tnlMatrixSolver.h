@@ -150,6 +150,7 @@ Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real
       res += err * err;
    }
    return sqrt( res ) / b_norm;
+   //return res;// / ( Real ) size;
 };
 
 

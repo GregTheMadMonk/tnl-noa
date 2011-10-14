@@ -169,6 +169,8 @@ tnlString tnlString :: operator + ( const char* str )
 bool tnlString :: operator == ( const tnlString& str ) const
 {
    assert( string && str. string );
+   if( str. length != length )
+      return false;
    if( strcmp( string, str. string ) == 0 )
       return true;
    return false;
