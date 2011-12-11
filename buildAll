@@ -1,6 +1,9 @@
 #!/bin/bash
 
 INSTALL_PREFIX=${HOME}/local
+WITH_CUDA=yes
+CUDA_ARCHITECTURE=2.0
+VERBOSE=0
 
 CPUS=`grep -c processor /proc/cpuinfo`
 
@@ -16,13 +19,13 @@ then
 fi
 
 cd Debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=1.2 -DWITH_CUDA=no
-make -j${CPUS} #VERBOSE=1
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} -DWITH_CUDA=${WITH_CUDA}
+make -j${CPUS} #VERBOSE=${VERBOSE}
 make -j${CPUS} test
 make -j${CPUS} install
 
 cd ../Release
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=1.2 -DWITH_CUDA=no
-make -j${CPUS} #VERBOSE=1
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} -DWITH_CUDA=${WITH_CUDA}
+make -j${CPUS} #VERBOSE=${VERBOSE}
 make -j${CPUS} test
 make -j${CPUS} install

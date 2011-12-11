@@ -1107,9 +1107,9 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( const Index 
    for( Index i = threadIndexInRow; i < nonzeros; i += threadsPerRow )
    {
       const Index column = columns[ pos ];
-      if( column == -1 )
-         printf( "* rowInMatrix = %d blockIdx. x = %d threadIdx. x = %d threadIndexInRow = %d i = %d \n",
-                rowInMatrix, blockIndex, threadIdx. x, threadIndexInRow, i );
+      //if( column == -1 )
+      //   printf( "* rowInMatrix = %d blockIdx. x = %d threadIdx. x = %d threadIndexInRow = %d i = %d \n",
+      //          rowInMatrix, blockIndex, threadIdx. x, threadIndexInRow, i );
       if( column != -1 )
          partialSums[ threadIdx. x ] += nonzeroElements[ pos ] * vec_x[ column ];
       //if( rowInMatrix == 0 )
