@@ -83,7 +83,23 @@ if( NOT WITH_CUDA STREQUAL "no" )
             message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
             set( HAVE_CUSP "#define HAVE_CUSP" )
             cuda_include_directories( ${CUSP_INCLUDE_DIR} )
-        endif()    
+        endif()
+        
+        ####
+        # Check for CUSPARSE
+        #
+        find_path( CUSPARSE_INCLUDE_DIR cusparse.h
+                   /usr/local/cuda/include                   
+                   ${CUDA_INCLUDE_DIR}  
+                   DOC "CUSPARSE headers." )
+        if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
+            message( "CUSPARSE not found." )
+            set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE" )
+        else()      
+            message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
+            set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
+            cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
+        endif()       
     
     endif( CUDA_FOUND )
 endif( NOT WITH_CUDA STREQUAL "no" )    

@@ -4,6 +4,7 @@ SET( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
                               tnlSpmvBenchmark.h
                               tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h
                               tnlSpmvBenchmarkCSRMatrix.h
+                              tnlSpmvBenchmarkCusparseMarix.h
                               tnlSpmvBenchmarkHybridMatrix.h
                               tnlSpmvBenchmarkRgCSRMatrix.h )
      

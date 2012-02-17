@@ -38,6 +38,7 @@ class tnlMatrixClass
    public:
    static const tnlString main;
    static const tnlString petsc;
+   static const tnlString cusparse;
 };
 
 template< typename Real, tnlDevice device, typename Index > class tnlCSRMatrix;

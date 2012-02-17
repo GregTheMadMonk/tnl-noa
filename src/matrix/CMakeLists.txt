@@ -1,5 +1,6 @@
 SET( headers tnlAdaptiveRgCSRMatrix.h
-             tnlCSRMatrix.h         
+             tnlCSRMatrix.h    
+             tnlCusparseCSRMatrix.h     
 	    	 tnlEllpackMatrix.h 
 	         tnlEllpackMatrixCUDA.h 	        
 	         tnlFastCSRMatrix.h 

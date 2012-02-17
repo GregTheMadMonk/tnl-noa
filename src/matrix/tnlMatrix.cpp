@@ -19,4 +19,5 @@
 
 const tnlString tnlMatrixClass :: main( "main" );
 const tnlString tnlMatrixClass :: petsc( "petsc" );
-//--------------------------------------------------------------------------
+const tnlString tnlMatrixClass :: cusparse( "cusparse" );
+
