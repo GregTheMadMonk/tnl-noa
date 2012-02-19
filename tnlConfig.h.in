@@ -6,4 +6,6 @@
 
 @HAVE_SYS_RESOURCE_H@
 
+@HAVE_CUSPARSE@
+
 #define TNL_CONFIG_DIRECTORY @configDirectory@

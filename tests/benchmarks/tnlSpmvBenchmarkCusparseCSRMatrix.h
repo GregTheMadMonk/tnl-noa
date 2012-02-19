@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSpmvBenchmarkCusparseMatrix.h  -  description
+                          tnlSpmvBenchmarkCusparseCSRMatrix.h  -  description
                              -------------------
     begin                : Feb 16, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,30 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSPMVBENCHMARKCUSPARSEMATRIX_H_
-#define TNLSPMVBENCHMARKCUSPARSEMATRIX_H_
+#ifndef TNLSPMVBENCHMARKCUSPARSECSRMATRIX_H_
+#define TNLSPMVBENCHMARKCUSPARSECSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
 #include <tnlConfig.h>
-#ifdef HAVE_CUSPARSE
-   #include <cusparse.h>
-#endif
-
+#include <matrix/tnlCusparseCSRMatrix.h>
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkCusparseMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >
+class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, tnlCuda, Index, tnlCusparseCSRMatrix >
 {
    public:
-
-   void setFileName( const tnlString& fileName );
+   tnlSpmvBenchmarkCusparseCSRMatrix();
 
    bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
 
    void tearDown();
 
-   void runBenchmark( const tnlLongVector< Real, tnlHost, Index >& x,
-                      const tnlLongVector< Real, tnlHost, Index >& refB,
-                      bool verbose );
+   Index getArtificialZeros() const;
 
    void writeProgress() const;
 
@@ -49,52 +43,34 @@ class tnlSpmvBenchmarkCusparseMatrix : public tnlSpmvBenchmark< Real, tnlHost, I
                          bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
-
-   protected:
-
-   tnlString fileName;
-
-   Index nonzeroElements;
 };
 
 template< typename Real, typename Index>
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: setFileName( const tnlString& fileName )
+bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   this -> fileName = fileName;
-}
-
-template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
-{
+   if( ! this -> matrix. copyFrom( matrix ) )
+      return false;
+   this -> setupOk = true;
    return true;
 }
 
 template< typename Real,
           typename Index>
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: tearDown()
+void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tearDown()
 {
-
+   this -> matrix. reset();
 }
 
 template< typename Real,
           typename Index>
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: runBenchmark( const tnlLongVector< Real, tnlHost, Index >& _x,
-                                                                    const tnlLongVector< Real, tnlHost, Index >& refB,
-                                                                    bool verbose )
+Index tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: getArtificialZeros() const
 {
-   this -> benchmarkWasSuccesful = false;
-#ifdef HAVE_CUSPARSE
-   try
-   {
-#else
-   this -> benchmarkWasSuccesful = false;
-#endif
-   writeProgress();
+   return 0;
 }
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: writeProgress() const
+void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeProgress() const
 {
    cout << left << setw( this -> formatColumnWidth ) << "Cusparse";
    //   cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
@@ -113,7 +89,14 @@ void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: writeProgress() const
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
+tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tnlSpmvBenchmarkCusparseCSRMatrix()
+{
+
+}
+
+template< typename Real,
+          typename Index >
+void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
                                                                        const double& csrGflops,
                                                                        const tnlString& inputMtxFile,
                                                                        const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -136,12 +119,4 @@ void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: writeToLogTable( ostream& 
    }
 }
 
-
-template< typename Real,
-          typename Index >
-void tnlSpmvBenchmarkCusparseMatrix< Real, Index > :: setNonzeroElements( const Index nonzeroElements )
-{
-   this -> nonzeroElements = nonzeroElements;
-}
-
-#endif /* TNLSPMVBENCHMARKCUSPARSEMATRIX_H_ */
+#endif /* TNLSPMVBENCHMARKCUSPARSECSRMATRIX_H_ */

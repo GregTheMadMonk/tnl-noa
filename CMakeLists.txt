@@ -99,8 +99,20 @@ if( NOT WITH_CUDA STREQUAL "no" )
             message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
             set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
             cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-        endif()       
-    
+        endif() 
+        
+        string( REPLACE "/include" "" CUSPARSE_LINK_DIR_HINT ${CUSPARSE_INCLUDE_DIR} )           
+        find_library( CUSPARSE_LIBRARY
+                      NAME cusparse 
+                      HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
+                      DOC "CUSPARSE library" )                                                                  
+        if( ${CUSPARSE_LIBRARY} STREQUAL "TNL_LIBRARY-NOTFOUND" )
+            message( "Cannot find CUSPARSE library." )
+        endif()    
+        string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
+        message( ${CUSPARSE_LINK_DIRECTORY} )
+        link_directories( ${CUSPARSE_LINK_DIRECTORY} )
+            
     endif( CUDA_FOUND )
 endif( NOT WITH_CUDA STREQUAL "no" )    
 

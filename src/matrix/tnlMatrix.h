@@ -316,7 +316,6 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
    tnlString line;
    bool dimensions_line( false ), format_ok( false );
    tnlList< tnlString > parsed_line;
-   Index non_zero_elements( 0 );
    Index parsed_elements( 0 );
    Index size( 0 );
    bool symmetric( false );
@@ -375,7 +374,6 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
          }
 
          dimensions_line = true;
-         non_zero_elements = L;
          size = M;
          continue;
       }

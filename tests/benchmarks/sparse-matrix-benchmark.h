@@ -31,6 +31,7 @@
 #include <matrix/tnlEllpackMatrixCUDA.h>
 #include <core/mfuncs.h>
 #include "tnlSpmvBenchmarkCSRMatrix.h"
+#include "tnlSpmvBenchmarkCusparseCSRMatrix.h"
 #include "tnlSpmvBenchmarkHybridMatrix.h"
 #include "tnlSpmvBenchmarkRgCSRMatrix.h"
 #include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"
@@ -211,13 +212,29 @@ bool benchmarkMatrix( const tnlString& inputFile,
    }
 
    /****
+    * Cusparse CSR format benchmark
+    */
+   tnlSpmvBenchmarkCusparseCSRMatrix< Real, int > cusparseCSRMatrixBenchmark;
+   cusparseCSRMatrixBenchmark. setup( csrMatrix );
+   cusparseCSRMatrixBenchmark. setMaxIterations( maxIterations );
+   cusparseCSRMatrixBenchmark. runBenchmark( cudaX, refB, verbose );
+   cusparseCSRMatrixBenchmark. tearDown();
+
+   if( logFileName )
+       cusparseCSRMatrixBenchmark. writeToLogTable( logFile,
+                                                    csrMatrixBenchmark. getGflops(),
+                                                    inputMtxFile,
+                                                    csrMatrix,
+                                                    true );
+
+   /****
     * Hybrid format benchmark
     */
    tnlSpmvBenchmarkHybridMatrix< Real, int > hybridMatrixBenchmark;
    hybridMatrixBenchmark. setFileName( inputMtxFile );
-   hybridMatrixBenchmark. setNonzeroElements( csrMatrix. getNonzeroElements() );
    hybridMatrixBenchmark. setup( csrMatrix );
    hybridMatrixBenchmark. setMaxIterations( maxIterations );
+   hybridMatrixBenchmark. setNonzeroElements( nonzeroElements );
    hybridMatrixBenchmark. runBenchmark( refX, refB, verbose );
    hybridMatrixBenchmark. tearDown();
 

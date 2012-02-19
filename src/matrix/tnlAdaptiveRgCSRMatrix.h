@@ -381,7 +381,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
             double nonzerosInRowRatio( 0.0 );
             if( nonzerosInGroup != 0.0 )
                nonzerosInRowRatio = nonzerosInRow / ( double ) nonzerosInGroup;
-            usedThreads += threadsPerRow[ i - groupBegin ] = Max( 1, floor( freeThreads * nonzerosInRowRatio ) );
+            usedThreads += threadsPerRow[ i - groupBegin ] = Max( 1.0, floor( freeThreads * nonzerosInRowRatio ) );
          }
          /****
           * If there are some threads left distribute them to the rows from the group beginning.
