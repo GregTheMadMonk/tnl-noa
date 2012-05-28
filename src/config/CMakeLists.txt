@@ -10,24 +10,14 @@ SET( headers tnlConfigDescription.h
 		     tnlParameterContainer.h
 		     FlexLexer.h 
     )
-SET( sources tnlConfigDescription.cpp 
-        	 tnlConfigDescriptionScanner.cpp 
-        	 tnlConfigDescriptionParser.cpp 
-        	 tnlParameterContainer.cpp 
-        	 parse.cc
-    )
 
-SET( libmconfigincludedir ${TNL_INCLUDE_DIR}/config )
-SET( libmconfiginclude_HEADERS ${headers} )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/config )
+SET( tnl_config_SOURCES 
+     ${CURRENT_DIR}/tnlConfigDescription.cpp 
+     ${CURRENT_DIR}/tnlConfigDescriptionScanner.cpp 
+     ${CURRENT_DIR}/tnlConfigDescriptionParser.cpp 
+     ${CURRENT_DIR}/tnlParameterContainer.cpp 
+     ${CURRENT_DIR}/parse.cc
+    PARENT_SCOPE )
 
-ADD_LIBRARY( tnlconfig${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/config )
-INSTALL( TARGETS tnlconfig${debugExt}-${tnlVersion} DESTINATION lib )
-
-if( BUILD_MPI )
-    ADD_LIBRARY( tnlconfig-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-    SET_TARGET_PROPERTIES( tnlconfig-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
-    INSTALL( TARGETS tnlconfig-mpi${debugExt}-${tnlVersion} DESTINATION lib )
-endif()
-
-
