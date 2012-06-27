@@ -18,25 +18,25 @@
 #ifndef tnlFieldSystem1DH
 #define tnlFieldSystem1DH
 
-#include "tnlLongVectorHost.h"
-#include "tnlVector.h"
+#include "tnlVectorHost.h"
+#include "tnlTuple.h"
 
-template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem1D : public tnlLongVector< T >
+template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem1D : public tnlVector< T >
 {
    public:
 
    tnlFieldSystem1D( const char* name = 0 )
-   : tnlLongVector< T >( name )
+   : tnlVector< T >( name )
    { };
 
    tnlFieldSystem1D( const char* name,
                      int _x_size )
-   : tnlLongVector< T >( name, _x_size * SYSTEM_SIZE ),
+   : tnlVector< T >( name, _x_size * SYSTEM_SIZE ),
      x_size( _x_size )
    { };
 
    tnlFieldSystem1D( const tnlFieldSystem1D& f )
-   : tnlLongVector< T >( f ),
+   : tnlVector< T >( f ),
      x_size( f. x_size )
    { };
 
@@ -54,7 +54,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    bool SetNewDimensions( int new_x_size )
    {
       x_size = new_x_size;
-      return tnlLongVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
+      return tnlVector< T > :: SetNewSize( x_size * SYSTEM_SIZE );
    };
 
    bool SetNewDimensions( const tnlFieldSystem1D< T, SYSTEM_SIZE, SYSTEM_INDEX >& f )
@@ -65,19 +65,19 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    const T& operator() ( const SYSTEM_INDEX ind, const int i ) const
    {
       assert( i < x_size && i >= 0 && ( int ) ind < SYSTEM_SIZE );
-      return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
+      return tnlVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
    T& operator() ( const SYSTEM_INDEX ind, const int i )
    {
       assert( i < x_size && i >= 0 && ( int ) ind < SYSTEM_SIZE );
-      return tnlLongVector< T > :: data[ i * SYSTEM_SIZE + ind ];
+      return tnlVector< T > :: data[ i * SYSTEM_SIZE + ind ];
    };
 
-   tnlVector< SYSTEM_SIZE, T > operator() ( const int i ) const
+   tnlTuple< SYSTEM_SIZE, T > operator() ( const int i ) const
    {
       assert( i < x_size && i >= 0 );
-      tnlVector< SYSTEM_SIZE, T > v;
+      tnlTuple< SYSTEM_SIZE, T > v;
       int j;
       for( j = 0; j < SYSTEM_SIZE; j ++ )
          v[ j ] = ( *this )( ( SYSTEM_INDEX ) j, i );
@@ -93,7 +93,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    //! Method for saving the object to a file as a binary data
    bool Save( ostream& file ) const
    {
-      if( ! tnlLongVector< T > :: Save( file ) ) return false;
+      if( ! tnlVector< T > :: Save( file ) ) return false;
       file. write( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;
@@ -102,7 +102,7 @@ template< class T, int SYSTEM_SIZE, typename SYSTEM_INDEX > class tnlFieldSystem
    //! Method for restoring the object from a file
    bool Load( istream& file )
    {
-      if( ! tnlLongVector< T > :: Load( file ) ) return false;
+      if( ! tnlVector< T > :: Load( file ) ) return false;
       file. read( ( char* ) &x_size, sizeof( int ) );
       if( file. bad() ) return false;
       return true;

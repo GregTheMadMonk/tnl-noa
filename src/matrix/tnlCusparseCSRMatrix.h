@@ -22,7 +22,7 @@
 #include <iostream>
 #include <iomanip>
 #include <tnlConfig.h>
-#include <core/tnlLongVectorHost.h>
+#include <core/tnlVectorHost.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>
@@ -89,10 +89,10 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
 
    Real rowProduct( Index row,
-                    const tnlLongVector< Real, Device, Index >& vector ) const;
+                    const tnlVector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, Device, Index >& x,
-                       tnlLongVector< Real, Device, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, Device, Index >& x,
+                       tnlVector< Real, Device, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const;
 
@@ -115,11 +115,11 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
    cusparseMatDescr_t cusparseMatDescr;
 #endif
 
-   tnlLongVector< Real, Device, Index > nonzero_elements;
+   tnlVector< Real, Device, Index > nonzero_elements;
 
-   tnlLongVector< Index, Device, Index > columns;
+   tnlVector< Index, Device, Index > columns;
 
-   tnlLongVector< Index, Device, Index > row_offsets;
+   tnlVector< Index, Device, Index > row_offsets;
 
 };
 
@@ -295,7 +295,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix
 
 template< typename Real, tnlDevice Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
-                                                                const tnlLongVector< Real, Device, Index >& vector ) const
+                                                                const tnlVector< Real, Device, Index >& vector ) const
 {
    abort();
    return 0.0;
@@ -303,8 +303,8 @@ Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& x,
-                                                                   tnlLongVector< Real, Device, Index >& b ) const
+void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& x,
+                                                                   tnlVector< Real, Device, Index >& b ) const
 {
 #ifdef HAVE_CUSPARSE
   cusparseSpmv( cusparseHandle,

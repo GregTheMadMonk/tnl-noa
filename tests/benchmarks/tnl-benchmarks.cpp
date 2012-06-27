@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 
-#include <core/tnlLongVectorHost.h>
-#include <core/tnlLongVectorCUDA.h>
+#include <core/tnlVectorHost.h>
+#include <core/tnlVectorCUDA.h>
 #include <tnl-benchmarks.h>
 
 

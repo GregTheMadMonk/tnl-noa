@@ -198,7 +198,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -217,7 +217,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -236,7 +236,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -255,7 +255,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -274,7 +274,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -293,7 +293,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       argcsrMatrix. copyFrom( csrMatrix );
       const int size = csrMatrix. getSize();
 
-      tnlLongVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );

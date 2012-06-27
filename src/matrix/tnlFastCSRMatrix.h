@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlLongVectorHost.h>
+#include <core/tnlVectorHost.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlMatrix.h>
@@ -92,10 +92,10 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlLongVector< Real, tnlHost, Index >& vector ) const;
+                    const tnlVector< Real, tnlHost, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, tnlHost, Index >& x,
-                       tnlLongVector< Real, tnlHost, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
+                       tnlVector< Real, tnlHost, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const;
 
@@ -125,20 +125,20 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
    //Index getElementPosition( Index row,
    //                        Index colum ) const;
 
-   Index insertColumnSequence( const tnlLongVector< Index >& columns,
+   Index insertColumnSequence( const tnlVector< Index >& columns,
 	                         Index column_sequence_offset,
 		                     Index column_sequence_length,
 		                     Index row );
 
 
    //! This array stores the non-zero elements of the sparse matrix.
-   tnlLongVector< Real > nonzero_elements;
+   tnlVector< Real > nonzero_elements;
 
    //! This array stores the indices of the row begins in the nonzero_elements array.
    /*! In the case of the common CSR format this array would be shared even with the column
     *  indices array but it is not the case now.
     */
-   tnlLongVector< Index > row_offsets;
+   tnlVector< Index > row_offsets;
 
    //! This array stores so called 'column sequences'.
    /*! In the common CSr format there is a sequence of column indices for each row telling
@@ -150,19 +150,19 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
     *  This array is allocated by the same size as the @param nonzero_elements. However, not all
     *  alocated memory is used.
     */
-   tnlLongVector< Index > column_sequences;
+   tnlVector< Index > column_sequences;
 
    //! This arrays stores the offsets of the column sequences begins in the column_sequences.
    /*! This array is allocated by the same size as the matrix size is. However, there might
     *  be less column sequences then the matrix rows.
     */
-   tnlLongVector< Index > columns_sequences_offsets;
+   tnlVector< Index > columns_sequences_offsets;
 
    //! This array stores the lengths of each column sequence.
    /*! This array is allocated by the same size as the matrix size is. However, there might
     *  be less column sequences then the matrix rows.
     */
-   tnlLongVector< Index > column_sequences_lengths;
+   tnlVector< Index > column_sequences_lengths;
 
 
 
@@ -286,7 +286,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: addToElement( Index row,
 }
 
 template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, tnlHost, Index > :: insertColumnSequence( const tnlLongVector< Index >& columns,
+Index tnlFastCSRMatrix< Real, tnlHost, Index > :: insertColumnSequence( const tnlVector< Index >& columns,
 	                                                                     Index column_sequence_offset,
 		                                                                  Index column_sequence_length,
 		                                                                  Index row )
@@ -377,7 +377,7 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
 
 template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
-                                                             const tnlLongVector< Real, tnlHost, Index >& vec ) const
+                                                             const tnlVector< Real, tnlHost, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this -> getSize(),
 			  cerr << "The row is outside the matrix." );
@@ -409,8 +409,8 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlLongVector< Real, tnlHost, Index >& vec,
-                                                                tnlLongVector< Real, tnlHost, Index >& result ) const
+void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& vec,
+                                                                tnlVector< Real, tnlHost, Index >& result ) const
 {
    tnlAssert( vec. getSize() == this -> getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "

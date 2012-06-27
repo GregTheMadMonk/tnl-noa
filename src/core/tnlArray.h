@@ -18,13 +18,13 @@
 #ifndef TNLARRAY_H_
 #define TNLARRAY_H_
 
-#include <core/tnlLongVector.h>
 #include <core/tnlVector.h>
+#include <core/tnlTuple.h>
 #include <core/tnlAssert.h>
 
 
 template< int Dimensions, typename Real = double, tnlDevice device = tnlHost, typename Index = int >
-class tnlArray : public tnlLongVector< Real, device, Index >
+class tnlArray : public tnlVector< Real, device, Index >
 {
    //! We do not allow constructor without parameters.
    tnlArray();
@@ -43,9 +43,9 @@ class tnlArray : public tnlLongVector< Real, device, Index >
              const tnlArray< Dimensions, Real, tnlCuda, Index >& array );
 
    void setSharedData( Real* data,
-                       tnlVector< Dimensions, Index > dimensions );
+                       tnlTuple< Dimensions, Index > dimensions );
 
-   bool setDimensions( const tnlVector< Dimensions, Index >& dimensions );
+   bool setDimensions( const tnlTuple< Dimensions, Index >& dimensions );
 
    //! Set dimensions of the array using another array as a template
    bool setLike( const tnlArray< Dimensions, Real, tnlHost, Index >& v );
@@ -55,26 +55,26 @@ class tnlArray : public tnlLongVector< Real, device, Index >
 
    void reset();
 
-   const tnlVector< Dimensions, Index >& getDimensions() const;
+   const tnlTuple< Dimensions, Index >& getDimensions() const;
 
    tnlString getType() const;
 
-   //Index getLongVectorIndex( const tnlVector< Dimensions, Index >& element ) const;
+   //Index getLongVectorIndex( const tnlTuple< Dimensions, Index >& element ) const;
    
-   Index getLongVectorIndex( const tnlVector< 1, Index >& element ) const;
+   Index getLongVectorIndex( const tnlTuple< 1, Index >& element ) const;
 
-   Index getLongVectorIndex( const tnlVector< 2, Index >& element ) const;
+   Index getLongVectorIndex( const tnlTuple< 2, Index >& element ) const;
 
-   Index getLongVectorIndex( const tnlVector< 3, Index >& element ) const;
+   Index getLongVectorIndex( const tnlTuple< 3, Index >& element ) const;
 
-   void setElement( const tnlVector< Dimensions, Index >& element, Real value );
+   void setElement( const tnlTuple< Dimensions, Index >& element, Real value );
 
    //! This method can be used for general access to the elements of the arrays.
    /*! It does not return reference but value. So it can be used to access
     *  arrays in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Real getElement( const tnlVector< Dimensions, Index >& element ) const;
+   Real getElement( const tnlTuple< Dimensions, Index >& element ) const;
 
    //! This method is used by simpler versions of the getElement and setElement.
    /*! This method might be removed in the future.
@@ -114,9 +114,9 @@ class tnlArray : public tnlLongVector< Real, device, Index >
     *  used to access elements of arrays in different adress space
     *  (GPU device usualy).
     */
-   Real& operator()( const tnlVector< Dimensions, Index >& element );
+   Real& operator()( const tnlTuple< Dimensions, Index >& element );
 
-   const Real& operator()( const tnlVector< Dimensions, Index >& element ) const;
+   const Real& operator()( const tnlTuple< Dimensions, Index >& element ) const;
 
    Real& operator() ( Index i1 );
 
@@ -145,7 +145,7 @@ class tnlArray : public tnlLongVector< Real, device, Index >
 
 
    protected:
-   tnlVector< Dimensions, Index > arrayDimensions;
+   tnlTuple< Dimensions, Index > arrayDimensions;
 };
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -153,14 +153,14 @@ ostream& operator << ( ostream& str, const tnlArray< Dimensions, Real, device, I
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 tnlArray< Dimensions, Real, device, Index > :: tnlArray( const tnlString& name )
-: tnlLongVector< Real, device, Index >( name )
+: tnlVector< Real, device, Index >( name )
   {
   }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 tnlArray< Dimensions, Real, device, Index > :: tnlArray( const tnlString& name,
                                                          const tnlArray< Dimensions, Real, tnlHost, Index >& array )
-: tnlLongVector< Real, device, Index >( name, array )
+: tnlVector< Real, device, Index >( name, array )
 {
    this -> arrayDimensions = array. getDimensions();
 }
@@ -168,24 +168,24 @@ tnlArray< Dimensions, Real, device, Index > :: tnlArray( const tnlString& name,
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 tnlArray< Dimensions, Real, device, Index > :: tnlArray( const tnlString& name,
                                                          const tnlArray< Dimensions, Real, tnlCuda, Index >& array )
-: tnlLongVector< Real, device, Index >( name, array )
+: tnlVector< Real, device, Index >( name, array )
 {
    this -> arrayDimensions = array. getDimensions();
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 void tnlArray< Dimensions, Real, device, Index > :: setSharedData( Real* data,
-                                                                   tnlVector< Dimensions, Index > dimensions )
+                                                                   tnlTuple< Dimensions, Index > dimensions )
 {
    Index size( 1 );
    for( int i = 0; i < Dimensions; i ++ )
       size *= arrayDimensions[ i ];
-   tnlLongVector< Real, device, Index > :: setSharedData( data, size );
+   tnlVector< Real, device, Index > :: setSharedData( data, size );
    arrayDimensions = dimensions;
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-bool tnlArray< Dimensions, Real, device, Index > :: setDimensions( const tnlVector< Dimensions, Index >& dimensions )
+bool tnlArray< Dimensions, Real, device, Index > :: setDimensions( const tnlTuple< Dimensions, Index >& dimensions )
 {
    arrayDimensions = dimensions;
    Index size( 1 );
@@ -203,7 +203,7 @@ bool tnlArray< Dimensions, Real, device, Index > :: setDimensions( const tnlVect
     * Do not remove this with this -> setSize().
     * This makes problems in case multiple inheritance - like in tnlFullMatrix.
     */
-   return tnlLongVector< Real, device, Index > :: setSize( size );
+   return tnlVector< Real, device, Index > :: setSize( size );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -221,13 +221,13 @@ bool tnlArray< Dimensions, Real, device, Index > :: setLike( const tnlArray< Dim
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 void tnlArray< Dimensions, Real, device, Index > :: reset()
 {
-   tnlLongVector< Real, device, Index > :: reset();
-   setDimensions( tnlVector< Dimensions, Index >( 0 ) );
+   tnlVector< Real, device, Index > :: reset();
+   setDimensions( tnlTuple< Dimensions, Index >( 0 ) );
 }
 
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-const tnlVector< Dimensions, Index >& tnlArray< Dimensions, Real, device, Index > :: getDimensions() const
+const tnlTuple< Dimensions, Index >& tnlArray< Dimensions, Real, device, Index > :: getDimensions() const
 {
    return arrayDimensions;
 }
@@ -247,15 +247,15 @@ tnlString tnlArray< Dimensions, Real, device, Index > :: getType() const
 }
 
 /*template< int Dimensions, typename Real, tnlDevice device, typename Index >
-Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlVector< Dimensions, Index >& element ) const
+Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlTuple< Dimensions, Index >& element ) const
 {
 }*/
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlVector< 1, Index >& element ) const
+Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlTuple< 1, Index >& element ) const
 {
    tnlAssert( Dimensions == 1, );
-   tnlAssert( element >= ( tnlVector< 1, Index >( 0 ) ) && element. x() < this -> getDimensions(). x(),
+   tnlAssert( element >= ( tnlTuple< 1, Index >( 0 ) ) && element. x() < this -> getDimensions(). x(),
               cerr << " element = ( " << element << " ) the dimensions is ( " << getDimensions()
                    << " ) array name is " << this -> getName() << endl; );
 
@@ -263,10 +263,10 @@ Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const t
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlVector< 2, Index >& element ) const
+Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlTuple< 2, Index >& element ) const
 {
    tnlAssert( Dimensions == 2, );
-   tnlAssert( element >= ( tnlVector< 2, Index >( 0 ) ) &&
+   tnlAssert( element >= ( tnlTuple< 2, Index >( 0 ) ) &&
               element. x() < this -> getDimensions(). x() &&
               element. y() < this -> getDimensions(). y(),
               cerr << " element = ( " << element << " ) the dimensions is ( " << getDimensions()
@@ -277,10 +277,10 @@ Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const t
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index > 
-Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlVector< 3, Index >& element ) const
+Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const tnlTuple< 3, Index >& element ) const
 {
    tnlAssert( Dimensions == 3, );
-   tnlAssert( element >= ( tnlVector< 3, Index >( 0 ) ) &&
+   tnlAssert( element >= ( tnlTuple< 3, Index >( 0 ) ) &&
               element. x() < this -> getDimensions(). x() &&
               element. y() < this -> getDimensions(). y() &&
               element. z() < this -> getDimensions(). z(),
@@ -294,15 +294,15 @@ Index tnlArray< Dimensions, Real, device, Index > :: getLongVectorIndex( const t
 
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-void tnlArray< Dimensions, Real, device, Index > :: setElement( const tnlVector< Dimensions, Index >& element, Real value )
+void tnlArray< Dimensions, Real, device, Index > :: setElement( const tnlTuple< Dimensions, Index >& element, Real value )
 {
-   tnlLongVector< Real, device, Index > :: setElement( getLongVectorIndex( element ), value );
+   tnlVector< Real, device, Index > :: setElement( getLongVectorIndex( element ), value );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-Real tnlArray< Dimensions, Real, device, Index > :: getElement( const tnlVector< Dimensions, Index >& element ) const
+Real tnlArray< Dimensions, Real, device, Index > :: getElement( const tnlTuple< Dimensions, Index >& element ) const
 {
-   return tnlLongVector< Real, device, Index > :: getElement( getLongVectorIndex( element ) );
+   return tnlVector< Real, device, Index > :: getElement( getLongVectorIndex( element ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -313,7 +313,7 @@ void tnlArray< Dimensions, Real, device, Index > :: setElement( Index i1, const 
               cerr << " i1 = " << i1 << " the dimensions is " << getDimensions(). x()
                    << " array name is " << this -> getName() << endl; );
 
-   tnlLongVector< Real, device, Index > :: setElement( i1, value );
+   tnlVector< Real, device, Index > :: setElement( i1, value );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -324,7 +324,7 @@ Real tnlArray< Dimensions, Real, device, Index > :: getElement( Index i1 ) const
               cerr << " i1 = " << i1 << " the dimensions is " << getDimensions(). x()
                    << " array name is " << this -> getName() << endl; );
 
-   return tnlLongVector< Real, device, Index > :: getElement( i1 );
+   return tnlVector< Real, device, Index > :: getElement( i1 );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -338,7 +338,7 @@ void tnlArray< Dimensions, Real, device, Index > :: setElement( Index i1, Index 
               cerr << " i2 = " << i2 << " the dimensions is " << getDimensions(). y()
                    << " array name is " << this -> getName() << endl; );
 
-   tnlLongVector< Real, device, Index > :: setElement( i1 * this -> arrayDimensions. y() + i2, value );
+   tnlVector< Real, device, Index > :: setElement( i1 * this -> arrayDimensions. y() + i2, value );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -352,7 +352,7 @@ Real tnlArray< Dimensions, Real, device, Index > :: getElement( Index i1, Index 
               cerr << " i2 = " << i2 << " the dimensions is " << getDimensions(). y()
                    << " array name is " << this -> getName() << endl; );
 
-   return tnlLongVector< Real, device, Index > :: getElement( i1 * this -> arrayDimensions. y() + i2 );
+   return tnlVector< Real, device, Index > :: getElement( i1 * this -> arrayDimensions. y() + i2 );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -369,7 +369,7 @@ void tnlArray< Dimensions, Real, device, Index > :: setElement( Index i1, Index 
               cerr << " i3 = " << i3 << " the dimensions is " << getDimensions(). z()
                    << " array name is " << this -> getName() << endl; );
 
-   tnlLongVector< Real, device, Index > :: setElement( i1 * this -> arrayDimensions. y() * arrayDimensions. z() +
+   tnlVector< Real, device, Index > :: setElement( i1 * this -> arrayDimensions. y() * arrayDimensions. z() +
                                                        i2 * this -> arrayDimensions. z() + i3,
                                                        value );
 }
@@ -388,56 +388,56 @@ Real tnlArray< Dimensions, Real, device, Index > :: getElement( Index i1, Index 
               cerr << " i3 = " << i3 << " the dimensions is " << getDimensions(). z()
                    << " array name is " << this -> getName() << endl; );
 
-   return tnlLongVector< Real, device, Index > :: getElement( i1 * this -> arrayDimensions. y() * arrayDimensions. z() +
+   return tnlVector< Real, device, Index > :: getElement( i1 * this -> arrayDimensions. y() * arrayDimensions. z() +
                                                               i2 * this -> arrayDimensions. z() + i3 );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-Real& tnlArray< Dimensions, Real, device, Index > :: operator()( const tnlVector< Dimensions, Index >& element )
+Real& tnlArray< Dimensions, Real, device, Index > :: operator()( const tnlTuple< Dimensions, Index >& element )
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( element ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
-const Real& tnlArray< Dimensions, Real, device, Index > :: operator()( const tnlVector< Dimensions, Index >& element ) const
+const Real& tnlArray< Dimensions, Real, device, Index > :: operator()( const tnlTuple< Dimensions, Index >& element ) const
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( element ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1 )
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 1, Index >( i1 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 1, Index >( i1 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 const Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1 ) const
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 1, Index >( i1 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 1, Index >( i1 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1, Index i2 )
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 2, Index >( i1, i2 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 2, Index >( i1, i2 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 const Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1, Index i2 ) const
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 2, Index >( i1, i2 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 2, Index >( i1, i2 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1, Index i2, Index i3 )
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 3, Index >( i1, i2, i3 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 3, Index >( i1, i2, i3 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 const Real& tnlArray< Dimensions, Real, device, Index > :: operator() ( Index i1, Index i2, Index i3 ) const
 {
-   return tnlLongVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlVector< 3, Index >( i1, i2, i3 ) ) );
+   return tnlVector< Real, device, Index > :: operator[]( getLongVectorIndex( tnlTuple< 3, Index >( i1, i2, i3 ) ) );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -449,7 +449,7 @@ bool tnlArray< Dimensions, Real, device, Index > :: operator == ( const tnlArray
                    << " dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second array is " << array. getName()
                    << " dimensions are ( " << array. getDimensions() << " )" << endl; );
-   return tnlLongVector< Real, device, Index > :: operator == ( array );
+   return tnlVector< Real, device, Index > :: operator == ( array );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
@@ -470,16 +470,16 @@ tnlArray< Dimensions, Real, device, Index >
                    << " dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second array is " << array. getName()
                    << " dimensions are ( " << array. getDimensions() << " )" << endl; );
-   tnlLongVector< Real, device, Index > :: operator = ( array );
+   tnlVector< Real, device, Index > :: operator = ( array );
    return ( *this );
 }
 
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 bool tnlArray< Dimensions, Real, device, Index > :: save( tnlFile& file ) const
 {
-   if( ! tnlLongVector< Real, device, Index > :: save( file ) )
+   if( ! tnlVector< Real, device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlLongVector of the tnlArray "
+      cerr << "I was not able to write the tnlVector of the tnlArray "
            << this -> getName() << endl;
       return false;
    }
@@ -495,9 +495,9 @@ bool tnlArray< Dimensions, Real, device, Index > :: save( tnlFile& file ) const
 template< int Dimensions, typename Real, tnlDevice device, typename Index >
 bool tnlArray< Dimensions, Real, device, Index > :: load( tnlFile& file )
 {
-   if( ! tnlLongVector< Real, device, Index > :: load( file ) )
+   if( ! tnlVector< Real, device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlLongVector of the tnlArray "
+      cerr << "I was not able to read the tnlVector of the tnlArray "
            << this -> getName() << endl;
       return false;
    }
@@ -513,10 +513,10 @@ bool tnlArray< Dimensions, Real, device, Index > :: load( tnlFile& file )
 template< typename Real, tnlDevice device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< 1, Real, device, Index >& array )
 {
-   tnlVector< 1, Index > dims = array. getDimensions();
+   tnlTuple< 1, Index > dims = array. getDimensions();
    for( Index i = 0; i < dims[ tnlX ]; i ++ )
    {
-      tnlVector< 1, Index > ind;
+      tnlTuple< 1, Index > ind;
       ind[ tnlX ] = i;
       str << array. getElement( ind ) << " ";
    }
@@ -526,12 +526,12 @@ ostream& operator << ( ostream& str, const tnlArray< 1, Real, device, Index >& a
 template< typename Real, tnlDevice device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< 2, Real, device, Index >& array )
 {
-   tnlVector< 2, Index > dims = array. getDimensions();
+   tnlTuple< 2, Index > dims = array. getDimensions();
    for( Index i = 0; i < dims[ tnlX ]; i ++ )
    {
       for( Index j = 0; j < dims[ tnlY ]; j ++ )
       {
-         tnlVector< 2, Index > ind;
+         tnlTuple< 2, Index > ind;
          ind[ 0 ] = i;
          ind[ 1 ] = j;
          str << array. getElement( ind ) << " ";
@@ -544,14 +544,14 @@ ostream& operator << ( ostream& str, const tnlArray< 2, Real, device, Index >& a
 template< typename Real, tnlDevice device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< 3, Real, device, Index >& array )
 {
-   tnlVector< 3, Index > dims = array. getDimensions();
+   tnlTuple< 3, Index > dims = array. getDimensions();
    for( Index i = 0; i < dims[ tnlX ]; i ++ )
    {
       for( Index j = 0; j < dims[ tnlY ]; j ++ )
       {
          for( Index k = 0; k < dims[ tnlZ ]; k ++ )
          {
-            tnlVector< 3, Index > ind;
+            tnlTuple< 3, Index > ind;
             ind[ 0 ] = i;
             ind[ 1 ] = j;
             ind[ 2 ] = k;

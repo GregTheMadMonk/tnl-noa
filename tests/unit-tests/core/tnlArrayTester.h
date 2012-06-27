@@ -62,14 +62,14 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
       tnlArray< 3, Real, device, Index > array( "tnlArrayTester :: array" );
       tnlArray< 3, Real, device, Index > array2( "tnlArrayTester :: array2", array );
       Real testData[ 1000 ];
-      array2. setSharedData( testData, tnlVector< 3, Index >( 10 ) );
-      CPPUNIT_ASSERT( array2. getDimensions() == ( tnlVector< 3, Index >( 10 ) ) );
+      array2. setSharedData( testData, tnlTuple< 3, Index >( 10 ) );
+      CPPUNIT_ASSERT( array2. getDimensions() == ( tnlTuple< 3, Index >( 10 ) ) );
    };
 
    void testSetDimensions()
    {
       tnlArray< 1, Real, device, Index > u1( "tnlArrayTester: u1" );
-      u1. setDimensions( tnlVector< 1, Index >( 10 ) );
+      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u1. getElement( i ) == ( Real ) 1 );
@@ -81,7 +81,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
 
 
       tnlArray< 2, Real, device, Index > u2( "tnlArrayTester: u2" );
-      u2. setDimensions( tnlVector< 2, Index >( 10 ) );
+      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
       for( int i = 0; i < 10; i ++ )
          for( int j = 0; j < 10; j ++ )
@@ -96,7 +96,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
                CPPUNIT_ASSERT( u2. getElement( i, j ) == ( Real ) ( i + j ) );
 
       tnlArray< 3, Real, device, Index > u3( "tnlArrayTester: u3" );
-      u3. setDimensions( tnlVector< 3, Index >( 10 ) );
+      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
       for( int i = 0; i < 10; i ++ )
          for( int j = 0; j < 10; j ++ )
@@ -118,8 +118,8 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
    {
       tnlArray< 1, Real, device, Index > u1( "tnlArrayTester:u1" );
       tnlArray< 1, Real, device, Index > v1( "tnlArrayTester:v1" );
-      u1. setDimensions( tnlVector< 1, Index >( 10 ) );
-      v1. setDimensions( tnlVector< 1, Index >( 10 ) );
+      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
+      v1. setDimensions( tnlTuple< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
       v1. setValue( ( Real ) 1 );
       CPPUNIT_ASSERT( u1 == v1 );
@@ -133,8 +133,8 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
 
       tnlArray< 2, Real, device, Index > u2( "tnlArrayTester:u2" );
       tnlArray< 2, Real, device, Index > v2( "tnlArrayTester:v2" );
-      u2. setDimensions( tnlVector< 2, Index >( 10 ) );
-      v2. setDimensions( tnlVector< 2, Index >( 10 ) );
+      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
+      v2. setDimensions( tnlTuple< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
       v2. setValue( ( Real ) 1 );
       CPPUNIT_ASSERT( u2 == v2 );
@@ -148,8 +148,8 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
 
       tnlArray< 3, Real, device, Index > u3( "tnlArrayTester:u3" );
       tnlArray< 3, Real, device, Index > v3( "tnlArrayTester:v3" );
-      u3. setDimensions( tnlVector< 3, Index >( 10 ) );
-      v3. setDimensions( tnlVector< 3, Index >( 10 ) );
+      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
+      v3. setDimensions( tnlTuple< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
       v3. setValue( ( Real ) 1 );
       CPPUNIT_ASSERT( u3 == v3 );
@@ -167,7 +167,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
       tnlFile file;
       tnlArray< 1, Real, device, Index > u1( "tnlArrayTester:u1" );
       tnlArray< 1, Real, device, Index > v1( "tnlArrayTester:v1" );
-      u1. setDimensions( tnlVector< 1, Index >( 10 ) );
+      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
       file. open( "tnlArrayTester-file.bin", tnlWriteMode );
       u1. save( file );
@@ -179,7 +179,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
 
       tnlArray< 2, Real, device, Index > u2( "tnlArrayTester:u2" );
       tnlArray< 2, Real, device, Index > v2( "tnlArrayTester:v2" );
-      u2. setDimensions( tnlVector< 2, Index >( 10 ) );
+      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
       file. open( "tnlArrayTester-file.bin", tnlWriteMode );
       u2. save( file );
@@ -191,7 +191,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlArrayTester
 
       tnlArray< 3, Real, device, Index > u3( "tnlArrayTester:u3" );
       tnlArray< 3, Real, device, Index > v3( "tnlArrayTester:v3" );
-      u3. setDimensions( tnlVector< 3, Index >( 10 ) );
+      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
       file. open( "tnlArrayTester-file.bin", tnlWriteMode );
       u3. save( file );

@@ -24,8 +24,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <core/tnlLongVectorCUDA.h>
-#include <core/tnlLongVectorHost.h>
+#include <core/tnlVectorCUDA.h>
+#include <core/tnlVectorHost.h>
 #include <core/mfuncs.h>
 
 using namespace std;
@@ -83,8 +83,8 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       return suiteOfTests;
    };
 
-   bool testSetup( tnlLongVector< T >& host_input,
-		           tnlLongVector< T, tnlCuda >& device_input,
+   bool testSetup( tnlVector< T >& host_input,
+		           tnlVector< T, tnlCuda >& device_input,
 		           int size )
    {
 	   if( ! host_input. SetNewSize( size ) )
@@ -99,13 +99,13 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 	   return true;
    }
 
-   bool mainReduction( const tnlLongVector< T >& host_input,
+   bool mainReduction( const tnlVector< T >& host_input,
 		               int algorithm_efficiency,
 		               const int desired_block_size,
 		               const int desired_grid_size )
    {
       const int size = host_input. getSize();
-      tnlLongVector< T, tnlCuda > device_input;
+      tnlVector< T, tnlCuda > device_input;
       if( ! device_input. setSize( size ) )
          return false;
       device_input. copyFrom( host_input );
@@ -220,11 +220,11 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
    void testReduction( int algorithm_efficiency = 0 )
    {
-      tnlLongVector< T > host_input;
+      tnlVector< T > host_input;
       int size = 2;
       for( int s = 1; s < 12; s ++ )
       {
-         tnlLongVector< T > host_input( "host-input", size );
+         tnlVector< T > host_input( "host-input", size );
 
          //cout << "Alg. " << algorithm_efficiency << "Testing zeros with size "  << size << " ";
          for( int i = 0; i < size; i ++ )
@@ -260,7 +260,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       }
       for( size = 1; size < 5000; size ++ )
       {
-         tnlLongVector< T > host_input( "host-input", size );
+         tnlVector< T > host_input( "host-input", size );
 
          //cout << "Alg. " << algorithm_efficiency  << " Testing zeros with size "  << size << " ";
          for( int i = 0; i < size; i ++ )

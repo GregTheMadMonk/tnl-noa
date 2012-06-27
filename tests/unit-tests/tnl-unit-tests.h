@@ -20,8 +20,8 @@
 #include <debug/tnlDebug.h>
 #include "core/tnlFileTester.h"
 #include "core/tnlRealTester.h"
-#include "core/tnlVectorTester.h"
-#include "core/tnlLongVectorHostTester.h"
+#include "core/tnlTupleTester.h"
+#include "core/tnlVectorHostTester.h"
 #include "core/tnlArrayTester.h"
 #include "core/tnlGridTester.h"
 #include "core/tnlSharedMemoryTester.h"
@@ -48,23 +48,23 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlRealTester< float > :: suite() );
    runner. addTest( tnlRealTester< double > :: suite() );
 
-   runner. addTest( tnlVectorTester< 1, int > :: suite() );
-   runner. addTest( tnlVectorTester< 2, int > :: suite() );
-   runner. addTest( tnlVectorTester< 3, int > :: suite() );
-   runner. addTest( tnlVectorTester< 4, int > :: suite() );
-   runner. addTest( tnlVectorTester< 1, float > :: suite() );
-   runner. addTest( tnlVectorTester< 2, float > :: suite() );
-   runner. addTest( tnlVectorTester< 3, float > :: suite() );
-   runner. addTest( tnlVectorTester< 4, float > :: suite() );
-   runner. addTest( tnlVectorTester< 1, double > :: suite() );
-   runner. addTest( tnlVectorTester< 2, double > :: suite() );
-   runner. addTest( tnlVectorTester< 3, double > :: suite() );
-   runner. addTest( tnlVectorTester< 4, double > :: suite() );
+   runner. addTest( tnlTupleTester< 1, int > :: suite() );
+   runner. addTest( tnlTupleTester< 2, int > :: suite() );
+   runner. addTest( tnlTupleTester< 3, int > :: suite() );
+   runner. addTest( tnlTupleTester< 4, int > :: suite() );
+   runner. addTest( tnlTupleTester< 1, float > :: suite() );
+   runner. addTest( tnlTupleTester< 2, float > :: suite() );
+   runner. addTest( tnlTupleTester< 3, float > :: suite() );
+   runner. addTest( tnlTupleTester< 4, float > :: suite() );
+   runner. addTest( tnlTupleTester< 1, double > :: suite() );
+   runner. addTest( tnlTupleTester< 2, double > :: suite() );
+   runner. addTest( tnlTupleTester< 3, double > :: suite() );
+   runner. addTest( tnlTupleTester< 4, double > :: suite() );
 
 
-   runner. addTest( tnlLongVectorHostTester< int > :: suite() );
-   runner. addTest( tnlLongVectorHostTester< float > :: suite() );
-   runner. addTest( tnlLongVectorHostTester< double > :: suite() );
+   runner. addTest( tnlVectorHostTester< int > :: suite() );
+   runner. addTest( tnlVectorHostTester< float > :: suite() );
+   runner. addTest( tnlVectorHostTester< double > :: suite() );
 
    runner. addTest( tnlArrayTester< int, tnlHost, int > :: suite() );
    runner. addTest( tnlArrayTester< float, tnlHost, int > :: suite() );
@@ -92,10 +92,10 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    runner. addTest( tnlFileTester :: suite() );
 
-   /*runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
-   runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
+   /*runner.addTest( tnlVectorCUDATester< int > :: suite() );
+   runner.addTest( tnlVectorCUDATester< float > :: suite() );
    if( CUDA_ARCH == 13 )
-      runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
+      runner.addTest( tnlVectorCUDATester< double > :: suite() );
 
    runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
    runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );

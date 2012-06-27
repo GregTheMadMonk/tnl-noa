@@ -10,10 +10,10 @@ set (headers tnlArray.h
 		     tnlFile.h 
 		     tnlFlopsCounter.h 
 		     tnlList.h 
-		     tnlLongVector.h
-		     tnlLongVectorBase.h 
-		     tnlLongVectorHost.h 
-		     tnlLongVectorCUDA.h  
+		     tnlVector.h
+		     tnlVectorBase.h 
+		     tnlVectorHost.h 
+		     tnlVectorCUDA.h  
 		     tnlLogger.h 
 		     tnlObject.h 
 		     tnlStack.h
@@ -22,7 +22,7 @@ set (headers tnlArray.h
 		     tnlReal.h
 		     tnlTimerCPU.h  
 		     tnlTimerRT.h  
-		     tnlVector.h 
+		     tnlTuple.h 
 			 tnlCudaSupport.h 
 		     mfilename.h 
 		     mfuncs.h 

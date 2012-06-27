@@ -22,7 +22,7 @@
 #include <cuda.h>
 #endif
 
-enum tnlVectorOperation { tnlParallelReductionMin = 1,
+enum tnlTupleOperation { tnlParallelReductionMin = 1,
                           tnlParallelReductionMax,
                           tnlParallelReductionSum,
                           tnlParallelReductionAbsMin,
@@ -130,7 +130,7 @@ __device__ double tnlCudaAbs( const double& a )
  * data elements with indecis tid and tid + s. Here we assume that for each
  * tid the tid + s element also exists i.e. we have even number of elements.
  */
-template< class T, tnlVectorOperation operation >
+template< class T, tnlTupleOperation operation >
 __device__ void reduceAligned( unsigned int tid,
                                unsigned int s,
                                T* sdata )
@@ -159,7 +159,7 @@ __device__ void reduceAligned( unsigned int tid,
  * the previous algorithm. Thid one works even for odd number of elements but
  * it is a bit slower.
  */
-template< class T, tnlVectorOperation operation >
+template< class T, tnlTupleOperation operation >
 __device__ void reduceNonAligned( unsigned int tid,
                                   unsigned int s,
                                   unsigned int n,
@@ -220,7 +220,7 @@ __device__ void reduceNonAligned( unsigned int tid,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < typename Type, typename ParameterType, typename Index, tnlVectorOperation operation, int blockSize >
+template < typename Type, typename ParameterType, typename Index, tnlTupleOperation operation, int blockSize >
 __global__ void tnlCUDAReductionKernel( const Index size,
                                         const Type* deviceInput,
                                         const Type* deviceInput2,
@@ -464,7 +464,7 @@ __global__ void tnlCUDAReductionKernel( const Index size,
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
  */
-template< typename Type, typename ParameterType, typename Index, tnlVectorOperation operation >
+template< typename Type, typename ParameterType, typename Index, tnlTupleOperation operation >
 bool tnlCUDALongVectorReduction( const Index size,
                                  const Type* deviceInput1,
                                  const Type* deviceInput2,
@@ -490,7 +490,7 @@ bool tnlCUDALongVectorReduction( const Index size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlLongVector< Type, tnlCuda > deviceAuxVct( "tnlCUDAOneVectorReduction:deviceAuxVct" );
+   tnlVector< Type, tnlCuda > deviceAuxVct( "tnlCUDAOneVectorReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
       int sizeAlloc = :: Max( 1, size / desBlockSize );
@@ -766,7 +766,7 @@ bool tnlCUDALongVectorComparison( const Index size,
    tnlAssert( size > 0,
               cerr << "You try to compare two CUDA long vectors with non-positive size." << endl
                    << "The size is " << size );
-   tnlLongVector< bool, tnlCuda, Index > boolArray( "tnlCUDALongVectorComparison:bool_array" );
+   tnlVector< bool, tnlCuda, Index > boolArray( "tnlCUDALongVectorComparison:bool_array" );
    if( ! deviceBoolAux )
    {
       if( ! boolArray. setSize( size ) )

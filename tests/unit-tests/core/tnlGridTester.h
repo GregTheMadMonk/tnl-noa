@@ -62,11 +62,11 @@ template< typename Real, tnlDevice device, typename Index > class tnlGridTester 
    void testSetDomain()
    {
       tnlGrid< 1, Real, device, Index > u1( "tnlGridTester: u1" );
-      u1. setDimensions( tnlVector< 1, Index >( 11 ) );
+      u1. setDimensions( tnlTuple< 1, Index >( 11 ) );
       u1. setValue( ( Real ) 1 );
-      u1. setDomain( tnlVector< 1, Real >( 0.0 ),
-                     tnlVector< 1, Real >( 1.0 ) );
-      CPPUNIT_ASSERT( u1. getSpaceSteps() == ( tnlVector< 1, Real >( 0.1 ) ) );
+      u1. setDomain( tnlTuple< 1, Real >( 0.0 ),
+                     tnlTuple< 1, Real >( 1.0 ) );
+      CPPUNIT_ASSERT( u1. getSpaceSteps() == ( tnlTuple< 1, Real >( 0.1 ) ) );
    };
 
 
@@ -75,7 +75,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlGridTester 
       /*tnlFile file;
       tnlGrid< 1, Real, device, Index > u1( "tnlGridTester:u1" );
       tnlGrid< 1, Real, device, Index > v1( "tnlGridTester:v1" );
-      u1. setDimensions( tnlVector< 1, Index >( 10 ) );
+      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
       file. open( "tnlGridTester-file.bin", tnlWriteMode );
       u1. save( file );
@@ -87,7 +87,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlGridTester 
 
       tnlGrid< 2, Real, device, Index > u2( "tnlGridTester:u2" );
       tnlGrid< 2, Real, device, Index > v2( "tnlGridTester:v2" );
-      u2. setDimensions( tnlVector< 2, Index >( 10 ) );
+      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
       file. open( "tnlGridTester-file.bin", tnlWriteMode );
       u2. save( file );
@@ -99,7 +99,7 @@ template< typename Real, tnlDevice device, typename Index > class tnlGridTester 
 
       tnlGrid< 3, Real, device, Index > u3( "tnlGridTester:u3" );
       tnlGrid< 3, Real, device, Index > v3( "tnlGridTester:v3" );
-      u3. setDimensions( tnlVector< 3, Index >( 10 ) );
+      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
       file. open( "tnlGridTester-file.bin", tnlWriteMode );
       u3. save( file );

@@ -48,8 +48,8 @@ class tnlSpmvBenchmark
     * the Hybrid format from the CUSP library. This format is not wrapped
     * in tnlMatrix.
     */
-   virtual void runBenchmark( const tnlLongVector< Real, Device, Index >& x,
-                              const tnlLongVector< Real, tnlHost, Index >& refB,
+   virtual void runBenchmark( const tnlVector< Real, Device, Index >& x,
+                              const tnlVector< Real, tnlHost, Index >& refB,
                               bool verbose );
 
    bool getBenchmarkWasSuccesful() const;
@@ -233,8 +233,8 @@ template< typename Real,
           tnlDevice Device,
           typename Index,
           template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
-void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlLongVector< Real, Device, Index >& x,
-                                                                      const tnlLongVector< Real, tnlHost, Index >& refB,
+void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlVector< Real, Device, Index >& x,
+                                                                      const tnlVector< Real, tnlHost, Index >& refB,
                                                                       bool verbose )
 {
    benchmarkWasSuccesful = false;
@@ -249,7 +249,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    }
 #endif
 
-   tnlLongVector< Real, Device, Index > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   tnlVector< Real, Device, Index > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! b. setSize( refB. getSize() ) )
       return;
 
@@ -268,7 +268,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlL
    this -> time = rt_timer. GetTime();
 
    firstErrorOccurence = 0;
-   tnlLongVector< Real, tnlHost, Index > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   tnlVector< Real, tnlHost, Index > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! resB. setSize( b. getSize() ) )
    {
       cerr << "I am not able to allocate copy of vector b on the host." << endl;
@@ -414,7 +414,7 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
    if( Device == tnlCuda )
    {
 #ifdef HAVE_CUDA
-      tnlLongVector< Real, Device, Index > x( "x" ), b( "b" );
+      tnlVector< Real, Device, Index > x( "x" ), b( "b" );
       if( ! x. setSize( size ) || ! b. setSize( size ) )
          return false;
       for( Index j = 0; j < size; j ++ )

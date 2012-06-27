@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlLongVectorHost.h>
+#include <core/tnlVectorHost.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>
@@ -92,10 +92,10 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlLongVector< Real, Device, Index >& vector ) const;
+                    const tnlVector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, Device, Index >& x,
-                       tnlLongVector< Real, Device, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, Device, Index >& x,
+                       tnlVector< Real, Device, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const
    { abort(); };
@@ -144,20 +144,20 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy;
 
-   tnlLongVector< Real, Device, Index > nonzeroElements;
+   tnlVector< Real, Device, Index > nonzeroElements;
 
-   tnlLongVector< Index, Device, Index > columns;
+   tnlVector< Index, Device, Index > columns;
 
-   tnlLongVector< Index, Device, Index > groupOffsets;
+   tnlVector< Index, Device, Index > groupOffsets;
 
-   tnlLongVector< Index, Device, Index > nonzeroElementsInRow;
+   tnlVector< Index, Device, Index > nonzeroElementsInRow;
 
    Index groupSize;
 
    /****
     * This vector is only used if useAdaptiveGroupSize is true.
     */
-   tnlLongVector< Index, Device, Index > adaptiveGroupSizes;
+   tnlVector< Index, Device, Index > adaptiveGroupSizes;
 
    /****
     * This variable is only used if useAdaptiveGroupSize is true.
@@ -567,7 +567,7 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
 
 template< typename Real, tnlDevice Device, typename Index >
 Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
-                                                          const tnlLongVector< Real, Device, Index >& vec ) const
+                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this -> getSize(),
               cerr << "The row is outside the matrix." );
@@ -606,8 +606,8 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
-                                                             tnlLongVector< Real, Device, Index >& result ) const
+void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
+                                                             tnlVector< Real, Device, Index >& result ) const
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
    tnlAssert( vec. getSize() == this -> getSize(),

@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlLongVectorHost.h>
+#include <core/tnlVectorHost.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>
@@ -74,10 +74,10 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlLongVector< Real, tnlHost, Index >& vector ) const;
+                    const tnlVector< Real, tnlHost, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, tnlHost, Index >& x,
-                       tnlLongVector< Real, tnlHost, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
+                       tnlVector< Real, tnlHost, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const
    { abort(); };
@@ -90,9 +90,9 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
 
    protected:
 
-   tnlLongVector< Real > ellpack_nonzero_elements;
+   tnlVector< Real > ellpack_nonzero_elements;
 
-   tnlLongVector< Index > ellpack_columns;
+   tnlVector< Index > ellpack_columns;
 
    Index row_length;
 
@@ -256,7 +256,7 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: getElement( Index row,
 
 template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
-                                                             const tnlLongVector< Real, tnlHost, Index >& vector ) const
+                                                             const tnlVector< Real, tnlHost, Index >& vector ) const
 {
    tnlAssert( 0 <= row && row < this -> getSize(),
               cerr << "The row is outside the matrix." );
@@ -286,8 +286,8 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlLongVector< Real, tnlHost, Index >& x,
-                                                                tnlLongVector< Real, tnlHost, Index >& b ) const
+void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
+                                                                tnlVector< Real, tnlHost, Index >& b ) const
 {
    tnlAssert( x. getSize() == this -> getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "

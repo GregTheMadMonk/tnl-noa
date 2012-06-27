@@ -17,7 +17,7 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 
-#include <core/tnlLongVectorCUDATester.h>
+#include <core/tnlVectorCUDATester.h>
 #include <core/tnlFieldCUDA2DTester.h>
 #include <core/tnlCUDAKernelsTester.h>
 #include <diff/tnlGridCUDA2DTester.h>
@@ -32,10 +32,10 @@ int main( int argc, char* argv[] )
    CppUnit :: TextTestRunner runner;
    
 #ifdef HAVE_CUDA
-   runner.addTest( tnlLongVectorCUDATester< int > :: suite() );
-   runner.addTest( tnlLongVectorCUDATester< float > :: suite() );
+   runner.addTest( tnlVectorCUDATester< int > :: suite() );
+   runner.addTest( tnlVectorCUDATester< float > :: suite() );
    if( CUDA_ARCH == 1.3 )
-      runner.addTest( tnlLongVectorCUDATester< double > :: suite() );
+      runner.addTest( tnlVectorCUDATester< double > :: suite() );
    
    runner.addTest( tnlFieldCUDA2DTester< int > :: suite() );
    runner.addTest( tnlFieldCUDA2DTester< float > :: suite() );

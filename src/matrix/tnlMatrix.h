@@ -25,7 +25,7 @@
 #include <core/tnlString.h>
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
-#include <core/tnlLongVector.h>
+#include <core/tnlVector.h>
 
 using namespace std;
 
@@ -73,7 +73,7 @@ class tnlMatrix : public tnlObject
 
    virtual Index getArtificialZeroElements() const;
 
-   //bool setRowsReordering( const tnlLongVector< Index, Device, Index >& reorderingPermutation );
+   //bool setRowsReordering( const tnlVector< Index, Device, Index >& reorderingPermutation );
 
    virtual Real getElement( Index row, Index column ) const = 0;
 
@@ -85,14 +85,14 @@ class tnlMatrix : public tnlObject
    virtual bool addToElement( Index row, Index column, const Real& v ) = 0;
    
    virtual Real rowProduct( const Index row,
-                            const tnlLongVector< Real, Device, Index >& vec ) const = 0;
+                            const tnlVector< Real, Device, Index >& vec ) const = 0;
    
-   virtual void vectorProduct( const tnlLongVector< Real, Device, Index >& vec,
-                               tnlLongVector< Real, Device, Index >& result ) const = 0;
+   virtual void vectorProduct( const tnlVector< Real, Device, Index >& vec,
+                               tnlVector< Real, Device, Index >& result ) const = 0;
 
    virtual bool performSORIteration( const Real& omega,
-                                     const tnlLongVector< Real, Device, Index >& b,
-                                     tnlLongVector< Real, Device, Index >& x,
+                                     const tnlVector< Real, Device, Index >& b,
+                                     tnlVector< Real, Device, Index >& x,
                                      Index firstRow,
                                      Index lastRow ) const;
 
@@ -126,7 +126,7 @@ class tnlMatrix : public tnlObject
     * Computes permutation of the rows such that the rows would be
     * ordered decreasingly by the number of the non-zero elements.
     */
-   bool sortRowsDecreasingly( tnlLongVector< Index, Device, Index >& permutation );
+   bool sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation );
 
    virtual bool read( istream& str,
 		                int verbose = 0 );
@@ -189,8 +189,8 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
-                                                              const tnlLongVector< Real, Device, Index >& b,
-                                                              tnlLongVector< Real, Device, Index >& x,
+                                                              const tnlVector< Real, Device, Index >& b,
+                                                              tnlVector< Real, Device, Index >& x,
                                                               Index firstRow,
                                                               Index lastRow ) const
 {
@@ -398,7 +398,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< Index, Device, Index >& permutation )
+bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation )
 {
    dbgFunctionName( "tnlMatrix< Real, Device, Index >", "sortRowsDecreasingly" );
    /****
@@ -420,7 +420,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlLongVector< In
       permutation[ this -> getNonzeroElementsInRow( i ) ] ++;
    }
 
-   tnlLongVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
+   tnlVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
    buckets. setSize( matrixSize + 1 );
    buckets. setValue( 0 );
 

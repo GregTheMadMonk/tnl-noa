@@ -23,7 +23,7 @@
 #include <core/tnlList.h>
 #include <core/tnlObject.h>
 #include <core/mfuncs.h>
-#include <core/tnlVector.h>
+#include <core/tnlTuple.h>
 #include <core/param-types.h>
 
 //! Basic structure for curves
@@ -220,7 +220,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< tnlVector< 2, double > >;
+template class tnlCurve< tnlTuple< 2, double > >;
 
 
 

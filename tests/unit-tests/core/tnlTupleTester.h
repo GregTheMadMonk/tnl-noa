@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorTester.h  -  description
+                          tnlTupleTester.h  -  description
                              -------------------
     begin                : Dec 4, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -25,37 +25,37 @@
 #include <core/tnlArray.h>
 #include <core/tnlFile.h>
 
-template< int Size, typename Real > class tnlVectorTester : public CppUnit :: TestCase
+template< int Size, typename Real > class tnlTupleTester : public CppUnit :: TestCase
 {
    public:
-   tnlVectorTester(){};
+   tnlTupleTester(){};
 
    virtual
-   ~tnlVectorTester(){};
+   ~tnlTupleTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTupleTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< Size, Real > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlTupleTester< Size, Real > >(
                                "testConstructors",
-                               & tnlVectorTester< Size, Real > :: testConstructors )
+                               & tnlTupleTester< Size, Real > :: testConstructors )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< Size, Real > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlTupleTester< Size, Real > >(
                                "testOperators",
-                               & tnlVectorTester< Size, Real > :: testOperators )
+                               & tnlTupleTester< Size, Real > :: testOperators )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< Size, Real > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlTupleTester< Size, Real > >(
                                "testSaveAndLoad",
-                               & tnlVectorTester< Size, Real > :: testSaveAndLoad )
+                               & tnlTupleTester< Size, Real > :: testSaveAndLoad )
                               );
       return suiteOfTests;
    };
 
    void testConstructors()
    {
-      tnlVector< Size, Real > v1;
-      tnlVector< Size, Real > v2( ( Real ) 1 );
+      tnlTuple< Size, Real > v1;
+      tnlTuple< Size, Real > v2( ( Real ) 1 );
       for( int i = 0; i < Size; i ++ )
       {
          CPPUNIT_ASSERT( v1[ i ] == ( Real ) 0 );
@@ -64,13 +64,13 @@ template< int Size, typename Real > class tnlVectorTester : public CppUnit :: Te
 
       if( Size == 2 )
       {
-         tnlVector< Size, Real > v3( ( Real ) 1, ( Real ) 2 );
+         tnlTuple< Size, Real > v3( ( Real ) 1, ( Real ) 2 );
          CPPUNIT_ASSERT( v3[ 0 ] == ( Real ) 1 );
          CPPUNIT_ASSERT( v3[ 1 ] == ( Real ) 2 );
       }
       if( Size == 3 )
       {
-         tnlVector< Size, Real > v3( ( Real ) 1, ( Real ) 2, ( Real ) 3 );
+         tnlTuple< Size, Real > v3( ( Real ) 1, ( Real ) 2, ( Real ) 3 );
          CPPUNIT_ASSERT( v3[ 0 ] == ( Real ) 1 );
          CPPUNIT_ASSERT( v3[ 1 ] == ( Real ) 2 );
          CPPUNIT_ASSERT( v3[ 2 ] == ( Real ) 3 );
@@ -79,9 +79,9 @@ template< int Size, typename Real > class tnlVectorTester : public CppUnit :: Te
 
    void testOperators()
    {
-      tnlVector< Size, Real > v1( ( Real ) 1 );
-      tnlVector< Size, Real > v2( ( Real ) 2 );
-      tnlVector< Size, Real > v3( ( Real ) 0 );
+      tnlTuple< Size, Real > v1( ( Real ) 1 );
+      tnlTuple< Size, Real > v2( ( Real ) 2 );
+      tnlTuple< Size, Real > v3( ( Real ) 0 );
 
       v3 += v1;
       for( int i = 0; i < Size; i ++ )
@@ -127,13 +127,13 @@ template< int Size, typename Real > class tnlVectorTester : public CppUnit :: Te
 
    void testSaveAndLoad()
    {
-      tnlVector< Size, Real > v1( ( Real ) 1 );
-      tnlVector< Size, Real > v2;
+      tnlTuple< Size, Real > v1( ( Real ) 1 );
+      tnlTuple< Size, Real > v2;
       tnlFile file;
-      file. open( "tnlVectorTest.bin", tnlWriteMode );
+      file. open( "tnlTupleTest.bin", tnlWriteMode );
       v1. save( file );
       file. close();
-      file. open( "tnlVectorTest.bin", tnlReadMode );
+      file. open( "tnlTupleTest.bin", tnlReadMode );
       v2. load( file );
       file. close();
       CPPUNIT_ASSERT( v1 == v2 );

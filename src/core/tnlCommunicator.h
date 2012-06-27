@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <debug/tnlDebug.h>
-#include <core/tnlLongVector.h>
+#include <core/tnlVector.h>
 #include <core/tnlCriticalSection.h>
 #include <core/tnlSharedMemory.h>
 
@@ -72,11 +72,11 @@ class tnlCommunicator
 
    int getCommunicationGroupSize() const;
 
-   bool setDimensions( const tnlVector< Dimensions, int >& dimensions );
+   bool setDimensions( const tnlTuple< Dimensions, int >& dimensions );
 
-   const tnlVector< Dimensions, int >& getDimensions() const;
+   const tnlTuple< Dimensions, int >& getDimensions() const;
 
-   const tnlVector< Dimensions, int >& getNodeCoordinates() const;
+   const tnlTuple< Dimensions, int >& getNodeCoordinates() const;
 
    int getDeviceId() const;
 
@@ -99,30 +99,30 @@ class tnlCommunicator
                  int sourceId ) const;
 
    template< typename DataType, typename Index >
-   bool send( const tnlLongVector< DataType, Device, Index >& data,
+   bool send( const tnlVector< DataType, Device, Index >& data,
               int destinationId ) const;
 
    template< typename DataType, typename Index >
-   bool receive( tnlLongVector< DataType, Device, Index >& data,
+   bool receive( tnlVector< DataType, Device, Index >& data,
                  int sourceId ) const;
 
    template< typename DataType >
    bool broadcast( DataType* data, int sourceId );
 
    template< typename DataType, typename Index >
-   bool broadcast( tnlLongVector< DataType, Device, Index >& data, int sourceId );
+   bool broadcast( tnlVector< DataType, Device, Index >& data, int sourceId );
 
    template< typename DataType >
    bool reduction( DataType* data, tnlReductionOperation operation, int targetId );
 
    template< typename DataType, typename Index >
-   bool scatter( const tnlLongVector< DataType, Device, Index >& inputData,
-                 tnlLongVector< DataType, Device, Index >& scatteredData,
+   bool scatter( const tnlVector< DataType, Device, Index >& inputData,
+                 tnlVector< DataType, Device, Index >& scatteredData,
                  int sourceId );
 
    template< typename DataType, typename Index >
-   bool gather( const tnlLongVector< DataType, Device, Index >& inputData,
-                tnlLongVector< DataType, Device, Index >& gatheredData,
+   bool gather( const tnlVector< DataType, Device, Index >& inputData,
+                tnlVector< DataType, Device, Index >& gatheredData,
                 int targetId );
 
    bool barrier();
@@ -134,9 +134,9 @@ class tnlCommunicator
 
    int communicationGroupSize;
 
-   tnlVector< Dimensions, int > dimensions;
+   tnlTuple< Dimensions, int > dimensions;
 
-   tnlVector< Dimensions, int > nodeCoordinates;
+   tnlTuple< Dimensions, int > nodeCoordinates;
 
    int deviceID;
 
@@ -158,20 +158,20 @@ int tnlCommunicator< Dimensions, Device > :: getCommunicationGroupSize() const
 }
 
 template< int Dimensions, tnlDevice Device >
-bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlVector< Dimensions, int >& dimensions )
+bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlTuple< Dimensions, int >& dimensions )
 {
    this -> dimensions = dimensions;
    // TODO: add automatic dimensions setting from the group size
 }
 
 template< int Dimensions, tnlDevice Device >
-const tnlVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
+const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< int Dimensions, tnlDevice Device >
-const tnlVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
+const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
 {
    return this -> nodeCoordinates;
 }
@@ -200,9 +200,9 @@ bool tnlCommunicator< Dimensions, Device > :: start()
       cerr << "Sorry, but I have wrong size ( " << this -> getCommunicationGroupSize() << " of the communication group. I cannot create a communicator." << endl;
       return false;
    }
-   if( this -> getDimensions() == tnlVector< Dimensions, int >( 0 ) )
-      this -> setDimensions( tnlVector< Dimensions, int >( 0 ) );
-   if( this -> getDimensions() == tnlVector< Dimensions, int >( -1 ) )
+   if( this -> getDimensions() == tnlTuple< Dimensions, int >( 0 ) )
+      this -> setDimensions( tnlTuple< Dimensions, int >( 0 ) );
+   if( this -> getDimensions() == tnlTuple< Dimensions, int >( -1 ) )
    {
       cerr << "Sorry, but I have wrong dimensions ( " << this -> getDimensions() << " of the communication group. I cannot create a communicator." << endl;
       return false;
@@ -383,7 +383,7 @@ bool tnlCommunicator< Dimensions, Device > :: receive( DataType* data,
 
 template< int Dimensions, tnlDevice Device >
 template< typename DataType, typename Index >
-bool tnlCommunicator< Dimensions, Device > :: send( const tnlLongVector< DataType, Device, Index >& data,
+bool tnlCommunicator< Dimensions, Device > :: send( const tnlVector< DataType, Device, Index >& data,
                                         int destinationID ) const
 {
    dbgFunctionName( "tnlCommunicator", "send" );
@@ -424,7 +424,7 @@ bool tnlCommunicator< Dimensions, Device > :: send( const tnlLongVector< DataTyp
     * Now we copy the data to the shared memory.
     * The DataType cannot be a type with the dynamic memory allocation.
     */
-   tnlLongVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+   tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
    sendingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
    sendingBuffer = data;
    dbgCout( "The sending process is setting the flag byte to tnlSharedMemoryDataSent ..." )
@@ -439,7 +439,7 @@ bool tnlCommunicator< Dimensions, Device > :: send( const tnlLongVector< DataTyp
 
 template< int Dimensions, tnlDevice Device >
 template< typename DataType, typename Index >
-bool tnlCommunicator< Dimensions, Device > :: receive( tnlLongVector< DataType, Device, Index >& data,
+bool tnlCommunicator< Dimensions, Device > :: receive( tnlVector< DataType, Device, Index >& data,
                                            int sourceID ) const
 {
    dbgFunctionName( "tnlCommunicator", "receive" );
@@ -483,7 +483,7 @@ bool tnlCommunicator< Dimensions, Device > :: receive( tnlLongVector< DataType, 
       usleep( 1 );
 
    dbgCout( "The receiving process is copying the data from the shared memory..." );
-   tnlLongVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+   tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
    receivingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
    data = receivingBuffer;
 
@@ -628,7 +628,7 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( DataType* data, int sou
 
 template< int Dimensions, tnlDevice Device >
 template< typename DataType, typename Index >
-bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlLongVector< DataType, Device, Index >& data,
+bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlVector< DataType, Device, Index >& data,
                                              int sourceId )
 {
    dbgFunctionName( "tnlCommunicator", "broadcast" );
@@ -689,7 +689,7 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlLongVector< DataType
        * Now we copy the data to the shared memory.
        * The DataType cannot be a type with the dynamic memory allocation.
        */
-      tnlLongVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+      tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
       sendingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
       sendingBuffer = data;
 
@@ -721,7 +721,7 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlLongVector< DataType
          usleep( 1 );
 
       dbgCout( "The receiving process " << getDeviceId() << " copying the data from the shared memory. " );
-      tnlLongVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
       receivingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
       data = receivingBuffer;
 
@@ -879,8 +879,8 @@ bool tnlCommunicator< Dimensions, Device > :: reduction( DataType* data, tnlRedu
 
 template< int Dimensions, tnlDevice Device >
 template< typename DataType, typename Index >
-bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlLongVector< DataType, Device, Index >& inputData,
-                                           tnlLongVector< DataType, Device, Index >& scatteredData,
+bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType, Device, Index >& inputData,
+                                           tnlVector< DataType, Device, Index >& scatteredData,
                                            int sourceId )
 {
    dbgFunctionName( "tnlCommunicator", "scatter" );
@@ -942,7 +942,7 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlLongVector< Data
        * Now we copy the data to the shared memory.
        * The DataType cannot be a type with the dynamic memory allocation.
        */
-      tnlLongVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+      tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
       sendingBuffer. setSharedData( sharedMemory. getData(), inputData. getSize() );
       sendingBuffer = inputData;
 
@@ -964,7 +964,7 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlLongVector< Data
       }
 
       dbgCout( "The process " << getDeviceId() << " is copying the data from the shared memory. " );
-      tnlLongVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
       receivingBuffer. setSharedData( sharedMemory. getData(), scatteredData. getSize() );
       scatteredData = receivingBuffer;
 
@@ -979,7 +979,7 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlLongVector< Data
          usleep( 1 );
 
       dbgCout( "The process " << getDeviceId() << " is copying the data from the shared memory. " );
-      tnlLongVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
       receivingBuffer. setSharedData( sharedMemory. getData(), scatteredData. getSize() );
       scatteredData = receivingBuffer;
 
@@ -1009,8 +1009,8 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlLongVector< Data
 
 template< int Dimensions, tnlDevice Device >
 template< typename DataType, typename Index >
-bool tnlCommunicator< Dimensions, Device > :: gather( const tnlLongVector< DataType, Device, Index >& inputData,
-                                           tnlLongVector< DataType, Device, Index >& gatheredData,
+bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType, Device, Index >& inputData,
+                                           tnlVector< DataType, Device, Index >& gatheredData,
                                            int targetId )
 {
    dbgFunctionName( "tnlCommunicator", "gather" );
@@ -1103,7 +1103,7 @@ bool tnlCommunicator< Dimensions, Device > :: gather( const tnlLongVector< DataT
       while( sharedMemory. getWritingCounter() != communicationGroupSize )
          usleep( 1 );
       dbgCout( "The target process " << getDeviceId() << " is gathering the data ..." );
-      tnlLongVector< DataType, tnlHost, Index > sharedMemoryVector( "sharedMemoryVector" );
+      tnlVector< DataType, tnlHost, Index > sharedMemoryVector( "sharedMemoryVector" );
       sharedMemoryVector. setSharedData( sharedMemory. getData(), getCommunicationGroupSize() * inputData. getSize() );
       gatheredData = sharedMemoryVector;
    }

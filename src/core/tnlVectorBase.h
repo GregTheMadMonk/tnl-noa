@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlLongVector.h  -  description
+                          tnlVector.h  -  description
                              -------------------
     begin                : 2007/06/16
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlLongVectorH
-#define tnlLongVectorH
+#ifndef tnlVectorH
+#define tnlVectorH
 
 #include <assert.h>
 #include <string.h>
@@ -32,13 +32,13 @@
 using namespace std;
 #endif
 
-template< typename Real, typename Index = int > class tnlLongVectorBase : public tnlObject
+template< typename Real, typename Index = int > class tnlVectorBase : public tnlObject
 {
 
    public:
 
    //! Constructor with given size
-   tnlLongVectorBase( const tnlString& name )
+   tnlVectorBase( const tnlString& name )
    : tnlObject( name ), size( 0 ), data( 0 ), shared_data( false )
    {
    };
@@ -97,7 +97,7 @@ template< typename Real, typename Index = int > class tnlLongVectorBase : public
      //defaultTnlStatistics. addTransferedBytes( touches * getSize() * sizeof( Real ) );
    };
 
-   virtual ~tnlLongVectorBase(){};
+   virtual ~tnlVectorBase(){};
 
    protected:
 
@@ -108,7 +108,7 @@ template< typename Real, typename Index = int > class tnlLongVectorBase : public
    bool shared_data;
 };
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int > class tnlLongVector : public tnlLongVectorBase< Real, Index >
+template< typename Real, tnlDevice Device = tnlHost, typename Index = int > class tnlVector : public tnlVectorBase< Real, Index >
 {
 
 };

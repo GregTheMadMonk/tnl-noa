@@ -30,9 +30,9 @@ bool benchmarkMatrix( const tnlString& fileName )
       return false;
 
    const Index size = csrMatrix. getSize();
-   tnlLongVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
-   tnlLongVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
-   tnlLongVector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
+   tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
+   tnlVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
+   tnlVector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
    if( ! x1. setSize( size ) ||
        ! x. setSize( size ) ||
        ! b. setSize( size ) )
@@ -59,8 +59,8 @@ bool benchmarkMatrix( const tnlString& fileName )
         << " L2 diff. norm = " << tnlDifferenceLpNorm( x, x1, ( Real ) 2.0 )
         << " Max. diff. norm = " << tnlDifferenceMax( x, x1 ) << endl;
 #ifdef HAVE_CUDA
-   tnlLongVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
-   tnlLongVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
+   tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
+   tnlVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
    cudaX. setLike( x );
    cudaX = x;
    cudaB. setLike( b );

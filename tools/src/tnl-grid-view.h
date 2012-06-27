@@ -57,7 +57,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
       if( ! output_y_size ) output_y_size = u. getDimensions(). y();
       output_u = &resizedU;
 
-      resizedU. setDimensions( tnlVector< 2, Index >( output_x_size, output_y_size ) );
+      resizedU. setDimensions( tnlTuple< 2, Index >( output_x_size, output_y_size ) );
       resizedU. setDomain( u. getDomainLowerCorner(), u. getDomainUpperCorner() );
 
       const Real& hx = output_u -> getSpaceSteps(). x();
@@ -78,7 +78,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
    parameters. GetParameter< tnlList< Real > >( "level-lines", level_lines );
    if( ! level_lines. isEmpty() )
    {
-      tnlCurve< tnlVector< 2, Real > > crv( "tnl-grid-view:curve" );
+      tnlCurve< tnlTuple< 2, Real > > crv( "tnl-grid-view:curve" );
       int j;
       for( j = 0; j < level_lines. getSize(); j ++ )
          if( ! getLevelSetCurve( * output_u, crv, level_lines[ j ] ) )
@@ -140,7 +140,7 @@ bool ProcesstnlGrid3D( const tnlString& file_name,
       if( ! output_z_size ) output_z_size = u. getDimensions()[ tnlZ ];
       output_u = &resizedU;
 
-      resizedU. setDimensions( tnlVector< 3, Index >( output_x_size, output_y_size, output_z_size ) );
+      resizedU. setDimensions( tnlTuple< 3, Index >( output_x_size, output_y_size, output_z_size ) );
       resizedU. setDomain( u. getDomainLowerCorner(), u. getDomainUpperCorner() );
 
       const Real& hx = output_u -> getSpaceSteps(). x();
@@ -208,7 +208,7 @@ bool ProcessCSRMatrix( const tnlString& file_name,
       if( verbose )
          cout << "Sorting the matrix rows..." << endl;
 
-      tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
+      tnlVector< int, tnlHost > rowPermutation( "rowPermutation" );
       matrix. sortRowsDecreasingly( rowPermutation );
       sortedMatrix. reorderRows( rowPermutation, matrix );
       inputMatrix = & sortedMatrix;

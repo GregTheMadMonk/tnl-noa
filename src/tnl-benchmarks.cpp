@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 #include <core/tnlTimerRT.h>
-#include <core/tnlLongVector.h>
-#include <core/tnlLongVectorCUDA.h>
+#include <core/tnlVector.h>
+#include <core/tnlVectorCUDA.h>
 #include <core/tnl-cuda-kernels.cu.h>
 #include <tnl-benchmarks.h>
 

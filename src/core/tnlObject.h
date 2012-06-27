@@ -56,7 +56,7 @@ class tnlObject
    //! Type getter
    /*!
     * This returns the type in C++ style - for example the returned value
-    * may look ass follows: "tnlLongVector< double, tnlCuda >".
+    * may look ass follows: "tnlVector< double, tnlCuda >".
     */
    virtual tnlString getType() const = 0;
 

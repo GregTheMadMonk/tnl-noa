@@ -170,11 +170,11 @@ class tnlMPIMesh< 3, Real, Device, Index >
 
    bool SetGlobalDomain( tnlGrid< 3, Real, Device, Index >& global_u )
    {
-      if( ! global_u. setDimensions( tnlVector< 3, Index >( domain_x_size, domain_y_size, domain_z_size  ) ) )
+      if( ! global_u. setDimensions( tnlTuple< 3, Index >( domain_x_size, domain_y_size, domain_z_size  ) ) )
          return false;
       
-      global_u. setDomain( tnlVector< 3, Real >( Ax, Bx, Ay ),
-                           tnlVector< 3, Real >( By, Az, Bz ) );
+      global_u. setDomain( tnlTuple< 3, Real >( Ax, Bx, Ay ),
+                           tnlTuple< 3, Real >( By, Az, Bz ) );
       return true;
    }
 

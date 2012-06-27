@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlLongVector.h>
+#include <core/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlMatrix.h>
@@ -95,10 +95,10 @@ class tnlFastRgCSRMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCu
                     int column ) const;
 
    Real rowProduct( int row,
-                    const tnlLongVector< Real, tnlCuda, Index >& vector ) const;
+                    const tnlVector< Real, tnlCuda, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, tnlCuda, Index >& x,
-                       tnlLongVector< Real, tnlCuda, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, tnlCuda, Index >& x,
+                       tnlVector< Real, tnlCuda, Index >& b ) const;
 
    Real getRowL1Norm( int row ) const
    { abort(); };
@@ -124,9 +124,9 @@ class tnlFastRgCSRMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCu
    bool insertBlock( );
 
    //! This array stores the non-zero elements of the sparse matrix.
-   tnlLongVector< Real, tnlCuda > nonzero_elements;
+   tnlVector< Real, tnlCuda > nonzero_elements;
 
-   tnlLongVector< int, tnlCuda, int > block_offsets;
+   tnlVector< int, tnlCuda, int > block_offsets;
 
 
    //! This array stores so called 'column sequences'.
@@ -139,24 +139,24 @@ class tnlFastRgCSRMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCu
     *  This array is allocated by the same size as the @param nonzero_elements. However, not all
     *  alocated memory is used.
     */
-   tnlLongVector< int, tnlCuda, int > column_sequences;
+   tnlVector< int, tnlCuda, int > column_sequences;
 
    //! This arrays stores the offsets of the column sequences begins in the column_sequences.
    /*! This array is allocated by the same size as the matrix size is. However, there might
     *  be less column sequences then the matrix rows.
     */
-   tnlLongVector< int, tnlCuda, int > columns_sequences_offsets;
+   tnlVector< int, tnlCuda, int > columns_sequences_offsets;
 
    //! This says where given block of column sequences begins
-   tnlLongVector< int, tnlCuda, int > columns_sequences_blocks_offsets;
+   tnlVector< int, tnlCuda, int > columns_sequences_blocks_offsets;
 
-   tnlLongVector< int, tnlCuda, int > column_sequences_in_block;
+   tnlVector< int, tnlCuda, int > column_sequences_in_block;
 
    //! This array stores the lengths of each column sequence.
    /*! This array is allocated by the same size as the matrix size is. However, there might
     *  be less column sequences then the matrix rows.
     */
-   tnlLongVector< int, tnlCuda, int > column_sequences_lengths;
+   tnlVector< int, tnlCuda, int > column_sequences_lengths;
 
    int block_size;
 
@@ -314,7 +314,7 @@ Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getElement( int row,
 
 template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: rowProduct( int row,
-                                                               const tnlLongVector< Real, tnlCuda, Index >& vec ) const
+                                                               const tnlVector< Real, tnlCuda, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this -> getSize(),
 			  cerr << "The row is outside the matrix." );
@@ -324,8 +324,8 @@ Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: rowProduct( int row,
 }
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlLongVector< Real, tnlCuda, Index >& vec,
-                                                                  tnlLongVector< Real, tnlCuda, Index >& result ) const
+void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector< Real, tnlCuda, Index >& vec,
+                                                                  tnlVector< Real, tnlCuda, Index >& result ) const
 {
    tnlAssert( vec != NULL && result != NULL,);
 

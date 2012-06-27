@@ -39,13 +39,13 @@ class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    const Index& getNumberOfDiagonals() const;
 
-   void setDiagonalsOffsets( const tnlLongVector< Index, Device, Index >& diagonalsOffsets );
+   void setDiagonalsOffsets( const tnlVector< Index, Device, Index >& diagonalsOffsets );
 
    bool setNonzeroElements( Index elements );
 
    Index getNonzeroElements() const;
 
-   const tnlLongVector< Index, Device, Index >& getDiagonalsOffsets() const;
+   const tnlVector< Index, Device, Index >& getDiagonalsOffsets() const;
 
    bool setLike( const tnlCSRMatrix< Real, Device, Index >& matrix );
 
@@ -78,14 +78,14 @@ class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlLongVector< Real, Device, Index >& vector ) const;
+                    const tnlVector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlLongVector< Real, Device, Index >& x,
-                       tnlLongVector< Real, Device, Index >& b ) const;
+   void vectorProduct( const tnlVector< Real, Device, Index >& x,
+                       tnlVector< Real, Device, Index >& b ) const;
 
    bool performSORIteration( const Real& omega,
-                             const tnlLongVector< Real, Device, Index >& b,
-                             tnlLongVector< Real, Device, Index >& x,
+                             const tnlVector< Real, Device, Index >& b,
+                             tnlVector< Real, Device, Index >& x,
                              Index firstRow,
                              Index lastRow ) const;
 
@@ -118,9 +118,9 @@ class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    Index numberOfDiagonals;
 
-   tnlLongVector< Real, Device, Index > nonzeroElements;
+   tnlVector< Real, Device, Index > nonzeroElements;
 
-   tnlLongVector< Index, Device, Index > diagonalsOffsets;
+   tnlVector< Index, Device, Index > diagonalsOffsets;
 
 };
 
@@ -189,7 +189,7 @@ Index tnlMultiDiagonalMatrix< Real, Device, Index > :: getNonzeroElements() cons
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const tnlLongVector< Index, Device, Index >& diagonalsOffsets )
+void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const tnlVector< Index, Device, Index >& diagonalsOffsets )
 {
    tnlAssert( diagonalsOffsets. getSize() == this -> diagonalsOffsest. getSize(),
               cerr << "diagonalsOffsets. getSize() = " << diagonalsOffsets. getSize()
@@ -198,7 +198,7 @@ void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-const tnlLongVector< Index, Device, Index >& tnlMultiDiagonalMatrix< Real, Device, Index > :: getDiagonalsOffsets() const
+const tnlVector< Index, Device, Index >& tnlMultiDiagonalMatrix< Real, Device, Index > :: getDiagonalsOffsets() const
 {
    return this -> diagonalsOffsets();
 }
@@ -284,7 +284,7 @@ Real tnlMultiDiagonalMatrix< Real, Device, Index > :: getElement( Index row,
 
 template< typename Real, tnlDevice Device, typename Index >
 Real tnlMultiDiagonalMatrix< Real, Device, Index > :: rowProduct( Index row,
-                  const tnlLongVector< Real, Device, Index >& vector ) const
+                  const tnlVector< Real, Device, Index >& vector ) const
 {
    Real result = 0.0;
    for( Index i = 0;
@@ -300,8 +300,8 @@ Real tnlMultiDiagonalMatrix< Real, Device, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, tnlDevice Device, typename Index >
-void tnlMultiDiagonalMatrix< Real, Device, Index > :: vectorProduct( const tnlLongVector< Real, Device, Index >& x,
-                                                                     tnlLongVector< Real, Device, Index >& b ) const
+void tnlMultiDiagonalMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& x,
+                                                                     tnlVector< Real, Device, Index >& b ) const
 {
 
    for( Index row = 0; row < this -> getSize(); row ++ )
@@ -322,8 +322,8 @@ void tnlMultiDiagonalMatrix< Real, Device, Index > :: vectorProduct( const tnlLo
 
 template< typename Real, tnlDevice Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
-                                                                           const tnlLongVector< Real, Device, Index >& b,
-                                                                           tnlLongVector< Real, Device, Index >& x,
+                                                                           const tnlVector< Real, Device, Index >& b,
+                                                                           tnlVector< Real, Device, Index >& x,
                                                                            Index firstRow,
                                                                            Index lastRow ) const
 {

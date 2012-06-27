@@ -1,5 +1,5 @@
 /***************************************************************************
- tnlLongVectorCUDA.h  -  description
+ tnlVectorCUDA.h  -  description
  -------------------
  begin                : Dec 27, 2009
  copyright            : (C) 2009 by Tomas Oberhuber
@@ -38,35 +38,35 @@ using namespace std;
 #include <core/param-types.h>
 #include <core/mfuncs.h>
 #include <core/tnlCudaSupport.h>
-#include <core/tnlLongVectorBase.h>
+#include <core/tnlVectorBase.h>
 #include <core/low-level/cuda-long-vector-kernels.h>
 #include <debug/tnlDebug.h>
 
 
 template< typename Real, typename Index >
-class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
+class tnlVector< Real, tnlCuda, Index > : public tnlVectorBase< Real >
 {
    //! We do not allow constructor without parameters.
-   tnlLongVector(){};
+   tnlVector(){};
 
    /****
     * We do not allow copy constructors as well to avoid having two
     * vectors with the same name.
     */
-   tnlLongVector( const tnlLongVector< Real, tnlHost, Index >& v ){};
+   tnlVector( const tnlVector< Real, tnlHost, Index >& v ){};
 
-   tnlLongVector( const tnlLongVector< Real, tnlCuda, Index >& v ){};
+   tnlVector( const tnlVector< Real, tnlCuda, Index >& v ){};
 
    public:
 
    //! Basic constructor
-   tnlLongVector( const tnlString& name, int _size = 0 );
+   tnlVector( const tnlString& name, int _size = 0 );
 
    //! Constructor with another long vector as template
-   tnlLongVector( const tnlString& name, const tnlLongVector< Real, tnlHost, Index >& v );
+   tnlVector( const tnlString& name, const tnlVector< Real, tnlHost, Index >& v );
 
    //! Constructor with another long vector as template
-   tnlLongVector( const tnlString& name, const tnlLongVector< Real, tnlCuda, Index >& v );
+   tnlVector( const tnlString& name, const tnlVector< Real, tnlCuda, Index >& v );
 
    //! Use this if you want to insert some data in this vector.
    /*!***
@@ -79,23 +79,23 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
    bool setSize( Index _size );
 
    //! Set size of the vector using another vector as a template
-   bool setSize( const tnlLongVector< Real, tnlCuda, Index >& v );
+   bool setSize( const tnlVector< Real, tnlCuda, Index >& v );
 
    //! Set size of the vector using another vector as a template
-   bool setSize( const tnlLongVector< Real, tnlHost, Index >& v );
+   bool setSize( const tnlVector< Real, tnlHost, Index >& v );
 
    //! Set size of the vector using another vector as a template
-   bool setLike( const tnlLongVector< Real, tnlHost, Index >& v );
+   bool setLike( const tnlVector< Real, tnlHost, Index >& v );
 
    //! Set size of the vector using another vector as a template
-   bool setLike( const tnlLongVector< Real, tnlCuda, Index >& v );
+   bool setLike( const tnlVector< Real, tnlCuda, Index >& v );
 
    /*!**
     * Free allocated memory
     */
    void reset();
 
-   void swap( tnlLongVector< Real, tnlCuda, Index >& u );
+   void swap( tnlVector< Real, tnlCuda, Index >& u );
 
    //! Returns type of this vector written in a form of C++ template type.
    tnlString getType() const;
@@ -152,20 +152,20 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
     */
    const Real& operator[] ( Index i ) const;
 
-   bool operator == ( const tnlLongVector< Real, tnlCuda, Index >& long_vector ) const;
+   bool operator == ( const tnlVector< Real, tnlCuda, Index >& long_vector ) const;
 
-   bool operator != ( const tnlLongVector< Real, tnlCuda, Index >& long_vector ) const;
+   bool operator != ( const tnlVector< Real, tnlCuda, Index >& long_vector ) const;
 
-   bool operator == ( const tnlLongVector< Real, tnlHost, Index >& long_vector ) const;
+   bool operator == ( const tnlVector< Real, tnlHost, Index >& long_vector ) const;
 
-   bool operator != ( const tnlLongVector< Real, tnlHost, Index >& long_vector ) const;
+   bool operator != ( const tnlVector< Real, tnlHost, Index >& long_vector ) const;
 
-   tnlLongVector< Real, tnlCuda, Index >& operator = ( const tnlLongVector< Real, tnlCuda, Index >& cuda_vector );
+   tnlVector< Real, tnlCuda, Index >& operator = ( const tnlVector< Real, tnlCuda, Index >& cuda_vector );
 
-   tnlLongVector< Real, tnlCuda, Index >& operator = ( const tnlLongVector< Real, tnlHost, Index >& long_vector );
+   tnlVector< Real, tnlCuda, Index >& operator = ( const tnlVector< Real, tnlHost, Index >& long_vector );
 
    template< typename Real2, typename Index2 >
-   tnlLongVector< Real, tnlCuda, Index >& operator = ( const tnlLongVector< Real2, tnlCuda, Index2 >& long_vector );
+   tnlVector< Real, tnlCuda, Index >& operator = ( const tnlVector< Real2, tnlCuda, Index2 >& long_vector );
 
    void setValue( const Real& v );
 
@@ -175,7 +175,7 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
    //! Method for restoring the object from a file
    virtual bool load( tnlFile& file );
 
-    ~tnlLongVector();
+    ~tnlVector();
 
    protected:
 
@@ -188,81 +188,81 @@ class tnlLongVector< Real, tnlCuda, Index > : public tnlLongVectorBase< Real >
 };
 
 template< typename Real, typename Index >
-bool operator == ( const tnlLongVector< Real, tnlHost, Index >& host_vector,
-                   const tnlLongVector< Real, tnlCuda, Index >& cuda_vector );
+bool operator == ( const tnlVector< Real, tnlHost, Index >& host_vector,
+                   const tnlVector< Real, tnlCuda, Index >& cuda_vector );
 
 template< typename Real, typename Index >
-bool operator != ( const tnlLongVector< Real, tnlHost, Index >& host_vector,
-                   const tnlLongVector< Real, tnlCuda, Index >& cuda_vector );
+bool operator != ( const tnlVector< Real, tnlHost, Index >& host_vector,
+                   const tnlVector< Real, tnlCuda, Index >& cuda_vector );
 
 template< typename Real, typename Index >
-ostream& operator << ( ostream& str, const tnlLongVector< Real, tnlCuda, Index >& vec );
+ostream& operator << ( ostream& str, const tnlVector< Real, tnlCuda, Index >& vec );
 
 /****
  * Here are some Blas style functions. They are not methods
  * because it would put too many restrictions on type Real.
- * In fact, we would like to use tnlLongVector to store objects
+ * In fact, we would like to use tnlVector to store objects
  * like edges or triangles in case of meshes. For these objects
  * operations like +, min or max are not defined.
  */
 
 template< typename Real, typename Index >
-Real tnlMax( const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlMax( const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlMin( const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlMin( const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlAbsMax( const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlAbsMax( const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlAbsMin( const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlAbsMin( const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlLpNorm( const tnlLongVector< Real, tnlCuda, Index >& v, const Real& p );
+Real tnlLpNorm( const tnlVector< Real, tnlCuda, Index >& v, const Real& p );
 
 template< typename Real, typename Index >
-Real tnlDifferenceMax( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlDifferenceMax( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlDifferenceMin( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlDifferenceMin( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlDifferenceAbsMax( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlDifferenceAbsMax( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlDifferenceAbsMin( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlDifferenceAbsMin( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlDifferenceLpNorm( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v, const Real& p );
+Real tnlDifferenceLpNorm( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v, const Real& p );
 
 template< typename Real, typename Index >
-Real tnlDifferenceSum( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlDifferenceSum( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v );
 
 template< typename Real, typename Index >
-Real tnlSum( const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlSum( const tnlVector< Real, tnlCuda, Index >& v );
 
 //! Computes u *= aplha
 template< typename Real, typename Index >
 void tnlScalarMultiplication( const Real& alpha,
-                              tnlLongVector< Real, tnlCuda, Index >& u );
+                              tnlVector< Real, tnlCuda, Index >& u );
 
 //! Computes scalar dot product
 template< typename Real, typename Index >
-Real tnlSDOT( const tnlLongVector< Real, tnlCuda, Index >& u ,
-              const tnlLongVector< Real, tnlCuda, Index >& v );
+Real tnlSDOT( const tnlVector< Real, tnlCuda, Index >& u ,
+              const tnlVector< Real, tnlCuda, Index >& v );
 
 //! Computes SAXPY operation (Scalar Alpha X Pus Y ).
 template< typename Real, typename Index >
 void tnlSAXPY( const Real& alpha,
-               const tnlLongVector< Real, tnlCuda, Index >& x,
-               tnlLongVector< Real, tnlCuda, Index >& y );
+               const tnlVector< Real, tnlCuda, Index >& x,
+               tnlVector< Real, tnlCuda, Index >& y );
 
 //! Computes SAXMY operation (Scalar Alpha X Minus Y ).
 /*!**
@@ -270,43 +270,43 @@ void tnlSAXPY( const Real& alpha,
  */
 template< typename Real, typename Index >
 void tnlSAXMY( const Real& alpha,
-               const tnlLongVector< Real, tnlCuda, Index >& x,
-               tnlLongVector< Real, tnlCuda, Index >& y );
+               const tnlVector< Real, tnlCuda, Index >& x,
+               tnlVector< Real, tnlCuda, Index >& y );
 
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void tnlLongVectorCUDASetValueKernel( Real* data,
+__global__ void tnlVectorCUDASetValueKernel( Real* data,
                                                  const Index size,
                                                  const Real v  );
 #endif
 
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index > :: tnlLongVector( const tnlString& name, int _size )
-: tnlLongVectorBase< Real >( name ), safeMode( true )
+tnlVector< Real, tnlCuda, Index > :: tnlVector( const tnlString& name, int _size )
+: tnlVectorBase< Real >( name ), safeMode( true )
 {
   setSize( _size );
 };
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index > :: tnlLongVector( const tnlString& name,
-                                                        const tnlLongVector< Real, tnlHost, Index >& v )
-   : tnlLongVectorBase< Real >( name ), safeMode( true )
+tnlVector< Real, tnlCuda, Index > :: tnlVector( const tnlString& name,
+                                                        const tnlVector< Real, tnlHost, Index >& v )
+   : tnlVectorBase< Real >( name ), safeMode( true )
 {
    setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index > :: tnlLongVector( const tnlString& name,
-                                                        const tnlLongVector< Real, tnlCuda, Index >& v )
-   : tnlLongVectorBase< Real >( name ), safeMode( true )
+tnlVector< Real, tnlCuda, Index > :: tnlVector( const tnlString& name,
+                                                        const tnlVector< Real, tnlCuda, Index >& v )
+   : tnlVectorBase< Real >( name ), safeMode( true )
 {
    setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: setSharedData( Real* _data, const Index _size )
+void tnlVector< Real, tnlCuda, Index > :: setSharedData( Real* _data, const Index _size )
 {
 #ifdef HAVE_CUDA
 
@@ -321,11 +321,11 @@ void tnlLongVector< Real, tnlCuda, Index > :: setSharedData( Real* _data, const 
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
+bool tnlVector< Real, tnlCuda, Index > :: setSize( Index _size )
 {
-   dbgFunctionName( "tnlLongVectorCUDA", "setSize" );
+   dbgFunctionName( "tnlVectorCUDA", "setSize" );
    tnlAssert( _size >= 0,
-            cerr << "You try to set size of tnlLongVector to negative value."
+            cerr << "You try to set size of tnlVector to negative value."
                  << "Vector name: " << this -> getName() << endl
                  << "New size: " << _size << endl );
    /* In the case that we run without active macro tnlAssert
@@ -333,7 +333,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
     */
    if( _size < 0 )
    {
-      cerr << "Negative size " << _size << " was passed to tnlLongVector " << this -> getName() << "." << endl;
+      cerr << "Negative size " << _size << " was passed to tnlVector " << this -> getName() << "." << endl;
       return false;
    }
 #ifdef HAVE_CUDA
@@ -373,33 +373,33 @@ bool tnlLongVector< Real, tnlCuda, Index > :: setSize( Index _size )
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: setSize( const tnlLongVector< Real, tnlHost, Index >& v )
+bool tnlVector< Real, tnlCuda, Index > :: setSize( const tnlVector< Real, tnlHost, Index >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: setSize( const tnlLongVector< Real, tnlCuda, Index >& v )
+bool tnlVector< Real, tnlCuda, Index > :: setSize( const tnlVector< Real, tnlCuda, Index >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: setLike( const tnlLongVector< Real, tnlHost, Index >& v )
+bool tnlVector< Real, tnlCuda, Index > :: setLike( const tnlVector< Real, tnlHost, Index >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: setLike( const tnlLongVector< Real, tnlCuda, Index >& v )
+bool tnlVector< Real, tnlCuda, Index > :: setLike( const tnlVector< Real, tnlCuda, Index >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: reset()
+void tnlVector< Real, tnlCuda, Index > :: reset()
 {
-   dbgFunctionName( "tnlLongVectorCUDA", "reset" );
+   dbgFunctionName( "tnlVectorCUDA", "reset" );
 #ifdef HAVE_CUDA
    if( this -> data && ! this -> shared_data )
    {
@@ -415,7 +415,7 @@ void tnlLongVector< Real, tnlCuda, Index > :: reset()
 };
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: swap( tnlLongVector< Real, tnlCuda, Index >& v )
+void tnlVector< Real, tnlCuda, Index > :: swap( tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( this -> getSize() > 0, );
    tnlAssert( this -> getSize() == v. getSize(),
@@ -428,26 +428,26 @@ void tnlLongVector< Real, tnlCuda, Index > :: swap( tnlLongVector< Real, tnlCuda
 };
 
 template< typename Real, typename Index >
-tnlString tnlLongVector< Real, tnlCuda, Index > :: getType() const
+tnlString tnlVector< Real, tnlCuda, Index > :: getType() const
 {
     Real t;
-    return tnlString( "tnlLongVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( ", tnlCuda >" );
+    return tnlString( "tnlVector< " ) + tnlString( GetParameterType( t ) ) + tnlString( ", tnlCuda >" );
 };
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: setSafeMode( bool mode )
+void tnlVector< Real, tnlCuda, Index > :: setSafeMode( bool mode )
 {
    safeMode = mode;
 }
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: getSafeMode() const
+bool tnlVector< Real, tnlCuda, Index > :: getSafeMode() const
 {
    return safeMode;
 }
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: setElement( Index i, Real d )
+void tnlVector< Real, tnlCuda, Index > :: setElement( Index i, Real d )
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -474,7 +474,7 @@ void tnlLongVector< Real, tnlCuda, Index > :: setElement( Index i, Real d )
 };
 
 template< typename Real, typename Index >
-Real tnlLongVector< Real, tnlCuda, Index > :: getElement( Index i ) const
+Real tnlVector< Real, tnlCuda, Index > :: getElement( Index i ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -503,11 +503,11 @@ Real tnlLongVector< Real, tnlCuda, Index > :: getElement( Index i ) const
 };
 
 template< typename Real, typename Index >
-Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )
+Real& tnlVector< Real, tnlCuda, Index > :: operator[] ( Index i )
 {
    cerr << "I am sorry. You try to call the following operator: " << endl;
    cerr << endl;
-   cerr << "Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
+   cerr << "Real& tnlVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
    cerr << endl;
    cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
@@ -518,11 +518,11 @@ Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )
 }
 
 template< typename Real, typename Index >
-const Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i ) const
+const Real& tnlVector< Real, tnlCuda, Index > :: operator[] ( Index i ) const
 {
    cerr << "I am sorry. You try to call the following operator: " << endl;
    cerr << endl;
-   cerr << "Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
+   cerr << "Real& tnlVector< Real, tnlCuda, Index > :: operator[] ( Index i )" << endl;
    cerr << endl;
    cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
@@ -533,7 +533,7 @@ const Real& tnlLongVector< Real, tnlCuda, Index > :: operator[] ( Index i ) cons
 }
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: operator == ( const tnlLongVector< Real, tnlCuda, Index >& cuda_vector ) const
+bool tnlVector< Real, tnlCuda, Index > :: operator == ( const tnlVector< Real, tnlCuda, Index >& cuda_vector ) const
 {
    tnlAssert( this -> getSize() == cuda_vector. getSize(),
               cerr << "You try to compare two long vectors with different sizes." << endl
@@ -552,13 +552,13 @@ bool tnlLongVector< Real, tnlCuda, Index > :: operator == ( const tnlLongVector<
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: operator != ( const tnlLongVector< Real, tnlCuda, Index >& long_vector ) const
+bool tnlVector< Real, tnlCuda, Index > :: operator != ( const tnlVector< Real, tnlCuda, Index >& long_vector ) const
 {
    return ! ( ( *this ) == long_vector );
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: operator == ( const tnlLongVector< Real, tnlHost, Index >& host_vector ) const
+bool tnlVector< Real, tnlCuda, Index > :: operator == ( const tnlVector< Real, tnlHost, Index >& host_vector ) const
 {
    tnlAssert( this -> getSize() == host_vector. getSize(),
               cerr << "You try to compare two long vectors with different sizes." << endl
@@ -610,13 +610,13 @@ bool tnlLongVector< Real, tnlCuda, Index > :: operator == ( const tnlLongVector<
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: operator != ( const tnlLongVector< Real, tnlHost, Index >& long_vector ) const
+bool tnlVector< Real, tnlCuda, Index > :: operator != ( const tnlVector< Real, tnlHost, Index >& long_vector ) const
 {
    return ! ( ( *this ) == long_vector );
 };
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: operator = ( const tnlLongVector< Real, tnlHost, Index >& rhs_vector )
+tnlVector< Real, tnlCuda, Index >& tnlVector< Real, tnlCuda, Index > :: operator = ( const tnlVector< Real, tnlHost, Index >& rhs_vector )
 {
 #ifdef HAVE_CUDA
    tnlAssert( rhs_vector. getSize() == this -> getSize(),
@@ -645,7 +645,7 @@ tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: 
 };
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: operator = ( const tnlLongVector< Real, tnlCuda, Index >& rhs_vector )
+tnlVector< Real, tnlCuda, Index >& tnlVector< Real, tnlCuda, Index > :: operator = ( const tnlVector< Real, tnlCuda, Index >& rhs_vector )
 {
 #ifdef HAVE_CUDA
     tnlAssert( rhs_vector. getSize() == this -> getSize(),
@@ -674,7 +674,7 @@ tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: 
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: save( tnlFile& file ) const
+bool tnlVector< Real, tnlCuda, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "You try to save empty vector. Its name is " << this -> getName() );
@@ -693,7 +693,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: save( tnlFile& file ) const
 };
 
 template< typename Real, typename Index >
-bool tnlLongVector< Real, tnlCuda, Index > :: load( tnlFile& file )
+bool tnlVector< Real, tnlCuda, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
@@ -717,7 +717,7 @@ bool tnlLongVector< Real, tnlCuda, Index > :: load( tnlFile& file )
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Real2, typename Index2 >
-__global__ void tnlLongVectorCUDAAssignOperatorKernel( const Real2* source,
+__global__ void tnlVectorCUDAAssignOperatorKernel( const Real2* source,
                                                        const Index targetSize,
                                                        Real* target )
 {
@@ -729,7 +729,7 @@ __global__ void tnlLongVectorCUDAAssignOperatorKernel( const Real2* source,
 
 template< typename Real, typename Index >
    template< typename Real2, typename Index2 >
-tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: operator = ( const tnlLongVector< Real2, tnlCuda, Index2 >& long_vector )
+tnlVector< Real, tnlCuda, Index >& tnlVector< Real, tnlCuda, Index > :: operator = ( const tnlVector< Real2, tnlCuda, Index2 >& long_vector )
 {
    tnlAssert( long_vector. getSize() == this -> getSize(),
            cerr << "Source name: " << long_vector. getName() << endl
@@ -742,7 +742,7 @@ tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: 
    blockSize. x = 512;
    gridSize. x = this -> getSize() / 512 + 1;
 
-   tnlLongVectorCUDAAssignOperatorKernel<<< gridSize, blockSize >>>( long_vector. getVector(),
+   tnlVectorCUDAAssignOperatorKernel<<< gridSize, blockSize >>>( long_vector. getVector(),
                                                                      this -> getSize(),
                                                                      this -> getVector() );
 #else
@@ -752,14 +752,14 @@ tnlLongVector< Real, tnlCuda, Index >& tnlLongVector< Real, tnlCuda, Index > :: 
 };
 
 template< typename Real, typename Index >
-void tnlLongVector< Real, tnlCuda, Index > :: setValue( const Real& v )
+void tnlVector< Real, tnlCuda, Index > :: setValue( const Real& v )
 {
 #ifdef HAVE_CUDA
    dim3 blockSize, gridSize;
    blockSize. x = 512;
    gridSize. x = this -> getSize() / 512 + 1;
 
-   tnlLongVectorCUDASetValueKernel<<< gridSize, blockSize >>>( this -> getVector(),
+   tnlVectorCUDASetValueKernel<<< gridSize, blockSize >>>( this -> getVector(),
                                                                this -> getSize(),
                                                                v );
 #else
@@ -768,9 +768,9 @@ void tnlLongVector< Real, tnlCuda, Index > :: setValue( const Real& v )
 }
 
 template< typename Real, typename Index >
-tnlLongVector< Real, tnlCuda, Index > :: ~tnlLongVector()
+tnlVector< Real, tnlCuda, Index > :: ~tnlVector()
 {
-   dbgFunctionName( "tnlLongVectorCUDA", "~tnlLongVectorCUDA" );
+   dbgFunctionName( "tnlVectorCUDA", "~tnlVectorCUDA" );
 #ifdef HAVE_CUDA
    if( this -> data && ! this -> shared_data )
    {
@@ -794,7 +794,7 @@ tnlLongVector< Real, tnlCuda, Index > :: ~tnlLongVector()
  * parameter v explicitly.
  */
 template< typename Real, typename Index >
-__global__ void tnlLongVectorCUDASetValueKernel( Real* data,
+__global__ void tnlVectorCUDASetValueKernel( Real* data,
                                                  const Index size,
                                                  const Real v )
 {
@@ -805,21 +805,21 @@ __global__ void tnlLongVectorCUDASetValueKernel( Real* data,
 #endif
 
 template< typename Real, typename Index >
-bool operator == ( const tnlLongVector< Real, tnlHost, Index >& host_vector,
-		             const tnlLongVector< Real, tnlCuda, Index >& cuda_vector )
+bool operator == ( const tnlVector< Real, tnlHost, Index >& host_vector,
+		             const tnlVector< Real, tnlCuda, Index >& cuda_vector )
 {
 	return ( cuda_vector == host_vector );
 };
 
 template< typename Real, typename Index >
-bool operator != ( const tnlLongVector< Real, tnlHost, Index >& host_vector,
-		             const tnlLongVector< Real, tnlCuda, Index >& cuda_vector )
+bool operator != ( const tnlVector< Real, tnlHost, Index >& host_vector,
+		             const tnlVector< Real, tnlCuda, Index >& cuda_vector )
 {
 	return !( cuda_vector == host_vector );
 };
 
 template< typename Real, typename Index >
-ostream& operator << ( ostream& str, const tnlLongVector< Real, tnlCuda, Index >& vec )
+ostream& operator << ( ostream& str, const tnlVector< Real, tnlCuda, Index >& vec )
 {
 #ifdef HAVE_CUDA
    Index size = vec. getSize();
@@ -849,7 +849,7 @@ ostream& operator << ( ostream& str, const tnlLongVector< Real, tnlCuda, Index >
 };
 
 template< typename Real, typename Index >
-Real tnlMax( const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlMax( const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -863,7 +863,7 @@ Real tnlMax( const tnlLongVector< Real, tnlCuda, Index >& v )
 }
 
 template< typename Real, typename Index >
-Real tnlMin( const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlMin( const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -877,7 +877,7 @@ Real tnlMin( const tnlLongVector< Real, tnlCuda, Index >& v )
 }
 
 template< typename Real, typename Index >
-Real tnlAbsMax( const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlAbsMax( const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -891,7 +891,7 @@ Real tnlAbsMax( const tnlLongVector< Real, tnlCuda, Index >& v )
 }
 
 template< typename Real, typename Index >
-Real tnlAbsMin( const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlAbsMin( const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -905,7 +905,7 @@ Real tnlAbsMin( const tnlLongVector< Real, tnlCuda, Index >& v )
 }
 
 template< typename Real, typename Index >
-Real tnlLpNorm( const tnlLongVector< Real, tnlCuda, Index >& v, const Real& p )
+Real tnlLpNorm( const tnlVector< Real, tnlCuda, Index >& v, const Real& p )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -919,7 +919,7 @@ Real tnlLpNorm( const tnlLongVector< Real, tnlCuda, Index >& v, const Real& p )
 }
 
 template< typename Real, typename Index >
-Real tnlSum( const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlSum( const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( v. getSize() != 0,
               cerr << "Vector name is " << v. getName() );
@@ -934,7 +934,7 @@ Real tnlSum( const tnlLongVector< Real, tnlCuda, Index >& v )
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void tnlLongVectorCUDAScalaMultiplicationKernel( const Index size,
+__global__ void tnlVectorCUDAScalaMultiplicationKernel( const Index size,
                                                             const Real alpha,
                                                             Real* x )
 {
@@ -945,8 +945,8 @@ __global__ void tnlLongVectorCUDAScalaMultiplicationKernel( const Index size,
 #endif
 
 template< typename Real, typename Index >
-Real tnlDifferenceMax( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlDifferenceMax( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -962,8 +962,8 @@ Real tnlDifferenceMax( const tnlLongVector< Real, tnlCuda, Index >& u,
 }
 
 template< typename Real, typename Index >
-Real tnlDifferenceMin( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlDifferenceMin( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -979,8 +979,8 @@ Real tnlDifferenceMin( const tnlLongVector< Real, tnlCuda, Index >& u,
 }
 
 template< typename Real, typename Index >
-Real tnlDifferenceAbsMax( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlDifferenceAbsMax( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -996,8 +996,8 @@ Real tnlDifferenceAbsMax( const tnlLongVector< Real, tnlCuda, Index >& u,
 }
 
 template< typename Real, typename Index >
-Real tnlDifferenceAbsMin( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlDifferenceAbsMin( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -1013,8 +1013,8 @@ Real tnlDifferenceAbsMin( const tnlLongVector< Real, tnlCuda, Index >& u,
 }
 
 template< typename Real, typename Index >
-Real tnlDifferenceLpNorm( const tnlLongVector< Real, tnlCuda, Index >& u,
-                          const tnlLongVector< Real, tnlCuda, Index >& v, const Real& p )
+Real tnlDifferenceLpNorm( const tnlVector< Real, tnlCuda, Index >& u,
+                          const tnlVector< Real, tnlCuda, Index >& v, const Real& p )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -1030,8 +1030,8 @@ Real tnlDifferenceLpNorm( const tnlLongVector< Real, tnlCuda, Index >& u,
 }
 
 template< typename Real, typename Index >
-Real tnlDifferenceSum( const tnlLongVector< Real, tnlCuda, Index >& u,
-                       const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlDifferenceSum( const tnlVector< Real, tnlCuda, Index >& u,
+                       const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -1049,7 +1049,7 @@ Real tnlDifferenceSum( const tnlLongVector< Real, tnlCuda, Index >& u,
 
 template< typename Real, typename Index >
 void tnlScalarMultiplication( const Real& alpha,
-                              tnlLongVector< Real, tnlCuda, Index >& u )
+                              tnlVector< Real, tnlCuda, Index >& u )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -1058,7 +1058,7 @@ void tnlScalarMultiplication( const Real& alpha,
    blockSize. x = 512;
    gridSize. x = u. getSize() / 512 + 1;
 
-   tnlLongVectorCUDAScalaMultiplicationKernel<<< gridSize, blockSize >>>( u. getSize(),
+   tnlVectorCUDAScalaMultiplicationKernel<<< gridSize, blockSize >>>( u. getSize(),
                                                                           alpha,
                                                                           u. getVector() );
 #else
@@ -1067,8 +1067,8 @@ void tnlScalarMultiplication( const Real& alpha,
 }
 
 template< typename Real, typename Index >
-Real tnlSDOT( const tnlLongVector< Real, tnlCuda, Index >& u ,
-              const tnlLongVector< Real, tnlCuda, Index >& v )
+Real tnlSDOT( const tnlVector< Real, tnlCuda, Index >& u ,
+              const tnlVector< Real, tnlCuda, Index >& v )
 {
    tnlAssert( u. getSize() != 0,
               cerr << "Vector name is " << u. getName() );
@@ -1087,7 +1087,7 @@ Real tnlSDOT( const tnlLongVector< Real, tnlCuda, Index >& u ,
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void tnlLongVectorCUDASaxpyKernel( const Index size,
+__global__ void tnlVectorCUDASaxpyKernel( const Index size,
                                               const Real alpha,
                                               const Real* x,
                                               Real* y )
@@ -1101,8 +1101,8 @@ __global__ void tnlLongVectorCUDASaxpyKernel( const Index size,
 //! Compute SAXPY operation (Scalar Alpha X Plus Y ).
 template< typename Real, typename Index >
 void tnlSAXPY( const Real& alpha,
-               const tnlLongVector< Real, tnlCuda, Index >& x,
-               tnlLongVector< Real, tnlCuda, Index >& y )
+               const tnlVector< Real, tnlCuda, Index >& x,
+               tnlVector< Real, tnlCuda, Index >& y )
 {
    tnlAssert( x. getSize() != 0,
               cerr << "Vector name is " << x. getName() );
@@ -1115,7 +1115,7 @@ void tnlSAXPY( const Real& alpha,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlLongVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( x. getSize(),
+   tnlVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( x. getSize(),
                                                             alpha,
                                                             x. getVector(),
                                                             y. getVector() );
@@ -1127,7 +1127,7 @@ void tnlSAXPY( const Real& alpha,
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void tnlLongVectorCUDASaxmyKernel( const Index size,
+__global__ void tnlVectorCUDASaxmyKernel( const Index size,
                                               const Real alpha,
                                               const Real* x,
                                               Real* y )
@@ -1140,8 +1140,8 @@ __global__ void tnlLongVectorCUDASaxmyKernel( const Index size,
 
 template< typename Real, typename Index >
 void tnlSAXMY( const Real& alpha,
-               const tnlLongVector< Real, tnlCuda, Index >& x,
-               tnlLongVector< Real, tnlCuda, Index >& y )
+               const tnlVector< Real, tnlCuda, Index >& x,
+               tnlVector< Real, tnlCuda, Index >& y )
 {
    tnlAssert( x. getSize() != 0,
               cerr << "Vector name is " << x. getName() );
@@ -1154,7 +1154,7 @@ void tnlSAXMY( const Real& alpha,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlLongVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( x. getSize(),
+   tnlVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( x. getSize(),
                                                             alpha,
                                                             x. getVector(),
                                                             y. getVector() );

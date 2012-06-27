@@ -126,10 +126,10 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
    };
    
    T rowProduct( const int row,
-                 const tnlLongVector< T >& vec ) const {};
+                 const tnlVector< T >& vec ) const {};
    
-   void vectorProduct( const tnlLongVector< T >&* vec,
-                       tnlLongVector< T >&* result ) const
+   void vectorProduct( const tnlVector< T >&* vec,
+                       tnlVector< T >&* result ) const
    {
 #ifdef HAVE_PETSC
       Vec petsc_vec, petsc_res;

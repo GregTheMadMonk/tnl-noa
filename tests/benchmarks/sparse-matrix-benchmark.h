@@ -46,9 +46,9 @@ double bestCudaRgCSRGflops( 0 );
 
 template< typename Real >
 void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
-                           const tnlLongVector< Real, tnlHost >& refX,
-                           const tnlLongVector< Real, tnlCuda >& cudaX,
-                           tnlLongVector< Real, tnlHost >& refB,
+                           const tnlVector< Real, tnlHost >& refX,
+                           const tnlVector< Real, tnlCuda >& cudaX,
+                           tnlVector< Real, tnlHost >& refB,
                            bool formatTest,
                            const int maxIterations,
                            const bool useAdaptiveGroupSize,
@@ -145,8 +145,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
            << " Non-zero elements: " << nonzeroElements << endl;
 
    const long int size = csrMatrix. getSize();
-   tnlLongVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
-   tnlLongVector< Real, tnlCuda > cudaX( "cudaX", size );
+   tnlVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
+   tnlVector< Real, tnlCuda > cudaX( "cudaX", size );
    refX. setValue( 0.0 );
    for( int i = 0; i < size; i ++ )
       refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
@@ -309,7 +309,7 @@ bool benchmarkMatrix( const tnlString& inputFile,
    if( verbose )
       cout << "          ------------------------------- Test with sorted matrix ----------------------------------          " << endl;
 
-   tnlLongVector< int, tnlHost > rowPermutation( "rowPermutation" );
+   tnlVector< int, tnlHost > rowPermutation( "rowPermutation" );
    {
       tnlCSRMatrix< Real, tnlHost > orderedCsrMatrix( "orderedCsrMatrix" );
       csrMatrix. sortRowsDecreasingly( rowPermutation );
