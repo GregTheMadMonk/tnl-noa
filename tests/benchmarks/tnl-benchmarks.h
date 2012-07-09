@@ -90,7 +90,7 @@ template< class T >
 void tnlCPUReductionSum( const tnlVector< T >& host_vector,
                          T& sum )
 {
-   const T* data = host_vector. getVector();
+   const T* data = host_vector. getData();
    const int size = host_vector. getSize();
    sum = 0.0;
    for( int i = 0; i < size; i ++ )
@@ -101,7 +101,7 @@ template< class T >
 void tnlCPUReductionMin( const tnlVector< T >& host_vector,
                          T& min )
 {
-   const T* data = host_vector. getVector();
+   const T* data = host_vector. getData();
    const int size = host_vector. getSize();
    //tnlAssert( data );
    min = data[ 0 ];
@@ -113,7 +113,7 @@ template< class T >
 void tnlCPUReductionMax( const tnlVector< T >& host_vector,
                          T& max )
 {
-   const T* data = host_vector. getVector();
+   const T* data = host_vector. getData();
    const int size = host_vector. getSize();
    //tnlAssert( data );
    max = data[ 0 ];
@@ -150,93 +150,93 @@ void reductionBenchmark( const int size,
 #ifdef HAVE_CUDA
          case 1:
             tnlCUDASimpleReduction1< T, tnlParallelReductionSum >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    sum,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction1< T, tnlParallelReductionMin >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    min,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction1< T, tnlParallelReductionMax >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    max,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             break;
          case 2:
             tnlCUDASimpleReduction2< T, tnlParallelReductionSum >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    sum,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction2< T, tnlParallelReductionMin >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    min,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction2< T, tnlParallelReductionMax >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    max,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             break;
          case 3:
             tnlCUDASimpleReduction3< T, tnlParallelReductionSum >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    sum,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction3< T, tnlParallelReductionMin >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    min,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction3< T, tnlParallelReductionMax >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    max,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             break;
          case 4:
             tnlCUDASimpleReduction4< T, tnlParallelReductionSum >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    sum,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction4< T, tnlParallelReductionMin >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    min,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction4< T, tnlParallelReductionMax >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    max,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             break;
          case 5:
             tnlCUDASimpleReduction5< T, tnlParallelReductionSum >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    sum,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction5< T, tnlParallelReductionMin >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    min,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             tnlCUDASimpleReduction5< T, tnlParallelReductionMax >( size,
-                                                                   device_vector. getVector(),
+                                                                   device_vector. getData(),
                                                                    max,
-                                                                   device_aux. getVector() );
+                                                                   device_aux. getData() );
             break;
          default:
             tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionSum >( size,
-                                                                              device_vector. getVector(),
+                                                                              device_vector. getData(),
                                                                               NULL,
                                                                               sum,
                                                                               0.0,
-                                                                              device_aux. getVector() );
+                                                                              device_aux. getData() );
             tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionMin >( size,
-                                                                              device_vector. getVector(),
+                                                                              device_vector. getData(),
                                                                               NULL,
                                                                               min,
                                                                               0.0,
-                                                                              device_aux. getVector() );
+                                                                              device_aux. getData() );
             tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionMax >( size,
-                                                                              device_vector. getVector(),
+                                                                              device_vector. getData(),
                                                                               NULL,
                                                                               max,
                                                                               0.0,
-                                                                              device_aux. getVector() );
+                                                                              device_aux. getData() );
 #endif
 
       }

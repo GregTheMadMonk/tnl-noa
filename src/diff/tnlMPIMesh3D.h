@@ -717,7 +717,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGrid< 3, Re
       {
          int buf_size = mpi_buff -> GetSize();
          dbgCout( "Calling MPI_Send and sending " << buf_size << "*" << sizeof( T ) << " bytes ... " );
-         MPI_Send( mpi_buff -> getVector(),
+         MPI_Send( mpi_buff -> getData(),
                    buf_size * sizeof( T ),
                    MPI_BYTE,
                    dest_node,
@@ -732,7 +732,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGrid< 3, Re
    int buf_size = sub_u. GetSize();
    dbgCout( "Receiving data - " << buf_size << "*" << sizeof( T ) << " bytes required ..." );
    MPI_Status status;
-   MPI_Recv( sub_u. getVector(),
+   MPI_Recv( sub_u. getData(),
              buf_size * sizeof( T ),
              MPI_BYTE,
              0,
@@ -828,7 +828,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGrid< 3, Real, Device, I
             dbgExpr( buf_size );
             
             dbgCout( "RECEIVING data from node " << src  );
-            MPI_Recv( mpi_buff. getVector(),
+            MPI_Recv( mpi_buff. getData(),
                       buf_size * sizeof( T ),
                       MPI_BYTE,
                       src,
@@ -878,7 +878,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGrid< 3, Real, Device, I
       int buf_size = ( subdomain_x_size + left_overlap + right_overlap ) *
                           ( subdomain_y_size + bottom_overlap + top_overlap ) *
                           ( subdomain_z_size + closer_overlap + further_overlap );
-      MPI_Send( const_cast< T* >( sub_u. getVector() ),
+      MPI_Send( const_cast< T* >( sub_u. getData() ),
                 buf_size * sizeof( T ),
                 MPI_BYTE,
                 root,

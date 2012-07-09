@@ -193,7 +193,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
 
    const Index size = getSize();
    Index pos = row * size;
-   const Real* data = tnlArray< 2, Real, Device, Index > :: getVector();
+   const Real* data = tnlArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
    if( Device == tnlHost )
    {
@@ -226,7 +226,7 @@ void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Rea
 
    const Index size = getSize();
    Index pos( 0 );
-   const Real* data = tnlArray< 2, Real, Device, Index > :: getVector();
+   const Real* data = tnlArray< 2, Real, Device, Index > :: getData();
    Real res;
    for( Index i = 0; i < size; i ++ )
    {
@@ -245,7 +245,7 @@ template< typename Real, tnlDevice Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: multiplyRow( const Index row, const Real& c )
 {
    const Index size = getSize();
-   Real* data = tnlArray< 2, Real, Device, Index > :: getVector();
+   Real* data = tnlArray< 2, Real, Device, Index > :: getData();
    Index pos = row * size;
    for( Index i = 0; i < size; i ++ )
    {
@@ -257,7 +257,7 @@ template< typename Real, tnlDevice Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: getRowL1Norm( const Index row ) const
 {
    const Index size = getSize();
-   const Real* data = tnlArray< 2, Real, Device, Index > :: getVector();
+   const Real* data = tnlArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
    Index pos = row * size;
    for( Index i = 0; i < size; i ++ )

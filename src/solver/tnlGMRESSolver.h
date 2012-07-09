@@ -131,14 +131,14 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
    
    Index _size = size;
 
-   Real *r = _r. getVector();
-   Real *w = _w. getVector();
-   Real *s = _s. getVector();
-   Real *cs = _cs. getVector();
-   Real *sn = _sn. getVector();
-   Real *v = _v. getVector();
-   Real *H = _H. getVector();
-   Real *M_tmp = _M_tmp. getVector();
+   Real *r = _r. getData();
+   Real *w = _w. getData();
+   Real *s = _s. getData();
+   Real *cs = _cs. getData();
+   Real *sn = _sn. getData();
+   Real *v = _v. getData();
+   Real *H = _H. getData();
+   Real *M_tmp = _M_tmp. getData();
 
    Real normb( 0.0 ), beta( 0.0 );
    //T normb( 0.0 ), beta( 0.0 ); does not work with openmp yet
@@ -189,7 +189,7 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
       /***
        * v_0 = r / | r | =  1.0 / beta * r
        */
-      vi. setSharedData( _v. getVector(), size );
+      vi. setSharedData( _v. getData(), size );
       tnlSAXPY( ( Real ) 1.0 / beta, _r, vi );
                 
       _s. setValue( ( Real ) 0.0 );
@@ -200,7 +200,7 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
       //dbgCout( " ----------- Starting m-loop -----------------" );
       for( i = 0; i < m && this -> iteration <= max_iterations; i++ )
       {
-         vi. setSharedData( &( _v. getVector()[ i * size ] ), size );
+         vi. setSharedData( &( _v. getData()[ i * size ] ), size );
          /****
           * Solve w from M w = A v_i
           */
@@ -214,7 +214,7 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
          
          for( k = 0; k <= i; k++ )
          {
-            vk. setSharedData( &( _v. getVector()[ k * _size ] ), _size );
+            vk. setSharedData( &( _v. getData()[ k * _size ] ), _size );
             /***
              * H_{k,i} = ( w, v_k )
              */
@@ -235,7 +235,7 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
          /***
           * v_{i+1} = w / |w|
           */
-         vi. setSharedData( &( _v. getVector()[ ( i + 1 ) * size ] ), size );
+         vi. setSharedData( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          tnlSAXPY( ( Real ) 1.0 / normw, _w, vi );
 
 
@@ -341,7 +341,7 @@ void tnlGMRESSolver< Real, Device, Index > :: update( Index k,
    tnlVector< Real, Device, Index > vi( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {
-      vi. setSharedData( &( v. getVector()[ i * this -> size ] ), x. getSize() );
+      vi. setSharedData( &( v. getData()[ i * this -> size ] ), x. getSize() );
       tnlSAXPY( y[ i ], vi, x );
    }
 };

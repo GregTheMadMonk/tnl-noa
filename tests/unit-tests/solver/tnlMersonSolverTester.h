@@ -136,7 +136,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       const Real hY = u. getSpaceSteps(). y();
       dim3 gridDim( gridXSize, gridYSize );
       dim3 blockDim( desBlockXSize, desBlockYSize );
-      heatEquationRHSKernel<<< gridDim, blockDim >>>( xSize, ySize, hX, hY, u. getVector(), fu. getVector() );
+      heatEquationRHSKernel<<< gridDim, blockDim >>>( xSize, ySize, hX, hY, u. getData(), fu. getData() );
    }
 
    void testUpdateU()

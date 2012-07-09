@@ -272,7 +272,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 		   {
 		      tnlVector< T, tnlCuda > device_vector( "device-vector", size );
 		      tnlVector< T, tnlHost > host_vector( "host-vector", size );
-		      T* data = device_vector. getVector();
+		      T* data = device_vector. getData();
 
 		      const int block_size = 512;
 		      const int grid_size = size / 512 + 1;
@@ -304,7 +304,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       {
          tnlVector< T, tnlCuda > device_vector( "device-vector", size );
          tnlVector< T, tnlHost > host_vector( "host-vector", size );
-         T* data = device_vector. getVector();
+         T* data = device_vector. getData();
          setNumber<<< 1, size >>>( number, data, size );
          host_vector = device_vector;
 
@@ -396,7 +396,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( *cuda_vector_4 );
       CPPUNIT_ASSERT( ! *cuda_vector_5 );
 
-      cuda_vector_5 -> setSharedData( cuda_vector_4 -> getVector(),
+      cuda_vector_5 -> setSharedData( cuda_vector_4 -> getData(),
                                       cuda_vector_4 -> getSize() );
       CPPUNIT_ASSERT( *cuda_vector_5 );
       /* Shared data are not handled automaticaly.

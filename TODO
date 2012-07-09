@@ -6,8 +6,6 @@ TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj
 TODO: implementovat tridu tnlParabolicSolver pro odvozovani resicu k casove promennym uloham
 
 
-TODO: zavets iteratory pres uzle site misto for cyklu
-
 TODO: objekt pro osetreni chyb - zavedeni funkce tnlGetError
       - mozna dat do tnlObject priznak, zda je objekt ok nebo 
         v nefunkcnim stavu   
@@ -22,7 +20,14 @@ TODO: implementovat metodu tnlObject passToDevice, ktera vytvori obraz daneho ob
       priblizit je kodu pro CPU.
 
 TODO: Zkusit z tnlExplicitSolver udelat tnlTimeSolver, od nej odvodit tnlEulerSolver, tnlMersonSolver a
-      tnlParabolicSolver. Objekt by obsahoval i metodu pro ukladani stavu v prubehu vypoctu.      
+      tnlParabolicSolver. Objekt by obsahoval i metodu pro ukladani stavu v prubehu vypoctu. 
+      
+TODO: - odvodit tnlArray primo z tnlArrayManager
+      - tnlGrid prejmenovat na tnlGridOfNodes
+      - zavest tnlGrid podle tnlMesh - tj. bude to pouze popis site bez sitove fce.
+      - po prepsani vsech schemat se tnlGridOfNodes zrusi
+      - zavest tnlObjectArray pro pole objektu - rozdil je v tom, ze treba save a load bude volat pro kazdy element
+        jeho metodu save a load apod.           
       
 DONE: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze 
 

@@ -106,11 +106,10 @@ if( NOT WITH_CUDA STREQUAL "no" )
                       NAME cusparse 
                       HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
                       DOC "CUSPARSE library" )                                                                  
-        if( ${CUSPARSE_LIBRARY} STREQUAL "TNL_LIBRARY-NOTFOUND" )
+        if( ${CUSPARSE_LIBRARY} STREQUAL "CUSPARSE_LIBRARY-NOTFOUND" )
             message( "Cannot find CUSPARSE library." )
         endif()    
         string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
-        message( ${CUSPARSE_LINK_DIRECTORY} )
         link_directories( ${CUSPARSE_LINK_DIRECTORY} )
             
     endif( CUDA_FOUND )

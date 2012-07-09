@@ -668,10 +668,10 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
 //#endif
 #ifdef UNDEF
       const Index blocks_num = groupOffsets. getSize() - 1;
-      const Index* row_lengths = nonzeroElementsInRow. getVector();
-      const Real* values = nonzeroElements. getVector();
-      const Index* cols = columns. getVector();
-      const Index* groupOffset = groupOffsets. getVector();
+      const Index* row_lengths = nonzeroElementsInRow. getData();
+      const Real* values = nonzeroElements. getData();
+      const Index* cols = columns. getData();
+      const Index* groupOffset = groupOffsets. getData();
       Index firstRowOfGroup = 0;
       for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
       {
@@ -744,13 +744,13 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
                                                               ( gridNumber,
                                                                 this -> maxCudaGridSize,
                                                                 size,
-                                                                adaptiveGroupSizes. getVector(),
-                                                                nonzeroElements. getVector(),
-                                                                columns. getVector(),
-                                                                groupOffsets. getVector(),
-                                                                nonzeroElementsInRow. getVector(),
-                                                                vec. getVector(),
-                                                                result. getVector() );
+                                                                adaptiveGroupSizes. getData(),
+                                                                nonzeroElements. getData(),
+                                                                columns. getData(),
+                                                                groupOffsets. getData(),
+                                                                nonzeroElementsInRow. getData(),
+                                                                vec. getData(),
+                                                                result. getData() );
             gridSize -= currentGridSize;
             gridNumber ++;
          }
@@ -770,12 +770,12 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
                                                this -> maxCudaGridSize,
                                                size,
                                                this -> groupSize,
-                                               nonzeroElements. getVector(),
-                                               columns. getVector(),
-                                               groupOffsets. getVector(),
-                                               nonzeroElementsInRow. getVector(),
-                                               vec. getVector(),
-                                               result. getVector() );
+                                               nonzeroElements. getData(),
+                                               columns. getData(),
+                                               groupOffsets. getData(),
+                                               nonzeroElementsInRow. getData(),
+                                               vec. getData(),
+                                               result. getData() );
             gridSize -= currentGridSize;
             gridNumber ++;
          }

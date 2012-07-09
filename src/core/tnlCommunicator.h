@@ -1071,7 +1071,7 @@ bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType,
    {
       dbgCout( "The process " << getDeviceId() << " is writing data ... " );
       memcpy( ( void* ) &( sharedMemory. getData()[ getDeviceId() * inputData. getSize() ] ),
-              ( void* ) inputData. getVector(),
+              ( void* ) inputData. getData(),
               sizeof( DataType ) );
    }
    if( Device == tnlCuda )

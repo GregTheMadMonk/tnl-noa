@@ -264,8 +264,8 @@ void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector<
 #ifdef HAVE_CUDA
 	sparseEllpackMatrixVectorProductKernelCaller( this -> getSize(),
 	                                       row_length,
-	                                       ellpack_nonzero_elements. getVector(),
-	                                       ellpack_columns. getVector(),
+	                                       ellpack_nonzero_elements. getData(),
+	                                       ellpack_columns. getData(),
 	                                       x,
 	                                       b );
 #else

@@ -332,13 +332,13 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVecto
 #ifdef HAVE_CUDA
 	/*sparseFastCSRMatrixVectorProductKernel( this -> getSize(),
 	                                              block_size,
-	                                              columns_sequences_blocks_offsets. getVector(),
-	                                              columns_sequences_offsets. getVector(),
-	                                              column_sequences. getVector(),
-	                                              nonzero_elements. getVector(),
-	                                              block_offsets. getVector(),
-	                                              column_sequences_lengths. getVector(),
-	                                              column_sequences_in_block. getVector(),
+	                                              columns_sequences_blocks_offsets. getData(),
+	                                              columns_sequences_offsets. getData(),
+	                                              column_sequences. getData(),
+	                                              nonzero_elements. getData(),
+	                                              block_offsets. getData(),
+	                                              column_sequences_lengths. getData(),
+	                                              column_sequences_in_block. getData(),
 	                                              vec,
 	                                              result );*/
 #else

@@ -865,12 +865,12 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
    cudaThreadSetCacheConfig( cudaFuncCachePreferL1 );
    AdaptiveRgCSRMatrixVectorProductKernel< Real, Index >
                                             <<< gridDim, blockDim, allocatedSharedMemory >>>
-                                            ( result. getVector(),
-                                              vec. getVector(),
-                                              nonzeroElements. getVector(),
-                                              columns. getVector(),
-                                              groupInfo. getVector(),
-                                              threads. getVector(),
+                                            ( result. getData(),
+                                              vec. getData(),
+                                              nonzeroElements. getData(),
+                                              columns. getData(),
+                                              groupInfo. getData(),
+                                              threads. getData(),
                                               1 );
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;

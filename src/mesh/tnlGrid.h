@@ -22,6 +22,7 @@
 #include <fstream>
 #include <core/tnlAssert.h>
 #include <core/tnlArray.h>
+#include <core/tnlVector.h>
 
 using namespace std;
 
@@ -1130,8 +1131,8 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const tnlGrid
          blockDim. x = desBlockSize;
          :: setDirichletBC< 2, Real, Index ><<< gridDim, blockDim >>>( this -> getDimensions(). x(),
                                                                        this -> getDimensions(). y(),
-                                                                       bc. getVector(),
-                                                                       this -> getVector() );
+                                                                       bc. getData(),
+                                                                       this -> getData() );
       }
 #endif
    }
@@ -1224,7 +1225,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const Real& b
          :: setConstantDirichletBC< 2, Real, Index ><<< gridDim, blockDim >>>( this -> getDimensions(). x(),
                                                                                this -> getDimensions(). y(),
                                                                                bcValue,
-                                                                               this -> getVector() );
+                                                                               this -> getData() );
       }
 #endif
    }
@@ -1326,8 +1327,8 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const tnlGrid< 
                                                                     this -> getDimensions(). y(),
                                                                     this -> getSpaceSteps(). x(),
                                                                     this -> getSpaceSteps(). y(),
-                                                                    bc. getVector(),
-                                                                    this -> getVector() );
+                                                                    bc. getData(),
+                                                                    this -> getData() );
       }
 #endif
    }
@@ -1430,7 +1431,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const Real& bcV
                                                                              this -> getSpaceSteps(). x(),
                                                                              this -> getSpaceSteps(). y(),
                                                                              bcValue,
-                                                                             this -> getVector() );
+                                                                             this -> getData() );
       }
 #endif
    }

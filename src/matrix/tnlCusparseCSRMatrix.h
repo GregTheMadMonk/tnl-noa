@@ -310,11 +310,11 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVect
   cusparseSpmv( cusparseHandle,
                 cusparseMatDescr,
                 this -> getSize(),
-                this -> nonzero_elements. getVector(),
-                this -> row_offsets. getVector(),
-                this -> columns. getVector(),
-                x. getVector(),
-                b. getVector() );
+                this -> nonzero_elements. getData(),
+                this -> row_offsets. getData(),
+                this -> columns. getData(),
+                x. getData(),
+                b. getData() );
 #endif
 }
 

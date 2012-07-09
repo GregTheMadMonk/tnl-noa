@@ -518,14 +518,14 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
 	Index pos = block_offset + block_row;
 
    Index column_offset = columns_sequences_offsets[ row ];
-   const Index* cols = column_sequences. getVector();
+   const Index* cols = column_sequences. getData();
    Index row_length = column_sequences_lengths[ row ];
    Index columns_in_block = column_sequences_in_block[ block_id ];
 
    Index i = 0;
    while( i < row_length && cols[ column_offset + i * columns_in_block ] + row < column ) i ++;
 
-   const Real* els = nonzero_elements. getVector();
+   const Real* els = nonzero_elements. getData();
    if( i < row_length && cols[ column_offset + i * columns_in_block ] + row == column )
 	  return els[ block_offset + block_row + i * current_block_size ];
    return Real( 0.0 );

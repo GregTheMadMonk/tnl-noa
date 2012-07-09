@@ -364,12 +364,12 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
    Index column_offset = columns_sequences_offsets[ row ];
    Index data_offset = row_offsets[ row ];
    Index row_length = row_offsets[ row + 1 ] - data_offset;
-   const Index* cols = column_sequences. getVector();
+   const Index* cols = column_sequences. getData();
 
    Index i = 0;
    while( i < row_length && cols[ column_offset + i ] + row < column ) i ++;
 
-   const Real* els = nonzero_elements. getVector();
+   const Real* els = nonzero_elements. getData();
    if( i < row_length && cols[ column_offset + i ] + row == column )
 	  return els[ data_offset + i ];
    return Real( 0.0 );
@@ -391,8 +391,8 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
    Index row_length = row_offsets[ row + 1 ] - data_offset;
 
    Index i = 0;
-   const Index* cols = column_sequences. getVector();
-   const Real* els = nonzero_elements. getVector();
+   const Index* cols = column_sequences. getData();
+   const Real* els = nonzero_elements. getData();
    Real product( 0.0 );
 
    while( i < row_length )
@@ -421,8 +421,8 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector<
                    << "The matrix size is " << this -> getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
-   const Index* cols = column_sequences. getVector();
-   const Real* els = nonzero_elements. getVector();
+   const Index* cols = column_sequences. getData();
+   const Real* els = nonzero_elements. getData();
 
    for( Index row = 0; row < this -> size; row ++ )
    {

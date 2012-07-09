@@ -206,7 +206,7 @@ bool tnlCUDASimpleReduction5( const int size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***
@@ -433,7 +433,7 @@ bool tnlCUDASimpleReduction4( const int size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***
@@ -645,7 +645,7 @@ bool tnlCUDASimpleReduction3( const int size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***
@@ -822,7 +822,7 @@ bool tnlCUDASimpleReduction2( const int size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***
@@ -982,7 +982,7 @@ bool tnlCUDASimpleReduction1( const int size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***

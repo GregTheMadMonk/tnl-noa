@@ -53,21 +53,15 @@ class tnlObject
    //! Constructor with name
    tnlObject( const tnlString& name );
 
-   //! Type getter
-   /*!
-    * This returns the type in C++ style - for example the returned value
+   /****
+    * Type getter. This returns the type in C++ style - for example the returned value
     * may look ass follows: "tnlVector< double, tnlCuda >".
     */
    virtual tnlString getType() const = 0;
 
-   //! Use this method if you want to change the name
-   /*!
-    *  This method can be cancled in the following versions of TNL.
-    *  Probably it does not make sense to change the name.
+   /****
+    *  Name getter
     */
-   //void setName( const char* _name );
-
-   //! Name getter
    const tnlString& getName() const;
 
    //! Method for saving the object to a file as a binary data

@@ -3,6 +3,10 @@ INCLUDE_DIRECTORIES( low-level )
 add_subdirectory( low-level )
 
 set (headers tnlArray.h
+             tnlArrayManager.h
+             tnlArrayManagerBase.h
+             tnlArrayManagerHost.h
+             tnlArrayManagerCUDA.h
              tnlAssert.h               
     	     tnlCurve.h 
     	     tnlCudaSupport.h
@@ -10,8 +14,7 @@ set (headers tnlArray.h
 		     tnlFile.h 
 		     tnlFlopsCounter.h 
 		     tnlList.h 
-		     tnlVector.h
-		     tnlVectorBase.h 
+		     tnlVector.h 
 		     tnlVectorHost.h 
 		     tnlVectorCUDA.h  
 		     tnlLogger.h 

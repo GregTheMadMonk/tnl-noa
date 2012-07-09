@@ -23,6 +23,7 @@
 #include "core/tnlTupleTester.h"
 #include "core/tnlVectorHostTester.h"
 #include "core/tnlArrayTester.h"
+#include "core/tnlArrayManagerTester.h"
 #include "core/tnlGridTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
@@ -61,6 +62,7 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlTupleTester< 3, double > :: suite() );
    runner. addTest( tnlTupleTester< 4, double > :: suite() );
 
+   runner. addTest( tnlArrayManagerTester< int, tnlHost, int > :: suite() );
 
    runner. addTest( tnlVectorHostTester< int > :: suite() );
    runner. addTest( tnlVectorHostTester< float > :: suite() );
@@ -91,6 +93,8 @@ int main( int argc, char* argv[] )
 
 #ifdef HAVE_CUDA
    runner. addTest( tnlFileTester :: suite() );
+
+   runner. addTest( tnlArrayManagerTester< int, tnlCuda, int > :: suite() );
 
    /*runner.addTest( tnlVectorCUDATester< int > :: suite() );
    runner.addTest( tnlVectorCUDATester< float > :: suite() );

@@ -496,7 +496,7 @@ bool tnlCUDALongVectorReduction( const Index size,
       int sizeAlloc = :: Max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
-      deviceAux = deviceAuxVct. getVector();
+      deviceAux = deviceAuxVct. getData();
    }
 
    /***
@@ -771,7 +771,7 @@ bool tnlCUDALongVectorComparison( const Index size,
    {
       if( ! boolArray. setSize( size ) )
          return false;
-      deviceBoolAux = boolArray. getVector();
+      deviceBoolAux = boolArray. getData();
    }
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;

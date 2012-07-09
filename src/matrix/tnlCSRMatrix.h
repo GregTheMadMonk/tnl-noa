@@ -352,8 +352,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
    if( shift == 0 )
       return true;
 
-   Real* els = nonzero_elements. getVector();
-   Index* cls = columns. getVector();
+   Real* els = nonzero_elements. getData();
+   Index* cls = columns. getData();
    if( shift > 0 )
    {
       for( Index i = last_nonzero_element - 1; i >= position; i -- )
@@ -440,8 +440,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
    /*
     * And now we insert the data.
     */
-   Real* els = nonzero_elements. getVector();
-   Index* cls = columns. getVector();
+   Real* els = nonzero_elements. getData();
+   Index* cls = columns. getData();
    for( Index i = 0; i < elements; i ++ )
    {
 	  Index column = first_column + offsets[ i ];
@@ -466,7 +466,7 @@ Index tnlCSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
               cerr << "The column is outside the matrix." );
    Index first_in_row = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
-   const Index* cols = columns. getVector();
+   const Index* cols = columns. getData();
    Index i = first_in_row;
    while( i < last_in_row && cols[ i ] < column ) i++;
    return i;
@@ -480,8 +480,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: setElementAux( Index row,
                                                             const elementOperation operation )
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "setElementAux" );
-   Real* els = nonzero_elements. getVector();
-   Index* cols = columns. getVector();
+   Real* els = nonzero_elements. getData();
+   Index* cols = columns. getData();
    Index i = getElementPosition( row, column );
    dbgCout( "Element position is " << i );
    if( cols[ i ] == column && i < row_offsets[ row + 1 ] )
@@ -516,8 +516,8 @@ template< typename Real, tnlDevice Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: getElement( Index row,
                                                         Index column ) const
 {
-   const Real* els = nonzero_elements. getVector();
-   const Index* cols = columns. getVector();
+   const Real* els = nonzero_elements. getData();
+   const Index* cols = columns. getData();
    Index i = getElementPosition( row, column );
    if( i < row_offsets[ row + 1 ] && cols[ i ] == column )
       return els[ i ];
@@ -536,8 +536,8 @@ Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
                    << "The vector size is " << vec. getSize() << endl; );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
-   const Index* cols = columns. getVector();
-   const Real* els = nonzero_elements. getVector();
+   const Index* cols = columns. getData();
+   const Real* els = nonzero_elements. getData();
    Real product( 0.0 );
    while( i < last_in_row )
    {
@@ -560,9 +560,9 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real
                    << "The matrix size is " << this -> getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
-   const Index* cols = columns. getVector();
-   const Index* rw_offsets = row_offsets. getVector();
-   const Real* els = nonzero_elements. getVector();
+   const Index* cols = columns. getData();
+   const Index* rw_offsets = row_offsets. getData();
+   const Real* els = nonzero_elements. getData();
 
    if( ! backwardSpMV )
    {
@@ -654,7 +654,7 @@ Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
                  cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
-   const Real* els = nonzero_elements. getVector();
+   const Real* els = nonzero_elements. getData();
    Real norm( 0.0 );
    while( i < last_in_row )
       norm += fabs( els[ i ] );
@@ -668,7 +668,7 @@ void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& 
                  cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
-   Real* els = nonzero_elements. getVector();
+   Real* els = nonzero_elements. getData();
    while( i < last_in_row )
       els[ i ] *= value;
 };

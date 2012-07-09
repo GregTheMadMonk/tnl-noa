@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlVector.h  -  description
+                          tnlArrayManager.h -  description
                              -------------------
-    begin                : Oct 3, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    begin                : Jul 4, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,18 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLONGVECTOR_H_
-#define TNLLONGVECTOR_H_
+#ifndef TNLARRAYMANAGER_H_
+#define TNLARRAYMANAGER_H_
 
-#include <core/tnlArrayManager.h>
+#include <core/tnlArrayManagerHost.h>
+#include <core/tnlArrayManagerCUDA.h>
 
-template< typename RealType, tnlDevice Device = tnlHost, typename IndexType = int >
-class tnlVector : public tnlArrayManager< RealType, Device, IndexType >
-{
-
-};
-
-#include <core/tnlVectorHost.h>
-#include <core/tnlVectorCUDA.h>
-
-#endif /* TNLLONGVECTOR_H_ */
+#endif /* TNLARRAYMANAGER_H_ */

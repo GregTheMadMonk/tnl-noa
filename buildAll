@@ -1,13 +1,14 @@
 #!/bin/bash
 
+TARGET=TNL
 INSTALL_PREFIX=${HOME}/local
-WITH_CUDA=no
+WITH_CUDA=yes
 CUDA_ARCHITECTURE=2.0
-VERBOSE=0
+VERBOSE=1
 
 CPUS=`grep -c processor /proc/cpuinfo`
 
-echo "Building TNL using $CPUS processors."
+echo "Building $TARGET using $CPUS processors."
 
 if [ ! -d Debug ];
 then
@@ -20,12 +21,12 @@ fi
 
 cd Debug
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} -DWITH_CUDA=${WITH_CUDA}
-make -j${CPUS} VERBOSE=${VERBOSE}
+make -j${CPUS} #VERBOSE=${VERBOSE}
 make -j${CPUS} test
 make -j${CPUS} install
 
 cd ../Release
 cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/local -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} -DWITH_CUDA=${WITH_CUDA}
-make -j${CPUS} VERBOSE=${VERBOSE}
+make -j${CPUS} #VERBOSE=${VERBOSE}
 make -j${CPUS} test
 make -j${CPUS} install

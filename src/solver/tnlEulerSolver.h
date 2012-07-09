@@ -155,8 +155,8 @@ void tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLevel
 {
    Real localResidue = Real( 0.0 );
    Index size = k1. getSize();
-   Real* _u = u. getVector();
-   Real* _k1 = k1. getVector();
+   Real* _u = u. getData();
+   Real* _k1 = k1. getData();
 
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau )

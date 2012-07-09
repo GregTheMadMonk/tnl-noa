@@ -278,13 +278,13 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
 {
    Index size = u. getSize();
 
-   Real* _k1 = k1. getVector();
-   Real* _k2 = k2. getVector();
-   Real* _k3 = k3. getVector();
-   Real* _k4 = k4. getVector();
-   Real* _k5 = k5. getVector();
-   Real* _kAux = kAux. getVector();
-   Real* _u = u. getVector();
+   Real* _k1 = k1. getData();
+   Real* _k2 = k2. getData();
+   Real* _k3 = k3. getData();
+   Real* _k4 = k4. getData();
+   Real* _k5 = k5. getData();
+   Real* _kAux = kAux. getData();
+   Real* _u = u. getData();
 
    /****
     * Compute data transfers statistics
@@ -366,11 +366,11 @@ template< class Problem, class Mesh, typename Real, tnlDevice Device, typename I
 Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( const Real tau )
 {
    const Index size = k1. getSize();
-   const Real* _k1 = k1. getVector();
-   const Real* _k3 = k3. getVector();
-   const Real* _k4 = k4. getVector();
-   const Real* _k5 = k5. getVector();
-   Real* _kAux = kAux. getVector();
+   const Real* _k1 = k1. getData();
+   const Real* _k3 = k3. getData();
+   const Real* _k4 = k4. getData();
+   const Real* _k5 = k5. getData();
+   Real* _kAux = kAux. getData();
 
    /****
     * Compute data transfers statistics
@@ -416,10 +416,10 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
 {
    Real localResidue = Real( 0.0 );
    Index size = k1. getSize();
-   Real* _u = u. getVector();
-   Real* _k1 = k1. getVector();
-   Real* _k4 = k4. getVector();
-   Real* _k5 = k5. getVector();
+   Real* _u = u. getData();
+   Real* _k1 = k1. getData();
+   Real* _k4 = k4. getData();
+   Real* _k5 = k5. getData();
 
    /****
     * Compute data transfers statistics
