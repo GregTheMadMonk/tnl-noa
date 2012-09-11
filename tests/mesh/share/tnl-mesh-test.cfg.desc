@@ -1,0 +1,5 @@
+group IO
+{
+   list of string input-file(!)         [Input binary file name.];
+   integer verbose(1)           [Verbose mode.];
+},[Arguments describing input and output data.];

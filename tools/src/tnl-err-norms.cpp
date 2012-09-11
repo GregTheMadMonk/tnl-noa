@@ -189,8 +189,8 @@ int main( int argc, char* argv[] )
    {
       if( size / first2second_ratio != second_files. getSize() && second_files. getSize() != 1 )
       {
-         cerr << "Sorry, the number of the files in the second set does not agree with the number of the files in the second one!" << endl;
-         return 1;
+         cerr << "Warning, the number of the files in the second set does not agree with the number of the files in the second one!" << endl;
+         //return 1;
       }
       for( int i = 0; i < size; i ++ )
       {
