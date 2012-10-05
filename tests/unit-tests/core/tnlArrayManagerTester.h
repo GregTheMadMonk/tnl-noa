@@ -58,13 +58,25 @@ class tnlArrayManagerTester : public CppUnit :: TestCase
                                "testSetGetElement",
                                & tnlArrayManagerTester< ElementType, Device, IndexType > :: testSetGetElement )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
+      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
                                "testComparisonOperator",
                                & tnlArrayManagerTester< ElementType, Device, IndexType > :: testComparisonOperator )
-                              );
+                              );*/
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
                                "testEquivalenceOperator",
                                & tnlArrayManagerTester< ElementType, Device, IndexType > :: testEquivalenceOperator )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
+                               "testSetSize",
+                               & tnlArrayManagerTester< ElementType, Device, IndexType > :: testSetSize )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
+                               "testReset",
+                               & tnlArrayManagerTester< ElementType, Device, IndexType > :: testReset )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
+                               "testSetSizeAndDestructor",
+                               & tnlArrayManagerTester< ElementType, Device, IndexType > :: testSetSizeAndDestructor )
                               );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayManagerTester< ElementType, Device, IndexType > >(
                                "testSaveAndLoad",
@@ -74,11 +86,6 @@ class tnlArrayManagerTester : public CppUnit :: TestCase
                                "testUnusualStructures",
                                & tnlArrayManagerTester< ElementType, Device, IndexType > :: testUnusualStructures )
                               );
-
-
-
-
-
       return suiteOfTests;
    }
 
@@ -114,10 +121,9 @@ class tnlArrayManagerTester : public CppUnit :: TestCase
          u. setElement( i, i );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u. getElement( i ) == i );
-
    };
 
-   void testComparisonOperator()
+   /*void testComparisonOperator()
    {
       tnlArrayManager< ElementType, Device, IndexType > u( "tnlArrayManagerTester :: u" );
       tnlArrayManager< ElementType, Device, IndexType > v( "tnlArrayManagerTester :: v" );
@@ -135,7 +141,7 @@ class tnlArrayManagerTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( ! ( u != v ) );
       CPPUNIT_ASSERT( u != w );
       CPPUNIT_ASSERT( ! ( u == w ) );
-   };
+   };*/
 
    void testEquivalenceOperator()
    {
@@ -149,6 +155,39 @@ class tnlArrayManagerTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( u == v );
       CPPUNIT_ASSERT( ! ( u != v ) );
    };
+
+   void testSetSize()
+   {
+      tnlArrayManager< ElementType, Device, IndexType > u( "tnlArrayManagerTester :: testSetSize - u" );
+      const int maxSize = 10;
+      for( int i = 0; i < maxSize; i ++ )
+         u. setSize( i );
+
+      CPPUNIT_ASSERT( u. getSize() == maxSize - 1 );
+   };
+
+   void testReset()
+   {
+      tnlArrayManager< ElementType, Device, IndexType > u( "tnlArrayManagerTester :: testReset - u" );
+      u. setSize( 100 );
+      CPPUNIT_ASSERT( u. getSize() == 100 );
+      u. reset();
+      CPPUNIT_ASSERT( u. getSize() == 0 );
+      u. setSize( 100 );
+      CPPUNIT_ASSERT( u. getSize() == 100 );
+      u. reset();
+      CPPUNIT_ASSERT( u. getSize() == 0 );
+
+   };
+
+   void testSetSizeAndDestructor()
+   {
+      for( int i = 0; i < 100; i ++ )
+      {
+         tnlArrayManager< ElementType, Device, IndexType > u( "tnlArrayManagerTester :: testSetSizeAndDestructor - u" );
+         u. setSize( i );
+      }
+   }
 
    void testSaveAndLoad()
    {

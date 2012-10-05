@@ -18,8 +18,11 @@
 #ifndef TNLARRAYMANAGERHOST_H_
 #define TNLARRAYMANAGERHOST_H_
 
+#include <cstring>
 #include <core/tnlArrayManagerBase.h>
 #include <debug/tnlDebug.h>
+
+using namespace std;
 
 template< typename ElementType, tnlDevice Device, typename IndexType > class tnlArrayManager;
 
@@ -28,15 +31,12 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
 template< typename ElementType, typename IndexType > class tnlArrayManager< ElementType, tnlHost, IndexType > : public tnlArrayManagerBase< ElementType, IndexType >
 {
    //! We do not allow constructor without parameters.
-   tnlArrayManager(){};
+   tnlArrayManager();
 
    /*!
     * We do not allow copy constructors as well to avoid having two
     * arrays with the same name.
     */
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v ){};
-
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v ){};
 
    public:
 
@@ -48,6 +48,10 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
 
    //! Constructor with another array as template
    tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   
+   tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+
+   tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
 
    //! Use this if you want to insert some data in this array.
    /*! The data will not be deallocated by the destructor.
@@ -123,7 +127,8 @@ template< typename ElementType, typename IndexType >
 tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlString& name, const tnlArrayManager& a )
 : tnlArrayManagerBase< ElementType, IndexType >( name )
 {
-  setSize( a. getSize() );
+   setSize( a. getSize() );
+   ( * this ) = a;
 };
 
 template< typename ElementType, typename IndexType >
@@ -131,7 +136,24 @@ tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnl
 : tnlArrayManagerBase< ElementType, IndexType >( name )
 {
   setSize( a. getSize() );
+   ( * this ) = a;
 };
+   
+template< typename ElementType, typename IndexType >
+tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v )
+: tnlArrayManagerBase< ElementType, IndexType >( "copy of " + v. name )
+{
+   setSize( v. getSize() );
+   ( * this ) = v;
+}
+
+template< typename ElementType, typename IndexType >
+tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v )
+: tnlArrayManagerBase< ElementType, IndexType >( "copy of " + v. name )
+{
+   setSize( v. getSize );
+   ( * this ) = v;
+}
 
 template< typename ElementType, typename IndexType > bool tnlArrayManager< ElementType, tnlHost, IndexType > :: setSize( IndexType _size )
 {
@@ -149,10 +171,11 @@ template< typename ElementType, typename IndexType > bool tnlArrayManager< Eleme
       cerr << "Negative size " << _size << " was passed to tnlArrayManager " << this -> getName() << "." << endl;
       return false;
    }
+
    if( this -> size && this -> size == _size && ! this -> shared_data ) return true;
    if( this -> data && ! this -> shared_data )
    {
-      delete[] -- this -> data;
+      delete[] -- ( this -> data );
       this -> data = 0;
    }
    this -> size = _size;
@@ -166,7 +189,7 @@ template< typename ElementType, typename IndexType > bool tnlArrayManager< Eleme
       this -> size = 0;
       return false;
    }
-   this -> data ++;
+   ( this -> data ) ++;
    return true;
 };
 
@@ -227,7 +250,7 @@ void tnlArrayManager< ElementType, tnlHost, IndexType > :: swap( tnlArrayManager
 template< typename ElementType, typename IndexType >
 tnlString tnlArrayManager< ElementType, tnlHost, IndexType > :: getType() const
 {
-   return tnlString( "tnlArrayManager< " ) + tnlString( GetParameterType( ElementType() ) ) + tnlString( ", tnlHost >" );
+   return tnlString( "tnlArrayManager< " ) + getParameterType< ElementType >() + tnlString( ", tnlHost >" );
 };
 
 template< typename ElementType, typename IndexType >
@@ -239,9 +262,11 @@ tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
 
-   memcpy( this -> data,
+   /*memcpy( this -> data,
            a. getData(),
-           this -> getSize() * sizeof( ElementType ) );
+           this -> getSize() * sizeof( ElementType ) );*/
+   for( IndexType i = 0; i < this -> getSize(); i ++ )
+      ( *this )[ i ] = a[ i ];
    return ( *this );
 };
 
@@ -347,7 +372,6 @@ bool tnlArrayManager< ElementType, tnlHost, IndexType > :: save( tnlFile& file )
            << " with size " << this -> getSize() << endl;
       return false;
    }
-   //cerr << "Writing " << this -> size << " elements from " << this -> getName() << "." << endl;
    return true;
 };
 
@@ -377,7 +401,7 @@ bool tnlArrayManager< ElementType, tnlHost, IndexType > :: load( tnlFile& file )
 template< typename ElementType, typename IndexType >
 tnlArrayManager< ElementType, tnlHost, IndexType > :: ~tnlArrayManager()
 {
-   if( this -> data && ! this -> shared_data ) delete -- this -> data;
+   if( this -> data && ! this -> shared_data ) delete[] -- this -> data;
 };
 
 template< typename ElementType, typename IndexType >

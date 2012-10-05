@@ -3,6 +3,9 @@
 
 #include <cassert>
 
+#include <iostream>
+
+using namespace std;
 
 template<typename T, typename I = int>
 class Array
@@ -13,8 +16,8 @@ public:
 	Array(const Array<T, I> &array);
 	~Array();
 
-	void create(I size);
-	void create(const Array<T, I> &array);
+	void setSize(I size);
+	void setLike(const Array<T, I> &array);
 	void free();
 
 	I getSize() const;
@@ -42,14 +45,14 @@ Array<T, I>::Array(I size)
 {
 	assert(size >= 0);
 
-	create(size);
+	setSize(size);
 }
 
 template<typename T, typename I>
 Array<T, I>::Array(const Array<T, I> &array)
 : m_data(0), m_size(0)
 {
-	create(array);
+	setLike(array);
 }
 
 template<typename T, typename I>
@@ -59,25 +62,30 @@ Array<T, I>::~Array()
 }
 
 template<typename T, typename I>
-void Array<T, I>::create(I size)
+void Array<T, I>:: setSize(I size)
 {
 	assert(size >= 0);
 
 	if (m_data && getSize() == size)
+	{
+	   cerr << "Not-allocating " << this -> m_size << " data at " << this -> m_data << endl;
 		return;
+	}
 
 	free();
 	if (size > 0)
 	{
 		m_data = new T[size];
 		m_size = size;
+		cerr << "Allocating " << this -> m_size << " data at " << this -> m_data << endl;
 	}
+
 }
 
 template<typename T, typename I>
-void Array<T, I>::create(const Array<T, I> &array)
+void Array<T, I>:: setLike(const Array<T, I> &array)
 {
-	create(array.getSize());
+	setSize(array.getSize());
 
 #pragma omp parallel for schedule(static)
 	for (I i = 0; i < array.getSize(); i++)
@@ -87,7 +95,11 @@ void Array<T, I>::create(const Array<T, I> &array)
 template<typename T, typename I>
 void Array<T, I>::free()
 {
-	delete[] m_data;
+	if( m_data )
+	{
+	   cerr << "Freeing data at " << this -> m_data << endl;
+	   delete[] m_data;
+	}
 	m_data = 0;
 	m_size = 0;
 }
@@ -118,7 +130,7 @@ template<typename T, typename I>
 Array<T, I> &Array<T, I>::operator=(const Array<T, I> &array)
 {
 	if (this != &array)
-		create(array);
+		setLike(array);
 
 	return *this;
 }

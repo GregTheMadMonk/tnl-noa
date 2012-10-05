@@ -26,8 +26,9 @@ template< typename ElementType, typename IndexType >
 class tnlArrayManagerBase : public tnlObject
 
 {
-   public:
+   tnlArrayManagerBase(){};
 
+   public:
    //! Constructor with name parameter.
    tnlArrayManagerBase( const tnlString& name );
 
@@ -124,6 +125,7 @@ class tnlArrayManager : public tnlArrayManagerBase< ElementType, IndexType >
 {
 
 };
+
 
 template< typename ElementType, typename IndexType >
 tnlArrayManagerBase< ElementType, IndexType > :: tnlArrayManagerBase( const tnlString& name )

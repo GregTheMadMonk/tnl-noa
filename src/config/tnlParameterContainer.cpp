@@ -48,14 +48,14 @@ bool tnlParameterContainer :: AddParameter( const char* name,
 }
 //--------------------------------------------------------------------------
 bool tnlParameterContainer :: SetParameter( const char* name,
-                                          const char* value )
+                                                  const char* value )
 {
    int i;
    for( i = 0; i < parameters. getSize(); i ++ )
    {
       if( parameters[ i ] -> name == name )
       {
-         if( GetParameterType( parameters[ i ] ) == GetParameterType( tnlString() ) ) 
+         if( parameters[ i ] -> type == getParameterType< tnlString >() )
          {
             ( ( tnlParameter< tnlString > * ) parameters[ i ] ) -> value. setString( value );
             return true;
@@ -63,7 +63,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
          else
          {
             cerr << "Parameter " << name << " already exists with different type " 
-                 << GetParameterType( parameters[ i ] ) << " not " 
+                 << parameters[ i ] -> type << " not " 
                  << GetParameterType( value ) << endl;
             abort();
             return false;

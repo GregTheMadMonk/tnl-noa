@@ -9,7 +9,7 @@ template<typename T, typename I, I size>
 class StaticArray
 {
 public:
-	void create(const StaticArray<T, I, size> &array);
+	void setLike(const StaticArray<T, I, size> &array);
 
 	I getSize() const;
 
@@ -24,7 +24,7 @@ private:
 
 
 template<typename T, typename I, I size>
-void StaticArray<T, I, size>::create(const StaticArray<T, I, size> &array)
+void StaticArray<T, I, size> :: setLike( const StaticArray<T, I, size> &array )
 {
 	for (I i = 0; i < size; i++)
 		(*this)[i] = array[i];

@@ -1,3 +1,10 @@
+2012-10-05  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+ 
+	* src/mesh/detail/container.h:
+	  replacing Array for m_data with tnlArrayManager     
+	* tests/mesh/main.cpp (main):
+	  re-defining i/o files w.r.t. the project directory structure 
+
 2012-07-09  oberhuber  <oberhuber@yvonne>
 
 	* src/core/tnlVectorBase.h: Removed.

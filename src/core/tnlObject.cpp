@@ -52,7 +52,7 @@ bool tnlObject :: save( tnlFile& file ) const
    if( ! file. write( magic_number, strlen( magic_number ) ) )
       return false;
    dbgCout( "Writing object name " << name );
-   if( ! getType(). save( file ) || ! name. save( file ) ) return false;
+   if( ! this -> getType(). save( file ) || ! name. save( file ) ) return false;
    return true;
 }
 

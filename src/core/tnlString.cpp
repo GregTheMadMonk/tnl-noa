@@ -218,7 +218,7 @@ char* tnlString :: getString()
 //---------------------------------------------------------------------------
 bool tnlString :: save( ostream& file ) const
 {
-   dbgFunctionName( "mString", "Write" );
+   dbgFunctionName( "tnlString", "save" );
    assert( string );
    dbgExpr( string );
 

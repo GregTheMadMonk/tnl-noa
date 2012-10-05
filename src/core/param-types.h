@@ -22,12 +22,15 @@
 #include <core/tnlList.h>
 #include <core/tnlString.h>
 
-inline tnlString GetParameterType( bool ) { return tnlString( "bool" ); };
-inline tnlString GetParameterType( int ) { return tnlString( "int" ); };
-inline tnlString GetParameterType( char ) { return tnlString( "char" ); };
-inline tnlString GetParameterType( const float& ) { return tnlString( "float" ); };
-inline tnlString GetParameterType( const double& ) { return tnlString( "double" ); };
-inline tnlString GetParameterType( const tnlFloat& ) { return tnlString( "tnlFloat" ); };
-inline tnlString GetParameterType( const tnlDouble& ) { return tnlString( "tnlDouble" ); };
+template< typename T >
+tnlString getParameterType() { return tnlString( "unknown type" ); };
+
+template<> inline tnlString getParameterType< bool >() { return tnlString( "bool" ); };
+template<> inline tnlString getParameterType< int >() { return tnlString( "int" ); };
+template<> inline tnlString getParameterType< char >() { return tnlString( "char" ); };
+template<> inline tnlString getParameterType< float >() { return tnlString( "float" ); };
+template<> inline tnlString getParameterType< double >() { return tnlString( "double" ); };
+template<> inline tnlString getParameterType< tnlFloat >() { return tnlString( "tnlFloat" ); };
+template<> inline tnlString getParameterType< tnlDouble> () { return tnlString( "tnlDouble" ); };
 
 #endif

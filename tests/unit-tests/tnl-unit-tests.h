@@ -19,6 +19,8 @@
 
 #include <debug/tnlDebug.h>
 #include "core/tnlFileTester.h"
+#include "core/tnlStringTester.h"
+#include "core/tnlObjectTester.h"
 #include "core/tnlRealTester.h"
 #include "core/tnlTupleTester.h"
 #include "core/tnlVectorHostTester.h"
@@ -45,6 +47,10 @@ int main( int argc, char* argv[] )
    CppUnit :: TextTestRunner runner;
 
    runner. addTest( tnlFileTester :: suite() );
+
+   runner. addTest( tnlStringTester :: suite() );
+
+   //runner. addTest( tnlObjectTester :: suite() );
 
    runner. addTest( tnlRealTester< float > :: suite() );
    runner. addTest( tnlRealTester< double > :: suite() );

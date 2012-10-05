@@ -3,11 +3,13 @@ set( headers core/tnl-cuda-kernels.h
              core/tnlCUDAKernelsTester.h 
              core/tnlCommunicatorTester.h 
              core/tnlFileTester.h 
-             core/tnlGridTester.h 
+             core/tnlGridTester.h
+             core/tnlObjectTester.h 
              core/tnlVectorCUDATester.h 
              core/tnlVectorHostTester.h 
              core/tnlRealTester.h 
-             core/tnlSharedMemoryTester.h 
+             core/tnlSharedMemoryTester.h
+             core/tnlStringTester.h 
              core/tnlTupleTester.h 
              diff/tnlMPIMeshTester.h 
              diff/tnlMersonSolverCUDATester.cu.h

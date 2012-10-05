@@ -63,8 +63,8 @@ class tnlString
        @param sufix_cut_off says the same about sufix.
     */
    void setString( const char* c,
-                   int prefix_cut_off = 0,
-                   int sufix_cut_off = 0 );
+                     int prefix_cut_off = 0,
+                     int sufix_cut_off = 0 );
 
    //! Return pointer to data
    const char* getString() const;

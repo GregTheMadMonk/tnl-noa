@@ -5,6 +5,7 @@
 #include <list>
 #include <stdexcept>
 #include <mesh/global/array.h>
+#include <core/tnlArrayManager.h>
 #include <mesh/global/static_array.h>
 
 
@@ -19,11 +20,11 @@ public:
 	typedef T DataType;
 	typedef I IndexType;
 
-	Container()                                    {}
-	explicit Container(IndexType size)             : m_data(size) { assert(0 <= size); }
+	Container()                                    : m_data( "mesh-container" ) {}
+	explicit Container(IndexType size)             : m_data( "mesh-container", size) { assert(0 <= size); }
 
-	void create(IndexType size)                    { assert(0 <= size); m_data.create(size); }
-	void free()                                    { m_data.free(); }
+	void create(IndexType size)                    { assert(0 <= size); m_data. setSize(size); }
+	void free()                                    { m_data. reset() /*free()*/; }
 
 	IndexType size() const                         { return m_data.getSize(); }
 
@@ -33,7 +34,8 @@ public:
 	size_t allocatedMemorySize() const             { return sizeof(DataType)*size(); }
 
 private:
-	Array<DataType, IndexType> m_data;
+	tnlArrayManager< DataType, tnlHost, IndexType > m_data;
+	//Array< DataType, IndexType > m_data;
 };
 
 

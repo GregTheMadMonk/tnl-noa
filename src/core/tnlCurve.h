@@ -75,8 +75,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
 
    tnlString getType() const
    {
-      T t;
-      return tnlString( "tnlCurve< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlCurve< " ) + tnlString( getParameterType< T >() ) + tnlString( " >" );
    };
 
    //! Append new point

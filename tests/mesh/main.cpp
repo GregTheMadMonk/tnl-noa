@@ -7,21 +7,43 @@
 
 using namespace std;
 
+/****
+ * Input files
+ */
 const char lineVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/line.vtk";
 const char twoTrianglesVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2triangles.vtk";
 const char twoSquaresVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2squares.vtk";
 const char twoCubesVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2cubes.vtk";
+const char squareHoleMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/squarehole.mesh";
+const char canyon2DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon2d.mesh";
+const char canyon3DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon3d.mesh";
+const char twoTrianglesTriInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2triangles.tri";
+const char coneMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/cone.mesh";
 
-const char lineVtkOutFile[] = TNL_TESTS_DIRECTORY "line-out.vtk";
-const char twoTrianglesVtkOutFile[] = TNL_TESTS_DIRECTORY "2triangles-out.vtk";
-const char twoSquaresVtkOutFile[] = TNL_TESTS_DIRECTORY "2squares-out.vtk";
-const char twoCubesVtkOutFile[] = TNL_TESTS_DIRECTORY "2cubes-out.vtk";
+/****
+ * VTK output files
+ */
+const char lineVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/line-out.vtk";
+const char twoTrianglesVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/2triangles-out.vtk";
+const char twoSquaresVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/2squares-out.vtk";
+const char twoCubesVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/2cubes-out.vtk";
+const char squareHoleVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/squarehole-out.vtk";
+const char canyon2DVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/canyon2d-out.vtk";
+const char canyon3DVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/canyon3d-out.vtk";
+const char coneVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/cone-out.vtk";
 
+/****
+ * Mesh output files
+ */
 const char lineMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/line-out.mesh";
 const char twoTrianglesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2triangles-out.mesh";
 const char twoSquaresMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2squares-out.mesh";
 const char twoCubesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2cubes-out.mesh";
 
+/****
+ * TRI output files
+ */
+const char twoTrianglesTriOutFile[] = TNL_TESTS_DIRECTORY "mesh/2triangles-out.tri";
 
 template<typename MeshType>
 void test(MeshType &mesh)
@@ -56,6 +78,7 @@ int main()
 	testmesh0.load( lineVtkFile );
 	testWithoutOutput(testmesh0);
 
+
 	cout << "Testing TriangularMeshNoEdges..." << endl;
 	Mesh<TriangularMeshNoEdgesConfig> mesh1;
 	mesh1.load( twoTrianglesVtkFile );
@@ -73,7 +96,7 @@ int main()
 
 	cout << "Testing 2D quadrilateral mesh without borders 2->1, with coborders 1->2..." << endl;
 	Mesh<config::Quadri2DCoborderWithoutBorderConfig> testmesh2;
-	testmesh2.load( twoTrianglesVtkFile );
+	testmesh2.load( twoSquaresVtkFile );
 	testWithoutOutput(testmesh2);
 
 	cout << "Testing HexahedralMesh..." << endl;
@@ -106,18 +129,18 @@ int main()
 	testmesh2.load( twoSquaresMeshOutFile );
 
 	Mesh<TriangularMeshConfig> trimesh;
-	trimesh.load("../tests/data/squarehole.mesh");
-	trimesh.write("../tests/data/squarehole_out.vtk");
-	trimesh.load("../tests/data/canyon2d.mesh");
-	trimesh.write("../tests/data/canyon2d_out.vtk");
-	trimesh.load("../tests/data/2triangles.tri");
-	trimesh.write("../tests/data/2triangles_out.tri");
+	trimesh.load( squareHoleMeshInFile );
+	trimesh.write( squareHoleVtkOutFile );
+	trimesh.load( canyon2DMeshInFile );
+	trimesh.write( canyon2DVtkOutFile );
+	trimesh.load( twoTrianglesTriInFile );
+	trimesh.write( twoTrianglesTriOutFile );
 
 	Mesh<TetrahedralMeshConfig> tetramesh;
-	tetramesh.load("../tests/data/cone.mesh");
-	tetramesh.write("../tests/data/cone_out.vtk");
-	tetramesh.load("../tests/data/canyon3d.mesh");
-	tetramesh.write("../tests/data/canyon3d_out.vtk");
+	tetramesh.load( coneMeshInFile );
+	tetramesh.write( coneVtkOutFile );
+	tetramesh.load( canyon3DMeshInFile );
+	tetramesh.write( canyon3DVtkOutFile );
 
 	cout << "done" << endl;
 

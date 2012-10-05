@@ -238,11 +238,11 @@ tnlString tnlArray< Dimensions, Real, device, Index > :: getType() const
    return tnlString( "tnlArray< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Real() ) ) +
+          tnlString( getParameterType< Real >() ) +
           tnlString( ", " ) +
           tnlString( getDeviceType( device ) ) +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Index() ) ) +
+          tnlString( getParameterType< Index >() ) +
           tnlString( " >" );
 }
 

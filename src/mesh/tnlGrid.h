@@ -396,11 +396,11 @@ tnlString tnlGrid< Dimensions, Real, Device, Index > :: getType() const
    return tnlString( "tnlGrid< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Real() ) ) +
+          tnlString( getParameterType< Real >() ) +
           tnlString( ", " ) +
           getDeviceType( Device ) +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Index() ) ) +
+          tnlString( getParameterType< Index >() ) +
           tnlString( " >" );
 }
 

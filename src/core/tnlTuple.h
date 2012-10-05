@@ -614,12 +614,12 @@ ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v )
    return str;
 };
 
-template< int Size, typename Real > tnlString GetParameterType( const tnlTuple< Size, Real >& )
+template< int Size, typename Real > tnlString getParameterType()
 { 
    return tnlString( "tnlTuple< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Real( 0 ) ) ) +
+          tnlString( getParameterType< Real >() ) +
           tnlString( " >" );
 };
 
