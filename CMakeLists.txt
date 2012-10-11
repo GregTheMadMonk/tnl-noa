@@ -24,7 +24,7 @@ else()
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
     #set( CXX_OPTIMIZE_FLAGS "-O3")
     OptimizeForArchitecture()
-    AddCompilerFlag( "-O3" )
+    AddCompilerFlag( "-O3 -DNDEBUG" )
 endif()
 
 #####
