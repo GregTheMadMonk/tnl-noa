@@ -1,9 +1,13 @@
+INCLUDE_DIRECTORIES( linear )
+
+ADD_SUBDIRECTORY( linear )
+
 SET( headers tnlBICGSolver.h
              tnlBICGStabSolver.h
              tnlCGSolver.h
              tnlEulerSolver.h
              tnlExplicitSolver.h
-             tnlGMRESSolver.h
+             tnlGMRESSolverOld.h
              tnlILUPreconditioner.h
              tnlMatrixSolver.h
              tnlMersonSolver.h
@@ -13,4 +17,4 @@ SET( headers tnlBICGSolver.h
              tnlSORSolver.h
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solver )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers )

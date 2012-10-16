@@ -15,8 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "matrix-solvers-benchmark-def.h"
-
 #include "matrix-solvers-benchmark.h"
 #include <fstream>
 #include <core/tnlObject.h>
@@ -24,6 +22,8 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
+#include "tnlConfig.h"
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg.desc";
 
 int main( int argc, char* argv[] )
 {
@@ -33,7 +33,7 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
-   if( conf_desc. ParseConfigDescription( CONFIG_DESCRIPTION_FILE ) != 0 )
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
@@ -64,6 +64,7 @@ int main( int argc, char* argv[] )
       cerr << "I am sorry, I am expecting tnlCSRMatrix in the input file but I found " << objectClass << "." << endl;
       return EXIT_FAILURE;
    }
+
    tnlString precision = parsedObjectType[ 1 ];
    //tnlString indexing = parsedObjectType[ 3 ];
    if( precision == "float" )
@@ -72,7 +73,6 @@ int main( int argc, char* argv[] )
    if( precision == "double" )
       if( ! benchmarkMatrix< double, int >( inputFile ) )
          return EXIT_FAILURE;
-
 
 
    fstream log_file;

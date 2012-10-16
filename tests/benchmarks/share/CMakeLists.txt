@@ -1,4 +1,5 @@
 INSTALL( FILES tnl-sparse-matrix-benchmark.cfg.desc
+               tnl-matrix-solvers-benchmark.cfg.desc
          DESTINATION share/tnl-${tnlVersion} )
 INSTALL( FILES matrix-market
                florida-matrix-market

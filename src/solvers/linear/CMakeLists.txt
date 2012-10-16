@@ -1,0 +1,3 @@
+INCLUDE_DIRECTORIES( krylov )
+
+ADD_SUBDIRECTORY( krylov )

@@ -20,10 +20,12 @@
 
 
 #include <math.h>
-#include <solver/tnlMatrixSolver.h>
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
-class tnlGMRESSolver : public tnlMatrixSolver< Real, Device, Index >
+template< typename Real,
+           tnlDevice Device,
+           typename Index
+           typename MatrixType< Real, Device, Index > >
+class tnlGMRESSolver
 {
    public:
 
@@ -49,11 +51,11 @@ class tnlGMRESSolver : public tnlMatrixSolver< Real, Device, Index >
     * on it inside of this method. It is not changed however.
     */
    void update( Index k,
-                Index m,
-                const tnlVector< Real, tnlHost, Index >& H,
-                const tnlVector< Real, tnlHost, Index >& s,
-                tnlVector< Real, Device, Index >& v,
-                tnlVector< Real, Device, Index >& x );
+                 Index m,
+                 const tnlVector< Real, tnlHost, Index >& H,
+                 const tnlVector< Real, tnlHost, Index >& s,
+                 tnlVector< Real, Device, Index >& v,
+                 tnlVector< Real, Device, Index >& x );
 
    void generatePlaneRotation( Real &dx,
                                Real &dy,
@@ -72,6 +74,8 @@ class tnlGMRESSolver : public tnlMatrixSolver< Real, Device, Index >
    tnlVector< Real, tnlHost, Index > _s, _cs, _sn, _H;
 
    Index size, restarting;
+
+   MatrixType* matrix;
 };
 
 template< typename Real, tnlDevice Device, typename Index >

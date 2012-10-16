@@ -20,14 +20,17 @@
 
 #include <core/tnlFile.h>
 #include <matrix/tnlCSRMatrix.h>
-#include <solver/tnlGMRESSolver.h>
+#include <solvers/tnlGMRESSolverOld.h>
 
 template< typename Real, typename Index >
 bool benchmarkMatrix( const tnlString& fileName )
 {
    tnlCSRMatrix< Real, tnlHost, Index > csrMatrix( "matrix-solvers-benchmark:csrMatrix" );
    if( ! csrMatrix. load( fileName ) )
+   {
+      cerr << "Unable to load file " << fileName << endl;
       return false;
+   }
 
    const Index size = csrMatrix. getSize();
    tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
@@ -43,7 +46,7 @@ bool benchmarkMatrix( const tnlString& fileName )
    x1. setValue( ( Real ) 1.0 );
    x. setValue( ( Real ) 0.0 );
 
-   tnlGMRESSolver< Real, tnlHost, Index > gmresSolver( "matrix-solvers-benchmark:gmresSolver" );
+   tnlGMRESSolverOld< Real, tnlHost, Index > gmresSolver( "matrix-solvers-benchmark:gmresSolver" );
    gmresSolver. setRestarting( 500 );
    gmresSolver. setVerbosity( 5 );
 
@@ -67,7 +70,7 @@ bool benchmarkMatrix( const tnlString& fileName )
    cudaB = b;
    tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
    rgCSRMatrix = csrMatrix;
-   tnlGMRESSolver< Real, tnlCuda, Index > cudaGMRESSolver( "matrix-solvers-benchmark:cudaGMRESSolver" );
+   tnlGMRESSolverOld< Real, tnlCuda, Index > cudaGMRESSolver( "matrix-solvers-benchmark:cudaGMRESSolver" );
    cudaGMRESSolver. setRestarting( 500 );
    cudaGMRESSolver. setVerbosity( 5 );
 
