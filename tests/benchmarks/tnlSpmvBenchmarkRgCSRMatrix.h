@@ -219,7 +219,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
                                this -> useAdaptiveGroupSize,
                                this -> adaptiveGroupSizeStrategy );
       rgCsrMatrix. copyFrom( csrMatrix );
-      printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
+      this -> printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
       logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
    }

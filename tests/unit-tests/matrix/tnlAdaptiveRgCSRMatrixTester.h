@@ -100,7 +100,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 12;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
-      setEmptyMatrix( csrMatrix, size );
+      this -> setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -116,7 +116,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 12;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
-      setDiagonalMatrix( csrMatrix, size );
+      this -> setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -132,7 +132,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Tridiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Tridiagonal" );
       int size = 12;
-      setTridiagonalMatrix( csrMatrix, size );
+      this -> setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -149,7 +149,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:upperTriangular" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:upperTriangular" );
       const int size = 12;
-      setUpperTriangularMatrix( csrMatrix, size );
+      this -> setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -166,7 +166,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
       const int size = 12;
-      setFullMatrix( csrMatrix, size );
+      this -> setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -183,7 +183,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:bcsstk20" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:bcsstk20" );
       const int size = 12;
-      setBcsstk20Matrix( csrMatrix );
+      this -> setBcsstk20Matrix( csrMatrix );
       argcsrMatrix. copyFrom( csrMatrix );
 
       bool error( false );
@@ -202,7 +202,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 35;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
-      setEmptyMatrix( csrMatrix, size );
+      this -> setEmptyMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else
@@ -232,7 +232,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 35;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
-      setDiagonalMatrix( csrMatrix, size );
+      this -> setDiagonalMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else
@@ -261,7 +261,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 12;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
-      setTridiagonalMatrix( csrMatrix, size );
+      this -> setTridiagonalMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else
@@ -289,7 +289,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 12;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
-      setUpperTriangularMatrix( csrMatrix, size );
+      this -> setUpperTriangularMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else
@@ -318,7 +318,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       const int size = 12;
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
-      setFullMatrix( csrMatrix, size );
+      this -> setFullMatrix( csrMatrix, size );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else
@@ -346,7 +346,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
    {
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
-      setBcsstk20Matrix( csrMatrix );
+      this -> setBcsstk20Matrix( csrMatrix );
       if( Device == tnlHost )
          argcsrMatrix. copyFrom( csrMatrix );
       else

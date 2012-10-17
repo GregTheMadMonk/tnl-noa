@@ -180,7 +180,7 @@ template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlCuda, IndexType > :: tnlVector( const tnlString& name, IndexType _size )
 : tnlArrayManager< RealType, tnlCuda, IndexType >( name )
 {
-  setSize( _size );
+  this -> setSize( _size );
 };
 
 template< typename RealType, typename IndexType >

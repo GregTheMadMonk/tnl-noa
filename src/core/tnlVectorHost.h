@@ -150,21 +150,21 @@ template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, IndexType _size )
 : tnlArrayManager< RealType, tnlHost, IndexType >( name )
 {
-   setSize( _size );
+   this -> setSize( _size );
 };
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, const tnlVector& v )
 : tnlArrayManager< RealType, tnlHost, IndexType >( name )
 {
-  setSize( v. getSize() );
+  this -> setSize( v. getSize() );
 };
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, const tnlVector< RealType, tnlCuda, IndexType >& v )
 : tnlArrayManager< RealType, tnlHost, IndexType >( name )
 {
-  setSize( v. getSize() );
+  this -> setSize( v. getSize() );
 };
 
 template< typename RealType, typename IndexType >

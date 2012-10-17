@@ -183,7 +183,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
          argCsrMatrix. tuneFormat( this -> desiredChunkSize,
                                  this -> cudaBlockSize );
          argCsrMatrix. copyFrom( csrMatrix );
-         printMatrixInHtml( matrixHtmlFile, argCsrMatrix );
+         this -> printMatrixInHtml( matrixHtmlFile, argCsrMatrix );
          if( rgCsrSpeedUp > 1.0 )
             bgColor=getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
          logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>, <a href=\"" << matrixHtmlFile << "\">HTML</a></td> " << endl;
