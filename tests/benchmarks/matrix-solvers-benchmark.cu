@@ -1,8 +1,8 @@
 /***************************************************************************
-                          matrix-solvers-benchmark.cpp  -  description
+                          matrix-solvers-benchmark.cu  -  description
                              -------------------
-    begin                : Jan 8, 2011
-    copyright            : (C) 2011 by Tomas Oberhuber
+    begin                : Oct 20, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

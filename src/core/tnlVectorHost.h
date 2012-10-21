@@ -27,9 +27,12 @@
 template< typename RealType, typename IndexType >
 class tnlVector< RealType, tnlCuda, IndexType >;
 
-template< typename RealType, typename IndexType >
-class tnlVector< RealType, tnlHost, IndexType > : public tnlArrayManager< RealType, tnlHost, IndexType >
+template< typename Real, typename Index >
+class tnlVector< Real, tnlHost, Index > : public tnlArrayManager< Real, tnlHost, Index >
 {
+   typedef Real RealType;
+   typedef Index IndexType;
+
    //! We do not allow constructor without parameters.
    tnlVector(){};
 
@@ -65,86 +68,51 @@ class tnlVector< RealType, tnlHost, IndexType > : public tnlArrayManager< RealTy
 
    void setValue( const RealType& v );
 
+   RealType max() const;
+
+   RealType min() const;
+
+   RealType absMax() const;
+
+   RealType absMin() const;
+
+   RealType lpNorm( const RealType& p ) const;
+
+   RealType sum() const;
+
+   RealType differenceMax( const tnlVector< RealType, tnlHost, IndexType >& v ) const;
+
+   RealType differenceMin( const tnlVector< RealType, tnlHost, IndexType >& v ) const;
+
+   RealType differenceAbsMax( const tnlVector< RealType, tnlHost, IndexType >& v ) const;
+
+   RealType differenceAbsMin( const tnlVector< RealType, tnlHost, IndexType >& v ) const;
+
+   RealType differenceLpNorm( const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p ) const;
+
+   RealType differenceSum( const tnlVector< RealType, tnlHost, IndexType >& v ) const;
+
+   void scalarMultiplication( const RealType& alpha );
+
+   //! Compute scalar dot product
+   RealType sdot( const tnlVector< RealType, tnlHost, IndexType >& v );
+
+   //! Compute SAXPY operation (Scalar Alpha X Pus Y ).
+   void saxpy( const RealType& alpha,
+                const tnlVector< RealType, tnlHost, IndexType >& x );
+
+   //! Compute SAXMY operation (Scalar Alpha X Minus Y ).
+   /*!**
+    * It is not a standart BLAS function but is useful for GMRES solver.
+    */
+   void saxmy( const RealType& alpha,
+                const tnlVector< RealType, tnlHost, IndexType >& x );
+
    virtual ~tnlVector();
 };
 
 template< typename RealType, typename IndexType >
 ostream& operator << ( ostream& str, const tnlVector< RealType, tnlHost, IndexType >& vec );
-
-/****
- * Here are some Blas style functions. They are not methods
- * because it would put too many restrictions on type RealType.
- * In fact, we would like to use tnlVector to store objects
- * like edges or triangles in case of meshes. For these objects
- * operations like +, min or max are not defined.
- */
-
-template< typename RealType, typename IndexType >
-RealType tnlMax( const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlMin( const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlAbsMax( const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlAbsMin( const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlLpNorm( const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p );
-
-template< typename RealType, typename IndexType >
-RealType tnlSum( const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceMax( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceMin( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMax( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMin( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceLpNorm( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceSum( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-void tnlScalarMultiplication( const RealType& alpha,
-                              tnlVector< RealType, tnlHost, IndexType >& u );
-
-//! Compute scalar dot product
-template< typename RealType, typename IndexType >
-RealType tnlSDOT( const tnlVector< RealType, tnlHost, IndexType >& u ,
-              const tnlVector< RealType, tnlHost, IndexType >& v );
-
-//! Compute SAXPY operation (Scalar Alpha X Pus Y ).
-template< typename RealType, typename IndexType >
-void tnlSAXPY( const RealType& alpha,
-               const tnlVector< RealType, tnlHost, IndexType >& x,
-               tnlVector< RealType, tnlHost, IndexType >& y );
-
-//! Compute SAXMY operation (Scalar Alpha X Minus Y ).
-/*!**
- * It is not a standart BLAS function but is useful for GMRES solver.
- */
-template< typename RealType, typename IndexType >
-void tnlSAXMY( const RealType& alpha,
-               const tnlVector< RealType, tnlHost, IndexType >& x,
-               tnlVector< RealType, tnlHost, IndexType >& y );
-
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, IndexType _size )
@@ -224,67 +192,65 @@ tnlVector< RealType, tnlHost, IndexType > :: ~tnlVector()
 {
 };
 
-
-
 template< typename RealType, typename IndexType >
-RealType tnlMax( const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: max() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   RealType result = v. getData()[ 0 ];
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   RealType result = this -> getData()[ 0 ];
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    for( IndexType i = 1; i < n; i ++ )
       result = Max( result, data1[ i ] );
    return result;
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlMin( const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: min() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   RealType result = v. getData()[ 0 ];
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   RealType result = this -> getData()[ 0 ];
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    for( IndexType i = 1; i < n; i ++ )
       result = Min( result, data1[ i ] );
    return result;
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlAbsMax( const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: absMax() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   RealType result = v. getData()[ 0 ];
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   RealType result = this -> getData()[ 0 ];
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    for( IndexType i = 1; i < n; i ++ )
       result = Max( result, ( RealType ) fabs( data1[ i ] ) );
    return result;
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlAbsMin( const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: absMin() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   RealType result = v. getData()[ 0 ];
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   RealType result = this -> getData()[ 0 ];
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    for( IndexType i = 1; i < n; i ++ )
       result = Min( result, ( RealType ) fabs( data1[ i ] ) );
    return result;
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlLpNorm( const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p )
+RealType tnlVector< RealType, tnlHost, IndexType > :: lpNorm( const RealType& p ) const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    RealType result = pow( ( RealType ) fabs( data1[ 0 ] ), ( RealType ) p );
    for( IndexType i = 1; i < n; i ++ )
       result += pow( ( RealType ) fabs( data1[ i ] ), ( RealType ) p  );
@@ -292,139 +258,131 @@ RealType tnlLpNorm( const tnlVector< RealType, tnlHost, IndexType >& v, const Re
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlSum( const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: sum() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
-   RealType result = v. getData()[ 0 ];
-   const IndexType n = v. getSize();
-   const RealType* data1 = v. getData();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   RealType result = this -> getData()[ 0 ];
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    for( IndexType i = 1; i < n; i ++ )
       result += data1[ i ];
    return result;
 };
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceMax( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceMax( const tnlVector< RealType, tnlHost, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
-   RealType result = u[ 0 ] - v[ 0 ];
+   RealType result = ( *this )[ 0 ] - v[ 0 ];
    const IndexType n = v. getSize();
    for( IndexType i = 1; i < n; i ++ )
-      result = Max( result, u[ i ] - v[ i ] );
+      result = Max( result, ( *this )[ i ] - v[ i ] );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceMin( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceMin( const tnlVector< RealType, tnlHost, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
-   RealType result = u[ 0 ] - v[ 0 ];
+   RealType result = ( *this )[ 0 ] - v[ 0 ];
    const IndexType n = v. getSize();
    for( IndexType i = 1; i < n; i ++ )
-      result = Min( result, u[ i ] - v[ i ] );
+      result = Min( result, ( *this )[ i ] - v[ i ] );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMax( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceAbsMax( const tnlVector< RealType, tnlHost, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
-   RealType result = u[ 0 ] - v[ 0 ];
+   RealType result = ( *this )[ 0 ] - v[ 0 ];
    const IndexType n = v. getSize();
    for( IndexType i = 1; i < n; i ++ )
-      result = Max( result, ( RealType ) fabs( u[ i ] - v[ i ] ) );
+      result = Max( result, ( RealType ) fabs( ( *this )[ i ] - v[ i ] ) );
    return result;
 
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMin( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceAbsMin( const tnlVector< RealType, tnlHost, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
-   RealType result = u[ 0 ] - v[ 0 ];
+   RealType result = ( *this )[ 0 ] - v[ 0 ];
    const IndexType n = v. getSize();
    for( IndexType i = 1; i < n; i ++ )
-      result = Min( result, ( RealType ) fabs(  u[ i ] - v[ i ] ) );
+      result = Min( result, ( RealType ) fabs( ( *this )[ i ] - v[ i ] ) );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceLpNorm( const tnlVector< RealType, tnlHost, IndexType >& u,
-                          const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceLpNorm( const tnlVector< RealType, tnlHost, IndexType >& v, const RealType& p ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    const IndexType n = v. getSize();
-   RealType result = pow( ( RealType ) fabs( u[ 0 ] - v[ 0 ] ), ( RealType ) p );
+   RealType result = pow( ( RealType ) fabs( ( *this )[ 0 ] - v[ 0 ] ), ( RealType ) p );
    for( IndexType i = 1; i < n; i ++ )
-      result += pow( ( RealType ) fabs( u[ i ] - v[ i ] ), ( RealType ) p  );
+      result += pow( ( RealType ) fabs( ( *this )[ i ] - v[ i ] ), ( RealType ) p  );
    return pow( result, 1.0 / p );
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceSum( const tnlVector< RealType, tnlHost, IndexType >& u,
-                       const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: differenceSum( const tnlVector< RealType, tnlHost, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
-   RealType result = u[ 0 ] - v[ 0 ];
-   const IndexType n = u. getSize();
+   RealType result = ( *this )[ 0 ] - v[ 0 ];
+   const IndexType n = this -> getSize();
    for( IndexType i = 1; i < n; i ++ )
-      result += u[ i ] - v[ i ];
+      result += ( *this )[ i ] - v[ i ];
    return result;
 };
 
 template< typename RealType, typename IndexType >
-void tnlScalarMultiplication( const RealType& alpha,
-                              tnlVector< RealType, tnlHost, IndexType >& u )
+void tnlVector< RealType, tnlHost, IndexType > :: scalarMultiplication( const RealType& alpha )
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   const IndexType n = u. getSize();
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   const IndexType n = this -> getSize();
    for( IndexType i = 0; i < n; i ++ )
-      u[ i ] *= alpha;
+      ( *this )[ i ] *= alpha;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlSDOT( const tnlVector< RealType, tnlHost, IndexType >& u,
-              const tnlVector< RealType, tnlHost, IndexType >& v )
+RealType tnlVector< RealType, tnlHost, IndexType > :: sdot( const tnlVector< RealType, tnlHost, IndexType >& v )
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
             cerr << "You try to compute SDOT of two vectors with different size." << endl
-                 << "The first tnLongVector " << u. getName() << " has size " << u. getSize() << "." << endl
+                 << "The first tnLongVector " << this -> getName() << " has size " << this -> getSize() << "." << endl
                  << "The second tnlVector " << v. getName() << " has size " << v. getSize() << "."  );
    RealType result = ( RealType ) 0;
-   const IndexType n = u. getSize();
-   const RealType* data1 = u. getData();
+   const IndexType n = this -> getSize();
+   const RealType* data1 = this -> getData();
    const RealType* data2 = v. getData();
    for( IndexType i = 0; i < n; i ++ )
       result += data1[ i ] * data2[ i ];
@@ -432,36 +390,34 @@ RealType tnlSDOT( const tnlVector< RealType, tnlHost, IndexType >& u,
 };
 
 template< typename RealType, typename IndexType >
-void tnlSAXPY( const RealType& alpha,
-               const tnlVector< RealType, tnlHost, IndexType >& x,
-               tnlVector< RealType, tnlHost, IndexType >& y )
+void tnlVector< RealType, tnlHost, IndexType > :: saxpy( const RealType& alpha,
+                                                         const tnlVector< RealType, tnlHost, IndexType >& x )
 {
-   tnlAssert( y. getSize() != 0,
-              cerr << "Vector name is " << y. getName() );
-   tnlAssert( y. getSize() == x. getSize(),
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == x. getSize(),
             cerr << "You try to compute SAXPY with vector x having different size." << endl
-                 << "The y tnLongVector " << y. getName() << " has size " << y. getSize() << "." << endl
+                 << "The y tnLongVector " << this -> getName() << " has size " << this -> getSize() << "." << endl
                  << "The x tnlVector " << x. getName() << " has size " << x. getSize() << "."  );
-   const IndexType n = y. getSize();
-   RealType* data1 = y. getData();
+   const IndexType n = this -> getSize();
+   RealType* data1 = this -> getData();
    const RealType* data2 = x. getData();
    for( IndexType i = 0; i < n; i ++ )
       data1[ i ] += alpha * data2[ i ];
 };
 
 template< typename RealType, typename IndexType >
-void tnlSAXMY( const RealType& alpha,
-               const tnlVector< RealType, tnlHost, IndexType >& x,
-               tnlVector< RealType, tnlHost, IndexType >& y )
+void tnlVector< RealType, tnlHost, IndexType > :: saxmy( const RealType& alpha,
+                                                             const tnlVector< RealType, tnlHost, IndexType >& x )
 {
-   tnlAssert( y. getSize() != 0,
-              cerr << "Vector name is " << y. getName() );
-   tnlAssert( y. getSize() == x. getSize(),
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == x. getSize(),
             cerr << "You try to compute SAXPY with vector x having different size." << endl
-                 << "The y tnLongVector " << y. getName() << " has size " << y. getSize() << "." << endl
+                 << "The y tnLongVector " << this -> getName() << " has size " << this -> getSize() << "." << endl
                  << "The x tnlVector " << x. getName() << " has size " << x. getSize() << "."  );
-   const IndexType n = y. getSize();
-   RealType* data1 = y. getData();
+   const IndexType n = this -> getSize();
+   RealType* data1 = this -> getData();
    const RealType* data2 = x. getData();
    for( IndexType i = 0; i < n; i ++ )
       data1[ i ] = alpha * data2[ i ] - data1[ i ];

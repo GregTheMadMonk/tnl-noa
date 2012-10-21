@@ -20,27 +20,40 @@
 
 
 #include <math.h>
+#include <core/tnlObject.h>
+#include <core/tnlVector.h>
+#include <solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <solvers/tnlIterativeSolver.h>
 
-template< typename Real,
+template< typename Matrix,
            tnlDevice Device,
-           typename Index
-           typename MatrixType< Real, Device, Index > >
-class tnlGMRESSolver
+           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
+                                                             Device,
+                                                             typename Matrix :: IndexType> >
+class tnlGMRESSolver : public tnlObject,
+                        public tnlIterativeSolver< typename Matrix :: RealType,
+                                                    typename Matrix :: IndexType >
 {
+
+   typedef typename Matrix :: RealType RealType;
+   typedef typename Matrix :: IndexType IndexType;
+   typedef Matrix MatrixType;
+   typedef Preconditioner PreconditionerType;
+
    public:
 
-   tnlGMRESSolver( const tnlString& name );
+   tnlGMRESSolver();
 
    tnlString getType() const;
 
-   void setRestarting( Index rest );
+   void setRestarting( IndexType rest );
 
-   bool solve( const tnlMatrix< Real, Device, Index >& A,
-               const tnlVector< Real, Device, Index >& b,
-               tnlVector< Real, Device, Index >& x,
-               const Real& max_residue,
-               const Index max_iterations,
-               tnlPreconditioner< Real >* precond = 0 );
+   void setMatrix( const MatrixType& matrix );
+
+   void setPreconditioner( const Preconditioner& preconditioner );
+
+   template< typename Vector >
+   bool solve( const Vector& b, Vector& x );
 
    ~tnlGMRESSolver();
 
@@ -50,37 +63,42 @@ class tnlGMRESSolver
     * Here the parameter v is not constant because setSharedData is used 
     * on it inside of this method. It is not changed however.
     */
-   void update( Index k,
-                 Index m,
-                 const tnlVector< Real, tnlHost, Index >& H,
-                 const tnlVector< Real, tnlHost, Index >& s,
-                 tnlVector< Real, Device, Index >& v,
-                 tnlVector< Real, Device, Index >& x );
+   void update( IndexType k,
+                 IndexType m,
+                 const tnlVector< RealType, tnlHost, IndexType >& H,
+                 const tnlVector< RealType, tnlHost, IndexType >& s,
+                 tnlVector< RealType, Device, IndexType >& v,
+                 tnlVector< RealType, Device, IndexType >& x );
 
-   void generatePlaneRotation( Real &dx,
-                               Real &dy,
-                               Real &cs,
-                               Real &sn );
+   void generatePlaneRotation( RealType &dx,
+                                  RealType &dy,
+                                  RealType &cs,
+                                  RealType &sn );
 
-   void applyPlaneRotation( Real &dx,
-                            Real &dy,
-                            Real &cs,
-                            Real &sn );
+   void applyPlaneRotation( RealType &dx,
+                               RealType &dy,
+                               RealType &cs,
+                               RealType &sn );
 
 
-   bool setSize( Index _size, Index m );
+   bool setSize( IndexType _size, IndexType m );
 
-   tnlVector< Real, Device, Index > _r, _w, _v, _M_tmp;
-   tnlVector< Real, tnlHost, Index > _s, _cs, _sn, _H;
+   tnlVector< RealType, Device, IndexType > _r, _w, _v, _M_tmp;
+   tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
 
-   Index size, restarting;
+   IndexType size, restarting, maxIterations;
 
-   MatrixType* matrix;
+   RealType maxResidue;
+
+   const MatrixType* matrix;
+   const PreconditionerType* preconditioner;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-tnlGMRESSolver< Real, Device, Index > :: tnlGMRESSolver( const tnlString& name )
-: tnlMatrixSolver< Real, Device, Index >( name ),
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+tnlGMRESSolver< Matrix, Device, Preconditioner > :: tnlGMRESSolver()
+: tnlObject( "no-name" ),
   _r( "tnlGMRESSolver::_r" ),
   _w( "tnlGMRESSolver::_w" ),
   _v( "tnlGMRESSolver::_v" ),
@@ -90,72 +108,93 @@ tnlGMRESSolver< Real, Device, Index > :: tnlGMRESSolver( const tnlString& name )
   _sn( "tnlGMRESSolver::_sn" ),
   _H( "tnlGMRESSolver:_H" ),
   size( 0 ),
-  restarting( 0 )
+  restarting( 0 ),
+  matrix( 0 ),
+  preconditioner( 0 )
 {
 };
    
-template< typename Real, tnlDevice Device, typename Index >
-tnlString tnlGMRESSolver< Real, Device, Index > :: getType() const
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+tnlString tnlGMRESSolver< Matrix, Device, Preconditioner > :: getType() const
 {
    return tnlString( "tnlGMRESSolver< " ) +
-          tnlString( GetParameterType( ( Real ) 0.0 ) ) +
-          tnlString( ", " ) +
-          getDeviceType( Device ) +
-          tnlString( ", " ) +
-          tnlString( GetParameterType( ( Index ) 0 ) ) +
-          tnlString( " >" );
+           tnlString( GetParameterType( ( RealType ) 0.0 ) ) +
+           tnlString( ", " ) +
+           getDeviceType( Device ) +
+           tnlString( ", " ) +
+           tnlString( GetParameterType( ( IndexType ) 0 ) ) +
+           tnlString( " >" );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
-void tnlGMRESSolver< Real, Device, Index > :: setRestarting( Index rest )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setRestarting( IndexType rest )
 {
    if( size != 0 )
       setSize( size, rest );
    restarting = rest;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
-                                                     const tnlVector< Real, Device, Index >& b,
-                                                     tnlVector< Real, Device, Index >& x,
-                                                     const Real& max_residue,
-                                                     const Index max_iterations,
-                                                     tnlPreconditioner< Real >* precond )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
+   this -> matrix = &matrix;
+}
+
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+{
+   this -> preconditioner = &preconditioner;
+}
+
+template< typename Matrix,
+          tnlDevice Device,
+          typename Preconditioner >
+ template< typename Vector >
+bool tnlGMRESSolver< Matrix, Device, Preconditioner > :: solve( const Vector& b, Vector& x )
+{
+   tnlAssert( matrix, cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << endl );
    if( restarting <= 0 )
    {
       cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
            << ". Please set some positive value using the SetRestarting method." << endl;
       return false;
    }
-   if( ! setSize( A. getSize(), restarting ) ) return false;
+   if( ! setSize( matrix -> getSize(), restarting ) ) return false;
 
 
-   Index i, j = 1, k, l;
+   IndexType i, j = 1, k, l;
    
-   Index _size = size;
+   IndexType _size = size;
 
-   Real *r = _r. getData();
-   Real *w = _w. getData();
-   Real *s = _s. getData();
-   Real *cs = _cs. getData();
-   Real *sn = _sn. getData();
-   Real *v = _v. getData();
-   Real *H = _H. getData();
-   Real *M_tmp = _M_tmp. getData();
+   RealType *r = _r. getData();
+   RealType *w = _w. getData();
+   RealType *s = _s. getData();
+   RealType *cs = _cs. getData();
+   RealType *sn = _sn. getData();
+   RealType *v = _v. getData();
+   RealType *H = _H. getData();
+   RealType *M_tmp = _M_tmp. getData();
 
-   Real normb( 0.0 ), beta( 0.0 );
+   RealType normb( 0.0 ), beta( 0.0 );
    //T normb( 0.0 ), beta( 0.0 ); does not work with openmp yet
    /****
     * 1. Solve r from M r = b - A x_0
     */
-   if( precond )
+   if( preconditioner )
    {
       //precond -> Solve( b, M_tmp );
       for( i = 0; i < _size; i ++ )
          normb += M_tmp[ i ] * M_tmp[ i ];
 
-      A. vectorProduct( x, _M_tmp );
+      matrix -> vectorProduct( x, _M_tmp );
       for( i = 0; i < size; i ++ )
          M_tmp[ i ] = b[ i ] - M_tmp[ i ];
 
@@ -165,56 +204,56 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
    }
    else
    {
-      A. vectorProduct( x, _r );
-      normb = tnlLpNorm( b, ( Real ) 2.0 );
-      tnlSAXMY( ( Real ) 1.0, b, _r );
-      beta = tnlLpNorm( _r, ( Real ) 2.0 );
+      matrix -> vectorProduct( x, _r );
+      normb = b. lpNorm( ( RealType ) 2.0 );
+      _r. saxmy( ( RealType ) 1.0, b );
+      beta = _r. lpNorm( ( RealType ) 2.0 );
    }
 
    if( normb == 0.0 ) normb = 1.0;
 
-   this -> iteration = 0;
-   this -> residue = beta / normb;
+   this -> resetIterations();
+   this -> setResidue( beta / normb );
 
-   tnlVector< Real, Device, Index > vi( "tnlGMRESSolver::vi" );
-   tnlVector< Real, Device, Index > vk( "tnlGMRESSolver::vk" );
-   while( this -> iteration < max_iterations &&
-          this -> residue > max_residue )
+   tnlVector< RealType, Device, IndexType > vi( "tnlGMRESSolver::vi" );
+   tnlVector< RealType, Device, IndexType > vk( "tnlGMRESSolver::vk" );
+   while( this -> getIterations() < this -> getMaxIterations() &&
+          this -> getResidue() > this -> getMaxResidue() )
    {
-      const Index m = restarting;
+      const IndexType m = restarting;
       for( i = 0; i < m + 1; i ++ )
          H[ i ] = s[ i ] = cs[ i ] = sn[ i ] = 0.0;
 
       /****
        * v = 0
        */   
-      _v. setValue( ( Real ) 0.0 );
+      _v. setValue( ( RealType ) 0.0 );
 
       /***
        * v_0 = r / | r | =  1.0 / beta * r
        */
       vi. setSharedData( _v. getData(), size );
-      tnlSAXPY( ( Real ) 1.0 / beta, _r, vi );
+      vi. saxpy( ( RealType ) 1.0 / beta, _r );
                 
-      _s. setValue( ( Real ) 0.0 );
+      _s. setValue( ( RealType ) 0.0 );
       _s[ 0 ] = beta;
       
 
 
       //dbgCout( " ----------- Starting m-loop -----------------" );
-      for( i = 0; i < m && this -> iteration <= max_iterations; i++ )
+      for( i = 0; i < m && this -> getIterations() <= this -> getMaxIterations(); i++ )
       {
          vi. setSharedData( &( _v. getData()[ i * size ] ), size );
          /****
           * Solve w from M w = A v_i
           */
-         if( precond )
+         if( preconditioner )
          {
-            A. vectorProduct( vi, _M_tmp );            
-            precond -> Solve( M_tmp, w );
+            matrix -> vectorProduct( vi, _M_tmp );            
+            //preconditioner -> Solve( M_tmp, w );
          }
          else
-             A. vectorProduct( vi, _w );
+             matrix -> vectorProduct( vi, _w );
          
          for( k = 0; k <= i; k++ )
          {
@@ -222,25 +261,25 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
             /***
              * H_{k,i} = ( w, v_k )
              */
-            Real H_k_i = tnlSDOT( _w, vk );
+            RealType H_k_i = _w. sdot( vk );
             H[ k + i * ( m + 1 ) ] = H_k_i;
             
             /****
              * w = w - H_{k,i} v_k
              */
-            tnlSAXPY( -H_k_i, vk, _w );
+            _w. saxpy( -H_k_i, vk );
          }
          /***
           * H_{i+1,i} = |w|
           */
-         Real normw = tnlLpNorm( _w, ( Real ) 2.0 );
+         RealType normw = _w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
          /***
           * v_{i+1} = w / |w|
           */
          vi. setSharedData( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         tnlSAXPY( ( Real ) 1.0 / normw, _w, vi );
+         vi. saxpy( ( RealType ) 1.0 / normw, _w );
 
 
          //dbgCout( "Applying rotations" );
@@ -263,72 +302,68 @@ bool tnlGMRESSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Devi
                              cs[ i ],
                              sn[ i ] );
 
-         this -> residue = fabs( s[ i + 1 ] ) / normb;
+         this -> setResidue( fabs( s[ i + 1 ] ) / normb );
 
-         if( this -> iteration % 10 == 0 &&
-             this -> verbosity > 1 )
-            this -> printOut();
-         if( this -> residue < max_residue )
+         if( this -> getResidue() < this -> getMaxResidue() )
          {
             update( i, m, _H, _s, _v, x );
-            if( this -> verbosity > 0 )
-               this -> printOut();
+            //if( this -> verbosity > 0 )
+            //   this -> printOut();
             return true;
          }
          //DBG_WAIT;
-         this -> iteration ++;
+         this -> nextIteration();
       }
       update( m - 1, m, _H, _s, _v, x );
       //dbgCout_ARRAY( x, size );
 
       // r = M.solve(b - A * x);
       beta = 0.0;
-      if( precond )
+      if( preconditioner )
       {
-         A. vectorProduct( x, _M_tmp );
+         matrix -> vectorProduct( x, _M_tmp );
          for( i = 0; i < _size; i ++ )
             M_tmp[ i ] = b[ i ] - M_tmp[ i ];
-         precond -> Solve( M_tmp, r );
+         //preconditioner -> solve( M_tmp, r );
          for( i = 0; i < _size; i ++ )
             beta += r[ i ] * r[ i ];
       }
       else
       {
-         A. vectorProduct( x, _r );
-         tnlSAXMY( ( Real ) 1.0, b, _r );
-         beta = tnlLpNorm( _r, ( Real ) 2.0 );
+         matrix -> vectorProduct( x, _r );
+         _r. saxmy( ( RealType ) 1.0, b );
+         beta = _r. lpNorm( ( RealType ) 2.0 );
       }
-      //beta = sqrt( beta );
-      //dbgCout_ARRAY( r, size );
-      //dbgExpr( beta );
-      //dbgExpr( beta / normb );
-      this -> residue = beta / normb;
-      this -> iteration ++;
+      this -> setResidue( beta / normb );
+      this -> nextIteration();
    }
-   if( this -> verbosity > 0 )
-      this -> printOut();
-   if( this -> iteration == max_iterations ) return false;
+   this -> refreshSolverMonitor();
+   if( this -> getIterations() == this -> getMaxIterations() ) return false;
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-tnlGMRESSolver< Real, Device, Index > :: ~tnlGMRESSolver()
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+tnlGMRESSolver< Matrix, Device, Preconditioner > :: ~tnlGMRESSolver()
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-void tnlGMRESSolver< Real, Device, Index > :: update( Index k,
-                                                      Index m,
-                                                      const tnlVector< Real, tnlHost, Index >& H,
-                                                      const tnlVector< Real, tnlHost, Index >& s,
-                                                      tnlVector< Real, Device, Index >& v,
-                                                      tnlVector< Real, Device, Index >& x )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: update( IndexType k,
+                                                                 IndexType m,
+                                                                 const tnlVector< RealType, tnlHost, IndexType >& H,
+                                                                 const tnlVector< RealType, tnlHost, IndexType >& s,
+                                                                 tnlVector< RealType, Device, IndexType >& v,
+                                                                 tnlVector< RealType, Device, IndexType >& x )
 {
    //dbgFunctionName( "tnlGMRESSolver", "Update" );
-   tnlVector< Real, tnlHost, Index > y( "tnlGMRESSolver::update:y" );
+   tnlVector< RealType, tnlHost, IndexType > y( "tnlGMRESSolver::update:y" );
    y. setSize( m + 1 );
 
-   Index i, j;
+   IndexType i, j;
    for( i = 0; i <= m ; i ++ )
       y[ i ] = s[ i ];
 
@@ -342,19 +377,21 @@ void tnlGMRESSolver< Real, Device, Index > :: update( Index k,
    }
    //dbgCout_ARRAY( y, m + 1 );
 
-   tnlVector< Real, Device, Index > vi( "tnlGMRESSolver::update:vi" );
+   tnlVector< RealType, Device, IndexType > vi( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {
       vi. setSharedData( &( v. getData()[ i * this -> size ] ), x. getSize() );
-      tnlSAXPY( y[ i ], vi, x );
+      x. saxpy( y[ i ], vi );
    }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-void tnlGMRESSolver< Real, Device, Index > :: generatePlaneRotation( Real &dx,
-                                                                     Real &dy,
-                                                                     Real &cs,
-                                                                     Real &sn )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: generatePlaneRotation( RealType &dx,
+                                                                                          RealType &dy,
+                                                                                          RealType &cs,
+                                                                                          RealType &sn )
 {
    if( dy == 0.0 )
    {
@@ -364,31 +401,35 @@ void tnlGMRESSolver< Real, Device, Index > :: generatePlaneRotation( Real &dx,
    else
       if( fabs( dy ) > fabs( dx ) )
       {
-         Real temp = dx / dy;
+         RealType temp = dx / dy;
          sn = 1.0 / sqrt( 1.0 + temp * temp );
          cs = temp * sn;
       }
       else
       {
-         Real temp = dy / dx;
+         RealType temp = dy / dx;
          cs = 1.0 / sqrt( 1.0 + temp * temp );
          sn = temp * cs;
       }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-void tnlGMRESSolver< Real, Device, Index > :: applyPlaneRotation( Real &dx,
-                                                                  Real &dy,
-                                                                  Real &cs,
-                                                                  Real &sn )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+void tnlGMRESSolver< Matrix, Device, Preconditioner > :: applyPlaneRotation( RealType &dx,
+                                                                                       RealType &dy,
+                                                                                       RealType &cs,
+                                                                                       RealType &sn )
 {
-   Real temp  =  cs * dx + sn * dy;
+   RealType temp  =  cs * dx + sn * dy;
    dy =  cs * dy - sn * dx;
    dx = temp;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
-bool tnlGMRESSolver< Real, Device, Index > :: setSize( Index _size, Index m )
+template< typename Matrix,
+           tnlDevice Device,
+           typename Preconditioner >
+bool tnlGMRESSolver< Matrix, Device, Preconditioner > :: setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting == m ) return true;
    size = _size;

@@ -36,9 +36,12 @@ using namespace std;
 #include <debug/tnlDebug.h>
 
 
-template< typename RealType, typename IndexType >
-class tnlVector< RealType, tnlCuda, IndexType > : public tnlArrayManager< RealType, tnlCuda, IndexType >
+template< typename Real, typename Index >
+class tnlVector< Real, tnlCuda, Index > : public tnlArrayManager< Real, tnlCuda, Index >
 {
+   typedef Real RealType;
+   typedef Index IndexType;
+
    //! We do not allow constructor without parameters.
    tnlVector(){};
 
@@ -79,6 +82,47 @@ class tnlVector< RealType, tnlCuda, IndexType > : public tnlArrayManager< RealTy
    void setValue( const RealType& v );
 
     ~tnlVector();
+
+   RealType max() const;
+
+   RealType min() const;
+
+   RealType absMax() const;
+
+   RealType absMin() const;
+
+   RealType sum() const;
+
+   RealType lpNorm( const RealType& p ) const;
+
+   RealType differenceMax( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   RealType differenceMin( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   RealType differenceAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   RealType differenceAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   RealType differenceLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p ) const;
+
+   RealType differenceSum( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   //! Computes u *= aplha
+   void scalarMultiplication( const RealType& alpha );
+
+   //! Computes scalar dot product
+   RealType sdot( const tnlVector< RealType, tnlCuda, IndexType >& v ) const;
+
+   //! Computes SAXPY operation (Scalar Alpha X Pus Y ).
+   void saxpy( const RealType& alpha,
+                const tnlVector< RealType, tnlCuda, IndexType >& x );
+
+   //! Computes SAXMY operation (Scalar Alpha X Minus Y ).
+   /*!**
+    * It is not a standard BLAS function but it is useful for GMRES solver.
+    */
+   void saxmy( const RealType& alpha,
+                const tnlVector< RealType, tnlCuda, IndexType >& x );
 };
 
 template< typename RealType, typename IndexType >
@@ -92,80 +136,6 @@ bool operator != ( const tnlVector< RealType, tnlHost, IndexType >& host_vector,
 template< typename RealType, typename IndexType >
 ostream& operator << ( ostream& str, const tnlVector< RealType, tnlCuda, IndexType >& vec );
 
-/****
- * Here are some Blas style functions. They are not methods
- * because it would put too many restrictions on type RealType.
- * In fact, we would like to use tnlVector to store objects
- * like edges or triangles in case of meshes. For these objects
- * operations like +, min or max are not defined.
- */
-
-template< typename RealType, typename IndexType >
-RealType tnlMax( const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlMin( const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceMax( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceMin( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p );
-
-template< typename RealType, typename IndexType >
-RealType tnlDifferenceSum( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-template< typename RealType, typename IndexType >
-RealType tnlSum( const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-//! Computes u *= aplha
-template< typename RealType, typename IndexType >
-void tnlScalarMultiplication( const RealType& alpha,
-                              tnlVector< RealType, tnlCuda, IndexType >& u );
-
-//! Computes scalar dot product
-template< typename RealType, typename IndexType >
-RealType tnlSDOT( const tnlVector< RealType, tnlCuda, IndexType >& u ,
-              const tnlVector< RealType, tnlCuda, IndexType >& v );
-
-//! Computes SAXPY operation (Scalar Alpha X Pus Y ).
-template< typename RealType, typename IndexType >
-void tnlSAXPY( const RealType& alpha,
-               const tnlVector< RealType, tnlCuda, IndexType >& x,
-               tnlVector< RealType, tnlCuda, IndexType >& y );
-
-//! Computes SAXMY operation (Scalar Alpha X Minus Y ).
-/*!**
- * It is not a standard BLAS function but it is useful for GMRES solver.
- */
-template< typename RealType, typename IndexType >
-void tnlSAXMY( const RealType& alpha,
-               const tnlVector< RealType, tnlCuda, IndexType >& x,
-               tnlVector< RealType, tnlCuda, IndexType >& y );
 
 
 #ifdef HAVE_CUDA
@@ -332,148 +302,112 @@ tnlVector< RealType, tnlCuda, IndexType > :: ~tnlVector()
 };
 
 
-#ifdef HAVE_CUDA
-/****
- * TODO: !!! If the type RealType would be some larger type this might fail.
- * CUDA cannot pass more than 256 bytes. We may need to pass the
- * parameter v explicitly.
- */
-template< typename RealType, typename IndexType >
-__global__ void tnlVectorCUDASetValueKernel( RealType* data,
-                                                 const IndexType size,
-                                                 const RealType v )
-{
-   const IndexType i = blockIdx. x * blockDim. x + threadIdx. x;
-   if( i < size )
-      data[ i ] = v;
-}
-#endif
 
 template< typename RealType, typename IndexType >
-bool operator == ( const tnlVector< RealType, tnlHost, IndexType >& host_vector,
-		             const tnlVector< RealType, tnlCuda, IndexType >& cuda_vector )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: max() const
 {
-	return ( cuda_vector == host_vector );
-};
-
-template< typename RealType, typename IndexType >
-bool operator != ( const tnlVector< RealType, tnlHost, IndexType >& host_vector,
-		             const tnlVector< RealType, tnlCuda, IndexType >& cuda_vector )
-{
-	return !( cuda_vector == host_vector );
-};
-
-template< typename RealType, typename IndexType >
-ostream& operator << ( ostream& str, const tnlVector< RealType, tnlCuda, IndexType >& vec )
-{
-#ifdef HAVE_CUDA
-   IndexType size = vec. getSize();
-   RealType buffer[ 1024 ];
-   IndexType pos( 0 );
-   while( pos < size )
-   {
-	   int transfer = Min( size - pos, 1024 );
-	   if( cudaMemcpy( buffer,
-			             &( vec. getData()[ pos ] ),
-   		    		    transfer * sizeof( RealType ), cudaMemcpyDeviceToHost ) != cudaSuccess )
-	   {
-		   cerr << "Transfer of data from CUDA device ( " << vec. getName()
-   		        << " ) failed." << endl;
-		   checkCUDAError( __FILE__, __LINE__ );
-		   return str;
-	   }
-	   for( IndexType i = 0; i < transfer; i ++ )
-		   str << buffer[ i ] <<  " ";
-	   pos += transfer;
-   }
-#else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-#endif
-   return str;
-
-};
-
-template< typename RealType, typename IndexType >
-RealType tnlMax( const tnlVector< RealType, tnlCuda, IndexType >& v )
-{
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionMax >( v. getSize(),
-                                                                             v. getData(),
-                                                                             ( RealType* ) NULL,
-                                                                             result,
-                                                                             ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionMax >
+                            ( this -> getSize(),
+                              this -> getData(),
+                              ( RealType* ) NULL,
+                              result,
+                              ( RealType ) 0 );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlMin( const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: min() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionMin >( v. getSize(),
-                                                                             v. getData(),
-                                                                             ( RealType* ) NULL,
-                                                                             result,
-                                                                             ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionMin >
+                             ( this -> getSize(),
+                               this -> getData(),
+                               ( RealType* ) NULL,
+                               result,
+                               ( RealType ) 0 );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: absMax() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionAbsMax >( v. getSize(),
-                                                                                v. getData(),
-                                                                                ( RealType* ) NULL,
-                                                                                result,
-                                                                                ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionAbsMax >
+                            ( this -> getSize(),
+                              this -> getData(),
+                              ( RealType* ) NULL,
+                              result,
+                              ( RealType ) 0 );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: absMin() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionAbsMin >( v. getSize(),
-                                                                                v. getData(),
-                                                                                ( RealType* ) NULL,
-                                                                                result,
-                                                                                ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionAbsMin >
+                             ( this -> getSize(),
+                               this -> getData(),
+                               ( RealType* ) NULL,
+                               result,
+                               ( RealType ) 0 );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: lpNorm( const RealType& p ) const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionLpNorm >( v. getSize(),
-                                                                                v. getData(),
-                                                                                ( RealType* ) NULL,
-                                                                                result,
-                                                                                p );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionLpNorm >
+                             ( this -> getSize(),
+                               this -> getData(),
+                               ( RealType* ) NULL,
+                               result,
+                               p );
    return result;
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlSum( const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: sum() const
 {
-   tnlAssert( v. getSize() != 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionSum >( v. getSize(),
-                                                                             v. getData(),
-                                                                             ( RealType* ) NULL,
-                                                                             result,
-                                                                             ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionSum >
+                             ( this -> getSize(),
+                               this -> getData(),
+                               ( RealType* ) NULL,
+                               result,
+                               ( RealType ) 0 );
    return result;
 }
 
@@ -490,13 +424,12 @@ __global__ void tnlVectorCUDAScalaMultiplicationKernel( const IndexType size,
 #endif
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceMax( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceMax( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*RealType result = u[ 0 ] - v[ 0 ];
@@ -507,13 +440,12 @@ RealType tnlDifferenceMax( const tnlVector< RealType, tnlCuda, IndexType >& u,
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceMin( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceMin( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*RealType result = u[ 0 ] - v[ 0 ];
@@ -524,13 +456,12 @@ RealType tnlDifferenceMin( const tnlVector< RealType, tnlCuda, IndexType >& u,
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*RealType result = u[ 0 ] - v[ 0 ];
@@ -541,13 +472,12 @@ RealType tnlDifferenceAbsMax( const tnlVector< RealType, tnlCuda, IndexType >& u
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*RealType result = u[ 0 ] - v[ 0 ];
@@ -558,13 +488,12 @@ RealType tnlDifferenceAbsMin( const tnlVector< RealType, tnlCuda, IndexType >& u
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                          const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& v, const RealType& p ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*const IndexType n = v. getSize();
@@ -575,13 +504,12 @@ RealType tnlDifferenceLpNorm( const tnlVector< RealType, tnlCuda, IndexType >& u
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlDifferenceSum( const tnlVector< RealType, tnlCuda, IndexType >& u,
-                       const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: differenceSum( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
-              cerr << "Vector names are " << u. getName() << " and " << v. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
+              cerr << "Vector names are " << this -> getName() << " and " << v. getName() );
 
    tnlAssert( false, ); // TODO: fix this
    /*RealType result = u[ 0 ] - v[ 0 ];
@@ -593,40 +521,43 @@ RealType tnlDifferenceSum( const tnlVector< RealType, tnlCuda, IndexType >& u,
 
 
 template< typename RealType, typename IndexType >
-void tnlScalarMultiplication( const RealType& alpha,
-                              tnlVector< RealType, tnlCuda, IndexType >& u )
+void tnlVector< RealType, tnlCuda, IndexType > :: scalarMultiplication( const RealType& alpha )
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
 #ifdef HAVE_CUDA
    dim3 blockSize, gridSize;
    blockSize. x = 512;
-   gridSize. x = u. getSize() / 512 + 1;
+   gridSize. x = this -> getSize() / 512 + 1;
+   // TODO: Fix this - the grid size might be limiting for large vectors.
 
-   tnlVectorCUDAScalaMultiplicationKernel<<< gridSize, blockSize >>>( u. getSize(),
-                                                                          alpha,
-                                                                          u. getData() );
+   tnlVectorCUDAScalaMultiplicationKernel<<< gridSize, blockSize >>>( this -> getSize(),
+                                                                      alpha,
+                                                                      this -> getData() );
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
 }
 
 template< typename RealType, typename IndexType >
-RealType tnlSDOT( const tnlVector< RealType, tnlCuda, IndexType >& u ,
-              const tnlVector< RealType, tnlCuda, IndexType >& v )
+RealType tnlVector< RealType, tnlCuda, IndexType > :: sdot( const tnlVector< RealType, tnlCuda, IndexType >& v ) const
 {
-   tnlAssert( u. getSize() != 0,
-              cerr << "Vector name is " << u. getName() );
-   tnlAssert( u. getSize() == v. getSize(),
+   tnlAssert( this -> getSize() != 0,
+              cerr << "Vector name is " << this -> getName() );
+   tnlAssert( this -> getSize() == v. getSize(),
               cerr << "You try to compute SDOT of two vectors with different sizes." << endl
-                   << "The first one is " << u. getName() << " with size " << u. getSize() << endl
+                   << "The first one is " << this -> getName() << " with size " << this -> getSize() << endl
                    << "The second one is " << v. getName() << " with size " << v. getSize() << endl );
    RealType result( 0 );
-   tnlCUDALongVectorReduction< RealType, RealType, IndexType, tnlParallelReductionSdot >( u. getSize(),
-                                                                              u. getData(),
-                                                                              v. getData(),
-                                                                              result,
-                                                                              ( RealType ) 0 );
+   tnlCUDALongVectorReduction< RealType,
+                               RealType,
+                               IndexType,
+                               tnlParallelReductionSdot >
+                             ( this -> getSize(),
+                               this -> getData(),
+                               v. getData(),
+                               result,
+                               ( RealType ) 0 );
    return result;
 }
 
@@ -645,25 +576,24 @@ __global__ void tnlVectorCUDASaxpyKernel( const IndexType size,
 
 //! Compute SAXPY operation (Scalar Alpha X Plus Y ).
 template< typename RealType, typename IndexType >
-void tnlSAXPY( const RealType& alpha,
-               const tnlVector< RealType, tnlCuda, IndexType >& x,
-               tnlVector< RealType, tnlCuda, IndexType >& y )
+void tnlVector< RealType, tnlCuda, IndexType > :: saxpy( const RealType& alpha,
+                                                             const tnlVector< RealType, tnlCuda, IndexType >& x )
 {
    tnlAssert( x. getSize() != 0,
               cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
+   tnlAssert( x. getSize() == this -> getSize(),
               cerr << "You try to compute SAXPY for two vectors with different sizes." << endl
                    << "The first one is " << x. getName() << " with size " << x. getSize() << endl
-                   << "The second one is " << y. getName() << " with size " << y. getSize() << endl );
+                   << "The second one is " << this -> getName() << " with size " << this -> getSize() << endl );
 #ifdef HAVE_CUDA
    dim3 blockSize, gridSize;
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( x. getSize(),
-                                                            alpha,
-                                                            x. getData(),
-                                                            y. getData() );
+   tnlVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( this -> getSize(),
+                                                        alpha,
+                                                        x. getData(),
+                                                        this -> getData() );
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -673,9 +603,9 @@ void tnlSAXPY( const RealType& alpha,
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
 __global__ void tnlVectorCUDASaxmyKernel( const IndexType size,
-                                              const RealType alpha,
-                                              const RealType* x,
-                                              RealType* y )
+                                           const RealType alpha,
+                                           const RealType* x,
+                                           RealType* y )
 {
    IndexType tid = blockDim. x * blockIdx. x + threadIdx. x;
    if( tid < size )
@@ -684,31 +614,90 @@ __global__ void tnlVectorCUDASaxmyKernel( const IndexType size,
 #endif
 
 template< typename RealType, typename IndexType >
-void tnlSAXMY( const RealType& alpha,
-               const tnlVector< RealType, tnlCuda, IndexType >& x,
-               tnlVector< RealType, tnlCuda, IndexType >& y )
+void tnlVector< RealType, tnlCuda, IndexType > :: saxmy( const RealType& alpha,
+                                                             const tnlVector< RealType, tnlCuda, IndexType >& x )
 {
    tnlAssert( x. getSize() != 0,
               cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
+   tnlAssert( x. getSize() == this -> getSize(),
               cerr << "You try to compute SAXPY for two vectors with different sizes." << endl
                    << "The first one is " << x. getName() << " with size " << x. getSize() << endl
-                   << "The second one is " << y. getName() << " with size " << y. getSize() << endl );
+                   << "The second one is " << this -> getName() << " with size " << this -> getSize() << endl );
 #ifdef HAVE_CUDA
    dim3 blockSize, gridSize;
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( x. getSize(),
-                                                            alpha,
-                                                            x. getData(),
-                                                            y. getData() );
+   tnlVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( this -> getSize(),
+                                                        alpha,
+                                                        x. getData(),
+                                                        this -> getData() );
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
 
 }
 
+#ifdef HAVE_CUDA
+/****
+ * TODO: !!! If the type RealType would be some larger type this might fail.
+ * CUDA cannot pass more than 256 bytes. We may need to pass the
+ * parameter v explicitly.
+ */
+template< typename RealType, typename IndexType >
+__global__ void tnlVectorCUDASetValueKernel( RealType* data,
+                                             const IndexType size,
+                                             const RealType v )
+{
+   const IndexType i = blockIdx. x * blockDim. x + threadIdx. x;
+   if( i < size )
+      data[ i ] = v;
+}
+#endif
+
+template< typename RealType, typename IndexType >
+bool operator == ( const tnlVector< RealType, tnlHost, IndexType >& host_vector,
+                   const tnlVector< RealType, tnlCuda, IndexType >& cuda_vector )
+{
+   return ( cuda_vector == host_vector );
+};
+
+template< typename RealType, typename IndexType >
+bool operator != ( const tnlVector< RealType, tnlHost, IndexType >& host_vector,
+                   const tnlVector< RealType, tnlCuda, IndexType >& cuda_vector )
+{
+   return !( cuda_vector == host_vector );
+};
+
+template< typename RealType, typename IndexType >
+ostream& operator << ( ostream& str, const tnlVector< RealType, tnlCuda, IndexType >& vec )
+{
+#ifdef HAVE_CUDA
+   IndexType size = vec. getSize();
+   RealType buffer[ 1024 ];
+   IndexType pos( 0 );
+   while( pos < size )
+   {
+      int transfer = Min( size - pos, 1024 );
+      if( cudaMemcpy( buffer,
+                      &( vec. getData()[ pos ] ),
+                      transfer * sizeof( RealType ), cudaMemcpyDeviceToHost ) != cudaSuccess )
+      {
+         cerr << "Transfer of data from CUDA device ( " << vec. getName()
+                 << " ) failed." << endl;
+         checkCUDAError( __FILE__, __LINE__ );
+         return str;
+      }
+      for( IndexType i = 0; i < transfer; i ++ )
+         str << buffer[ i ] <<  " ";
+      pos += transfer;
+   }
+#else
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+#endif
+   return str;
+
+};
 
 
 #endif /* TNLLONGVECTORCUDA_H_ */

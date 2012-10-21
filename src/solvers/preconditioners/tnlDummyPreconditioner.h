@@ -1,8 +1,8 @@
 /***************************************************************************
-                          matrix-solvers-benchmark.cpp  -  description
+                          tnlDummyPreconditioner.h  -  description
                              -------------------
-    begin                : Jan 8, 2011
-    copyright            : (C) 2011 by Tomas Oberhuber
+    begin                : Oct 19, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,4 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "matrix-solvers-benchmark.h"
+#ifndef TNLDUMMYPRECONDITIONER_H_
+#define TNLDUMMYPRECONDITIONER_H_
+
+#include <core/tnlObject.h>
+
+template< typename Real, tnlDevice Device, typename Index >
+class tnlDummyPreconditioner
+{
+   public:
+
+   template< typename Vector >
+      bool solve( const Vector& b, Vector& x ) {};
+};
+
+
+#endif /* TNLDUMMYPRECONDITIONER_H_ */

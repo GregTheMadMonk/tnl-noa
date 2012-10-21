@@ -90,29 +90,31 @@ if( NOT WITH_CUDA STREQUAL "no" )
         ####
         # Check for CUSPARSE
         #
-        find_path( CUSPARSE_INCLUDE_DIR cusparse.h
-                   /usr/local/cuda/include                   
-                   ${CUDA_INCLUDE_DIR}  
-                   DOC "CUSPARSE headers." )
-        if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
-            message( "CUSPARSE not found." )
-            set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE" )
-        else()      
-            message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
-            set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
-            cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-        endif() 
-        
-        string( REPLACE "/include" "" CUSPARSE_LINK_DIR_HINT ${CUSPARSE_INCLUDE_DIR} )           
-        find_library( CUSPARSE_LIBRARY
-                      NAME cusparse 
-                      HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
-                      DOC "CUSPARSE library" )                                                                  
-        if( ${CUSPARSE_LIBRARY} STREQUAL "CUSPARSE_LIBRARY-NOTFOUND" )
-            message( "Cannot find CUSPARSE library." )
-        endif()    
-        string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
-        link_directories( ${CUSPARSE_LINK_DIRECTORY} )
+        if( NOT WITH_CUSPARSE STREQUAL "no" )
+           find_path( CUSPARSE_INCLUDE_DIR cusparse.h
+                      /usr/local/cuda/include                   
+                      ${CUDA_INCLUDE_DIR}  
+                      DOC "CUSPARSE headers." )
+           if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
+               message( "CUSPARSE not found." )
+               set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE" )
+           else()      
+               message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
+               set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
+               cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
+           endif() 
+           
+           string( REPLACE "/include" "" CUSPARSE_LINK_DIR_HINT ${CUSPARSE_INCLUDE_DIR} )           
+           find_library( CUSPARSE_LIBRARY
+                         NAME cusparse 
+                         HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
+                         DOC "CUSPARSE library" )                                                                  
+           if( ${CUSPARSE_LIBRARY} STREQUAL "CUSPARSE_LIBRARY-NOTFOUND" )
+               message( "Cannot find CUSPARSE library." )
+           endif()    
+           string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
+           link_directories( ${CUSPARSE_LINK_DIRECTORY} )
+        endif( NOT WITH_CUSPARSE STREQUAL "no" )
             
     endif( CUDA_FOUND )
 endif( NOT WITH_CUDA STREQUAL "no" )    
@@ -165,6 +167,7 @@ endif()
 FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
   /usr/local/include
   /usr/include
+  DOC "CppUnit headers."
 )
 
 ####
@@ -191,15 +194,20 @@ else(WIN32)
                /usr/lib)
 endif(WIN32)
 
-if(CPPUNIT_INCLUDE_DIR)
+
+if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
+      message( "CPPUNIT not found." )
+      set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT" )
+else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
   if(CPPUNIT_LIBRARY)
+    message( "CPPUNIT found. -- ${CPPUNIT_INCLUDE_DIR}" )
     set(CPPUNIT_FOUND "YES")
     set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
     set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
-${CMAKE_DL_LIBS})
+                                ${CMAKE_DL_LIBS})
+   set( HAVE_CPPUNIT "#define HAVE_CPPUNIT" )
   endif(CPPUNIT_LIBRARY)
-endif(CPPUNIT_INCLUDE_DIR)
-
+endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
 
 ENABLE_TESTING()
 INCLUDE( Dart )

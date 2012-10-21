@@ -1,8 +1,12 @@
 INCLUDE_DIRECTORIES( linear )
 
 ADD_SUBDIRECTORY( linear )
+ADD_SUBDIRECTORY( preconditioners )
 
-SET( headers tnlBICGSolver.h
+SET( headers tnlIterativeSolver.h
+             tnlSolverMonitor.h
+             tnlSimpleIterativeSolverMonitor.h
+             tnlBICGSolver.h
              tnlBICGStabSolver.h
              tnlCGSolver.h
              tnlEulerSolver.h

@@ -182,12 +182,12 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, -i );
 
-      CPPUNIT_ASSERT( tnlMax( u ) == 0 );
-      CPPUNIT_ASSERT( tnlMin( u ) == - 9 );
-      CPPUNIT_ASSERT( tnlAbsMax( u ) == 9 );
-      CPPUNIT_ASSERT( tnlAbsMin( u ) == 0 );
-      CPPUNIT_ASSERT( tnlLpNorm( u, ( T ) 1 ) == 45 );
-      CPPUNIT_ASSERT( tnlSum( u ) == -45 );
+      CPPUNIT_ASSERT( u. max() == 0 );
+      CPPUNIT_ASSERT( u. min() == - 9 );
+      CPPUNIT_ASSERT( u. absMax() == 9 );
+      CPPUNIT_ASSERT( u. absMin() == 0 );
+      CPPUNIT_ASSERT( u. lpNorm( ( T ) 1 ) == 45 );
+      CPPUNIT_ASSERT( u. sum() == -45 );
    };
 
    void testBlasFunctions()
@@ -199,9 +199,9 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       u. setValue( 2 );
       v. setValue( 3 );
 
-      CPPUNIT_ASSERT( tnlSDOT( u, v ) == 60 );
+      CPPUNIT_ASSERT( u. sdot( v ) == 60 );
 
-      tnlSAXPY( ( T ) 2, v, u );
+      u. saxpy( ( T ) 2, v );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u. getElement( i ) == 8 );
    }

@@ -52,6 +52,9 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
+   typedef Real RealType;
+   typedef Index IndexType;
+
    //! Basic constructor
    tnlCSRMatrix( const tnlString& name );
 

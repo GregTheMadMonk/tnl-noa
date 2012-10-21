@@ -1,8 +1,8 @@
 /***************************************************************************
-                          matrix-solvers-benchmark.cpp  -  description
+                          tnlSolverMonitor.h  -  description
                              -------------------
-    begin                : Jan 8, 2011
-    copyright            : (C) 2011 by Tomas Oberhuber
+    begin                : Oct 19, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,4 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "matrix-solvers-benchmark.h"
+#ifndef TNLSOLVERMONITOR_H_
+#define TNLSOLVERMONITOR_H_
+
+template< typename Real, typename Index >
+class tnlSolverMonitor
+{
+   public:
+
+   virtual void refresh() = 0;
+
+   ~tnlSolverMonitor() {};
+};
+
+
+#endif /* TNLSOLVERMONITOR_H_ */
