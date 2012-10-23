@@ -120,7 +120,7 @@ class tnlArrayManagerBase : public tnlObject
 
 };
 
-template< typename ElementType, tnlDevice Device = tnlHost, typename IndexType = int >
+template< typename ElementType, typename Device = tnlHost, typename IndexType = int >
 class tnlArrayManager : public tnlArrayManagerBase< ElementType, IndexType >
 {
 

@@ -23,7 +23,7 @@
 #include <core/mpi-supp.h>
 #include <debug/tnlDebug.h>
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 class tnlMPIMesh< 3, Real, Device, Index >
 {
    public:
@@ -263,7 +263,7 @@ class tnlMPIMesh< 3, Real, Device, Index >
         *top_right_recieve_buff;
 };
                
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
                                          const tnlGrid< 3, Real, Device, Index >& u,
                                          const char* file_name_base,
@@ -271,7 +271,7 @@ void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
 
 // Implementation
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMPIMesh< 3, Real, Device, Index > :: tnlMPIMesh()
     : mesh_comm( 0 ), original_comm( 0 ),
       mesh_x_size( 0 ), mesh_y_size( 0 ), mesh_z_size( 0 ),
@@ -301,7 +301,7 @@ tnlMPIMesh< 3, Real, Device, Index > :: tnlMPIMesh()
       top_right_recieve_buff( 0 )
       {};
    
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Device, Index >& u,
                                                    int& _mesh_x_size,
                                                    int& _mesh_y_size,
@@ -536,7 +536,7 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Devic
       return true;
    };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Device, Index >& u,
                                                    const tnlParameterContainer& parameters,
                                                    Index _overlap_width,
@@ -557,7 +557,7 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGrid< 3, Real, Devic
 }
 
    
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGrid< 3, Real, Device, Index >& u,
                                                          tnlGrid< 3, Real, Device, Index >& sub_u,
                                                          int root ) const
@@ -631,7 +631,7 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGrid< 3, Real,
 return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGrid< 3, Real, Device, Index >& u,
                                                             tnlGrid< 3, Real, Device, Index >& sub_u,
                                                             int dest_node,
@@ -743,7 +743,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGrid< 3, Re
 #endif
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMPIMesh< 3, Real, Device, Index > :: Scatter( const tnlGrid< 3, Real, Device, Index >& u,
                                                       tnlGrid< 3, Real, Device, Index >& sub_u,
                                                       int root ) const
@@ -773,7 +773,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Scatter( const tnlGrid< 3, Real, De
 #endif
 }
     
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGrid< 3, Real, Device, Index >& u,
                                                      const tnlGrid< 3, Real, Device, Index >& sub_u,
                                                      int root ) const
@@ -893,7 +893,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGrid< 3, Real, Device, I
 #endif
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMPIMesh< 3, Real, Device, Index > :: Synchronize( tnlGrid< 3, Real, Device, Index >& u )
 {
    dbgFunctionName( "tnlMPIMesh3D", "Synchronize" );
@@ -1344,7 +1344,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Synchronize( tnlGrid< 3, Real, Devi
 #endif
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMPIMesh< 3, Real, Device, Index > ::  FreeBuffers()
 {
    if( left_send_buff ) delete left_send_buff;
@@ -1388,7 +1388,7 @@ void tnlMPIMesh< 3, Real, Device, Index > ::  FreeBuffers()
    top_right_recieve_buff = 0;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
                      const tnlGrid< 3, Real, Device, Index >& u,
                      const char* file_name_base,

@@ -21,7 +21,7 @@
 #include <math.h>
 #include <solver/tnlMatrixSolver.h>
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlSORSolver : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
@@ -46,7 +46,7 @@ class tnlSORSolver : public tnlMatrixSolver< Real, Device, Index >
    Real sorOmega;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlSORSolver< Real, Device, Index > :: tnlSORSolver( const tnlString& name )
 : tnlMatrixSolver< Real, Device, Index >( name ),
   sorOmega( 1.0 )
@@ -54,7 +54,7 @@ tnlSORSolver< Real, Device, Index > :: tnlSORSolver( const tnlString& name )
   }
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlSORSolver< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlSORSolver< " ) +
@@ -66,19 +66,19 @@ tnlString tnlSORSolver< Real, Device, Index > :: getType() const
           tnlString( " >" );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlSORSolver< Real, Device, Index > :: setSOROmega( const Real& omega )
 {
    this -> sorOmega = omega;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlSORSolver< Real, Device, Index > :: getSOROmega( ) const
 {
    return this -> sorOmega;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlSORSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
                                                    const tnlVector< Real, Device, Index >& b,
                                                    tnlVector< Real, Device, Index >& x,

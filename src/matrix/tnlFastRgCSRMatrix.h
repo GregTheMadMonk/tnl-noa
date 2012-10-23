@@ -29,7 +29,7 @@
 //! Matrix storing the non-zero elements in the Row-Grouped CSR (Compressed Sparse Row) format
 /*!
  */
-template< typename Real, tnlDevice device = tnlHost, typename Index = int >
+template< typename Real, typename device = tnlHost, typename Index = int >
 class tnlFastRgCSRMatrix
 {
 };

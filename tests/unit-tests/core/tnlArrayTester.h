@@ -25,7 +25,7 @@
 #include <core/tnlArray.h>
 #include <core/tnlFile.h>
 
-template< typename Real, tnlDevice device, typename Index > class tnlArrayTester : public CppUnit :: TestCase
+template< typename Real, typename device, typename Index > class tnlArrayTester : public CppUnit :: TestCase
 {
    public:
    tnlArrayTester(){};

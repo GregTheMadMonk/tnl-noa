@@ -25,7 +25,7 @@
 #include <mesh/tnlGrid.h>
 #include <core/tnlFile.h>
 
-template< typename Real, tnlDevice device, typename Index > class tnlGridTester : public CppUnit :: TestCase
+template< typename Real, typename device, typename Index > class tnlGridTester : public CppUnit :: TestCase
 {
    public:
    tnlGridTester(){};

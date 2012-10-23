@@ -26,7 +26,7 @@
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
 #include "tnlMatrixTester.h"
 
-template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestCase,
+template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestCase,
                                                                            public tnlMatrixTester< Real >
 {
    public:
@@ -40,7 +40,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlAdaptiveRgCSRMatrixTester" );
       CppUnit :: TestResult result;
 
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
       {
          suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlAdaptiveRgCSRMatrixTester< Real, Device > >(
                                   "ifEmptyMatrixIsStoredProperly",
@@ -203,7 +203,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
       this -> setEmptyMatrix( csrMatrix, size );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
@@ -233,7 +233,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
       this -> setDiagonalMatrix( csrMatrix, size );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
@@ -262,7 +262,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setTridiagonalMatrix( csrMatrix, size );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
@@ -290,7 +290,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setUpperTriangularMatrix( csrMatrix, size );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
@@ -319,7 +319,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
       this -> setFullMatrix( csrMatrix, size );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
@@ -347,7 +347,7 @@ template< class Real, tnlDevice Device > class tnlAdaptiveRgCSRMatrixTester : pu
       tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setBcsstk20Matrix( csrMatrix );
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {

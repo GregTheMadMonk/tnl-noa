@@ -37,7 +37,7 @@ tnlString GetParameterType( const testingClassForArrayManagerTester& c )
    return tnlString( "testingClassForArrayManagerTester" );
 };
 
-template< typename ElementType, tnlDevice Device, typename IndexType >
+template< typename ElementType, typename Device, typename IndexType >
 class tnlArrayManagerTester : public CppUnit :: TestCase
 {
    public:

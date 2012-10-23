@@ -25,8 +25,8 @@
 template< int Dimensions,
           typename Real1,
           typename Real2,
-          tnlDevice Device1,
-          tnlDevice Device2,
+          typename Device1,
+          typename Device2,
           typename Index >
 bool compareGrids( const tnlString& firstFileName,
                    const tnlString& secondFileName,

@@ -25,7 +25,7 @@
 #include <matrix/tnlMatrix.h>
 #include <solvers/tnlPreconditioner.h>
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMatrixSolver : public tnlObject
 {
    public:
@@ -74,7 +74,7 @@ class tnlMatrixSolver : public tnlObject
 
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const tnlString& name )
 : tnlObject( name ),
   iteration( 0 ),
@@ -86,37 +86,37 @@ tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const tnlString& name
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlMatrixSolver< Real, Device, Index > :: getIterationNumber() const
 {
    return this -> iteration;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const Real& tnlMatrixSolver< Real, Device, Index > :: getResidue() const
 {
    return this -> residue;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrixSolver< Real, Device, Index > :: setVerbosity( int verbose )
 {
    this -> verbosity = verbose;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrixSolver< Real, Device, Index > :: setTimerCPU( tnlTimerCPU* timer )
 {
    this -> cpu_timer = timer;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrixSolver< Real, Device, Index > :: setTimerRT( tnlTimerRT* timer )
 {
    this -> rt_timer = timer;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrixSolver< Real, Device, Index > :: printOut()
 {
    if( this -> verbosity > 0 )
@@ -136,7 +136,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
    }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real, Device, Index >& A,
                                                            const tnlVector< Real, Device, Index >& b,
                                                            const tnlVector< Real, Device, Index >& x,
@@ -154,7 +154,7 @@ Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real
 };
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMatrixSolver< Real, Device, Index > :: ~tnlMatrixSolver()
 {
 };

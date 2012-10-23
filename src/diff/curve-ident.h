@@ -22,7 +22,7 @@
 #include <mesh/tnlGrid.h>
 #include <debug/tnlDebug.h>
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool getLevelSetCurve( const tnlGrid< 2, Real, Device, Index >& u,
                        tnlCurve< tnlTuple< 2, Real > >& crv,
                        const Real level = 0.0 )

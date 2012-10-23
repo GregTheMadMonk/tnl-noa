@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlVector.h  -  description
+                          typename.h  -  description
                              -------------------
-    begin                : Oct 3, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    begin                : Oct 22, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,18 +15,44 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLONGVECTOR_H_
-#define TNLLONGVECTOR_H_
+#ifndef TNLDEVICE_H_
+#define TNLDEVICE_H_
 
-#include <core/tnlArrayManager.h>
+#include <core/tnlString.h>
+#include <core/tnlString.h>
 
-template< typename RealType, typename Device = tnlHost, typename IndexType = int >
-class tnlVector : public tnlArrayManager< RealType, Device, IndexType >
+enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice };
+
+class tnlHost
+{   
+   public:
+
+   static tnlString getDeviceType()
+   {
+      return tnlString( "tnlHost" );
+   }
+
+   static tnlDeviceEnum getDevice()
+   {
+      return tnlHostDevice;
+   };
+};
+
+class tnlCuda
 {
+   public:
+
+   static tnlString getDeviceType()
+   {
+      return tnlString( "tnlCuda" );      
+   }
+
+   static tnlDeviceEnum getDevice()
+   {
+      return tnlCudaDevice;
+   };
 
 };
 
-#include <core/tnlVectorHost.h>
-#include <core/tnlVectorCUDA.h>
 
-#endif /* TNLLONGVECTOR_H_ */
+#endif /* TNLDEVICE_H_ */

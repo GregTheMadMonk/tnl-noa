@@ -20,7 +20,7 @@
 
 #include <matrix/tnlMatrix.h>
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -124,7 +124,7 @@ class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMultiDiagonalMatrix< Real, Device, Index > :: tnlMultiDiagonalMatrix( const tnlString& name )
    : tnlMatrix< Real, Device, Index >( name ),
      nonzeroElements( name + " : nonzeroElements" ),
@@ -133,13 +133,13 @@ tnlMultiDiagonalMatrix< Real, Device, Index > :: tnlMultiDiagonalMatrix( const t
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const tnlString& tnlMultiDiagonalMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlMultiDiagonalMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlMultiDiagonalMatrix< ") +
@@ -149,7 +149,7 @@ tnlString tnlMultiDiagonalMatrix< Real, Device, Index > :: getType() const
           tnlString( " >" );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    tnlAssert( new_size > 0, cerr << "new_size = " << new_size << endl; );
@@ -159,7 +159,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setSize( Index new_size )
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setNumberOfDiagonals( const Index& diagonals )
 {
    tnlAssert( diagonals > 0, cerr << "New number of diagonals = " << diagonals << endl );
@@ -170,25 +170,25 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setNumberOfDiagonals( cons
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const Index& tnlMultiDiagonalMatrix< Real, Device, Index > :: getNumberOfDiagonals() const
 {
    return this -> numberOfDiagonals;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
 
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlMultiDiagonalMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
    return this -> nonzeroElements. getSize();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const tnlVector< Index, Device, Index >& diagonalsOffsets )
 {
    tnlAssert( diagonalsOffsets. getSize() == this -> diagonalsOffsest. getSize(),
@@ -197,13 +197,13 @@ void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const
    this -> diagonalsOffsets = diagonalsOffsets;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const tnlVector< Index, Device, Index >& tnlMultiDiagonalMatrix< Real, Device, Index > :: getDiagonalsOffsets() const
 {
    return this -> diagonalsOffsets();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setLike( const tnlCSRMatrix< Real, Device, Index >& matrix )
 {
    if( ! this -> setSize( matrix. getSize() ) )
@@ -213,14 +213,14 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setLike( const tnlCSRMatri
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: reset()
 {
    this -> nonzeroElements. reset();
    this -> diagonalsOffsets. reset();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: insertRow( Index row,
                  Index elements,
                  Real* data,
@@ -231,7 +231,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: insertRow( Index row,
    // TODO: implement this
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setElement( Index row,
                   Index column,
                   const Real& value )
@@ -249,7 +249,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: setElement( Index row,
    return false;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: addToElement( Index row,
                     Index column,
                     const Real& value )
@@ -269,7 +269,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: addToElement( Index row,
    return false;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlMultiDiagonalMatrix< Real, Device, Index > :: getElement( Index row,
                   Index column ) const
 {
@@ -282,7 +282,7 @@ Real tnlMultiDiagonalMatrix< Real, Device, Index > :: getElement( Index row,
    return 0.0;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlMultiDiagonalMatrix< Real, Device, Index > :: rowProduct( Index row,
                   const tnlVector< Real, Device, Index >& vector ) const
 {
@@ -299,7 +299,7 @@ Real tnlMultiDiagonalMatrix< Real, Device, Index > :: rowProduct( Index row,
    return result;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& x,
                                                                      tnlVector< Real, Device, Index >& b ) const
 {
@@ -320,7 +320,7 @@ void tnlMultiDiagonalMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
    }
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
                                                                            const tnlVector< Real, Device, Index >& b,
                                                                            tnlVector< Real, Device, Index >& x,
@@ -361,7 +361,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: performSORIteration( const
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlMultiDiagonalMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
    Real norm( 0.0 );
@@ -372,7 +372,7 @@ Real tnlMultiDiagonalMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) 
    return norm;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
    for( Index i = row * this -> getNumberOfDiagonals();
@@ -381,13 +381,13 @@ void tnlMultiDiagonalMatrix< Real, Device, Index > :: multiplyRow( Index row, co
       this -> nonzeroElements[ i ] *= value;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: read( istream& str, int verbose )
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlMatrix< Real, Device, Index > :: save( file ) ) return false;
@@ -398,7 +398,7 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: save( tnlFile& file ) cons
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlMatrix< Real, Device, Index > :: load( file ) ) return false;
@@ -409,25 +409,25 @@ bool tnlMultiDiagonalMatrix< Real, Device, Index > :: load( tnlFile& file )
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMultiDiagonalMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlCSRMatrix< Real, Device, Index >& tnlMultiDiagonalMatrix< Real, Device, Index > :: operator = ( const tnlCSRMatrix< Real, Device, Index >& csrMatrix )
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: printOut( ostream& str,
                                                                 const tnlString& format,
                                                                 const Index lines ) const

@@ -26,10 +26,9 @@
 #include <solvers/tnlIterativeSolver.h>
 
 template< typename Matrix,
-           tnlDevice Device,
            typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
-                                                             Device,
-                                                             typename Matrix :: IndexType> >
+                                                                typename Matrix :: Device,
+                                                                typename Matrix :: IndexType> >
 class tnlGMRESSolver : public tnlObject,
                         public tnlIterativeSolver< typename Matrix :: RealType,
                                                     typename Matrix :: IndexType >
@@ -37,6 +36,7 @@ class tnlGMRESSolver : public tnlObject,
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
+   typedef typename Matrix :: Device Device;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
@@ -95,9 +95,8 @@ class tnlGMRESSolver : public tnlObject,
 };
 
 template< typename Matrix,
-           tnlDevice Device,
            typename Preconditioner >
-tnlGMRESSolver< Matrix, Device, Preconditioner > :: tnlGMRESSolver()
+tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
 : tnlObject( "no-name" ),
   _r( "tnlGMRESSolver::_r" ),
   _w( "tnlGMRESSolver::_w" ),
@@ -115,23 +114,21 @@ tnlGMRESSolver< Matrix, Device, Preconditioner > :: tnlGMRESSolver()
 };
    
 template< typename Matrix,
-           tnlDevice Device,
            typename Preconditioner >
-tnlString tnlGMRESSolver< Matrix, Device, Preconditioner > :: getType() const
+tnlString tnlGMRESSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlGMRESSolver< " ) +
            tnlString( GetParameterType( ( RealType ) 0.0 ) ) +
            tnlString( ", " ) +
-           getDeviceType( Device ) +
+           Device :: getDeviceType() +
            tnlString( ", " ) +
            tnlString( GetParameterType( ( IndexType ) 0 ) ) +
            tnlString( " >" );
 }
 
 template< typename Matrix,
-           tnlDevice Device,
            typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setRestarting( IndexType rest )
+void tnlGMRESSolver< Matrix, Preconditioner > :: setRestarting( IndexType rest )
 {
    if( size != 0 )
       setSize( size, rest );
@@ -139,26 +136,23 @@ void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setRestarting( IndexTyp
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setMatrix( const MatrixType& matrix )
+          typename Preconditioner >
+void tnlGMRESSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
    this -> matrix = &matrix;
 }
 
 template< typename Matrix,
-           tnlDevice Device,
            typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
    this -> preconditioner = &preconditioner;
 }
 
 template< typename Matrix,
-          tnlDevice Device,
           typename Preconditioner >
  template< typename Vector >
-bool tnlGMRESSolver< Matrix, Device, Preconditioner > :: solve( const Vector& b, Vector& x )
+bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    tnlAssert( matrix, cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << endl );
    if( restarting <= 0 )
@@ -343,21 +337,19 @@ bool tnlGMRESSolver< Matrix, Device, Preconditioner > :: solve( const Vector& b,
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-tnlGMRESSolver< Matrix, Device, Preconditioner > :: ~tnlGMRESSolver()
+          typename Preconditioner >
+tnlGMRESSolver< Matrix, Preconditioner > :: ~tnlGMRESSolver()
 {
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: update( IndexType k,
-                                                                 IndexType m,
-                                                                 const tnlVector< RealType, tnlHost, IndexType >& H,
-                                                                 const tnlVector< RealType, tnlHost, IndexType >& s,
-                                                                 tnlVector< RealType, Device, IndexType >& v,
-                                                                 tnlVector< RealType, Device, IndexType >& x )
+          typename Preconditioner >
+void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
+                                                         IndexType m,
+                                                         const tnlVector< RealType, tnlHost, IndexType >& H,
+                                                         const tnlVector< RealType, tnlHost, IndexType >& s,
+                                                         tnlVector< RealType, Device, IndexType >& v,
+                                                         tnlVector< RealType, Device, IndexType >& x )
 {
    //dbgFunctionName( "tnlGMRESSolver", "Update" );
    tnlVector< RealType, tnlHost, IndexType > y( "tnlGMRESSolver::update:y" );
@@ -386,12 +378,11 @@ void tnlGMRESSolver< Matrix, Device, Preconditioner > :: update( IndexType k,
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: generatePlaneRotation( RealType &dx,
-                                                                                          RealType &dy,
-                                                                                          RealType &cs,
-                                                                                          RealType &sn )
+          typename Preconditioner >
+void tnlGMRESSolver< Matrix, Preconditioner > :: generatePlaneRotation( RealType &dx,
+                                                                        RealType &dy,
+                                                                        RealType &cs,
+                                                                        RealType &sn )
 {
    if( dy == 0.0 )
    {
@@ -414,12 +405,11 @@ void tnlGMRESSolver< Matrix, Device, Preconditioner > :: generatePlaneRotation( 
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-void tnlGMRESSolver< Matrix, Device, Preconditioner > :: applyPlaneRotation( RealType &dx,
-                                                                                       RealType &dy,
-                                                                                       RealType &cs,
-                                                                                       RealType &sn )
+          typename Preconditioner >
+void tnlGMRESSolver< Matrix, Preconditioner > :: applyPlaneRotation( RealType &dx,
+                                                                     RealType &dy,
+                                                                     RealType &cs,
+                                                                     RealType &sn )
 {
    RealType temp  =  cs * dx + sn * dy;
    dy =  cs * dy - sn * dx;
@@ -427,9 +417,8 @@ void tnlGMRESSolver< Matrix, Device, Preconditioner > :: applyPlaneRotation( Rea
 };
 
 template< typename Matrix,
-           tnlDevice Device,
-           typename Preconditioner >
-bool tnlGMRESSolver< Matrix, Device, Preconditioner > :: setSize( IndexType _size, IndexType m )
+          typename Preconditioner >
+bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting == m ) return true;
    size = _size;

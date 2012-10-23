@@ -29,7 +29,7 @@
 using namespace std;
 
 //! Implementation of the ELLPACK format
-template< typename Real, tnlDevice device = tnlHost, typename Index = int >
+template< typename Real, typename device = tnlHost, typename Index = int >
 class tnlEllpackMatrix
 {
 };

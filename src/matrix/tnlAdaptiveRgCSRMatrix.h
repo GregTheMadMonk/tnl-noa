@@ -26,6 +26,7 @@
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>
 #include <debug/tnlDebug.h>
+#include <core/tnlDevice.h>
 
 using namespace std;
 
@@ -45,7 +46,7 @@ inline tnlString GetParameterType( const tnlARGCSRGroupProperties& a )
 //! Matrix storing the non-zero elements in the Row-grouped CSR (Compressed Sparse Row) format
 /*!
  */
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -101,7 +102,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool copyFrom( const tnlCSRMatrix< Real, tnlHost,Index >& csr_matrix );
 
-   template< tnlDevice Device2 >
+   template< typename Device2 >
    bool copyFrom( const tnlAdaptiveRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
 
    Real getRowL1Norm( Index row ) const
@@ -189,7 +190,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 #endif
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const tnlString& name )
 : tnlMatrix< Real, Device, Index >( name ),
   nonzeroElements( name + " : nonzeroElements" ),
@@ -208,37 +209,37 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const t
 	tnlAssert( maxGroupSize > 0, );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const tnlString& tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlAdaptiveRgCSRMatrix< ") +
           tnlString( GetParameterType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           GetParameterType( Index( 0 ) ) +
           tnlString( " >" );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getMaxGroupSize() const
 {
    return maxGroupSize;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getCUDABlockSize() const
 {
    return cudaBlockSize;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
 {
    tnlAssert( newSize > 0, cerr << "newSize = " << newSize );
@@ -253,7 +254,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    tnlAssert( elements != 0, );
@@ -266,7 +267,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index 
 };
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: reset()
 {
    nonzeroElements. reset();
@@ -283,20 +284,20 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: reset()
    lastNonzeroElement = 0;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
    tnlAssert( nonzeroElements. getSize() > artificialZeros, );
 	return nonzeroElements. getSize() - artificialZeros;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
 	return artificialZeros;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index desiredChunkSize,
                                                                   const Index cudaBlockSize )
 {
@@ -304,7 +305,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index de
    this -> cudaBlockSize = cudaBlockSize;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( const Index row, const Index groupId ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getFirstThreadInRow" );
@@ -316,22 +317,22 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( cons
    return threads. getElement( row - 1 );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getLastThreadInRow( const Index row, const Index groupId ) const
 {
    tnlAssert( row >= 0 && row < this -> getSize(), cerr << " row = " << row << " size = " << this -> getSize() );
    return threads. getElement( row );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
-	dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	if( ! this -> setSize( csrMatrix. getSize() ) )
-		return false;
-	
-	if( Device == tnlHost )
-	{
+  dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
+  if( ! this -> setSize( csrMatrix. getSize() ) )
+          return false;
+  
+  if( Device :: getDevice() == tnlHostDevice )
+  {
       Index nonzerosInGroup( 0 );
       Index groupBegin( 0 );
       Index groupEnd( 0 );
@@ -566,7 +567,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 
       }
 	}
-	if( Device == tnlCuda )
+	if( Device :: getDevice() == tnlCudaDevice )
 	{
 		tnlAssert( false,
 			cerr << "Conversion from tnlCSRMatrix on the host to the tnlAdaptiveRgCSRMatrix on the CUDA device is not implemented yet."; );
@@ -576,8 +577,8 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 }
 
 
-template< typename Real, tnlDevice Device, typename Index >
-   template< tnlDevice Device2 >
+template< typename Real, typename Device, typename Index >
+   template< typename Device2 >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiveRgCSRMatrix< Real, Device2, Index >& adaptiveRgCSRMatrix )
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, Device, Index >", "copyFrom" );
@@ -611,14 +612,14 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
                                                                   Index column ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getElement" );
    tnlAssert( 0 <= row && row < this -> getSize(),
               cerr << "The row is outside the matrix." );
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       const Index groupId = rowToGroupMapping[ row ];
       const Index firstRow = groupInfo[ groupId ]. firstRow;
@@ -642,7 +643,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
          }
       return 0.0;
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
       tnlAssert( false,
                 cerr << "tnlRgCSRMatrix< Real, tnlCuda, Index > ::getElement is not implemented yet." );
@@ -652,7 +653,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
    return 0.0; // this is only to avoid a compiler warning
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
                                                                      tnlVector< Real, Device, Index >& result ) const
 {
@@ -666,7 +667,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
                    << "The matrix size is " << this -> getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
 
       Real partialSums[ 256 ];
@@ -842,7 +843,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
       }
 #endif
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
    Index blockSize = this -> getCUDABlockSize();
@@ -881,7 +882,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
 
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( ostream& str,
                                                                      const Index groupId ) const
 {
@@ -916,7 +917,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( ostream& st
 }
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
                                                                 const tnlString& format,
 		                                                          const Index lines ) const
@@ -980,13 +981,13 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
                                                             const tnlString& format,
                                                             tnlCSRMatrix< Real, Device, Index >* csrMatrix,
                                                             int verbose )
 {
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
       cerr << "Drawing of matrices stored on the GPU is not supported yet." << endl;
       return false;

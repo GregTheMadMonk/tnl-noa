@@ -20,7 +20,7 @@
 
 #include <core/tnlObject.h>
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 class tnlDummyPreconditioner
 {
    public:

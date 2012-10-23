@@ -26,7 +26,7 @@
 #include <core/tnlCommunicator.h>
 #include <core/tnlFile.h>
 
-template< tnlDevice Device > class tnlCommunicatorTester : public CppUnit :: TestCase
+template< typename Device > class tnlCommunicatorTester : public CppUnit :: TestCase
 {
    public:
    tnlCommunicatorTester(){};

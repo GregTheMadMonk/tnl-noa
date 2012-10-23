@@ -34,6 +34,7 @@
 #include <core/tnlCudaSupport.h>
 #include <core/tnlString.h>
 #include <core/tnlObject.h>
+#include <core/tnlDevice.h>
 
 using namespace std;
 
@@ -83,8 +84,8 @@ class tnlFile
    tnlFile();
 
 	bool open( const tnlString& fileName,
-		        const tnlIOMode mode,
-		 	     const tnlCompression compression = tnlCompressionBzip2 );
+		         const tnlIOMode mode,
+		 	      const tnlCompression compression = tnlCompressionBzip2 );
 
 	const tnlString& getFileName() const
    {
@@ -102,23 +103,19 @@ class tnlFile
 	}
 
 	// TODO: this does not work for constant types
-	template< typename Type, typename Index >
+	template< typename Type, typename Device = tnlHost, typename Index = int >
 	bool read( Type* buffer,
-	           const Index& elements,
-	           const tnlDevice device = tnlHost );
+	           const Index& elements );
 
-	template< typename Type >
-	bool read( Type* buffer,
-	           const tnlDevice device = tnlHost );
+	template< typename Type, typename Device = tnlHost >
+	bool read( Type* buffer );
 
-	template< typename Type, typename Index >
+	template< typename Type, typename Device = tnlHost, typename Index = int >
 	bool write( const Type* buffer,
-	            const Index elements,
-	            const tnlDevice device = tnlHost );
+	            const Index elements );
 
-	template< typename Type >
-	bool write( Type* buffer,
-	            const tnlDevice device = tnlHost );
+	template< typename Type, typename Device = tnlHost >
+	bool write( Type* buffer );
 
 
 	bool close();
@@ -127,25 +124,22 @@ class tnlFile
 
 };
 
-template< typename Type >
-bool tnlFile :: read( Type* buffer,
-                      const tnlDevice device )
+template< typename Type, typename Device >
+bool tnlFile :: read( Type* buffer )
 {
-   return read< Type, int >( buffer, 1, device );
+   return read< Type, Device, int >( buffer, 1 );
 };
 
-template< typename Type >
-bool tnlFile :: write( Type* buffer,
-                       const tnlDevice device )
+template< typename Type, typename Device >
+bool tnlFile :: write( Type* buffer )
 {
-   return write< Type, int >( buffer, 1, device );
+   return write< Type, Device, int >( buffer, 1 );
 };
 
 
-template< typename Type, typename Index >
+template< typename Type, typename Device, typename Index >
 bool tnlFile :: read( Type* buffer,
-                      const Index& elements,
-                      const tnlDevice device )
+                         const Index& elements )
 {
    if( ! fileOK )
    {
@@ -163,9 +157,8 @@ bool tnlFile :: read( Type* buffer,
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    void* host_buffer( 0 );
-   switch( device )
+   if( Device :: getDeviceType() == "tnlHost" )
    {
-      case tnlHost:
          bytes_read = BZ2_bzRead( &bzerror,
                                   bzFile,
                                   buffer,
@@ -173,60 +166,59 @@ bool tnlFile :: read( Type* buffer,
          if( bzerror == BZ_OK || bzerror == BZ_STREAM_END )
             readElements = bytes_read / sizeof( Type );
          return checkBz2Error( bzerror );
-      case tnlCuda:
+   }
+   if( Device :: getDeviceType() == "tnlCuda" )
+   {
 #ifdef HAVE_CUDA
-         /*!***
-          * Here we cannot use
-          *
-          * host_buffer = new Type[ host_buffer_size ];
-          *
-          * because it does not work for constant types like
-          * T = const bool.
-          */
-         host_buffer = malloc( sizeof( Type ) * host_buffer_size );
-         readElements = 0;
-         if( ! host_buffer )
-         {
-            cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-                 << this -> getFileName() << "." << endl;
-            return false;
-
-         }
-
-         while( readElements < elements )
-         {
-            int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
-            int bytesRead = BZ2_bzRead( &bzerror,
-                                        bzFile,
-                                        host_buffer,
-                                        transfer * sizeof( Type ) );
-            if( ! checkBz2Error( bzerror) )
-            {
-               free( host_buffer );
-               return false;
-            }
-            if( cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
-                            host_buffer,
-                            bytesRead,
-                            cudaMemcpyHostToDevice ) != cudaSuccess )
-            {
-               cerr << "Transfer of data from the CUDA device to the file " << this -> fileName
-                    << " failed." << endl;
-               checkCUDAError( __FILE__, __LINE__ );
-               free( host_buffer );
-               return false;
-            }
-            readElements += bytesRead / sizeof( Type );
-         }
-         free( host_buffer );
-         return true;
-#else
-         cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      /*!***
+       * Here we cannot use
+       *
+       * host_buffer = new Type[ host_buffer_size ];
+       *
+       * because it does not work for constant types like
+       * T = const bool.
+       */
+      host_buffer = malloc( sizeof( Type ) * host_buffer_size );
+      readElements = 0;
+      if( ! host_buffer )
+      {
+         cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+              << this -> getFileName() << "." << endl;
          return false;
+
+      }
+
+      while( readElements < elements )
+      {
+         int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
+         int bytesRead = BZ2_bzRead( &bzerror,
+                                     bzFile,
+                                     host_buffer,
+                                     transfer * sizeof( Type ) );
+         if( ! checkBz2Error( bzerror) )
+         {
+            free( host_buffer );
+            return false;
+         }
+         if( cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
+                         host_buffer,
+                         bytesRead,
+                         cudaMemcpyHostToDevice ) != cudaSuccess )
+         {
+            cerr << "Transfer of data from the CUDA device to the file " << this -> fileName
+                 << " failed." << endl;
+            checkCUDAError( __FILE__, __LINE__ );
+            free( host_buffer );
+            return false;
+         }
+         readElements += bytesRead / sizeof( Type );
+      }
+      free( host_buffer );
+      return true;
+#else
+      cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      return false;
 #endif
-      case tnlOpenCL:
-         tnlAssert( false, cerr << "Not implemented yet." << endl; );
-         break;
    }
 #else
    cerr << "Bzip2 compression is not supported on this system." << endl;
@@ -235,10 +227,9 @@ bool tnlFile :: read( Type* buffer,
    return true;
 };
 
-template< class Type, typename Index >
+template< class Type, typename Device, typename Index >
 bool tnlFile ::  write( const Type* buffer,
-                        const Index elements,
-                        const tnlDevice device )
+                           const Index elements )
 {
    if( ! fileOK )
    {
@@ -257,15 +248,16 @@ bool tnlFile ::  write( const Type* buffer,
    Index writtenElements( 0 );
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
-   switch( device )
+   if( Device :: getDeviceType() == "tnlHost" )
    {
-      case tnlHost:
-         BZ2_bzWrite( &bzerror,
-                      bzFile,
-                      ( void* ) buf,
-                      elements * sizeof( Type ) );
-         return checkBz2Error( bzerror );
-      case tnlCuda:
+      BZ2_bzWrite( &bzerror,
+                   bzFile,
+                   ( void* ) buf,
+                   elements * sizeof( Type ) );
+      return checkBz2Error( bzerror );
+   }
+   if( Device :: getDeviceType() == "tnlCuda" )
+   {
 #ifdef HAVE_CUDA
          /*!***
           * Here we cannot use
@@ -313,9 +305,6 @@ bool tnlFile ::  write( const Type* buffer,
          cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
          return false;
 #endif
-      case tnlOpenCL:
-         tnlAssert( false, cerr << "Not implemented yet!" << endl );
-         break;
    }
 
 #else

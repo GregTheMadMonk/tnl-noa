@@ -20,7 +20,7 @@
 
 #include <mesh/tnlGrid.h>
 
-template< int Dimensions, typename Real = double, tnlDevice Device = tnlHost, typename Index = int >
+template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlMPIMesh
 {
 };

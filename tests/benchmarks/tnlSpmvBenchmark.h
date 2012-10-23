@@ -28,9 +28,9 @@ float tnlSpmvBenchmarkPrecision( const float& ) { return 1.0e-4; }
 
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 class tnlSpmvBenchmark
 {
    public:
@@ -141,9 +141,9 @@ class tnlSpmvBenchmark
 };
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
    : benchmarkWasSuccesful( false ),
      setupOk( false ),
@@ -166,45 +166,45 @@ tnlSpmvBenchmark< Real, Device, Index, Matrix > :: tnlSpmvBenchmark()
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBenchmarkWasSuccesful() const
 {
    return this -> benchmarkWasSuccesful;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getGflops() const
 {
    return this -> gflops;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 double tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getTime() const
 {
    return this -> time;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: setMaxIterations( const int maxIterations )
 {
    this -> maxIterations = maxIterations;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 int tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getIterations() const
 {
    return this -> iterations;
@@ -212,27 +212,27 @@ int tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getIterations() const
 
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 Index tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getArtificialZeros() const
 {
    return this -> artificialZeros;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 Real tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getMaxError() const
 {
    return this -> maxError;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlVector< Real, Device, Index >& x,
                                                                       const tnlVector< Real, tnlHost, Index >& refB,
                                                                       bool verbose )
@@ -241,7 +241,7 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlV
    if( ! setupOk )
       return;
 #ifndef HAVE_CUDA
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
       if( verbose )
          writeProgress();
@@ -303,9 +303,9 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark( const tnlV
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgressTableHeader()
 {
    int totalWidth = this -> formatColumnWidth +
@@ -327,9 +327,9 @@ void tnlSpmvBenchmark< Real, Device, Index, Matrix > :: writeProgressTableHeader
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 tnlString tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBgColorBySpeedUp( const double& speedUp ) const
 {
    if( speedUp >= 30.0 )
@@ -351,9 +351,9 @@ tnlString tnlSpmvBenchmark< Real, Device, Index, Matrix > :: getBgColorBySpeedUp
 
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: printMatrixInHtml( const tnlString& fileName,
                                                                            tnlMatrix< Real >& matrix ) const
 {
@@ -375,9 +375,9 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: printMatrixInHtml( const
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index,
-          template< typename matrixReal, tnlDevice matrixDevice, typename matrixIndex > class Matrix >
+          template< typename matrixReal, typename matrixDevice, typename matrixIndex > class Matrix >
 bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMatrix< Real, tnlHost, Index >& testMatrix,
                                                                     int verbose ) const
 {
@@ -385,7 +385,7 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
       return false;
 
 #ifndef HAVE_CUDA
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
       return false;
 #endif
 
@@ -396,7 +396,7 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
            << " have different sizes: " << size << " and " << testMatrix. getSize() << "." << endl;
       return false;
    }
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       for( Index i = 0; i < size; i ++ )
       {
@@ -411,7 +411,7 @@ bool tnlSpmvBenchmark< Real, Device, Index, Matrix > :: testMatrix( const tnlMat
             cout << "Comparing with testing matrix: " << i + 1 << " / " << size << "           \r" << flush;
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       tnlVector< Real, Device, Index > x( "x" ), b( "b" );

@@ -30,7 +30,7 @@
  *
  */
 
-template< class Problem, class Mesh, typename Real = double, tnlDevice Device = tnlHost, typename Index = int >
+template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, Index >
 {
    public:
@@ -125,7 +125,7 @@ __global__ void updateU( const Index size,
 
 
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: tnlMersonSolver( const tnlString& name )
 : tnlExplicitSolver< Problem, Mesh, Real, Device, Index >( name ),
   k1( "tnlMersonSolver:k1" ),
@@ -139,7 +139,7 @@ tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: tnlMersonSolver( const 
    this -> tau = 1.0;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() const
 {
    Mesh m( "m" );
@@ -158,13 +158,13 @@ tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() con
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: setAdaptivity( const Real& a )
 {
    adaptivity = a;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& problem,
                                                                      Mesh& u )
 {
@@ -270,7 +270,7 @@ bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& pr
    }
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions( Mesh& u,
                                                                                  Problem& problem,
                                                                                  const Real& time,
@@ -298,7 +298,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
 
    Real tau_3 = tau / 3.0;
 
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       problem. GetExplicitRHS( time, u, k1 );
 
@@ -330,7 +330,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
       problem. GetExplicitRHS( time + tau, kAux, k5 );
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const int block_size = 512;
@@ -362,7 +362,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
    }
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( const Real tau )
 {
    const Index size = k1. getSize();
@@ -381,7 +381,7 @@ Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( cons
    k5. touch();
 
    Real eps( 0.0 ), maxEps( 0.0 );
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       // TODO: implement OpenMP support
       for( Index i = 0; i < size; i ++  )
@@ -394,7 +394,7 @@ Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( cons
          eps = Max( eps, err );
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const Index block_size = 512;
@@ -409,7 +409,7 @@ Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( cons
    return maxEps;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLevel( Mesh& u,
                                                                                    Real tau,
                                                                                    Real& currentResidue )
@@ -429,7 +429,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
    k4. touch();
    k5. touch();
 
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau )
@@ -441,7 +441,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
          localResidue += fabs( ( Real ) add );
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const Index block_size = 512;
@@ -457,7 +457,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
 
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: writeGrids( const Mesh& u )
 {
    cout << "Writing Merson solver grids ...";

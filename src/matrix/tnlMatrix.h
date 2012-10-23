@@ -41,9 +41,9 @@ class tnlMatrixClass
    static const tnlString cusparse;
 };
 
-template< typename Real, tnlDevice device, typename Index > class tnlCSRMatrix;
+template< typename Real, typename device, typename Index > class tnlCSRMatrix;
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMatrix : public tnlObject
 {
    public:
@@ -162,22 +162,22 @@ class tnlMatrix : public tnlObject
    Index size;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 ostream& operator << ( ostream& o_str, const tnlMatrix< Real, Device, Index >& A );
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMatrix< Real, Device, Index > :: tnlMatrix( const tnlString& name )
 : tnlObject( name )
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
    return 0;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
    tnlAssert( false, cerr << "not implemented yet - matrix name is " << this -> getName() );
@@ -187,7 +187,7 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
    abort();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
                                                               const tnlVector< Real, Device, Index >& b,
                                                               tnlVector< Real, Device, Index >& x,
@@ -197,13 +197,13 @@ bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
    return false;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, Device, Index >& m ) const
 {
    return compare( m, false );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device, Index >& m, bool verbose ) const
 {
    if( this -> getSize() != m. getSize() )
@@ -220,13 +220,13 @@ bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device,
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: operator != ( const tnlMatrix< Real, Device, Index >& m ) const
 {
    return ! ( ( *this ) == m );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) ) return false;
@@ -235,7 +235,7 @@ bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) ) return false;
@@ -244,19 +244,19 @@ bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real, Device, Index >& matrix )
 {
    this -> size = matrix. getSize();
@@ -269,7 +269,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
    return * this;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header,
 		                                                   bool& symmetric )
 {
@@ -309,7 +309,7 @@ bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header
 }
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: read( istream& file,
                                                int verbose )
 {
@@ -397,7 +397,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation )
 {
    dbgFunctionName( "tnlMatrix< Real, Device, Index >", "sortRowsDecreasingly" );
@@ -442,7 +442,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 		                                         const tnlString& format,
 		                                         tnlCSRMatrix< Real, Device, Index >* csrMatrix,
@@ -485,7 +485,7 @@ bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 	return false;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( ostream& str,
                                                                 const int elementSize ) const
 {
@@ -498,7 +498,7 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( ostream& str,
    str << "0 " << scale << " translate" << endl;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
                                                               const int elementSize,
                                                               bool verbose ) const
@@ -526,7 +526,7 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
 }
 
 //! Operator <<
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 ostream& operator << ( ostream& o_str,
 		                 const tnlMatrix< Real, Device, Index >& A )
 {

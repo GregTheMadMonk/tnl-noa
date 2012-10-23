@@ -28,7 +28,7 @@
 
 using namespace std;
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool ProcesstnlGrid2D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
@@ -109,7 +109,7 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool ProcesstnlGrid3D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,

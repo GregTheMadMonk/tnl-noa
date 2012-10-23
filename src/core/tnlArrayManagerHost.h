@@ -24,7 +24,7 @@
 
 using namespace std;
 
-template< typename ElementType, tnlDevice Device, typename IndexType > class tnlArrayManager;
+template< typename ElementType, typename Device, typename IndexType > class tnlArrayManager;
 
 template< typename ElementType, typename IndexType > class tnlArrayManager< ElementType, tnlCuda, IndexType >;
 

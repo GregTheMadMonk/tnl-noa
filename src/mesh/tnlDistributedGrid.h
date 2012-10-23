@@ -23,7 +23,7 @@
 
 template< int Dimensions,
           typename GridType,
-          tnlDevice Device = tnlHost,
+          typename Device = tnlHost,
           typename Real = double,
           typename Index = int >
 class tnlDistributedGrid : public tnlObject
@@ -125,14 +125,14 @@ class tnlDistributedGrid : public tnlObject
 
 };
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: tnlDistributedGrid( const tnlString& name )
  : tnlObject( name )
 {
 
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 bool tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: init( tnlCommunicator* communicator,
                                                                               const GridType& grid,
                                                                               const tnlTuple< Dimensions, int >& gridDimensions,
@@ -141,67 +141,67 @@ bool tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: init( tn
 
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 tnlCommunicator* tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getCommunicator() const
 {
     return communicator;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainLowerCorner() const
 {
     return domainLowerCorner;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainUpperCorner() const
 {
     return domainUpperCorner;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDimensions() const
 {
     return globalDimensions;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getGridDimensions() const
 {
     return gridDimensions;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerNeighbors() const
 {
     return lowerNeighbors;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerSubdomainsOverlaps() const
 {
     return lowerSubdomainsOverlaps;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getNodeCoordinates() const
 {
     return nodeCoordinates;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getSubdomainDimensions() const
 {
     return subdomainDimensions;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUpperSubdomainsOverlaps() const
 {
     return upperSubdomainsOverlaps;
 }
 
-template< int Dimensions, typename GridType, tnlDevice Device, typename Real, typename Index >
+template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 const tnlTuple< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUppperNeighbors() const
 {
     return uppperNeighbors;

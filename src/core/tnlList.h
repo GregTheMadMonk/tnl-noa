@@ -301,7 +301,7 @@ template< class T > class tnlList
    //! Save the list in binary format
    bool Save( tnlFile& file ) const
    {
-      file. write( &size, 1 );
+      file. write( &size );
       for( int i = 0; i < size; i ++ )
          if( ! file. write( &operator[]( i ), 1 ) )
             return false;

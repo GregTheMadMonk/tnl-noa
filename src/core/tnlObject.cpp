@@ -190,17 +190,4 @@ bool parseObjectType( const tnlString& objectType,
    }
 }
 
-tnlString getDeviceType( tnlDevice device )
-{
-   switch( device )
-   {
-      case tnlHost:
-         return tnlString( "tnlHost" );
-      case tnlCuda:
-         return tnlString( "tnlHost" );
-         //TODO: return "tnlCuda" should be here but we are not sure if it is good
-      default:
-         return tnlString( "tnlUnknownDevice" );
-   }
-}
 

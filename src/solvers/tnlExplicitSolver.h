@@ -23,7 +23,7 @@
 #include <core/tnlTimerRT.h>
 #include <core/tnlFlopsCounter.h>
 
-template< class Problem, class Mesh, typename Real = double, tnlDevice Device = tnlHost, typename Index = int >
+template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlExplicitSolver : public tnlObject
 {
    public:
@@ -105,7 +105,7 @@ protected:
    bool testingMode;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: tnlExplicitSolver( const tnlString&  name )
 :  tnlObject( name ),
    iteration( 0 ),
@@ -123,103 +123,103 @@ tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: tnlExplicitSolver( c
    {
    };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setTime( const Real& t )
 {
    time = t;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 const Real& tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getTime() const
 {
    return time;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 int tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getIterationsNumber() const
 {
    return iteration;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setTau( const Real& t )
 {
    tau = t;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 const Real& tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getTau() const
 {
    return tau;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 const Real& tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getResidue() const
 {
    return residue;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 int tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getMaxIterationsNumber() const
 {
     return maxIterationsNumber;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 Real tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getMaxResidue() const
 {
     return maxResidue;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 Real tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: getStopTime() const
 {
     return stopTime;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setMaxIterationsNumber( int maxIterationsNumber )
 {
     this -> maxIterationsNumber = maxIterationsNumber;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setMaxResidue( const Real& maxResidue )
 {
     this -> maxResidue = maxResidue;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setStopTime( const Real& stopTime )
 {
     this -> stopTime = stopTime;
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setMPIComm( MPI_Comm comm )
 {
    solver_comm = comm;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setVerbosity( int v )
 {
    verbosity = v;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setTimerCPU( tnlTimerCPU* timer )
 {
    cpu_timer = timer;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setTimerRT( tnlTimerRT* timer )
 {
    rt_timer = timer;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: printOut() const
 {
    if( verbosity > 0 )
@@ -246,7 +246,7 @@ void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: printOut() cons
    }
 }
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlExplicitSolver < Problem, Mesh, Real, Device, Index > :: setTestingMode( bool testingMode )
 {
    this -> testingMode = testingMode;

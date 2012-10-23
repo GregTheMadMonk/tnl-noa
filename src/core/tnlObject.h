@@ -23,14 +23,6 @@
 class tnlFile;
 template< class T > class tnlList;
 
-/*!
- * This enum type determines where a certain object is stored.
- * tnlHost means that the object is in the operating memory and it can be touched by CPU.
- * tnlCuda means that the object is stored on the GPU when using CUDA.
- * tnlOpenCL is not supported yet.
- */
-enum tnlDevice { tnlHost, tnlCuda, tnlOpenCL };
-
 //! This is basic class for all 'large' objects like matrices, meshes, grids, solvers etc.
 /*!
  *  Objects like numerical grids, meshes, matrices large vectors etc.
@@ -89,7 +81,5 @@ bool getObjectType( const tnlString& file_name, tnlString& type );
 
 bool parseObjectType( const tnlString& objectType,
                       tnlList< tnlString >& parsedObjectType );
-
-tnlString getDeviceType( tnlDevice device );
 
 #endif

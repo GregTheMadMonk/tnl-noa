@@ -22,7 +22,7 @@
 #include <math.h>
 #include <solvers/tnlMatrixSolver.h>
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
@@ -74,7 +74,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
    Index size, restarting;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const tnlString& name )
 : tnlMatrixSolver< Real, Device, Index >( name ),
   _r( "tnlGMRESSolverOld::_r" ),
@@ -90,7 +90,7 @@ tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const tnlString& 
 {
 };
    
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlGMRESSolverOld< " ) +
@@ -102,7 +102,7 @@ tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
           tnlString( " >" );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
 {
    if( size != 0 )
@@ -110,7 +110,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
    restarting = rest;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
                                                      const tnlVector< Real, Device, Index >& b,
                                                      tnlVector< Real, Device, Index >& x,
@@ -307,12 +307,12 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlGMRESSolverOld< Real, Device, Index > :: ~tnlGMRESSolverOld()
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
                                                       Index m,
                                                       const tnlVector< Real, tnlHost, Index >& H,
@@ -346,7 +346,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
    }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: generatePlaneRotation( Real &dx,
                                                                      Real &dy,
                                                                      Real &cs,
@@ -372,7 +372,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: generatePlaneRotation( Real &dx
       }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: applyPlaneRotation( Real &dx,
                                                                   Real &dy,
                                                                   Real &cs,
@@ -383,7 +383,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: applyPlaneRotation( Real &dx,
    dx = temp;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlGMRESSolverOld< Real, Device, Index > :: setSize( Index _size, Index m )
 {
    if( size == _size && restarting == m ) return true;

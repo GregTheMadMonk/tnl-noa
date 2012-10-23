@@ -26,7 +26,7 @@
 #include <core/tnlSharedMemory.h>
 #include <core/tnlFile.h>
 
-template< tnlDevice Device > class tnlSharedMemoryTester : public CppUnit :: TestCase
+template< typename Device > class tnlSharedMemoryTester : public CppUnit :: TestCase
 {
    public:
    tnlSharedMemoryTester(){};

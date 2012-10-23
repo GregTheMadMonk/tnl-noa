@@ -26,7 +26,7 @@
 
 using namespace std;
 
-template< int Dimensions, typename Real = double, tnlDevice Device = tnlHost, typename Index = int >
+template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlGrid : public tnlArray< Dimensions, Real, Device, Index >
 {
    //! We do not allow constructor without parameters.
@@ -81,7 +81,7 @@ class tnlGrid : public tnlArray< Dimensions, Real, Device, Index >
 
    bool operator != ( const tnlGrid< Dimensions, Real, Device, Index >& array ) const;
 
-   template< typename Real2, tnlDevice Device2, typename Index2 >
+   template< typename Real2, typename Device2, typename Index2 >
    tnlGrid< Dimensions, Real, Device, Index >& operator = ( const tnlGrid< Dimensions, Real2, Device2, Index2 >& array );
 
    //! This method interpolates value at given point.
@@ -301,13 +301,13 @@ __global__ void setNeumannBC( const Index xSize,
                               Real* u );
 #endif
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name )
 : tnlArray< Dimensions, Real, Device, Index >( name )
   {
   }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                                                        const tnlGrid< Dimensions, Real, tnlHost, Index >& grid )
 : tnlArray< Dimensions, Real, Device, Index >( name, grid )
@@ -316,7 +316,7 @@ tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                       grid. getDomainUpperCorner() );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                                                        const tnlGrid< Dimensions, Real, tnlCuda, Index >& grid )
 : tnlArray< Dimensions, Real, Device, Index >( name, grid )
@@ -325,13 +325,13 @@ tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                       grid. getDomainUpperCorner() );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 const tnlTuple< Dimensions, Index >& tnlGrid< Dimensions, Real, Device, Index > :: getDimensions() const
 {
    return tnlArray< Dimensions, Real, Device, Index > :: getDimensions();
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setDimensions( const tnlTuple< Dimensions, Index >& dimensions )
 {
    if( ! tnlArray< Dimensions, Real, Device, Index > :: setDimensions( dimensions ) )
@@ -341,7 +341,7 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: setDimensions( const tnlTuple
    return true;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setDomain( const tnlTuple< Dimensions, Real >& lowerCorner,
                                                               const tnlTuple< Dimensions, Real >& upperCorner )
 {
@@ -358,39 +358,39 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: setDomain( const tnlTuple< Di
    return true;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setLike( const tnlGrid< Dimensions, Real, tnlHost, Index >& v )
 {
    return tnlArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
           this -> setDomain( v. getDomainLowerCorner(), v. getDomainUpperCorner() );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setLike( const tnlGrid< Dimensions, Real, tnlCuda, Index >& v )
 {
    return tnlArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
           this -> setDomain( v. getDomainLowerCorner(), v. getDomainUpperCorner() );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 const tnlTuple< Dimensions, Real >& tnlGrid< Dimensions, Real, Device, Index > :: getDomainLowerCorner() const
 {
    return this -> domainLowerCorner;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 const tnlTuple< Dimensions, Real >& tnlGrid< Dimensions, Real, Device, Index > :: getDomainUpperCorner() const
 {
    return this -> domainUpperCorner;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 const tnlTuple< Dimensions, Real >& tnlGrid< Dimensions, Real, Device, Index > :: getSpaceSteps() const
 {
    return spaceSteps;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 tnlString tnlGrid< Dimensions, Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlGrid< ") +
@@ -398,13 +398,13 @@ tnlString tnlGrid< Dimensions, Real, Device, Index > :: getType() const
           tnlString( ", " ) +
           tnlString( getParameterType< Real >() ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           tnlString( getParameterType< Index >() ) +
           tnlString( " >" );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: operator == ( const tnlGrid< Dimensions, Real, Device, Index >& grid ) const
 {
    tnlAssert( this -> getDomainLowerCorner() == grid. getDomainLowerCorner() &&
@@ -419,14 +419,14 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: operator == ( const tnlGrid< 
    return tnlArray< Dimensions, Real, Device, Index > :: operator == ( grid );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: operator != ( const tnlGrid< Dimensions, Real, Device, Index >& grid ) const
 {
    return ! ( (* this ) == grid );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
-  template< typename Real2, tnlDevice Device2, typename Index2 >
+template< int Dimensions, typename Real, typename Device, typename Index >
+  template< typename Real2, typename Device2, typename Index2 >
 tnlGrid< Dimensions, Real, Device, Index >&
 tnlGrid< Dimensions, Real, Device, Index >
 :: operator = ( const tnlGrid< Dimensions, Real2, Device2, Index2 >& grid )
@@ -441,7 +441,7 @@ tnlGrid< Dimensions, Real, Device, Index >
    return ( *this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const tnlTuple< Dimensions, Real >& point ) const
 {
    if( Dimensions == 1)
@@ -490,20 +490,20 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const tnlTuple< Dim
    }
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const Real& x ) const
 {
    return this -> getValue( tnlTuple< 1, Real >( x ) );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const Real& x,
                                                              const Real& y ) const
 {
    return this -> getValue( tnlTuple< 2, Real >( x, y ) );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const Real& x,
                                                              const Real& y,
                                                              const Real& z ) const
@@ -511,7 +511,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getValue( const Real& x,
    return this -> getValue( tnlTuple< 3, Real >( x, y, z ) );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1 ) const
 {
    tnlAssert( Dimensions == 1,
@@ -528,7 +528,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1 )
             tnlArray< 1, Real, tnlHost, Index > ::  getElement( i1 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1,
                                                                 const Index i2 ) const
 {
@@ -548,7 +548,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1,
             this ->  getElement( i1, i2 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -573,7 +573,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1,
             this ->  getElement( i1, i2, i3 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1 ) const
 {
    tnlAssert( Dimensions == 1,
@@ -590,7 +590,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1 )
             tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1,
                                                                 const Index i2 ) const
 {
@@ -610,7 +610,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1,
             this -> getElement( i1 - 1, i2 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -635,7 +635,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1,
             this ->  getElement( i1 - 1, i2, i3 ) ) / Hx;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1 ) const
 {
    tnlAssert( Dimensions == 1,
@@ -652,7 +652,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1 ) c
             tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( 2.0 * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1,
                                                               const Index i2 ) const
 {
@@ -672,7 +672,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1,
             this -> getElement( i1 - 1, i2 ) ) / ( 2.0 * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1,
                                                               const Index i2,
                                                               const Index i3 ) const
@@ -697,7 +697,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1,
             this -> getElement( i1 - 1, i2, i3 ) ) / ( 2.0 * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1 ) const
 {
    tnlAssert( Dimensions == 1,
@@ -715,7 +715,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1 ) 
             tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( Hx * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1,
                                                                const Index i2 ) const
 {
@@ -736,7 +736,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1,
             this -> getElement( i1 - 1, i2 ) ) / ( Hx * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1,
                                                                const Index i2,
                                                                const Index i3 ) const
@@ -762,7 +762,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1,
             this -> getElement( i1 - 1, i2, i3 ) ) / ( Hx * Hx );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_f( const Index i1,
                                                                 const Index i2 ) const
 {
@@ -782,7 +782,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_f( const Index i1,
             this -> getElement( i1, i2 ) ) / Hy;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_f( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -807,7 +807,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_f( const Index i1,
             this -> getElement( i1, i2, i3 ) ) / Hy;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_b( const Index i1,
                                                                 const Index i2 ) const
 {
@@ -827,7 +827,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_b( const Index i1,
             this -> getElement( i1, i2 - 1 ) ) / Hy;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_b( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -852,7 +852,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y_b( const Index i1,
             this -> getElement( i1, i2 - 1, i3 ) ) / Hy;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y( const Index i1,
                                                               const Index i2 ) const
 {
@@ -872,7 +872,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y( const Index i1,
             this -> getElement( i1, i2 - 1 ) ) / ( 2.0 * Hy );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y( const Index i1,
                                                               const Index i2,
                                                               const Index i3 ) const
@@ -897,7 +897,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_y( const Index i1,
             this -> getElement( i1, i2 - 1, i3 ) ) / ( 2.0 * Hy );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_yy( const Index i1,
                                                                const Index i2 ) const
 {
@@ -918,7 +918,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_yy( const Index i1,
             this -> getElement( i1, i2 - 1 ) ) / ( Hy * Hy );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_yy( const Index i1,
                                                                const Index i2,
                                                                const Index i3 ) const
@@ -944,7 +944,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_yy( const Index i1,
             this -> getElement( i1, i2 - 1, i3 ) ) / ( Hy * Hy );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z_f( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -969,7 +969,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z_f( const Index i1,
             this -> getElement( i1, i2, i3 ) ) / Hz;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z_b( const Index i1,
                                                                 const Index i2,
                                                                 const Index i3 ) const
@@ -994,7 +994,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z_b( const Index i1,
             this -> getElement( i1, i2, i3 - 1 ) ) / Hz;
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z( const Index i1,
                                                               const Index i2,
                                                               const Index i3 ) const
@@ -1019,7 +1019,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_z( const Index i1,
             this -> getElement( i1, i2, i3 - 1 ) ) / ( 2.0 * Hz );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_zz( const Index i1,
                                                                const Index i2,
                                                                const Index i3 ) const
@@ -1045,12 +1045,12 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_zz( const Index i1,
             this -> getElement( i1, i2, i3 - 1 ) ) / ( Hz * Hz );
 };
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const tnlGrid< Dimensions, Real, Device, Index >&bc,
                                                                    const tnlTuple< Dimensions, bool >& lowerBC,
                                                                    const tnlTuple< Dimensions, bool >& upperBC )
 {
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       if( Dimensions == 1 )
       {
@@ -1118,7 +1118,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const tnlGrid
                   ( *this )( i, j, zSize - 1 ) = bc( i, j, zSize - 1 );
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       if( Dimensions == 2 )
@@ -1138,12 +1138,12 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const tnlGrid
    }
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const Real& bcValue,
                                                                    const tnlTuple< Dimensions, bool >& lowerBC,
                                                                    const tnlTuple< Dimensions, bool >& upperBC )
 {
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       if( Dimensions == 1 )
       {
@@ -1211,7 +1211,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const Real& b
                   ( *this )( i, j, zSize - 1 ) =  bcValue;
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       if( Dimensions == 2 )
@@ -1231,12 +1231,12 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setDirichletBC( const Real& b
    }
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const tnlGrid< Dimensions, Real, Device, Index >&bc,
                                                                  const tnlTuple< Dimensions, bool >& lowerBC,
                                                                  const tnlTuple< Dimensions, bool >& upperBC )
 {
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       if( Dimensions == 1 )
       {
@@ -1312,7 +1312,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const tnlGrid< 
                   ( *this )( i, j, zSize - 1 ) = ( *this )( i, j, zSize - 2 ) + hz * bc( i, j, zSize - 1 );
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       if( Dimensions == 2 )
@@ -1334,12 +1334,12 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const tnlGrid< 
    }
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const Real& bcValue,
                                                                  const tnlTuple< Dimensions, bool >& lowerBC,
                                                                  const tnlTuple< Dimensions, bool >& upperBC )
 {
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       if( Dimensions == 1 )
       {
@@ -1415,7 +1415,7 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const Real& bcV
                   ( *this )( i, j, zSize - 1 ) = ( *this )( i, j, zSize - 2 ) + hz * bcValue;
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       if( Dimensions == 2 )
@@ -1437,31 +1437,31 @@ void tnlGrid< Dimensions, Real, Device, Index > :: setNeumannBC( const Real& bcV
    }
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getMax() const
 {
    return tnlMax( * this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getMin() const
 {
    return tnlMin( * this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getAbsMax() const
 {
    return tnlAbsMax( * this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getAbsMin() const
 {
    return tnlAbsMin( * this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getLpNorm() const
 {
    Real result = tnlLpNorm( * this );
@@ -1479,13 +1479,13 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getLpNorm() const
    return result;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getSum() const
 {
    return tnlSum( * this );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVector< Real, tnlHost, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1500,7 +1500,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVe
    return tnlDifferenceMax( *this, v );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVector< Real, tnlHost, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1515,7 +1515,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVe
    return tnlDifferenceMin( *this, v );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< Real, tnlHost, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1530,7 +1530,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tn
    return tnlDifferenceAbsMax( *this, v );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< Real, tnlHost, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1545,7 +1545,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tn
    return tnlDifferenceAbsMin( *this, v );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< Real, tnlHost, Index >& v, const Real& p ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1573,7 +1573,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tn
    return result;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVector< Real, tnlHost, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -1589,7 +1589,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVe
 }
 
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlArray< Dimensions, Real, Device, Index > :: save( file ) )
@@ -1609,7 +1609,7 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: save( tnlFile& file ) const
    return true;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlArray< Dimensions, Real, Device, Index > :: load( file ) )
@@ -1629,19 +1629,19 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: load( tnlFile& file )
    return true;
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
 
-template< int Dimensions, typename Real, tnlDevice Device, typename Index >
+template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: draw( const tnlString& fileName,
                                                          const tnlString& format,
                                                          const tnlTuple< Dimensions, Index > steps ) const

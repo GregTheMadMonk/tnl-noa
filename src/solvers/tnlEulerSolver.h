@@ -21,7 +21,7 @@
 #include <math.h>
 #include <solver/tnlExplicitSolver.h>
 
-template< class Problem, class Mesh, typename Real = double, tnlDevice Device = tnlHost, typename Index = int >
+template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, Index >
 {
    public:
@@ -42,14 +42,14 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, In
    Mesh k1;
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: tnlEulerSolver( const tnlString& name )
 : tnlExplicitSolver< Problem, Mesh, Real, Device, Index >( name ),
   k1( "tnlEulerSolver:k1" )
 {
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 tnlString tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: getType() const
 {
    Mesh m( "m" );
@@ -68,7 +68,7 @@ tnlString tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: getType() cons
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& scheme,
                                                                     Mesh& u )
 {
@@ -148,7 +148,7 @@ bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& sch
    }
 };
 
-template< class Problem, class Mesh, typename Real, tnlDevice Device, typename Index >
+template< class Problem, class Mesh, typename Real, typename Device, typename Index >
 void tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLevel( Mesh& u,
                                                                                   Real tau,
                                                                                   Real& currentResidue )

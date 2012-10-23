@@ -407,7 +407,7 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: save( tnlFile& file )
       return false;
    if( ! file. write( &this -> size, 1 ) )
       return false;
-   if( ! file. write( this -> data, this -> size, tnlCuda ) )
+   if( ! file. write< ElementType, tnlCuda, IndexType >( this -> data, this -> size ) )
    {
       cerr << "I was not able to WRITE the long vector " << this -> getName()
            << " with size " << this -> getSize() << endl;
@@ -431,7 +431,7 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: load( tnlFile& file )
       return false;
    }
    setSize( _size );
-   if( ! file. read( this -> data, this -> size, tnlCuda ) )
+   if( ! file. read< ElementType, tnlCuda, IndexType >( this -> data, this -> size ) )
    {
       cerr << "I was not able to READ the long vector " << this -> getName()
            << " with size " << this -> getSize() << endl;

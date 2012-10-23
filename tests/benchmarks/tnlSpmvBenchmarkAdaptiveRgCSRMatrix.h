@@ -22,7 +22,7 @@
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
 #include <core/tnlAssert.h>
 
-template< typename Real, tnlDevice Device, typename Index>
+template< typename Real, typename Device, typename Index>
 class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index, tnlAdaptiveRgCSRMatrix >
 {
    public:
@@ -68,7 +68,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 };
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index>
 tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAdaptiveRgCSRMatrix()
  : desiredChunkSize( 4 ),
@@ -81,12 +81,12 @@ tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAd
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
    //tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       this -> matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( ! this -> matrix. copyFrom( matrix ) )
@@ -94,7 +94,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
       //matrix. printOut( cout, "text", 30 );
       //this -> matrix. printOut( cout, "text", 30 );
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
@@ -111,7 +111,7 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index>
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
@@ -120,12 +120,12 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tearDown()
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
    cout << left << setw( this -> formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
       cout << setw( 5 ) << this -> desiredChunkSize
            << setw( 10 ) << this -> cudaBlockSize;
    else
@@ -138,14 +138,14 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress
    else
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
       cout << "CUDA support is missing.";
 #endif
       cout << endl;
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostream& logFile,
                                                                                     const double& csrGflops,
@@ -211,7 +211,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setDesiredChunkSize( const Index desiredChunkSize )
 {
@@ -219,7 +219,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setDesiredChu
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
@@ -227,7 +227,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setCudaBlockS
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 Index tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
@@ -235,7 +235,7 @@ Index tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificia
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setBestRgCSRGflops( const double& bestRgCSRGflops )
 {
@@ -243,7 +243,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setBestRgCSRG
 }
 
 template< typename Real,
-          tnlDevice Device,
+          typename Device,
           typename Index >
 tnlString tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getBgColorByRgCSRSpeedUp( const double& speedUp ) const
 {

@@ -71,7 +71,7 @@ __global__ void heatEquationRHSKernel( const Index xSize,
 #endif
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 class tnlMersonSolverTester : public CppUnit :: TestCase
 {
    public:

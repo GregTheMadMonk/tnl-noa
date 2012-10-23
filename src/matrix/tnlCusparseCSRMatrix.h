@@ -37,7 +37,7 @@ using namespace std;
 //! Wrapper for Cusparse CSR matrix
 /*!
  */
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int  >
+template< typename Real, typename Device = tnlHost, typename Index = int  >
 class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -85,7 +85,7 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix );
 
-   template< tnlDevice Device2 >
+   template< typename Device2 >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
 
    Real rowProduct( Index row,
@@ -174,7 +174,7 @@ inline void cusparseSpmv( cusparseHandle_t cusparseHandle,
 #endif
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const tnlString& name )
    : tnlMatrix< Real, Device, Index >( name ),
      nonzero_elements( name + " : nonzero-elements" ),
@@ -189,23 +189,23 @@ tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const tnlSt
 #endif
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const tnlString& tnlCusparseCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: cusparse;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlCusparseCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlCusparseCSRMatrix< ") +
           tnlString( GetParameterType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( " >" );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    this -> size = new_size;
@@ -215,7 +215,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setLike( const tnlCusparseCSRMatrix< Real, Device, Index >& matrix )
 {
    dbgFunctionName( "tnlCusparseCSRMatrix< Real, Device, Index >", "setLike" );
@@ -230,7 +230,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: setLike( const tnlCusparseCS
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: reset()
 {
    nonzero_elements. reset();
@@ -238,7 +238,7 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: reset()
    row_offsets. reset();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    if( ! nonzero_elements. setSize( elements ) )
@@ -250,37 +250,37 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index el
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlCusparseCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
    return nonzero_elements. getSize();
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlCusparseCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
    return 0;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: getElement( Index row, Index column ) const
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setElement( Index row, Index column, const Real& v )
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: addToElement( Index row, Index column, const Real& v )
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
 {
    if( ! this -> setSize( csr_matrix. getSize() ) ||
@@ -293,7 +293,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix
    return true;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
                                                                 const tnlVector< Real, Device, Index >& vector ) const
 {
@@ -302,7 +302,7 @@ Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 }
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& x,
                                                                    tnlVector< Real, Device, Index >& b ) const
 {
@@ -318,20 +318,20 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVect
 #endif
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
    tnlAssert( false, );
    return 0.0;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
    tnlAssert( false, );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( ostream& str,
                                                           const tnlString& format,
                                                           tnlCSRMatrix< Real, Device, Index >* csrMatrix,
@@ -341,7 +341,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( ostream& str,
    return false;
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: printOut( ostream& stream,
                                                               const tnlString& format,
                                                               const Index lines ) const
@@ -350,7 +350,7 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: printOut( ostream& stream,
 }
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlCusparseCSRMatrix< Real, Device, Index > :: ~tnlCusparseCSRMatrix()
 {
 #ifdef HAVE_CUSPARSE

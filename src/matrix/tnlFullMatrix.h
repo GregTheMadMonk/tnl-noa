@@ -23,7 +23,7 @@
 
 const int tnlMaxFullMatrixSize = 65536;
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
                       virtual public tnlArray< 2, Real, Device, Index >
 {
@@ -79,7 +79,7 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
    ~tnlFullMatrix();
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const tnlString& name )
 : tnlArray< 2, Real, Device, Index >( name ),
   tnlMatrix< Real, Device, Index >( name ),
@@ -87,26 +87,26 @@ tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const tnlString& name )
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const Index size )
 : tnlArray< 2, Real, Device, Index >( size, size )
 {
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlString tnlFullMatrix< Real, Device, Index > :: getType() const
 {
    Real t;
    return tnlString( "tnlFullMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 const tnlString& tnlFullMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    if( new_size > tnlMaxFullMatrixSize )
@@ -124,37 +124,37 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: setNonzeroElements( Index n )
 {
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: reset()
 {
    tnlArray< 2, Real, Device, Index > :: reset();
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlFullMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
    return nonzero_elements;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Index tnlFullMatrix< Real, Device, Index > :: getSize() const
 {
    return tnlMatrix< Real, Device, Index > :: getSize(); // it is the same as GetYSize()
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: getElement( Index i, Index j ) const
 {
    return tnlArray< 2, Real, Device, Index > :: getElement( i, j );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: setElement( Index i, Index j, const Real& v )
 {
    Real d = tnlArray< 2, Real, Device, Index > :: getElement( i, j );
@@ -166,7 +166,7 @@ bool tnlFullMatrix< Real, Device, Index > :: setElement( Index i, Index j, const
     return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: addToElement( Index i, Index j, const Real& v )
 {
    Real d1 = tnlArray< 2, Real, Device, Index > :: getElement( i, j );
@@ -180,7 +180,7 @@ bool tnlFullMatrix< Real, Device, Index > :: addToElement( Index i, Index j, con
    return true;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
@@ -195,7 +195,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
    Index pos = row * size;
    const Real* data = tnlArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       for( Index i = 0; i < size; i ++ )
       {
@@ -203,7 +203,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
          pos ++;
       }
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
       tnlAssert( false, );
       //TODO: implement this
@@ -211,7 +211,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
    return res;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
                                                             tnlVector< Real, Device, Index >& result ) const
 {
@@ -241,7 +241,7 @@ void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Rea
 };
 
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: multiplyRow( const Index row, const Real& c )
 {
    const Index size = getSize();
@@ -253,7 +253,7 @@ void tnlFullMatrix< Real, Device, Index > :: multiplyRow( const Index row, const
    }
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: getRowL1Norm( const Index row ) const
 {
    const Index size = getSize();
@@ -265,26 +265,26 @@ Real tnlFullMatrix< Real, Device, Index > :: getRowL1Norm( const Index row ) con
    return res;
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, Device, Index >& m ) const
 {
    return tnlMatrix< Real, Device, Index > :: operator == ( m );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: operator != ( const tnlMatrix< Real, Device, Index >& m ) const
 {
    return tnlMatrix< Real, Device, Index > :: operator != ( m );
 }
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: ~tnlFullMatrix()
 {
 };
 
 
 //! Matrix product
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void MatrixProduct( const tnlFullMatrix< Real, tnlHost, Index >& m1,
                     const tnlFullMatrix< Real, tnlHost, Index >& m2,
                     tnlFullMatrix< Real, tnlHost, Index >& result )
@@ -302,7 +302,7 @@ void MatrixProduct( const tnlFullMatrix< Real, tnlHost, Index >& m1,
 };
 
 //! Matrix sum
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 void MatrixSum( const tnlFullMatrix< Real, tnlHost, Index >& m1,
                 const tnlFullMatrix< Real, tnlHost, Index >& m2,
                 tnlFullMatrix< Real, tnlHost, Index >& result )
@@ -315,7 +315,7 @@ void MatrixSum( const tnlFullMatrix< Real, tnlHost, Index >& m1,
          result( i, j ) = m1( i, j ) + m2( i, j );
 };
 
-template< typename Real, tnlDevice Device, typename Index >
+template< typename Real, typename Device, typename Index >
 ostream& operator << ( ostream& o_str, const tnlFullMatrix< Real, Device, Index >& A )
 {
    return operator << ( o_str, ( const tnlMatrix< Real, Device, Index >& ) A );

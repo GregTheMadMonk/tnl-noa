@@ -52,7 +52,7 @@ enum tnlReductionOperation
  * What devices will communicate by this communicator depends on the template
  * parameter @param Device.
  */
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 class tnlCommunicator
 {
    public:
@@ -143,7 +143,7 @@ class tnlCommunicator
    pid_t processID;
 };
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 tnlCommunicator< Dimensions, Device > :: tnlCommunicator()
 : communicationGroupSize( 0 ),
   deviceID( -1 ),
@@ -151,45 +151,45 @@ tnlCommunicator< Dimensions, Device > :: tnlCommunicator()
 {
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 int tnlCommunicator< Dimensions, Device > :: getCommunicationGroupSize() const
 {
    return this -> communicationGroupSize;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlTuple< Dimensions, int >& dimensions )
 {
    this -> dimensions = dimensions;
    // TODO: add automatic dimensions setting from the group size
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
 {
    return this -> nodeCoordinates;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 int tnlCommunicator< Dimensions, Device > :: getDeviceId() const
 {
     return this -> deviceID;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: setCommunicationGroupSize( int communicationGroupSize )
 {
     this -> communicationGroupSize = communicationGroupSize;
     // TODO: add automatic groupsize setting
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: start()
 {
    dbgFunctionName( "tnlCommunicator", "start" );
@@ -207,8 +207,8 @@ bool tnlCommunicator< Dimensions, Device > :: start()
       cerr << "Sorry, but I have wrong dimensions ( " << this -> getDimensions() << " of the communication group. I cannot create a communicator." << endl;
       return false;
    }
-   if( Device == tnlCuda ||
-       Device == tnlHost )
+   if( Device :: getDeviceType() == "tnlCuda" ||
+       Device :: getDeviceType() == "tnlHost" )
    {
       deviceID = 0;
       int currentDeviceID = 1;
@@ -233,7 +233,7 @@ bool tnlCommunicator< Dimensions, Device > :: start()
    }
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: stop()
 {
    dbgFunctionName( "tnlCommunicator", "stop")
@@ -253,7 +253,7 @@ bool tnlCommunicator< Dimensions, Device > :: stop()
 
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType >
 bool tnlCommunicator< Dimensions, Device > :: send( const DataType* data,
                                         int destinationID ) const
@@ -297,13 +297,13 @@ bool tnlCommunicator< Dimensions, Device > :: send( const DataType* data,
     * Now we copy the data to the shared memory.
     * The DataType cannot be a type with the dynamic memory allocation.
     */
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       memcpy( ( void* ) sharedMemory. getData(),
               data,
               sizeof( DataType ) );
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 
    }
@@ -318,7 +318,7 @@ bool tnlCommunicator< Dimensions, Device > :: send( const DataType* data,
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType >
 bool tnlCommunicator< Dimensions, Device > :: receive( DataType* data,
                                            int sourceID ) const
@@ -381,7 +381,7 @@ bool tnlCommunicator< Dimensions, Device > :: receive( DataType* data,
 }
 
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType, typename Index >
 bool tnlCommunicator< Dimensions, Device > :: send( const tnlVector< DataType, Device, Index >& data,
                                         int destinationID ) const
@@ -437,7 +437,7 @@ bool tnlCommunicator< Dimensions, Device > :: send( const tnlVector< DataType, D
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType, typename Index >
 bool tnlCommunicator< Dimensions, Device > :: receive( tnlVector< DataType, Device, Index >& data,
                                            int sourceID ) const
@@ -492,7 +492,7 @@ bool tnlCommunicator< Dimensions, Device > :: receive( tnlVector< DataType, Devi
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType >
 bool tnlCommunicator< Dimensions, Device > :: broadcast( DataType* data, int sourceId )
 {
@@ -555,13 +555,13 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( DataType* data, int sou
        * Now we copy the data to the shared memory.
        * The DataType cannot be a type with the dynamic memory allocation.
        */
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
       {
          memcpy( ( void* ) ( sharedMemory. getData() ),
                  ( void* ) data,
                  sizeof( DataType ) );
       }
-      if( Device == tnlCuda )
+      if( Device :: getDevice() == tnlCudaDevice )
       {
 
       }
@@ -626,7 +626,7 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( DataType* data, int sou
    }
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType, typename Index >
 bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlVector< DataType, Device, Index >& data,
                                              int sourceId )
@@ -749,7 +749,7 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlVector< DataType, De
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType >
 bool tnlCommunicator< Dimensions, Device > :: reduction( DataType* data, tnlReductionOperation operation, int targetId )
 {
@@ -808,14 +808,14 @@ bool tnlCommunicator< Dimensions, Device > :: reduction( DataType* data, tnlRedu
     */
 
 
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       dbgCout( "The process " << getDeviceId() << " is writing data " << * data );
       memcpy( ( void* ) &( sharedMemory. getData()[ getDeviceId() ] ),
               ( void* ) data,
               sizeof( DataType ) );
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 
    }
@@ -864,12 +864,12 @@ bool tnlCommunicator< Dimensions, Device > :: reduction( DataType* data, tnlRedu
                break;
          }
       }
-      if( Device == tnlHost )
+      if( Device :: getDevice() == tnlHostDevice )
       {
          *data = aux;
          dbgExpr( *data );
       }
-      if( Device == tnlCuda )
+      if( Device :: getDevice() == tnlCudaDevice )
       {
 
       }
@@ -877,7 +877,7 @@ bool tnlCommunicator< Dimensions, Device > :: reduction( DataType* data, tnlRedu
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType, typename Index >
 bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType, Device, Index >& inputData,
                                            tnlVector< DataType, Device, Index >& scatteredData,
@@ -1007,7 +1007,7 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 template< typename DataType, typename Index >
 bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType, Device, Index >& inputData,
                                            tnlVector< DataType, Device, Index >& gatheredData,
@@ -1067,14 +1067,14 @@ bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType,
     * means until the writing counter equals communication group size.
     */
 
-   if( Device == tnlHost )
+   if( Device :: getDevice() == tnlHostDevice )
    {
       dbgCout( "The process " << getDeviceId() << " is writing data ... " );
       memcpy( ( void* ) &( sharedMemory. getData()[ getDeviceId() * inputData. getSize() ] ),
               ( void* ) inputData. getData(),
               sizeof( DataType ) );
    }
-   if( Device == tnlCuda )
+   if( Device :: getDevice() == tnlCudaDevice )
    {
 
    }
@@ -1110,7 +1110,7 @@ bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType,
    return true;
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: barrier()
 {
    dbgFunctionName( "tnlCommunicator", "gather" );
@@ -1182,7 +1182,7 @@ bool tnlCommunicator< Dimensions, Device > :: barrier()
       usleep( 1 );
 }
 
-template< int Dimensions, tnlDevice Device >
+template< int Dimensions, typename Device >
 tnlCommunicator< Dimensions, Device > :: ~tnlCommunicator()
 {
    stop();

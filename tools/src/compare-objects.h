@@ -25,8 +25,8 @@
 template< int Dimensions,
           typename Real1,
           typename Real2,
-          tnlDevice Device1,
-          tnlDevice Device2,
+          typename Device1,
+          typename Device2,
           typename Index >
 bool compareObjects( const tnlGrid< Dimensions, Real1, Device1, Index >& u1,
                      const tnlGrid< Dimensions, Real2, Device2, Index >& u2,

@@ -29,7 +29,7 @@
 
 using namespace std;
 
-template< typename Real, tnlDevice Device, typename Index > class tnlFastRgCSRMatrix;
+template< typename Real, typename Device, typename Index > class tnlFastRgCSRMatrix;
 
 
 //! The Fast CSR format is based on the common CSR format but with compression of the column indices.
@@ -38,7 +38,7 @@ template< typename Real, tnlDevice Device, typename Index > class tnlFastRgCSRMa
     \author Tomas Oberhuber.
  */
 
-template< typename Real, tnlDevice Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlFastCSRMatrix
 {
 };
