@@ -20,7 +20,7 @@
 
 
 #include <math.h>
-#include <solver/tnlMatrixSolver.h>
+#include <solvers/tnlMatrixSolver.h>
 
 template< typename T > class tnlBICGStabSolver : public tnlMatrixSolver< T >
 {

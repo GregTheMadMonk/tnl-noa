@@ -18,7 +18,7 @@
 #ifndef tnlILUPreconditionerH
 #define tnlILUPreconditionerH
 
-#include <solver/tnlPreconditioner.h>
+#include <solvers/tnlPreconditioner.h>
 #include <debug/tnlDebug.h>
 
 //#define ILU_DEBUG

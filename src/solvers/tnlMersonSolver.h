@@ -20,7 +20,7 @@
 
 #include <math.h>
 #include <core/low-level/cuda-long-vector-kernels.h>
-#include <solver/tnlExplicitSolver.h>
+#include <solvers/tnlExplicitSolver.h>
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -151,7 +151,7 @@ tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() con
           tnlString( ", " ) +
           GetParameterType( Real ( 0  ) ) +
           tnlString( ", " ) +
-          tnlString( getDeviceType( Device ) ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           tnlString( GetParameterType( Index ( 0 ) ) ) +
           tnlString( ", " ) +

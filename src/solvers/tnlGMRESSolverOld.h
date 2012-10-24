@@ -96,7 +96,7 @@ tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
    return tnlString( "tnlGMRESSolverOld< " ) +
           tnlString( GetParameterType( ( Real ) 0.0 ) ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           tnlString( GetParameterType( ( Index ) 0 ) ) +
           tnlString( " >" );
@@ -162,9 +162,9 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
    else
    {
       A. vectorProduct( x, _r );
-      normb = tnlLpNorm( b, ( Real ) 2.0 );
-      tnlSAXMY( ( Real ) 1.0, b, _r );
-      beta = tnlLpNorm( _r, ( Real ) 2.0 );
+      normb = b. lpNorm( ( Real ) 2.0 );
+      _r. saxmy( ( Real ) 1.0, b );
+      beta = _r. lpNorm( ( Real ) 2.0 );
    }
 
    if( normb == 0.0 ) normb = 1.0;
@@ -190,7 +190,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
        * v_0 = r / | r | =  1.0 / beta * r
        */
       vi. setSharedData( _v. getData(), size );
-      tnlSAXPY( ( Real ) 1.0 / beta, _r, vi );
+      vi. saxpy( ( Real ) 1.0 / beta, _r );
                 
       _s. setValue( ( Real ) 0.0 );
       _s[ 0 ] = beta;
@@ -218,25 +218,25 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
             /***
              * H_{k,i} = ( w, v_k )
              */
-            Real H_k_i = tnlSDOT( _w, vk );
+            Real H_k_i = vk. sdot( _w );
             H[ k + i * ( m + 1 ) ] = H_k_i;
             
             /****
              * w = w - H_{k,i} v_k
              */
-            tnlSAXPY( -H_k_i, vk, _w );
+            _w. saxpy( -H_k_i, vk );
          }
          /***
           * H_{i+1,i} = |w|
           */
-         Real normw = tnlLpNorm( _w, ( Real ) 2.0 );
+         Real normw = _w. lpNorm( ( Real ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
          /***
           * v_{i+1} = w / |w|
           */
          vi. setSharedData( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         tnlSAXPY( ( Real ) 1.0 / normw, _w, vi );
+         vi. saxpy( ( Real ) 1.0 / normw, _w );
 
 
          //dbgCout( "Applying rotations" );
@@ -291,8 +291,8 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
       else
       {
          A. vectorProduct( x, _r );
-         tnlSAXMY( ( Real ) 1.0, b, _r );
-         beta = tnlLpNorm( _r, ( Real ) 2.0 );
+         _r. saxmy( ( Real ) 1.0, b );
+         beta = _r. lpNorm( ( Real ) 2.0 );
       }
       //beta = sqrt( beta );
       //dbgCout_ARRAY( r, size );
@@ -342,7 +342,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
    for( i = 0; i <= k; i++)
    {
       vi. setSharedData( &( v. getData()[ i * this -> size ] ), x. getSize() );
-      tnlSAXPY( y[ i ], vi, x );
+      x. saxpy( y[ i ], vi );
    }
 };
 

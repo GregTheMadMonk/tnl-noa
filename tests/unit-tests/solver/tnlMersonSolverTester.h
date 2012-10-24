@@ -19,7 +19,7 @@
 #define TNLMERSONSOLVERTESTER_H_
 
 #include <mesh/tnlGrid.h>
-#include <solver/tnlMersonSolver.h>
+#include <solvers/tnlMersonSolver.h>
 #include <core/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
@@ -85,7 +85,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       return tnlString( "tnlMersonSolverTester< " ) +
              GetParameterType( Real( 0 ) ) +
              tnlString( ", ") +
-             tnlString( getDeviceType( Device ) ) +
+             Device :: getDeviceType() +
              tnlString( ", ") +
              GetParameterType( Index( 0 ) ) +
              tnlString( " >" );

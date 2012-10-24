@@ -19,7 +19,7 @@
 #define tnlSORSolverH
 
 #include <math.h>
-#include <solver/tnlMatrixSolver.h>
+#include <solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlSORSolver : public tnlMatrixSolver< Real, Device, Index >
@@ -60,7 +60,7 @@ tnlString tnlSORSolver< Real, Device, Index > :: getType() const
    return tnlString( "tnlSORSolver< " ) +
           tnlString( GetParameterType( ( Real ) 0.0 ) ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           tnlString( GetParameterType( ( Index ) 0 ) ) +
           tnlString( " >" );
@@ -91,7 +91,7 @@ bool tnlSORSolver< Real, Device, Index > :: solve( const tnlMatrix< Real, Device
    this -> iteration = 0;
    this -> residue = max_residue + 1.0;;
 
-   Real bNorm = tnlLpNorm( b, ( Real ) 2.0 );
+   Real bNorm = b. lpNorm( ( Real ) 2.0 );
 
    while( this -> iteration < max_iterations &&
           max_residue < this -> residue )

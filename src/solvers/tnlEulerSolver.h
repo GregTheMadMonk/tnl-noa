@@ -19,7 +19,7 @@
 #define tnlEulerSolverH
 
 #include <math.h>
-#include <solver/tnlExplicitSolver.h>
+#include <solvers/tnlExplicitSolver.h>
 
 template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, Index >
@@ -61,7 +61,7 @@ tnlString tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: getType() cons
           tnlString( ", " ) +
           GetParameterType( Real ( 0  ) ) +
           tnlString( ", " ) +
-          tnlString( getDeviceType( Device ) ) +
+          Device :: getDeviceType() +
           tnlString( ", " ) +
           tnlString( GetParameterType( Index ( 0 ) ) ) +
           tnlString( ", " ) +

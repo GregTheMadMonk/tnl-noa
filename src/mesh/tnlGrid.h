@@ -235,17 +235,33 @@ class tnlGrid : public tnlArray< Dimensions, Real, Device, Index >
 
    Real getSum() const;
 
-   Real getDifferenceMax( const tnlVector< Real, tnlHost, Index >& v ) const;
+   Real getDifferenceMax( const tnlVector< Real, Device, Index >& v ) const;
 
-   Real getDifferenceMin( const tnlVector< Real, tnlHost, Index >& v ) const;
+   Real getDifferenceMin( const tnlVector< Real, Device, Index >& v ) const;
 
-   Real getDifferenceAbsMax( const tnlVector< Real, tnlHost, Index >& v ) const;
+   Real getDifferenceAbsMax( const tnlVector< Real, Device, Index >& v ) const;
 
-   Real getDifferenceAbsMin( const tnlVector< Real, tnlHost, Index >& v ) const;
+   Real getDifferenceAbsMin( const tnlVector< Real, Device, Index >& v ) const;
 
-   Real getDifferenceLpNorm( const tnlVector< Real, tnlHost, Index >& v, const Real& p ) const;
+   Real getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const;
 
-   Real getDifferenceSum( const tnlVector< Real, tnlHost, Index >& v ) const;
+   Real getDifferenceSum( const tnlVector< Real, Device, Index >& v ) const;
+
+   void scalarMultiplication( const Real& alpha );
+
+   //! Compute scalar dot product
+   Real sdot( const tnlVector< Real, Device, Index >& v ) const;
+
+   //! Compute SAXPY operation (Scalar Alpha X Pus Y ).
+   void saxpy( const Real& alpha,
+                const tnlVector< Real, Device, Index >& x );
+
+   //! Compute SAXMY operation (Scalar Alpha X Minus Y ).
+   /*!**
+    * It is not a standart BLAS function but is useful for GMRES solver.
+    */
+   void saxmy( const Real& alpha,
+                const tnlVector< Real, Device, Index >& x );
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -1486,7 +1502,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getSum() const
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVector< Real, tnlHost, Index >& v ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1501,7 +1517,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVe
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVector< Real, tnlHost, Index >& v ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1516,7 +1532,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVe
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< Real, tnlHost, Index >& v ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1531,7 +1547,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tn
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< Real, tnlHost, Index >& v ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1546,7 +1562,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tn
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< Real, tnlHost, Index >& v, const Real& p ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1574,7 +1590,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tn
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVector< Real, tnlHost, Index >& v ) const
+Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -1585,8 +1601,61 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVe
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return tnlDifferenceSum( *this, v );
+   return this -> tnlDifferenceSum( v );
 }
+
+template< int Dimensions, typename Real, typename Device, typename Index >
+void tnlGrid< Dimensions, Real, Device, Index > :: scalarMultiplication( const Real& alpha )
+{
+   return this -> scalarMultiplication( alpha );
+}
+
+template< int Dimensions, typename Real, typename Device, typename Index >
+Real tnlGrid< Dimensions, Real, Device, Index > :: sdot( const tnlVector< Real, Device, Index >& v ) const
+{
+   tnlAssert( this -> getDimensions() == v. getDimensions(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   tnlAssert( this -> getDomainLoweCorner() == v. getDomainLowerCorner() &&
+              this -> getDomainUpperCorner() == v. getDomainUpperCorner(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   return this -> sdot( v );
+};
+
+template< int Dimensions, typename Real, typename Device, typename Index >
+void tnlGrid< Dimensions, Real, Device, Index > :: saxpy( const Real& alpha,
+                                                         const tnlVector< Real, Device, Index >& x )
+{
+   tnlAssert( this -> getDimensions() == v. getDimensions(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   tnlAssert( this -> getDomainLoweCorner() == v. getDomainLowerCorner() &&
+              this -> getDomainUpperCorner() == v. getDomainUpperCorner(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   this -> saxpy( alpha, x );
+};
+
+template< int Dimensions, typename Real, typename Device, typename Index >
+void tnlGrid< Dimensions, Real, Device, Index > :: saxmy( const Real& alpha,
+                                                     const tnlVector< Real, Device, Index >& x )
+{
+   tnlAssert( this -> getDimensions() == v. getDimensions(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   tnlAssert( this -> getDomainLoweCorner() == v. getDomainLowerCorner() &&
+              this -> getDomainUpperCorner() == v. getDomainUpperCorner(),
+              cerr << "The grid names are " << this -> getName()
+                   << " and " << v. getName()
+                   << "To get grids with the same parameters use the method setLike." << endl; );
+   this -> saxmy( alpha, x );
+};
 
 
 template< int Dimensions, typename Real, typename Device, typename Index >

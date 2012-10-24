@@ -18,7 +18,7 @@
 #ifndef tnlPETSCPreconditionerH
 #define tnlPETSCPreconditionerH
 
-#include <solver/tnlPreconditioner.h>
+#include <solvers/tnlPreconditioner.h>
 
 #ifdef HAVE_PETSC
 #include <petscksp.h>

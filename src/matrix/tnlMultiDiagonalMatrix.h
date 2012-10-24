@@ -145,7 +145,7 @@ tnlString tnlMultiDiagonalMatrix< Real, Device, Index > :: getType() const
    return tnlString( "tnlMultiDiagonalMatrix< ") +
           tnlString( GetParameterType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
-          getDeviceType( Device ) +
+          Device :: getDeviceType() +
           tnlString( " >" );
 }
 
