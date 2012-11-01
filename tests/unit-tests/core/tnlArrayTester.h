@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlArrayTester.h  -  description
+                          tnlArrayTester.h -  description
                              -------------------
-    begin                : Nov 25, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    begin                : Jul 4, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,8 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLARRAYTESTER_H_
-#define TNLARRAYTESTER_H_
+#ifndef TNLARRAYMANAGERTESTER_H_
+#define TNLARRAYMANAGERTESTER_H_
+
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -25,7 +26,19 @@
 #include <core/tnlArray.h>
 #include <core/tnlFile.h>
 
-template< typename Real, typename device, typename Index > class tnlArrayTester : public CppUnit :: TestCase
+
+class testingClassForArrayManagerTester
+{
+
+};
+
+tnlString GetParameterType( const testingClassForArrayManagerTester& c )
+{
+   return tnlString( "testingClassForArrayManagerTester" );
+};
+
+template< typename ElementType, typename Device, typename IndexType >
+class tnlArrayTester : public CppUnit :: TestCase
 {
    public:
    tnlArrayTester(){};
@@ -37,170 +50,168 @@ template< typename Real, typename device, typename Index > class tnlArrayTester 
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< Real, device, Index > >(
-                               "testConstructors",
-                               & tnlArrayTester< Real, device, Index > :: testConstructors )
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testSharedData",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSharedData )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< Real, device, Index > >(
-                               "testSetDimensions",
-                               & tnlArrayTester< Real, device, Index > :: testSetDimensions )
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testSetGetElement",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetGetElement )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< Real, device, Index > >(
-                               "testOperators",
-                               & tnlArrayTester< Real, device, Index > :: testOperators )
+      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testComparisonOperator",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testComparisonOperator )
+                              );*/
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testEquivalenceOperator",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testEquivalenceOperator )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< Real, device, Index > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testSetSize",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSize )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testReset",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testReset )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testSetSizeAndDestructor",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSizeAndDestructor )
+                              );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testSaveAndLoad",
-                               & tnlArrayTester< Real, device, Index > :: testSaveAndLoad )
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSaveAndLoad )
                               );
-
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testUnusualStructures",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testUnusualStructures )
+                              );
       return suiteOfTests;
+   }
+
+   void testSharedData()
+   {
+      ElementType data[ 10 ];
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
+      u. setSharedData( data, 10 );
+      for( int i = 0; i < 10; i ++ )
+         data[ i ] = i;
+      for( int i = 0; i < 10; i ++ )
+         CPPUNIT_ASSERT( data[ i ] == u. getElement( i ) );
+
+      for( int i = 0; i < 10; i ++ )
+         u. setElement( i, 2 * i );
+      for( int i = 0; i < 10; i ++ )
+         CPPUNIT_ASSERT( data[ i ] == 2*i );
+
+      u. setSize( 10 );
+         for( int i = 0; i < 10; i ++ )
+            u. setElement( i, 0 );
+
+      for( int i = 0; i < 10; i ++ )
+         CPPUNIT_ASSERT( data[ i ] == 2*i );
+
    };
 
-   void testConstructors()
+   void testSetGetElement()
    {
-      tnlArray< 3, Real, device, Index > array( "tnlArrayTester :: array" );
-      tnlArray< 3, Real, device, Index > array2( "tnlArrayTester :: array2", array );
-      Real testData[ 1000 ];
-      array2. setSharedData( testData, tnlTuple< 3, Index >( 10 ) );
-      CPPUNIT_ASSERT( array2. getDimensions() == ( tnlTuple< 3, Index >( 10 ) ) );
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
+      u. setSize( 10 );
+      for( int i = 0; i < 10; i ++ )
+         u. setElement( i, i );
+      for( int i = 0; i < 10; i ++ )
+         CPPUNIT_ASSERT( u. getElement( i ) == i );
    };
 
-   void testSetDimensions()
+   /*void testComparisonOperator()
    {
-      tnlArray< 1, Real, device, Index > u1( "tnlArrayTester: u1" );
-      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
-      u1. setValue( ( Real ) 1 );
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
+      tnlArray< ElementType, Device, IndexType > v( "tnlArrayTester :: v" );
+      tnlArray< ElementType, Device, IndexType > w( "tnlArrayTester :: w" );
+      u. setSize( 10 );
+      v. setSize( 10 );
+      w. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( u1. getElement( i ) == ( Real ) 1 );
+      {
+         u. setElement( i, i );
+         v. setElement( i, i );
+         w. setElement( i, 2*1 );
+      }
+      CPPUNIT_ASSERT( u == v );
+      CPPUNIT_ASSERT( ! ( u != v ) );
+      CPPUNIT_ASSERT( u != w );
+      CPPUNIT_ASSERT( ! ( u == w ) );
+   };*/
 
+   void testEquivalenceOperator()
+   {
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
+      tnlArray< ElementType, Device, IndexType > v( "tnlArrayTester :: v" );
+      u. setSize( 10 );
+      v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         u1. setElement( i, ( Real ) i );
-      for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( u1. getElement( i ) == ( Real ) i );
-
-
-      tnlArray< 2, Real, device, Index > u2( "tnlArrayTester: u2" );
-      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
-      u2. setValue( ( Real ) 1 );
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-               CPPUNIT_ASSERT( u2. getElement( i, j ) == ( Real ) 1 );
-
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-               u2. setElement( i, j, ( Real ) ( i + j ) );
-
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-               CPPUNIT_ASSERT( u2. getElement( i, j ) == ( Real ) ( i + j ) );
-
-      tnlArray< 3, Real, device, Index > u3( "tnlArrayTester: u3" );
-      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
-      u3. setValue( ( Real ) 1 );
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-            for( int k = 0; k < 10; k ++ )
-               CPPUNIT_ASSERT( u3. getElement( i, j, k ) == ( Real ) 1 );
-
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-            for( int k = 0; k < 10; k ++ )
-               u3. setElement( i, j, k, ( Real ) ( i + j + k ) );
-
-      for( int i = 0; i < 10; i ++ )
-         for( int j = 0; j < 10; j ++ )
-            for( int k = 0; k < 10; k ++ )
-               CPPUNIT_ASSERT( u3. getElement( i, j, k ) == ( Real ) ( i + j + k ) );
+         u. setElement( i, i );
+      v = u;
+      CPPUNIT_ASSERT( u == v );
+      CPPUNIT_ASSERT( ! ( u != v ) );
    };
 
-   void testOperators()
+   void testSetSize()
    {
-      tnlArray< 1, Real, device, Index > u1( "tnlArrayTester:u1" );
-      tnlArray< 1, Real, device, Index > v1( "tnlArrayTester:v1" );
-      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
-      v1. setDimensions( tnlTuple< 1, Index >( 10 ) );
-      u1. setValue( ( Real ) 1 );
-      v1. setValue( ( Real ) 1 );
-      CPPUNIT_ASSERT( u1 == v1 );
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testSetSize - u" );
+      const int maxSize = 10;
+      for( int i = 0; i < maxSize; i ++ )
+         u. setSize( i );
 
-      v1. setValue( ( Real ) 2 );
-      CPPUNIT_ASSERT( ! ( u1 == v1 ) );
-      CPPUNIT_ASSERT( u1 != v1 );
+      CPPUNIT_ASSERT( u. getSize() == maxSize - 1 );
+   };
 
-      v1 = u1;
-      CPPUNIT_ASSERT( u1 == v1 );
+   void testReset()
+   {
+      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testReset - u" );
+      u. setSize( 100 );
+      CPPUNIT_ASSERT( u. getSize() == 100 );
+      u. reset();
+      CPPUNIT_ASSERT( u. getSize() == 0 );
+      u. setSize( 100 );
+      CPPUNIT_ASSERT( u. getSize() == 100 );
+      u. reset();
+      CPPUNIT_ASSERT( u. getSize() == 0 );
 
-      tnlArray< 2, Real, device, Index > u2( "tnlArrayTester:u2" );
-      tnlArray< 2, Real, device, Index > v2( "tnlArrayTester:v2" );
-      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
-      v2. setDimensions( tnlTuple< 2, Index >( 10 ) );
-      u2. setValue( ( Real ) 1 );
-      v2. setValue( ( Real ) 1 );
-      CPPUNIT_ASSERT( u2 == v2 );
+   };
 
-      v2. setValue( ( Real ) 2 );
-      CPPUNIT_ASSERT( ! ( u2 == v2 ) );
-      CPPUNIT_ASSERT( u2 != v2 );
-
-      v2 = u2;
-      CPPUNIT_ASSERT( u2 == v2 );
-
-      tnlArray< 3, Real, device, Index > u3( "tnlArrayTester:u3" );
-      tnlArray< 3, Real, device, Index > v3( "tnlArrayTester:v3" );
-      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
-      v3. setDimensions( tnlTuple< 3, Index >( 10 ) );
-      u3. setValue( ( Real ) 1 );
-      v3. setValue( ( Real ) 1 );
-      CPPUNIT_ASSERT( u3 == v3 );
-
-      v3. setValue( ( Real ) 2 );
-      CPPUNIT_ASSERT( ! ( u3 == v3 ) );
-      CPPUNIT_ASSERT( u3 != v3 );
-
-      v3 = u3;
-      CPPUNIT_ASSERT( u3 == v3 );
+   void testSetSizeAndDestructor()
+   {
+      for( int i = 0; i < 100; i ++ )
+      {
+         tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testSetSizeAndDestructor - u" );
+         u. setSize( i );
+      }
    }
 
    void testSaveAndLoad()
    {
+      tnlArray< ElementType, Device, IndexType > v( "test-array-v" );
+      v. setSize( 100 );
+      for( int i = 0; i < 100; i ++ )
+         v. setElement( i, 3.14147 );
       tnlFile file;
-      tnlArray< 1, Real, device, Index > u1( "tnlArrayTester:u1" );
-      tnlArray< 1, Real, device, Index > v1( "tnlArrayTester:v1" );
-      u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
-      u1. setValue( ( Real ) 1 );
-      file. open( "tnlArrayTester-file.bin", tnlWriteMode );
-      u1. save( file );
+      file. open( "test-file.tnl", tnlWriteMode, tnlCompressionBzip2 );
+      v. save( file );
       file. close();
-      file. open( "tnlArrayTester-file.bin", tnlReadMode );
-      v1. load( file );
+      tnlArray< ElementType, Device, IndexType > u( "test-array-u" );
+      file. open( "test-file.tnl", tnlReadMode );
+      u. load( file );
       file. close();
-      CPPUNIT_ASSERT( u1 == v1 );
-
-      tnlArray< 2, Real, device, Index > u2( "tnlArrayTester:u2" );
-      tnlArray< 2, Real, device, Index > v2( "tnlArrayTester:v2" );
-      u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
-      u2. setValue( ( Real ) 1 );
-      file. open( "tnlArrayTester-file.bin", tnlWriteMode );
-      u2. save( file );
-      file. close();
-      file. open( "tnlArrayTester-file.bin", tnlReadMode );
-      v2. load( file );
-      file. close();
-      CPPUNIT_ASSERT( u2 == v2 );
-
-      tnlArray< 3, Real, device, Index > u3( "tnlArrayTester:u3" );
-      tnlArray< 3, Real, device, Index > v3( "tnlArrayTester:v3" );
-      u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
-      u3. setValue( ( Real ) 1 );
-      file. open( "tnlArrayTester-file.bin", tnlWriteMode );
-      u3. save( file );
-      file. close();
-      file. open( "tnlArrayTester-file.bin", tnlReadMode );
-      v3. load( file );
-      file. close();
-      CPPUNIT_ASSERT( u3 == v3 );
+      CPPUNIT_ASSERT( u == v );
    }
 
+   void testUnusualStructures()
+   {
+      tnlArray< testingClassForArrayManagerTester >u ( "test-vector" );
+   };
+
 };
-#endif /* TNLARRAYTESTER_H_ */
+
+
+#endif /* TNLARRAYMANAGERTESTER_H_ */

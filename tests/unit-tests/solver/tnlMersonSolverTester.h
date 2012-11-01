@@ -71,7 +71,7 @@ __global__ void heatEquationRHSKernel( const Index xSize,
 #endif
 
 
-template< typename Real, typename Device, typename Index >
+template< typename Real, typename Device, typename Index = int >
 class tnlMersonSolverTester : public CppUnit :: TestCase
 {
    public:
@@ -126,6 +126,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
                         tnlGrid< 2, Real, tnlCuda, int >& u,
                         tnlGrid< 2, Real, tnlCuda, int >& fu )
    {
+#ifdef HAVE_CUDA
       const Index xSize = u. getDimensions(). x();
       const Index ySize = u. getDimensions(). y();
       const Index desBlockXSize = 16;
@@ -137,6 +138,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       dim3 gridDim( gridXSize, gridYSize );
       dim3 blockDim( desBlockXSize, desBlockYSize );
       heatEquationRHSKernel<<< gridDim, blockDim >>>( xSize, ySize, hX, hY, u. getData(), fu. getData() );
+#endif
    }
 
    void testUpdateU()
@@ -176,6 +178,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       tnlGrid< 2, Real, tnlHost, int > hostAuxU( "hostAuxU" );
       hostAuxU. setLike( hostU );
 
+#ifdef HAVE_CUDA
       tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
                        tnlGrid< 2, Real, tnlCuda, Index >,
                        Real,
@@ -185,6 +188,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       mersonSolverCUDA. setAdaptivity( 0.001 );
       mersonSolverCUDA. setTime( 0.0 );
       mersonSolverCUDA. setTau( 0.001 );
+#endif
 
       const Real finalTime = 0.1;
       const Real tau = 0.01;
@@ -197,8 +201,10 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          mersonSolver. setStopTime( time );
          mersonSolver. solve( *this, hostU );
          cout << "Starting the CUDA Merson solver with stop time " << time << endl;
+#ifdef HAVE_CUDA
          mersonSolverCUDA. setStopTime( time );
          mersonSolverCUDA. solve( *this, deviceU );
+#endif
 
          hostAuxU = deviceU;
          Real l1Norm = hostU. getDifferenceLpNorm( hostAuxU, ( Real ) 1.0 );

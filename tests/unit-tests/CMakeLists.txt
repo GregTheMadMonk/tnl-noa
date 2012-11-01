@@ -1,5 +1,5 @@
 set( headers core/tnl-cuda-kernels.h 
-             core/tnlArrayTester.h 
+             core/tnlMultiArrayTester.h 
              core/tnlCUDAKernelsTester.h 
              core/tnlCommunicatorTester.h 
              core/tnlFileTester.h 

@@ -5,7 +5,7 @@
 #include <list>
 #include <stdexcept>
 #include <mesh/global/array.h>
-#include <core/tnlArrayManager.h>
+#include <core/tnlArray.h>
 #include <mesh/global/static_array.h>
 
 
@@ -34,7 +34,7 @@ public:
 	size_t allocatedMemorySize() const             { return sizeof(DataType)*size(); }
 
 private:
-	tnlArrayManager< DataType, tnlHost, IndexType > m_data;
+	tnlArray< DataType, tnlHost, IndexType > m_data;
 	//Array< DataType, IndexType > m_data;
 };
 

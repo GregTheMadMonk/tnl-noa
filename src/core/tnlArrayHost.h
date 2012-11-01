@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayManagerHost.h -  description
+                          tnlArrayHost.h -  description
                              -------------------
     begin                : Jul 4, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -19,19 +19,19 @@
 #define TNLARRAYMANAGERHOST_H_
 
 #include <cstring>
-#include <core/tnlArrayManagerBase.h>
+#include <core/tnlArrayBase.h>
 #include <debug/tnlDebug.h>
 
 using namespace std;
 
-template< typename ElementType, typename Device, typename IndexType > class tnlArrayManager;
+template< typename ElementType, typename Device, typename IndexType > class tnlArray;
 
-template< typename ElementType, typename IndexType > class tnlArrayManager< ElementType, tnlCuda, IndexType >;
+template< typename ElementType, typename IndexType > class tnlArray< ElementType, tnlCuda, IndexType >;
 
-template< typename ElementType, typename IndexType > class tnlArrayManager< ElementType, tnlHost, IndexType > : public tnlArrayManagerBase< ElementType, IndexType >
+template< typename ElementType, typename IndexType > class tnlArray< ElementType, tnlHost, IndexType > : public tnlArrayBase< ElementType, IndexType >
 {
    //! We do not allow constructor without parameters.
-   tnlArrayManager();
+   tnlArray();
 
    /*!
     * We do not allow copy constructors as well to avoid having two
@@ -41,17 +41,17 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
    public:
 
    //! Basic constructor with given size
-   tnlArrayManager( const tnlString& name, IndexType _size = 0 );
+   tnlArray( const tnlString& name, IndexType _size = 0 );
 
    //! Constructor with another array as template
-   tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+   tnlArray( const tnlString& name, const tnlArray< ElementType, tnlHost, IndexType >& v );
 
    //! Constructor with another array as template
-   tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   tnlArray( const tnlString& name, const tnlArray< ElementType, tnlCuda, IndexType >& v );
    
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+   tnlArray( const tnlArray< ElementType, tnlHost, IndexType >& v );
 
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   tnlArray( const tnlArray< ElementType, tnlCuda, IndexType >& v );
 
    //! Use this if you want to insert some data in this array.
    /*! The data will not be deallocated by the destructor.
@@ -63,10 +63,10 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
    bool setSize( IndexType _size );
 
    //! Set size of the array using another array as a template
-   bool setLike( const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+   bool setLike( const tnlArray< ElementType, tnlHost, IndexType >& v );
 
    //! Set size of the array using another array as a template
-   bool setLike( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   bool setLike( const tnlArray< ElementType, tnlCuda, IndexType >& v );
 
    /*!
     * Free allocated memory
@@ -76,13 +76,13 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
    /*!
     * Swaps data between two array managers
     */
-   void swap( tnlArrayManager< ElementType, tnlHost, IndexType >& u );
+   void swap( tnlArray< ElementType, tnlHost, IndexType >& u );
 
    //! Operator = for copying data from another array on host.
-   tnlArrayManager< ElementType, tnlHost, IndexType >& operator = ( const tnlArrayManager< ElementType, tnlHost, IndexType >& array );
+   tnlArray< ElementType, tnlHost, IndexType >& operator = ( const tnlArray< ElementType, tnlHost, IndexType >& array );
 
    //! Operator = for copying data from another array on CUDA device.
-   tnlArrayManager< ElementType, tnlHost, IndexType >& operator =  ( const tnlArrayManager< ElementType, tnlCuda, IndexType >& cuda_array );
+   tnlArray< ElementType, tnlHost, IndexType >& operator =  ( const tnlArray< ElementType, tnlCuda, IndexType >& cuda_array );
 
    //! Operator = with different element and index types.
    /*!
@@ -90,7 +90,7 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
     * array of doubles.
     */
    template< typename ElementType2, typename IndexType2 >
-   tnlArrayManager< ElementType, tnlHost, IndexType >& operator = ( const tnlArrayManager< ElementType2, tnlHost, IndexType2 >& a );
+   tnlArray< ElementType, tnlHost, IndexType >& operator = ( const tnlArray< ElementType2, tnlHost, IndexType2 >& a );
 
    //! Returns type of this array written in a form of C++ template type.
    tnlString getType() const;
@@ -109,57 +109,57 @@ template< typename ElementType, typename IndexType > class tnlArrayManager< Elem
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
-   virtual ~tnlArrayManager();
+   virtual ~tnlArray();
 
 };
 
 template< typename ElementType, typename IndexType >
-ostream& operator << ( ostream& str, const tnlArrayManager< ElementType, tnlHost, IndexType >& a );
+ostream& operator << ( ostream& str, const tnlArray< ElementType, tnlHost, IndexType >& a );
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlString& name, IndexType _size )
-: tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlHost, IndexType > :: tnlArray( const tnlString& name, IndexType _size )
+: tnlArrayBase< ElementType, IndexType >( name )
 {
    setSize( _size );
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlString& name, const tnlArrayManager& a )
-: tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlHost, IndexType > :: tnlArray( const tnlString& name, const tnlArray& a )
+: tnlArrayBase< ElementType, IndexType >( name )
 {
    setSize( a. getSize() );
    ( * this ) = a;
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlCuda, IndexType >& a )
-: tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlHost, IndexType > :: tnlArray( const tnlString& name, const tnlArray< ElementType, tnlCuda, IndexType >& a )
+: tnlArrayBase< ElementType, IndexType >( name )
 {
   setSize( a. getSize() );
    ( * this ) = a;
 };
    
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v )
-: tnlArrayManagerBase< ElementType, IndexType >( "copy of " + v. name )
+tnlArray< ElementType, tnlHost, IndexType > :: tnlArray( const tnlArray< ElementType, tnlHost, IndexType >& v )
+: tnlArrayBase< ElementType, IndexType >( "copy of " + v. name )
 {
    setSize( v. getSize() );
    ( * this ) = v;
 }
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v )
-: tnlArrayManagerBase< ElementType, IndexType >( "copy of " + v. name )
+tnlArray< ElementType, tnlHost, IndexType > :: tnlArray( const tnlArray< ElementType, tnlCuda, IndexType >& v )
+: tnlArrayBase< ElementType, IndexType >( "copy of " + v. name )
 {
    setSize( v. getSize );
    ( * this ) = v;
 }
 
-template< typename ElementType, typename IndexType > bool tnlArrayManager< ElementType, tnlHost, IndexType > :: setSize( IndexType _size )
+template< typename ElementType, typename IndexType > bool tnlArray< ElementType, tnlHost, IndexType > :: setSize( IndexType _size )
 {
-   dbgFunctionName( "tnlArrayManager< ElementType, tnlHost, IndexType >", "setSize" );
+   dbgFunctionName( "tnlArray< ElementType, tnlHost, IndexType >", "setSize" );
    tnlAssert( _size >= 0,
-            cerr << "You try to set size of tnlArrayManager to negative value."
+            cerr << "You try to set size of tnlArray to negative value."
                  << "Name: " << this -> getName() << endl
                  << "New size: " << _size << endl );
    dbgExpr( this -> getName() );
@@ -168,7 +168,7 @@ template< typename ElementType, typename IndexType > bool tnlArrayManager< Eleme
     */
    if( _size < 0 )
    {
-      cerr << "Negative size " << _size << " was passed to tnlArrayManager " << this -> getName() << "." << endl;
+      cerr << "Negative size " << _size << " was passed to tnlArray " << this -> getName() << "." << endl;
       return false;
    }
 
@@ -194,7 +194,7 @@ template< typename ElementType, typename IndexType > bool tnlArrayManager< Eleme
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlHost, IndexType > :: setSharedData( ElementType* _data, const IndexType _size )
+void tnlArray< ElementType, tnlHost, IndexType > :: setSharedData( ElementType* _data, const IndexType _size )
 {
    /****
     * First let us touch the last element to see what happens.
@@ -210,28 +210,28 @@ void tnlArrayManager< ElementType, tnlHost, IndexType > :: setSharedData( Elemen
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlHost, IndexType > :: setLike( const tnlArrayManager< ElementType, tnlHost, IndexType >& a )
+bool tnlArray< ElementType, tnlHost, IndexType > :: setLike( const tnlArray< ElementType, tnlHost, IndexType >& a )
 {
    return setSize( a. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlHost, IndexType > :: setLike( const tnlArrayManager< ElementType, tnlCuda, IndexType >& a )
+bool tnlArray< ElementType, tnlHost, IndexType > :: setLike( const tnlArray< ElementType, tnlCuda, IndexType >& a )
 {
    return setSize( a. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlHost, IndexType > :: reset()
+void tnlArray< ElementType, tnlHost, IndexType > :: reset()
 {
-   dbgFunctionName( "tnlArrayManager< ElementType, tnlHost, IndexType >", "reset" );
+   dbgFunctionName( "tnlArray< ElementType, tnlHost, IndexType >", "reset" );
    dbgExpr( this -> getName() );
    setSize( 0 );
 };
 
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlHost, IndexType > :: swap( tnlArrayManager< ElementType, tnlHost, IndexType >& v )
+void tnlArray< ElementType, tnlHost, IndexType > :: swap( tnlArray< ElementType, tnlHost, IndexType >& v )
 {
    tnlAssert( this -> getSize() > 0, );
    tnlAssert( this -> getSize() == v. getSize(),
@@ -248,13 +248,13 @@ void tnlArrayManager< ElementType, tnlHost, IndexType > :: swap( tnlArrayManager
 };
 
 template< typename ElementType, typename IndexType >
-tnlString tnlArrayManager< ElementType, tnlHost, IndexType > :: getType() const
+tnlString tnlArray< ElementType, tnlHost, IndexType > :: getType() const
 {
-   return tnlString( "tnlArrayManager< " ) + getParameterType< ElementType >() + tnlString( ", tnlHost >" );
+   return tnlString( "tnlArray< " ) + getParameterType< ElementType >() + tnlString( ", tnlHost >" );
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator = ( const tnlArrayManager< ElementType, tnlHost, IndexType >& a )
+tnlArray< ElementType, tnlHost, IndexType >& tnlArray< ElementType, tnlHost, IndexType > :: operator = ( const tnlArray< ElementType, tnlHost, IndexType >& a )
 {
    tnlAssert( a. getSize() == this -> getSize(),
            cerr << "Source name: " << a. getName() << endl
@@ -272,7 +272,7 @@ tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType
 
 template< typename ElementType, typename IndexType >
    template< typename ElementType2, typename IndexType2 >
-tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator = ( const tnlArrayManager< ElementType2, tnlHost, IndexType2 >& a )
+tnlArray< ElementType, tnlHost, IndexType >& tnlArray< ElementType, tnlHost, IndexType > :: operator = ( const tnlArray< ElementType2, tnlHost, IndexType2 >& a )
 {
    tnlAssert( a. getSize() == this -> getSize(),
            cerr << "Source name: " << a. getName() << endl
@@ -286,7 +286,7 @@ tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator =  ( const tnlArrayManager< ElementType, tnlCuda, IndexType >& cuda_array )
+tnlArray< ElementType, tnlHost, IndexType >& tnlArray< ElementType, tnlHost, IndexType > :: operator =  ( const tnlArray< ElementType, tnlCuda, IndexType >& cuda_array )
 {
 #ifdef HAVE_CUDA
    tnlAssert( cuda_array. getSize() == this -> getSize(),
@@ -312,7 +312,7 @@ tnlArrayManager< ElementType, tnlHost, IndexType >& tnlArrayManager< ElementType
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlHost, IndexType > :: setElement( IndexType i, ElementType d )
+void tnlArray< ElementType, tnlHost, IndexType > :: setElement( IndexType i, ElementType d )
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -325,7 +325,7 @@ void tnlArrayManager< ElementType, tnlHost, IndexType > :: setElement( IndexType
 };
 
 template< typename ElementType, typename IndexType >
-ElementType tnlArrayManager< ElementType, tnlHost, IndexType > :: getElement( IndexType i ) const
+ElementType tnlArray< ElementType, tnlHost, IndexType > :: getElement( IndexType i ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -338,7 +338,7 @@ ElementType tnlArrayManager< ElementType, tnlHost, IndexType > :: getElement( In
 };
 
 template< typename ElementType, typename IndexType >
-ElementType& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator[] ( IndexType i )
+ElementType& tnlArray< ElementType, tnlHost, IndexType > :: operator[] ( IndexType i )
 {
     tnlAssert( i < this -> size,
            cerr << "Name: " << this -> getName() << endl
@@ -348,7 +348,7 @@ ElementType& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator[] ( 
 };
 
 template< typename ElementType, typename IndexType >
-const ElementType& tnlArrayManager< ElementType, tnlHost, IndexType > :: operator[] ( IndexType i ) const
+const ElementType& tnlArray< ElementType, tnlHost, IndexType > :: operator[] ( IndexType i ) const
 {
    tnlAssert( i < this -> size,
            cerr << "Name: " << this -> getName() << endl
@@ -358,7 +358,7 @@ const ElementType& tnlArrayManager< ElementType, tnlHost, IndexType > :: operato
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlHost, IndexType > :: save( tnlFile& file ) const
+bool tnlArray< ElementType, tnlHost, IndexType > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "You try to save empty vector. Its name is " << this -> getName() );
@@ -376,7 +376,7 @@ bool tnlArrayManager< ElementType, tnlHost, IndexType > :: save( tnlFile& file )
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlHost, IndexType > :: load( tnlFile& file )
+bool tnlArray< ElementType, tnlHost, IndexType > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
@@ -399,13 +399,13 @@ bool tnlArrayManager< ElementType, tnlHost, IndexType > :: load( tnlFile& file )
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlHost, IndexType > :: ~tnlArrayManager()
+tnlArray< ElementType, tnlHost, IndexType > :: ~tnlArray()
 {
    if( this -> data && ! this -> shared_data ) delete[] -- this -> data;
 };
 
 template< typename ElementType, typename IndexType >
-ostream& operator << ( ostream& str, const tnlArrayManager< ElementType, tnlHost, IndexType >& vec )
+ostream& operator << ( ostream& str, const tnlArray< ElementType, tnlHost, IndexType >& vec )
 {
    for( IndexType i = 0; i < vec. getSize(); i ++ )
       str << vec[ i ] << " ";

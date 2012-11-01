@@ -21,13 +21,13 @@
 #include <iomanip>
 #include <fstream>
 #include <core/tnlAssert.h>
-#include <core/tnlArray.h>
+#include <core/tnlMultiArray.h>
 #include <core/tnlVector.h>
 
 using namespace std;
 
 template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
-class tnlGrid : public tnlArray< Dimensions, Real, Device, Index >
+class tnlGrid : public tnlMultiArray< Dimensions, Real, Device, Index >
 {
    //! We do not allow constructor without parameters.
    tnlGrid();
@@ -319,14 +319,14 @@ __global__ void setNeumannBC( const Index xSize,
 
 template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name )
-: tnlArray< Dimensions, Real, Device, Index >( name )
+: tnlMultiArray< Dimensions, Real, Device, Index >( name )
   {
   }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                                                        const tnlGrid< Dimensions, Real, tnlHost, Index >& grid )
-: tnlArray< Dimensions, Real, Device, Index >( name, grid )
+: tnlMultiArray< Dimensions, Real, Device, Index >( name, grid )
 {
    this -> setDomain( grid. getDomainLowerCorner(),
                       grid. getDomainUpperCorner() );
@@ -335,7 +335,7 @@ tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
 template< int Dimensions, typename Real, typename Device, typename Index >
 tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
                                                        const tnlGrid< Dimensions, Real, tnlCuda, Index >& grid )
-: tnlArray< Dimensions, Real, Device, Index >( name, grid )
+: tnlMultiArray< Dimensions, Real, Device, Index >( name, grid )
 {
    this -> setDomain( grid. getDomainLowerCorner(),
                       grid. getDomainUpperCorner() );
@@ -344,13 +344,13 @@ tnlGrid< Dimensions, Real, Device, Index > :: tnlGrid( const tnlString& name,
 template< int Dimensions, typename Real, typename Device, typename Index >
 const tnlTuple< Dimensions, Index >& tnlGrid< Dimensions, Real, Device, Index > :: getDimensions() const
 {
-   return tnlArray< Dimensions, Real, Device, Index > :: getDimensions();
+   return tnlMultiArray< Dimensions, Real, Device, Index > :: getDimensions();
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setDimensions( const tnlTuple< Dimensions, Index >& dimensions )
 {
-   if( ! tnlArray< Dimensions, Real, Device, Index > :: setDimensions( dimensions ) )
+   if( ! tnlMultiArray< Dimensions, Real, Device, Index > :: setDimensions( dimensions ) )
       return false;
    for( int i = 0; i < Dimensions; i ++ )
       spaceSteps[ i ] = ( domainUpperCorner[ i ] - domainLowerCorner[ i ] ) / ( Real ) ( this -> getDimensions()[ i ] - 1 );
@@ -377,14 +377,14 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: setDomain( const tnlTuple< Di
 template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setLike( const tnlGrid< Dimensions, Real, tnlHost, Index >& v )
 {
-   return tnlArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
+   return tnlMultiArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
           this -> setDomain( v. getDomainLowerCorner(), v. getDomainUpperCorner() );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: setLike( const tnlGrid< Dimensions, Real, tnlCuda, Index >& v )
 {
-   return tnlArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
+   return tnlMultiArray< Dimensions, Real, Device, Index > :: setLike( v ) &&
           this -> setDomain( v. getDomainLowerCorner(), v. getDomainUpperCorner() );
 }
 
@@ -432,7 +432,7 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: operator == ( const tnlGrid< 
                    << "Second grid is " << grid. getName()
                    << " domain is ( " << grid. getDomainLowerCorner() << " )- ("
                                       << grid. getDomainUpperCorner() << ")" << endl; );
-   return tnlArray< Dimensions, Real, Device, Index > :: operator == ( grid );
+   return tnlMultiArray< Dimensions, Real, Device, Index > :: operator == ( grid );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -540,8 +540,8 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_f( const Index i1 )
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            tnlArray< 1, Real, tnlHost, Index > ::  getElement( i1 ) ) / Hx;
+   return ( tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
+            tnlMultiArray< 1, Real, tnlHost, Index > ::  getElement( i1 ) ) / Hx;
 };
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -596,14 +596,14 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x_b( const Index i1 )
               cerr << "The array " << this -> getName()
                    << " has " << Dimensions << " but 1 is expected." << endl; );
    tnlAssert( i1 > 0 &&
-              i1 <= ( tnlArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
+              i1 <= ( tnlMultiArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
               cerr << " i1 = " << i1 << " and it should be in ( 0, " <<
-                   ( tnlArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ] " << endl; );
+                   ( tnlMultiArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ] " << endl; );
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 ) -
-            tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / Hx;
+   return ( tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 ) -
+            tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / Hx;
 };
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -664,8 +664,8 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_x( const Index i1 ) c
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( 2.0 * Hx );
+   return ( tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
+            tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( 2.0 * Hx );
 };
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -720,15 +720,15 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: Partial_xx( const Index i1 ) 
               cerr << "The array " << this -> getName()
                    << " has " << Dimensions << " but 1 is expected." << endl; );
    tnlAssert( i1 > 0 &&
-              i1 < ( tnlArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
+              i1 < ( tnlMultiArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
               cerr << " i1 = " << i1 << " and it should be in ( 0, " <<
-                   ( tnlArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ) " << endl; );
+                   ( tnlMultiArray< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ) " << endl; );
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            2.0 * tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 ) +
-            tnlArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( Hx * Hx );
+   return ( tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
+            2.0 * tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 ) +
+            tnlMultiArray< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( Hx * Hx );
 };
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1498,7 +1498,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getLpNorm() const
 template< int Dimensions, typename Real, typename Device, typename Index >
 Real tnlGrid< Dimensions, Real, Device, Index > :: getSum() const
 {
-   return tnlSum( * this );
+   return tnlMultiArray< Dimensions, Real, Device, Index > :: sum( * this );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1513,7 +1513,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMax( const tnlVe
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return tnlDifferenceMax( *this, v );
+   return v. differenceMax( *this );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1528,7 +1528,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceMin( const tnlVe
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return tnlDifferenceMin( *this, v );
+   return v. differenceMin( *this );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1543,7 +1543,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMax( const tn
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return tnlDifferenceAbsMax( *this, v );
+   return v. differenceAbsMax( *this );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1558,7 +1558,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceAbsMin( const tn
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return tnlDifferenceAbsMin( *this, v );
+   return v. differenceAbsMin( *this );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1574,7 +1574,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceLpNorm( const tn
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
 
-   Real result = tnlDifferenceLpNorm( * this, v, p );
+   Real result = v. differenceLpNorm( * this, p );
    if( Dimensions == 1 )
       return result * getSpaceSteps(). x();
    if( Dimensions == 2 )
@@ -1601,7 +1601,7 @@ Real tnlGrid< Dimensions, Real, Device, Index > :: getDifferenceSum( const tnlVe
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return this -> tnlDifferenceSum( v );
+   return this -> differenceSum( v );
 }
 
 template< int Dimensions, typename Real, typename Device, typename Index >
@@ -1661,9 +1661,9 @@ void tnlGrid< Dimensions, Real, Device, Index > :: saxmy( const Real& alpha,
 template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: save( tnlFile& file ) const
 {
-   if( ! tnlArray< Dimensions, Real, Device, Index > :: save( file ) )
+   if( ! tnlMultiArray< Dimensions, Real, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlArray of the tnlGrid "
+      cerr << "I was not able to write the tnlMultiArray of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
@@ -1681,9 +1681,9 @@ bool tnlGrid< Dimensions, Real, Device, Index > :: save( tnlFile& file ) const
 template< int Dimensions, typename Real, typename Device, typename Index >
 bool tnlGrid< Dimensions, Real, Device, Index > :: load( tnlFile& file )
 {
-   if( ! tnlArray< Dimensions, Real, Device, Index > :: load( file ) )
+   if( ! tnlMultiArray< Dimensions, Real, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlArray of the tnlGrid "
+      cerr << "I was not able to read the tnlMultiArray of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }

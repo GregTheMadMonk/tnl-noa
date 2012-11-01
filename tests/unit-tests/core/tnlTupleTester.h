@@ -22,8 +22,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlArray.h>
 #include <core/tnlFile.h>
+#include <core/tnlTuple.h>
 
 template< int Size, typename Real > class tnlTupleTester : public CppUnit :: TestCase
 {

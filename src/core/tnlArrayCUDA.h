@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayManagerCUDA.h -  description
+                          tnlArrayCUDA.h -  description
                              -------------------
     begin                : Jul 4, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -26,29 +26,29 @@
 const int tnlGPUvsCPUTransferBufferSize = 5 * 1 << 20;
 
 template< typename ElementType, typename IndexType >
-class tnlArrayManager< ElementType, tnlCuda, IndexType > : public tnlArrayManagerBase< ElementType, IndexType >
+class tnlArray< ElementType, tnlCuda, IndexType > : public tnlArrayBase< ElementType, IndexType >
 {
    //! We do not allow constructor without parameters.
-   tnlArrayManager(){};
+   tnlArray(){};
 
    /****
     * We do not allow copy constructors as well to avoid having two
     * arrays with the same name.
     */
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlHost, IndexType >& v ){};
+   tnlArray( const tnlArray< ElementType, tnlHost, IndexType >& v ){};
 
-   tnlArrayManager( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v ){};
+   tnlArray( const tnlArray< ElementType, tnlCuda, IndexType >& v ){};
 
    public:
 
    //! Basic constructor with given size
-   tnlArrayManager( const tnlString& name, IndexType _size = 0 );
+   tnlArray( const tnlString& name, IndexType _size = 0 );
 
    //! Constructor with another array as template
-   tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+   tnlArray( const tnlString& name, const tnlArray< ElementType, tnlHost, IndexType >& v );
 
    //! Constructor with another array as template
-   tnlArrayManager( const tnlString& name, const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   tnlArray( const tnlString& name, const tnlArray< ElementType, tnlCuda, IndexType >& v );
 
    //! Use this if you want to insert some data in this array.
    /*! The data will not be deallocated by the destructor.
@@ -60,10 +60,10 @@ class tnlArrayManager< ElementType, tnlCuda, IndexType > : public tnlArrayManage
    bool setSize( IndexType _size );
 
    //! Set size of the array using another array as a template
-   bool setLike( const tnlArrayManager< ElementType, tnlHost, IndexType >& v );
+   bool setLike( const tnlArray< ElementType, tnlHost, IndexType >& v );
 
    //! Set size of the array using another array as a template
-   bool setLike( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v );
+   bool setLike( const tnlArray< ElementType, tnlCuda, IndexType >& v );
 
    /*!**
     * Free allocated memory
@@ -73,17 +73,17 @@ class tnlArrayManager< ElementType, tnlCuda, IndexType > : public tnlArrayManage
    /*!***
     * Swaps data between two array managers
     */
-   void swap( tnlArrayManager< ElementType, tnlCuda, IndexType >& u );
+   void swap( tnlArray< ElementType, tnlCuda, IndexType >& u );
 
    //! Returns type of this array written in a form of C++ template type.
    tnlString getType() const;
 
-   tnlArrayManager< ElementType, tnlCuda, IndexType >& operator = ( const tnlArrayManager< ElementType, tnlCuda, IndexType >& array );
+   tnlArray< ElementType, tnlCuda, IndexType >& operator = ( const tnlArray< ElementType, tnlCuda, IndexType >& array );
 
-   tnlArrayManager< ElementType, tnlCuda, IndexType >& operator = ( const tnlArrayManager< ElementType, tnlHost, IndexType >& array );
+   tnlArray< ElementType, tnlCuda, IndexType >& operator = ( const tnlArray< ElementType, tnlHost, IndexType >& array );
 
    template< typename ElementType2, typename IndexType2 >
-   tnlArrayManager< ElementType, tnlCuda, IndexType >& operator = ( const tnlArrayManager< ElementType2, tnlCuda, IndexType2 >& array );
+   tnlArray< ElementType, tnlCuda, IndexType >& operator = ( const tnlArray< ElementType2, tnlCuda, IndexType2 >& array );
 
    void setElement( IndexType i, ElementType d );
 
@@ -99,46 +99,46 @@ class tnlArrayManager< ElementType, tnlCuda, IndexType > : public tnlArrayManage
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
-   virtual ~tnlArrayManager();
+   virtual ~tnlArray();
 
 };
 
 template< typename ElementType, typename IndexType >
-bool operator == ( const tnlArrayManager< ElementType, tnlHost, IndexType >& host_vector,
-                   const tnlArrayManager< ElementType, tnlCuda, IndexType >& cuda_vector );
+bool operator == ( const tnlArray< ElementType, tnlHost, IndexType >& host_vector,
+                   const tnlArray< ElementType, tnlCuda, IndexType >& cuda_vector );
 
 template< typename ElementType, typename IndexType >
-bool operator != ( const tnlArrayManager< ElementType, tnlHost, IndexType >& host_vector,
-                   const tnlArrayManager< ElementType, tnlCuda, IndexType >& cuda_vector );
+bool operator != ( const tnlArray< ElementType, tnlHost, IndexType >& host_vector,
+                   const tnlArray< ElementType, tnlCuda, IndexType >& cuda_vector );
 
 template< typename ElementType, typename IndexType >
-ostream& operator << ( ostream& str, const tnlArrayManager< ElementType, tnlCuda, IndexType >& vec );
+ostream& operator << ( ostream& str, const tnlArray< ElementType, tnlCuda, IndexType >& vec );
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlCuda, IndexType > :: tnlArrayManager( const tnlString& name, IndexType _size )
-: tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlCuda, IndexType > :: tnlArray( const tnlString& name, IndexType _size )
+: tnlArrayBase< ElementType, IndexType >( name )
 {
    setSize( _size );
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlCuda, IndexType > :: tnlArrayManager( const tnlString& name,
-                                                        const tnlArrayManager< ElementType, tnlHost, IndexType >& v )
-   : tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlCuda, IndexType > :: tnlArray( const tnlString& name,
+                                                        const tnlArray< ElementType, tnlHost, IndexType >& v )
+   : tnlArrayBase< ElementType, IndexType >( name )
 {
    setSize( v. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlCuda, IndexType > :: tnlArrayManager( const tnlString& name,
-                                                        const tnlArrayManager< ElementType, tnlCuda, IndexType >& v )
-   : tnlArrayManagerBase< ElementType, IndexType >( name )
+tnlArray< ElementType, tnlCuda, IndexType > :: tnlArray( const tnlString& name,
+                                                        const tnlArray< ElementType, tnlCuda, IndexType >& v )
+   : tnlArrayBase< ElementType, IndexType >( name )
 {
    setSize( v. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlCuda, IndexType > :: setSharedData( ElementType* _data, const IndexType _size )
+void tnlArray< ElementType, tnlCuda, IndexType > :: setSharedData( ElementType* _data, const IndexType _size )
 {
 #ifdef HAVE_CUDA
 
@@ -153,11 +153,11 @@ void tnlArrayManager< ElementType, tnlCuda, IndexType > :: setSharedData( Elemen
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: setSize( IndexType _size )
+bool tnlArray< ElementType, tnlCuda, IndexType > :: setSize( IndexType _size )
 {
-   dbgFunctionName( "tnlArrayManagerCUDA", "setSize" );
+   dbgFunctionName( "tnlArrayCUDA", "setSize" );
    tnlAssert( _size >= 0,
-            cerr << "You try to set size of tnlArrayManager to negative value."
+            cerr << "You try to set size of tnlArray to negative value."
                  << "Vector name: " << this -> getName() << endl
                  << "New size: " << _size << endl );
    /* In the case that we run without active macro tnlAssert
@@ -165,7 +165,7 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: setSize( IndexType _s
     */
    if( _size < 0 )
    {
-      cerr << "Negative size " << _size << " was passed to tnlArrayManager " << this -> getName() << "." << endl;
+      cerr << "Negative size " << _size << " was passed to tnlArray " << this -> getName() << "." << endl;
       return false;
    }
 #ifdef HAVE_CUDA
@@ -205,21 +205,21 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: setSize( IndexType _s
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: setLike( const tnlArrayManager< ElementType, tnlHost, IndexType >& v )
+bool tnlArray< ElementType, tnlCuda, IndexType > :: setLike( const tnlArray< ElementType, tnlHost, IndexType >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: setLike( const tnlArrayManager< ElementType, tnlCuda, IndexType >& v )
+bool tnlArray< ElementType, tnlCuda, IndexType > :: setLike( const tnlArray< ElementType, tnlCuda, IndexType >& v )
 {
    return setSize( v. getSize() );
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlCuda, IndexType > :: reset()
+void tnlArray< ElementType, tnlCuda, IndexType > :: reset()
 {
-   dbgFunctionName( "tnlArrayManagerCUDA", "reset" );
+   dbgFunctionName( "tnlArrayCUDA", "reset" );
 #ifdef HAVE_CUDA
    if( this -> data && ! this -> shared_data )
    {
@@ -235,7 +235,7 @@ void tnlArrayManager< ElementType, tnlCuda, IndexType > :: reset()
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlCuda, IndexType > :: swap( tnlArrayManager< ElementType, tnlCuda, IndexType >& v )
+void tnlArray< ElementType, tnlCuda, IndexType > :: swap( tnlArray< ElementType, tnlCuda, IndexType >& v )
 {
    tnlAssert( this -> getSize() > 0, );
    tnlAssert( this -> getSize() == v. getSize(),
@@ -248,14 +248,14 @@ void tnlArrayManager< ElementType, tnlCuda, IndexType > :: swap( tnlArrayManager
 };
 
 template< typename ElementType, typename IndexType >
-tnlString tnlArrayManager< ElementType, tnlCuda, IndexType > :: getType() const
+tnlString tnlArray< ElementType, tnlCuda, IndexType > :: getType() const
 {
     ElementType t;
-    return tnlString( "tnlArrayManager< " ) + tnlString( GetParameterType( t ) ) + tnlString( ", tnlCuda >" );
+    return tnlString( "tnlArray< " ) + tnlString( GetParameterType( t ) ) + tnlString( ", tnlCuda >" );
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlCuda, IndexType >& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator = ( const tnlArrayManager< ElementType, tnlHost, IndexType >& rhs_vector )
+tnlArray< ElementType, tnlCuda, IndexType >& tnlArray< ElementType, tnlCuda, IndexType > :: operator = ( const tnlArray< ElementType, tnlHost, IndexType >& rhs_vector )
 {
 #ifdef HAVE_CUDA
    tnlAssert( rhs_vector. getSize() == this -> getSize(),
@@ -284,7 +284,7 @@ tnlArrayManager< ElementType, tnlCuda, IndexType >& tnlArrayManager< ElementType
 };
 
 template< typename ElementType, typename IndexType >
-tnlArrayManager< ElementType, tnlCuda, IndexType >& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator = ( const tnlArrayManager< ElementType, tnlCuda, IndexType >& rhs_vector )
+tnlArray< ElementType, tnlCuda, IndexType >& tnlArray< ElementType, tnlCuda, IndexType > :: operator = ( const tnlArray< ElementType, tnlCuda, IndexType >& rhs_vector )
 {
 #ifdef HAVE_CUDA
     tnlAssert( rhs_vector. getSize() == this -> getSize(),
@@ -313,7 +313,7 @@ tnlArrayManager< ElementType, tnlCuda, IndexType >& tnlArrayManager< ElementType
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManager< ElementType, tnlCuda, IndexType > :: setElement( IndexType i, ElementType d )
+void tnlArray< ElementType, tnlCuda, IndexType > :: setElement( IndexType i, ElementType d )
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -340,7 +340,7 @@ void tnlArrayManager< ElementType, tnlCuda, IndexType > :: setElement( IndexType
 };
 
 template< typename ElementType, typename IndexType >
-ElementType tnlArrayManager< ElementType, tnlCuda, IndexType > :: getElement( IndexType i ) const
+ElementType tnlArray< ElementType, tnlCuda, IndexType > :: getElement( IndexType i ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "Vector name is " << this -> getName() );
@@ -369,11 +369,11 @@ ElementType tnlArrayManager< ElementType, tnlCuda, IndexType > :: getElement( In
 };
 
 template< typename ElementType, typename IndexType >
-ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )
+ElementType& tnlArray< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )
 {
    cerr << "I am sorry. You try to call the following operator: " << endl;
    cerr << endl;
-   cerr << "ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )" << endl;
+   cerr << "ElementType& tnlArray< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )" << endl;
    cerr << endl;
    cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
@@ -384,11 +384,11 @@ ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator[] ( 
 }
 
 template< typename ElementType, typename IndexType >
-const ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i ) const
+const ElementType& tnlArray< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i ) const
 {
    cerr << "I am sorry. You try to call the following operator: " << endl;
    cerr << endl;
-   cerr << "ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )" << endl;
+   cerr << "ElementType& tnlArray< ElementType, tnlCuda, IndexType > :: operator[] ( IndexType i )" << endl;
    cerr << endl;
    cerr << "for vector " << this -> getName() << "." << endl;
    cerr << "The call comes from the HOST (CPU) and the long vector is allocated " << endl;
@@ -399,7 +399,7 @@ const ElementType& tnlArrayManager< ElementType, tnlCuda, IndexType > :: operato
 }
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: save( tnlFile& file ) const
+bool tnlArray< ElementType, tnlCuda, IndexType > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
               cerr << "You try to save empty vector. Its name is " << this -> getName() );
@@ -418,7 +418,7 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: save( tnlFile& file )
 }
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: load( tnlFile& file )
+bool tnlArray< ElementType, tnlCuda, IndexType > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
@@ -441,7 +441,7 @@ bool tnlArrayManager< ElementType, tnlCuda, IndexType > :: load( tnlFile& file )
 }
 
 template< typename Real, typename Index >
-tnlArrayManager< Real, tnlCuda, Index > :: ~tnlArrayManager()
+tnlArray< Real, tnlCuda, Index > :: ~tnlArray()
 {
    dbgFunctionName( "tnlVectorCUDA", "~tnlVectorCUDA" );
 #ifdef HAVE_CUDA
@@ -460,7 +460,7 @@ tnlArrayManager< Real, tnlCuda, Index > :: ~tnlArrayManager()
 };
 
 template< typename ElementType, typename IndexType >
-ostream& operator << ( ostream& str, const tnlArrayManager< ElementType, tnlCuda, IndexType >& vec )
+ostream& operator << ( ostream& str, const tnlArray< ElementType, tnlCuda, IndexType >& vec )
 {
 #ifdef HAVE_CUDA
    IndexType size = vec. getSize();

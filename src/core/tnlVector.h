@@ -18,10 +18,10 @@
 #ifndef TNLLONGVECTOR_H_
 #define TNLLONGVECTOR_H_
 
-#include <core/tnlArrayManager.h>
+#include <core/tnlArray.h>
 
 template< typename RealType, typename Device = tnlHost, typename IndexType = int >
-class tnlVector : public tnlArrayManager< RealType, Device, IndexType >
+class tnlVector : public tnlArray< RealType, Device, IndexType >
 {
 
 };

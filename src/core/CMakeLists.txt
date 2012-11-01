@@ -2,11 +2,11 @@ INCLUDE_DIRECTORIES( low-level )
 
 add_subdirectory( low-level )
 
-set (headers tnlArray.h
-             tnlArrayManager.h
-             tnlArrayManagerBase.h
-             tnlArrayManagerHost.h
-             tnlArrayManagerCUDA.h
+set (headers tnlMultiArray.h
+             tnlArray.h
+             tnlArrayBase.h
+             tnlArrayHost.h
+             tnlArrayCUDA.h
              tnlAssert.h               
     	       tnlCurve.h 
     	       tnlCudaSupport.h

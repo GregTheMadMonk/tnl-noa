@@ -20,7 +20,7 @@
 
 #include <core/mfuncs.h>
 #include <core/tnlAssert.h>
-#include <core/tnlArrayManager.h>
+#include <core/tnlArray.h>
 #include <core/tnlVector.h>
 #include <debug/tnlDebug.h>
 
@@ -28,7 +28,7 @@ template< typename RealType, typename IndexType >
 class tnlVector< RealType, tnlCuda, IndexType >;
 
 template< typename Real, typename Index >
-class tnlVector< Real, tnlHost, Index > : public tnlArrayManager< Real, tnlHost, Index >
+class tnlVector< Real, tnlHost, Index > : public tnlArray< Real, tnlHost, Index >
 {
    typedef Real RealType;
    typedef Index IndexType;
@@ -116,21 +116,21 @@ ostream& operator << ( ostream& str, const tnlVector< RealType, tnlHost, IndexTy
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, IndexType _size )
-: tnlArrayManager< RealType, tnlHost, IndexType >( name )
+: tnlArray< RealType, tnlHost, IndexType >( name )
 {
    this -> setSize( _size );
 };
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, const tnlVector& v )
-: tnlArrayManager< RealType, tnlHost, IndexType >( name )
+: tnlArray< RealType, tnlHost, IndexType >( name )
 {
   this -> setSize( v. getSize() );
 };
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, const tnlVector< RealType, tnlCuda, IndexType >& v )
-: tnlArrayManager< RealType, tnlHost, IndexType >( name )
+: tnlArray< RealType, tnlHost, IndexType >( name )
 {
   this -> setSize( v. getSize() );
 };
@@ -138,7 +138,7 @@ tnlVector< RealType, tnlHost, IndexType > :: tnlVector( const tnlString& name, c
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType >& tnlVector< RealType, tnlHost, IndexType > :: operator =( const tnlVector< RealType, tnlHost, IndexType >& vector )
 {
-   tnlArrayManager< RealType, tnlHost, IndexType > :: operator = ( vector );
+   tnlArray< RealType, tnlHost, IndexType > :: operator = ( vector );
    return *this;
 };
 
@@ -146,14 +146,14 @@ template< typename RealType, typename IndexType >
    template< typename RealType2, typename IndexType2 >
 tnlVector< RealType, tnlHost, IndexType >& tnlVector< RealType, tnlHost, IndexType > :: operator = ( const tnlVector< RealType2, tnlHost, IndexType2 >& vector )
 {
-   tnlArrayManager< RealType, tnlHost, IndexType > :: operator = ( vector );
+   tnlArray< RealType, tnlHost, IndexType > :: operator = ( vector );
    return *this;
 };
 
 template< typename RealType, typename IndexType >
 tnlVector< RealType, tnlHost, IndexType >& tnlVector< RealType, tnlHost, IndexType > :: operator =  ( const tnlVector< RealType, tnlCuda, IndexType >& cuda_vector )
 {
-   tnlArrayManager< RealType, tnlHost, IndexType > :: operator = ( cuda_vector );
+   tnlArray< RealType, tnlHost, IndexType > :: operator = ( cuda_vector );
    return *this;
 };
 

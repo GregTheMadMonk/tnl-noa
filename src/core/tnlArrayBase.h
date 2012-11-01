@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayManagerBase.h -  description
+                          tnlArrayBase.h -  description
                              -------------------
     begin                : Jul 4, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -23,14 +23,14 @@
 #include <core/tnlFile.h>
 
 template< typename ElementType, typename IndexType >
-class tnlArrayManagerBase : public tnlObject
+class tnlArrayBase : public tnlObject
 
 {
-   tnlArrayManagerBase(){};
+   tnlArrayBase(){};
 
    public:
    //! Constructor with name parameter.
-   tnlArrayManagerBase( const tnlString& name );
+   tnlArrayBase( const tnlString& name );
 
    virtual tnlString getType() const = 0;
 
@@ -121,26 +121,26 @@ class tnlArrayManagerBase : public tnlObject
 };
 
 template< typename ElementType, typename Device = tnlHost, typename IndexType = int >
-class tnlArrayManager : public tnlArrayManagerBase< ElementType, IndexType >
+class tnlArray : public tnlArrayBase< ElementType, IndexType >
 {
 
 };
 
 
 template< typename ElementType, typename IndexType >
-tnlArrayManagerBase< ElementType, IndexType > :: tnlArrayManagerBase( const tnlString& name )
+tnlArrayBase< ElementType, IndexType > :: tnlArrayBase( const tnlString& name )
 : tnlObject( name ), size( 0 ), data( 0 ), shared_data( false ), safeMode( true )
 {
 };
 
 template< typename ElementType, typename IndexType >
-IndexType tnlArrayManagerBase< ElementType, IndexType > :: getSize() const
+IndexType tnlArrayBase< ElementType, IndexType > :: getSize() const
 {
    return size;
 };
 
 template< typename ElementType, typename IndexType >
-const ElementType* tnlArrayManagerBase< ElementType, IndexType > :: getData() const
+const ElementType* tnlArrayBase< ElementType, IndexType > :: getData() const
 {
    if( size == 0 )
       return 0;
@@ -148,7 +148,7 @@ const ElementType* tnlArrayManagerBase< ElementType, IndexType > :: getData() co
 };
 
 template< typename ElementType, typename IndexType >
-ElementType* tnlArrayManagerBase< ElementType, IndexType > :: getData()
+ElementType* tnlArrayBase< ElementType, IndexType > :: getData()
 {
    if( size == 0 )
       return 0;
@@ -156,25 +156,25 @@ ElementType* tnlArrayManagerBase< ElementType, IndexType > :: getData()
 }
 
 template< typename ElementType, typename IndexType >
-tnlArrayManagerBase< ElementType, IndexType > :: operator bool() const
+tnlArrayBase< ElementType, IndexType > :: operator bool() const
 {
    return ( getSize() != 0 );
 };
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManagerBase< ElementType, IndexType > :: setSafeMode( bool mode )
+void tnlArrayBase< ElementType, IndexType > :: setSafeMode( bool mode )
 {
    safeMode = mode;
 }
 
 template< typename ElementType, typename IndexType >
-bool tnlArrayManagerBase< ElementType, IndexType > :: getSafeMode() const
+bool tnlArrayBase< ElementType, IndexType > :: getSafeMode() const
 {
    return safeMode;
 }
 
 template< typename ElementType, typename IndexType >
-void tnlArrayManagerBase< ElementType, IndexType > :: touch( long int touches ) const
+void tnlArrayBase< ElementType, IndexType > :: touch( long int touches ) const
 {
   // TODO: fix this
   //defaultTnlStatistics. addTransferedBytes( touches * getSize() * sizeof( Real ) );
