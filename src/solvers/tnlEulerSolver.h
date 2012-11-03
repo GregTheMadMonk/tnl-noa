@@ -108,7 +108,7 @@ bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& sch
       /****
        * Compute the RHS
        */
-      scheme. GetExplicitRHS( time, u, k1 );
+      scheme. GetExplicitRHS( time, currentTau, u, k1 );
 
       Real lastResidue = residue;
       computeNewTimeLevel( u, currentTau, residue );
