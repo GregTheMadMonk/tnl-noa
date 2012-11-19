@@ -44,7 +44,7 @@ class MeshInitializer : public MeshInitializerLayer<MeshConfigTag, DimTag<MeshCo
 public:
 	MeshInitializer(MeshType &mesh)
 	{
-		setMesh(mesh);
+		this->setMesh(mesh);
 	}
 
 	void initMesh()

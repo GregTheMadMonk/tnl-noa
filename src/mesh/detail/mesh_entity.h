@@ -57,11 +57,11 @@ public:
 	typedef MeshConfigTag MeshConfig;
 	typedef MeshEntityTag Tag;
 
-	template<DimensionType dimension> typename BorderRangesTag<dimension>::RangeType      borderEntities()           { return borderRange(DimTag<dimension>(), this->getMesh()); }
-	template<DimensionType dimension> typename BorderRangesTag<dimension>::ConstRangeType borderEntities() const     { return borderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename BorderRangesTag<dimension>::RangeType      borderEntities()           { return this->borderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename BorderRangesTag<dimension>::ConstRangeType borderEntities() const     { return this->borderRange(DimTag<dimension>(), this->getMesh()); }
 
-	template<DimensionType dimension> typename CoborderRangesTag<dimension>::RangeType      coborderEntities()       { return coborderRange(DimTag<dimension>(), this->getMesh()); }
-	template<DimensionType dimension> typename CoborderRangesTag<dimension>::ConstRangeType coborderEntities() const { return coborderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename CoborderRangesTag<dimension>::RangeType      coborderEntities()       { return this->coborderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename CoborderRangesTag<dimension>::ConstRangeType coborderEntities() const { return this->coborderRange(DimTag<dimension>(), this->getMesh()); }
 
 	size_t allocatedMemorySize() const { return BorderBaseType::allocatedMemorySize() + CoborderBaseType::allocatedMemorySize(); }
 
@@ -101,8 +101,8 @@ public:
 	PointType       &getPoint()       { return m_point; }
 	const PointType &getPoint() const { return m_point; }
 
-	template<DimensionType dimension> typename CoborderRangesTag<dimension>::RangeType      coborderEntities()       { return coborderRange(DimTag<dimension>(), this->getMesh()); }
-	template<DimensionType dimension> typename CoborderRangesTag<dimension>::ConstRangeType coborderEntities() const { return coborderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename CoborderRangesTag<dimension>::RangeType      coborderEntities()       { return this->coborderRange(DimTag<dimension>(), this->getMesh()); }
+	template<DimensionType dimension> typename CoborderRangesTag<dimension>::ConstRangeType coborderEntities() const { return this->coborderRange(DimTag<dimension>(), this->getMesh()); }
 
 	size_t allocatedMemorySize() const { return CoborderBaseType::allocatedMemorySize(); }
 

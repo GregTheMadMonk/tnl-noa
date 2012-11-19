@@ -35,8 +35,8 @@ public:
 	void load(IOReader<MeshConfigTag> &reader);
 	void write(IOWriter<MeshConfigTag> &writer) const;
 
-	template<DimensionType dimension> typename EntityRangesTag<dimension>::RangeType      entities()       { return entityRange(DimTag<dimension>()); }
-	template<DimensionType dimension> typename EntityRangesTag<dimension>::ConstRangeType entities() const { return entityRange(DimTag<dimension>()); }
+	template<DimensionType dimension> typename EntityRangesTag<dimension>::RangeType      entities()       { return this->entityRange(DimTag<dimension>()); }
+	template<DimensionType dimension> typename EntityRangesTag<dimension>::ConstRangeType entities() const { return this->entityRange(DimTag<dimension>()); }
 
 	size_t memoryRequirement() const { return sizeof(*this) + this->allocatedMemorySize(); }
 
