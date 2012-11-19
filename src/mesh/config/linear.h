@@ -14,8 +14,7 @@ class LinearMeshConfig : public MeshConfigBase
 public:
 	typedef topology::Edge Cell;
 
-	enum { dimension = Cell::dimension };
-	enum { dimWorld = dimension };
+	enum { dimWorld = Cell::dimension };
 };
 
 

@@ -10,21 +10,6 @@ namespace implementation
 {
 
 
-template<typename MeshConfigTag, typename DimensionTag>
-class MeshEntitiesTag
-{
-public:
-	typedef typename topology::BorderEntities<typename MeshConfigTag::Cell, DimensionTag::value>::Tag Tag;
-};
-
-template<typename MeshConfigTag>
-class MeshEntitiesTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >
-{
-public:
-	typedef typename MeshConfigTag::Cell Tag;
-};
-
-
 template<typename, typename>      class MeshEntity;
 template<typename, typename>      class MeshEntityKey;
 template<typename, DimensionType> class Point;
@@ -34,7 +19,26 @@ template<typename MeshConfigTag>
 class MeshTag
 {
 public:
+	enum { dimension = MeshConfigTag::Cell::dimension };
+
+	typedef DimTag<dimension> MeshDimTag;
+
 	typedef Point<typename MeshConfigTag::NumericType, MeshConfigTag::dimWorld> PointType;
+};
+
+
+template<typename MeshConfigTag, typename DimensionTag>
+class MeshEntitiesTag
+{
+public:
+	typedef typename topology::BorderEntities<typename MeshConfigTag::Cell, DimensionTag::value>::Tag Tag;
+};
+
+template<typename MeshConfigTag>
+class MeshEntitiesTag<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag>
+{
+public:
+	typedef typename MeshConfigTag::Cell Tag;
 };
 
 

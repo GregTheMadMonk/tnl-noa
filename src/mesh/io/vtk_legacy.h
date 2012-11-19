@@ -211,7 +211,7 @@ protected:
 			this->error("Unable to write to file");
 
 		VertexConstRangeType vertexRange = mesh.template entities<0>();
-		CellConstRangeType   cellRange   = mesh.template entities<MeshConfigTag::dimension>();
+		CellConstRangeType   cellRange   = mesh.template entities<MeshType::dimension>();
 
 		m_stream << "# vtk DataFile Version 2.0\n";
 		m_stream << "Mesh\n";

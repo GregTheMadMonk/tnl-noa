@@ -17,7 +17,7 @@ class MeshLayer;
 
 
 template<typename MeshConfigTag>
-class MeshLayers : public MeshLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension> >
+class MeshLayers : public MeshLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag>
 {
 };
 
@@ -62,9 +62,9 @@ class MeshLayer<MeshConfigTag, DimensionTag, StorageTag<false> > : public MeshLa
 
 
 template<typename MeshConfigTag>
-class MeshLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension>, StorageTag<true> > : public MeshLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension - 1> >
+class MeshLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag, StorageTag<true> > : public MeshLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag::Previous>
 {
-	typedef DimTag<MeshConfigTag::dimension>                          DimensionTag;
+	typedef typename MeshTag<MeshConfigTag>::MeshDimTag               DimensionTag;
 	typedef MeshLayer<MeshConfigTag, typename DimensionTag::Previous> BaseType;
 
 	typedef EntityTag<MeshConfigTag, DimensionTag> Tag;

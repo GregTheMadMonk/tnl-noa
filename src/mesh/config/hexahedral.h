@@ -14,8 +14,7 @@ class HexahedralMeshConfig : public MeshConfigBase
 public:
 	typedef topology::Hexahedron Cell;
 
-	enum { dimension = Cell::dimension };
-	enum { dimWorld = dimension };
+	enum { dimWorld = Cell::dimension };
 };
 
 

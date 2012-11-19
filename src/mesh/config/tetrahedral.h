@@ -14,8 +14,7 @@ class TetrahedralMeshConfig : public MeshConfigBase
 public:
 	typedef topology::Tetrahedron Cell;
 
-	enum { dimension = Cell::dimension };
-	enum { dimWorld = dimension };
+	enum { dimWorld = Cell::dimension };
 };
 
 

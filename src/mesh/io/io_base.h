@@ -85,10 +85,10 @@ public:
 protected:
 	typedef typename MeshTag<MeshConfigTag>::PointType PointType;
 
-	typedef typename EntityTag<MeshConfigTag, DimTag<0>                        >::Type          VertexType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<0>                        >::ContainerType VertexContainerType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::Type          CellType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::ContainerType CellContainerType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<0>                   >::Type          VertexType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<0>                   >::ContainerType VertexContainerType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<MeshType::dimension> >::Type          CellType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<MeshType::dimension> >::ContainerType CellContainerType;
 
 	typedef typename EntityBorderTag<MeshConfigTag, typename MeshConfigTag::Cell, DimTag<0> >::ContainerType BorderVertexContainerType;
 	typedef typename BorderVertexContainerType::DataType                                                     GlobalIndexType;
@@ -97,7 +97,7 @@ protected:
 	enum { cellVerticesCount = EntityBorderTag<MeshConfigTag, typename MeshConfigTag::Cell, DimTag<0> >::count };
 
 	VertexContainerType &getVertexContainer(MeshType &mesh) const                                    { return mesh.entityContainer(DimTag<0>()); }
-	CellContainerType &getCellContainer(MeshType &mesh) const                                        { return mesh.entityContainer(DimTag<MeshConfigTag::dimension>()); }
+	CellContainerType &getCellContainer(MeshType &mesh) const                                        { return mesh.entityContainer(DimTag<MeshType::dimension>()); }
 
 	void setVertexPoint(VertexType &vertex, const PointType &point) const                            { vertex.setPoint(point); }
 	void setCellVertex(CellType &cell, LocalIndexType localIndex, GlobalIndexType globalIndex) const { cell.setVertex(localIndex, globalIndex); }
@@ -126,10 +126,10 @@ public:
 protected:
 	typedef typename MeshTag<MeshConfigTag>::PointType PointType;
 
-	typedef typename EntityTag<MeshConfigTag, DimTag<0>                        >::Type           VertexType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<0>                        >::ConstRangeType VertexConstRangeType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::Type           CellType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::ConstRangeType CellConstRangeType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<0>                   >::Type           VertexType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<0>                   >::ConstRangeType VertexConstRangeType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<MeshType::dimension> >::Type           CellType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<MeshType::dimension> >::ConstRangeType CellConstRangeType;
 
 	typedef typename EntityBorderTag<MeshConfigTag, typename MeshConfigTag::Cell, DimTag<0> >::ContainerType BorderVertexContainerType;
 

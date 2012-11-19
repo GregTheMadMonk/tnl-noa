@@ -13,7 +13,6 @@ class Lin3DConfig : public LinearMeshConfig
 public:
 	typedef topology::Edge Cell;
 
-	enum { dimension = Cell::dimension };
 	enum { dimWorld = 3 };
 };
 

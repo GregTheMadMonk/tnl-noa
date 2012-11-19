@@ -14,8 +14,7 @@ class QuadrilateralMeshConfig : public MeshConfigBase
 public:
 	typedef topology::Quadrilateral Cell;
 
-	enum { dimension = Cell::dimension };
-	enum { dimWorld = dimension };
+	enum { dimWorld = Cell::dimension };
 };
 
 
