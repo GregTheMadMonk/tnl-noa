@@ -35,16 +35,16 @@ class EntityInitializer;
 
 
 template<typename MeshConfigTag>
-class MeshInitializer : public MeshInitializerLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension> >
+class MeshInitializer : public MeshInitializerLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag>
 {
-	typedef MeshInitializerLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension> > BaseType;
+	typedef MeshInitializerLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag> BaseType;
 
 	typedef Mesh<MeshConfigTag> MeshType;
 
 public:
 	MeshInitializer(MeshType &mesh)
 	{
-		setMesh(mesh);
+		this->setMesh(mesh);
 	}
 
 	void initMesh()
@@ -132,9 +132,9 @@ class MeshInitializerLayer<MeshConfigTag, DimensionTag, StorageTag<false> > : pu
 
 
 template<typename MeshConfigTag>
-class MeshInitializerLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension>, StorageTag<true> > : public MeshInitializerLayer<MeshConfigTag, DimTag<MeshConfigTag::dimension - 1> >
+class MeshInitializerLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag, StorageTag<true> > : public MeshInitializerLayer<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag::Previous>
 {
-	typedef DimTag<MeshConfigTag::dimension>                                     DimensionTag;
+	typedef typename MeshTag<MeshConfigTag>::MeshDimTag                          DimensionTag;
 	typedef MeshInitializerLayer<MeshConfigTag, typename DimensionTag::Previous> BaseType;
 
 	typedef EntityTag<MeshConfigTag, DimensionTag> Tag;
@@ -190,7 +190,7 @@ class MeshInitializerLayer<MeshConfigTag, DimTag<0>, StorageTag<true> > : public
 	typedef typename Tag::RangeType                RangeType;
 	typedef typename Tag::ContainerType::IndexType GlobalIndexType;
 
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::Type CellType;
+	typedef typename EntityTag<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag>::Type CellType;
 
 	typedef MeshInitializer<MeshConfigTag>                                 MeshInitializerType;
 	typedef EntityInitializer<MeshConfigTag, typename MeshConfigTag::Cell> CellInitializerType;
@@ -229,10 +229,10 @@ private:
 
 template<typename MeshConfigTag, typename MeshEntityTag>
 class EntityInitializer : public EntityInitializerLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshEntityTag::dimension - 1> >,
-                          public EntityInitializerCoborderLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshConfigTag::dimension> >
+                          public EntityInitializerCoborderLayer<MeshConfigTag, MeshEntityTag, typename MeshTag<MeshConfigTag>::MeshDimTag>
 {
-	typedef EntityInitializerLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshEntityTag::dimension - 1> >     BaseType;
-	typedef EntityInitializerCoborderLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshConfigTag::dimension> > CoborderBaseType;
+	typedef EntityInitializerLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshEntityTag::dimension - 1> >               BaseType;
+	typedef EntityInitializerCoborderLayer<MeshConfigTag, MeshEntityTag, typename MeshTag<MeshConfigTag>::MeshDimTag> CoborderBaseType;
 
 	typedef typename EntityTag<MeshConfigTag, DimTag<MeshEntityTag::dimension> >::Type                     EntityType;
 	typedef typename EntityTag<MeshConfigTag, DimTag<MeshEntityTag::dimension> >::ContainerType::IndexType GlobalIndexType;
@@ -353,11 +353,11 @@ private:
 
 
 template<typename MeshConfigTag>
-class EntityInitializer<MeshConfigTag, topology::Vertex> : public EntityInitializerCoborderLayer<MeshConfigTag, topology::Vertex, DimTag<MeshConfigTag::dimension> >
+class EntityInitializer<MeshConfigTag, topology::Vertex> : public EntityInitializerCoborderLayer<MeshConfigTag, topology::Vertex, typename MeshTag<MeshConfigTag>::MeshDimTag>
 {
 	typedef DimTag<0> DimensionTag;
 
-	typedef EntityInitializerCoborderLayer<MeshConfigTag, topology::Vertex, DimTag<MeshConfigTag::dimension> > CoborderBaseType;
+	typedef EntityInitializerCoborderLayer<MeshConfigTag, topology::Vertex, typename MeshTag<MeshConfigTag>::MeshDimTag> CoborderBaseType;
 
 	typedef typename EntityTag<MeshConfigTag, DimensionTag>::Type                     EntityType;
 	typedef typename EntityTag<MeshConfigTag, DimensionTag>::ContainerType::IndexType GlobalIndexType;

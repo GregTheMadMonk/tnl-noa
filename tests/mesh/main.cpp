@@ -14,11 +14,11 @@ const char lineVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/line.vtk";
 const char twoTrianglesVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2triangles.vtk";
 const char twoSquaresVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2squares.vtk";
 const char twoCubesVtkFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2cubes.vtk";
-const char squareHoleMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/squarehole.mesh";
-const char canyon2DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon2d.mesh";
-const char canyon3DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon3d.mesh";
+const char squareHoleMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/squarehole.ngn";
+const char canyon2DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon2d.ngn";
+const char canyon3DMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/canyon3d.ngn";
 const char twoTrianglesTriInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/2triangles.tri";
-const char coneMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/cone.mesh";
+const char coneMeshInFile[] = TNL_SOURCE_DIRECTORY "tests/mesh/share/cone.ngn";
 
 /****
  * VTK output files
@@ -35,10 +35,10 @@ const char coneVtkOutFile[] = TNL_TESTS_DIRECTORY "mesh/cone-out.vtk";
 /****
  * Mesh output files
  */
-const char lineMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/line-out.mesh";
-const char twoTrianglesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2triangles-out.mesh";
-const char twoSquaresMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2squares-out.mesh";
-const char twoCubesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2cubes-out.mesh";
+const char lineMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/line-out.ngn";
+const char twoTrianglesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2triangles-out.ngn";
+const char twoSquaresMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2squares-out.ngn";
+const char twoCubesMeshOutFile[] = TNL_TESTS_DIRECTORY "mesh/2cubes-out.ngn";
 
 /****
  * TRI output files

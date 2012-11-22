@@ -11,8 +11,8 @@
 template<typename MeshEntityType>
 class EntityInfo
 {
-	enum { meshDimension = MeshEntityType::MeshConfig::dimension };
-	enum { entityDimension = MeshEntityType::Tag::dimension };
+	enum { meshDimension = MeshEntityType::meshDimension };
+	enum { entityDimension = MeshEntityType::dimension };
 
 public:
 	static void print(std::ostream &stream, const MeshEntityType &entity)
@@ -126,8 +126,6 @@ private:
 template<typename MeshType>
 class MeshInfo
 {
-	enum { meshDimension = MeshType::Config::dimension };
-
 public:
 	static void print(std::ostream &stream, const MeshType &mesh)
 	{
@@ -169,7 +167,7 @@ private:
 
 	static void printEntities(std::ostream &stream, const MeshType &mesh)
 	{
-		LOOP<DimensionType, meshDimension + 1, MeshEntitiesPrinter>::EXEC(stream, mesh);
+		LOOP<DimensionType, MeshType::dimension + 1, MeshEntitiesPrinter>::EXEC(stream, mesh);
 	}
 };
 

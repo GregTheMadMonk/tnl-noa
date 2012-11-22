@@ -16,18 +16,20 @@ class Mesh : public MeshLayers<MeshConfigTag>
 	template<typename, typename, typename> friend class MeshInitializerLayer;
 	friend class IOReader<MeshConfigTag>;
 
-	typedef typename EntityTag<MeshConfigTag, DimTag<0> >::RangeType                        VertexRangeType;
-	typedef typename EntityTag<MeshConfigTag, DimTag<MeshConfigTag::dimension> >::RangeType CellRangeType;
+	typedef typename EntityTag<MeshConfigTag, DimTag<0> >::RangeType                                  VertexRangeType;
+	typedef typename EntityTag<MeshConfigTag, typename MeshTag<MeshConfigTag>::MeshDimTag>::RangeType CellRangeType;
 
-	template<DimensionType dimension>
+	template<DimensionType dim>
 	struct EntityRangesTag
 	{
-		typedef typename EntityTag<MeshConfigTag, DimTag<dimension> >::RangeType      RangeType;
-		typedef typename EntityTag<MeshConfigTag, DimTag<dimension> >::ConstRangeType ConstRangeType;
+		typedef typename EntityTag<MeshConfigTag, DimTag<dim> >::RangeType      RangeType;
+		typedef typename EntityTag<MeshConfigTag, DimTag<dim> >::ConstRangeType ConstRangeType;
 	};
 
 public:
 	typedef MeshConfigTag Config;
+
+	enum { dimension = MeshTag<MeshConfigTag>::dimension };
 
 	void load(const char *filename);
 	void write(const char *filename) const;
@@ -35,8 +37,8 @@ public:
 	void load(IOReader<MeshConfigTag> &reader);
 	void write(IOWriter<MeshConfigTag> &writer) const;
 
-	template<DimensionType dimension> typename EntityRangesTag<dimension>::RangeType      entities()       { return entityRange(DimTag<dimension>()); }
-	template<DimensionType dimension> typename EntityRangesTag<dimension>::ConstRangeType entities() const { return entityRange(DimTag<dimension>()); }
+	template<DimensionType dim> typename EntityRangesTag<dim>::RangeType      entities()       { return this->entityRange(DimTag<dim>()); }
+	template<DimensionType dim> typename EntityRangesTag<dim>::ConstRangeType entities() const { return this->entityRange(DimTag<dim>()); }
 
 	size_t memoryRequirement() const { return sizeof(*this) + this->allocatedMemorySize(); }
 

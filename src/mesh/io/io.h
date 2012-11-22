@@ -20,7 +20,7 @@ template<typename MeshConfigTag> struct IOReaders<MeshConfigTag, 2> { typedef Pe
 
 static const char *readersExtensions[] = {
 	"vtk",  // 0 - VTKLegacyReader
-	"mesh", // 1 - NetgenNeutralReader
+	"ngn",  // 1 - NetgenNeutralReader
 	"tri"   // 2 - PetrBauerReader
 };
 
@@ -33,7 +33,7 @@ template<typename MeshConfigTag> struct IOWriters<MeshConfigTag, 2> { typedef Pe
 
 static const char *writersExtensions[] = {
 	"vtk",  // 0 - VTKLegacyWriter
-	"mesh", // 1 - NetgenNeutralWriter
+	"ngn",  // 1 - NetgenNeutralWriter
 	"tri"   // 2 - PetrBauerReader
 };
 

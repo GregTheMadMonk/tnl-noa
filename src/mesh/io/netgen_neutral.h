@@ -37,8 +37,8 @@ protected:
 		if (!m_stream)
 			this->error("Unable to read from file");
 
-		VertexContainerType &vertexContainer = getVertexContainer(mesh);
-		CellContainerType   &cellContainer   = getCellContainer(mesh);
+		VertexContainerType &vertexContainer = this->getVertexContainer(mesh);
+		CellContainerType   &cellContainer   = this->getCellContainer(mesh);
 
 		std::string line;
 		int count;
@@ -71,7 +71,7 @@ protected:
 			if (iss)
 				this->error(PointType::dimension, "-dimensional space expected; more vertex coordinates specified");
 
-			setVertexPoint(vertexContainer[i], point);
+			this->setVertexPoint(vertexContainer[i], point);
 
 			iss.clear();
 		}
@@ -104,7 +104,7 @@ protected:
 				if (vertexIndex > vertexContainer.size())
 					this->error("Vertex index greater than total number of vertices for cell number ", i);
 
-				setCellVertex(cellContainer[i], j, vertexIndex - 1);
+				this->setCellVertex(cellContainer[i], j, vertexIndex - 1);
 			}
 
 			int vertexIndex;
@@ -152,7 +152,7 @@ protected:
 			this->error("Unable to write to file");
 
 		VertexConstRangeType vertexRange = mesh.template entities<0>();
-		CellConstRangeType   cellRange   = mesh.template entities<MeshConfigTag::dimension>();
+		CellConstRangeType   cellRange   = mesh.template entities<MeshType::dimension>();
 
 		m_stream << vertexRange.size() << "\n";
 		for (int i = 0; i < vertexRange.size(); i++)
@@ -168,7 +168,7 @@ protected:
 		m_stream << cellRange.size() << "\n";
 		for (int i = 0; i < cellRange.size(); i++)
 		{
-			const BorderVertexContainerType &borderVertexContainer = getCellBorderVertexContainer(cellRange[i]);
+			const BorderVertexContainerType &borderVertexContainer = this->getCellBorderVertexContainer(cellRange[i]);
 
 			m_stream << "1";
 			for (int j = 0; j < borderVertexContainer.size(); j++)

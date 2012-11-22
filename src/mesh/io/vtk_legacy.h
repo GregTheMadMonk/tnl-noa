@@ -70,8 +70,8 @@ protected:
 		if (!m_stream)
 			this->error("Unable to read from file");
 
-		VertexContainerType &vertexContainer = getVertexContainer(mesh);
-		CellContainerType   &cellContainer   = getCellContainer(mesh);
+		VertexContainerType &vertexContainer = this->getVertexContainer(mesh);
+		CellContainerType   &cellContainer   = this->getCellContainer(mesh);
 
 		std::string line, str1, str2;
 		int count, size;
@@ -114,7 +114,7 @@ protected:
 				if (coord[d] != 0.0)
 					this->error(PointType::dimension, "-dimensional mesh expected; other coordinates shold be zero");
 
-			setVertexPoint(vertexContainer[i], point);
+			this->setVertexPoint(vertexContainer[i], point);
 		}
 
 		m_stream >> std::ws;
@@ -144,7 +144,7 @@ protected:
 				if (vertexIndex >= vertexContainer.size())
 					this->error("Point index greater than total number of points for cell number ", i);
 
-				setCellVertex(cellContainer[i], j, vertexIndex);
+				this->setCellVertex(cellContainer[i], j, vertexIndex);
 			}
 
 			numbersRead += (1 + borderVerticesCount);
@@ -211,7 +211,7 @@ protected:
 			this->error("Unable to write to file");
 
 		VertexConstRangeType vertexRange = mesh.template entities<0>();
-		CellConstRangeType   cellRange   = mesh.template entities<MeshConfigTag::dimension>();
+		CellConstRangeType   cellRange   = mesh.template entities<MeshType::dimension>();
 
 		m_stream << "# vtk DataFile Version 2.0\n";
 		m_stream << "Mesh\n";
@@ -235,7 +235,7 @@ protected:
 		m_stream << "CELLS " << cellRange.size() << " " << cellRange.size()*(1 + cellVerticesCount) << "\n";
 		for (int i = 0; i < cellRange.size(); i++)
 		{
-			const BorderVertexContainerType &borderVertexContainer = getCellBorderVertexContainer(cellRange[i]);
+			const BorderVertexContainerType &borderVertexContainer = this->getCellBorderVertexContainer(cellRange[i]);
 			assert(borderVertexContainer.size() == cellVerticesCount);
 
 			m_stream << cellVerticesCount;

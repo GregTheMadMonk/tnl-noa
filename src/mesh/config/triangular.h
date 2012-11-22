@@ -14,8 +14,7 @@ class TriangularMeshConfig : public MeshConfigBase
 public:
 	typedef topology::Triangle Cell;
 
-	enum { dimension = Cell::dimension };
-	enum { dimWorld = dimension };
+	enum { dimWorld = Cell::dimension };
 };
 
 

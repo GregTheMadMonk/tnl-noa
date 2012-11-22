@@ -16,7 +16,7 @@ class MeshEntityCoborderLayer;
 
 
 template<typename MeshConfigTag, typename MeshEntityTag>
-class MeshEntityCoborder : public MeshEntityCoborderLayer<MeshConfigTag, MeshEntityTag, DimTag<MeshConfigTag::dimension> >
+class MeshEntityCoborder : public MeshEntityCoborderLayer<MeshConfigTag, MeshEntityTag, typename MeshTag<MeshConfigTag>::MeshDimTag>
 {
 };
 
