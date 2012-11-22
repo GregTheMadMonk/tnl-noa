@@ -20,6 +20,7 @@
 
 
 #include <math.h>
+#include <core/tnlSharedVector.h>
 #include <solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
@@ -45,7 +46,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
    protected:
 
    /*!**
-    * Here the parameter v is not constant because setSharedData is used 
+    * Here the parameter v is not constant because bind is used
     * on it inside of this method. It is not changed however.
     */
    void update( Index k,
@@ -172,8 +173,8 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
    this -> iteration = 0;
    this -> residue = beta / normb;
 
-   tnlVector< Real, Device, Index > vi( "tnlGMRESSolverOld::vi" );
-   tnlVector< Real, Device, Index > vk( "tnlGMRESSolverOld::vk" );
+   tnlSharedVector< Real, Device, Index > vi;
+   tnlSharedVector< Real, Device, Index > vk;
    while( this -> iteration < max_iterations &&
           this -> residue > max_residue )
    {
@@ -189,7 +190,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
       /***
        * v_0 = r / | r | =  1.0 / beta * r
        */
-      vi. setSharedData( _v. getData(), size );
+      vi. bind( _v. getData(), size );
       vi. saxpy( ( Real ) 1.0 / beta, _r );
                 
       _s. setValue( ( Real ) 0.0 );
@@ -200,7 +201,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
       //dbgCout( " ----------- Starting m-loop -----------------" );
       for( i = 0; i < m && this -> iteration <= max_iterations; i++ )
       {
-         vi. setSharedData( &( _v. getData()[ i * size ] ), size );
+         vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
           * Solve w from M w = A v_i
           */
@@ -214,7 +215,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
          
          for( k = 0; k <= i; k++ )
          {
-            vk. setSharedData( &( _v. getData()[ k * _size ] ), _size );
+            vk. bind( &( _v. getData()[ k * _size ] ), _size );
             /***
              * H_{k,i} = ( w, v_k )
              */
@@ -235,7 +236,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
          /***
           * v_{i+1} = w / |w|
           */
-         vi. setSharedData( &( _v. getData()[ ( i + 1 ) * size ] ), size );
+         vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. saxpy( ( Real ) 1.0 / normw, _w );
 
 
@@ -338,10 +339,10 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
    }
    //dbgCout_ARRAY( y, m + 1 );
 
-   tnlVector< Real, Device, Index > vi( "tnlGMRESSolverOld::update:vi" );
+   tnlSharedVector< Real, Device, Index > vi;
    for( i = 0; i <= k; i++)
    {
-      vi. setSharedData( &( v. getData()[ i * this -> size ] ), x. getSize() );
+      vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
       x. saxpy( y[ i ], vi );
    }
 };

@@ -22,6 +22,7 @@
 #include <math.h>
 #include <core/tnlObject.h>
 #include <core/tnlVector.h>
+#include <core/tnlSharedVector.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 
@@ -59,10 +60,6 @@ class tnlGMRESSolver : public tnlObject,
 
    protected:
 
-   /*!**
-    * Here the parameter v is not constant because setSharedData is used 
-    * on it inside of this method. It is not changed however.
-    */
    void update( IndexType k,
                  IndexType m,
                  const tnlVector< RealType, tnlHost, IndexType >& H,
@@ -209,8 +206,10 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this -> resetIterations();
    this -> setResidue( beta / normb );
 
-   tnlVector< RealType, Device, IndexType > vi( "tnlGMRESSolver::vi" );
-   tnlVector< RealType, Device, IndexType > vk( "tnlGMRESSolver::vk" );
+   tnlSharedVector< RealType, Device, IndexType > vi;
+   vi. setName( "tnlGMRESSolver::vi" );
+   tnlSharedVector< RealType, Device, IndexType > vk;
+   vk. setName( "tnlGMRESSolver::vk" );
    while( this -> getIterations() < this -> getMaxIterations() &&
           this -> getResidue() > this -> getMaxResidue() )
    {
@@ -226,7 +225,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /***
        * v_0 = r / | r | =  1.0 / beta * r
        */
-      vi. setSharedData( _v. getData(), size );
+      vi. bind( _v. getData(), size );
       vi. saxpy( ( RealType ) 1.0 / beta, _r );
                 
       _s. setValue( ( RealType ) 0.0 );
@@ -237,7 +236,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       //dbgCout( " ----------- Starting m-loop -----------------" );
       for( i = 0; i < m && this -> getIterations() <= this -> getMaxIterations(); i++ )
       {
-         vi. setSharedData( &( _v. getData()[ i * size ] ), size );
+         vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
           * Solve w from M w = A v_i
           */
@@ -251,7 +250,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          
          for( k = 0; k <= i; k++ )
          {
-            vk. setSharedData( &( _v. getData()[ k * _size ] ), _size );
+            vk. bind( &( _v. getData()[ k * _size ] ), _size );
             /***
              * H_{k,i} = ( w, v_k )
              */
@@ -272,7 +271,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          /***
           * v_{i+1} = w / |w|
           */
-         vi. setSharedData( &( _v. getData()[ ( i + 1 ) * size ] ), size );
+         vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. saxpy( ( RealType ) 1.0 / normw, _w );
 
 
@@ -369,10 +368,11 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    }
    //dbgCout_ARRAY( y, m + 1 );
 
-   tnlVector< RealType, Device, IndexType > vi( "tnlGMRESSolver::update:vi" );
+   tnlSharedVector< RealType, Device, IndexType > vi;
+   vi. setName( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {
-      vi. setSharedData( &( v. getData()[ i * this -> size ] ), x. getSize() );
+      vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
       x. saxpy( y[ i ], vi );
    }
 };

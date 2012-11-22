@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlVectorHost.h>
+#include <core/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlMatrix.h>
@@ -109,8 +109,9 @@ class tnlCSRMatrix : public tnlMatrix< Real, Dev, Index >
    Real rowProduct( Index row,
                     const tnlVector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlVector< Real, Device, Index >& x,
-                       tnlVector< Real, Device, Index >& b ) const;
+   template< typename Vector1, typename Vector2 >
+   void vectorProduct( const Vector1& x,
+                       Vector2& b ) const;
 
    void setBackwardSpMV( bool backwardSpMV );
 
@@ -551,9 +552,12 @@ Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
    return product;
 }
 
-template< typename Real, typename Device, typename Index >
-void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                                                           tnlVector< Real, Device, Index >& result ) const
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector1, typename Vector2 >
+void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
+                                                           Vector2& result ) const
 {
    tnlAssert( vec. getSize() == this -> getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
@@ -580,10 +584,10 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real
          Index last_in_row = rw_offsets[ row + 1 ];
          while( i < last_in_row )
          {
-            product += els[ i ] * vec[ cols[ i ] ];
+            product += els[ i ] * vec. getElement( cols[ i ] );
             i ++;
          }
-         result[ row ] = product;
+         result. setElement( row, product );
       }
    }
    else
@@ -598,10 +602,10 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real
          Index first_in_row = rw_offsets[ row ];
          while( i >= first_in_row )
          {
-            product += els[ i ] * vec[ cols[ i ] ];
+            product += els[ i ] * vec. getElement( cols[ i ] );
             i --;
          }
-         result[ row ] = product;
+         result. setElement( row, product );
       }
    }
 }

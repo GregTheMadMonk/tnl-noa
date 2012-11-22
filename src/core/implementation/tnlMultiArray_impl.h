@@ -1,0 +1,262 @@
+/***************************************************************************
+                          tnlMultiArray_impl.h  -  description
+                             -------------------
+    begin                : Nov 13, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNLMULTIARRAY_IMPL_H_
+#define TNLMULTIARRAY_IMPL_H_
+
+
+
+template< typename Element, typename Device, typename Index >
+tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
+{
+}
+
+template< typename Element, typename Device, typename Index >
+tnlString tnlMultiArray< 1, Element, Device, Index > :: getType() const
+{
+   return tnlString( "tnlMultiArray< ") +
+          tnlString( Dimensions ) +
+          tnlString( ", " ) +
+          tnlString( getParameterType< Element >() ) +
+          tnlString( ", " ) +
+          tnlString( Device :: getDeviceType() ) +
+          tnlString( ", " ) +
+          tnlString( getParameterType< Index >() ) +
+          tnlString( " >" );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index xSize )
+{
+   tnlAssert( xSize > 0,
+              cerr << "xSize = " << xSize );
+   dimensions[ 0 ] = xSize;
+   return tnlArray< Element, Device, Index > :: setSize( xSize );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const tnlTuple< 1, Index >& dimensions )
+{
+   tnlAssert( xSize > 0,
+              cerr << "xSize = " << xSize );
+   this -> dimensions = dimensions;
+   return tnlArray< Element, Device, Index > :: setSize( this -> dimensions[ 0 ] );
+}
+
+template< typename Element, typename Device, typename Index >
+   template< typename MultiArray >
+bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const tnlMultiArray& multiArray )
+{
+   return setDimensions( multiArray. getDimensions() );
+}
+
+template< typename Element, typename Device, typename Index >
+void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
+{
+   xSize = this -> dimensions[ 0 ];
+}
+
+template< typename Element, typename Device, typename Index >
+const tnlTuple< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDimensions() const
+{
+   return this -> dimensions;
+}
+
+template< typename Element, typename Device, typename Index >
+Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
+{
+   tnlAssert( xSize > 0,
+              cerr << "i = " << i );
+   return i;
+}
+
+template< typename Element, typename Device, typename Index >
+Element tnlMultiArray< 1, Element, Device, Index > :: getElement( const Index i ) const
+{
+   return tnlArray< Element, Device, Index > :: getElement( getLongVectorIndex( i ) );
+}
+
+template< typename Element, typename Device, typename Index >
+void tnlMultiArray< 1, Element, Device, Index > :: setElement( const Index i, Element value )
+{
+   tnlArray< Element, Device, Index > :: setElement( getElementIndex( i ), value );
+}
+
+
+template< typename Element, typename Device, typename Index >
+Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element )
+{
+   return tnlArray< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+}
+
+template< typename Element, typename Device, typename Index >
+const Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
+{
+   return tnlArray< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+}
+
+template< typename Element, typename Device, typename Index >
+   template< typename MultiArray >
+bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArray& array ) const
+{
+   // TODO: Static assert on dimensions
+   tnlAssert( this -> getDimensions() == array. getDimensions(),
+              cerr << "You are attempting to compare two arrays with different dimensions." << endl
+                   << "First array name is " << this -> getName()
+                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array is " << array. getName()
+                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+   return tnlArray< Element, Device, Index > :: operator == ( array );
+}
+
+template< typename Element, typename Device, typename Index >
+   template< typename MultiArray >
+bool tnlMultiArray< 1, Element, Device, Index > :: operator != ( const MultiArray& array ) const
+{
+   return ! ( (* this ) == array );
+}
+
+template< typename Element, typename Device, typename Index >
+tnlMultiArray< 1, Element, Device, Index >&
+   tnlMultiArray< 1, Element, Device, Index > :: operator = ( const tnlMultiArray< 1, Element, Device, Index >& array )
+{
+   // TODO: Static assert on dimensions
+   tnlAssert( this -> getDimensions() == array. getDimensions(),
+              cerr << "You are attempting to assign two arrays with different dimensions." << endl
+                   << "First array name is " << this -> getName()
+                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array is " << array. getName()
+                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+   tnlArray< Element, Device, Index > :: operator = ( array );
+   return ( *this );
+}
+
+template< typename Element, typename Device, typename Index >
+   template< typename MultiArray >
+tnlMultiArray< 1, Element, Device, Index >&
+   tnlMultiArray< 1, Element, Device, Index > :: operator = ( const MultiArray& array )
+{
+   // TODO: Static assert on dimensions
+   tnlAssert( this -> getDimensions() == array. getDimensions(),
+              cerr << "You are attempting to assign two arrays with different dimensions." << endl
+                   << "First array name is " << this -> getName()
+                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array is " << array. getName()
+                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+   tnlArray< Element, Device, Index > :: operator = ( array );
+   return ( *this );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: save( tnlFile& file ) const
+{
+   if( ! tnlArray< Element, Device, Index > :: save( file ) )
+   {
+      cerr << "I was not able to write the tnlArray of tnlMultiArray "
+           << this -> getName() << endl;
+      return false;
+   }
+   if( ! dimensions. save( file ) )
+   {
+      cerr << "I was not able to write the dimensions of tnlMultiArray "
+           << this -> getName() << endl;
+      return false;
+   }
+   return true;
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: load( tnlFile& file )
+{
+   if( ! tnlArray< Element, Device, Index > :: load( file ) )
+   {
+      cerr << "I was not able to read the tnlArray of tnlMultiArray "
+           << this -> getName() << endl;
+      return false;
+   }
+   if( ! dimensions. load( file ) )
+   {
+      cerr << "I was not able to read the dimensions of tnlMultiArray "
+           << this -> getName() << endl;
+      return false;
+   }
+   return true;
+}
+
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
+{
+   for( Index i = 0; i < array. getDimensions()[ 0 ]; i ++ )
+   {
+      str << array. getElement( i ) << " ";
+   }
+   return str;
+}
+
+/*
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiArray< 2, Element, Device, Index >& array )
+{
+   tnlTuple< 2, Index > dims = array. getDimensions();
+   for( Index i = 0; i < dims[ tnlX ]; i ++ )
+   {
+      for( Index j = 0; j < dims[ tnlY ]; j ++ )
+      {
+         tnlTuple< 2, Index > ind;
+         ind[ 0 ] = i;
+         ind[ 1 ] = j;
+         str << array. getElement( ind ) << " ";
+      }
+      str << endl;
+   }
+   return str;
+}
+
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiArray< 3, Element, Device, Index >& array )
+{
+   tnlTuple< 3, Index > dims = array. getDimensions();
+   for( Index i = 0; i < dims[ tnlX ]; i ++ )
+   {
+      for( Index j = 0; j < dims[ tnlY ]; j ++ )
+      {
+         for( Index k = 0; k < dims[ tnlZ ]; k ++ )
+         {
+            tnlTuple< 3, Index > ind;
+            ind[ 0 ] = i;
+            ind[ 1 ] = j;
+            ind[ 2 ] = k;
+            str << array. getElement( ind ) << " ";
+         }
+         str << endl;
+      }
+      str << endl;
+   }
+   return str;
+}
+
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
+{
+   tnlAssert( false,
+              cerr << "Operator << is not yet implemented for arrays with the dimensions greater than 3." << endl; );
+   return str;
+};
+*/
+
+
+#endif /* TNLMULTIARRAY_IMPL_H_ */

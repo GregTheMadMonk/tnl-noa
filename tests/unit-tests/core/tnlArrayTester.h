@@ -51,24 +51,29 @@ class tnlArrayTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSharedData",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSharedData )
+                               "testConstructorDestructor",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testConstructorDestructor )
                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+                               "testSetSize",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSize )
+                              );
+
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testSetGetElement",
                                & tnlArrayTester< ElementType, Device, IndexType > :: testSetGetElement )
                               );
-      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testComparisonOperator",
                                & tnlArrayTester< ElementType, Device, IndexType > :: testComparisonOperator )
-                              );*/
+                              );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testEquivalenceOperator",
                                & tnlArrayTester< ElementType, Device, IndexType > :: testEquivalenceOperator )
                               );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSetSize",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSize )
+                               "testGetSize",
+                               & tnlArrayTester< ElementType, Device, IndexType > :: testGetSize )
                               );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testReset",
@@ -89,29 +94,17 @@ class tnlArrayTester : public CppUnit :: TestCase
       return suiteOfTests;
    }
 
-   void testSharedData()
+   void testConstructorDestructor()
    {
-      ElementType data[ 10 ];
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
-      u. setSharedData( data, 10 );
-      for( int i = 0; i < 10; i ++ )
-         data[ i ] = i;
-      for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( data[ i ] == u. getElement( i ) );
+      tnlArray< ElementType, Device, IndexType > u;
+   }
 
-      for( int i = 0; i < 10; i ++ )
-         u. setElement( i, 2 * i );
-      for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( data[ i ] == 2*i );
-
+   void testSetSize()
+   {
+      tnlArray< ElementType, Device, IndexType > u, v;
       u. setSize( 10 );
-         for( int i = 0; i < 10; i ++ )
-            u. setElement( i, 0 );
-
-      for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( data[ i ] == 2*i );
-
-   };
+      v. setSize( 10 );
+   }
 
    void testSetGetElement()
    {
@@ -123,7 +116,7 @@ class tnlArrayTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( u. getElement( i ) == i );
    };
 
-   /*void testComparisonOperator()
+   void testComparisonOperator()
    {
       tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
       tnlArray< ElementType, Device, IndexType > v( "tnlArrayTester :: v" );
@@ -141,22 +134,24 @@ class tnlArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( ! ( u != v ) );
       CPPUNIT_ASSERT( u != w );
       CPPUNIT_ASSERT( ! ( u == w ) );
-   };*/
+   };
 
    void testEquivalenceOperator()
    {
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
-      tnlArray< ElementType, Device, IndexType > v( "tnlArrayTester :: v" );
+      tnlArray< ElementType, Device, IndexType > u;
+      tnlArray< ElementType, Device, IndexType > v;
+      u. setName( "tnlArrayTester :: testEquivalenceOperator :: u" );
+      v. setName( "tnlArrayTester :: testEquivalenceOperator :: v" );
       u. setSize( 10 );
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, i );
       v = u;
-      CPPUNIT_ASSERT( u == v );
-      CPPUNIT_ASSERT( ! ( u != v ) );
+      //CPPUNIT_ASSERT( u == v );
+      //CPPUNIT_ASSERT( ! ( u != v ) );
    };
 
-   void testSetSize()
+   void testGetSize()
    {
       tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testSetSize - u" );
       const int maxSize = 10;

@@ -1,8 +1,8 @@
 /***************************************************************************
                           tnlVector.h  -  description
                              -------------------
-    begin                : Oct 3, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    begin                : Nov 7, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,18 +15,93 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLONGVECTOR_H_
-#define TNLLONGVECTOR_H_
+#ifndef TNLVECTOR_H_
+#define TNLVECTOR_H_
 
 #include <core/tnlArray.h>
 
-template< typename RealType, typename Device = tnlHost, typename IndexType = int >
-class tnlVector : public tnlArray< RealType, Device, IndexType >
-{
+class tnlHost;
 
+template< typename Real = double,
+           typename Device = tnlHost,
+           typename Index = int >
+class tnlVector : public tnlArray< Real, Device, Index >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   tnlVector();
+
+   tnlVector( const tnlString& name );
+
+   tnlVector( const tnlString& name, const Index size );
+
+   tnlString getType() const;
+
+   tnlVector< Real, Device, Index >& operator = ( const tnlVector< Real, Device, Index >& array );
+
+   template< typename Vector >
+   tnlVector< Real, Device, Index >& operator = ( const Vector& array );
+
+   template< typename Vector >
+   bool operator == ( const Vector& array ) const;
+
+   template< typename Vector >
+   bool operator != ( const Vector& array ) const;
+
+   Real max() const;
+
+   Real min() const;
+
+   Real absMax() const;
+
+   Real absMin() const;
+
+   Real lpNorm( const Real& p ) const;
+
+   Real sum() const;
+
+   template< typename Vector >
+   Real differenceMax( const Vector& v ) const;
+
+   template< typename Vector >
+   Real differenceMin( const Vector& v ) const;
+
+   template< typename Vector >
+   Real differenceAbsMax( const Vector& v ) const;
+
+   template< typename Vector >
+   Real differenceAbsMin( const Vector& v ) const;
+
+   template< typename Vector >
+   Real differenceLpNorm( const Vector& v, const Real& p ) const;
+
+   template< typename Vector >
+   Real differenceSum( const Vector& v ) const;
+
+   void scalarMultiplication( const Real& alpha );
+
+   //! Compute scalar dot product
+   template< typename Vector >
+   Real sdot( const Vector& v );
+
+   //! Compute SAXPY operation (Scalar Alpha X Pus Y ).
+   template< typename Vector >
+   void saxpy( const Real& alpha,
+               const Vector& x );
+
+   //! Compute SAXMY operation (Scalar Alpha X Minus Y ).
+   /*!**
+    * It is not a standart BLAS function but is useful for GMRES solver.
+    */
+   template< typename Vector >
+   void saxmy( const Real& alpha,
+                const Vector& x );
 };
 
-#include <core/tnlVectorHost.h>
-#include <core/tnlVectorCUDA.h>
+#include <core/implementation/tnlVector_impl.h>
 
-#endif /* TNLLONGVECTOR_H_ */
+#endif /* TNLVECTOR_H_ */

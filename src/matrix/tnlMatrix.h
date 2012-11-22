@@ -26,6 +26,7 @@
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
 #include <core/tnlVector.h>
+#include <debug/tnlDebug.h>
 
 using namespace std;
 
@@ -87,8 +88,9 @@ class tnlMatrix : public tnlObject
    virtual Real rowProduct( const Index row,
                             const tnlVector< Real, Device, Index >& vec ) const = 0;
    
-   virtual void vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                               tnlVector< Real, Device, Index >& result ) const = 0;
+   template< typename Vector1, typename Vector2 >
+   void vectorProduct( const Vector1& vec,
+                       Vector2& result ) const{};
 
    virtual bool performSORIteration( const Real& omega,
                                      const tnlVector< Real, Device, Index >& b,

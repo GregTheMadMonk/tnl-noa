@@ -36,11 +36,10 @@ template< class T > class tnlList;
  */
 class tnlObject
 {
-   private:
-   //! Constructor with no parameters is not allowed.
-   tnlObject();
-
    public:
+
+   //! Basic constructor
+   tnlObject();
 
    //! Constructor with name
    tnlObject( const tnlString& name );
@@ -50,6 +49,11 @@ class tnlObject
     * may look ass follows: "tnlVector< double, tnlCuda >".
     */
    virtual tnlString getType() const;
+
+   /****
+    *  Name getter
+    */
+    void setName( const tnlString& name );
 
    /****
     *  Name getter

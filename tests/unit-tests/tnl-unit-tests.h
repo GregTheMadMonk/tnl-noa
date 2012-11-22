@@ -23,9 +23,11 @@
 #include "core/tnlObjectTester.h"
 #include "core/tnlRealTester.h"
 #include "core/tnlTupleTester.h"
-#include "core/tnlVectorHostTester.h"
+#include "core/tnlVectorTester.h"
 #include "core/tnlMultiArrayTester.h"
 #include "core/tnlArrayTester.h"
+#include "core/tnlSharedArrayTester.h"
+#include "core/tnlSharedVectorTester.h"
 #include "core/tnlGridTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
@@ -51,7 +53,7 @@ int main( int argc, char* argv[] )
 
    runner. addTest( tnlStringTester :: suite() );
 
-   //runner. addTest( tnlObjectTester :: suite() );
+   runner. addTest( tnlObjectTester :: suite() );
 
    runner. addTest( tnlRealTester< float > :: suite() );
    runner. addTest( tnlRealTester< double > :: suite() );
@@ -71,16 +73,20 @@ int main( int argc, char* argv[] )
 
    runner. addTest( tnlArrayTester< int, tnlHost, int > :: suite() );
 
-   runner. addTest( tnlVectorHostTester< int > :: suite() );
-   runner. addTest( tnlVectorHostTester< float > :: suite() );
-   runner. addTest( tnlVectorHostTester< double > :: suite() );
+   runner. addTest( tnlSharedArrayTester< int, tnlHost, int > :: suite() );
 
-   runner. addTest( tnlMultiArrayTester< int, tnlHost, int > :: suite() );
-   runner. addTest( tnlMultiArrayTester< float, tnlHost, int > :: suite() );
-   runner. addTest( tnlMultiArrayTester< double, tnlHost, int > :: suite() );
+   runner. addTest( tnlSharedVectorTester< double, tnlHost, int > :: suite() );
 
-   /*runner. addTest( tnlCSRMatrixTester< float > :: suite() );
-   runner. addTest( tnlCSRMatrixTester< double > :: suite() );*/
+   runner. addTest( tnlVectorTester< double, tnlHost, int > :: suite() );
+
+   runner. addTest( tnlMultiArrayTester< 1, int, tnlHost, int > :: suite() );
+
+   //runner. addTest( tnlMultiArrayTester< int, tnlHost, int > :: suite() );
+   //runner. addTest( tnlMultiArrayTester< float, tnlHost, int > :: suite() );
+   //runner. addTest( tnlMultiArrayTester< double, tnlHost, int > :: suite() );
+
+   runner. addTest( tnlCSRMatrixTester< float > :: suite() );
+   runner. addTest( tnlCSRMatrixTester< double > :: suite() );
 
    runner. addTest( tnlRgCSRMatrixTester< float > :: suite() );
    runner. addTest( tnlRgCSRMatrixTester< double > :: suite() );
@@ -88,24 +94,25 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlEllpackMatrixTester< float > :: suite() );
    runner. addTest( tnlEllpackMatrixTester< double > :: suite() );
 
-   //runner. addTest( tnlAdaptiveRgCSRMatrixTester< float > :: suite() );
+   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float, tnlHost > :: suite() );
    runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlHost > :: suite() );
 
-   runner. addTest( tnlMPIMeshTester< float > :: suite() );
+   /*runner. addTest( tnlMPIMeshTester< float > :: suite() );
 
-   //runner. addTest( tnlMersonSolverTester< float, tnlHost > :: suite() );
-   //runner. addTest( tnlMersonSolverTester< double, tnlHost > :: suite() );
+   runner. addTest( tnlMersonSolverTester< float, tnlHost > :: suite() );
+   runner. addTest( tnlMersonSolverTester< double, tnlHost > :: suite() );
 
-   //runner. addTest( tnlSharedMemoryTester< tnlHost > :: suite() );
+   runner. addTest( tnlSharedMemoryTester< tnlHost > :: suite() );
 
-   //runner. addTest( tnlCommunicatorTester< tnlHost > :: suite() );
+   runner. addTest( tnlCommunicatorTester< tnlHost > :: suite() );*/
 
 
 #ifdef HAVE_CUDA
-   runner. addTest( tnlFileTester :: suite() );
+   /*runner. addTest( tnlFileTester :: suite() );
 
    runner. addTest( tnlArrayTester< int, tnlCuda, int > :: suite() );
-
+   runner. addTest( tnlSharedArrayTester< int, tnlCuda, int > :: suite() );
+   runner. addTest( tnlSharedVectorTester< double, tnlCuda, int > :: suite() );*/
    /*runner.addTest( tnlVectorCUDATester< int > :: suite() );
    runner.addTest( tnlVectorCUDATester< float > :: suite() );
    if( CUDA_ARCH == 13 )
@@ -130,7 +137,7 @@ int main( int argc, char* argv[] )
    if( CUDA_ARCH == 13 )
       runner.addTest( tnlMersonSolverTester< double, tnlCuda, int > :: suite() );*/
 
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlCuda > :: suite() );
+   //runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlCuda > :: suite() );
 #endif
 
    runner.run();

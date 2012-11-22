@@ -34,7 +34,8 @@
 #include <core/tnlCudaSupport.h>
 #include <core/tnlString.h>
 #include <core/tnlObject.h>
-#include <core/tnlDevice.h>
+#include <core/tnlHost.h>
+#include <core/tnlCuda.h>
 
 using namespace std;
 

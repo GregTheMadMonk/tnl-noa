@@ -27,6 +27,13 @@
 
 const char magic_number[] = "SIM33";
 
+tnlObject :: tnlObject()
+: name( "<no name>" )
+{
+   dbgFunctionName( "tnlObject", "tnlObject" );
+   dbgCout( "Initiating object " << getName() );
+}
+
 
 tnlObject :: tnlObject( const tnlString& _name )
 : name( _name )
@@ -38,6 +45,11 @@ tnlObject :: tnlObject( const tnlString& _name )
 tnlString tnlObject :: getType() const
 {
    return tnlString( "tnlObject" );
+}
+
+void tnlObject :: setName( const tnlString& name)
+{
+   this -> name = name;
 }
 
 const tnlString& tnlObject :: getName() const

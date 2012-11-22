@@ -1,37 +1,35 @@
-INCLUDE_DIRECTORIES( low-level )
+add_subdirectory( implementation )
 
-add_subdirectory( low-level )
-
-set (headers tnlMultiArray.h
-             tnlArray.h
-             tnlArrayBase.h
-             tnlArrayHost.h
-             tnlArrayCUDA.h
+set (headers tnlArray.h
              tnlAssert.h               
-    	       tnlCurve.h 
-    	       tnlCudaSupport.h
-		       tnlDataElement.h
-		       tnlDevice.h
-		       tnlFile.h 
-		       tnlFlopsCounter.h 
-		       tnlList.h 
-		       tnlVector.h 
-		       tnlVectorHost.h 
-		       tnlVectorCUDA.h  
-		       tnlLogger.h 
-		       tnlObject.h 
-		       tnlStack.h
-		       tnlStatistics.h 
-		       tnlString.h 
-		       tnlReal.h
-		       tnlTimerCPU.h  
-		       tnlTimerRT.h  
-		       tnlTuple.h 
-			    tnlCudaSupport.h 
-		       mfilename.h 
-		       mfuncs.h 
-		       mpi-supp.h 
-		       param-types.h
+             tnlCurve.h
+      	    tnlCuda.h
+      	    tnlCudaSupport.h
+  		       tnlDataElement.h
+  		       tnlDevice.h
+  		       tnlFile.h 
+  		       tnlFlopsCounter.h
+   		    tnlHost.h 
+   		    tnlList.h
+   		    tnlMultiArray.h
+   		    tnlMultiVector.h 
+   		    tnlSharedArray.h
+   		    tnlSharedVector.h
+   		    tnlVector.h 
+   		    tnlLogger.h 
+   		    tnlObject.h 
+   		    tnlStack.h
+   		    tnlStatistics.h 
+   		    tnlString.h 
+   		    tnlReal.h
+   		    tnlTimerCPU.h  
+   		    tnlTimerRT.h  
+   		    tnlTuple.h 
+   	       tnlCudaSupport.h 
+   		    mfilename.h 
+   		    mfuncs.h 
+   		    mpi-supp.h 
+   		    param-types.h
     )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/core )    

@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlVectorHost.h>
+#include <core/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>

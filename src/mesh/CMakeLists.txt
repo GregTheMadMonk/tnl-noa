@@ -1,5 +1,6 @@
-INCLUDE_DIRECTORIES( common config detail global io topology )
+#INCLUDE_DIRECTORIES( common config detail global io topology )
 
+ADD_SUBDIRECTORY( implementation )
 ADD_SUBDIRECTORY( common )
 ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( detail )

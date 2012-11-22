@@ -396,9 +396,9 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( *cuda_vector_4 );
       CPPUNIT_ASSERT( ! *cuda_vector_5 );
 
-      cuda_vector_5 -> setSharedData( cuda_vector_4 -> getData(),
+      /*cuda_vector_5 -> bind( cuda_vector_4 -> getData(),
                                       cuda_vector_4 -> getSize() );
-      CPPUNIT_ASSERT( *cuda_vector_5 );
+      CPPUNIT_ASSERT( *cuda_vector_5 );*/
       /* Shared data are not handled automaticaly.
        * One must be sure that data were not freed sooner
        * then any LongVectors stopped using it.

@@ -25,7 +25,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlVectorHost.h>
+#include <core/tnlVector.h>
 #include <core/tnlFile.h>
 
 
@@ -97,9 +97,9 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testSharedData()
    {
-      T data[ 10 ];
+      /*T data[ 10 ];
       tnlVector< T > u( "tnlVectorTester :: u" );
-      u. setSharedData( data, 10 );
+      u. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = i;
       for( int i = 0; i < 10; i ++ )
@@ -114,7 +114,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       u. setValue( 0 );
 
       for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( data[ i ] == 2*i );
+         CPPUNIT_ASSERT( data[ i ] == 2*i );*/
 
    };
 

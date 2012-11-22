@@ -424,8 +424,8 @@ bool tnlCommunicator< Dimensions, Device > :: send( const tnlVector< DataType, D
     * Now we copy the data to the shared memory.
     * The DataType cannot be a type with the dynamic memory allocation.
     */
-   tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
-   sendingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
+   tnlSharedArray< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+   sendingBuffer. bind( sharedMemory. getData(), data. getSize() );
    sendingBuffer = data;
    dbgCout( "The sending process is setting the flag byte to tnlSharedMemoryDataSent ..." )
    sharedMemory. increaseWritingCounter();
@@ -483,8 +483,8 @@ bool tnlCommunicator< Dimensions, Device > :: receive( tnlVector< DataType, Devi
       usleep( 1 );
 
    dbgCout( "The receiving process is copying the data from the shared memory..." );
-   tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
-   receivingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
+   tnlSharedArray< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+   receivingBuffer. bind( sharedMemory. getData(), data. getSize() );
    data = receivingBuffer;
 
    dbgCout( "The receiving process is increasing the reading counter of the shared memory..." );
@@ -689,8 +689,8 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlVector< DataType, De
        * Now we copy the data to the shared memory.
        * The DataType cannot be a type with the dynamic memory allocation.
        */
-      tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
-      sendingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+      sendingBuffer. bind( sharedMemory. getData(), data. getSize() );
       sendingBuffer = data;
 
       dbgCout( "The broadcasting process " << getDeviceId() << " has copied data." );
@@ -721,8 +721,8 @@ bool tnlCommunicator< Dimensions, Device > :: broadcast( tnlVector< DataType, De
          usleep( 1 );
 
       dbgCout( "The receiving process " << getDeviceId() << " copying the data from the shared memory. " );
-      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
-      receivingBuffer. setSharedData( sharedMemory. getData(), data. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      receivingBuffer. bind( sharedMemory. getData(), data. getSize() );
       data = receivingBuffer;
 
       /****
@@ -942,8 +942,8 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType
        * Now we copy the data to the shared memory.
        * The DataType cannot be a type with the dynamic memory allocation.
        */
-      tnlVector< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
-      sendingBuffer. setSharedData( sharedMemory. getData(), inputData. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > sendingBuffer( "sendingBuffer" );
+      sendingBuffer. bind( sharedMemory. getData(), inputData. getSize() );
       sendingBuffer = inputData;
 
       dbgCout( "The broadcasting process " << getDeviceId() << " has copied data." );
@@ -964,8 +964,8 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType
       }
 
       dbgCout( "The process " << getDeviceId() << " is copying the data from the shared memory. " );
-      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
-      receivingBuffer. setSharedData( sharedMemory. getData(), scatteredData. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      receivingBuffer. bind( sharedMemory. getData(), scatteredData. getSize() );
       scatteredData = receivingBuffer;
 
       dbgCout( "The broadcasting process " << getDeviceId() << " is waiting for the receiving process to read the data ..." )
@@ -979,8 +979,8 @@ bool tnlCommunicator< Dimensions, Device > :: scatter( const tnlVector< DataType
          usleep( 1 );
 
       dbgCout( "The process " << getDeviceId() << " is copying the data from the shared memory. " );
-      tnlVector< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
-      receivingBuffer. setSharedData( sharedMemory. getData(), scatteredData. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > receivingBuffer( "receivingBuffer" );
+      receivingBuffer. bind( sharedMemory. getData(), scatteredData. getSize() );
       scatteredData = receivingBuffer;
 
       /****
@@ -1103,8 +1103,8 @@ bool tnlCommunicator< Dimensions, Device > :: gather( const tnlVector< DataType,
       while( sharedMemory. getWritingCounter() != communicationGroupSize )
          usleep( 1 );
       dbgCout( "The target process " << getDeviceId() << " is gathering the data ..." );
-      tnlVector< DataType, tnlHost, Index > sharedMemoryVector( "sharedMemoryVector" );
-      sharedMemoryVector. setSharedData( sharedMemory. getData(), getCommunicationGroupSize() * inputData. getSize() );
+      tnlSharedArray< DataType, tnlHost, Index > sharedMemoryVector( "sharedMemoryVector" );
+      sharedMemoryVector. bind( sharedMemory. getData(), getCommunicationGroupSize() * inputData. getSize() );
       gatheredData = sharedMemoryVector;
    }
    return true;

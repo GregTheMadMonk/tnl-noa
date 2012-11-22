@@ -4,9 +4,8 @@ set( headers core/tnl-cuda-kernels.h
              core/tnlCommunicatorTester.h 
              core/tnlFileTester.h 
              core/tnlGridTester.h
-             core/tnlObjectTester.h 
-             core/tnlVectorCUDATester.h 
-             core/tnlVectorHostTester.h 
+             core/tnlObjectTester.h  
+             core/tnlVectorTester.h 
              core/tnlRealTester.h 
              core/tnlSharedMemoryTester.h
              core/tnlStringTester.h 

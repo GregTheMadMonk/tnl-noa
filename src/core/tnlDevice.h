@@ -18,41 +18,6 @@
 #ifndef TNLDEVICE_H_
 #define TNLDEVICE_H_
 
-#include <core/tnlString.h>
-#include <core/tnlString.h>
-
 enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice };
-
-class tnlHost
-{   
-   public:
-
-   static tnlString getDeviceType()
-   {
-      return tnlString( "tnlHost" );
-   }
-
-   static tnlDeviceEnum getDevice()
-   {
-      return tnlHostDevice;
-   };
-};
-
-class tnlCuda
-{
-   public:
-
-   static tnlString getDeviceType()
-   {
-      return tnlString( "tnlCuda" );      
-   }
-
-   static tnlDeviceEnum getDevice()
-   {
-      return tnlCudaDevice;
-   };
-
-};
-
 
 #endif /* TNLDEVICE_H_ */
