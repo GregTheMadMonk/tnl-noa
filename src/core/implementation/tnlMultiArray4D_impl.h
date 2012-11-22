@@ -78,7 +78,7 @@ bool tnlMultiArray< 4, Element, Device, Index > :: setDimensions( const tnlTuple
 
 template< typename Element, typename Device, typename Index >
    template< typename MultiArray >
-bool tnlMultiArray< 4, Element, Device, Index > :: setLike( const tnlMultiArray& multiArray )
+bool tnlMultiArray< 4, Element, Device, Index > :: setLike( const MultiArray& multiArray )
 {
    return setDimensions( multiArray. getDimensions() );
 }

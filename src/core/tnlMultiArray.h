@@ -53,7 +53,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const tnlMultiArray& v );
+   bool setLike( const MultiArray& v );
    
    Index getElementIndex( const Index i ) const;
 
@@ -122,7 +122,7 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const tnlMultiArray& v );
+   bool setLike( const MultiArray& v );
 
    Index getElementIndex( const Index j, const Index i ) const;
 
@@ -192,7 +192,7 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const tnlMultiArray& v );
+   bool setLike( const MultiArray& v );
 
    Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
@@ -262,7 +262,7 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const tnlMultiArray& v );
+   bool setLike( const MultiArray& v );
 
    Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
