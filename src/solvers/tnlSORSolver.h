@@ -22,7 +22,7 @@
 #include <solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlSORSolver : public tnlMatrixSolver< Real, Device, Index >
+class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
    
