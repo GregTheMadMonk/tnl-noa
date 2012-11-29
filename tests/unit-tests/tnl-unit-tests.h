@@ -15,6 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef TNL_UNIT_TESTS_H
+#define TNL_UNIT_TESTS_H
+
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
+
 #include <cppunit/ui/text/TestRunner.h>
 
 #include <debug/tnlDebug.h>
@@ -143,3 +150,18 @@ int main( int argc, char* argv[] )
    runner.run();
    return 0;
 }
+
+#else // HAVE_CPPUNIT
+
+#include <iostream>
+
+using namespace std;
+
+int main( int argc, char* argv[] )
+{
+   cerr << "UNIT TESTS ARE DISABLED." << endl;
+   return 0;
+}
+#endif // HAVE_CPPUNIT
+
+#endif // TNL_UNIT_TESTS_H

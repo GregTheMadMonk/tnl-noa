@@ -8,6 +8,8 @@
 
 @HAVE_CUSPARSE@
 
+@HAVE_CPPUNIT@
+
 #define TNL_CONFIG_DIRECTORY @configDirectory@
 
 #define TNL_SOURCE_DIRECTORY @sourceDirectory@
