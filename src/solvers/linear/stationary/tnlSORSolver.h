@@ -22,7 +22,7 @@
 #include <core/tnlObject.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
-#include <solvers/linear/tnlResidueGetter.h>
+#include <solvers/linear/tnlLinearResidueGetter.h>
 
 
 template< typename Matrix,
@@ -49,7 +49,7 @@ class tnlSORSolver : public tnlObject,
 
    void setOmega( const RealType& omega );
 
-   conat RealType& getOmega() const;
+   const RealType& getOmega() const;
 
    void setMatrix( const MatrixType& matrix );
 
@@ -69,7 +69,7 @@ class tnlSORSolver : public tnlObject,
 
    const PreconditionerType* preconditioner;
 
-}
+};
 
 #include <solvers/linear/stationary/implementation/tnlSORSolver_impl.h>
 

@@ -19,11 +19,11 @@
 #define TNLLINEARRESIDUEGETTER_IMPL_H_
 
 template< typename Matrix, typename Vector >
-typename tnlLinearResidueGetter :: RealType
-   tnlResidueGetter< Matrix, Vector > :: getResidue( const Matrix& matrix,
-                                                     const Vector& x,
-                                                     const Vector& b,
-                                                     RealType bNorm )
+typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
+   tnlLinearResidueGetter< Matrix, Vector > :: getResidue( const Matrix& matrix,
+                                                           const Vector& x,
+                                                           const Vector& b,
+                                                           RealType bNorm )
 {
    const IndexType size = matrix. getSize();
    RealType res( 0.0 );
@@ -34,7 +34,7 @@ typename tnlLinearResidueGetter :: RealType
       RealType err = fabs( matrix. rowProduct( i, x ) - b[ i ] );
       res += err * err;
    }
-   return sqrt( res ) / b_norm;
+   return sqrt( res ) / bNorm;
 }
 
 #endif /* TNLLINEARRESIDUEGETTER_IMPL_H_ */

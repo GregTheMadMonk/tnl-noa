@@ -20,6 +20,8 @@
 
 #include <solvers/tnlSolverMonitor.h>
 #include <solvers/tnlIterativeSolver.h>
+#include <core/tnlTimerCPU.h>
+#include <core/tnlTimerRT.h>
 
 template< typename Real, typename Index>
 class tnlSimpleIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
@@ -34,6 +36,12 @@ class tnlSimpleIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
 
    void refresh();
 
+   void resetTimers();
+
+   double getCPUTime();
+
+   double getRealTime();
+
    protected:
 
    Index refreshing;
@@ -43,6 +51,10 @@ class tnlSimpleIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    Index verbose;
 
    const tnlIterativeSolver< Real, Index >* solver;
+
+   tnlTimerCPU cpuTimer;
+
+   tnlTimerRT rtTimer;
 };
 
 template< typename Real, typename Index>
@@ -75,13 +87,31 @@ void tnlSimpleIterativeSolverMonitor< Real, Index > :: refresh()
    if( this -> verbose > 0 )
    {
       cout << " ITER:" << setw( 8 ) << solver -> getIterations()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << solver -> getResidue();
-/*      if( this -> cpu_timer )
-         cout << " CPU: " << setw( 8 ) << cpu_time;
-      if( this -> rt_timer )
-         cout << " ELA: " << setw( 8 ) << this -> rt_timer -> GetTime();*/
-      cout << "   \r" << flush;
+           << " RES:" << setprecision( 5 ) << setw( 12 ) << solver -> getResidue()
+           << " CPU: " << setw( 8 ) << this -> getCPUTime()
+           << " ELA: " << setw( 8 ) << this -> getRealTime()
+           << "   \r" << flush;
    }
 }
+
+template< typename Real, typename Index>
+void tnlSimpleIterativeSolverMonitor< Real, Index > :: resetTimers()
+{
+   cpuTimer. Reset();
+   rtTimer. Reset();
+}
+
+template< typename Real, typename Index>
+double tnlSimpleIterativeSolverMonitor< Real, Index > :: getCPUTime()
+{
+   return cpuTimer. GetTime();
+}
+
+template< typename Real, typename Index>
+double tnlSimpleIterativeSolverMonitor< Real, Index > :: getRealTime()
+{
+   return rtTimer. GetTime();
+}
+
 
 #endif /* TNLSIMPLEITERATIVESOLVERMONITOR_H_ */

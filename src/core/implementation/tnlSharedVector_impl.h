@@ -25,11 +25,10 @@ template< typename Real,
           typename Index >
 tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlSharedVector< " ) +
-                     getParameterType< Real >() +
-                     Device :: getDeviceType() +
-                     getParameterType< Index >() +
-                     " >";
+   return tnlString( "tnlSharedVector< " ) + ", " +
+                     getParameterType< Real >() + ", " +
+                     Device :: getDeviceType() + ", " +
+                     getParameterType< Index >() + " >";
 };
 
 template< typename Real,

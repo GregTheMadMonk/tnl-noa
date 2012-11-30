@@ -25,24 +25,121 @@
 #include <config/tnlParameterContainer.h>
 #include <matrix/tnlCSRMatrix.h>
 #include <solvers/tnlSimpleIterativeSolverMonitor.h>
+#include <solvers/linear/stationary/tnlSORSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg.desc";
 
+template< typename Solver, typename Matrix, typename Vector >
+bool benchmarkSolver( const tnlParameterContainer&  parameters,
+                      Solver& solver,
+                      const Matrix& matrix,
+                      const Vector& b,
+                      Vector& x )
+{
+   typedef typename Matrix :: RealType RealType;
+   typedef typename Matrix :: Device DeviceType;
+   typedef typename Matrix :: IndexType IndexType;
+
+   const RealType& maxResidue = parameters. GetParameter< double >( "max-residue" );
+   const IndexType& size = matrix. getSize();
+   const IndexType nonZeros = matrix. getNonzeroElements();
+   //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
+   const IndexType maxIterations = 2 * size;
+   cout << "Setting max. number of iterations to " << maxIterations << endl;
+
+   solver. setMatrix( matrix );
+   solver. setMaxIterations( maxIterations );
+   solver. setMaxResidue( maxResidue );
+   tnlSimpleIterativeSolverMonitor< RealType, IndexType > solverMonitor;
+   solverMonitor. setSolver( solver );
+   solver. setSolverMonitor( solverMonitor );
+   solver. setRefreshRate( 10 );
+   solverMonitor. resetTimers();
+   bool testSuccesfull = solver. solve( b, x );
+
+   tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   fstream logFile;
+   if( logFileName != "" )
+   {
+      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      if( ! logFile )
+         cerr << "Unable to open the log file " << logFileName << endl;
+      else
+      {
+         if( testSuccesfull )
+         {
+            double cpuTime = solverMonitor. getCPUTime();
+            double realTime = solverMonitor. getRealTime();
+            logFile << "             <td> " << solver. getResidue() << " </td> " << endl
+                    << "             <td> " << solver. getIterations() << " </td> " << endl
+                    << "             <td> " << cpuTime << " </td> " << endl
+                    << "             <td> " << realTime << " </td> " << endl;
+         }
+         else
+         {
+            logFile << "Solver diverged." << endl;
+         }
+         logFile. close();
+      }
+   }
+   return testSuccesfull;
+}
+
+template< typename Matrix, typename Vector >
+bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
+                              const Matrix& matrix,
+                              const Vector& b,
+                              Vector& x )
+{
+   typedef typename Matrix :: RealType RealType;
+   typedef typename Matrix :: Device DeviceType;
+   typedef typename Matrix :: IndexType IndexType;
+
+   const tnlString& solverName = parameters. GetParameter< tnlString >( "solver-name" );
+   IndexType iterations( 0 );
+   RealType residue( 0.0 );
+   bool converged( false );
+   if( solverName == "gmres" )
+   {
+      tnlGMRESSolver< Matrix, DeviceType > gmresSolver;
+      const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
+      gmresSolver. setRestarting( gmresRestarting );
+      if( ! benchmarkSolver( parameters, gmresSolver, matrix, b, x ) )
+         return false;
+   }
+   if( solverName == "sor" )
+   {
+      tnlSORSolver< Matrix, DeviceType > sorSolver;
+      const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
+      sorSolver. setOmega( sorOmega );
+      if( ! benchmarkSolver( parameters, sorSolver, matrix, b, x ) )
+         return false;
+   }
+}
+
 
 template< typename Real, typename Index >
-bool benchmarkMatrix( const tnlString& fileName )
+bool benchmarkMatrix( const tnlParameterContainer&  parameters )
 {
+   /****
+    * Loading the matrix from the input file
+    */
    typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
+   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
    csrMatrixType csrMatrix( "matrix-solvers-benchmark:csrMatrix" );
-   if( ! csrMatrix. load( fileName ) )
+   if( ! csrMatrix. load( inputFile ) )
    {
-      cerr << "Unable to load file " << fileName << endl;
+      cerr << "Unable to load file " << inputFile << endl;
       return false;
    }
 
+   /****
+    * Setting up the linear problem
+    */
    const Index size = csrMatrix. getSize();
+   cout << "Matrix size is " << size << endl;
    tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
    tnlVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
    tnlVector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
@@ -55,53 +152,37 @@ bool benchmarkMatrix( const tnlString& fileName )
    }
    x1. setValue( ( Real ) 1.0 );
    x. setValue( ( Real ) 0.0 );
-
-   tnlGMRESSolver< csrMatrixType, tnlHost > gmresSolver;
-   //gmresSolver. setName( "matrix-solvers-benchmark:gmresSolver" );
-   gmresSolver. setRestarting( 500 );
-   //gmresSolver. setVerbosity( 5 );
-
-   cout << "Matrix size is " << size << endl;
    csrMatrix. vectorProduct( x1, b );
-   gmresSolver. setRestarting( 500 );
-   gmresSolver. setMatrix( csrMatrix );
-   gmresSolver. setMaxIterations( 100000 );
-   gmresSolver. setMaxResidue( 1.0e-6 );
-   tnlSimpleIterativeSolverMonitor< Real, Index > solverMonitor;
-   solverMonitor. setSolver( gmresSolver );
-   gmresSolver. setSolverMonitor( solverMonitor );
-   gmresSolver. setRefreshRate( 10 );
-   if( ! gmresSolver. solve( b, x ) )
+
+   const tnlString device = parameters. GetParameter< tnlString >( "device" );
+   if( device == "host" )
+      if( ! benchmarkMatrixOnDevice( parameters, csrMatrix, b, x ) )
+         return false;
+
+   if( device == "cuda" )
+   {
+#ifdef HAVE_CUDA
+      typedef tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrixType;
+      rgCSRMatrixType rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
+      rgCSRMatrix = csrMatrix;
+      tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
+      tnlVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
+      cudaX. setLike( x );
+      cudaX = x;
+      cudaB. setLike( b );
+      cudaB = b;
+      if( ! benchmarkMatrixOnDevice( parameters, rgCSRMatrix, cudaB, cudaX ) )
+         return false;
+      x = cudaX;
+#else
+      cerr << "CUDA support is missing on this system." << endl;
       return false;
+#endif
+   }
+
    cout << endl << "L1 diff. norm = " << x. differenceLpNorm( x1, ( Real ) 1.0 )
         << " L2 diff. norm = " << x. differenceLpNorm( x1, ( Real ) 2.0 )
         << " Max. diff. norm = " << x. differenceMax( x1 ) << endl;
-#ifdef HAVE_CUDA
-   typedef tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrixType;
-   tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
-   tnlVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
-   cudaX. setLike( x );
-   cudaX = x;
-   cudaB. setLike( b );
-   cudaB = b;
-   rgCSRMatrixType rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
-   rgCSRMatrix = csrMatrix;
-   tnlGMRESSolver< rgCSRMatrixType, tnlCuda > cudaGMRESSolver( "matrix-solvers-benchmark:cudaGMRESSolver" );
-   cudaGMRESSolver. setRestarting( 500 );
-   cudaGMRESSolver. setMatrix( rgCSRMatrix );
-   cudaGMRESSolver. setMaxIterations( 10000 );
-   cudaGMRESSolver. setMaxResidue( 1.0e-6 );
-   solverMonitor. setSolver( cudaGMRESSolver );
-   cudaGMRESSolver. setSolverMonitor( solverMonitor );
-   cudaGMRESSolver. setRefreshRate( 10 );
-
-   if( !cudaGMRESSolver. solve( cudaB, cudaX ) )
-      return false;
-   cout << endl << "L1 diff. norm = " << tnlDifferenceLpNorm( cudaX, x1, ( Real ) 1.0 )
-        << " L2 diff. norm = " << tnlDifferenceLpNorm( cudaX, x1, ( Real ) 2.0 )
-        << " Max. diff. norm = " << tnlDifferenceMax( cudaX, x1 ) << endl;
-
-#endif
    return true;
 }
 
@@ -148,10 +229,10 @@ int main( int argc, char* argv[] )
    tnlString precision = parsedObjectType[ 1 ];
    //tnlString indexing = parsedObjectType[ 3 ];
    if( precision == "float" )
-      if( ! benchmarkMatrix< float, int >( inputFile ) )
+      if( ! benchmarkMatrix< float, int >( parameters ) )
          return EXIT_FAILURE;
    if( precision == "double" )
-      if( ! benchmarkMatrix< double, int >( inputFile ) )
+      if( ! benchmarkMatrix< double, int >( parameters ) )
          return EXIT_FAILURE;
 
 

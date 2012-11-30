@@ -38,11 +38,10 @@ template< typename Element,
           typename Index >
 tnlString tnlSharedArray< Element, Device, Index > :: getType() const
 {
-   return tnlString( "tnlSharedArray< " ) +
-                     getParameterType< Element >() +
-                     Device :: getDeviceType() +
-                     getParameterType< Index >() +
-                     " >";
+   return tnlString( "tnlSharedArray< " ) + ", " +
+                     getParameterType< Element >() + ", " +
+                     Device :: getDeviceType() + ", " +
+                     getParameterType< Index >() + " >";
 };
 
 template< typename Element,

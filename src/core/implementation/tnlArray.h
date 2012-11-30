@@ -47,11 +47,10 @@ template< typename Element,
           typename Index >
 tnlString tnlArray< Element, Device, Index > :: getType() const
 {
-   return tnlString( "tnlArray< " ) +
-                     getParameterType< Element >() +
-                     Device :: getDeviceType() +
-                     getParameterType< Index >() +
-                     " >";
+   return tnlString( "tnlArray< " ) + ", " +
+                     getParameterType< Element >() + ", " +
+                     Device :: getDeviceType() + ", " +
+                     getParameterType< Index >() + " >";
 };
 
 template< typename Element,

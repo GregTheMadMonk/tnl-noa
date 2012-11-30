@@ -99,7 +99,7 @@ class tnlVector : public tnlArray< Real, Device, Index >
     */
    template< typename Vector >
    void saxmy( const Real& alpha,
-                const Vector& x );
+               const Vector& x );
 };
 
 #include <core/implementation/tnlVector_impl.h>

@@ -19,12 +19,12 @@
 #define TNLLINEARRESIDUEGETTER_H_
 
 template< typename Matrix, typename Vector >
-class tnlResidueGetter
+class tnlLinearResidueGetter
 {
    public:
 
    typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: DeviceType DeviceType;
+   typedef typename Matrix :: Device DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
    static RealType getResidue( const Matrix& matrix,
@@ -33,6 +33,6 @@ class tnlResidueGetter
                                RealType bNorm = 0 );
 };
 
-#include <solvers/linear/implementation/tnlLinearResideuGetter_impl.h>
+#include <solvers/linear/implementation/tnlLinearResidueGetter_impl.h>
 
 #endif /* TNLLINEARRESIDUEGETTER_H_ */

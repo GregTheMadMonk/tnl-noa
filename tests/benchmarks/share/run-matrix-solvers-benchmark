@@ -5,6 +5,10 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
 MATRIX_SOLVERS_BENCHMARK="tnl-matrix-solvers-benchmark-dbg"
 STOP_TIME="1"
 
+SOLVERS="gmres sor"
+SOR_OMEGAS="0.4 0.8 1.2 1.6 2.0"
+GMRES_RESTARTINGS="8 16 32 64 128 256"
+
 export CUDA_PROFILE=0
 export CUDA_PROFILE_CONFIG="$TNL_SOURCE_DIR/tests/cuda-profiler.conf"
 PROCESS_CUDA_PROFILE="$TNL_SOURCE_DIR/tests/process-cuda-profile.pl"
@@ -16,6 +20,133 @@ export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-m
 #MM_MATRICES=""
 #FLORIDA_MM_MATRICES=""
 
+
+benchmark_matrix()
+# $1 input file
+# $2 input mtx file
+# $3 verbose
+{
+   for solver in $SOLVERS;
+   do     
+      echo "Testing with $solver solver." 
+      if test x$solver == xsor;
+      then
+         for omega in $SOR_OMEGAS;
+         do
+            echo "Setting sor-omega to $omega"
+            logfile="$2.results.sor.omega-$omega.log"
+            if test ! -e $logfile;
+            then
+               $MATRIX_SOLVERS_BENCHMARK --input-file $1 \
+                                         --input-mtx-file $2 \
+                                         --solver-name $solver \
+                                         --sor-omega $omega \
+                                         --log-file $logfile \
+                                         --verbose $3
+               echo ""
+            else
+               echo "Test has already passed."
+            fi
+         done
+      fi
+      if test x$solver == xgmres;
+      then
+         for gmres_restarting in $GMRES_RESTARTINGS;
+         do
+            echo "Setting GMRES restarting to $gmres_restarting"
+            logfile="$2.results.gmres.restarting-$gmres_restarting.log"
+            if test ! -e $logfile;
+            then
+               $MATRIX_SOLVERS_BENCHMARK --input-file $1 \
+                                         --input-mtx-file $2 \
+                                         --solver-name $solver \
+                                         --gmres-restarting $gmres_restarting \
+                                         --log-file $logfile \
+                                         --verbose $3
+               echo ""
+            else
+               echo "Test has already passed."
+            fi
+         done
+      fi
+   done
+}
+
+write_log_header()
+# $1 log file name
+{
+   echo "<html>" > $1
+   echo "   <body>" >> $1
+   echo "      <table border=1>" >> $1
+   echo "          <tr>" >> $1
+   echo "             <td rowspan=4 colspan=3 align=center>Matrix</td>" >> $1
+   echo "             <td rowspan=4 colspan=15 align=center>SOR</td>" >> $1
+   echo "             <td rowspan=4 colspan=18 align=center>GMRES</td>" >> $1
+   echo "          </tr>" >> $1
+         
+   echo "          <tr>" >> $1
+   echo "             <td>Name</td>" >> $1                      # Matrix description
+   echo "             <td>Size</td>" >> $1
+   echo "             <td>NonZeros No.</td>" >> $1
+   echo "             <td colspan=3>0.4</td>" >> $1                      # SOR Omegas
+   echo "             <td colspan=3>0.8</td>" >> $1                      # SOR Omegas
+   echo "             <td colspan=3>1.2</td>" >> $1                      # SOR Omegas
+   echo "             <td colspan=3>1.6</td>" >> $1                      # SOR Omegas
+   echo "             <td colspan=3>2.0</td>" >> $1                      # SOR Omegas
+   echo "             <td colspan=3>8</td>" >> $1                        # GMRES restartings
+   echo "             <td colspan=3>16</td>" >> $1                       # GMRES restartings
+   echo "             <td colspan=3>32</td>" >> $1                       # GMRES restartings
+   echo "             <td colspan=3>64</td>" >> $1                       # GMRES restartings
+   echo "             <td colspan=3>128</td>" >> $1                      # GMRES restartings
+   echo "             <td colspan=3>256</td>" >> $1                      # GMRES restartings
+   echo "          </tr>" >> $1
+   
+   echo "          <tr>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 0.4
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 0.8
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 1.2
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 1.6
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 2.0
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 8
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 16
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 32
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 64
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 128
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 256
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "          </tr>" >> $1
+}
+
+close_log()
+# $1 log file name
+{
+      echo "      </table>" >> $1
+   echo "   </body>" >> $1
+   echo "</html>" >> $1
+}
+
+write_log_header matrix-solvers-benchmark.log
 
 for link in $MM_MATRICES;
 do
@@ -35,7 +166,7 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in double precison ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.double.log 
-         $MATRIX_SOLVERS_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-double.log --stop-time $STOP_TIME --verbose 1
+         benchmark_matrix $unzipped_matrix.double.bin.bz2 $unzipped_matrix 1
          gzip $unzipped_matrix
       fi          
    fi
@@ -64,9 +195,11 @@ do
             echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            $MATRIX_SOLVERS_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --log-file sparse-matrix-benchmark-double.log --stop-time $STOP_TIME --verbose 1                        
+            benchmark_matrix $file.double.bin.bz2 $file 1                        
          fi                           
          rm $file         
       done
    fi
 done
+
+close_log matrix-solvers-benchmark.log

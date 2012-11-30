@@ -33,13 +33,17 @@ class tnlIterativeSolver
 
    void resetIterations();
 
-   void nextIteration();
+   bool nextIteration();
 
    const Index& getIterations() const;
 
    void setMaxResidue( const Real& maxResidue );
 
    const Real& getMaxResidue() const;
+
+   void setMinResidue( const Real& minResidue );
+
+   const Real& getMinResidue() const;
 
    void setResidue( const Real& residue );
 
@@ -59,6 +63,11 @@ class tnlIterativeSolver
 
    Real maxResidue;
 
+   /****
+    * If the current residue is over minResidue the solver is stopped.
+    */
+   Real minResidue;
+
    Real currentResidue;
 
    tnlSolverMonitor< Real, Index >* solverMonitor;
@@ -71,6 +80,7 @@ tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
 : maxIterations( 0 ),
   currentIteration( 0 ),
   maxResidue( 0 ),
+  minResidue( 1.0e+8 ),
   currentResidue( 0 ),
   solverMonitor( 0 ),
   refreshRate( 1 )
@@ -96,12 +106,15 @@ void tnlIterativeSolver< Real, Index> :: resetIterations()
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: nextIteration()
+bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
    if( this -> solverMonitor &&
        this -> currentIteration % this -> refreshRate == 0 )
       solverMonitor -> refresh();
    this -> currentIteration ++;
+   if( this -> getResidue() > this -> getMinResidue() )
+      return false;
+   return true;
 }
 
 template< typename Real, typename Index >
@@ -121,6 +134,19 @@ const Real& tnlIterativeSolver< Real, Index> :: getMaxResidue() const
 {
    return this -> maxResidue;
 }
+
+template< typename Real, typename Index >
+void tnlIterativeSolver< Real, Index> :: setMinResidue( const Real& minResidue )
+{
+   this -> minResidue = minResidue;
+}
+
+template< typename Real, typename Index >
+const Real& tnlIterativeSolver< Real, Index> :: getMinResidue() const
+{
+   return this -> minResidue;
+}
+
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setResidue( const Real& residue )

@@ -6,3 +6,12 @@ group IO
    real stop-time(3.0)          [How many seconds shell we iterate SpMV.];
    integer verbose(1)           [Verbose mode.];
 },[Arguments describing input and output data.];
+
+group solver
+{
+   string device("host")         [On what device the solver will run. Can be host or cuda.];
+   string solver-name(!)         [Set matrix solver for benchmarking. It can be gmres. ];
+   real max-residue(1.0e-6)      [Set what residue we want to achieve.];
+   integer gmres-restarting(20)         [Set restarting for GMRES method.];   
+   real sor-omega(1.0)         [Omega parameter for the SOR method. Can be 0--2.];
+},[Arguments describing the solver.];

@@ -51,11 +51,10 @@ template< typename Real,
           typename Index >
 tnlString tnlVector< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlVector< " ) +
-                     getParameterType< Real >() +
-                     Device :: getDeviceType() +
-                     getParameterType< Index >() +
-                     " >";
+   return tnlString( "tnlVector< " ) + ", " +
+                     getParameterType< Real >() + ", " +
+                     Device :: getDeviceType() + ", " +
+                     getParameterType< Index >() + " >";
 };
 
 template< typename Real,

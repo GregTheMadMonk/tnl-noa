@@ -140,6 +140,8 @@ endif()
 # Check for some system header
 #
 find_path( SYS_TIME_INCLUDE_DIR sys/time.h  
+           /usr/include/x86_64-linux-gnu
+           /usr/include
            DOC "System timer headers." )
 if( ${SYS_TIME_INCLUDE_DIR} STREQUAL "SYS_TIME_INCLUDE_DIR-NOTFOUND" )
     message(  "Missing header file sys/time.h" )
@@ -149,7 +151,9 @@ else()
     set( HAVE_SYS_TIME_H "#define HAVE_SYS_TIME_H" )
 endif()
 
-find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h  
+find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h
+           /usr/include/x86_64-linux-gnu
+           /usr/include  
            DOC "System resources headers." )
 if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
     message( "Missing header file sys/time.h" )

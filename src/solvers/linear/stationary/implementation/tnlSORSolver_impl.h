@@ -20,7 +20,7 @@
 
 template< typename Matrix, typename Preconditioner >
 tnlSORSolver< Matrix, Preconditioner > :: tnlSORSolver()
-: sorOmega( 1.0 )
+: omega( 1.0 )
 {
 }
 
@@ -37,13 +37,13 @@ tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
 }
 
 template< typename Matrix, typename Preconditioner >
-void tnlSORSolver< Matrix, Preconditioner > :: setSOROmega( const Real& omega )
+void tnlSORSolver< Matrix, Preconditioner > :: setOmega( const RealType& omega )
 {
    this -> omega = omega;
 }
 
 template< typename Matrix, typename Preconditioner >
-Real tnlSORSolver< Matrix, Preconditioner > :: getSOROmega( ) const
+const typename tnlSORSolver< Matrix, Preconditioner > :: RealType& tnlSORSolver< Matrix, Preconditioner > :: getOmega( ) const
 {
    return this -> omega;
 }
@@ -68,30 +68,37 @@ template< typename Matrix, typename Preconditioner >
 bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                                       Vector& x )
 {
-   const Index size = matrix -> getSize();
+   const IndexType size = matrix -> getSize();
 
    this -> resetIterations();
-   this -> setResidue( max_residue + 1.0 );
+   this -> setResidue( this -> getMaxResidue() + 1.0 );
 
-   Real bNorm = b. lpNorm( ( Real ) 2.0 );
+   RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
    while( this -> getIterations() < this -> getMaxIterations() &&
           this -> getResidue() > this -> getMaxResidue() )
    {
-      matrix -> performSORIteration( this -> sorOmega,
+      matrix -> performSORIteration( this -> getOmega(),
                                      b,
                                      x,
                                      0,
                                      size );
-      if( this -> iteration % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( A, b, x, bNorm ) );
-      this -> nextIteration();
+      if( this -> getIterations() % 10 == 0 )
+         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+      if( ! this -> nextIteration() )
+         return false;
       this -> refreshSolverMonitor();
    }
-   this -> setResidue( ResidueGetter :: getResidue( A, b, x, bNorm ) );
+   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
       if( this -> getIterations() == this -> getMaxIterations() ) return false;
    return true;
 };
+
+template< typename Matrix, typename Preconditioner >
+tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
+{
+}
+
 
 #endif /* TNLSORSOLVER_IMPL_H_ */
