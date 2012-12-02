@@ -18,6 +18,7 @@
 #ifndef TNLITERATIVESOLVER_H_
 #define TNLITERATIVESOLVER_H_
 
+#include <float.h>
 #include <solvers/tnlSolverMonitor.h>
 
 template< typename Real, typename Index >
@@ -80,7 +81,7 @@ tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
 : maxIterations( 0 ),
   currentIteration( 0 ),
   maxResidue( 0 ),
-  minResidue( 1.0e+8 ),
+  minResidue( DBL_MAX ),
   currentResidue( 0 ),
   solverMonitor( 0 ),
   refreshRate( 1 )
@@ -112,7 +113,7 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
        this -> currentIteration % this -> refreshRate == 0 )
       solverMonitor -> refresh();
    this -> currentIteration ++;
-   if( this -> getResidue() > this -> getMinResidue() )
+   if( this -> getResidue() > this -> getMinResidue() && this -> currentIteration > 10 )
       return false;
    return true;
 }

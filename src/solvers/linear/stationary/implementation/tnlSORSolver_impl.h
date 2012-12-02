@@ -91,7 +91,7 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getIterations() == this -> getMaxIterations() ) return false;
+      if( this -> getResidue() > this -> getMaxResidue() ) return false;
    return true;
 };
 

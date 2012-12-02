@@ -750,9 +750,9 @@ typename Vector1 :: RealType getVectorSdot( const Vector1& v1,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType hostVectorSaxpy( Vector1& y,
-                                              const Vector2& x,
-                                              const typename Vector1 :: RealType& alpha )
+void hostVectorSaxpy( Vector1& y,
+                      const Vector2& x,
+                      const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -763,9 +763,9 @@ typename Vector1 :: RealType hostVectorSaxpy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType cudaVectorSaxpy( Vector1& y,
-                                              const Vector2& x,
-                                              const typename Vector1 :: RealType& alpha )
+void cudaVectorSaxpy( Vector1& y,
+                      const Vector2& x,
+                      const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -785,9 +785,9 @@ typename Vector1 :: RealType cudaVectorSaxpy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType vectorSaxpy( Vector1& y,
-                                          const Vector2& x,
-                                          const typename Vector1 :: RealType& alpha )
+void vectorSaxpy( Vector1& y,
+                  const Vector2& x,
+                  const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: DeviceType Device1;
    typedef typename Vector2 :: DeviceType Device2;
@@ -811,9 +811,9 @@ typename Vector1 :: RealType vectorSaxpy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType hostVectorSaxmy( Vector1& y,
-                                              const Vector2& x,
-                                              const typename Vector1 :: RealType& alpha )
+void hostVectorSaxmy( Vector1& y,
+                      const Vector2& x,
+                      const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -824,9 +824,9 @@ typename Vector1 :: RealType hostVectorSaxmy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType cudaVectorSaxmy( Vector1& y,
-                                              const Vector2& x,
-                                              const typename Vector1 :: RealType& alpha )
+void cudaVectorSaxmy( Vector1& y,
+                      const Vector2& x,
+                      const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -846,9 +846,9 @@ typename Vector1 :: RealType cudaVectorSaxmy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType vectorSaxmy( Vector1& y,
-                                          const Vector2& x,
-                                          const typename Vector1 :: RealType& alpha )
+void vectorSaxmy( Vector1& y,
+                  const Vector2& x,
+                  const typename Vector1 :: RealType& alpha )
 {
    typedef typename Vector1 :: DeviceType Device1;
    typedef typename Vector2 :: DeviceType Device2;
@@ -871,4 +871,69 @@ typename Vector1 :: RealType vectorSaxmy( Vector1& y,
    }
 }
 
+
+template< typename Vector1, typename Vector2 >
+void hostVectorSaxpsby( Vector1& y,
+                        const Vector2& x,
+                        const typename Vector1 :: RealType& alpha,
+                        const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   const Index n = y. getSize();
+   for( Index i = 0; i < n; i ++ )
+      y[ i ] = alpha * x[ i ] + beta *  y[ i ];
+}
+
+template< typename Vector1, typename Vector2 >
+void cudaVectorSaxpsby( Vector1& y,
+                        const Vector2& x,
+                        const typename Vector1 :: RealType& alpha,
+                        const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+#ifdef HAVE_CUDA
+   dim3 blockSize, gridSize;
+   blockSize. x = 512;
+   gridSize. x = x. getSize() / 512 + 1;
+
+   tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
+                                                          alpha,
+                                                          x. getData(),
+                                                          beta );
+#else
+   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+#endif
+}
+
+
+template< typename Vector1, typename Vector2 >
+void vectorSaxpsby( Vector1& y,
+                    const Vector2& x,
+                    const typename Vector1 :: RealType& alpha,
+                    const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: DeviceType Device1;
+   typedef typename Vector2 :: DeviceType Device2;
+
+   tnlAssert( y. getSize() > 0,
+              cerr << "Vector name is " << v1. getName() );
+   tnlAssert( y. getSize() == x. getSize(),
+              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
+              cerr << "Vector names are " << y. getName() << " and " << x. getName() );
+
+   switch( Device1 :: getDevice() )
+   {
+      case tnlHostDevice:
+         return hostVectorSaxpsby( y, x, alpha, beta );
+         break;
+      case tnlCudaDevice:
+         return cudaVectorSaxpsby( y, x, alpha, beta );
+         break;
+   }
+}
 #endif /* VECTOROPERATIONS_H_ */

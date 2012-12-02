@@ -26,6 +26,7 @@
 #include <matrix/tnlCSRMatrix.h>
 #include <solvers/tnlSimpleIterativeSolverMonitor.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
+#include <solvers/linear/krylov/tnlCGSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 
 #include "tnlConfig.h"
@@ -46,19 +47,21 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    const IndexType& size = matrix. getSize();
    const IndexType nonZeros = matrix. getNonzeroElements();
    //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
-   const IndexType maxIterations = 2 * size;
+   const IndexType maxIterations = size;
    cout << "Setting max. number of iterations to " << maxIterations << endl;
 
    solver. setMatrix( matrix );
    solver. setMaxIterations( maxIterations );
    solver. setMaxResidue( maxResidue );
+   solver. setMinResidue( 1.0e9 );
    tnlSimpleIterativeSolverMonitor< RealType, IndexType > solverMonitor;
    solverMonitor. setSolver( solver );
    solver. setSolverMonitor( solverMonitor );
    solver. setRefreshRate( 10 );
    solverMonitor. resetTimers();
-   bool testSuccesfull = solver. solve( b, x );
+   solver. solve( b, x );
 
+   bool solverConverged( solver. getResidue() < maxResidue );
    tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
    fstream logFile;
    if( logFileName != "" )
@@ -68,23 +71,22 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
          cerr << "Unable to open the log file " << logFileName << endl;
       else
       {
-         if( testSuccesfull )
+         tnlString bgColor( "#FF0000" );
+         if( solver. getResidue() < 1 )
+            bgColor="#FF8888";
+         if( solver. getResidue() < maxResidue )
          {
-            double cpuTime = solverMonitor. getCPUTime();
-            double realTime = solverMonitor. getRealTime();
-            logFile << "             <td> " << solver. getResidue() << " </td> " << endl
-                    << "             <td> " << solver. getIterations() << " </td> " << endl
-                    << "             <td> " << cpuTime << " </td> " << endl
-                    << "             <td> " << realTime << " </td> " << endl;
+            bgColor="#88FF88";
          }
-         else
-         {
-            logFile << "Solver diverged." << endl;
-         }
+         double cpuTime = solverMonitor. getCPUTime();
+         double realTime = solverMonitor. getRealTime();
+         logFile << "             <td bgcolor=" << bgColor << "> " << solver. getResidue() << " </td> " << endl
+                 << "             <td bgcolor=" << bgColor << "> " << solver. getIterations() << " </td> " << endl
+                 << "             <td bgcolor=" << bgColor << "> " << cpuTime << " </td> " << endl;
          logFile. close();
       }
    }
-   return testSuccesfull;
+   return solverConverged;
 }
 
 template< typename Matrix, typename Vector >
@@ -101,22 +103,27 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
    IndexType iterations( 0 );
    RealType residue( 0.0 );
    bool converged( false );
-   if( solverName == "gmres" )
-   {
-      tnlGMRESSolver< Matrix, DeviceType > gmresSolver;
-      const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
-      gmresSolver. setRestarting( gmresRestarting );
-      if( ! benchmarkSolver( parameters, gmresSolver, matrix, b, x ) )
-         return false;
-   }
    if( solverName == "sor" )
    {
       tnlSORSolver< Matrix, DeviceType > sorSolver;
       const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
       sorSolver. setOmega( sorOmega );
-      if( ! benchmarkSolver( parameters, sorSolver, matrix, b, x ) )
-         return false;
+      return benchmarkSolver( parameters, sorSolver, matrix, b, x );
    }
+   if( solverName == "cg" )
+   {
+      tnlCGSolver< Matrix, DeviceType > cgSolver;
+      return benchmarkSolver( parameters, cgSolver, matrix, b, x );
+   }
+   if( solverName == "gmres" )
+   {
+      tnlGMRESSolver< Matrix, DeviceType > gmresSolver;
+      const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
+      gmresSolver. setRestarting( gmresRestarting );
+      return benchmarkSolver( parameters, gmresSolver, matrix, b, x );
+   }
+   cerr << "Unknown solver " << solverName << endl;
+   return false;
 }
 
 
@@ -133,6 +140,24 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    {
       cerr << "Unable to load file " << inputFile << endl;
       return false;
+   }
+
+   /****
+    * Writing matrix statistics
+    */
+   tnlString matrixStatsFileName = parameters. GetParameter< tnlString >( "matrix-stats-file" );
+   if( matrixStatsFileName )
+   {
+      fstream matrixStatsFile;
+      matrixStatsFile. open( matrixStatsFileName. getString(), ios :: out );
+      if( ! matrixStatsFile )
+      {
+         cerr << "Unable to open matrix statistics file " << matrixStatsFileName << endl;
+         return false;
+      }
+      matrixStatsFile << "             <td> " << csrMatrix. getSize() << " </td> " << endl
+                      << "             <td> " << csrMatrix. getNonzeroElements() << " </td> " << endl;
+      matrixStatsFile. close();
    }
 
    /****

@@ -21,11 +21,11 @@
 #include <math.h>
 #include <solvers/tnlMatrixSolver.h>
 
-template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
 {
    public:
 
-   tnlCGSolver()
+   tnlCGSolverOld()
    : r( 0 ), new_r( 0 ), p( 0 ), Ap( 0 ), size( 0 )
    {};
    
@@ -111,7 +111,7 @@ template< typename T > class tnlCGSolver : public tnlMatrixSolver< T >
          tnlMatrixSolver< T > :: PrintOut();
    };
 
-   ~tnlCGSolver()
+   ~tnlCGSolverOld()
    {
       FreeSupportingArrays();
    };

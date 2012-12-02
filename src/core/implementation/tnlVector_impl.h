@@ -239,9 +239,20 @@ template< typename Real,
           typename Index >
 template< typename Vector >
 void tnlVector< Real, Device, Index > :: saxmy( const Real& alpha,
-                                                      const Vector& x )
+                                                const Vector& x )
 {
    vectorSaxmy( *this, x, alpha );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlVector< Real, Device, Index > :: saxpsby( const Real& alpha,
+                                                  const Vector& x,
+                                                  const Real& beta )
+{
+      vectorSaxpsby( *this, x, alpha, beta );
 }
 
 #endif /* TNLVECTOR_H_IMPLEMENTATION */

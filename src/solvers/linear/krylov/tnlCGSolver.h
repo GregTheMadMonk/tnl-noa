@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGMRESSolver.h  -  description
+                          tnlCGSolver.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -15,9 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlGMRESSolverH
-#define tnlGMRESSolverH
-
+#ifndef tnlCGSolverH
+#define tnlCGSolverH
 
 #include <math.h>
 #include <core/tnlObject.h>
@@ -25,14 +24,16 @@
 #include <core/tnlSharedVector.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
+#include <solvers/linear/tnlLinearResidueGetter.h>
 
 template< typename Matrix,
            typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
                                                                 typename Matrix :: Device,
                                                                 typename Matrix :: IndexType> >
-class tnlGMRESSolver : public tnlObject,
-                        public tnlIterativeSolver< typename Matrix :: RealType,
-                                                    typename Matrix :: IndexType >
+
+class tnlCGSolver : public tnlObject,
+                    public tnlIterativeSolver< typename Matrix :: RealType,
+                                               typename Matrix :: IndexType >
 {
    public:
 
@@ -42,54 +43,31 @@ class tnlGMRESSolver : public tnlObject,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
-   tnlGMRESSolver();
 
+   tnlCGSolver();
+   
    tnlString getType() const;
-
-   void setRestarting( IndexType rest );
 
    void setMatrix( const MatrixType& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
-   template< typename Vector >
+   template< typename Vector,
+             typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~tnlGMRESSolver();
+   ~tnlCGSolver();
 
    protected:
 
-   void update( IndexType k,
-                 IndexType m,
-                 const tnlVector< RealType, tnlHost, IndexType >& H,
-                 const tnlVector< RealType, tnlHost, IndexType >& s,
-                 tnlVector< RealType, Device, IndexType >& v,
-                 tnlVector< RealType, Device, IndexType >& x );
+   bool setSize( IndexType size );
 
-   void generatePlaneRotation( RealType &dx,
-                                  RealType &dy,
-                                  RealType &cs,
-                                  RealType &sn );
-
-   void applyPlaneRotation( RealType &dx,
-                               RealType &dy,
-                               RealType &cs,
-                               RealType &sn );
-
-
-   bool setSize( IndexType _size, IndexType m );
-
-   tnlVector< RealType, Device, IndexType > _r, _w, _v, _M_tmp;
-   tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
-
-   IndexType size, restarting, maxIterations;
-
-   RealType maxResidue;
+   tnlVector< RealType, Device, IndexType >  r, new_r, p, Ap;
 
    const MatrixType* matrix;
    const PreconditionerType* preconditioner;
 };
 
-#include <solvers/linear/krylov/implementation/tnlGMRESSolver_impl.h>
+#include <solvers/linear/krylov/implementation/tnlCGSolver_impl.h>
 
 #endif

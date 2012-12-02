@@ -260,7 +260,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          return false;
    }
    this -> refreshSolverMonitor();
-   if( this -> getIterations() == this -> getMaxIterations() ) return false;
+   if( this -> getResidue() >this -> getMaxResidue() ) return false;
    return true;
 };
 

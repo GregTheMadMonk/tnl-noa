@@ -84,22 +84,31 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    void scalarMultiplication( const Real& alpha );
 
-   //! Compute scalar dot product
+   //! Computes scalar dot product
    template< typename Vector >
    Real sdot( const Vector& v );
 
-   //! Compute SAXPY operation (Scalar Alpha X Pus Y ).
+   //! Computes SAXPY operation (Y = Scalar Alpha X Plus Y ).
    template< typename Vector >
    void saxpy( const Real& alpha,
                const Vector& x );
 
-   //! Compute SAXMY operation (Scalar Alpha X Minus Y ).
+   //! Computes SAXMY operation (Y = Scalar Alpha X Minus Y ).
    /*!**
-    * It is not a standart BLAS function but is useful for GMRES solver.
+    * It is not a standard BLAS function but is useful for linear solvers.
     */
    template< typename Vector >
    void saxmy( const Real& alpha,
                const Vector& x );
+
+   //! Computes Y = Scalar Alpha X Plus Scalar Beta Y
+   /*!**
+    * It is not standard BLAS function as well.
+    */
+   template< typename Vector >
+   void saxpsby( const Real& alpha,
+                 const Vector& x,
+                 const Real& beta );
 };
 
 #include <core/implementation/tnlVector_impl.h>

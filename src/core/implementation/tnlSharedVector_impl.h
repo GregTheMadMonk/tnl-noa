@@ -218,4 +218,17 @@ void tnlSharedVector< Real, Device, Index > :: saxmy( const Real& alpha,
    vectorSaxmy( *this, x, alpha );
 }
 
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlSharedVector< Real, Device, Index > :: saxpsby( const Real& alpha,
+                                                        const Vector& x,
+                                                        const Real& beta )
+{
+      vectorSaxpsbz( *this, x, alpha, beta );
+}
+
+
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */
