@@ -5,9 +5,12 @@ BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
 MATRIX_SOLVERS_BENCHMARK="tnl-matrix-solvers-benchmark-dbg"
 STOP_TIME="1"
 
-SOLVERS="gmres sor"
+SOLVERS="sor cg bicgstab gmres"
+#SOLVERS="cg"
 SOR_OMEGAS="0.4 0.8 1.2 1.6 2.0"
 GMRES_RESTARTINGS="8 16 32 64 128 256"
+
+LOG_FILE="matrix-solvers-benchmark.html"
 
 export CUDA_PROFILE=0
 export CUDA_PROFILE_CONFIG="$TNL_SOURCE_DIR/tests/cuda-profiler.conf"
@@ -24,11 +27,36 @@ export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-m
 benchmark_matrix()
 # $1 input file
 # $2 input mtx file
-# $3 verbose
+# $3 complete log file
+# $4 verbose
 {
+   echo "          <tr>" >> $3
+   echo "             <td>$2</td>" >> $3
+   $MATRIX_SOLVERS_BENCHMARK --input-file $1 \
+                             --input-mtx-file $2 \
+                             --solver-name none\
+                             --matrix-stats-file matrix-stats.html \
+                             --verbose $4
+   cat matrix-stats.html >> $3
    for solver in $SOLVERS;
    do     
       echo "Testing with $solver solver." 
+      if [ x$solver == xcg ] || [ x$solver == xbicgstab ];
+      then
+         logfile="$2.results.$solver.log"
+         if test ! -e $logfile;
+         then
+            $MATRIX_SOLVERS_BENCHMARK --input-file $1 \
+                                      --input-mtx-file $2 \
+                                      --solver-name $solver \
+                                      --log-file $logfile \
+                                      --verbose $4
+            echo ""
+         else
+            echo "Test has already passed."
+         fi
+         cat $logfile >> $3
+      fi
       if test x$solver == xsor;
       then
          for omega in $SOR_OMEGAS;
@@ -42,11 +70,12 @@ benchmark_matrix()
                                          --solver-name $solver \
                                          --sor-omega $omega \
                                          --log-file $logfile \
-                                         --verbose $3
+                                         --verbose $4
                echo ""
             else
                echo "Test has already passed."
             fi
+            cat $logfile >> $3
          done
       fi
       if test x$solver == xgmres;
@@ -62,14 +91,16 @@ benchmark_matrix()
                                          --solver-name $solver \
                                          --gmres-restarting $gmres_restarting \
                                          --log-file $logfile \
-                                         --verbose $3
+                                         --verbose $4
                echo ""
             else
                echo "Test has already passed."
             fi
+            cat $logfile >> $3
          done
       fi
    done
+   echo "          </tr>" >> $3
 }
 
 write_log_header()
@@ -79,20 +110,24 @@ write_log_header()
    echo "   <body>" >> $1
    echo "      <table border=1>" >> $1
    echo "          <tr>" >> $1
-   echo "             <td rowspan=4 colspan=3 align=center>Matrix</td>" >> $1
-   echo "             <td rowspan=4 colspan=15 align=center>SOR</td>" >> $1
-   echo "             <td rowspan=4 colspan=18 align=center>GMRES</td>" >> $1
+   echo "             <td rowspan=1 colspan=3 align=center>Matrix</td>" >> $1
+   echo "             <td rowspan=1 colspan=15 align=center>SOR</td>" >> $1
+   echo "             <td rowspan=2 colspan=3 align=center>CG</td>" >> $1
+   echo "             <td rowspan=2 colspan=3 align=center>BICGStab</td>" >> $1
+   echo "             <td rowspan=1 colspan=18 align=center>GMRES</td>" >> $1
    echo "          </tr>" >> $1
          
    echo "          <tr>" >> $1
-   echo "             <td>Name</td>" >> $1                      # Matrix description
-   echo "             <td>Size</td>" >> $1
-   echo "             <td>NonZeros No.</td>" >> $1
+   echo "             <td rowspan=2>Name</td>" >> $1                      # Matrix description
+   echo "             <td rowspan=2>Size</td>" >> $1
+   echo "             <td rowspan=2>NonZeros No.</td>" >> $1
    echo "             <td colspan=3>0.4</td>" >> $1                      # SOR Omegas
    echo "             <td colspan=3>0.8</td>" >> $1                      # SOR Omegas
    echo "             <td colspan=3>1.2</td>" >> $1                      # SOR Omegas
    echo "             <td colspan=3>1.6</td>" >> $1                      # SOR Omegas
    echo "             <td colspan=3>2.0</td>" >> $1                      # SOR Omegas
+#   echo "             <td colspan=3></td>" >> $1                         # CG
+#   echo "             <td colspan=3></td>" >> $1                         # BICGStab
    echo "             <td colspan=3>8</td>" >> $1                        # GMRES restartings
    echo "             <td colspan=3>16</td>" >> $1                       # GMRES restartings
    echo "             <td colspan=3>32</td>" >> $1                       # GMRES restartings
@@ -115,6 +150,12 @@ write_log_header()
    echo "             <td>Iterations</td>" >> $1
    echo "             <td>CPU</td>" >> $1
    echo "             <td>Residue</td>" >> $1                           # SOR Results omega = 2.0
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # CG
+   echo "             <td>Iterations</td>" >> $1
+   echo "             <td>CPU</td>" >> $1
+   echo "             <td>Residue</td>" >> $1                           # BICGStab
    echo "             <td>Iterations</td>" >> $1
    echo "             <td>CPU</td>" >> $1
    echo "             <td>Residue</td>" >> $1                           # GMRES Results restarting 8
@@ -146,7 +187,7 @@ close_log()
    echo "</html>" >> $1
 }
 
-write_log_header matrix-solvers-benchmark.log
+write_log_header $LOG_FILE
 
 for link in $MM_MATRICES;
 do
@@ -166,7 +207,7 @@ do
          gunzip -f $matrix
          echo "Checking with the matrix $unzipped_matrix in double precison ..."
          export CUDA_PROFILE_LOG=$unzipped_matrix.double.log 
-         benchmark_matrix $unzipped_matrix.double.bin.bz2 $unzipped_matrix 1
+         benchmark_matrix $unzipped_matrix.double.bin.bz2 $unzipped_matrix $LOG_FILE 1
          gzip $unzipped_matrix
       fi          
    fi
@@ -195,7 +236,7 @@ do
             echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'."
          else   
             echo "Checking with the matrix $file ..."
-            benchmark_matrix $file.double.bin.bz2 $file 1                        
+            benchmark_matrix $file.double.bin.bz2 $file $LOG_FILE 1                        
          fi                           
          rm $file         
       done
