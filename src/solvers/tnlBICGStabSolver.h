@@ -15,18 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlBICGStabSolverH
-#define tnlBICGStabSolverH
+#ifndef tnlBICGStabSolverOldH
+#define tnlBICGStabSolverOldH
 
 
 #include <math.h>
 #include <solvers/tnlMatrixSolver.h>
 
-template< typename T > class tnlBICGStabSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
 {
    public:
 
-   tnlBICGStabSolver()
+   tnlBICGStabSolverOld()
    : r( 0 ), r_ast( 0 ), r_new( 0 ), p( 0 ), s( 0 ), Ap( 0 ), As( 0 ), M_tmp( 0 ),
      size( 0 )
    {
@@ -178,7 +178,7 @@ template< typename T > class tnlBICGStabSolver : public tnlMatrixSolver< T >
          tnlMatrixSolver< T > :: PrintOut();
    };
 
-   ~tnlBICGStabSolver()
+   ~tnlBICGStabSolverOld()
    {
       FreeSupportingArrays();
    };

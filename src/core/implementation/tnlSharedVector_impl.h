@@ -227,8 +227,33 @@ void tnlSharedVector< Real, Device, Index > :: saxpsby( const Real& alpha,
                                                         const Vector& x,
                                                         const Real& beta )
 {
-      vectorSaxpsbz( *this, x, alpha, beta );
+      vectorSaxpsby( *this, x, alpha, beta );
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlSharedVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
+                                                        const Vector& x,
+                                                        const Real& beta,
+                                                        const Vector& z )
+{
+      vectorSaxpsbz( *this, x, alpha, z, beta );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlSharedVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
+                                                          const Vector& x,
+                                                          const Real& beta,
+                                                          const Vector& z )
+{
+      vectorSaxpsbz( *this, x, alpha, z, beta );
+}
+
 
 
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */

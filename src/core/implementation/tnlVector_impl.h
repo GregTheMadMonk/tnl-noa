@@ -255,4 +255,30 @@ void tnlVector< Real, Device, Index > :: saxpsby( const Real& alpha,
       vectorSaxpsby( *this, x, alpha, beta );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
+                                                  const Vector& x,
+                                                  const Real& beta,
+                                                  const Vector& z )
+{
+      vectorSaxpsbz( *this, x, alpha, z, beta );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void tnlVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
+                                                    const Vector& x,
+                                                    const Real& beta,
+                                                    const Vector& z )
+{
+      vectorSaxpsbzpy( *this, x, alpha, z, beta );
+}
+
+
+
 #endif /* TNLVECTOR_H_IMPLEMENTATION */

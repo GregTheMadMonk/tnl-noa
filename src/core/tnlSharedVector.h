@@ -103,6 +103,28 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    void saxpsby( const Real& alpha,
                  const Vector& x,
                  const Real& beta );
+
+   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z
+   /*!**
+    * It is not standard BLAS function as well.
+    */
+   template< typename Vector >
+   void saxpsbz( const Real& alpha,
+                 const Vector& x,
+                 const Real& beta,
+                 const Vector& z );
+
+   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
+   /*!**
+    * It is not standard BLAS function as well.
+    */
+   template< typename Vector >
+   void saxpsbzpy( const Real& alpha,
+                   const Vector& x,
+                   const Real& beta,
+                   const Vector& z );
+
+
 };
 
 #include <core/implementation/tnlSharedVector_impl.h>

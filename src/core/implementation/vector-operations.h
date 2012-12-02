@@ -871,7 +871,6 @@ void vectorSaxmy( Vector1& y,
    }
 }
 
-
 template< typename Vector1, typename Vector2 >
 void hostVectorSaxpsby( Vector1& y,
                         const Vector2& x,
@@ -936,4 +935,144 @@ void vectorSaxpsby( Vector1& y,
          break;
    }
 }
+
+template< typename Vector1, typename Vector2 >
+void hostVectorSaxpsbz( Vector1& y,
+                        const Vector2& x,
+                        const typename Vector1 :: RealType& alpha,
+                        const Vector2& z,
+                        const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   const Index n = y. getSize();
+   for( Index i = 0; i < n; i ++ )
+      y[ i ] = alpha * x[ i ] + beta *  z[ i ];
+}
+
+template< typename Vector1, typename Vector2 >
+void cudaVectorSaxpsbz( Vector1& y,
+                        const Vector2& x,
+                        const typename Vector1 :: RealType& alpha,
+                        const Vector2& z,
+                        const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+#ifdef HAVE_CUDA
+   dim3 blockSize, gridSize;
+   blockSize. x = 512;
+   gridSize. x = x. getSize() / 512 + 1;
+
+   tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
+                                                          alpha,
+                                                          x. getData(),
+                                                          beta,
+                                                          z. getData() );
+#else
+   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+#endif
+}
+
+
+template< typename Vector1, typename Vector2 >
+void vectorSaxpsbz( Vector1& y,
+                    const Vector2& x,
+                    const typename Vector1 :: RealType& alpha,
+                    const Vector2& z,
+                    const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: DeviceType Device1;
+   typedef typename Vector2 :: DeviceType Device2;
+
+   tnlAssert( y. getSize() > 0,
+              cerr << "Vector name is " << v1. getName() );
+   tnlAssert( y. getSize() == x. getSize(),
+              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
+              cerr << "Vector names are " << y. getName() << " and " << x. getName() );
+
+   switch( Device1 :: getDevice() )
+   {
+      case tnlHostDevice:
+         return hostVectorSaxpsbz( y, x, alpha, z, beta );
+         break;
+      case tnlCudaDevice:
+         return cudaVectorSaxpsbz( y, x, alpha, z, beta );
+         break;
+   }
+}
+
+template< typename Vector1, typename Vector2 >
+void hostVectorSaxpsbzpy( Vector1& y,
+                          const Vector2& x,
+                          const typename Vector1 :: RealType& alpha,
+                          const Vector2& z,
+                          const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   const Index n = y. getSize();
+   for( Index i = 0; i < n; i ++ )
+      y[ i ] += alpha * x[ i ] + beta *  z[ i ];
+}
+
+template< typename Vector1, typename Vector2 >
+void cudaVectorSaxpsbzpy( Vector1& y,
+                          const Vector2& x,
+                          const typename Vector1 :: RealType& alpha,
+                          const Vector2& z,
+                          const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+#ifdef HAVE_CUDA
+   dim3 blockSize, gridSize;
+   blockSize. x = 512;
+   gridSize. x = x. getSize() / 512 + 1;
+
+   tnlVectorCUDASaxpsbzpyKernel<<< gridSize, blockSize >>>( y. getSize(),
+                                                          alpha,
+                                                          x. getData(),
+                                                          beta,
+                                                          z. getData() );
+#else
+   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+#endif
+}
+
+
+template< typename Vector1, typename Vector2 >
+void vectorSaxpsbzpy( Vector1& y,
+                      const Vector2& x,
+                      const typename Vector1 :: RealType& alpha,
+                      const Vector2& z,
+                      const typename Vector1 :: RealType& beta )
+{
+   typedef typename Vector1 :: DeviceType Device1;
+   typedef typename Vector2 :: DeviceType Device2;
+
+   tnlAssert( y. getSize() > 0,
+              cerr << "Vector name is " << v1. getName() );
+   tnlAssert( y. getSize() == x. getSize(),
+              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
+              cerr << "Vector names are " << y. getName() << " and " << x. getName() );
+
+   switch( Device1 :: getDevice() )
+   {
+      case tnlHostDevice:
+         return hostVectorSaxpsbzpy( y, x, alpha, z, beta );
+         break;
+      case tnlCudaDevice:
+         return cudaVectorSaxpsbzpy( y, x, alpha, z, beta );
+         break;
+   }
+}
+
+
 #endif /* VECTOROPERATIONS_H_ */

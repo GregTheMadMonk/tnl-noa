@@ -55,11 +55,10 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
 {
    if( ! this -> setSize( matrix -> getSize() ) ) return false;
 
-   RealType alpha, beta, s1, s2;
-
    this -> resetIterations();
    this -> setResidue( this -> getMaxResidue() + 1.0 );
 
+   RealType alpha, beta, s1, s2;
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
    // r_0 = b - A x_0, p_0 = r_0

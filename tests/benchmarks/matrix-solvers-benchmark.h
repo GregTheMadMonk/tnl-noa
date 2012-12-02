@@ -27,6 +27,7 @@
 #include <solvers/tnlSimpleIterativeSolverMonitor.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
 #include <solvers/linear/krylov/tnlCGSolver.h>
+#include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 
 #include "tnlConfig.h"
@@ -105,22 +106,27 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
    bool converged( false );
    if( solverName == "sor" )
    {
-      tnlSORSolver< Matrix, DeviceType > sorSolver;
+      tnlSORSolver< Matrix, DeviceType > solver;
       const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
-      sorSolver. setOmega( sorOmega );
-      return benchmarkSolver( parameters, sorSolver, matrix, b, x );
+      solver. setOmega( sorOmega );
+      return benchmarkSolver( parameters, solver, matrix, b, x );
    }
    if( solverName == "cg" )
    {
-      tnlCGSolver< Matrix, DeviceType > cgSolver;
-      return benchmarkSolver( parameters, cgSolver, matrix, b, x );
+      tnlCGSolver< Matrix, DeviceType > solver;
+      return benchmarkSolver( parameters, solver, matrix, b, x );
+   }
+   if( solverName == "bicgstab" )
+   {
+      tnlBICGStabSolver< Matrix, DeviceType > solver;
+      return benchmarkSolver( parameters, solver, matrix, b, x );
    }
    if( solverName == "gmres" )
    {
-      tnlGMRESSolver< Matrix, DeviceType > gmresSolver;
+      tnlGMRESSolver< Matrix, DeviceType > solver;
       const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
-      gmresSolver. setRestarting( gmresRestarting );
-      return benchmarkSolver( parameters, gmresSolver, matrix, b, x );
+      solver. setRestarting( gmresRestarting );
+      return benchmarkSolver( parameters, solver, matrix, b, x );
    }
    cerr << "Unknown solver " << solverName << endl;
    return false;
