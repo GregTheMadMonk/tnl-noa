@@ -20,6 +20,7 @@
 
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
+#include <core/implementation/memory-functions.h>
 
 class tnlHost
 {

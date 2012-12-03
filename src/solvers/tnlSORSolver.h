@@ -103,7 +103,7 @@ bool tnlSORSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Dev
                               size );
       if( this -> iteration % 10 == 0 )
       {
-         this -> residue = getResidue( A, b, x, bNorm );
+         this -> residue = this -> getResidue( A, b, x, bNorm );
          if( this -> verbosity > 1 )
             this -> printOut();
       }
@@ -111,7 +111,7 @@ bool tnlSORSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Dev
    }
    if( this -> verbosity > 0 )
    {
-      this -> residue = getResidue( A, b, x, bNorm );
+      this -> residue = this -> getResidue( A, b, x, bNorm );
       this -> printOut();
    }
    if( this -> iteration <= max_iterations ) return true;
