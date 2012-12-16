@@ -106,6 +106,12 @@ class tnlCSRMatrix : public tnlMatrix< Real, Dev, Index >
    Real getElement( Index row,
                     Index column ) const;
 
+   Index getRowLength( const Index row ) const;
+
+   const Index* getRowColumnIndexes( const Index row ) const;
+
+   const Real* getRowValues( const Index row ) const;
+
    Real rowProduct( Index row,
                     const tnlVector< Real, Device, Index >& vector ) const;
 
@@ -152,11 +158,11 @@ class tnlCSRMatrix : public tnlMatrix< Real, Dev, Index >
                           Index& max_row_length,
                           Index& average_row_length ) const;
 
+
+
    protected:
 
    enum elementOperation { set_element, add_to_element };
-
-   Index getRowLength( Index row ) const;
 
    //! This method creates free space for inserting new elements.
    /*!
@@ -329,7 +335,7 @@ Index tnlCSRMatrix< Real, Device, Index > :: checkNonzeroElements() const
 }
 
 template< typename Real, typename Device, typename Index >
-Index tnlCSRMatrix< Real, Device, Index > :: getRowLength( Index row ) const
+Index tnlCSRMatrix< Real, Device, Index > :: getRowLength( const Index row ) const
 {
 	tnlAssert( row >= 0 && row < this -> getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
@@ -527,6 +533,18 @@ Real tnlCSRMatrix< Real, Device, Index > :: getElement( Index row,
    if( i < row_offsets[ row + 1 ] && cols[ i ] == column )
       return els[ i ];
    return Real( 0.0 );
+}
+
+template< typename Real, typename Device, typename Index >
+const Index* tnlCSRMatrix< Real, Device, Index > :: getRowColumnIndexes( const Index row ) const
+{
+   return &columns[ row_offsets[ row ] ];
+}
+
+template< typename Real, typename Device, typename Index >
+const Real* tnlCSRMatrix< Real, Device, Index > :: getRowValues( const Index row ) const
+{
+   return &nonzero_elements[ row_offsets[ row ] ];
 }
 
 template< typename Real, typename Device, typename Index >

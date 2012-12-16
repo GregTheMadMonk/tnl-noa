@@ -19,14 +19,18 @@ ENDIF()
 TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${debugExt}-${tnlVersion}
                                                               ${CUSPARSE_LIBRARY} )
 
-IF( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-matrix-solvers-benchmark${debugExt} matrix-solvers-benchmark.cu )
-    #SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )        
-ELSE()
-    ADD_EXECUTABLE( tnl-matrix-solvers-benchmark${debugExt} matrix-solvers-benchmark.cpp )
-    #SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-ENDIF()
-TARGET_LINK_LIBRARIES( tnl-matrix-solvers-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
+if( BUILD_MPI )
+   IF( BUILD_CUDA )
+       CUDA_ADD_EXECUTABLE( tnl-matrix-solvers-benchmark${debugExt} matrix-solvers-benchmark.cu )
+       SET_TARGET_PROPERTIES( tnl-matrix-solvers-benchmark${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${PETSC_CXX_FLAGS}" )        
+   ELSE()
+       ADD_EXECUTABLE( tnl-matrix-solvers-benchmark${debugExt} matrix-solvers-benchmark.cpp )
+       SET_TARGET_PROPERTIES( tnl-matrix-solvers-benchmark${debugExt} PROPERTIES COMPILE_FLAGS "${PETSC_CXX_FLAGS}" )
+   ENDIF()
+   TARGET_LINK_LIBRARIES( tnl-matrix-solvers-benchmark${debugExt} tnl-mpi${debugExt}-${tnlVersion}
+                                                                  ${MPI_LIBRARIES}
+                                                                  ${PETSC_LIBRARY} )
+endif()                                                                  
 
 
 INSTALL( TARGETS tnl-sparse-matrix-benchmark${debugExt}

@@ -29,9 +29,33 @@
 #include <solvers/linear/krylov/tnlCGSolver.h>
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
+#include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#ifdef HAVE_PETSC
+   #include <petsc.h>
+#endif
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg.desc";
+
+void writeTestFailToLog( const tnlParameterContainer& parameters )
+{
+   const tnlString& logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   fstream logFile;
+   if( logFileName != "" )
+   {
+      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      if( ! logFile )
+         cerr << "Unable to open the log file " << logFileName << endl;
+      else
+      {
+         tnlString bgColor( "#FF0000" );
+         logFile << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl
+                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl
+                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl;
+         logFile. close();
+      }
+   }
+}
 
 template< typename Solver, typename Matrix, typename Vector >
 bool benchmarkSolver( const tnlParameterContainer&  parameters,
@@ -63,7 +87,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    solver. solve( b, x );
 
    bool solverConverged( solver. getResidue() < maxResidue );
-   tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   const tnlString& logFileName = parameters. GetParameter< tnlString >( "log-file" );
    fstream logFile;
    if( logFileName != "" )
    {
@@ -88,6 +112,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
       }
    }
    return solverConverged;
+
 }
 
 template< typename Matrix, typename Vector >
@@ -100,36 +125,120 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
    typedef typename Matrix :: Device DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
-   const tnlString& solverName = parameters. GetParameter< tnlString >( "solver-name" );
-   IndexType iterations( 0 );
-   RealType residue( 0.0 );
-   bool converged( false );
-   if( solverName == "sor" )
+   const tnlString& solverClass = parameters. GetParameter< tnlString >( "solver-class" );
+   if( solverClass == "tnl" )
    {
-      tnlSORSolver< Matrix, DeviceType > solver;
-      const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
-      solver. setOmega( sorOmega );
-      return benchmarkSolver( parameters, solver, matrix, b, x );
+      const tnlString& solverName = parameters. GetParameter< tnlString >( "solver-name" );
+      IndexType iterations( 0 );
+      RealType residue( 0.0 );
+      bool converged( false );
+      if( solverName == "sor" )
+      {
+         tnlSORSolver< Matrix, DeviceType > solver;
+         const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
+         solver. setOmega( sorOmega );
+         return benchmarkSolver( parameters, solver, matrix, b, x );
+      }
+      if( solverName == "cg" )
+      {
+         tnlCGSolver< Matrix, DeviceType > solver;
+         return benchmarkSolver( parameters, solver, matrix, b, x );
+      }
+      if( solverName == "bicgstab" )
+      {
+         tnlBICGStabSolver< Matrix, DeviceType > solver;
+         return benchmarkSolver( parameters, solver, matrix, b, x );
+      }
+      if( solverName == "gmres" )
+      {
+         tnlGMRESSolver< Matrix, DeviceType > solver;
+         const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
+         solver. setRestarting( gmresRestarting );
+         return benchmarkSolver( parameters, solver, matrix, b, x );
+      }
+      if( solverName == "tfqmr" )
+      {
+         tnlTFQMRSolver< Matrix, DeviceType > solver;
+         return benchmarkSolver( parameters, solver, matrix, b, x );
+      }
+      cerr << "Unknown solver " << solverName << endl;
+      return false;
    }
-   if( solverName == "cg" )
+   if( solverClass == "petsc" )
    {
-      tnlCGSolver< Matrix, DeviceType > solver;
-      return benchmarkSolver( parameters, solver, matrix, b, x );
+#ifndef HAVE_PETSC
+      cerr << "PETSC is not installed on this system." << endl;
+      writeTestFailToLog( parameters );
+      return false;
+#else
+      if( DeviceType :: getDeviceType() != "tnlHost" )
+      {
+         cerr << "PETSC tests can run only on host. The current device is " << DeviceType :: getDeviceType() << endl;
+         writeTestFailToLog( parameters );
+         return false;
+      }
+      /****
+       * Set-up the PETSC matrix
+       */
+      const IndexType n = matrix. getSize();
+      Mat A;
+      MatCreate( PETSC_COMM_WORLD, &A );
+      MatSetType( A, MATAIJ );
+      MatSetSizes( A, PETSC_DECIDE, PETSC_DECIDE, n, n );
+      MatSetUp( A );
+
+      /****
+       * Inserting data
+       */
+      tnlArray< PetscScalar > petscVals;
+      tnlArray< PetscInt > petscCols;
+      petscVals. setSize( n );
+      petscCols. setSize( n );
+      for( IndexType i = 0; i < n; i ++ )
+      {
+         const IndexType rowLength = matrix. getRowLength( i );
+         for( IndexType j = 0; j < rowLength; j ++ )
+         {
+            petscVals. setElement( j, matrix. getRowValues( i )[ j ] );
+            petscCols. setElement( j, matrix. getRowColumnIndexes( i )[ j ] );
+         }
+         MatSetValues( A,
+                       1,  // setting one row
+                       &i, // index of thew row
+                       rowLength,
+                       petscCols. getData(),
+                       petscVals. getData(),
+                       INSERT_VALUES );
+      }
+      MatAssemblyBegin( A, MAT_FINAL_ASSEMBLY );
+      MatAssemblyEnd( A, MAT_FINAL_ASSEMBLY );
+
+      /****
+       * Check matrix conversion
+       */
+      /*for( IndexType i = 0; i < n; i++ )
+         for( IndexType j = 0; j < n; j ++ )
+         {
+            PetscScalar value;
+            MatGetValues( A, 1, &i, 1, &j, &value );
+            if( matrix. getElement( i, j ) != value )
+            {
+               cerr << "Conversion to PETSC matrix was not correct at position " << i << " " << j << "." << endl;
+               cerr << "Values are " << value << " and " << matrix. getElement( i, j ) << endl;
+               return false;
+            }
+         }
+      cerr << "PETSC CONVERSION WAS OK!!!" << endl;
+      return true;*/
+
+      Vec petscB, petscX;
+      KSP ksp;
+      KSPCreate( PETSC_COMM_WORLD, &ksp );
+
+
+#endif
    }
-   if( solverName == "bicgstab" )
-   {
-      tnlBICGStabSolver< Matrix, DeviceType > solver;
-      return benchmarkSolver( parameters, solver, matrix, b, x );
-   }
-   if( solverName == "gmres" )
-   {
-      tnlGMRESSolver< Matrix, DeviceType > solver;
-      const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
-      solver. setRestarting( gmresRestarting );
-      return benchmarkSolver( parameters, solver, matrix, b, x );
-   }
-   cerr << "Unknown solver " << solverName << endl;
-   return false;
+
 }
 
 
@@ -219,6 +328,9 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
 
 int main( int argc, char* argv[] )
 {
+#ifdef HAVE_PETSC
+   PetscInitialize( &argc, &argv, ( char* ) 0, ( char* ) 0 );
+#endif
    /****
     * Parsing command line arguments ...
     */
@@ -261,11 +373,21 @@ int main( int argc, char* argv[] )
    //tnlString indexing = parsedObjectType[ 3 ];
    if( precision == "float" )
       if( ! benchmarkMatrix< float, int >( parameters ) )
+      {
+#ifdef HAVE_PETSC
+         PetscFinalize();
+#endif
          return EXIT_FAILURE;
+      }
+
    if( precision == "double" )
       if( ! benchmarkMatrix< double, int >( parameters ) )
+      {
+#ifdef HAVE_PETSC
+         PetscFinalize();
+#endif
          return EXIT_FAILURE;
-
+      }
 
    fstream log_file;
    if( log_file_name )
@@ -278,6 +400,9 @@ int main( int argc, char* argv[] )
       }
       cout << "Writing to log file " << log_file_name << "..." << endl;
    }
+#ifdef HAVE_PETSC
+   PetscFinalize();
+#endif
    return EXIT_SUCCESS;
 
 }

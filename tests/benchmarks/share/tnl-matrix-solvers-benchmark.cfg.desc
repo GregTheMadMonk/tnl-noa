@@ -11,8 +11,9 @@ group IO
 group solver
 {
    string device("host")         [On what device the solver will run. Can be host or cuda.];
-   string solver-name(!)         [Set matrix solver for benchmarking. It can be gmres. ];
+   string solver-name(!)         [Set matrix solver for benchmarking. It can be sor, cg, bicgstab, tfqmr, gmres. ];
+   string solver-class("tnl")    [Choose other library of solvers. It can be tnl or petsc.];
    real max-residue(1.0e-6)      [Set what residue we want to achieve.];
-   integer gmres-restarting(20)         [Set restarting for GMRES method.];   
-   real sor-omega(1.0)         [Omega parameter for the SOR method. Can be 0--2.];
+   integer gmres-restarting(20)  [Set restarting for GMRES method.];   
+   real sor-omega(1.0)           [Omega parameter for the SOR method. Can be 0--2.];
 },[Arguments describing the solver.];
