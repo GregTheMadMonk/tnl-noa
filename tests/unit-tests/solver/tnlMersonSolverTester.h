@@ -19,7 +19,7 @@
 #define TNLMERSONSOLVERTESTER_H_
 
 #include <mesh/tnlGrid.h>
-#include <solvers/tnlMersonSolver.h>
+#include <solvers/ode/tnlMersonSolver.h>
 #include <core/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>

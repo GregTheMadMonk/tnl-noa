@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlTimerCPU.h  -  description
+                          main.cpp  -  description
                              -------------------
-    begin                : 2007/06/23
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Jan 12, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,42 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlTimerCPUH
-#define tnlTimerCPUH
+#include "two-phase-flow.h"
+#include "program-name-conf.h"
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 
-#include "tnlConfig.h"
-#ifdef HAVE_SYS_RESOURCE_H
-   #include <sys/resource.h>
-#endif
-
-
-#include "mpi-supp.h"
-
-class tnlTimerCPU
+int main( int argc, char* argv[] )
 {
-   public:
+   tnlParameterContainer parameters;
+   tnlConfigDescription conf_desc;
+   if( conf_desc. ParseConfigDescription( CONFIG_FILE ) != 0 )
+      return EXIT_FAILURE;
+   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   {
+      conf_desc. PrintUsage( argv[ 0 ] );
+      return EXIT_FAILURE;
+   }
 
-   tnlTimerCPU();
-
-   void Reset();
-   
-   void Stop();
-
-   void Continue();
-
-   double GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
-      
-   protected:
-
-   double initial_time;
-
-   double total_time;
-
-   bool stop_state;
-};
-
-extern tnlTimerCPU default_mcore_cpu_timer;
+   /****
+    * Write your code here
+    */
+   return EXIT_SUCCESS;
+}
 
 
-
-#endif

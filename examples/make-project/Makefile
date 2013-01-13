@@ -1,31 +1,42 @@
-TNL_VERSION="0.1"
+TNL_VERSION=0.1
 TNL_INSTALL_DIR=${HOME}/local/lib
 TNL_INCLUDE_DIR=${HOME}/local/include/tnl-${TNL_VERSION}
 
 TARGET = program-name
+CONFIG_FILE = $(TARGET).cfg.desc
+INSTALL_DIR = ${HOME}/local
 CXX = g++
 CUDA_CXX = nvcc
-CXX_FLAGS = -std=gnu++0x -I${TNL_INCLUDE_DIR}
-LD_FLAGS = -L${TNL_INSTALL_DIR} -ltnl-0.1
+CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR)
+LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1
 
-OBJECTS = Finite_Elements.o MatrixStorage/CSRMatrix.o MatrixStorage/objVector.o ParameterContainer/parameterContainer.o
-DIST = main.cpp Makefile
+SOURCES = main.cpp
+HEADERS = 
+OBJECTS = main.o
+DIST = $(SOURCES) Makefile
 
-all: prog
+all: $(TARGET)
 clean: 
 	rm -f $(OBJECTS)
+	rm -f $(TARGET)-conf.h	
+
 dist: $(DIST)
-	tar zcvf prog.tgz $(DIST) 
+	tar zcvf $(TARGET).tgz $(DIST) 
 
-install: prog
-	mv prog $(PROG)
+install: $(TARGET)
+	cp $(TARGET) $(INSTALL_DIR)/bin
+	cp $(CONFIG_FILE) $(INSTALL_DIR)/share
 
-uninstall: prog
-	rm f /usr/local/bin 
+uninstall: $(TARGET)
+	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
+	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share
 
-prog: $(OBJECTS)
-	$(CC) -o prog $(OBJECTS) $(LD_FLAGS)
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
-%.o: %.cpp
-	$(CC) -c -o $@ $(CXX_FLAGS) $< 
+%.o: %.cpp $(TARGET)-conf.h $(HEADERS)
+	$(CC) -c -o $@ $(CXX_FLAGS) $<
+
+$(TARGET)-conf.h:
+	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
 

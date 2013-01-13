@@ -19,38 +19,45 @@
 #define tnlEulerSolverH
 
 #include <math.h>
-#include <solvers/tnlExplicitSolver.h>
+#include <solvers/ode/tnlExplicitSolver.h>
 
-template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
-class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, Index >
+template< class Problem, class Mesh >
+class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh >
 {
    public:
+
+   typedef typename Problem  ProblemType;
+   typedef typename Mesh  MeshType;
+   typedef typename Problem :: Real RealType;
+   typedef typename Problem :: Device DeviceType;
+   typedef typename Problem :: Index IndexType;
+
 
    tnlEulerSolver( const tnlString& name );
 
    tnlString getType() const;
 
-   bool solve( Problem& scheme,
-               Mesh& u );
+   bool solve( ProblemType& scheme,
+               MeshType& u );
 
    protected:
-   void computeNewTimeLevel( Mesh& u,
-                             Real tau,
-                             Real& currentResidue );
+   void computeNewTimeLevel( MeshType& u,
+                             RealType tau,
+                             RealType& currentResidue );
 
    
-   Mesh k1;
+   MeshType k1;
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: tnlEulerSolver( const tnlString& name )
-: tnlExplicitSolver< Problem, Mesh, Real, Device, Index >( name ),
+template< class Problem, class Mesh >
+tnlEulerSolver< Problem, Mesh > :: tnlEulerSolver( const tnlString& name )
+: tnlExplicitSolver< Problem, Mesh >( name ),
   k1( "tnlEulerSolver:k1" )
 {
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-tnlString tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: getType() const
+template< class Problem, class Mesh >
+tnlString tnlEulerSolver< Problem, Mesh > :: getType() const
 {
    Mesh m( "m" );
    Problem p( "p" );
@@ -59,18 +66,18 @@ tnlString tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: getType() cons
           tnlString( ", " ) +
           m. getType() +
           tnlString( ", " ) +
-          GetParameterType( Real ( 0  ) ) +
+          GetParameterType( RealType ( 0  ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( GetParameterType( Index ( 0 ) ) ) +
+          tnlString( GetParameterType( IndexType ( 0 ) ) ) +
           tnlString( ", " ) +
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& scheme,
-                                                                    Mesh& u )
+template< class Problem, class Mesh >
+bool tnlEulerSolver< Problem, Mesh > :: solve( Problem& scheme,
+                                               Mesh& u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
@@ -86,10 +93,10 @@ bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& sch
    /****
     * Set necessary parameters
     */
-   Real& time = this -> time;
-   Real currentTau = this -> tau;
-   Real& residue = this -> residue;
-   Index& iteration = this -> iteration;
+   RealType& time = this -> time;
+   RealType currentTau = this -> tau;
+   RealType& residue = this -> residue;
+   IndexType& iteration = this -> iteration;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    iteration = 0;
@@ -110,7 +117,7 @@ bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& sch
        */
       scheme. GetExplicitRHS( time, currentTau, u, k1 );
 
-      Real lastResidue = residue;
+      RealType lastResidue = residue;
       computeNewTimeLevel( u, currentTau, residue );
 
       /****
@@ -148,26 +155,26 @@ bool tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& sch
    }
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-void tnlEulerSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLevel( Mesh& u,
-                                                                                  Real tau,
-                                                                                  Real& currentResidue )
+template< class Problem, class Mesh >
+void tnlEulerSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
+                                        RealType tau,
+                                        RealType& currentResidue )
 {
-   Real localResidue = Real( 0.0 );
-   Index size = k1. getSize();
-   Real* _u = u. getData();
-   Real* _k1 = k1. getData();
+   RealType localResidue = RealType( 0.0 );
+   IndexType size = k1. getSize();
+   RealType* _u = u. getData();
+   RealType* _k1 = k1. getData();
 
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau )
 #endif
-   for( Index i = 0; i < size; i ++ )
+   for( IndexType i = 0; i < size; i ++ )
    {
-      const Real add = tau * _k1[ i ];
+      const RealType add = tau * _k1[ i ];
       _u[ i ] += add;
       localResidue += fabs( add );
    }
-   localResidue /= tau * ( Real ) size;
+   localResidue /= tau * ( RealType ) size;
    :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this -> solver_comm );
 }
 

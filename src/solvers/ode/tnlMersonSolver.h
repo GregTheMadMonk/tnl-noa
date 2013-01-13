@@ -20,7 +20,7 @@
 
 #include <math.h>
 #include <core/implementation/cuda-long-vector-kernels.h>
-#include <solvers/tnlExplicitSolver.h>
+#include <solvers/ode/tnlExplicitSolver.h>
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -30,16 +30,22 @@
  *
  */
 
-template< class Problem, class Mesh, typename Real = double, typename Device = tnlHost, typename Index = int >
-class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, Index >
+template< class Problem, class Mesh >
+class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh >
 {
    public:
+
+   typedef Problem :: ProblemType;
+   typedef Mesh :: MeshType;
+   typedef typename Problem :: Real RealType;
+   typedef typename Problem :: Device DeviceType;
+   typedef typename Problem :: Index IndexType;
 
    tnlMersonSolver( const tnlString& name );
 
    tnlString getType() const;
 
-   void setAdaptivity( const Real& a );
+   void setAdaptivity( const RealType& a );
    
    bool solve( Problem& problem,
                Mesh& u );
@@ -54,21 +60,21 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh, Real, Device, I
     */
    void computeKFunctions( Mesh& u,
                            Problem& problem,
-                           const Real& time,
-                           Real tau );
+                           const RealType& time,
+                           RealType tau );
 
-   Real computeError( const Real tau );
+   RealType computeError( const RealType tau );
 
    void computeNewTimeLevel( Mesh& u,
-                             Real tau,
-                             Real& currentResidue );
+                             RealType tau,
+                             RealType& currentResidue );
 
    void writeGrids( const Mesh& u );
 
    Mesh k1, k2, k3, k4, k5, kAux;
 
    //! This controls the accuracy of the solver
-   Real adaptivity;
+   RealType adaptivity;
 };
 
 #ifdef HAVE_CUDA
@@ -125,9 +131,9 @@ __global__ void updateU( const Index size,
 
 
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: tnlMersonSolver( const tnlString& name )
-: tnlExplicitSolver< Problem, Mesh, Real, Device, Index >( name ),
+template< class Problem, class Mesh >
+tnlMersonSolver< Problem, Mesh > :: tnlMersonSolver( const tnlString& name )
+: tnlExplicitSolver< Problem, Mesh, RealType, Device, Index >( name ),
   k1( "tnlMersonSolver:k1" ),
   k2( "tnlMersonSolver:k2" ),
   k3( "tnlMersonSolver:k3" ),
@@ -139,8 +145,8 @@ tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: tnlMersonSolver( const 
    this -> tau = 1.0;
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() const
+template< class Problem, class Mesh >
+tnlString tnlMersonSolver< Problem, Mesh > :: getType() const
 {
    Mesh m( "m" );
    Problem p( "p" );
@@ -149,7 +155,7 @@ tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() con
           tnlString( ", " ) +
           m. getType() +
           tnlString( ", " ) +
-          GetParameterType( Real ( 0  ) ) +
+          GetParameterType( RealType ( 0  ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
@@ -158,14 +164,14 @@ tnlString tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: getType() con
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: setAdaptivity( const Real& a )
+template< class Problem, class Mesh >
+void tnlMersonSolver< Problem, Mesh > :: setAdaptivity( const RealType& a )
 {
    adaptivity = a;
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& problem,
+template< class Problem, class Mesh >
+bool tnlMersonSolver< Problem, Mesh > :: solve( Problem& problem,
                                                                      Mesh& u )
 {
    /****
@@ -192,9 +198,9 @@ bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& pr
    /****
     * Set necessary parameters
     */
-   Real& time = this -> time;
-   Real currentTau = this -> tau;
-   Real& residue = this -> residue;
+   RealType& time = this -> time;
+   RealType currentTau = this -> tau;
+   RealType& residue = this -> residue;
    Index& iteration = this -> iteration;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
@@ -221,13 +227,13 @@ bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& pr
       /****
        * Compute an error of the approximation.
        */
-      Real eps( 0.0 );
+      RealType eps( 0.0 );
       if( adaptivity != 0.0 )
          eps = computeError( currentTau );
 
       if( adaptivity == 0.0 || eps < adaptivity )
       {
-         Real lastResidue = residue;
+         RealType lastResidue = residue;
          computeNewTimeLevel( u, currentTau, residue );
          /****
           * When time is close to stopTime the new residue
@@ -270,21 +276,21 @@ bool tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: solve( Problem& pr
    }
 };
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions( Mesh& u,
+template< class Problem, class Mesh >
+void tnlMersonSolver< Problem, Mesh > :: computeKFunctions( Mesh& u,
                                                                                  Problem& problem,
-                                                                                 const Real& time,
-                                                                                 Real tau )
+                                                                                 const RealType& time,
+                                                                                 RealType tau )
 {
    Index size = u. getSize();
 
-   Real* _k1 = k1. getData();
-   Real* _k2 = k2. getData();
-   Real* _k3 = k3. getData();
-   Real* _k4 = k4. getData();
-   Real* _k5 = k5. getData();
-   Real* _kAux = kAux. getData();
-   Real* _u = u. getData();
+   RealType* _k1 = k1. getData();
+   RealType* _k2 = k2. getData();
+   RealType* _k3 = k3. getData();
+   RealType* _k4 = k4. getData();
+   RealType* _k5 = k5. getData();
+   RealType* _kAux = kAux. getData();
+   RealType* _u = u. getData();
 
    /****
     * Compute data transfers statistics
@@ -296,7 +302,7 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
    kAux. touch( 4 );
    u. touch( 4 );
 
-   Real tau_3 = tau / 3.0;
+   RealType tau_3 = tau / 3.0;
 
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -362,15 +368,15 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeKFunctions(
    }
 }
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( const Real tau )
+template< class Problem, class Mesh >
+RealType tnlMersonSolver< Problem, Mesh > :: computeError( const RealType tau )
 {
    const Index size = k1. getSize();
-   const Real* _k1 = k1. getData();
-   const Real* _k3 = k3. getData();
-   const Real* _k4 = k4. getData();
-   const Real* _k5 = k5. getData();
-   Real* _kAux = kAux. getData();
+   const RealType* _k1 = k1. getData();
+   const RealType* _k3 = k3. getData();
+   const RealType* _k4 = k4. getData();
+   const RealType* _k5 = k5. getData();
+   RealType* _kAux = kAux. getData();
 
    /****
     * Compute data transfers statistics
@@ -380,13 +386,13 @@ Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( cons
    k4. touch();
    k5. touch();
 
-   Real eps( 0.0 ), maxEps( 0.0 );
+   RealType eps( 0.0 ), maxEps( 0.0 );
    if( Device :: getDevice() == tnlHostDevice )
    {
       // TODO: implement OpenMP support
       for( Index i = 0; i < size; i ++  )
       {
-         Real err = ( Real ) ( tau / 3.0 *
+         RealType err = ( RealType ) ( tau / 3.0 *
                               fabs( 0.2 * _k1[ i ] +
                                    -0.9 * _k3[ i ] +
                                     0.8 * _k4[ i ] +
@@ -409,17 +415,17 @@ Real tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeError( cons
    return maxEps;
 }
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLevel( Mesh& u,
-                                                                                   Real tau,
-                                                                                   Real& currentResidue )
+template< class Problem, class Mesh >
+void tnlMersonSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
+                                                                                   RealType tau,
+                                                                                   RealType& currentResidue )
 {
-   Real localResidue = Real( 0.0 );
+   RealType localResidue = RealType( 0.0 );
    Index size = k1. getSize();
-   Real* _u = u. getData();
-   Real* _k1 = k1. getData();
-   Real* _k4 = k4. getData();
-   Real* _k5 = k5. getData();
+   RealType* _u = u. getData();
+   RealType* _k1 = k1. getData();
+   RealType* _k4 = k4. getData();
+   RealType* _k5 = k5. getData();
 
    /****
     * Compute data transfers statistics
@@ -436,9 +442,9 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
 #endif
       for( Index i = 0; i < size; i ++ )
       {
-         const Real add = tau / 6.0 * ( _k1[ i ] + 4.0 * _k4[ i ] + _k5[ i ] );
+         const RealType add = tau / 6.0 * ( _k1[ i ] + 4.0 * _k4[ i ] + _k5[ i ] );
          _u[ i ] += add;
-         localResidue += fabs( ( Real ) add );
+         localResidue += fabs( ( RealType ) add );
       }
    }
    if( Device :: getDevice() == tnlCudaDevice )
@@ -452,13 +458,13 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: computeNewTimeLeve
       localResidue = 0.0;
 #endif
    }
-   localResidue /= tau * ( Real ) size;
+   localResidue /= tau * ( RealType ) size;
    :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this -> solver_comm );
 
 }
 
-template< class Problem, class Mesh, typename Real, typename Device, typename Index >
-void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: writeGrids( const Mesh& u )
+template< class Problem, class Mesh >
+void tnlMersonSolver< Problem, Mesh > :: writeGrids( const Mesh& u )
 {
    cout << "Writing Merson solver grids ...";
    u. save( "tnlMersonSolver-u.tnl" );
@@ -473,66 +479,66 @@ void tnlMersonSolver< Problem, Mesh, Real, Device, Index > :: writeGrids( const 
 
 #ifdef HAVE_CUDA
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void computeK2Arg( const Index size,
-                              const Real tau,
-                              const Real* u,
-                              const Real* k1,
-                              Real* k2_arg )
+                              const RealType tau,
+                              const RealType* u,
+                              const RealType* k1,
+                              RealType* k2_arg )
 {
    int i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
       k2_arg[ i ] = u[ i ] + tau * ( 1.0 / 3.0 * k1[ i ] );
 }
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void computeK3Arg( const Index size,
-                              const Real tau,
-                              const Real* u,
-                              const Real* k1,
-                              const Real* k2,
-                              Real* k3_arg )
+                              const RealType tau,
+                              const RealType* u,
+                              const RealType* k1,
+                              const RealType* k2,
+                              RealType* k3_arg )
 {
    Index i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
       k3_arg[ i ] = u[ i ] + tau * 1.0 / 6.0 * ( k1[ i ] + k2[ i ] );
 }
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void computeK4Arg( const Index size,
-                              const Real tau,
-                              const Real* u,
-                              const Real* k1,
-                              const Real* k3,
-                              Real* k4_arg )
+                              const RealType tau,
+                              const RealType* u,
+                              const RealType* k1,
+                              const RealType* k3,
+                              RealType* k4_arg )
 {
    Index i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
       k4_arg[ i ] = u[ i ] + tau * ( 0.125 * k1[ i ] + 0.375 * k3[ i ] );
 }
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void computeK5Arg( const Index size,
-                              const Real tau,
-                              const Real* u,
-                              const Real* k1,
-                              const Real* k3,
-                              const Real* k4,
-                              Real* k5_arg )
+                              const RealType tau,
+                              const RealType* u,
+                              const RealType* k1,
+                              const RealType* k3,
+                              const RealType* k4,
+                              RealType* k5_arg )
 {
    Index i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
       k5_arg[ i ] = u[ i ] + tau * ( 0.5 * k1[ i ] - 1.5 * k3[ i ] + 2.0 * k4[ i ] );
 }
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void computeErrorKernel( const Index size,
-                                    const Real tau,
-                                    const Real* k1,
-                                    const Real* k3,
-                                    const Real* k4,
-                                    const Real* k5,
-                                    Real* err )
+                                    const RealType tau,
+                                    const RealType* k1,
+                                    const RealType* k3,
+                                    const RealType* k4,
+                                    const RealType* k5,
+                                    RealType* err )
 {
    Index i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
@@ -542,13 +548,13 @@ __global__ void computeErrorKernel( const Index size,
                                          -0.1 * k5[ i ] );
 }
 
-template< typename Real, typename Index >
+template< typename RealType, typename Index >
 __global__ void updateU( const Index size,
-                         const Real tau,
-                         const Real* k1,
-                         const Real* k4,
-                         const Real* k5,
-                         Real* u )
+                         const RealType tau,
+                         const RealType* k1,
+                         const RealType* k4,
+                         const RealType* k5,
+                         RealType* u )
 {
         Index i = blockIdx. x * blockDim. x + threadIdx. x;
         if( i < size )

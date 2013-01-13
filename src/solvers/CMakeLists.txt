@@ -1,6 +1,5 @@
-INCLUDE_DIRECTORIES( linear )
-
 ADD_SUBDIRECTORY( linear )
+ADD_SUBDIRECTORY( ode )
 ADD_SUBDIRECTORY( preconditioners )
 
 SET( headers tnlIterativeSolver.h
@@ -9,12 +8,9 @@ SET( headers tnlIterativeSolver.h
              tnlBICGSolver.h
              tnlBICGStabSolver.h
              tnlCGSolver.h
-             tnlEulerSolver.h
-             tnlExplicitSolver.h
              tnlGMRESSolverOld.h
              tnlILUPreconditioner.h
-             tnlMatrixSolver.h
-             tnlMersonSolver.h
+             tnlMatrixSolver.h             
              tnlPETSCPreconditioner.h
              tnlPETSCSolver.h
              tnlPreconditioner.h
