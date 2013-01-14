@@ -160,11 +160,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          }
       hostU. draw( "u-ini", "gnuplot" );
 
-      tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
-                       tnlGrid< 2, Real, tnlHost, Index >,
-                       Real,
-                       tnlHost,
-                       Index > mersonSolver( "mersonSolver" );
+      tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index > >
+                       mersonSolver( "mersonSolver" );
       mersonSolver. setVerbosity( 2 );
       mersonSolver. setAdaptivity( 0.001 );
       mersonSolver. setTime( 0.0 );

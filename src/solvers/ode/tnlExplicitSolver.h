@@ -23,16 +23,16 @@
 #include <core/tnlTimerRT.h>
 #include <core/tnlFlopsCounter.h>
 
-template< class Problem, class Mesh >
+template< class Problem >
 class tnlExplicitSolver : public tnlObject
 {
    public:
    
-   typedef Problem :: ProblemType;
-   typedef Mesh :: MeshType;
-   typedef typename Problem :: Real RealType;
-   typedef typename Problem :: Device DeviceType;
-   typedef typename Problem :: Index IndexType;
+   typedef Problem ProblemType;
+   typedef typename Problem :: DofVectorType DofVectorType;
+   typedef typename Problem :: RealType RealType;
+   typedef typename Problem :: DeviceType DeviceType;
+   typedef typename Problem :: IndexType IndexType;
 
    tnlExplicitSolver( const tnlString& name );
 
@@ -71,7 +71,7 @@ class tnlExplicitSolver : public tnlObject
    void printOut() const;
    
    virtual bool solve( Problem& scheme,
-                       Mesh& u ) = 0;
+                       DofVectorType& u ) = 0;
 
    void setTestingMode( bool testingMode );
 
@@ -111,8 +111,8 @@ protected:
    bool testingMode;
 };
 
-template< class Problem, class Mesh >
-tnlExplicitSolver < Problem, Mesh > :: tnlExplicitSolver( const tnlString&  name )
+template< class Problem >
+tnlExplicitSolver < Problem > :: tnlExplicitSolver( const tnlString&  name )
 :  tnlObject( name ),
    iteration( 0 ),
    time( 0.0 ),
@@ -129,104 +129,104 @@ tnlExplicitSolver < Problem, Mesh > :: tnlExplicitSolver( const tnlString&  name
    {
    };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setTime( const RealType& t )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setTime( const RealType& t )
 {
    time = t;
 };
 
-template< class Problem, class Mesh >
-const RealType& tnlExplicitSolver < Problem, Mesh > :: getTime() const
+template< class Problem >
+const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTime() const
 {
    return time;
 };
 
-template< class Problem, class Mesh >
-IndexType tnlExplicitSolver < Problem, Mesh > :: getIterationsNumber() const
+template< class Problem >
+typename Problem :: IndexType tnlExplicitSolver < Problem > :: getIterationsNumber() const
 {
    return iteration;
 };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setTau( const RealType& t )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setTau( const RealType& t )
 {
    tau = t;
 };
 
-template< class Problem, class Mesh >
-const RealType& tnlExplicitSolver < Problem, Mesh > :: getTau() const
+template< class Problem >
+const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTau() const
 {
    return tau;
 };
 
-template< class Problem, class Mesh >
-const RealType& tnlExplicitSolver < Problem, Mesh > :: getResidue() const
+template< class Problem >
+const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getResidue() const
 {
    return residue;
 };
 
-template< class Problem, class Mesh >
-IndexType tnlExplicitSolver < Problem, Mesh > :: getMaxIterationsNumber() const
+template< class Problem >
+typename Problem :: IndexType tnlExplicitSolver < Problem > :: getMaxIterationsNumber() const
 {
     return maxIterationsNumber;
 }
 
-template< class Problem, class Mesh >
-RealType tnlExplicitSolver < Problem, Mesh > :: getMaxResidue() const
+template< class Problem >
+typename Problem :: RealType tnlExplicitSolver < Problem > :: getMaxResidue() const
 {
     return maxResidue;
 }
 
-template< class Problem, class Mesh >
-RealType tnlExplicitSolver < Problem, Mesh > :: getStopTime() const
+template< class Problem >
+typename Problem :: RealType tnlExplicitSolver < Problem > :: getStopTime() const
 {
     return stopTime;
 }
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setMaxIterationsNumber( IndexType maxIterationsNumber )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setMaxIterationsNumber( typename Problem :: IndexType maxIterationsNumber )
 {
     this -> maxIterationsNumber = maxIterationsNumber;
 }
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setMaxResidue( const RealType& maxResidue )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setMaxResidue( const RealType& maxResidue )
 {
     this -> maxResidue = maxResidue;
 }
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setStopTime( const RealType& stopTime )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setStopTime( const RealType& stopTime )
 {
     this -> stopTime = stopTime;
 }
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setMPIComm( MPI_Comm comm )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setMPIComm( MPI_Comm comm )
 {
    solver_comm = comm;
 };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setVerbosity( IndexType v )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setVerbosity( IndexType v )
 {
    verbosity = v;
 };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setTimerCPU( tnlTimerCPU* timer )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setTimerCPU( tnlTimerCPU* timer )
 {
    cpu_timer = timer;
 };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setTimerRT( tnlTimerRT* timer )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setTimerRT( tnlTimerRT* timer )
 {
    rt_timer = timer;
 };
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: printOut() const
+template< class Problem >
+void tnlExplicitSolver < Problem > :: printOut() const
 {
    if( verbosity > 0 )
    {
@@ -252,8 +252,8 @@ void tnlExplicitSolver < Problem, Mesh > :: printOut() const
    }
 }
 
-template< class Problem, class Mesh >
-void tnlExplicitSolver < Problem, Mesh > :: setTestingMode( bool testingMode )
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setTestingMode( bool testingMode )
 {
    this -> testingMode = testingMode;
 }

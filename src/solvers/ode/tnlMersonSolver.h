@@ -30,16 +30,16 @@
  *
  */
 
-template< class Problem, class Mesh >
-class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh >
+template< class Problem >
+class tnlMersonSolver : public tnlExplicitSolver< Problem >
 {
    public:
 
-   typedef Problem :: ProblemType;
-   typedef Mesh :: MeshType;
-   typedef typename Problem :: Real RealType;
-   typedef typename Problem :: Device DeviceType;
-   typedef typename Problem :: Index IndexType;
+   typedef Problem ProblemType;
+   typedef typename Problem :: DofVectorType DofVectorType;
+   typedef typename Problem :: RealType RealType;
+   typedef typename Problem :: DeviceType DeviceType;
+   typedef typename Problem :: IndexType IndexType;
 
    tnlMersonSolver( const tnlString& name );
 
@@ -48,7 +48,7 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh >
    void setAdaptivity( const RealType& a );
    
    bool solve( Problem& problem,
-               Mesh& u );
+               DofVectorType& u );
 
    protected:
    
@@ -58,20 +58,20 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem, Mesh >
     * needs to correct u on the boundaries to be able to compute
     * the RHS.
     */
-   void computeKFunctions( Mesh& u,
+   void computeKFunctions( DofVectorType& u,
                            Problem& problem,
                            const RealType& time,
                            RealType tau );
 
    RealType computeError( const RealType tau );
 
-   void computeNewTimeLevel( Mesh& u,
+   void computeNewTimeLevel( DofVectorType& u,
                              RealType tau,
                              RealType& currentResidue );
 
-   void writeGrids( const Mesh& u );
+   void writeGrids( const DofVectorType& u );
 
-   Mesh k1, k2, k3, k4, k5, kAux;
+   DofVectorType k1, k2, k3, k4, k5, kAux;
 
    //! This controls the accuracy of the solver
    RealType adaptivity;
@@ -131,9 +131,9 @@ __global__ void updateU( const Index size,
 
 
 
-template< class Problem, class Mesh >
-tnlMersonSolver< Problem, Mesh > :: tnlMersonSolver( const tnlString& name )
-: tnlExplicitSolver< Problem, Mesh, RealType, Device, Index >( name ),
+template< typename Problem >
+tnlMersonSolver< Problem > :: tnlMersonSolver( const tnlString& name )
+: tnlExplicitSolver< Problem >( name ),
   k1( "tnlMersonSolver:k1" ),
   k2( "tnlMersonSolver:k2" ),
   k3( "tnlMersonSolver:k3" ),
@@ -145,34 +145,25 @@ tnlMersonSolver< Problem, Mesh > :: tnlMersonSolver( const tnlString& name )
    this -> tau = 1.0;
 };
 
-template< class Problem, class Mesh >
-tnlString tnlMersonSolver< Problem, Mesh > :: getType() const
+template< typename Problem >
+tnlString tnlMersonSolver< Problem > :: getType() const
 {
-   Mesh m( "m" );
-   Problem p( "p" );
    return tnlString( "tnlMersonSolver< " ) +
-          p. getType() +
+          Problem :: getType() +
           tnlString( ", " ) +
-          m. getType() +
-          tnlString( ", " ) +
-          GetParameterType( RealType ( 0  ) ) +
-          tnlString( ", " ) +
-          Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( GetParameterType( Index ( 0 ) ) ) +
-          tnlString( ", " ) +
+          DofVectorType :: getType() +
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh >
-void tnlMersonSolver< Problem, Mesh > :: setAdaptivity( const RealType& a )
+template< typename Problem >
+void tnlMersonSolver< Problem > :: setAdaptivity( const RealType& a )
 {
    adaptivity = a;
 };
 
-template< class Problem, class Mesh >
-bool tnlMersonSolver< Problem, Mesh > :: solve( Problem& problem,
-                                                                     Mesh& u )
+template< typename Problem >
+bool tnlMersonSolver< Problem > :: solve( Problem& problem,
+                                                                     DofVectorType& u )
 {
    /****
     * First setup the supporting meshes k1...k5 and kAux.
@@ -201,7 +192,7 @@ bool tnlMersonSolver< Problem, Mesh > :: solve( Problem& problem,
    RealType& time = this -> time;
    RealType currentTau = this -> tau;
    RealType& residue = this -> residue;
-   Index& iteration = this -> iteration;
+   IndexType& iteration = this -> iteration;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    iteration = 0;
@@ -276,13 +267,13 @@ bool tnlMersonSolver< Problem, Mesh > :: solve( Problem& problem,
    }
 };
 
-template< class Problem, class Mesh >
-void tnlMersonSolver< Problem, Mesh > :: computeKFunctions( Mesh& u,
+template< typename Problem >
+void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
                                                                                  Problem& problem,
                                                                                  const RealType& time,
                                                                                  RealType tau )
 {
-   Index size = u. getSize();
+   IndexType size = u. getSize();
 
    RealType* _k1 = k1. getData();
    RealType* _k2 = k2. getData();
@@ -304,39 +295,39 @@ void tnlMersonSolver< Problem, Mesh > :: computeKFunctions( Mesh& u,
 
    RealType tau_3 = tau / 3.0;
 
-   if( Device :: getDevice() == tnlHostDevice )
+   if( DeviceType :: getDevice() == tnlHostDevice )
    {
       problem. GetExplicitRHS( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 )
    #endif
-      for( Index i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
       problem. GetExplicitRHS( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 )
    #endif
-      for( Index i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
       problem. GetExplicitRHS( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 )
    #endif
-      for( Index i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
       problem. GetExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 )
    #endif
-      for( Index i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
       problem. GetExplicitRHS( time + tau, tau, kAux, k5 );
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const int block_size = 512;
@@ -368,10 +359,10 @@ void tnlMersonSolver< Problem, Mesh > :: computeKFunctions( Mesh& u,
    }
 }
 
-template< class Problem, class Mesh >
-RealType tnlMersonSolver< Problem, Mesh > :: computeError( const RealType tau )
+template< typename Problem >
+typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const RealType tau )
 {
-   const Index size = k1. getSize();
+   const IndexType size = k1. getSize();
    const RealType* _k1 = k1. getData();
    const RealType* _k3 = k3. getData();
    const RealType* _k4 = k4. getData();
@@ -387,10 +378,10 @@ RealType tnlMersonSolver< Problem, Mesh > :: computeError( const RealType tau )
    k5. touch();
 
    RealType eps( 0.0 ), maxEps( 0.0 );
-   if( Device :: getDevice() == tnlHostDevice )
+   if( DeviceType :: getDevice() == tnlHostDevice )
    {
       // TODO: implement OpenMP support
-      for( Index i = 0; i < size; i ++  )
+      for( IndexType i = 0; i < size; i ++  )
       {
          RealType err = ( RealType ) ( tau / 3.0 *
                               fabs( 0.2 * _k1[ i ] +
@@ -400,7 +391,7 @@ RealType tnlMersonSolver< Problem, Mesh > :: computeError( const RealType tau )
          eps = Max( eps, err );
       }
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const Index block_size = 512;
@@ -415,13 +406,13 @@ RealType tnlMersonSolver< Problem, Mesh > :: computeError( const RealType tau )
    return maxEps;
 }
 
-template< class Problem, class Mesh >
-void tnlMersonSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
+template< typename Problem >
+void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
                                                                                    RealType tau,
                                                                                    RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
-   Index size = k1. getSize();
+   IndexType size = k1. getSize();
    RealType* _u = u. getData();
    RealType* _k1 = k1. getData();
    RealType* _k4 = k4. getData();
@@ -435,19 +426,19 @@ void tnlMersonSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
    k4. touch();
    k5. touch();
 
-   if( Device :: getDevice() == tnlHostDevice )
+   if( DeviceType :: getDevice() == tnlHostDevice )
    {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau )
 #endif
-      for( Index i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
       {
          const RealType add = tau / 6.0 * ( _k1[ i ] + 4.0 * _k4[ i ] + _k5[ i ] );
          _u[ i ] += add;
          localResidue += fabs( ( RealType ) add );
       }
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
       const Index block_size = 512;
@@ -463,8 +454,8 @@ void tnlMersonSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
 
 }
 
-template< class Problem, class Mesh >
-void tnlMersonSolver< Problem, Mesh > :: writeGrids( const Mesh& u )
+template< typename Problem >
+void tnlMersonSolver< Problem > :: writeGrids( const DofVectorType& u )
 {
    cout << "Writing Merson solver grids ...";
    u. save( "tnlMersonSolver-u.tnl" );

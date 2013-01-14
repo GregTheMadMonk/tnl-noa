@@ -21,13 +21,13 @@
 #include <math.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 
-template< class Problem, class Mesh >
-class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh >
+template< typename Problem >
+class tnlEulerSolver : public tnlExplicitSolver< Problem >
 {
    public:
 
    typedef typename Problem  ProblemType;
-   typedef typename Mesh  MeshType;
+   typedef typename Problem :: DofVectorType DofVectorType;
    typedef typename Problem :: Real RealType;
    typedef typename Problem :: Device DeviceType;
    typedef typename Problem :: Index IndexType;
@@ -38,28 +38,28 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem, Mesh >
    tnlString getType() const;
 
    bool solve( ProblemType& scheme,
-               MeshType& u );
+                DofVectorType& u );
 
    protected:
-   void computeNewTimeLevel( MeshType& u,
+   void computeNewTimeLevel( DofVectorTypeType& u,
                              RealType tau,
                              RealType& currentResidue );
 
    
-   MeshType k1;
+   DofVectorTypeType k1;
 };
 
-template< class Problem, class Mesh >
-tnlEulerSolver< Problem, Mesh > :: tnlEulerSolver( const tnlString& name )
-: tnlExplicitSolver< Problem, Mesh >( name ),
+template< typename Problem >
+tnlEulerSolver< Problem > :: tnlEulerSolver( const tnlString& name )
+: tnlExplicitSolver< Problem >( name ),
   k1( "tnlEulerSolver:k1" )
 {
 };
 
-template< class Problem, class Mesh >
-tnlString tnlEulerSolver< Problem, Mesh > :: getType() const
+template< typename Problem >
+tnlString tnlEulerSolver< Problem > :: getType() const
 {
-   Mesh m( "m" );
+   DofVectorType m( "m" );
    Problem p( "p" );
    return tnlString( "tnlEulerSolver< " ) +
           p. getType() +
@@ -75,9 +75,9 @@ tnlString tnlEulerSolver< Problem, Mesh > :: getType() const
           tnlString( " >" );
 };
 
-template< class Problem, class Mesh >
-bool tnlEulerSolver< Problem, Mesh > :: solve( Problem& scheme,
-                                               Mesh& u )
+template< typename Problem >
+bool tnlEulerSolver< Problem > :: solve( Problem& scheme,
+                                               DofVectorType& u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
@@ -155,8 +155,8 @@ bool tnlEulerSolver< Problem, Mesh > :: solve( Problem& scheme,
    }
 };
 
-template< class Problem, class Mesh >
-void tnlEulerSolver< Problem, Mesh > :: computeNewTimeLevel( Mesh& u,
+template< typename Problem >
+void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
                                         RealType tau,
                                         RealType& currentResidue )
 {
