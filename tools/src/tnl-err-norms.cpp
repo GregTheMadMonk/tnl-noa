@@ -366,6 +366,7 @@ int main( int argc, char* argv[] )
          if( ! objects_match )
          {
             cerr << "Files " << firstFileName << " and " << secondFileName << " cannot be compared ... SKIPPING" << endl;
+            cerr << "First object type is " << firstObjectType << " and second object type is " << secondObjectType << "." << endl;
             continue;
          }
 

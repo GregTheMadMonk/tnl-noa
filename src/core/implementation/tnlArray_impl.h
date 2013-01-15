@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArray.h  -  description
+                          tnlArray_impl.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber

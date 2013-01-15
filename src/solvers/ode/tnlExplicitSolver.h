@@ -34,7 +34,9 @@ class tnlExplicitSolver : public tnlObject
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
 
-   tnlExplicitSolver( const tnlString& name );
+   tnlExplicitSolver();
+
+   void setProblem( Problem& problem );
 
    void setTime( const RealType& t );
 
@@ -70,8 +72,7 @@ class tnlExplicitSolver : public tnlObject
 
    void printOut() const;
    
-   virtual bool solve( Problem& scheme,
-                       DofVectorType& u ) = 0;
+   virtual bool solve( DofVectorType& u ) = 0;
 
    void setTestingMode( bool testingMode );
 
@@ -109,12 +110,13 @@ protected:
    tnlTimerRT* rt_timer;
 
    bool testingMode;
+
+   Problem* problem;
 };
 
 template< class Problem >
-tnlExplicitSolver < Problem > :: tnlExplicitSolver( const tnlString&  name )
-:  tnlObject( name ),
-   iteration( 0 ),
+tnlExplicitSolver < Problem > :: tnlExplicitSolver()
+:  iteration( 0 ),
    time( 0.0 ),
    tau( 0.0 ),
    residue( 0.0 ),
@@ -125,9 +127,16 @@ tnlExplicitSolver < Problem > :: tnlExplicitSolver( const tnlString&  name )
    verbosity( 0 ),
    cpu_timer( &default_mcore_cpu_timer ),
    rt_timer( &default_mcore_rt_timer ),
-   testingMode( false )
+   testingMode( false ),
+   problem( 0 )
    {
    };
+
+template< typename Problem >
+void tnlExplicitSolver< Problem > :: setProblem( Problem& problem )
+{
+   this -> problem = &problem;
+};
 
 template< class Problem >
 void tnlExplicitSolver < Problem > :: setTime( const RealType& t )

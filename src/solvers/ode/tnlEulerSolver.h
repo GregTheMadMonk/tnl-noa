@@ -26,58 +26,44 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
 {
    public:
 
-   typedef typename Problem  ProblemType;
+   typedef Problem  ProblemType;
    typedef typename Problem :: DofVectorType DofVectorType;
-   typedef typename Problem :: Real RealType;
-   typedef typename Problem :: Device DeviceType;
-   typedef typename Problem :: Index IndexType;
+   typedef typename Problem :: RealType RealType;
+   typedef typename Problem :: DeviceType DeviceType;
+   typedef typename Problem :: IndexType IndexType;
 
 
-   tnlEulerSolver( const tnlString& name );
+   tnlEulerSolver();
 
    tnlString getType() const;
 
-   bool solve( ProblemType& scheme,
-                DofVectorType& u );
+   bool solve( DofVectorType& u );
 
    protected:
-   void computeNewTimeLevel( DofVectorTypeType& u,
+   void computeNewTimeLevel( DofVectorType& u,
                              RealType tau,
                              RealType& currentResidue );
 
    
-   DofVectorTypeType k1;
+   DofVectorType k1;
 };
 
 template< typename Problem >
-tnlEulerSolver< Problem > :: tnlEulerSolver( const tnlString& name )
-: tnlExplicitSolver< Problem >( name ),
-  k1( "tnlEulerSolver:k1" )
+tnlEulerSolver< Problem > :: tnlEulerSolver()
+: k1( "tnlEulerSolver:k1" )
 {
 };
 
 template< typename Problem >
 tnlString tnlEulerSolver< Problem > :: getType() const
 {
-   DofVectorType m( "m" );
-   Problem p( "p" );
    return tnlString( "tnlEulerSolver< " ) +
-          p. getType() +
-          tnlString( ", " ) +
-          m. getType() +
-          tnlString( ", " ) +
-          GetParameterType( RealType ( 0  ) ) +
-          tnlString( ", " ) +
-          Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( GetParameterType( IndexType ( 0 ) ) ) +
-          tnlString( ", " ) +
+          Problem :: getTypeStatic() +
           tnlString( " >" );
 };
 
 template< typename Problem >
-bool tnlEulerSolver< Problem > :: solve( Problem& scheme,
-                                               DofVectorType& u )
+bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
@@ -115,7 +101,7 @@ bool tnlEulerSolver< Problem > :: solve( Problem& scheme,
       /****
        * Compute the RHS
        */
-      scheme. GetExplicitRHS( time, currentTau, u, k1 );
+      this -> problem -> GetExplicitRHS( time, currentTau, u, k1 );
 
       RealType lastResidue = residue;
       computeNewTimeLevel( u, currentTau, residue );
@@ -157,8 +143,8 @@ bool tnlEulerSolver< Problem > :: solve( Problem& scheme,
 
 template< typename Problem >
 void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
-                                        RealType tau,
-                                        RealType& currentResidue )
+                                                       RealType tau,
+                                                       RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
    IndexType size = k1. getSize();
