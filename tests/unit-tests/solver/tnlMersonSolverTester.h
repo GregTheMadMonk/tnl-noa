@@ -18,7 +18,7 @@
 #ifndef TNLMERSONSOLVERTESTER_H_
 #define TNLMERSONSOLVERTESTER_H_
 
-#include <mesh/tnlGrid.h>
+#include <legacy/mesh/tnlGridOld.h>
 #include <solvers/ode/tnlMersonSolver.h>
 #include <core/mfilename.h>
 #include <cppunit/TestSuite.h>
@@ -107,8 +107,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    };
 
    void GetExplicitRHS( const Real& time,
-                        tnlGrid< 2, Real, tnlHost, int >& u,
-                        tnlGrid< 2, Real, tnlHost, int >& fu )
+                        tnlGridOld< 2, Real, tnlHost, int >& u,
+                        tnlGridOld< 2, Real, tnlHost, int >& fu )
    {
       const Index xSize = u. getDimensions(). x();
       const Index ySize = u. getDimensions(). y();
@@ -123,8 +123,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    }
 
    void GetExplicitRHS( const Real& time,
-                        tnlGrid< 2, Real, tnlCuda, int >& u,
-                        tnlGrid< 2, Real, tnlCuda, int >& fu )
+                        tnlGridOld< 2, Real, tnlCuda, int >& u,
+                        tnlGridOld< 2, Real, tnlCuda, int >& fu )
    {
 #ifdef HAVE_CUDA
       const Index xSize = u. getDimensions(). x();
@@ -145,7 +145,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    {
       const Index size = 128;
 
-      tnlGrid< 2, Real, tnlHost, int > hostU( "hostU");
+      tnlGridOld< 2, Real, tnlHost, int > hostU( "hostU");
       hostU. setDimensions( tnlTuple< 2, Index >( size, size ) );
       hostU. setDomain( tnlTuple< 2, Real >( 0.0, 0.0 ),
                         tnlTuple< 2, Real >( 1.0, 1.0 ) );
@@ -168,16 +168,16 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       mersonSolver. setTau( 0.001 );
 
 
-      tnlGrid< 2, Real, tnlCuda, int > deviceU( "deviceU" );
+      tnlGridOld< 2, Real, tnlCuda, int > deviceU( "deviceU" );
       deviceU. setLike( hostU );
       deviceU = hostU;
 
-      tnlGrid< 2, Real, tnlHost, int > hostAuxU( "hostAuxU" );
+      tnlGridOld< 2, Real, tnlHost, int > hostAuxU( "hostAuxU" );
       hostAuxU. setLike( hostU );
 
 #ifdef HAVE_CUDA
       tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
-                       tnlGrid< 2, Real, tnlCuda, Index >,
+                       tnlGridOld< 2, Real, tnlCuda, Index >,
                        Real,
                        tnlCuda,
                        Index > mersonSolverCUDA( "mersonSolverCuda" );

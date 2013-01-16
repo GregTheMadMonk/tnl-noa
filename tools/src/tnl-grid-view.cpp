@@ -83,44 +83,44 @@ int main( int argc, char* argv[] )
          }
 
          bool object_type_matched( false );
-         if( object_type == "tnlGrid< 2, float, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 2, float, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld2D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 2, double, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 2, double, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld2D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 3, float, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 3, float, tnlHost, int >" )
          {
-            ProcesstnlGrid3D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld3D< float, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 3, double, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 3, double, tnlHost, int >" )
          {
-             ProcesstnlGrid3D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+             ProcesstnlGridOld3D< double, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
              object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 2, tnlFloat, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 2, tnlFloat, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld2D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 2, tnlDouble, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 2, tnlDouble, tnlHost, int >" )
          {
-            ProcesstnlGrid2D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld2D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid< 3, tnlFloat, tnlHost, int >" )
+         if( object_type == "tnlGridOld< 3, tnlFloat, tnlHost, int >" )
          {
-            ProcesstnlGrid3D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+            ProcesstnlGridOld3D< tnlFloat, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
             object_type_matched = true;
          }
-         if( object_type == "tnlGrid3D< tnlDouble >" )
+         if( object_type == "tnlGridOld3D< tnlDouble >" )
          {
-             ProcesstnlGrid3D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
+             ProcesstnlGridOld3D< tnlDouble, tnlHost, int >( input_file, parameters, i, output_file_name, output_file_format );
              object_type_matched = true;
          }
          if( object_type == "tnlCSRMatrix< float, tnlHost >")

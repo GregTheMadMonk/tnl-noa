@@ -336,6 +336,23 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
 template< typename Element,
           typename Device,
           typename Index >
+bool tnlArray< Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlArray< Element, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+}
+
+
+template< typename Element,
+          typename Device,
+          typename Index >
 tnlArray< Element, Device, Index > :: ~tnlArray()
 {
    if( this -> data )

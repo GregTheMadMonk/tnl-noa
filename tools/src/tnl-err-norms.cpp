@@ -20,7 +20,7 @@
 #include <math.h>
 
 #include <debug/tnlDebug.h>
-#include <mesh/tnlGrid.h>
+#include <legacy/mesh/tnlGridOld.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
@@ -213,10 +213,10 @@ int main( int argc, char* argv[] )
 
          double l1_norm( 0.0 ), l2_norm( 0.0 ), max_norm( 0.0 );
          bool objects_match( false );
-         if( ( firstObjectType == "tnlGrid< 2, double, tnlHost, int >" ||
-               firstObjectType == "tnlGrid< 2, double, tnlCuda, int >") &&
-             ( secondObjectType == "tnlGrid< 2, double, tnlHost, int >" ||
-               secondObjectType == "tnlGrid< 2, double, tnlCuda, int >" ) )
+         if( ( firstObjectType == "tnlGridOld< 2, double, tnlHost, int >" ||
+               firstObjectType == "tnlGridOld< 2, double, tnlCuda, int >") &&
+             ( secondObjectType == "tnlGridOld< 2, double, tnlHost, int >" ||
+               secondObjectType == "tnlGridOld< 2, double, tnlCuda, int >" ) )
          {
             compareGrids< 2, double, double, tnlHost, tnlHost, int >( firstFileName,
                                                                       secondFileName,
@@ -230,10 +230,10 @@ int main( int argc, char* argv[] )
                                                                       verbose );
             objects_match = true;
          }
-         if( ( firstObjectType == "tnlGrid< 2, float, tnlHost, int >" ||
-               firstObjectType == "tnlGrid< 2, float, tnlCuda, int >" ) &&
-             ( secondObjectType == "tnlGrid< 2, float, tnlHost, int >" ||
-               secondObjectType == "tnlGrid< 2, float, tnlCuda, int >" ) )
+         if( ( firstObjectType == "tnlGridOld< 2, float, tnlHost, int >" ||
+               firstObjectType == "tnlGridOld< 2, float, tnlCuda, int >" ) &&
+             ( secondObjectType == "tnlGridOld< 2, float, tnlHost, int >" ||
+               secondObjectType == "tnlGridOld< 2, float, tnlCuda, int >" ) )
          {
             float _l1_norm, _l2_norm, _max_norm;
             float _space_step = ( float ) space_step;
@@ -254,10 +254,10 @@ int main( int argc, char* argv[] )
             h = ( double ) _h;
             objects_match = true;
          }
-         if( ( firstObjectType == "tnlGrid< 2, double, tnlHost, int >" ||
-               firstObjectType == "tnlGrid< 2, double, tnlCuda, int >" ) &&
-             ( secondObjectType == "tnlGrid< 2, float, tnlHost, int >" ||
-               secondObjectType == "tnlGrid< 2, float, tnlCuda, int >" ) )
+         if( ( firstObjectType == "tnlGridOld< 2, double, tnlHost, int >" ||
+               firstObjectType == "tnlGridOld< 2, double, tnlCuda, int >" ) &&
+             ( secondObjectType == "tnlGridOld< 2, float, tnlHost, int >" ||
+               secondObjectType == "tnlGridOld< 2, float, tnlCuda, int >" ) )
          {
             compareGrids< 2, double, float, tnlHost, tnlHost, int >( firstFileName,
                                                                      secondFileName,
@@ -271,10 +271,10 @@ int main( int argc, char* argv[] )
                                                                      verbose );
             objects_match = true;
          }
-         if( ( firstObjectType == "tnlGrid< 2, float, tnlHost, int >" ||
-               firstObjectType == "tnlGrid< 2, float, tnlCuda, int >" ) &&
-             ( secondObjectType == "tnlGrid< 2, double, tnlHost, int >" ||
-               secondObjectType == "tnlGrid< 2, double, tnlHost, int >" ) )
+         if( ( firstObjectType == "tnlGridOld< 2, float, tnlHost, int >" ||
+               firstObjectType == "tnlGridOld< 2, float, tnlCuda, int >" ) &&
+             ( secondObjectType == "tnlGridOld< 2, double, tnlHost, int >" ||
+               secondObjectType == "tnlGridOld< 2, double, tnlHost, int >" ) )
          {
             compareGrids< 2, double, float, tnlHost, tnlHost, int >( secondFileName,
                                                                      firstFileName,
@@ -288,8 +288,8 @@ int main( int argc, char* argv[] )
                                                                      verbose );
             objects_match = true;
          }
-         if( firstObjectType == "tnlGrid< 2, tnlDouble, tnlHost, int >" ||
-             firstObjectType == "tnlGrid< 2, tnlDouble, tnlCuda, int >" )
+         if( firstObjectType == "tnlGridOld< 2, tnlDouble, tnlHost, int >" ||
+             firstObjectType == "tnlGridOld< 2, tnlDouble, tnlCuda, int >" )
          {
             tnlDouble _l1_norm, _l2_norm, _max_norm;
             tnlDouble _space_step = ( tnlDouble ) space_step;
@@ -311,8 +311,8 @@ int main( int argc, char* argv[] )
             h = ( double ) _h;
             objects_match = true;
          }
-         if( firstObjectType == "tnlGrid< 2, tnlFloat, tnlHost, int >" ||
-             firstObjectType == "tnlGrid< 2, tnlFloat, tnlCuda, int >" )
+         if( firstObjectType == "tnlGridOld< 2, tnlFloat, tnlHost, int >" ||
+             firstObjectType == "tnlGridOld< 2, tnlFloat, tnlCuda, int >" )
          {
             tnlFloat _l1_norm, _l2_norm, _max_norm;
             tnlFloat _space_step = ( tnlFloat ) space_step;
@@ -334,13 +334,13 @@ int main( int argc, char* argv[] )
             objects_match = true;
          }
 
-         if( firstObjectType == "tnlGrid< 3, double, tnlHost, int >" ||
-             firstObjectType == "tnlGrid< 3, double, tnlCuda, int >" )
+         if( firstObjectType == "tnlGridOld< 3, double, tnlHost, int >" ||
+             firstObjectType == "tnlGridOld< 3, double, tnlCuda, int >" )
          {
-            dbgCout( "Processing file with tnlGrid3D< double > ..." );
+            dbgCout( "Processing file with tnlGridOld3D< double > ..." );
             dbgExpr( firstFileName );
             dbgExpr( secondFileName );
-            tnlGrid< 3, double, tnlHost, int > u1( "u1" ), u2( "u2" ), difference( "difference" );
+            tnlGridOld< 3, double, tnlHost, int > u1( "u1" ), u2( "u2" ), difference( "difference" );
             if( write_difference &&
                 ! difference. setLike( u1 ) )
             {
@@ -447,7 +447,7 @@ int main( int argc, char* argv[] )
             file. close();
          }
 
-         tnlGrid< 1, double > difference( "difference" );
+         tnlGridOld< 1, double > difference( "difference" );
          difference. setDimensions( tnlTuple< 1, int >( curve. getSize() ) );
          difference. setDomain( tnlTuple< 1, double >( 0.0 ), 
                                 tnlTuple< 1, double >( 1.0 ) );

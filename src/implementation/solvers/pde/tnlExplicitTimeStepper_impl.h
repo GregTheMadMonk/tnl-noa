@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlMPIMesh.h  -  description
+                          tnlExplicitTimeStepper_impl.h  -  description
                              -------------------
-    begin                : Dec 15, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    begin                : Jan 15, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,17 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMPIMESH_H_
-#define TNLMPIMESH_H_
+#ifndef TNLEXPLICITTIMESTEPPER_IMPL_H_
+#define TNLEXPLICITTIMESTEPPER_IMPL_H_
 
-#include <legacy/mesh/tnlGridOld.h>
-
-template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
-class tnlMPIMesh
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
+: odeSolver( 0 )
 {
 };
 
-#include <diff/tnlMPIMesh2D.h>
-#include <diff/tnlMPIMesh3D.h>
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+void tnlExplicitTimeStepper< Problem, OdeSolver > :: setSolver( OdeSolver< Problem >& odeSolver )
+{
+   this -> odeSolver = &odeSolver;
+};
 
-#endif /* TNLMPIMESH_H_ */
+
+
+#endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

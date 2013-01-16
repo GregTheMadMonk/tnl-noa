@@ -18,6 +18,7 @@
 #ifndef TNLMULTIARRAY_H_
 #define TNLMULTIARRAY_H_
 
+#include <iostream>
 #include <core/tnlArray.h>
 #include <core/tnlTuple.h>
 #include <core/tnlAssert.h>

@@ -20,7 +20,7 @@
 #include <core/tnlVectorCUDATester.h>
 #include <core/tnlFieldCUDA2DTester.h>
 #include <core/tnlCUDAKernelsTester.h>
-#include <diff/tnlGridCUDA2DTester.h>
+#include <diff/tnlGridOldCUDA2DTester.h>
 #include <diff/tnlMersonSolverCUDATester.h>
 
 #include <iostream>
@@ -42,10 +42,10 @@ int main( int argc, char* argv[] )
    if( CUDA_ARCH == 1.3 )
       runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
    
-   runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
-   runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
+   runner.addTest( tnlGridOldCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlGridOldCUDA2DTester< float > :: suite() );
    if( CUDA_ARCH == 1.3 )
-      runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
+      runner.addTest( tnlGridOldCUDA2DTester< double > :: suite() );
    
    runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
    runner.addTest( tnlCUDAKernelsTester< float > :: suite() );

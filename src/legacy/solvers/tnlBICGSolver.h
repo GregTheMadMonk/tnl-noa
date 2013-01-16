@@ -19,7 +19,7 @@
 #define tnlBICGSolverH
 
 #include <math.h>
-#include <solvers/tnlMatrixSolver.h>
+#include <legacy/solvers/tnlMatrixSolver.h>
 
 template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
 {

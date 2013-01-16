@@ -3,7 +3,7 @@ set( headers core/tnl-cuda-kernels.h
              core/tnlCUDAKernelsTester.h 
              core/tnlCommunicatorTester.h 
              core/tnlFileTester.h 
-             core/tnlGridTester.h
+             core/tnlGridOldTester.h
              core/tnlObjectTester.h  
              core/tnlVectorTester.h 
              core/tnlRealTester.h 

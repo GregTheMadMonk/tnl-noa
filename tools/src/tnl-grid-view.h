@@ -15,35 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDVIEW_H_
-#define TNLGRIDVIEW_H_
+#ifndef tnlGridOldVIEW_H_
+#define tnlGridOldVIEW_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
 #include <matrix/tnlCSRMatrix.h>
 #include <matrix/tnlRgCSRMatrix.h>
 #include <matrix/tnlAdaptiveRgCSRMatrix.h>
-#include <mesh/tnlGrid.h>
+#include <legacy/mesh/tnlGridOld.h>
 #include <fstream>
 
 using namespace std;
 
 template< typename Real, typename Device, typename Index >
-bool ProcesstnlGrid2D( const tnlString& file_name,
+bool ProcesstnlGridOld2D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
                        const tnlString& output_file_name,
                        const tnlString& output_file_format )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid< 2, Real, Device, Index > u( "u" ), resizedU( "resizedU" );
+   tnlGridOld< 2, Real, Device, Index > u( "u" ), resizedU( "resizedU" );
    if( ! u. load( file_name ) )
    {
       cout << " unable to restore the data " << endl;
       return false;
    }
 
-   tnlGrid< 2, Real, Device, Index >* output_u;
+   tnlGridOld< 2, Real, Device, Index >* output_u;
 
    int output_x_size( 0 ), output_y_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );
@@ -110,21 +110,21 @@ bool ProcesstnlGrid2D( const tnlString& file_name,
 }
 
 template< typename Real, typename Device, typename Index >
-bool ProcesstnlGrid3D( const tnlString& file_name,
+bool ProcesstnlGridOld3D( const tnlString& file_name,
                        const tnlParameterContainer& parameters,
                        int file_index,
                        const tnlString& output_file_name,
                        const tnlString& output_file_format )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
-   tnlGrid< 3, Real, Device, Index > u( "u"), resizedU( "resizedU" );
+   tnlGridOld< 3, Real, Device, Index > u( "u"), resizedU( "resizedU" );
    if( ! u. load( file_name ) )
    {
       cout << " unable to restore the data " << endl;
       return false;
    }
 
-   tnlGrid< 3, Real, Device, Index >* output_u;
+   tnlGridOld< 3, Real, Device, Index >* output_u;
 
    int output_x_size( 0 ), output_y_size( 0 ), output_z_size( 0 );
    parameters. GetParameter< int >( "output-x-size", output_x_size );
@@ -262,4 +262,4 @@ bool ProcessCSRMatrix( const tnlString& file_name,
 
 
 
-#endif /* TNLGRIDVIEW_H_ */
+#endif /* tnlGridOldVIEW_H_ */

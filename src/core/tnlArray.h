@@ -94,10 +94,14 @@ class tnlArray : public tnlObject
    void touch( IndexType2 touches = 1 ) const;
 
    //! Method for saving the object to a file as a binary data.
-   virtual bool save( tnlFile& file ) const;
+   bool save( tnlFile& file ) const;
 
    //! Method for loading the object from a file as a binary data.
-   virtual bool load( tnlFile& file );
+   bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    ~tnlArray();
 

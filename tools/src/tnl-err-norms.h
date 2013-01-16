@@ -40,11 +40,11 @@ bool compareGrids( const tnlString& firstFileName,
                    bool verbose )
 {
    dbgFunctionName( "", "compareGrids" );
-   dbgCout( "Processing file with tnlGrid ..." );
+   dbgCout( "Processing file with tnlGridOld ..." );
    dbgExpr( firstFileName );
    dbgExpr( secondFileName );
-   tnlGrid< Dimensions, Real1, Device1, Index > u1( "u1" ), difference( "difference" );
-   tnlGrid< Dimensions, Real2, Device2, Index > u2( "u2" );
+   tnlGridOld< Dimensions, Real1, Device1, Index > u1( "u1" ), difference( "difference" );
+   tnlGridOld< Dimensions, Real2, Device2, Index > u2( "u2" );
 
    tnlFile file;
    file. open( firstFileName, tnlReadMode );

@@ -23,7 +23,7 @@
 #include <core/mpi-supp.h>
 #include <core/tnlObject.h>
 #include <matrix/tnlMatrix.h>
-#include <solvers/tnlPreconditioner.h>
+#include <legacy/solvers/tnlPreconditioner.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMatrixSolver : public tnlObject

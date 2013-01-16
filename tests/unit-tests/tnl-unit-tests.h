@@ -35,7 +35,7 @@
 #include "core/tnlArrayTester.h"
 #include "core/tnlSharedArrayTester.h"
 #include "core/tnlSharedVectorTester.h"
-#include "core/tnlGridTester.h"
+#include "core/tnlGridOldTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
 #include "matrix/tnlCSRMatrixTester.h"
@@ -130,10 +130,10 @@ int main( int argc, char* argv[] )
    if( CUDA_ARCH == 13 )
       runner.addTest( tnlFieldCUDA2DTester< double > :: suite() );
 
-   runner.addTest( tnlGridCUDA2DTester< int > :: suite() );
-   runner.addTest( tnlGridCUDA2DTester< float > :: suite() );
+   runner.addTest( tnlGridOldCUDA2DTester< int > :: suite() );
+   runner.addTest( tnlGridOldCUDA2DTester< float > :: suite() );
    if( CUDA_ARCH == 13 )
-      runner.addTest( tnlGridCUDA2DTester< double > :: suite() );
+      runner.addTest( tnlGridOldCUDA2DTester< double > :: suite() );
 
    runner.addTest( tnlCUDAKernelsTester< int > :: suite() );
    runner.addTest( tnlCUDAKernelsTester< float > :: suite() );

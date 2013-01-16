@@ -19,7 +19,7 @@
 #define tnlSORSolverOldH
 
 #include <math.h>
-#include <solvers/tnlMatrixSolver.h>
+#include <legacy/solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >

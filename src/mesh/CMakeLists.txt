@@ -1,6 +1,5 @@
 #INCLUDE_DIRECTORIES( common config detail global io topology )
 
-ADD_SUBDIRECTORY( implementation )
 ADD_SUBDIRECTORY( common )
 ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( detail )
@@ -8,8 +7,7 @@ ADD_SUBDIRECTORY( global )
 ADD_SUBDIRECTORY( io )
 ADD_SUBDIRECTORY( topology )
 
-SET( headers tnlDistributedGrid.h
-             tnlGrid.h  
+SET( headers tnlGrid.h
              config.h 
              information.h 
              mesh.h 

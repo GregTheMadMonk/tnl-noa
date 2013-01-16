@@ -7,6 +7,8 @@ ADD_SUBDIRECTORY( diff )
 ADD_SUBDIRECTORY( matrix )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( solvers )
+ADD_SUBDIRECTORY( legacy )
+ADD_SUBDIRECTORY( implementation )
 
 ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                ${tnl_config_SOURCES}

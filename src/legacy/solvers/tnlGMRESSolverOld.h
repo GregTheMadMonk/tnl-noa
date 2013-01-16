@@ -21,7 +21,7 @@
 
 #include <math.h>
 #include <core/tnlSharedVector.h>
-#include <solvers/tnlMatrixSolver.h>
+#include <legacy/solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridTester.h  -  description
+                          tnlGridOldTester.h  -  description
                              -------------------
     begin                : Dec 13, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -15,39 +15,39 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDTESTER_H_
-#define TNLGRIDTESTER_H_
+#ifndef tnlGridOldTESTER_H_
+#define tnlGridOldTESTER_H_
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <mesh/tnlGrid.h>
+#include <legacy/mesh/tnlGridOld.h>
 #include <core/tnlFile.h>
 
-template< typename Real, typename device, typename Index > class tnlGridTester : public CppUnit :: TestCase
+template< typename Real, typename device, typename Index > class tnlGridOldTester : public CppUnit :: TestCase
 {
    public:
-   tnlGridTester(){};
+   tnlGridOldTester(){};
 
    virtual
-   ~tnlGridTester(){};
+   ~tnlGridOldTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlGridTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlGridOldTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridTester< Real, device, Index > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridOldTester< Real, device, Index > >(
                                "testConstructors",
-                               & tnlGridTester< Real, device, Index > :: testConstructors )
+                               & tnlGridOldTester< Real, device, Index > :: testConstructors )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridTester< Real, device, Index > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridOldTester< Real, device, Index > >(
                                "testSetDomain",
-                               & tnlGridTester< Real, device, Index > :: testSetDomain )
+                               & tnlGridOldTester< Real, device, Index > :: testSetDomain )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridTester< Real, device, Index > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlGridOldTester< Real, device, Index > >(
                                "testSaveAndLoad",
-                               & tnlGridTester< Real, device, Index > :: testSaveAndLoad )
+                               & tnlGridOldTester< Real, device, Index > :: testSaveAndLoad )
                               );
 
       return suiteOfTests;
@@ -55,13 +55,13 @@ template< typename Real, typename device, typename Index > class tnlGridTester :
 
    void testConstructors()
    {
-      tnlGrid< 3, Real, device, Index > Grid( "tnlGridTester :: Grid" );
-      tnlGrid< 3, Real, device, Index > Grid2( "tnlGridTester :: Grid2", Grid );
+      tnlGridOld< 3, Real, device, Index > Grid( "tnlGridOldTester :: Grid" );
+      tnlGridOld< 3, Real, device, Index > Grid2( "tnlGridOldTester :: Grid2", Grid );
    };
 
    void testSetDomain()
    {
-      tnlGrid< 1, Real, device, Index > u1( "tnlGridTester: u1" );
+      tnlGridOld< 1, Real, device, Index > u1( "tnlGridOldTester: u1" );
       u1. setDimensions( tnlTuple< 1, Index >( 11 ) );
       u1. setValue( ( Real ) 1 );
       u1. setDomain( tnlTuple< 1, Real >( 0.0 ),
@@ -73,42 +73,42 @@ template< typename Real, typename device, typename Index > class tnlGridTester :
    void testSaveAndLoad()
    {
       /*tnlFile file;
-      tnlGrid< 1, Real, device, Index > u1( "tnlGridTester:u1" );
-      tnlGrid< 1, Real, device, Index > v1( "tnlGridTester:v1" );
+      tnlGridOld< 1, Real, device, Index > u1( "tnlGridOldTester:u1" );
+      tnlGridOld< 1, Real, device, Index > v1( "tnlGridOldTester:v1" );
       u1. setDimensions( tnlTuple< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
-      file. open( "tnlGridTester-file.bin", tnlWriteMode );
+      file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u1. save( file );
       file. close();
-      file. open( "tnlGridTester-file.bin", tnlReadMode );
+      file. open( "tnlGridOldTester-file.bin", tnlReadMode );
       v1. load( file );
       file. close();
       CPPUNIT_ASSERT( u1 == v1 );
 
-      tnlGrid< 2, Real, device, Index > u2( "tnlGridTester:u2" );
-      tnlGrid< 2, Real, device, Index > v2( "tnlGridTester:v2" );
+      tnlGridOld< 2, Real, device, Index > u2( "tnlGridOldTester:u2" );
+      tnlGridOld< 2, Real, device, Index > v2( "tnlGridOldTester:v2" );
       u2. setDimensions( tnlTuple< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
-      file. open( "tnlGridTester-file.bin", tnlWriteMode );
+      file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u2. save( file );
       file. close();
-      file. open( "tnlGridTester-file.bin", tnlReadMode );
+      file. open( "tnlGridOldTester-file.bin", tnlReadMode );
       v2. load( file );
       file. close();
       CPPUNIT_ASSERT( u2 == v2 );
 
-      tnlGrid< 3, Real, device, Index > u3( "tnlGridTester:u3" );
-      tnlGrid< 3, Real, device, Index > v3( "tnlGridTester:v3" );
+      tnlGridOld< 3, Real, device, Index > u3( "tnlGridOldTester:u3" );
+      tnlGridOld< 3, Real, device, Index > v3( "tnlGridOldTester:v3" );
       u3. setDimensions( tnlTuple< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
-      file. open( "tnlGridTester-file.bin", tnlWriteMode );
+      file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u3. save( file );
       file. close();
-      file. open( "tnlGridTester-file.bin", tnlReadMode );
+      file. open( "tnlGridOldTester-file.bin", tnlReadMode );
       v3. load( file );
       file. close();
       CPPUNIT_ASSERT( u3 == v3 );*/
    }
 
 };
-#endif /* TNLGRIDTESTER_H_ */
+#endif /* tnlGridOldTESTER_H_ */

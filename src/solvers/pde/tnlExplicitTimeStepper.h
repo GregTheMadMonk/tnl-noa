@@ -27,6 +27,8 @@ class tnlExplicitTimeStepper
    typedef Problem ProblemType;
    typedef OdeSolver< ProblemType > OdeSolverType;
 
+   tnlExplicitTimeStepper();
+
    void setSolver( OdeSolverType& odeSolver );
 
    protected:
@@ -34,6 +36,6 @@ class tnlExplicitTimeStepper
    OdeSolverType* odeSolver;
 };
 
-
+#include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
 
 #endif /* TNLEXPLICITTIMESTEPPER_H_ */

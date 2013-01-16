@@ -18,7 +18,7 @@
 #ifndef compare_objectsH
 #define compare_objectsH
 
-#include <mesh/tnlGrid.h>
+#include <legacy/mesh/tnlGridOld.h>
 #include <math.h>
 #include <core/mfuncs.h>
 
@@ -27,12 +27,12 @@ template< typename Real1,
           typename Device1,
           typename Device2,
           typename Index >
-bool compareObjects( const tnlGrid< 2, Real1, Device1, Index >& u1,
-                     const tnlGrid< 2, Real2, Device2, Index >& u2,
+bool compareObjects( const tnlGridOld< 2, Real1, Device1, Index >& u1,
+                     const tnlGridOld< 2, Real2, Device2, Index >& u2,
                      Real1& l1_norm,
                      Real1& l2_norm,
                      Real1& max_norm,
-                     tnlGrid< 2, Real1, Device1, Index >& difference,
+                     tnlGridOld< 2, Real1, Device1, Index >& difference,
                      Index edge_skip )
 {
    if( u1. getDimensions() != u2. getDimensions() ||
@@ -74,12 +74,12 @@ template< typename Real1,
           typename Device1,
           typename Device2,
           typename Index >
-bool compareObjects( const tnlGrid< 3, Real1, Device1, Index >& u1,
-                     const tnlGrid< 3, Real2, Device2, Index >& u2,
+bool compareObjects( const tnlGridOld< 3, Real1, Device1, Index >& u1,
+                     const tnlGridOld< 3, Real2, Device2, Index >& u2,
                      Real1& l1_norm,
                      Real1& l2_norm,
                      Real1& max_norm,
-                     tnlGrid< 3, Real1, Device1, Index >& difference,
+                     tnlGridOld< 3, Real1, Device1, Index >& difference,
                      Index edge_skip )
 {
    if( u1. getDimensions() != u2. getDimensions() ||

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGrid3D_impl.h  -  description
+                          tnlGridOld3D_impl.h  -  description
                              -------------------
     begin                : Nov 22, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRID3D_IMPL_H_
-#define TNLGRID3D_IMPL_H_
+#ifndef tnlGridOld3D_IMPL_H_
+#define tnlGridOld3D_IMPL_H_
 
 #ifdef HAVE_CUDA
 /*template< int Dimensions, typename Real, typename Index >
@@ -50,40 +50,40 @@ __global__ void setNeumannBC( const Index xSize,
 #endif
 
 template< typename Real, typename Device, typename Index >
-tnlGrid< 3,Real, Device, Index > :: tnlGrid()
+tnlGridOld< 3,Real, Device, Index > :: tnlGridOld()
 {
 }
 
 template< typename Real, typename Device, typename Index >
-tnlGrid< 3,Real, Device, Index > :: tnlGrid( const tnlString& name )
-{
-   this -> setName( name );
-}
-
-template< typename Real, typename Device, typename Index >
-tnlGrid< 3,Real, Device, Index > :: tnlGrid( const tnlString& name,
-                                             const tnlGrid< 3,Real, tnlHost, Index >& grid )
+tnlGridOld< 3,Real, Device, Index > :: tnlGridOld( const tnlString& name )
 {
    this -> setName( name );
-   this -> setLike( grid );
 }
 
 template< typename Real, typename Device, typename Index >
-tnlGrid< 3,Real, Device, Index > :: tnlGrid( const tnlString& name,
-                                              const tnlGrid< 3,Real, tnlCuda, Index >& grid )
+tnlGridOld< 3,Real, Device, Index > :: tnlGridOld( const tnlString& name,
+                                             const tnlGridOld< 3,Real, tnlHost, Index >& grid )
 {
    this -> setName( name );
    this -> setLike( grid );
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Index >& tnlGrid< 3,Real, Device, Index > :: getDimensions() const
+tnlGridOld< 3,Real, Device, Index > :: tnlGridOld( const tnlString& name,
+                                              const tnlGridOld< 3,Real, tnlCuda, Index >& grid )
+{
+   this -> setName( name );
+   this -> setLike( grid );
+}
+
+template< typename Real, typename Device, typename Index >
+const tnlTuple< 3,Index >& tnlGridOld< 3,Real, Device, Index > :: getDimensions() const
 {
    return tnlMultiVector< 3,Real, Device, Index > :: getDimensions();
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: setDimensions( const tnlTuple< 3,Index >& dimensions )
+bool tnlGridOld< 3,Real, Device, Index > :: setDimensions( const tnlTuple< 3,Index >& dimensions )
 {
    if( ! tnlMultiVector< 3,Real, Device, Index > :: setDimensions( dimensions ) )
       return false;
@@ -94,7 +94,7 @@ bool tnlGrid< 3,Real, Device, Index > :: setDimensions( const tnlTuple< 3,Index 
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: setDomain( const tnlTuple< 3,Real >& lowerCorner,
+bool tnlGridOld< 3,Real, Device, Index > :: setDomain( const tnlTuple< 3,Real >& lowerCorner,
                                                      const tnlTuple< 3,Real >& upperCorner )
 {
    if( lowerCorner >= upperCorner )
@@ -113,34 +113,34 @@ bool tnlGrid< 3,Real, Device, Index > :: setDomain( const tnlTuple< 3,Real >& lo
 
 template< typename Real, typename Device, typename Index >
    template< typename Grid >
-bool tnlGrid< 3,Real, Device, Index > :: setLike( const Grid& v )
+bool tnlGridOld< 3,Real, Device, Index > :: setLike( const Grid& v )
 {
    return tnlMultiVector< 3,Real, Device, Index > :: setLike( v ) &&
           this -> setDomain( v. getDomainLowerCorner(), v. getDomainUpperCorner() );
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGrid< 3,Real, Device, Index > :: getDomainLowerCorner() const
+const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainLowerCorner() const
 {
    return this -> domainLowerCorner;
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGrid< 3,Real, Device, Index > :: getDomainUpperCorner() const
+const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainUpperCorner() const
 {
    return this -> domainUpperCorner;
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGrid< 3,Real, Device, Index > :: getSpaceSteps() const
+const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getSpaceSteps() const
 {
    return spaceSteps;
 }
 
 template< typename Real, typename Device, typename Index >
-tnlString tnlGrid< 3,Real, Device, Index > :: getType() const
+tnlString tnlGridOld< 3,Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlGrid< ") +
+   return tnlString( "tnlGridOld< ") +
           tnlString( "3" ) +
           tnlString( ", " ) +
           tnlString( getParameterType< Real >() ) +
@@ -152,7 +152,7 @@ tnlString tnlGrid< 3,Real, Device, Index > :: getType() const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: operator == ( const tnlGrid< 3,Real, Device, Index >& grid ) const
+bool tnlGridOld< 3,Real, Device, Index > :: operator == ( const tnlGridOld< 3,Real, Device, Index >& grid ) const
 {
    tnlAssert( this -> getDomainLowerCorner() == grid. getDomainLowerCorner() &&
               this -> getDomainUpperCorner() == grid. getDomainUpperCorner(),
@@ -167,16 +167,16 @@ bool tnlGrid< 3,Real, Device, Index > :: operator == ( const tnlGrid< 3,Real, De
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: operator != ( const tnlGrid< 3,Real, Device, Index >& grid ) const
+bool tnlGridOld< 3,Real, Device, Index > :: operator != ( const tnlGridOld< 3,Real, Device, Index >& grid ) const
 {
    return ! ( (* this ) == grid );
 }
 
 template< typename Real, typename Device, typename Index >
   template< typename Real2, typename Device2, typename Index2 >
-tnlGrid< 3,Real, Device, Index >&
-tnlGrid< 3,Real, Device, Index >
-:: operator = ( const tnlGrid< 3,Real2, Device2, Index2 >& grid )
+tnlGridOld< 3,Real, Device, Index >&
+tnlGridOld< 3,Real, Device, Index >
+:: operator = ( const tnlGridOld< 3,Real2, Device2, Index2 >& grid )
 {
    tnlAssert( this -> getDimensions() == grid. getDimensions(),
               cerr << "You are attempting to assign two arrays with different dimensions." << endl
@@ -189,13 +189,13 @@ tnlGrid< 3,Real, Device, Index >
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getValue( const tnlTuple< 3,Real >& point ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getValue( const tnlTuple< 3,Real >& point ) const
 {
    tnlAssert( 0, cerr << "Interpolation is not implemented yet.");
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getValue( const Real& x,
+Real tnlGridOld< 3,Real, Device, Index > :: getValue( const Real& x,
                                                              const Real& y,
                                                              const Real& z ) const
 {
@@ -204,7 +204,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getValue( const Real& x,
 
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_x_f( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_x_f( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -226,7 +226,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_x_f( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_x_b( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_x_b( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -248,7 +248,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_x_b( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_x( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_x( const Index i1,
                                                     const Index i2,
                                                     const Index i3 ) const
 {
@@ -270,7 +270,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_x( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_xx( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_xx( const Index i1,
                                                      const Index i2,
                                                      const Index i3 ) const
 {
@@ -293,7 +293,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_xx( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_y_f( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_y_f( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -318,7 +318,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_y_f( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_y_b( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_y_b( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -340,7 +340,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_y_b( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_y( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_y( const Index i1,
                                                     const Index i2,
                                                     const Index i3 ) const
 {
@@ -362,7 +362,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_y( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_yy( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_yy( const Index i1,
                                                      const Index i2,
                                                      const Index i3 ) const
 {
@@ -385,7 +385,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_yy( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_z_f( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_z_f( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -407,7 +407,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_z_f( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_z_b( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_z_b( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
@@ -429,7 +429,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_z_b( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_z( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_z( const Index i1,
                                                     const Index i2,
                                                     const Index i3 ) const
 {
@@ -451,7 +451,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_z( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: Partial_zz( const Index i1,
+Real tnlGridOld< 3,Real, Device, Index > :: Partial_zz( const Index i1,
                                                      const Index i2,
                                                      const Index i3 ) const
 {
@@ -474,7 +474,7 @@ Real tnlGrid< 3,Real, Device, Index > :: Partial_zz( const Index i1,
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: setDirichletBC( const tnlGrid< 3,Real, Device, Index >&bc,
+void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const tnlGridOld< 3,Real, Device, Index >&bc,
                                                          const tnlTuple< 3,bool >& lowerBC,
                                                          const tnlTuple< 3,bool >& upperBC )
 {
@@ -535,7 +535,7 @@ void tnlGrid< 3,Real, Device, Index > :: setDirichletBC( const tnlGrid< 3,Real, 
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: setDirichletBC( const Real& bcValue,
+void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const Real& bcValue,
                                                          const tnlTuple< 3,bool >& lowerBC,
                                                          const tnlTuple< 3,bool >& upperBC )
 {
@@ -594,7 +594,7 @@ void tnlGrid< 3,Real, Device, Index > :: setDirichletBC( const Real& bcValue,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: setNeumannBC( const tnlGrid< 3,Real, Device, Index >&bc,
+void tnlGridOld< 3,Real, Device, Index > :: setNeumannBC( const tnlGridOld< 3,Real, Device, Index >&bc,
                                                        const tnlTuple< 3,bool >& lowerBC,
                                                        const tnlTuple< 3,bool >& upperBC )
 {
@@ -660,7 +660,7 @@ void tnlGrid< 3,Real, Device, Index > :: setNeumannBC( const tnlGrid< 3,Real, De
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: setNeumannBC( const Real& bcValue,
+void tnlGridOld< 3,Real, Device, Index > :: setNeumannBC( const Real& bcValue,
                                                        const tnlTuple< 3,bool >& lowerBC,
                                                        const tnlTuple< 3,bool >& upperBC )
 {
@@ -724,31 +724,31 @@ void tnlGrid< 3,Real, Device, Index > :: setNeumannBC( const Real& bcValue,
 }
 
 /*template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getMax() const
+Real tnlGridOld< 3,Real, Device, Index > :: getMax() const
 {
    return tnlMax( * this );
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getMin() const
+Real tnlGridOld< 3,Real, Device, Index > :: getMin() const
 {
    return tnlMin( * this );
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getAbsMax() const
+Real tnlGridOld< 3,Real, Device, Index > :: getAbsMax() const
 {
    return tnlAbsMax( * this );
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getAbsMin() const
+Real tnlGridOld< 3,Real, Device, Index > :: getAbsMin() const
 {
    return tnlAbsMin( * this );
 }*/
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getLpNorm() const
+Real tnlGridOld< 3,Real, Device, Index > :: getLpNorm() const
 {
    Real result = tnlLpNorm( * this );
    return result * getSpaceSteps(). x()
@@ -758,13 +758,13 @@ Real tnlGrid< 3,Real, Device, Index > :: getLpNorm() const
 
 /*
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getSum() const
+Real tnlGridOld< 3,Real, Device, Index > :: getSum() const
 {
    return tnlMultiVector< 3,Real, Device, Index > :: sum( * this );
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceMax( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceMax( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -779,7 +779,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceMax( const tnlVector< Real
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceMin( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceMin( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -794,7 +794,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceMin( const tnlVector< Real
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -809,7 +809,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceAbsMax( const tnlVector< R
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -824,7 +824,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceAbsMin( const tnlVector< R
 }*/
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -843,7 +843,7 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceLpNorm( const tnlVector< R
 }
 
 /*template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: getDifferenceSum( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getDifferenceSum( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -858,13 +858,13 @@ Real tnlGrid< 3,Real, Device, Index > :: getDifferenceSum( const tnlVector< Real
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: scalarMultiplication( const Real& alpha )
+void tnlGridOld< 3,Real, Device, Index > :: scalarMultiplication( const Real& alpha )
 {
    return this -> scalarMultiplication( alpha );
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGrid< 3,Real, Device, Index > :: sdot( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 3,Real, Device, Index > :: sdot( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -879,7 +879,7 @@ Real tnlGrid< 3,Real, Device, Index > :: sdot( const tnlVector< Real, Device, In
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: saxpy( const Real& alpha,
+void tnlGridOld< 3,Real, Device, Index > :: saxpy( const Real& alpha,
                                                          const tnlVector< Real, Device, Index >& x )
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -895,7 +895,7 @@ void tnlGrid< 3,Real, Device, Index > :: saxpy( const Real& alpha,
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGrid< 3,Real, Device, Index > :: saxmy( const Real& alpha,
+void tnlGridOld< 3,Real, Device, Index > :: saxmy( const Real& alpha,
                                                      const tnlVector< Real, Device, Index >& x )
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -912,11 +912,11 @@ void tnlGrid< 3,Real, Device, Index > :: saxmy( const Real& alpha,
 
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: save( tnlFile& file ) const
+bool tnlGridOld< 3,Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlMultiVector< 3,Real, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlMultiVector of the tnlGrid "
+      cerr << "I was not able to write the tnlMultiVector of the tnlGridOld "
            << this -> getName() << endl;
       return false;
    }
@@ -924,7 +924,7 @@ bool tnlGrid< 3,Real, Device, Index > :: save( tnlFile& file ) const
        ! domainUpperCorner. save( file ) ||
        ! spaceSteps. save( file ) )
    {
-      cerr << "I was not able to write the domain decsription of the tnlGrid "
+      cerr << "I was not able to write the domain decsription of the tnlGridOld "
            << this -> getName() << endl;
       return false;
    }
@@ -932,11 +932,11 @@ bool tnlGrid< 3,Real, Device, Index > :: save( tnlFile& file ) const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: load( tnlFile& file )
+bool tnlGridOld< 3,Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlMultiVector< 3,Real, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlMultiVector of the tnlGrid "
+      cerr << "I was not able to read the tnlMultiVector of the tnlGridOld "
            << this -> getName() << endl;
       return false;
    }
@@ -944,7 +944,7 @@ bool tnlGrid< 3,Real, Device, Index > :: load( tnlFile& file )
        ! domainUpperCorner. load( file ) ||
        ! spaceSteps. load( file ) )
    {
-      cerr << "I was not able to read the domain description of the tnlGrid "
+      cerr << "I was not able to read the domain description of the tnlGridOld "
            << this -> getName() << endl;
       return false;
    }
@@ -952,25 +952,25 @@ bool tnlGrid< 3,Real, Device, Index > :: load( tnlFile& file )
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: save( const tnlString& fileName ) const
+bool tnlGridOld< 3,Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: load( const tnlString& fileName )
+bool tnlGridOld< 3,Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGrid< 3,Real, Device, Index > :: draw( const tnlString& fileName,
+bool tnlGridOld< 3,Real, Device, Index > :: draw( const tnlString& fileName,
                                                          const tnlString& format,
                                                          const tnlTuple< 3,Index > steps ) const
 {
    tnlAssert( steps > ( tnlTuple< 3,Index >( 0 ) ),
               cerr << "Wrong steps of increment ( " << steps << " )"
-                   << " for drawing the tnlGrid " << this -> getName() << "." << endl; );
+                   << " for drawing the tnlGridOld " << this -> getName() << "." << endl; );
    if( format == "tnl" )
       return this -> save( fileName );
    fstream file;
@@ -978,7 +978,7 @@ bool tnlGrid< 3,Real, Device, Index > :: draw( const tnlString& fileName,
    if( ! file )
    {
       cerr << " I am not able to open the file " << fileName
-           << " for drawing the tnlGrid " << this -> getName() << "." << endl;
+           << " for drawing the tnlGridOld " << this -> getName() << "." << endl;
       return false;
    }
    const Index xSize = this -> getDimensions()[ tnlX ];
@@ -992,7 +992,7 @@ bool tnlGrid< 3,Real, Device, Index > :: draw( const tnlString& fileName,
    const Real& hz = this -> getSpaceSteps()[ tnlZ ];
    if( format == "gnuplot" )
    {
-      cout << "GNUPLOT is not supported for tnlGrid3D." << endl;
+      cout << "GNUPLOT is not supported for tnlGridOld3D." << endl;
       return false;
    }
    if( format == "vti" )
@@ -1053,7 +1053,7 @@ bool tnlGrid< 3,Real, Device, Index > :: draw( const tnlString& fileName,
             }
       return true;
    }
-   cerr << endl << "I do not know a format " << format << " for tnlGrid with 3 dimensions.";
+   cerr << endl << "I do not know a format " << format << " for tnlGridOld with 3 dimensions.";
    return false;
 }
 
@@ -1157,4 +1157,4 @@ __global__ void setNeumannBC( const Index xSize,
 
 
 
-#endif /* TNLGRID3D_IMPL_H_ */
+#endif /* tnlGrid3D_IMPL_H_ */
