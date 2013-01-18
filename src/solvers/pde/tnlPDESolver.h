@@ -18,18 +18,45 @@
 #ifndef TNLPDESOLVER_H_
 #define TNLPDESOLVER_H_
 
-template< typename TimeStepper >
-class tnlPDESolver
+#include <core/tnlObject.h>
+
+template< typename Problem,
+          typename TimeStepper >
+class tnlPDESolver : public tnlObject
 {
    public:
 
+   typedef typename TimeStepper :: RealType RealType;
+   typedef typename TimeStepper :: DeviceType DeviceType;
+   typedef typename TimeStepper :: IndexType IndexType;
+   typedef typename TimeStepper :: ProblemType ProblemType;
+   
+   tnlPDESolver();
+
    void setTimeStepper( TimeStepper& timeStepper );
+
+   void setProblem( ProblemType& problem );
+
+   bool setFinalTime( const RealType& finalT );
+
+   const RealType& getFinalTine() const;
+
+   bool setSnapshotTau( const RealType& tau );
+   
+   const RealType& getSnapshotTau() const;
+
+   bool solve();
 
    protected:
 
    TimeStepper* timeStepper;
 
+   RealType finalTime, snapshotTau;
+
+   ProblemType* problem;
+
 };
 
+#include <implementation/solvers/pde/tnlPDESolver_impl.h>
 
 #endif /* TNLPDESOLVER_H_ */

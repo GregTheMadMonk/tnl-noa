@@ -21,7 +21,8 @@
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
-: odeSolver( 0 )
+: odeSolver( 0 ),
+  problem( 0 )
 {
 };
 
@@ -32,6 +33,42 @@ void tnlExplicitTimeStepper< Problem, OdeSolver > :: setSolver( OdeSolver< Probl
    this -> odeSolver = &odeSolver;
 };
 
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+void tnlExplicitTimeStepper< Problem, OdeSolver > :: setProblem( ProblemType& problem )
+{
+   this -> problem = &problem;
+};
 
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+Problem* tnlExplicitTimeStepper< Problem, OdeSolver > :: getProblem() const
+{
+    return this -> problem;
+};
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTau( const RealType& tau )
+{
+   if( tau <= 0.0 )
+   {
+      cerr << "Tau for tnlExplicitTimeStepper must be positive. " << endl;
+      return false;
+   }
+   this -> tau = tau;
+};
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+bool tnlExplicitTimeStepper< Problem, OdeSolver > :: solve( const RealType& time,
+                                                            const RealType& stopTime )
+{
+   this -> odeSolver -> setTau( this -> tau );
+   this -> odeSolver -> setProblem( * this -> problem );
+   DofVectorType& u = problem -> getDofVector();
+   this -> odeSolver -> setTime( time );
+   return this -> odeSolver -> solve( u );
+}
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

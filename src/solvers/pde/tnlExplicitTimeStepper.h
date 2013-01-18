@@ -26,14 +26,33 @@ class tnlExplicitTimeStepper
 
    typedef Problem ProblemType;
    typedef OdeSolver< ProblemType > OdeSolverType;
+   typedef typename Problem :: RealType RealType;
+   typedef typename Problem :: DeviceType DeviceType;
+   typedef typename Problem :: IndexType IndexType;
+   typedef typename ProblemType :: DofVectorType DofVectorType;
 
    tnlExplicitTimeStepper();
 
    void setSolver( OdeSolverType& odeSolver );
 
+   void setProblem( ProblemType& problem );
+
+   ProblemType* getProblem() const;
+
+   bool setTau( const RealType& tau );
+
+   const RealType& getTau() const;
+
+   bool solve( const RealType& time,
+               const RealType& stopTime );
+
    protected:
 
    OdeSolverType* odeSolver;
+
+   Problem* problem;
+
+   RealType tau;
 };
 
 #include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
