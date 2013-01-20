@@ -27,18 +27,18 @@
 #include <solvers/tnlIterativeSolver.h>
 
 template< typename Matrix,
-           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
-                                                                typename Matrix :: Device,
-                                                                typename Matrix :: IndexType> >
+          typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
+                                                            typename Matrix :: DeviceType,
+                                                            typename Matrix :: IndexType> >
 class tnlGMRESSolver : public tnlObject,
-                        public tnlIterativeSolver< typename Matrix :: RealType,
-                                                    typename Matrix :: IndexType >
+                       public tnlIterativeSolver< typename Matrix :: RealType,
+                                                  typename Matrix :: IndexType >
 {
    public:
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: Device Device;
+   typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
@@ -60,26 +60,26 @@ class tnlGMRESSolver : public tnlObject,
    protected:
 
    void update( IndexType k,
-                 IndexType m,
-                 const tnlVector< RealType, tnlHost, IndexType >& H,
-                 const tnlVector< RealType, tnlHost, IndexType >& s,
-                 tnlVector< RealType, Device, IndexType >& v,
-                 tnlVector< RealType, Device, IndexType >& x );
+                IndexType m,
+                const tnlVector< RealType, tnlHost, IndexType >& H,
+                const tnlVector< RealType, tnlHost, IndexType >& s,
+                tnlVector< RealType, DeviceType, IndexType >& v,
+                tnlVector< RealType, DeviceType, IndexType >& x );
 
    void generatePlaneRotation( RealType &dx,
-                                  RealType &dy,
-                                  RealType &cs,
-                                  RealType &sn );
-
-   void applyPlaneRotation( RealType &dx,
                                RealType &dy,
                                RealType &cs,
                                RealType &sn );
 
+   void applyPlaneRotation( RealType &dx,
+                            RealType &dy,
+                            RealType &cs,
+                            RealType &sn );
+
 
    bool setSize( IndexType _size, IndexType m );
 
-   tnlVector< RealType, Device, IndexType > _r, _w, _v, _M_tmp;
+   tnlVector< RealType, DeviceType, IndexType > _r, _w, _v, _M_tmp;
    tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting, maxIterations;
@@ -90,6 +90,43 @@ class tnlGMRESSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <solvers/linear/krylov/implementation/tnlGMRESSolver_impl.h>
+#include <implementation/solvers/linear/krylov/tnlGMRESSolver_impl.h>
+
+#include <matrix/tnlCSRMatrix.h>
+#include <matrix/tnlEllpackMatrix.h>
+#include <matrix/tnlMultiDiagonalMatrix.h>
+
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, long int > >;
+
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
+
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;
+
+
+#ifdef HAVE_CUDA
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
+
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
+
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;
+#endif
 
 #endif

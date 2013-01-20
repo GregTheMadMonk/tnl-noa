@@ -69,6 +69,6 @@ class tnlTFQMRSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <solvers/linear/krylov/implementation/tnlTFQMRSolver_impl.h>
+#include <implementation/solvers/linear/krylov/tnlTFQMRSolver_impl.h>
 
 #endif

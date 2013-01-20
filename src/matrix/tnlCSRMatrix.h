@@ -47,13 +47,13 @@ template< typename Real, typename device, typename Index > class tnlEllpackMatri
  */
 
 // TODO: add CUDA support
-template< typename Real, typename Dev = tnlHost, typename Index = int >
-class tnlCSRMatrix : public tnlMatrix< Real, Dev, Index >
+template< typename Real, typename Device = tnlHost, typename Index = int >
+class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
-   typedef Dev Device;
+   typedef Device DeviceType;
    typedef Index IndexType;
 
    //! Basic constructor

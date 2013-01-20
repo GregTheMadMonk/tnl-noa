@@ -19,7 +19,7 @@
 #define tnlMersonSolverH
 
 #include <math.h>
-#include <core/implementation/cuda-long-vector-kernels.h>
+#include <implementation/core/cuda-long-vector-kernels.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 
 /****

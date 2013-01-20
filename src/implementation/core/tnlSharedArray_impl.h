@@ -18,9 +18,12 @@
 #ifndef TNLSHAREDARRAY_H_IMPLEMENTATION
 #define TNLSHAREDARRAY_H_IMPLEMENTATION
 
+#include <iostream>
 #include <core/tnlFile.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
+
+using namespace std;
 
 //namespace implementation
 //{
@@ -167,8 +170,8 @@ tnlSharedArray< Element, Device, Index >&
     tnlSharedArray< Element, Device, Index > :: operator = ( const tnlSharedArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << a. getName() << endl
-                << "Source size: " << a. getSize() << endl
+           cerr << "Source name: " << array. getName() << endl
+                << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
    Device :: template memcpy< Element,
@@ -187,8 +190,8 @@ template< typename Element,
 tnlSharedArray< Element, Device, Index >& tnlSharedArray< Element, Device, Index > :: operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << a. getName() << endl
-                << "Source size: " << a. getSize() << endl
+           cerr << "Source name: " << array. getName() << endl
+                << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
    Device :: template memcpy< typename Array :: ElementType,

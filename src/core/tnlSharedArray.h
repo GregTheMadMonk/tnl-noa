@@ -104,6 +104,6 @@ class tnlSharedArray : public tnlObject
    Element* data;
 };
 
-#include <core/implementation/tnlSharedArray_impl.h>
+#include <implementation/core/tnlSharedArray_impl.h>
 
 #endif /* TNLSHAREDARRAY_H_ */

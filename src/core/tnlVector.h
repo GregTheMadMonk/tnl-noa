@@ -131,6 +131,22 @@ class tnlVector : public tnlArray< Real, Device, Index >
                    const Vector& z );
 };
 
-#include <core/implementation/tnlVector_impl.h>
+#include <implementation/core/tnlVector_impl.h>
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlVector< float, tnlHost, int >;
+extern template class tnlVector< double, tnlHost, int >;
+extern template class tnlVector< float, tnlHost, long int >;
+extern template class tnlVector< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+extern template class tnlVector< float, tnlCuda, int >;
+extern template class tnlVector< double, tnlCuda, int >;
+extern template class tnlVector< float, tnlCuda, long int >;
+extern template class tnlVector< double, tnlCuda, long int >;
+#endif
+
+#endif
 
 #endif /* TNLVECTOR_H_ */

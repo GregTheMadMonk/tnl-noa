@@ -44,7 +44,7 @@ tnlString tnlGMRESSolver< Matrix, Preconditioner > :: getType() const
    return tnlString( "tnlGMRESSolver< " ) +
            tnlString( GetParameterType( ( RealType ) 0.0 ) ) +
            tnlString( ", " ) +
-           Device :: getDeviceType() +
+           DeviceType :: getDeviceType() +
            tnlString( ", " ) +
            tnlString( GetParameterType( ( IndexType ) 0 ) ) +
            tnlString( " >" );
@@ -133,9 +133,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this -> resetIterations();
    this -> setResidue( beta / normb );
 
-   tnlSharedVector< RealType, Device, IndexType > vi;
+   tnlSharedVector< RealType, DeviceType, IndexType > vi;
    vi. setName( "tnlGMRESSolver::vi" );
-   tnlSharedVector< RealType, Device, IndexType > vk;
+   tnlSharedVector< RealType, DeviceType, IndexType > vk;
    vk. setName( "tnlGMRESSolver::vk" );
    while( this -> getIterations() < this -> getMaxIterations() &&
           this -> getResidue() > this -> getMaxResidue() )
@@ -276,8 +276,8 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
                                                          IndexType m,
                                                          const tnlVector< RealType, tnlHost, IndexType >& H,
                                                          const tnlVector< RealType, tnlHost, IndexType >& s,
-                                                         tnlVector< RealType, Device, IndexType >& v,
-                                                         tnlVector< RealType, Device, IndexType >& x )
+                                                         tnlVector< RealType, DeviceType, IndexType >& v,
+                                                         tnlVector< RealType, DeviceType, IndexType >& x )
 {
    //dbgFunctionName( "tnlGMRESSolver", "Update" );
    tnlVector< RealType, tnlHost, IndexType > y( "tnlGMRESSolver::update:y" );
@@ -297,7 +297,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    }
    //dbgCout_ARRAY( y, m + 1 );
 
-   tnlSharedVector< RealType, Device, IndexType > vi;
+   tnlSharedVector< RealType, DeviceType, IndexType > vi;
    vi. setName( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {

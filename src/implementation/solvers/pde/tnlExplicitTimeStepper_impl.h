@@ -68,6 +68,7 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver > :: solve( const RealType& time
    this -> odeSolver -> setProblem( * this -> problem );
    DofVectorType& u = problem -> getDofVector();
    this -> odeSolver -> setTime( time );
+   this -> odeSolver -> setStopTime( stopTime );
    return this -> odeSolver -> solve( u );
 }
 

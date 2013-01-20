@@ -29,7 +29,7 @@
 using namespace std;
 
 //! Implementation of the ELLPACK format
-template< typename Real, typename device = tnlHost, typename Index = int >
+template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlEllpackMatrix
 {
 };
@@ -38,6 +38,11 @@ template< typename Real, typename Index >
 class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost, Index >
 {
    public:
+
+   typedef Real RealType;
+   typedef tnlHost DeviceType;
+   typedef Index IndexType;
+
    //! Basic constructor
    tnlEllpackMatrix( const tnlString& name, Index _row );
 

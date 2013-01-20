@@ -18,7 +18,7 @@
 #ifndef VECTOROPERATIONS_H_
 #define VECTOROPERATIONS_H_
 
-#include <core/implementation/cuda-long-vector-kernels.h>
+#include <implementation/core/cuda-long-vector-kernels.h>
 
 template< typename Vector >
 typename Vector :: RealType getHostVectorMax( const Vector& v )
@@ -793,7 +793,7 @@ void vectorSaxpy( Vector1& y,
    typedef typename Vector2 :: DeviceType Device2;
 
    tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
+              cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
    tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
@@ -854,7 +854,7 @@ void vectorSaxmy( Vector1& y,
    typedef typename Vector2 :: DeviceType Device2;
 
    tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
+              cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
    tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
@@ -919,7 +919,7 @@ void vectorSaxpsby( Vector1& y,
    typedef typename Vector2 :: DeviceType Device2;
 
    tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
+              cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
    tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
@@ -988,7 +988,7 @@ void vectorSaxpsbz( Vector1& y,
    typedef typename Vector2 :: DeviceType Device2;
 
    tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
+              cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
    tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),
@@ -1057,7 +1057,7 @@ void vectorSaxpsbzpy( Vector1& y,
    typedef typename Vector2 :: DeviceType Device2;
 
    tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
+              cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
    tnlAssert( Device1 :: getDevice() == Device2 :: getDevice(),

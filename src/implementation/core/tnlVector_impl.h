@@ -18,7 +18,7 @@
 #ifndef TNLVECTOR_H_IMPLEMENTATION
 #define TNLVECTOR_H_IMPLEMENTATION
 
-#include <core/implementation/vector-operations.h>
+#include <implementation/core/vector-operations.h>
 
 template< typename Real,
           typename Device,

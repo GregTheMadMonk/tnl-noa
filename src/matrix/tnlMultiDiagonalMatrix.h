@@ -25,6 +25,10 @@ class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
    //! Basic constructor
    tnlMultiDiagonalMatrix( const tnlString& name );
 

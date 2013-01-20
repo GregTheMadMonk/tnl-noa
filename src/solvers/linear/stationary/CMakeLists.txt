@@ -1,5 +1,3 @@
-ADD_SUBDIRECTORY( implementation )
-
 SET( headers tnlSORSolver.h
    )
    

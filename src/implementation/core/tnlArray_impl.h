@@ -18,9 +18,13 @@
 #ifndef TNLARRAY_H_IMPLEMENTATION
 #define TNLARRAY_H_IMPLEMENTATION
 
+#include <iostream>
+#include <core/tnlAssert.h>
 #include <core/tnlFile.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
+
+using namespace std;
 
 //namespace implementation
 //{
@@ -92,7 +96,7 @@ bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
    tnlAssert( array. getSize() >= 0,
               cerr << "You try to set size of tnlArray to negative value."
                    << "Name: " << this -> getName() << endl
-                   << "Array name:" << array. getName() <<
+                   << "Array name:" << array. getName()
                    << "Array size: " << array. getSize() << endl );
    return setSize( array. getSize() );
 };
@@ -184,8 +188,8 @@ tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const tnlArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << a. getName() << endl
-                << "Source size: " << a. getSize() << endl
+           cerr << "Source name: " << array. getName() << endl
+                << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
    Device :: template memcpy< Element,
@@ -205,8 +209,8 @@ tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << a. getName() << endl
-                << "Source size: " << a. getSize() << endl
+           cerr << "Source name: " << array. getName() << endl
+                << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
    Device :: template memcpy< typename Array :: ElementType,

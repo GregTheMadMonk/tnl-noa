@@ -1,9 +1,9 @@
 /***************************************************************************
- tnlStack.cpp  -  description
- -------------------
- begin                : Nov 21, 2009
- copyright            : (C) 2009 by Tomas Oberhuber
- email                : tomas.oberhuber@fjfi.cvut.cz
+                          tnlArray_impl.cpp  -  description
+                             -------------------
+    begin                : Jan 20, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,5 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlStack.h"
+#include <core/tnlArray.h>
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+template class tnlArray< float, tnlHost, int >;
+template class tnlArray< double, tnlHost, int >;
+template class tnlArray< float, tnlHost, long int >;
+template class tnlArray< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+template class tnlArray< float, tnlCuda, int >;
+template class tnlArray< double, tnlCuda, int >;
+template class tnlArray< float, tnlCuda, long int >;
+template class tnlArray< double, tnlCuda, long int >;
+#endif
+
+#endif

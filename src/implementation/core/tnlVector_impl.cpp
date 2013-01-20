@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlLinearResidueGetter.h  -  description
+                          tnlVector_impl.cpp  -  description
                              -------------------
-    begin                : Nov 25, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Jan 20, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,24 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
+#include <core/tnlVector.h>
 
-template< typename Matrix, typename Vector >
-class tnlLinearResidueGetter
-{
-   public:
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: Device DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
+template class tnlVector< float, tnlHost, int >;
+template class tnlVector< double, tnlHost, int >;
+template class tnlVector< float, tnlHost, long int >;
+template class tnlVector< double, tnlHost, long int >;
 
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
-};
+#ifdef HAVE_CUDA
+template class tnlVector< float, tnlCuda, int >;
+template class tnlVector< double, tnlCuda, int >;
+template class tnlVector< float, tnlCuda, long int >;
+template class tnlVector< double, tnlCuda, long int >;
+#endif
 
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
+#endif
 
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+

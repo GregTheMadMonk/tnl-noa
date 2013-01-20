@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlLinearResidueGetter.h  -  description
+                          tnlSharedVector_impl.cpp  -  description
                              -------------------
-    begin                : Nov 25, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Jan 20, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,24 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
+#include <core/tnlSharedVector.h>
 
-template< typename Matrix, typename Vector >
-class tnlLinearResidueGetter
-{
-   public:
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: Device DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
+template class tnlSharedVector< float, tnlHost, int >;
+template class tnlSharedVector< double, tnlHost, int >;
+template class tnlSharedVector< float, tnlHost, long int >;
+template class tnlSharedVector< double, tnlHost, long int >;
 
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
-};
+#ifdef HAVE_CUDA
+template class tnlSharedVector< float, tnlCuda, int >;
+template class tnlSharedVector< double, tnlCuda, int >;
+template class tnlSharedVector< float, tnlCuda, long int >;
+template class tnlSharedVector< double, tnlCuda, long int >;
+#endif
 
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
+#endif
 
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+
+

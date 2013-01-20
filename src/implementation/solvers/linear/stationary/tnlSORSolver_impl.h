@@ -30,7 +30,7 @@ tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
    return tnlString( "tnlSORSolver< " ) +
            tnlString( GetParameterType( ( RealType ) 0.0 ) ) +
            tnlString( ", " ) +
-           Device :: getDeviceType() +
+           DeviceType :: getDeviceType() +
            tnlString( ", " ) +
            tnlString( GetParameterType( ( IndexType ) 0 ) ) +
            tnlString( " >" );

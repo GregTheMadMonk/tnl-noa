@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiArray_impl.h  -  description
+                          tnlMultiArray1D_impl.h  -  description
                              -------------------
     begin                : Nov 13, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,14 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMULTIARRAY_IMPL_H_
-#define TNLMULTIARRAY_IMPL_H_
+#ifndef TNLMULTIARRAY1D_IMPL_H_
+#define TNLMULTIARRAY1D_IMPL_H_
 
 
 
 template< typename Element, typename Device, typename Index >
 tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
 {
+}
+
+template< typename Element, typename Device, typename Index >
+tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray( const tnlString& name )
+{
+   this -> setName( name );
 }
 
 template< typename Element, typename Device, typename Index >
@@ -40,26 +46,26 @@ tnlString tnlMultiArray< 1, Element, Device, Index > :: getType() const
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index xSize )
+bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
 {
-   tnlAssert( xSize > 0,
-              cerr << "xSize = " << xSize );
-   dimensions[ 0 ] = xSize;
-   return tnlArray< Element, Device, Index > :: setSize( xSize );
+   tnlAssert( iSize > 0,
+              cerr << "iSize = " << iSize );
+   dimensions[ 0 ] = iSize;
+   return tnlArray< Element, Device, Index > :: setSize( iSize );
 }
 
 template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const tnlTuple< 1, Index >& dimensions )
 {
-   tnlAssert( xSize > 0,
-              cerr << "xSize = " << xSize );
+   tnlAssert( dimensions[ 0 ] > 0,
+              cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this -> dimensions = dimensions;
    return tnlArray< Element, Device, Index > :: setSize( this -> dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >
    template< typename MultiArray >
-bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const tnlMultiArray& multiArray )
+bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const MultiArray& multiArray )
 {
    return setDimensions( multiArray. getDimensions() );
 }
@@ -79,15 +85,16 @@ const tnlTuple< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDim
 template< typename Element, typename Device, typename Index >
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
-   tnlAssert( xSize > 0,
-              cerr << "i = " << i );
+   tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
+              cerr << "i = " << i
+                   << "this -> dimensions[ 0 ] " << this -> dimensions[ 0 ] );
    return i;
 }
 
 template< typename Element, typename Device, typename Index >
 Element tnlMultiArray< 1, Element, Device, Index > :: getElement( const Index i ) const
 {
-   return tnlArray< Element, Device, Index > :: getElement( getLongVectorIndex( i ) );
+   return tnlArray< Element, Device, Index > :: getElement( getElementIndex( i ) );
 }
 
 template< typename Element, typename Device, typename Index >
@@ -100,13 +107,13 @@ void tnlMultiArray< 1, Element, Device, Index > :: setElement( const Index i, El
 template< typename Element, typename Device, typename Index >
 Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element )
 {
-   return tnlArray< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
 const Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
 {
-   return tnlArray< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
@@ -207,56 +214,4 @@ ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, In
    return str;
 }
 
-/*
-template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 2, Element, Device, Index >& array )
-{
-   tnlTuple< 2, Index > dims = array. getDimensions();
-   for( Index i = 0; i < dims[ tnlX ]; i ++ )
-   {
-      for( Index j = 0; j < dims[ tnlY ]; j ++ )
-      {
-         tnlTuple< 2, Index > ind;
-         ind[ 0 ] = i;
-         ind[ 1 ] = j;
-         str << array. getElement( ind ) << " ";
-      }
-      str << endl;
-   }
-   return str;
-}
-
-template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 3, Element, Device, Index >& array )
-{
-   tnlTuple< 3, Index > dims = array. getDimensions();
-   for( Index i = 0; i < dims[ tnlX ]; i ++ )
-   {
-      for( Index j = 0; j < dims[ tnlY ]; j ++ )
-      {
-         for( Index k = 0; k < dims[ tnlZ ]; k ++ )
-         {
-            tnlTuple< 3, Index > ind;
-            ind[ 0 ] = i;
-            ind[ 1 ] = j;
-            ind[ 2 ] = k;
-            str << array. getElement( ind ) << " ";
-         }
-         str << endl;
-      }
-      str << endl;
-   }
-   return str;
-}
-
-template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
-{
-   tnlAssert( false,
-              cerr << "Operator << is not yet implemented for arrays with the dimensions greater than 3." << endl; );
-   return str;
-};
-*/
-
-
-#endif /* TNLMULTIARRAY_IMPL_H_ */
+#endif /* TNLMULTIARRAY1D_IMPL_H_ */

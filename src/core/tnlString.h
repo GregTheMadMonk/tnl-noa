@@ -54,6 +54,12 @@ class tnlString
 
    //! Convert number to a string
    tnlString( int number );
+   
+   tnlString( long int number );
+
+   tnlString( float number );
+
+   tnlString( double number );
 
    //! Destructor
    ~tnlString();

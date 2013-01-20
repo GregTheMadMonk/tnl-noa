@@ -320,9 +320,50 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 
-#include <core/implementation/tnlMultiArray1D_impl.h>
-#include <core/implementation/tnlMultiArray2D_impl.h>
-#include <core/implementation/tnlMultiArray3D_impl.h>
-#include <core/implementation/tnlMultiArray4D_impl.h>
+#include <implementation/core/tnlMultiArray1D_impl.h>
+#include <implementation/core/tnlMultiArray2D_impl.h>
+#include <implementation/core/tnlMultiArray3D_impl.h>
+#include <implementation/core/tnlMultiArray4D_impl.h>
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlMultiArray< 1, float,  tnlHost, int >;
+extern template class tnlMultiArray< 1, double, tnlHost, int >;
+extern template class tnlMultiArray< 1, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 1, double, tnlHost, long int >;
+extern template class tnlMultiArray< 2, float,  tnlHost, int >;
+extern template class tnlMultiArray< 2, double, tnlHost, int >;
+extern template class tnlMultiArray< 2, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 2, double, tnlHost, long int >;
+extern template class tnlMultiArray< 3, float,  tnlHost, int >;
+extern template class tnlMultiArray< 3, double, tnlHost, int >;
+extern template class tnlMultiArray< 3, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 3, double, tnlHost, long int >;
+extern template class tnlMultiArray< 4, float,  tnlHost, int >;
+extern template class tnlMultiArray< 4, double, tnlHost, int >;
+extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 4, double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+#endif
+
+extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 1, double, tnlCuda, int >;
+extern template class tnlMultiArray< 1, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 1, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 2, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 2, double, tnlCuda, int >;
+extern template class tnlMultiArray< 2, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 2, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 3, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 3, double, tnlCuda, int >;
+extern template class tnlMultiArray< 3, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 3, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 4, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 4, double, tnlCuda, int >;
+extern template class tnlMultiArray< 4, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 4, double, tnlCuda, long int >;
+
+#endif
 
 #endif /* TNLMULTIARRAY_H_ */

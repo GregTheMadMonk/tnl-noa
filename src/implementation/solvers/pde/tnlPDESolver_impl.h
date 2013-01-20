@@ -30,7 +30,7 @@ tnlPDESolver< Problem, TimeStepper > :: tnlPDESolver()
 template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper > :: setTimeStepper( TimeStepper& timeStepper )
 {
-   this -> timeStepper = timeStepper;
+   this -> timeStepper = &timeStepper;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -76,9 +76,9 @@ const typename TimeStepper :: RealType& tnlPDESolver< Problem, TimeStepper > :: 
 template< typename Problem, typename TimeStepper >
 bool tnlPDESolver< Problem, TimeStepper > :: solve()
 {
-   tnlAssert( timeStepper,
+   tnlAssert( timeStepper != 0,
               cerr << "No time stepper was set in tnlPDESolver with name " << this -> getName() );
-   tnlAssert( problem,
+   tnlAssert( problem != 0,
               cerr << "No problem was set in tnlPDESolver with name " << this -> getName() );
 
    if( snapshotTau == 0 )
@@ -89,17 +89,21 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    RealType t( 0.0 );
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
-   this -> timeStepper -> setProblem( * this -> problem );
+   this -> timeStepper -> setProblem( * ( this -> problem ) );
    while( step < allSteps )
    {
       RealType tau = Min( this -> snapshotTau,
-                          this -> finalTime - t - this -> snapshotTau );
+                          this -> finalTime - t );
+      this -> timeStepper -> setTau( tau );
       if( ! this -> timeStepper -> solve( t, t + tau ) )
          return false;
       step ++;
       t += tau;
       if( ! this -> problem -> makeSnapshot( t, step ) )
+      {
+         cerr << "Making the snapshot failed." << endl;
          return false;
+      }
    }
    return true;
 }

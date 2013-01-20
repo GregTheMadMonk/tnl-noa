@@ -114,6 +114,22 @@ class tnlArray : public tnlObject
    Element* data;
 };
 
-#include <core/implementation/tnlArray_impl.h>
+#include <implementation/core/tnlArray_impl.h>
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlArray< float, tnlHost, int >;
+extern template class tnlArray< double, tnlHost, int >;
+extern template class tnlArray< float, tnlHost, long int >;
+extern template class tnlArray< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+extern template class tnlArray< float, tnlCuda, int >;
+extern template class tnlArray< double, tnlCuda, int >;
+extern template class tnlArray< float, tnlCuda, long int >;
+extern template class tnlArray< double, tnlCuda, long int >;
+#endif
+
+#endif
 
 #endif /* TNLARRAY_H_ */

@@ -68,6 +68,6 @@ class tnlCGSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <solvers/linear/krylov/implementation/tnlCGSolver_impl.h>
+#include <implementation/solvers/linear/krylov/tnlCGSolver_impl.h>
 
 #endif

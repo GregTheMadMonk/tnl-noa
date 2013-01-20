@@ -55,6 +55,28 @@ tnlString :: tnlString( int number )
    sprintf( string, "%d", number );
 }
 
+tnlString :: tnlString( long int number )
+{
+   string = new char[ STRING_PAGE ];
+   length = STRING_PAGE;
+   sprintf( string, "%l", number );
+}
+
+tnlString :: tnlString( float number )
+{
+   string = new char[ STRING_PAGE ];
+   length = STRING_PAGE;
+   sprintf( string, "%f", number );
+}
+
+tnlString :: tnlString( double number )
+{
+   string = new char[ STRING_PAGE ];
+   length = STRING_PAGE;
+   sprintf( string, "%f", number );
+}
+
+
 tnlString :: ~tnlString()
 {
    if( string ) delete[] string;

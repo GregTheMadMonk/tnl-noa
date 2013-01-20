@@ -1,4 +1,3 @@
-ADD_SUBDIRECTORY( implementation )
 ADD_SUBDIRECTORY( krylov )
 ADD_SUBDIRECTORY( stationary )
 
