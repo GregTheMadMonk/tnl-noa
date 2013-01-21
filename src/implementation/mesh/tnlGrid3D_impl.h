@@ -43,6 +43,14 @@ tnlString tnlGrid< 3, Real, Device, Index> :: getTypeStatic()
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlGrid< 3, Real, Device, Index> :: getType() const
+{
+   return this -> getTypeStatic();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 3, Real, Device, Index> :: setDimensions( const Index zSize, const Index ySize, const Index xSize )
 {
    tnlAssert( xSize > 1,

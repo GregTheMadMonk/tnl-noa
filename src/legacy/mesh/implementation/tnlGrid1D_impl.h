@@ -229,9 +229,6 @@ Real tnlGridOld< 1, Real, Device, Index > :: Partial_x( const Index i1 ) const
 template< typename Real, typename Device, typename Index >
 Real tnlGridOld< 1, Real, Device, Index > :: Partial_xx( const Index i1 ) const
 {
-   tnlAssert( Dimensions == 1,
-              cerr << "The array " << this -> getName()
-                   << " has " << Dimensions << " but 1 is expected." << endl; );
    tnlAssert( i1 > 0 &&
               i1 < ( tnlMultiVector< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
               cerr << " i1 = " << i1 << " and it should be in ( 0, " <<

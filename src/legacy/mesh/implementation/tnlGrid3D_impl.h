@@ -297,9 +297,6 @@ Real tnlGridOld< 3,Real, Device, Index > :: Partial_y_f( const Index i1,
                                                       const Index i2,
                                                       const Index i3 ) const
 {
-   tnlAssert( Dimensions == 3,
-              cerr << "The array " << this -> getName()
-                   << " has " << Dimensions << " but 3 are expected." << endl; );
    tnlAssert( i1 >= 0 && i2 >= 0 && i3 >= 0 &&
               i1 <= this -> getDimensions()[ tnlX ] - 1 &&
               i2 < this -> getDimensions()[ tnlY ] - 1 &&

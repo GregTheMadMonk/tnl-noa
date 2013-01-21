@@ -41,6 +41,15 @@ tnlString tnlGrid< 2, Real, Device, Index> :: getTypeStatic()
 }
 
 template< typename Real,
+           typename Device,
+           typename Index >
+tnlString tnlGrid< 2, Real, Device, Index> :: getType() const
+{
+   cerr << "################" << endl;
+   return this -> getTypeStatic();
+}
+
+template< typename Real,
           typename Device,
           typename Index >
 void tnlGrid< 2, Real, Device, Index> :: setDimensions( const Index ySize, const Index xSize )
@@ -149,8 +158,8 @@ Index tnlGrid< 2, Real, Device, Index> :: getNodeIndex( const Index j, const Ind
 }
 
 template< typename Real,
-          typename Device,
-          typename Index >
+           typename Device,
+           typename Index >
 Index tnlGrid< 2, Real, Device, Index> :: getDofs() const
 {
    return this -> dofs;

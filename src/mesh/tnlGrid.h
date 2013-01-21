@@ -46,6 +46,8 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    static tnlString getTypeStatic();
 
+   tnlString getType() const;
+
    void setDimensions( const Index xSize );
 
    const tnlTuple< 1, Index >& getDimensions() const;
@@ -102,6 +104,8 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    static tnlString getTypeStatic();
 
+   tnlString getType() const;
+
    void setDimensions( const Index ySize, const Index xSize );
 
    const tnlTuple< 2, Index >& getDimensions() const;
@@ -157,6 +161,8 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
    tnlGrid();
 
    static tnlString getTypeStatic();
+
+   tnlString getType() const;
 
    void setDimensions( const Index zSize, const Index ySize, const Index xSize );
 

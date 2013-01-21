@@ -108,9 +108,9 @@ Index tnlMultiVector< 4, Element, Device, Index > :: getElementIndex( const Inde
                                                                           const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ] &&
-              j >= 0 && j < this -> dimensions[ 1 ] &&,
+              j >= 0 && j < this -> dimensions[ 1 ] &&
               k >= 0 && k < this -> dimensions[ 2 ] &&
-              l >= 0 && l < this -> dimensions[ 3 ]
+              l >= 0 && l < this -> dimensions[ 3 ],
               cerr << " i = " << i
                    << " j = " << j
                    << " k = " << k

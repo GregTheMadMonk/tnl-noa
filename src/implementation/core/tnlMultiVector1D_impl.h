@@ -107,13 +107,13 @@ void tnlMultiVector< 1, Element, Device, Index > :: setElement( const Index i, E
 template< typename Element, typename Device, typename Index >
 Element& tnlMultiVector< 1, Element, Device, Index > :: operator()( const Index element )
 {
-   return tnlVector< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlVector< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
 const Element& tnlMultiVector< 1, Element, Device, Index > :: operator()( const Index element ) const
 {
-   return tnlVector< Element, Device, Index > :: operator[]( getLongVectorIndex( element ) );
+   return tnlVector< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >

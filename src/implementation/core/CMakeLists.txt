@@ -18,6 +18,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
 set( tnl_implementation_core_SOURCES
      ${CURRENT_DIR}/tnlArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
+     ${CURRENT_DIR}/tnlMultiVector_impl.cpp
      ${CURRENT_DIR}/tnlSharedVector_impl.cpp
      ${CURRENT_DIR}/tnlVector_impl.cpp
      ${CURRENT_DIR}/tnlTimerRT.cpp

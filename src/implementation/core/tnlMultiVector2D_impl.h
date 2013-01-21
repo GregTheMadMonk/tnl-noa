@@ -50,7 +50,7 @@ template< typename Element, typename Device, typename Index >
 bool tnlMultiVector< 2, Element, Device, Index > :: setDimensions( const Index jSize,
                                                                        const Index iSize )
 {
-   tnlAssert( xSize > 0 && ySize > 0,
+   tnlAssert( iSize > 0 && jSize > 0,
               cerr << "iSize = " << iSize
                    << "jSize = " << jSize );
 
