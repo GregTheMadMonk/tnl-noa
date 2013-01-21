@@ -46,6 +46,10 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    template< typename Vector >
    bool operator != ( const Vector& array ) const;
 
+   bool save( tnlFile& file ) const;
+
+   bool save( const tnlString& fileName ) const;
+
    Real max() const;
 
    Real min() const;

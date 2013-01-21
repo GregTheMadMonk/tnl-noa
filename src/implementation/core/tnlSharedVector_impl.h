@@ -70,6 +70,34 @@ bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vecto
    return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
 }
 
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlSharedVector< Element, Device, Index > :: save( tnlFile& file ) const
+{
+   tnlAssert( this -> size != 0,
+              cerr << "You try to save empty vector. Its name is " << this -> getName() );
+   if( ! tnlObject :: save( file ) )
+      return false;
+   if( ! file. write( &this -> size, 1 ) )
+      return false;
+   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   {
+      cerr << "I was not able to SAVE tnlSharedVector " << this -> getName()
+           << " with size " << this -> getSize() << endl;
+      return false;
+   }
+   return true;
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlSharedVector< Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+};
+
 template< typename Real,
           typename Device,
           typename Index >

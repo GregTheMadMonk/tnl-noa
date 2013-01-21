@@ -66,6 +66,16 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    Index getDofs() const;
 
+   //! Method for saving the object to a file as a binary data
+   bool save( tnlFile& file ) const;
+
+   //! Method for restoring the object from a file
+   bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 1, IndexType > dimensions;
@@ -112,6 +122,16 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    Index getDofs() const;
 
+   //! Method for saving the object to a file as a binary data
+   bool save( tnlFile& file ) const;
+
+   //! Method for restoring the object from a file
+   bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 2, IndexType > dimensions;
@@ -157,6 +177,16 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
    Index getNodeIndex( const Index k, const Index j, const Index i ) const;
 
    Index getDofs() const;
+
+   //! Method for saving the object to a file as a binary data
+   bool save( tnlFile& file ) const;
+
+   //! Method for restoring the object from a file
+   bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    protected:
 

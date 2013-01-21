@@ -156,6 +156,56 @@ Index tnlGrid< 2, Real, Device, Index> :: getDofs() const
    return this -> dofs;
 };
 
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index> :: save( tnlFile& file ) const
+{
+   if( ! tnlObject :: save( file ) )
+      return false;
+   if( ! this -> lowerCorner. save( file ) ||
+       ! this -> upperCorner. save( file ) ||
+       ! this -> dimensions. save( file ) )
+   {
+      cerr << "I was not able to save the domain description of the tnlGrid "
+           << this -> getName() << endl;
+      return false;
+   }
+   return true;
+};
 
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index> :: load( tnlFile& file )
+{
+   if( ! tnlObject :: load( file ) )
+      return false;
+   if( ! this -> lowerCorner. load( file ) ||
+       ! this -> upperCorner. load( file ) ||
+       ! this -> dimensions. load( file ) )
+   {
+      cerr << "I was not able to load the domain description of the tnlGrid "
+           << this -> getName() << endl;
+      return false;
+   }
+   return true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index> :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index> :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+};
 
 #endif /* TNLGRID2D_IMPL_H_ */

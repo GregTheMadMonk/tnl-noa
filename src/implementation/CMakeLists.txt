@@ -6,6 +6,7 @@ SET( headers  )
 
 set( tnl_implementation_SOURCES 
      ${tnl_implementation_core_SOURCES}
+     ${tnl_implementation_mesh_SOURCES}
      ${tnl_implementation_solvers_SOURCES} 
      PARENT_SCOPE )
 

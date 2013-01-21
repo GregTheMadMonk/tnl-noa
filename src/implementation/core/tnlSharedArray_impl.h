@@ -278,7 +278,7 @@ template< typename Element,
 bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
-              cerr << "You try to save empty vector. Its name is " << this -> getName() );
+              cerr << "You try to save empty array. Its name is " << this -> getName() );
    if( ! tnlObject :: save( file ) )
       return false;
    if( ! file. write( &this -> size, 1 ) )
@@ -291,6 +291,16 @@ bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
    }
    return true;
 };
+
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlSharedArray< Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+};
+
 
 //}; // namespace implementation
 

@@ -93,7 +93,9 @@ class tnlSharedArray : public tnlObject
    void touch( IndexType2 touches = 1 ) const;
 
    //! Method for saving the object to a file as a binary data.
-   virtual bool save( tnlFile& file ) const;
+   bool save( tnlFile& file ) const;
+
+   bool save( const tnlString& fileName ) const;
 
    protected:
 
