@@ -25,10 +25,15 @@ template< typename Real,
           typename Index >
 tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlSharedVector< " ) +
+   return tnlString( "tnlVector< " ) +
                      getParameterType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                      getParameterType< Index >() + " >";
+   /****
+    * It seems that there is no reason to differ here between vector and shared vector.
+    * This method is used mainly (or only) for loading and saving of objects.
+    * Making difference between shared vector and vector only complicates thinks.
+    */
 };
 
 template< typename Real,

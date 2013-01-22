@@ -18,7 +18,10 @@
 #ifndef TNL_VIEW_H_
 #define TNL_VIEW_H_
 
+#include <core/mfilename.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlString.h>
+#include <core/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
 
@@ -49,6 +52,28 @@ bool processMesh( const tnlParameterContainer& parameters )
       {
          if( verbose )
             cout << objectType << " detected ... ";
+
+         tnlString outputFileName( inputFiles[ i ] );
+         RemoveFileExtension( outputFileName );
+         tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+         if( outputFormat == "gnuplot" )
+            outputFileName += ".gplt";
+         else
+         {
+            cerr << "Unknown file format " << outputFormat << "." << endl;
+            continue;
+         }
+         if( verbose )
+            cout << " writing to " << outputFileName << " ...";
+
+         if( objectType == "tnlSharedVector< double, tnlHost, int >" ||
+             objectType == "tnlVector< double, tnlHost, int >" )
+         {
+            tnlVector< double, tnlHost, int > v;
+            if( ! v. load( inputFiles[ i ] ) )
+               continue;
+            mesh. write( v, outputFileName, outputFormat );
+         }
       }
       if( verbose )
          cout << endl;

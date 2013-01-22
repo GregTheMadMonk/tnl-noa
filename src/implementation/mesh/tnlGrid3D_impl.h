@@ -213,6 +213,9 @@ bool tnlGrid< 3, Real, Device, Index> :: load( tnlFile& file )
            << this -> getName() << endl;
       return false;
    }
+   this -> dofs = this -> getDimensions(). x() *
+                   this -> getDimensions(). y() *
+                   this -> getDimensions(). z();
    return true;
 };
 

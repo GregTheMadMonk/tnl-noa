@@ -136,6 +136,11 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    bool load( const tnlString& fileName );
 
+   template< typename MeshFunction >
+   bool write( const MeshFunction& function,
+                const tnlString& fileName,
+                const tnlString& format ) const;
+
    protected:
 
    tnlTuple< 2, IndexType > dimensions;
