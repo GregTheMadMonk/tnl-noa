@@ -45,7 +45,6 @@ template< typename Real,
            typename Index >
 tnlString tnlGrid< 2, Real, Device, Index> :: getType() const
 {
-   cerr << "################" << endl;
    return this -> getTypeStatic();
 }
 

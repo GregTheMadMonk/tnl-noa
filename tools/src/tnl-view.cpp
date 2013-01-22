@@ -47,5 +47,11 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
    cout << meshType << " detected in " << meshFile << " file." << endl;
-   return EXIT_SUCCESS;
+   if( meshType == "tnlGrid< 2, double, tnlHost, int >" )
+   {
+      if( ! processMesh< tnlGrid< 2, double, tnlHost, int > >( parameters ) )
+         return EXIT_FAILURE;
+      return EXIT_SUCCESS;
+   }
+   return EXIT_FAILURE;
 }

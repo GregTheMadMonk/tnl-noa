@@ -25,7 +25,7 @@ template< typename Real,
           typename Index >
 tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlSharedVector< " ) + ", " +
+   return tnlString( "tnlSharedVector< " ) +
                      getParameterType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                      getParameterType< Index >() + " >";
