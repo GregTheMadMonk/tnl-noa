@@ -250,7 +250,7 @@ bool tnlGrid< 2, Real, Device, Index> :: write( const MeshFunction& function,
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
             const RealType x = this -> getLowerCorner(). x() + i * hx;
-            const RealType y = this -> getLowerCorner(). y() + i * hy;
+            const RealType y = this -> getLowerCorner(). y() + j * hy;
             file << x << " " << " " << y << " " << function[ this -> getNodeIndex( j, i ) ] << endl;
          }
          file << endl;

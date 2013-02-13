@@ -37,6 +37,10 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
 
    tnlString getType() const;
 
+   void setCFLCondition( const RealType& cfl );
+
+   const RealType& getCFLCondition() const;
+
    bool solve( DofVectorType& u );
 
    protected:
@@ -46,11 +50,14 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
 
    
    DofVectorType k1;
+
+   RealType cflCondition;
 };
 
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
-: k1( "tnlEulerSolver:k1" )
+: k1( "tnlEulerSolver:k1" ),
+  cflCondition( 0.0 )
 {
 };
 
@@ -61,6 +68,18 @@ tnlString tnlEulerSolver< Problem > :: getType() const
           Problem :: getTypeStatic() +
           tnlString( " >" );
 };
+
+template< typename Problem >
+void tnlEulerSolver< Problem > :: setCFLCondition( const RealType& cfl )
+{
+   this -> cflCondition = cfl;
+}
+
+template< typename Problem >
+const typename Problem :: RealType& tnlEulerSolver< Problem > :: getCFLCondition() const
+{
+   return this -> cflCondition;
+}
 
 template< typename Problem >
 bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
@@ -104,6 +123,16 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       this -> problem -> GetExplicitRHS( time, currentTau, u, k1 );
 
       RealType lastResidue = residue;
+      RealType maxResidue( 0.0 );
+      if( this -> cflCondition != 0.0 )
+      {
+         maxResidue = k1. absMax();
+         if( currentTau * maxResidue > this -> cflCondition )
+         {
+            currentTau *= 0.9;
+            continue;
+         }
+      }
       computeNewTimeLevel( u, currentTau, residue );
 
       /****
@@ -138,6 +167,9 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
           return true;
        }
       if( iteration == this -> getMaxIterationsNumber() ) return false;
+
+      if( this -> cflCondition != 0.0 )
+         currentTau /= 0.95;
    }
 };
 
