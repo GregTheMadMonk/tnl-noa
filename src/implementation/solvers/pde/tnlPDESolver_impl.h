@@ -90,11 +90,16 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
    this -> timeStepper -> setProblem( * ( this -> problem ) );
+   if( ! this -> problem -> makeSnapshot( t, step ) )
+   {
+      cerr << "Making the snapshot failed." << endl;
+      return false;
+   }
    while( step < allSteps )
    {
       RealType tau = Min( this -> snapshotTau,
                           this -> finalTime - t );
-      this -> timeStepper -> setTau( tau );
+      //this -> timeStepper -> setTau( tau );
       if( ! this -> timeStepper -> solve( t, t + tau ) )
          return false;
       step ++;
