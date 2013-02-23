@@ -1,0 +1,12 @@
+group Solver
+{
+   string real-type( "double" )     [Precision of the floating point arithmetics. Can be float, double, long-double.];
+   string index-type( "int" )       [Indexing type for arrays, vectors, matrices etc. Can be int or long-int.];
+   string device( "host" )          [Device to use for the computations. Can be host or cuda.];
+   string discrete-solver(!)        [The main solver for the discretised problem.];
+},[The solver set-up.];
+
+group Discretisation
+{
+   string time-discretisation(!)    [Time discretisation for the time dependent problems. Can be explicit, semi-implicit or fully-implicit.];
+},[The numerical scheme set-up.];

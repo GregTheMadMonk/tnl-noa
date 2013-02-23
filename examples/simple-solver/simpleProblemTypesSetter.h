@@ -1,7 +1,7 @@
 /***************************************************************************
-                          main.cpp  -  description
+                          simpleProblemTypesSetter.h  -  description
                              -------------------
-    begin                : Jan 12, 2013
+    begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,26 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "program-name-conf.h"
-#include <config/tnlConfigDescription.h>
+#ifndef SIMPLEPROBLEMTYPESSETTER_H_
+#define SIMPLEPROBLEMTYPESSETTER_H_
+
 #include <config/tnlParameterContainer.h>
 
-int main( int argc, char* argv[] )
+
+//template< typename SolverTypesSetter >
+class simpleProblemTypesSetter
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( CONFIG_FILE ) != 0 )
-      return EXIT_FAILURE;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   public:
+   template< typename RealType,
+             typename DeviceType,
+             typename IndexType >
+   bool run( const tnlParameterContainer& parameters ) const
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
-      return EXIT_FAILURE;
+      ;
    }
 
-   /****
-    * Write your code here
-    */
-   return EXIT_SUCCESS;
-}
+};
 
 
+#endif /* SIMPLEPROBLEMTYPESSETTER_H_ */

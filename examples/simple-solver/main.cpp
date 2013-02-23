@@ -15,25 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "program-name-conf.h"
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include "simple-solver-conf.h"
+#include "simpleProblemTypesSetter.h"
+#include <config/tnlBasicTypesSetter.h>
+#include <solvers/tnlProblemSolver.h>
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( CONFIG_FILE ) != 0 )
+   typedef simpleProblemTypesSetter ProblemSetter;
+   typedef tnlBasicTypesSetter< ProblemSetter > BasicTypesSetter;
+   tnlProblemSolver< BasicTypesSetter > problemSolver;
+   if( ! problemSolver. run( CONFIG_FILE, argc, argv ) )
       return EXIT_FAILURE;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc. PrintUsage( argv[ 0 ] );
-      return EXIT_FAILURE;
-   }
-
-   /****
-    * Write your code here
-    */
    return EXIT_SUCCESS;
 }
 

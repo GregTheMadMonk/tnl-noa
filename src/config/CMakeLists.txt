@@ -2,13 +2,14 @@ SET( EXTRA_DIST tnlConfigDescriptionParser.y
 	            tnlConfigDescriptionScanner.l 	            
     )
 
-SET( headers tnlConfigDescription.h     	    
- 		     tnlConfigDescriptionParser.h 
-		     tnlConfigDescriptionParserbase.h 
-		     tnlConfigDescriptionParser.ih 
-		     tnlConfigDescriptionScanner.h 
-		     tnlParameterContainer.h
-		     FlexLexer.h 
+SET( headers tnlBasicTypesSetter.h
+             tnlConfigDescription.h     	    
+ 		       tnlConfigDescriptionParser.h 
+		       tnlConfigDescriptionParserbase.h 
+		       tnlConfigDescriptionParser.ih 
+		       tnlConfigDescriptionScanner.h 
+		       tnlParameterContainer.h
+		       FlexLexer.h 
     )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/config )

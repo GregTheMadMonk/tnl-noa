@@ -1,7 +1,7 @@
 ADD_SUBDIRECTORY( linear )
 ADD_SUBDIRECTORY( pde )
 
-SET( headers  )
+SET( headers tnlProblemSolver_impl.h )
 
 set( tnl_implementation_solvers_SOURCES
      ${tnl_implementation_solvers_linear_SOURCES}

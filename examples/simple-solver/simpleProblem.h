@@ -1,7 +1,7 @@
 /***************************************************************************
-                          main.cpp  -  description
+                          simpleProblem.h  -  description
                              -------------------
-    begin                : Jan 12, 2013
+    begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,26 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "program-name-conf.h"
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#ifndef SIMPLEPROBLEM_H_
+#define SIMPLEPROBLEM_H_
 
-int main( int argc, char* argv[] )
+class simpleProblem
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( CONFIG_FILE ) != 0 )
-      return EXIT_FAILURE;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc. PrintUsage( argv[ 0 ] );
-      return EXIT_FAILURE;
-   }
 
-   /****
-    * Write your code here
-    */
-   return EXIT_SUCCESS;
-}
+};
 
 
+#endif /* SIMPLEPROBLEM_H_ */
