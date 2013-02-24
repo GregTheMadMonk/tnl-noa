@@ -9,6 +9,7 @@ SET( headers tnlBasicTypesSetter.h
 		       tnlConfigDescriptionParser.ih 
 		       tnlConfigDescriptionScanner.h 
 		       tnlParameterContainer.h
+		       tnlDefaultBasicTypesChecker.h
 		       FlexLexer.h 
     )
 

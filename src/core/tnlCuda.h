@@ -111,7 +111,7 @@ class tnlCuda
       }
    }
 
-   template< typename Element, typename Index, typename Device >
+   template< typename Element, typename Index >
    static bool memset( Element* destination,
                        const Element& value,
                        const Index size )

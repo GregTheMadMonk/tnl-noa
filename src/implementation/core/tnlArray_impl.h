@@ -249,13 +249,13 @@ bool tnlArray< Element, Device, Index > :: operator != ( const Array& array ) co
 
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void tnlArray< Element, Device, Index > :: setValue( const Element& e )
 {
    tnlAssert( this -> size != 0,
               cerr << "Array name is " << this -> getName() );
-   Device :: template memset< Element, Index, Device >( this -> getData(), e, this -> getSize() );
+   Device :: memset( this -> getData(), e, this -> getSize() );
 }
 
 template< typename Element,

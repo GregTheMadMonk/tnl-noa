@@ -20,22 +20,15 @@
 
 #include <core/tnlObject.h>
 #include <config/tnlParameterContainer.h>
+#include <config/tnlDefaultBasicTypesChecker.h>
 
-template< typename ProblemTypesSetter >
+template< typename ProblemTypesSetter,
+          typename ProblemTypesChecker = tnlDefaultBasicTypesChecker >
 class tnlBasicTypesSetter : public tnlObject
 {
    public:
 
    bool run( const tnlParameterContainer& parameters );
-
-   virtual bool checkSupportedRealTypes( const tnlString& realType,
-                                         const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedIndexTypes( const tnlString& indexType,
-                                          const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedDevices( const tnlString& device,
-                                       const tnlParameterContainer& parameters ) const;
 
    /*virtual bool checkSupportedDimensions( const int dimensions,
                                           const tnlParameterContainer& parameters ) const;

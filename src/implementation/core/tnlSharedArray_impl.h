@@ -235,7 +235,9 @@ void tnlSharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
    tnlAssert( this -> size != 0,
               cerr << "Array name is " << this -> getName() );
-   Device :: memset( this -> getData(), e, this -> getSize() );
+   Device :: template memset< Element, Index >
+                              ( this -> getData(), e, this -> getSize() );
+
 }
 
 template< typename Element,

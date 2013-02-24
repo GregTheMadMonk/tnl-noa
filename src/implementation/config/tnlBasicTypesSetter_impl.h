@@ -19,25 +19,14 @@
 #include <core/tnlCuda.h>
 #include <solvers/ode/tnlEulerSolver.h>
 
-template< typename ProblemTypesSetter >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: run( const tnlParameterContainer& parameters )
+template< typename ProblemTypesSetter,
+          typename ProblemTypesChecker >
+bool tnlBasicTypesSetter< ProblemTypesSetter, ProblemTypesChecker > :: run( const tnlParameterContainer& parameters )
 {
    return this -> setRealType( parameters );
 };
 
-template< typename ProblemTypesSetter >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: checkSupportedRealTypes( const tnlString& realType,
-                                                             const tnlParameterContainer& parameters ) const
-{
-   return true;
-}
 
-template< typename ProblemTypesSetter >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: checkSupportedIndexTypes( const tnlString& indexType,
-                                                              const tnlParameterContainer& parameters ) const
-{
-   return true;
-}
 
 /*template< typename ProblemTypesSetter >
 bool tnlBasicTypesSetter< ProblemTypesSetter > :: checkSupportedDimensions( const int dimensions,
@@ -62,11 +51,12 @@ bool tnlBasicTypesSetter< ProblemTypesSetter > :: checkSupportedTimeDiscretisati
 }*/
 
 
-template< typename ProblemTypesSetter >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: setRealType( const tnlParameterContainer& parameters ) const
+template< typename ProblemTypesSetter,
+          typename ProblemTypesChecker >
+bool tnlBasicTypesSetter< ProblemTypesSetter, ProblemTypesChecker > :: setRealType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& realType = parameters. GetParameter< tnlString >( "real-type" );
-   if( ! checkSupportedRealTypes( realType, parameters ) )
+   if( ! ProblemTypesChecker :: checkSupportedRealTypes( realType, parameters ) )
    {
       cerr << "The real type '" << realType << "' is not supported." << endl;
       return false;
@@ -81,12 +71,13 @@ bool tnlBasicTypesSetter< ProblemTypesSetter > :: setRealType( const tnlParamete
    return false;
 }
 
-template< typename ProblemTypesSetter >
+template< typename ProblemTypesSetter,
+          typename ProblemTypesChecker >
    template< typename RealType >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: setIndexType( const tnlParameterContainer& parameters ) const
+bool tnlBasicTypesSetter< ProblemTypesSetter, ProblemTypesChecker > :: setIndexType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
-   if( ! checkSupportedIndexTypes( indexType, parameters ) )
+   if( ! ProblemTypesChecker :: checkSupportedIndexTypes( indexType, parameters ) )
    {
       cerr << "The index type '" << indexType << "' is not supported." << endl;
       return false;
@@ -99,26 +90,24 @@ bool tnlBasicTypesSetter< ProblemTypesSetter > :: setIndexType( const tnlParamet
    return false;
 }
 
-template< typename ProblemTypesSetter >
+template< typename ProblemTypesSetter,
+          typename ProblemTypesChecker >
    template< typename RealType,
              typename IndexType >
-bool tnlBasicTypesSetter< ProblemTypesSetter > :: setDeviceType( const tnlParameterContainer& parameters ) const
+bool tnlBasicTypesSetter< ProblemTypesSetter, ProblemTypesChecker > :: setDeviceType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& device = parameters. GetParameter< tnlString >( "device" );
-   if( ! checkSupportedDevices( device, parameters ) )
+   if( ! ProblemTypesChecker :: checkSupportedDevices( device, parameters ) )
    {
       cerr << "The device '" << device << "' is not supported." << endl;
       return false;
    }
    ProblemTypesSetter problemTypesSetter;
-   /*const tnlString& device2 = parameters. GetParameter< tnlString >( "device" );
-   problemTypesSetter. run< double, tnlHost, int >( parameters );
-   problemTypesSetter. run< RealType, tnlHost, IndexType >( parameters );
    if( device == "host" )
-      return problemTypesSetter. run< RealType, tnlHost, IndexType >( parameters );
+      return problemTypesSetter. template run< RealType, tnlHost, IndexType >( parameters );
    if( device == "cuda" )
-      return problemTypesSetter. run( parameters );
-   cerr << "The device '" << device << "' is not defined. " << endl;*/
+      return problemTypesSetter. template run< RealType, tnlHost, IndexType >( parameters );
+   cerr << "The device '" << device << "' is not defined. " << endl;
    return false;
 }
 
