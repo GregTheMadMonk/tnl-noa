@@ -111,11 +111,14 @@ bool tnlBasicTypesSetter< ProblemTypesSetter > :: setDeviceType( const tnlParame
       return false;
    }
    ProblemTypesSetter problemTypesSetter;
+   /*const tnlString& device2 = parameters. GetParameter< tnlString >( "device" );
+   problemTypesSetter. run< double, tnlHost, int >( parameters );
+   problemTypesSetter. run< RealType, tnlHost, IndexType >( parameters );
    if( device == "host" )
       return problemTypesSetter. run< RealType, tnlHost, IndexType >( parameters );
    if( device == "cuda" )
       return problemTypesSetter. run( parameters );
-   cerr << "The device '" << device << "' is not defined. " << endl;
+   cerr << "The device '" << device << "' is not defined. " << endl;*/
    return false;
 }
 

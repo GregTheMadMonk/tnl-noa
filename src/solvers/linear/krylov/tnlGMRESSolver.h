@@ -59,12 +59,13 @@ class tnlGMRESSolver : public tnlObject,
 
    protected:
 
+   template< typename Vector >
    void update( IndexType k,
                 IndexType m,
                 const tnlVector< RealType, tnlHost, IndexType >& H,
                 const tnlVector< RealType, tnlHost, IndexType >& s,
                 tnlVector< RealType, DeviceType, IndexType >& v,
-                tnlVector< RealType, DeviceType, IndexType >& x );
+                Vector& x );
 
    void generatePlaneRotation( RealType &dx,
                                RealType &dy,

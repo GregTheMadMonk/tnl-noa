@@ -272,12 +272,13 @@ tnlGMRESSolver< Matrix, Preconditioner > :: ~tnlGMRESSolver()
 
 template< typename Matrix,
           typename Preconditioner >
+   template< typename Vector >
 void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
                                                          IndexType m,
                                                          const tnlVector< RealType, tnlHost, IndexType >& H,
                                                          const tnlVector< RealType, tnlHost, IndexType >& s,
                                                          tnlVector< RealType, DeviceType, IndexType >& v,
-                                                         tnlVector< RealType, DeviceType, IndexType >& x )
+                                                         Vector& x )
 {
    //dbgFunctionName( "tnlGMRESSolver", "Update" );
    tnlVector< RealType, tnlHost, IndexType > y( "tnlGMRESSolver::update:y" );

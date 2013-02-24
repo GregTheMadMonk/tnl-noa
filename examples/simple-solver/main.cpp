@@ -20,9 +20,17 @@
 #include <config/tnlBasicTypesSetter.h>
 #include <solvers/tnlProblemSolver.h>
 
+#include <core/tnlHost.h>
+#include <config/tnlParameterContainer.h>
+
 int main( int argc, char* argv[] )
 {
    typedef simpleProblemTypesSetter ProblemSetter;
+
+   tnlParameterContainer parameters;
+   ProblemSetter problemSetter;
+   problemSetter. run< double, tnlHost, int >( parameters );
+
    typedef tnlBasicTypesSetter< ProblemSetter > BasicTypesSetter;
    tnlProblemSolver< BasicTypesSetter > problemSolver;
    if( ! problemSolver. run( CONFIG_FILE, argc, argv ) )
