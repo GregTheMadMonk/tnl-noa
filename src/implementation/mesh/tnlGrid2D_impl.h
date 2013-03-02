@@ -160,6 +160,22 @@ Index tnlGrid< 2, Real, Device, Index> :: getNodeIndex( const Index j, const Ind
 }
 
 template< typename Real,
+          typename Device,
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index> :: getNodeNeighbour( const Index node,
+                                                            const Index dy,
+                                                            const Index dx ) const
+{
+   tnlAssert( node + dy * this -> dimensions. x() + dx < getDofs(),
+              cerr << "Index of neighbour with dx = " << dx
+                   << " and dy = " << dy
+                   << " is out of range ( " << dimensions. x()
+                   << " ) in tnlGrid " << this -> getName(); )
+   return node + dy * this -> dimensions. x() + dx;
+}
+
+
+template< typename Real,
            typename Device,
            typename Index >
 Index tnlGrid< 2, Real, Device, Index> :: getDofs() const

@@ -32,10 +32,10 @@ uninstall: $(TARGET)
 	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share
 
 $(TARGET): $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
+	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
 %.o: %.cpp $(TARGET)-conf.h $(HEADERS)
-	$(CC) -c -o $@ $(CXX_FLAGS) $<
+	$(CXX) -c -o $@ $(CXX_FLAGS) $<
 
 $(TARGET)-conf.h:
 	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/${CONFIG_FILE}\" " > $(TARGET)-conf.h 

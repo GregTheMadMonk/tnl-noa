@@ -301,25 +301,41 @@ template< class T > class tnlList
    //! Save the list in binary format
    bool Save( tnlFile& file ) const
    {
+#ifdef HAVE_CXX11      
       file. write( &size );
       for( int i = 0; i < size; i ++ )
          if( ! file. write( &operator[]( i ), 1 ) )
             return false;
       return true;
+#else
+      file. write< const int, tnlHost >( &size );
+      for( int i = 0; i < size; i ++ )
+         if( ! file. write< int, tnlHost, int >( &operator[]( i ), 1 ) )
+            return false;
+      return true;
+#endif            
    }
 
    //! Save the list in binary format using method save of type T
    bool DeepSave( tnlFile& file ) const
    {
-      file. write( &size, 1 );
+#ifdef HAVE_CXX11      
+      file. write( &size );
       for( int i = 0; i < size; i ++ )
          if( ! operator[]( i ). save( file ) ) return false;
       return true;
+#else
+      file. write< const int, tnlHost >( &size );
+      for( int i = 0; i < size; i ++ )
+         if( ! operator[]( i ). save( file ) ) return false;
+      return true;
+#endif            
    }
 
    //! Load the list
    bool Load( tnlFile& file )
    {
+#ifdef HAVE_CXX11      
       EraseAll();
       int _size;
       file. read( &_size, 1 );
@@ -336,6 +352,24 @@ template< class T > class tnlList
          Append( t );
       }
       return true;
+#else
+      EraseAll();
+      int _size;
+      file. read< int, tnlHost >( &_size );
+      if( _size < 0 )
+      {
+         cerr << "The curve size is negative." << endl;
+         return false;
+      }
+      T t;
+      for( int i = 0; i < _size; i ++ )
+      {
+         if( ! file. read< T, tnlHost >( &t ) )
+            return false;
+         Append( t );
+      }
+      return true;
+#endif            
    };
 
    //! Load the list using method Load of the type T
@@ -343,7 +377,7 @@ template< class T > class tnlList
    {
       EraseAll();
       int _size;
-      file. read( &_size, 1 );
+      file. read( &_size );
       if( _size < 0 )
       {
          cerr << "The list size is negative." << endl;

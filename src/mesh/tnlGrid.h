@@ -124,6 +124,10 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    Index getNodeIndex( const Index j, const Index i ) const;
 
+   Index getNodeNeighbour( const Index node,
+                           const Index dy,
+                           const Index dx ) const;
+
    Index getDofs() const;
 
    //! Method for saving the object to a file as a binary data
