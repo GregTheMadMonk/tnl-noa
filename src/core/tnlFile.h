@@ -104,34 +104,35 @@ class tnlFile
 	}
 
 	// TODO: this does not work for constant types
-#ifdef HAVE_CXX11        
-	template< typename Type, typename Device = tnlHost, typename Index = int >
+#ifdef HAVE_NOT_CXX11
+	template< typename Type, typename Device, typename Index >
 	bool read( Type* buffer,
 	           const Index& elements );
 
-	template< typename Type, typename Device = tnlHost >
+	template< typename Type, typename Device >
 	bool read( Type* buffer );
 
-	template< typename Type, typename Device = tnlHost, typename Index = int >
+	template< typename Type, typename Device, typename Index >
 	bool write( const Type* buffer,
 	            const Index elements );
 
-	template< typename Type, typename Device = tnlHost >
+	template< typename Type, typename Device >
 	bool write( Type* buffer );
 #else        
-	template< typename Type, typename Device, typename Index >
-	bool read( Type* buffer,
-	           const Index& elements );
+   template< typename Type, typename Device = tnlHost, typename Index = int >
+   bool read( Type* buffer,
+              const Index& elements );
 
-	template< typename Type, typename Device >
-	bool read( Type* buffer );
+   template< typename Type, typename Device = tnlHost >
+   bool read( Type* buffer );
 
-	template< typename Type, typename Device, typename Index >
-	bool write( const Type* buffer,
-	            const Index elements );
+   template< typename Type, typename Device = tnlHost, typename Index = int >
+   bool write( const Type* buffer,
+               const Index elements );
 
-	template< typename Type, typename Device >
-	bool write( Type* buffer );
+   template< typename Type, typename Device = tnlHost >
+   bool write( Type* buffer );
+
 #endif
 
 	bool close();

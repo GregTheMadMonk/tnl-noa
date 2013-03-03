@@ -288,9 +288,17 @@ bool tnlString :: save( tnlFile& file ) const
    dbgExpr( string );
 
    int len = strlen( string );
-   if( ! file. write( &len, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< int, tnlHost >( &len ) )
+#else      
+   if( ! file. write( &len ) )
+#endif      
       return false;
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< char, tnlHost, int >( string, len ) )
+#else      
    if( ! file. write( string, len ) )
+#endif      
       return false;
    return true;
 }
@@ -298,7 +306,11 @@ bool tnlString :: save( tnlFile& file ) const
 bool tnlString :: load( tnlFile& file )
 {
    int _length;
-   if( ! file. read( &_length, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< int, tnlHost >( &_length ) )
+#else      
+   if( ! file. read( &_length ) )
+#endif      
    {
       cerr << "I was not able to read tnlString length." << endl;
       return false;
@@ -321,7 +333,11 @@ bool tnlString :: load( tnlFile& file )
       string = new char[ length ];
    }
 
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< char, tnlHost, int >( string, _length ) )
+#else
    if( ! file. read( string, _length ) )
+#endif      
    {
       cerr << "I was not able to read a tnlString with a length " << length << "." << endl;
       return false;

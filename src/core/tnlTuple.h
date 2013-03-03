@@ -550,9 +550,15 @@ template< int Size, typename Real >
 bool tnlTuple< Size, Real > :: save( tnlFile& file ) const
 {
    int size = Size;
-   if( ! file. write( &size, 1 ) ||
+#ifdef HAVE_NOT_CXX11   
+   if( ! file. write< int, tnlHost >( &size ) ||
+       ! file. write< Real, tnlHost, int >( data, size ) )
+      cerr << "Unable to write tnlTuple." << endl;
+#else   
+   if( ! file. write( &size ) ||
        ! file. write( data, size ) )
       cerr << "Unable to write tnlTuple." << endl;
+#endif
    return true;
 };
 
@@ -560,18 +566,26 @@ template< int Size, typename Real >
 bool tnlTuple< Size, Real > :: load( tnlFile& file)
 {
    int size;
-   if( ! file. read( &size, 1 ) )
+#ifdef HAVE_NOT_CXX11   
+   if( ! file. read< int, tnlHost >( &size ) )
+#else   
+   if( ! file. read( &size ) )
+#endif      
    {
       cerr << "Unable to read tnlTuple." << endl;
       return false;
-   }
+   }   
    if( size != Size )
    {
       cerr << "You try to read tnlTuple with wrong size " << size
            << ". It should be " << Size << endl;
       return false;
    }
+#ifdef HAVE_NOT_CXX11   
+   if( ! file. read< Real, tnlHost, int >( data, size ) )
+#else
    if( ! file. read( data, size ) )
+#endif      
    {
       cerr << "Unable to read tnlTuple." << endl;
       return false;

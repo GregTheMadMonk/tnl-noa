@@ -61,7 +61,11 @@ bool tnlObject :: save( tnlFile& file ) const
 {
    dbgFunctionName( "tnlObject", "Save" );
    dbgCout( "Writing magic number." );
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< const char, tnlHost, int >( magic_number, strlen( magic_number ) ) )
+#else      
    if( ! file. write( magic_number, strlen( magic_number ) ) )
+#endif      
       return false;
    dbgCout( "Writing object name " << name );
    if( ! this -> getType(). save( file ) || ! name. save( file ) ) return false;
@@ -126,7 +130,11 @@ bool getObjectType( tnlFile& file, tnlString& type )
    dbgFunctionName( "", "getObjectType" );
    dbgCout( "Checking magic number." );
    char mn[ 10 ];
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< char, tnlHost, int >( mn, strlen( magic_number ) ) )
+#else      
    if( ! file. read( mn, strlen( magic_number ) ) )
+#endif      
    {
       cerr << "Unable to read file " << file. getFileName() << " ... " << endl;
       return false;

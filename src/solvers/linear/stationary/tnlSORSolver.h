@@ -55,9 +55,15 @@ class tnlSORSolver : public tnlObject,
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Vector,
+             typename ResidueGetter >
+   bool solve( const Vector& b, Vector& x );
+#else
    template< typename Vector,
              typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector > >
    bool solve( const Vector& b, Vector& x );
+#endif   
 
    ~tnlSORSolver();
 

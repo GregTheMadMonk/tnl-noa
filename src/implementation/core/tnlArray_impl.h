@@ -301,8 +301,13 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
               cerr << "You try to save empty vector. Its name is " << this -> getName() );
    if( ! tnlObject :: save( file ) )
       return false;
-   if( ! file. write( &this -> size, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< const Index, tnlHost >( &this -> size ) )
       return false;
+#else            
+   if( ! file. write( &this -> size ) )
+      return false;
+#endif      
    if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
       cerr << "I was not able to WRITE tnlArray " << this -> getName()
@@ -320,8 +325,13 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
    if( ! tnlObject :: load( file ) )
       return false;
    int _size;
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< int, tnlHost >( &_size ) )
+      return false;
+#else   
    if( ! file. read( &_size, 1 ) )
       return false;
+#endif      
    if( _size <= 0 )
    {
       cerr << "Error: The size " << _size << " of the file is not a positive number." << endl;

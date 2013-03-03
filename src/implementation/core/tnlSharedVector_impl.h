@@ -84,7 +84,11 @@ bool tnlSharedVector< Element, Device, Index > :: save( tnlFile& file ) const
               cerr << "You try to save empty vector. Its name is " << this -> getName() );
    if( ! tnlObject :: save( file ) )
       return false;
-   if( ! file. write( &this -> size, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< const Index, Device >( &this -> size ) )
+#else               
+   if( ! file. write( &this -> size ) )
+#endif      
       return false;
    if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
