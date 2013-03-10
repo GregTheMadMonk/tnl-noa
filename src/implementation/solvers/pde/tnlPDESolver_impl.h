@@ -23,7 +23,11 @@ tnlPDESolver< Problem, TimeStepper > :: tnlPDESolver()
 : timeStepper( 0 ),
   finalTime( 0.0 ),
   snapshotTau( 0.0 ),
-  problem( 0 )
+  problem( 0 ),
+  ioRtTimer( 0 ),
+  computeRtTimer( 0 ),
+  ioCpuTimer( 0 ),
+  computeCpuTimer( 0 )
 {
 }
 
@@ -74,6 +78,30 @@ const typename TimeStepper :: RealType& tnlPDESolver< Problem, TimeStepper > :: 
 }
 
 template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer)
+{
+   this -> ioRtTimer = &ioRtTimer;
+}
+
+template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper > :: setComputeRtTimer( tnlTimerRT& computeRtTimer )
+{
+   this -> computeRtTimer = &computeRtTimer;
+}
+
+template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper > :: setIoCpuTimer( tnlTimerCPU& ioCpuTimer )
+{
+   this -> ioCpuTimer = &ioCpuTimer;
+}
+
+template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper > :: setComputeCpuTimer( tnlTimerCPU& computeCpuTimer )
+{
+   this -> computeCpuTimer = & computeCpuTimer;
+}
+
+template< typename Problem, typename TimeStepper >
 bool tnlPDESolver< Problem, TimeStepper > :: solve()
 {
    tnlAssert( timeStepper != 0,
@@ -104,11 +132,23 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
          return false;
       step ++;
       t += tau;
+
+      this -> ioRtTimer -> Continue();
+      this -> ioCpuTimer -> Continue();
+      this -> computeRtTimer -> Stop();
+      this -> computeCpuTimer -> Stop();
+
       if( ! this -> problem -> makeSnapshot( t, step ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;
       }
+
+      this -> ioRtTimer -> Stop();
+      this -> ioCpuTimer -> Stop();
+      this -> computeRtTimer -> Continue();
+      this -> computeCpuTimer -> Continue();
+
    }
    return true;
 }

@@ -27,10 +27,9 @@
 #include <solvers/linear/tnlLinearResidueGetter.h>
 
 template< typename Matrix,
-           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
-                                                                typename Matrix :: Device,
-                                                                typename Matrix :: IndexType> >
-
+          typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
+                                                            typename Matrix :: Device,
+                                                            typename Matrix :: IndexType> >
 class tnlCGSolver : public tnlObject,
                     public tnlIterativeSolver< typename Matrix :: RealType,
                                                typename Matrix :: IndexType >
@@ -39,7 +38,7 @@ class tnlCGSolver : public tnlObject,
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: Device Device;
+   typedef typename Matrix :: DeviceType Device;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
@@ -52,9 +51,15 @@ class tnlCGSolver : public tnlObject,
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Vector,
+             typename ResidueGetter >
+   bool solve( const Vector& b, Vector& x );
+#else
    template< typename Vector,
              typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
+#endif
 
    ~tnlCGSolver();
 

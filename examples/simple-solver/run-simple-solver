@@ -1,0 +1,8 @@
+#!/bin/bash
+
+simple-solver --dimensions 2 \
+              --time-discretisation explicit \
+              --discrete-solver merson \
+              --snapshot-period 0.01 \
+              --final-time 1.0
+              

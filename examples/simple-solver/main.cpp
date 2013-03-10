@@ -16,24 +16,13 @@
  ***************************************************************************/
 
 #include "simple-solver-conf.h"
-#include "simpleProblemTypesSetter.h"
-#include <config/tnlBasicTypesSetter.h>
-#include <solvers/tnlProblemSolver.h>
-
-#include <core/tnlHost.h>
-#include <config/tnlParameterContainer.h>
+#include "simpleProblemSetter.h"
+#include <solvers/tnlSolver.h>
 
 int main( int argc, char* argv[] )
 {
-   typedef simpleProblemTypesSetter ProblemSetter;
-
-   tnlParameterContainer parameters;
-   ProblemSetter problemSetter;
-   problemSetter. run< double, tnlHost, int >( parameters );
-
-   typedef tnlBasicTypesSetter< ProblemSetter > BasicTypesSetter;
-   tnlProblemSolver< BasicTypesSetter > problemSolver;
-   if( ! problemSolver. run( CONFIG_FILE, argc, argv ) )
+   tnlSolver< simpleProblemSetter > solver;
+   if( ! solver. run( CONFIG_FILE, argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

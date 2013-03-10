@@ -20,6 +20,7 @@
 
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
+#include <core/tnlAssert.h>
 #include <implementation/core/memory-functions.h>
 
 class tnlCuda

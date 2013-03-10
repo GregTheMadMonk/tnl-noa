@@ -22,6 +22,7 @@
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 #include <core/tnlFlopsCounter.h>
+#include <core/tnlObject.h>
 
 template< class Problem >
 class tnlExplicitSolver : public tnlObject
@@ -64,7 +65,7 @@ class tnlExplicitSolver : public tnlObject
 
    void setMPIComm( MPI_Comm comm );
   
-   void setVerbosity( IndexType v );
+   void setVerbose( IndexType v );
 
    void setTimerCPU( tnlTimerCPU* timer );
 
@@ -217,7 +218,7 @@ void tnlExplicitSolver < Problem > :: setMPIComm( MPI_Comm comm )
 };
 
 template< class Problem >
-void tnlExplicitSolver < Problem > :: setVerbosity( IndexType v )
+void tnlExplicitSolver < Problem > :: setVerbose( IndexType v )
 {
    verbosity = v;
 };

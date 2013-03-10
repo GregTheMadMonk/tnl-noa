@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlDefaultBasicTypesChecker_impl.h  -  description
+                          tnlSolver_impl.h  -  description
                              -------------------
-    begin                : Feb 24, 2013
+    begin                : Mar 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,26 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDEFAULTBASICTYPESCHECKER_IMPL_H_
-#define TNLDEFAULTBASICTYPESCHECKER_IMPL_H_
+#ifndef TNLSOLVER_IMPL_H_
+#define TNLSOLVER_IMPL_H_
 
-bool tnlDefaultBasicTypesChecker :: checkSupportedRealTypes( const tnlString& realType,
-                                                             const tnlParameterContainer& parameters )
+#include <solvers/tnlSolverInitiator.h>
+#include <solvers/tnlSolverStarter.h>
+
+template< template< typename SolverStarter> class ProblemSetter >
+bool tnlSolver< ProblemSetter > :: run( const char* configFileName, int argc, char* argv[] )
 {
-   return true;
-}
+   typedef tnlSolverStarter SolverStarter;
+   tnlSolverInitiator< ProblemSetter< SolverStarter > > solverInitiator;
+   if( ! solverInitiator. run( CONFIG_FILE, argc, argv ) )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
 
-bool tnlDefaultBasicTypesChecker :: checkSupportedIndexTypes( const tnlString& indexType,
-                                                              const tnlParameterContainer& parameters )
-{
-   return true;
-}
-
-bool tnlDefaultBasicTypesChecker :: checkSupportedDevices( const tnlString& device,
-                                                           const tnlParameterContainer& parameters )
-{
-   return true;
-}
+};
 
 
-#endif /* TNLDEFAULTBASICTYPESCHECKER_IMPL_H_ */
+
+
+#endif /* TNLSOLVER_IMPL_H_ */

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlProblemSolver.h  -  description
+                          tnlSolverInitiator.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,19 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPROBLEMSOLVER_H_
-#define TNLPROBLEMSOLVER_H_
+#ifndef TNLSOLVERINITIATOR_H_
+#define TNLSOLVERINITIATOR_H_
 
 #include <core/tnlObject.h>
 
 template< typename ProblemSetter >
-class tnlProblemSolver : public tnlObject
+class tnlSolverInitiator : public tnlObject
 {
    public:
 
    bool run( const char* configFileName, int argc, char* argv[] );
 
-   /*virtual bool checkSupportedRealTypes( const tnlString& realType,
+   virtual bool checkSupportedRealTypes( const tnlString& realType,
                                          const tnlParameterContainer& parameters ) const;
 
    virtual bool checkSupportedIndexTypes( const tnlString& indexType,
@@ -35,16 +35,6 @@ class tnlProblemSolver : public tnlObject
 
    virtual bool checkSupportedDevices( const tnlString& device,
                                        const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedDimensions( const int dimensions,
-                                          const tnlParameterContainer& parameters ) const;
-
-
-   virtual bool checkSupportedDiscreteSolvers( const tnlString& timeDiscretisation,
-                                              const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedTimeDiscretisations( const tnlString& timeDiscretisation,
-                                                   const tnlParameterContainer& parameters ) const;
 
    protected:
 
@@ -57,30 +47,9 @@ class tnlProblemSolver : public tnlObject
              typename IndexType >
    bool setDeviceType( const tnlParameterContainer& parameters ) const;
 
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   bool setDimensions( const tnlParameterContainer& parameters ) const;
-
-
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   bool setupProblem( const tnlParameterContainer& parameters ) const;
-
-
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   bool setDiscreteSolver( const tnlParameterContainer& parameters ) const;
-
-
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   bool setTimeDiscretisation( const tnlParameterContainer& parameters ) const;*/
+   int verbose;
 };
 
-#include <implementation/solvers/tnlProblemSolver_impl.h>
+#include <implementation/solvers/tnlSolverInitiator_impl.h>
 
-#endif /* TNLPROBLEMSOLVER_H_ */
+#endif /* TNLSOLVERINITIATOR_H_ */

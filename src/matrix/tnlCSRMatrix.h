@@ -738,7 +738,11 @@ bool tnlCSRMatrix< Real, Device, Index > :: save( tnlFile& file ) const
    if( ! nonzero_elements. save( file ) ) return false;
    if( ! columns. save( file ) ) return false;
    if( ! row_offsets. save( file ) ) return false;
-   if( ! file. write( &last_nonzero_element, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< const Index, tnlHost >( &last_nonzero_element ) )
+#else      
+   if( ! file. write( &last_nonzero_element ) )
+#endif      
       return false;
    return true;
 };
@@ -750,7 +754,11 @@ bool tnlCSRMatrix< Real, Device, Index > :: load( tnlFile& file )
    if( ! nonzero_elements. load( file ) ) return false;
    if( ! columns. load( file ) ) return false;
    if( ! row_offsets. load( file ) ) return false;
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< Index, tnlHost >( &last_nonzero_element ) )
+#else      
    if( ! file. read( &last_nonzero_element ) )
+#endif      
       return false;
    return true;
 };

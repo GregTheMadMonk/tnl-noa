@@ -29,9 +29,8 @@ template< typename Matrix,
 tnlString tnlCGSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlCGSolver< " ) +
-           tnlString( GetParameterType( ( RealType ) 0.0 ) ) + ", " +
-           Device :: getDeviceType() + ", " +
-           tnlString( GetParameterType( ( IndexType ) 0 ) ) + " >";
+          this -> matrix -> getType() + ", " +
+          this -> preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,

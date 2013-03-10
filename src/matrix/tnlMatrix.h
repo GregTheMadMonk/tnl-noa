@@ -232,7 +232,11 @@ template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) ) return false;
-   if( ! file. write( &size, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. write< const Index, tnlHost >( &size ) )
+#else      
+   if( ! file. write( &size ) )
+#endif      
       return false;
    return true;
 }
@@ -241,7 +245,11 @@ template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) ) return false;
-   if( ! file. read( &size, 1 ) )
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< Index, tnlHost >( &size ) )
+#else      
+   if( ! file. read( &size ) )
+#endif      
       return false;
    return true;
 }

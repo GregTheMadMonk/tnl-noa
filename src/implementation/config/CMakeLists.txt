@@ -1,5 +1,4 @@
-SET( headers tnlBasicTypesSetter_impl.h
-             tnlDefaultBasicTypesChecker_impl.h )
+SET( headers )
 
 set( tnl_implementation_SOURCES
      ${tnl_implementation_config_SOURCES}

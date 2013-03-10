@@ -2,8 +2,7 @@ SET( EXTRA_DIST tnlConfigDescriptionParser.y
 	            tnlConfigDescriptionScanner.l 	            
     )
 
-SET( headers tnlBasicTypesSetter.h
-             tnlConfigDescription.h     	    
+SET( headers tnlConfigDescription.h     	    
  		       tnlConfigDescriptionParser.h 
 		       tnlConfigDescriptionParserbase.h 
 		       tnlConfigDescriptionParser.ih 

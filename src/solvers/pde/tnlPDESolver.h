@@ -45,6 +45,14 @@ class tnlPDESolver : public tnlObject
    
    const RealType& getSnapshotTau() const;
 
+   void setIoRtTimer( tnlTimerRT& ioRtTimer);
+
+   void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+
+   void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+
+   void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+
    bool solve();
 
    protected:
@@ -54,6 +62,10 @@ class tnlPDESolver : public tnlObject
    RealType finalTime, snapshotTau;
 
    ProblemType* problem;
+
+   tnlTimerRT *ioRtTimer, *computeRtTimer;
+
+   tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
 
 };
 

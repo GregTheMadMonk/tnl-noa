@@ -27,6 +27,11 @@ class tnlDummyPreconditioner
 
    template< typename Vector >
       bool solve( const Vector& b, Vector& x ) {};
+
+   tnlString getType() const
+   {
+      return tnlString( "tnlDummyPreconditioner" );
+   }
 };
 
 

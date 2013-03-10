@@ -4,7 +4,9 @@ ADD_SUBDIRECTORY( pde )
 ADD_SUBDIRECTORY( preconditioners )
 
 SET( headers tnlIterativeSolver.h
-             tnlProblemSolver.h
+             tnlSolver.h
+             tnlSolverStarter.h
+             tnlSolverInitiator.h
              tnlSolverMonitor.h
              tnlSimpleIterativeSolverMonitor.h
    )

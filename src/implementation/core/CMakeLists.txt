@@ -2,6 +2,7 @@ SET( headers cuda-long-vector-kernels.h
              vector-operations.h
              memory-functions.h
              tnlArray_impl.h
+             tnlLogger_impl.h
              tnlMultiArray1D_impl.h
              tnlMultiArray2D_impl.h
              tnlMultiArray3D_impl.h

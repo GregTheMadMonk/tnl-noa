@@ -1,5 +1,5 @@
 /***************************************************************************
-                          simpleProblem.h  -  description
+                          simpleProblemSetter.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,13 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEM_H_
-#define SIMPLEPROBLEM_H_
+#ifndef SIMPLEPROBLEMTYPESSETTER_H_
+#define SIMPLEPROBLEMTYPESSETTER_H_
 
-class simpleProblem
+#include <config/tnlParameterContainer.h>
+#include <mesh/tnlGrid.h>
+#include "simpleProblemSolver.h"
+
+template< typename SolverStarter >
+class simpleProblemSetter
 {
-
+   public:
+   template< typename RealType,
+             typename DeviceType,
+             typename IndexType >
+   bool run( const tnlParameterContainer& parameters ) const;
 };
 
+#include "simpleProblemSetter_impl.h"
 
-#endif /* SIMPLEPROBLEM_H_ */
+#endif /* SIMPLEPROBLEMSETTER_H_ */

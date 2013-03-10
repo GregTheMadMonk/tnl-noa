@@ -39,20 +39,36 @@ template< class T > class tnlCurveElement
    
    bool save( tnlFile& file ) const
    {
+#ifdef HAVE_NOT_CXX11      
+      if( ! file. write< const T, tnlHost >( &position ) )
+         return false;
+      if( ! file. write< const bool, tnlHost >( &separator ) )
+         return false;
+      return true;
+#else      
       if( ! file. write( &position ) )
          return false;
       if( ! file. write( &separator ) )
          return false;
       return true;
+#endif      
    };
    
    bool load( tnlFile& file )
    {
+#ifdef HAVE_NOT_CXX11      
+      if( ! file. read< T, tnlHost >( &position ) )
+         return false;
+      if( ! file. read< bool, tnlHost >( &separator ) )
+         return false;
+      return true;
+#else      
       if( ! file. read( &position ) )
          return false;
       if( ! file. read( &separator ) )
          return false;
       return true;
+#endif      
    };
    
    T position;

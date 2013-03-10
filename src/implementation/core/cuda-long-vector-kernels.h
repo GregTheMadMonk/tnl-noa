@@ -21,6 +21,9 @@
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
+#include <iostream>
+
+using namespace std;
 
 enum tnlTupleOperation { tnlParallelReductionMin = 1,
                           tnlParallelReductionMax,

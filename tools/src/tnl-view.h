@@ -64,7 +64,7 @@ bool processMesh( const tnlParameterContainer& parameters )
             continue;
          }
          if( verbose )
-            cout << " writing to " << outputFileName << " ...";
+            cout << " writing to " << outputFileName << " ...                 \r" << flush;
 
          if( objectType == "tnlSharedVector< double, tnlHost, int >" ||
              objectType == "tnlVector< double, tnlHost, int >" )
@@ -75,9 +75,9 @@ bool processMesh( const tnlParameterContainer& parameters )
             mesh. write( v, outputFileName, outputFormat );
          }
       }
-      if( verbose )
-         cout << endl;
    }
+   if( verbose )
+      cout << endl;
 }
 
 

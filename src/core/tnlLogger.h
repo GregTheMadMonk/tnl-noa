@@ -28,41 +28,25 @@ class tnlLogger
    public:
 
    tnlLogger( int _width,
-            ostream& _stream )
-   : width( _width ), 
-     stream( _stream ){};
+              ostream& _stream );
 
-   void WriteHeader( const char* title );
+   void WriteHeader( const tnlString& title );
 
    void WriteSeparator();
 
+   bool writeSystemInformation();
+
+   void writeCurrentTime( const char* label );
+
+   // TODO: add units
    template< typename T > void WriteParameter( const char* label,
-                                               const char* parameter_name,
+                                               const char* parameterName,
                                                const tnlParameterContainer& parameters,
-                                               int parameter_level = 0 )
-   {
-      stream << "| ";
-      int i;
-      for( i = 0; i < parameter_level; i ++ )
-         stream << " ";
-      stream  << label 
-              << setw( width - strlen( label ) - 3 - parameter_level )
-              << parameters. GetParameter< T >( parameter_name ) << " |" << endl;
-   };
+                                               int parameterLevel = 0 );
    
    template< typename T > void WriteParameter( const char* label,
                                                const T& value,
-                                               int parameter_level = 0 )
-   {
-      stream << "| ";
-      int i;
-      for( i = 0; i < parameter_level; i ++ )
-         stream << " ";
-      stream  << label 
-              << setw( width - strlen( label ) - 3 - parameter_level )
-              << value << " |" << endl;
-   };
-
+                                               int parameterLevel = 0 );
 
    protected:
 
@@ -70,5 +54,33 @@ class tnlLogger
 
    ostream& stream;
 };
+
+#include <implementation/core/tnlLogger_impl.h>
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+extern template void tnlLogger :: WriteParameter< char* >( const char*,
+                                                           const char*,
+                                                           const tnlParameterContainer&,
+                                                           int );
+extern template void tnlLogger :: WriteParameter< double >( const char*,
+                                                            const char*,
+                                                            const tnlParameterContainer&,
+                                                            int );
+extern template void tnlLogger :: WriteParameter< int >( const char*,
+                                                         const char*,
+                                                         const tnlParameterContainer&,
+                                                         int );
+
+// TODO: fix this
+//extern template void tnlLogger :: WriteParameter< char* >( const char*,
+//                                                           const char*&,
+//                                                           int );
+extern template void tnlLogger :: WriteParameter< double >( const char*,
+                                                            const double&,
+                                                            int );
+extern template void tnlLogger :: WriteParameter< int >( const char*,
+                                                         const int&,
+                                                         int );
+#endif
 
 #endif

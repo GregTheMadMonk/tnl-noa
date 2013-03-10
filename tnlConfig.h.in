@@ -15,3 +15,5 @@
 #define TNL_SOURCE_DIRECTORY @sourceDirectory@
 
 #define TNL_TESTS_DIRECTORY @testsDirectory@
+
+#define TNL_CPP_COMPILER_NAME "@CMAKE_CXX_COMPILER@"

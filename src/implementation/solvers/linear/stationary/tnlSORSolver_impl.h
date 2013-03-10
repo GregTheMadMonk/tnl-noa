@@ -28,12 +28,8 @@ template< typename Matrix, typename Preconditioner >
 tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlSORSolver< " ) +
-           tnlString( GetParameterType( ( RealType ) 0.0 ) ) +
-           tnlString( ", " ) +
-           DeviceType :: getDeviceType() +
-           tnlString( ", " ) +
-           tnlString( GetParameterType( ( IndexType ) 0 ) ) +
-           tnlString( " >" );
+          this -> matrix -> getType() + ", " +
+          this -> preconditioner -> getType() + " >";
 }
 
 template< typename Matrix, typename Preconditioner >

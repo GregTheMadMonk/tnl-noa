@@ -56,9 +56,17 @@ class tnlFileTester : public CppUnit :: TestCase
          return;
       }
       int intData( 5 );
-      file. write( &intData, 1 );
+#ifdef HAVE_NOT_CXX11      
+      file. write< int, tnlHost >( &intData );
+#else      
+      file. write( &intData );
+#endif      
       double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
+#ifdef HAVE_NOT_CXX11
+      file. write< double, tnlHost >( doubleData, 3 );
+#else
       file. write( doubleData, 3 );
+#endif      
       if( ! file. close() )
       {
          cerr << "Unable to close the file test-file.tnl" << endl;
@@ -72,8 +80,13 @@ class tnlFileTester : public CppUnit :: TestCase
       }
       int newIntData;
       double newDoubleData[ 3 ];
+#ifdef HAVE_NOT_CXX11
+      file. read< int, tnlHost >( &newIntData );
+      file. read< double, tnlHost >( newDoubleData, 3 );
+#else            
       file. read( &newIntData, 1 );
       file. read( newDoubleData, 3 );
+#endif      
 
       CPPUNIT_ASSERT( newIntData == intData );
       for( int i = 0; i < 3; i ++ )
