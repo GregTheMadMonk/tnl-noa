@@ -19,6 +19,7 @@
 #define TNLPDESOLVER_H_
 
 #include <core/tnlObject.h>
+#include <solvers/tnlSolverMonitor.h>
 
 template< typename Problem,
           typename TimeStepper >

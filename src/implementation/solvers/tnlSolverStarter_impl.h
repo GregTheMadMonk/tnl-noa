@@ -30,6 +30,8 @@
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
+#include <solvers/tnlIterativeSolverMonitor.h>
+#include <solvers/ode/tnlODESolverMonitor.h>
 
 tnlSolverStarter :: tnlSolverStarter()
 : logWidth( 72 )
@@ -40,11 +42,20 @@ template< typename Problem >
 bool tnlSolverStarter :: run( const tnlParameterContainer& parameters )
 {
    this -> verbose = parameters. GetParameter< int >( "verbose" );
-   return setDiscreteSolver< Problem >( parameters );
+
+   /****
+    * Create and set-up the problem
+    */
+   Problem problem;
+   if( ! problem. init( parameters ) )
+      return false;
+
+   return setDiscreteSolver< Problem >( problem, parameters );
 }
 
 template< typename Problem >
-bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& parameters )
+bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
+                                            const tnlParameterContainer& parameters )
 {
    const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
    const tnlString& timeDiscretisation = parameters. GetParameter< tnlString>( "time-discretisation" );
@@ -65,13 +76,20 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       return false;
    }
 
+
+
    if( discreteSolver == "euler" )
    {
       typedef tnlEulerSolver< Problem > DiscreteSolver;
       DiscreteSolver solver;
       solver. setName( "euler-solver" );
       solver. setVerbose( this -> verbose );
-      return setExplicitTimeDiscretisation( parameters, solver );
+      tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
+      if( ! problem. getSolverMonitor() )
+         solver. setSolverMonitor( odeSolverMonitor );
+      else
+         solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+      return setExplicitTimeDiscretisation( problem, parameters, solver );
    }
 
    if( discreteSolver == "merson" )
@@ -82,7 +100,13 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       solver. setName( "merson-solver" );
       solver. setAdaptivity( adaptivity );
       solver. setVerbose( this -> verbose );
-      return setExplicitTimeDiscretisation( parameters, solver );
+      tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
+      if( ! problem. getSolverMonitor() )
+         solver. setSolverMonitor( odeSolverMonitor );
+      else
+         solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+
+      return setExplicitTimeDiscretisation( problem, parameters, solver );
    }
 
    if( ( discreteSolver == "sor" ||
@@ -105,7 +129,7 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       solver. setName( "sor-solver" );
       solver. setOmega( omega );
       //solver. setVerbose( this -> verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( parameters, solver );
+      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
    if( discreteSolver == "cg" )
@@ -115,7 +139,7 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       DiscreteSolver solver;
       solver. setName( "cg-solver" );
       //solver. setVerbose( this -> verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( parameters, solver );
+      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
    if( discreteSolver == "bicg-stab" )
@@ -125,7 +149,7 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       DiscreteSolver solver;
       solver. setName( "bicg-solver" );
       //solver. setVerbose( this -> verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( parameters, solver );
+      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
    if( discreteSolver == "gmres" )
@@ -137,7 +161,7 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
       solver. setName( "gmres-solver" );
       solver. setRestarting( restarting );
       //solver. setVerbose( this -> verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( parameters, solver );
+      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
    cerr << "Unknown discrete solver " << discreteSolver << "." << endl;
@@ -146,19 +170,21 @@ bool tnlSolverStarter :: setDiscreteSolver( const tnlParameterContainer& paramet
 
 template< typename Problem,
           template < typename > class DiscreteSolver >
-bool tnlSolverStarter :: setExplicitTimeDiscretisation( const tnlParameterContainer& parameters,
+bool tnlSolverStarter :: setExplicitTimeDiscretisation( Problem& problem,
+                                                        const tnlParameterContainer& parameters,
                                                         DiscreteSolver< Problem >& discreteSolver )
 {
    typedef tnlExplicitTimeStepper< Problem, DiscreteSolver > TimeStepperType;
    TimeStepperType timeStepper;
    timeStepper. setSolver( discreteSolver );
    timeStepper. setTau( parameters. GetParameter< double >( "initial-tau" ) );
-   return runPDESolver< Problem, TimeStepperType >( parameters, timeStepper );
+   return runPDESolver< Problem, TimeStepperType >( problem, parameters, timeStepper );
 }
 
 template< typename Problem,
           typename DiscreteSolver >
-bool tnlSolverStarter :: setSemiImplicitTimeDiscretisation( const tnlParameterContainer& parameters,
+bool tnlSolverStarter :: setSemiImplicitTimeDiscretisation( Problem& problem,
+                                                            const tnlParameterContainer& parameters,
                                                             DiscreteSolver& discreteSolver )
 {
 
@@ -199,18 +225,12 @@ bool tnlSolverStarter :: writeProlog( ostream& str,
 
 template< typename Problem,
           typename TimeStepper >
-bool tnlSolverStarter :: runPDESolver( const tnlParameterContainer& parameters,
+bool tnlSolverStarter :: runPDESolver( Problem& problem,
+                                       const tnlParameterContainer& parameters,
                                        TimeStepper& timeStepper )
 {
    this -> totalCpuTimer. Reset();
    this -> totalRtTimer. Reset();
-
-   /****
-    * Create and set-up the problem
-    */
-   Problem problem;
-   if( ! problem. init( parameters ) )
-      return false;
 
    /***
     * Set-up the initial condition

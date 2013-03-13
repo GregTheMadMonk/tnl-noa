@@ -18,6 +18,8 @@
 #ifndef TNLEXPLICITTIMESTEPPER_H_
 #define TNLEXPLICITTIMESTEPPER_H_
 
+#include <solvers/ode/tnlODESolverMonitor.h>
+
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 class tnlExplicitTimeStepper

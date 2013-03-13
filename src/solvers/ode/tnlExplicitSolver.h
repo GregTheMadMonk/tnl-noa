@@ -23,6 +23,7 @@
 #include <core/tnlTimerRT.h>
 #include <core/tnlFlopsCounter.h>
 #include <core/tnlObject.h>
+#include <solvers/ode/tnlODESolverMonitor.h>
 
 template< class Problem >
 class tnlExplicitSolver : public tnlObject
@@ -70,12 +71,16 @@ class tnlExplicitSolver : public tnlObject
    void setTimerCPU( tnlTimerCPU* timer );
 
    void setTimerRT( tnlTimerRT* timer );
-
-   void printOut() const;
    
    virtual bool solve( DofVectorType& u ) = 0;
 
    void setTestingMode( bool testingMode );
+
+   void setRefreshRate( const IndexType& refreshRate );
+
+   void setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor );
+
+   void refreshSolverMonitor();
 
 protected:
     
@@ -113,6 +118,8 @@ protected:
    bool testingMode;
 
    Problem* problem;
+
+   tnlODESolverMonitor< RealType, IndexType >* solverMonitor;
 };
 
 template< class Problem >
@@ -236,29 +243,27 @@ void tnlExplicitSolver < Problem > :: setTimerRT( tnlTimerRT* timer )
 };
 
 template< class Problem >
-void tnlExplicitSolver < Problem > :: printOut() const
+void tnlExplicitSolver < Problem > :: setRefreshRate( const IndexType& refreshRate )
 {
-   if( verbosity > 0 )
+   this -> refreshRate = refreshRate;
+}
+
+template< class Problem >
+void tnlExplicitSolver < Problem > :: setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor )
+{
+   this -> solverMonitor = &solverMonitor;
+}
+
+template< class Problem >
+void tnlExplicitSolver < Problem > :: refreshSolverMonitor()
+{
+   if( this -> solverMonitor )
    {
-      IndexType cpu_time = 0;
-      if( cpu_timer ) cpu_time = cpu_timer -> GetTime( 0, solver_comm );
-      if( MPIGetRank() != 0 ) return;
-      // TODO: add EST
-      //cout << " EST: " << estimated;
-      cout << " ITER:" << setw( 8 ) << getIterationsNumber()
-           << " TAU:" << setprecision( 5 ) << setw( 12 ) << getTau()
-           << " T:" << setprecision( 5 ) << setw( 12 ) << getTime()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << getResidue();
-      if( cpu_timer )
-         cout << " CPU: " << setw( 8 ) << cpu_time;
-      if( rt_timer )
-         cout << " ELA: " << setw( 8 ) << rt_timer -> GetTime();
-      double flops = ( double ) tnl_flops_counter. getFlops();
-      if( flops )
-      {
-       cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> GetTime();
-      }
-      cout << "   \r" << flush;
+      this -> solverMonitor -> setIterations( this -> getIterationsNumber() );
+      this -> solverMonitor -> setResidue( this -> getResidue() );
+      this -> solverMonitor -> setTimeStep( this -> getTau() );
+      this -> solverMonitor -> setTime( this -> getTime() );
+      this -> solverMonitor -> refresh();
    }
 }
 

@@ -142,11 +142,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
    if( currentTau == 0.0 ) return true;
    iteration = 0;
 
-   /****
-    * Do a printout ...
-    */
-   if( this -> verbosity > 0 )
-      this -> printOut();
+   this -> refreshSolverMonitor();
 
    /****
     * Start the main loop
@@ -178,6 +174,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          if( currentTau + time == this -> stopTime ) residue = lastResidue;
          time += currentTau;
          iteration ++;
+         this -> refreshSolverMonitor();
       }
 
       /****
@@ -192,11 +189,6 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          currentTau = this -> getStopTime() - time; //we don't want to keep such tau
       else this -> tau = currentTau;
 
-      /****
-       * Do printouts if verbosity is on
-       */
-      if( this -> verbosity > 1 )
-          this ->  printOut();
 
       /****
        * Check stop conditions.
@@ -204,9 +196,8 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       if( time >= this -> getStopTime() ||
           ( this -> getMaxResidue() != 0.0 && residue < this -> getMaxResidue() ) )
        {
-         if( this -> verbosity > 0 )
-            this -> printOut();
-          return true;
+         this -> refreshSolverMonitor();
+         return true;
        }
       if( iteration == this -> getMaxIterationsNumber() ) return false;
    }

@@ -33,16 +33,19 @@ class tnlSolverStarter
    bool run( const tnlParameterContainer& parameters );
 
    template< typename Problem >
-   bool setDiscreteSolver( const tnlParameterContainer& parameters );
+   bool setDiscreteSolver( Problem& problem,
+                           const tnlParameterContainer& parameters );
 
    template< typename Problem,
              template < typename > class DiscreteSolver >
-   bool setExplicitTimeDiscretisation( const tnlParameterContainer& parameters,
+   bool setExplicitTimeDiscretisation( Problem& problem,
+                                       const tnlParameterContainer& parameters,
                                        DiscreteSolver< Problem >& solver );
 
    template< typename Problem,
              typename DiscreteSolver >
-   bool setSemiImplicitTimeDiscretisation( const tnlParameterContainer& parameters,
+   bool setSemiImplicitTimeDiscretisation( Problem& problem,
+                                           const tnlParameterContainer& parameters,
                                            DiscreteSolver& solver);
 
    template< typename Problem >
@@ -51,7 +54,8 @@ class tnlSolverStarter
                      const Problem& problem );
 
    template< typename Problem, typename TimeStepper >
-   bool runPDESolver( const tnlParameterContainer& parameters,
+   bool runPDESolver( Problem& problem,
+                      const tnlParameterContainer& parameters,
                       TimeStepper& timeStepper );
 
    bool writeEpilog( ostream& str );

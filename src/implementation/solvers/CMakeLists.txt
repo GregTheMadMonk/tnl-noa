@@ -2,7 +2,8 @@ ADD_SUBDIRECTORY( linear )
 ADD_SUBDIRECTORY( pde )
 ADD_SUBDIRECTORY( ode )
 
-SET( headers tnlSolver_impl.h
+SET( headers tnlIterativeSolverMonitor_impl.h
+             tnlSolver_impl.h
              tnlSolverStarter_impl.h
              tnlSolverInitiator_impl.h )
 

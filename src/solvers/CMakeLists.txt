@@ -8,7 +8,7 @@ SET( headers tnlIterativeSolver.h
              tnlSolverStarter.h
              tnlSolverInitiator.h
              tnlSolverMonitor.h
-             tnlSimpleIterativeSolverMonitor.h
+             tnlIterativeSolverMonitor.h
    )
    
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers )

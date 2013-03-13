@@ -171,13 +171,18 @@ template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlSolverMonitor< Real, Index >& solverMonitor )
 {
    this -> solverMonitor = &solverMonitor;
+   solverMonitor. setSolver( this );
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor()
 {
    if( this -> solverMonitor )
+   {
+      this -> solverMonitor() -> setIterations( this -> getIterations() );
+      this -> solverMonitor() -> setResidue( this -> getResidue() );
       this -> solverMonitor -> refresh();
+   }
 }
 
 #endif /* TNLITERATIVESOLVER_H_ */
