@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlLinearResidueGetter.h  -  description
+                          tnlSolverTester.h  -  description
                              -------------------
-    begin                : Nov 25, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Mar 17, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,24 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
+#ifndef TNLSOLVERTEST_H_
+#define TNLSOLVERTEST_H_
 
-template< typename Matrix, typename Vector >
-class tnlLinearResidueGetter
+#include <tnlConfig.h>
+#include <iostream>
+
+using namespace std;
+
+#ifdef HAVE_CPPUNIT
+
+#include <cppunit/ui/text/TestRunner.h>
+#include <iostream>
+#include "tnlSolverTester.h"
+
+using namespace std;
+
+int main( int argc, char* argv[] )
 {
-   public:
+   CppUnit :: TextTestRunner runner;
+   runner. addTest( tnlSolverTester :: suite() );
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: DeviceType DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
+}
+#else
+int main( int argc, char* argv[] )
+{
+   cerr << "UNIT TESTS ARE DISABLED." << endl;
+   return 0;
+}
+#endif
 
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
-};
 
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
-
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+#endif /* TNLSOLVERTEST_H_ */

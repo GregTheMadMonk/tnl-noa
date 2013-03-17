@@ -20,6 +20,7 @@
 
 #include <matrix/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 #include <core/tnlVector.h>
 #include <core/tnlSharedVector.h>
@@ -56,6 +57,8 @@ class simpleProblemSolver
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );
+
+   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
 
    protected:
 

@@ -71,7 +71,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const Precon
 
 template< typename Matrix,
           typename Preconditioner >
- template< typename Vector >
+ template< typename Vector, typename ResidueGetter >
 bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    tnlAssert( matrix, cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << endl );

@@ -19,6 +19,7 @@
 #define TNLSOLVERINITIATOR_H_
 
 #include <core/tnlObject.h>
+#include <config/tnlParameterContainer.h>
 
 template< typename ProblemSetter >
 class tnlSolverInitiator : public tnlObject

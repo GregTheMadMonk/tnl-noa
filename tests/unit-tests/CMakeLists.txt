@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( solver )
+
 set( headers core/tnl-cuda-kernels.h 
              core/tnlMultiArrayTester.h 
              core/tnlCUDAKernelsTester.h 

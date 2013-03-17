@@ -7,6 +7,7 @@ set( tnlVersion "0.1" )
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
+include( UseCodeCoverage )
 
 ####
 # Settings for debug/release version
@@ -219,30 +220,30 @@ else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
   endif(CPPUNIT_LIBRARY)
 endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
 
-if( BUILD_MPI )
-   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
-     /usr/include/petsc
-     ${PETSC_DIR}/${PETSC_ARCH}/include
-     ${PETSC_DIR}/include
-     DOC "PETSC headers."
-   )
-   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
-      message( "PETSC not found." ) 
-   else()
-      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
-      FIND_LIBRARY(PETSC_LIBRARY petsc
-                  ${PETSC_INCLUDE_DIR}/../lib
-                  /usr/local/lib
-                  /usr/lib)
-      if( PETSC_LIBRARY )
-         #string( REPLACE ";" " " MPI_LIBRARIES "${MPI_CXX_LIBRARIES}" )
-         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
-         message( "PETSC library found -- ${PETSC_LIBRARY}")
-         list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
-         set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")                     
-      endif()
-   endif()
-endif()
+#if( BUILD_MPI )
+#   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
+#     /usr/include/petsc
+#     ${PETSC_DIR}/${PETSC_ARCH}/include
+#     ${PETSC_DIR}/include
+#     DOC "PETSC headers."
+#   )
+#   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
+#      message( "PETSC not found." ) 
+#   else()
+#      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
+#      FIND_LIBRARY(PETSC_LIBRARY petsc
+#                  ${PETSC_INCLUDE_DIR}/../lib
+#                  /usr/local/lib
+#                  /usr/lib)
+#      if( PETSC_LIBRARY )
+#         #string( REPLACE ";" " " MPI_LIBRARIES "${MPI_CXX_LIBRARIES}" )
+#         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
+#         message( "PETSC library found -- ${PETSC_LIBRARY}")
+#         list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
+#         set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")                     
+#      endif()
+#   endif()
+#endif()
 
 
 ENABLE_TESTING()

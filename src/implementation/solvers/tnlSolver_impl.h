@@ -26,7 +26,7 @@ bool tnlSolver< ProblemSetter > :: run( const char* configFileName, int argc, ch
 {
    typedef tnlSolverStarter SolverStarter;
    tnlSolverInitiator< ProblemSetter< SolverStarter > > solverInitiator;
-   if( ! solverInitiator. run( CONFIG_FILE, argc, argv ) )
+   if( ! solverInitiator. run( configFileName, argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 

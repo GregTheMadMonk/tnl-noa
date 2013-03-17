@@ -28,7 +28,7 @@
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
-                                                            typename Matrix :: Device,
+                                                            typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class tnlCGSolver : public tnlObject,
                     public tnlIterativeSolver< typename Matrix :: RealType,

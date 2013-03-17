@@ -65,7 +65,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
                       Vector& x )
 {
    typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: Device DeviceType;
+   typedef typename Matrix :: DeviceType DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
    const RealType& maxResidue = parameters. GetParameter< double >( "max-residue" );
@@ -83,7 +83,11 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    solver. setSolverMonitor( solverMonitor );
    solver. setRefreshRate( 10 );
    solverMonitor. resetTimers();
+#ifdef HAVE_NOT_CXX11
+   solver. template solve< Vector, tnlLinearResidueGetter< Matrix, Vector > >( b, x );
+#else   
    solver. solve( b, x );
+#endif   
 
    bool solverConverged( solver. getResidue() < maxResidue );
    const tnlString& logFileName = parameters. GetParameter< tnlString >( "log-file" );
@@ -121,7 +125,7 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
                               Vector& x )
 {
    typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: Device DeviceType;
+   typedef typename Matrix :: DeviceType DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
    const tnlString& solverClass = parameters. GetParameter< tnlString >( "solver-class" );
@@ -133,31 +137,31 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
       bool converged( false );
       if( solverName == "sor" )
       {
-         tnlSORSolver< Matrix, DeviceType > solver;
+         tnlSORSolver< Matrix > solver;
          const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
          solver. setOmega( sorOmega );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "cg" )
       {
-         tnlCGSolver< Matrix, DeviceType > solver;
+         tnlCGSolver< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "bicgstab" )
       {
-         tnlBICGStabSolver< Matrix, DeviceType > solver;
+         tnlBICGStabSolver< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "gmres" )
       {
-         tnlGMRESSolver< Matrix, DeviceType > solver;
+         tnlGMRESSolver< Matrix > solver;
          const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
          solver. setRestarting( gmresRestarting );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "tfqmr" )
       {
-         tnlTFQMRSolver< Matrix, DeviceType > solver;
+         tnlTFQMRSolver< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       cerr << "Unknown solver " << solverName << endl;

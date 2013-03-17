@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlLinearResidueGetter.h  -  description
+                          tnlIterativeSolver_impl.cpp  -  description
                              -------------------
-    begin                : Nov 25, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Mar 17, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,24 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
+#include <solvers/tnlIterativeSolver.h>
 
-template< typename Matrix, typename Vector >
-class tnlLinearResidueGetter
-{
-   public:
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: DeviceType DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
+template class tnlIterativeSolver< float,  int >;
+template class tnlIterativeSolver< double, int >;
+template class tnlIterativeSolver< float,  long int >;
+template class tnlIterativeSolver< double, long int >;
 
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
-};
+#ifdef HAVE_CUDA
+template class tnlIterativeSolver< float,  int >;
+template class tnlIterativeSolver< double, int >;
+template class tnlIterativeSolver< float,  long int >;
+template class tnlIterativeSolver< double, long int >;
+#endif
 
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
+#endif
 
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+
+

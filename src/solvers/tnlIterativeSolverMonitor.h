@@ -19,7 +19,6 @@
 #define TNLITERATIVESOLVERMONITOR_H_
 
 #include <solvers/tnlSolverMonitor.h>
-#include <solvers/tnlIterativeSolver.h>
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 

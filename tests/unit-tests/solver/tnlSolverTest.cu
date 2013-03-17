@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlLinearResidueGetter.h  -  description
+                          tnlSolverTest.cu  -  description
                              -------------------
-    begin                : Nov 25, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Mar 17, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,24 +15,4 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
-
-template< typename Matrix, typename Vector >
-class tnlLinearResidueGetter
-{
-   public:
-
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: DeviceType DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
-
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
-};
-
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
-
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+#include "tnlSolverTest.h"

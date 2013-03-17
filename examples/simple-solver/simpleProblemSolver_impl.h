@@ -173,4 +173,12 @@ void simpleProblemSolver< Mesh> :: GetExplicitRHS( const RealType& time,
 #endif
 }
 
+template< typename Mesh >
+tnlSolverMonitor< typename simpleProblemSolver< Mesh > :: RealType,
+                  typename simpleProblemSolver< Mesh > :: IndexType >*
+   simpleProblemSolver< Mesh > ::  getSolverMonitor()
+{
+   return 0;
+}
+
 #endif /* SIMPLEPROBLEM_IMPL_H_ */

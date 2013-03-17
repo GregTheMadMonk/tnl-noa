@@ -18,6 +18,10 @@
 #ifndef TNLITERATIVESOLVERMONITOR_IMPL_H_
 #define TNLITERATIVESOLVERMONITOR_IMPL_H_
 
+#include <iomanip>
+
+using namespace std;
+
 template< typename Real, typename Index>
 tnlIterativeSolverMonitor< Real, Index > :: tnlIterativeSolverMonitor()
 : iterations( 0 ),

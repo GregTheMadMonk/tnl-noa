@@ -18,8 +18,7 @@
 #ifndef TNLITERATIVESOLVER_H_
 #define TNLITERATIVESOLVER_H_
 
-#include <float.h>
-#include <solvers/tnlSolverMonitor.h>
+#include <solvers/tnlIterativeSolverMonitor.h>
 
 template< typename Real, typename Index >
 class tnlIterativeSolver
@@ -52,7 +51,7 @@ class tnlIterativeSolver
 
    void setRefreshRate( const Index& refreshRate );
 
-   void setSolverMonitor( tnlSolverMonitor< Real, Index >& solverMonitor );
+   void setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor );
 
    void refreshSolverMonitor();
 
@@ -71,118 +70,11 @@ class tnlIterativeSolver
 
    Real currentResidue;
 
-   tnlSolverMonitor< Real, Index >* solverMonitor;
+   tnlIterativeSolverMonitor< Real, Index >* solverMonitor;
 
    Index refreshRate;
 };
 
-template< typename Real, typename Index >
-tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
-: maxIterations( 0 ),
-  currentIteration( 0 ),
-  maxResidue( 0 ),
-  minResidue( DBL_MAX ),
-  currentResidue( 0 ),
-  solverMonitor( 0 ),
-  refreshRate( 1 )
-{
-};
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
-{
-   this -> maxIterations = maxIterations;
-}
-
-template< typename Real, typename Index >
-const Index& tnlIterativeSolver< Real, Index> :: getMaxIterations() const
-{
-   return this -> maxIterations;
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: resetIterations()
-{
-   this -> currentIteration = 0;
-}
-
-template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: nextIteration()
-{
-   if( this -> solverMonitor &&
-       this -> currentIteration % this -> refreshRate == 0 )
-      solverMonitor -> refresh();
-   this -> currentIteration ++;
-   if( this -> getResidue() > this -> getMinResidue() && this -> currentIteration > 10 )
-      return false;
-   return true;
-}
-
-template< typename Real, typename Index >
-const Index& tnlIterativeSolver< Real, Index> :: getIterations() const
-{
-   return this -> currentIteration;
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMaxResidue( const Real& maxResidue )
-{
-   this -> maxResidue = maxResidue;
-}
-
-template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getMaxResidue() const
-{
-   return this -> maxResidue;
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMinResidue( const Real& minResidue )
-{
-   this -> minResidue = minResidue;
-}
-
-template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getMinResidue() const
-{
-   return this -> minResidue;
-}
-
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setResidue( const Real& residue )
-{
-   this -> currentResidue = residue;
-}
-
-template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getResidue() const
-{
-   return this -> currentResidue;
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
-{
-   this -> refreshRate = refreshRate;
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlSolverMonitor< Real, Index >& solverMonitor )
-{
-   this -> solverMonitor = &solverMonitor;
-   solverMonitor. setSolver( this );
-}
-
-template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor()
-{
-   if( this -> solverMonitor )
-   {
-      this -> solverMonitor() -> setIterations( this -> getIterations() );
-      this -> solverMonitor() -> setResidue( this -> getResidue() );
-      this -> solverMonitor -> refresh();
-   }
-}
+#include <implementation/solvers/tnlIterativeSolver_impl.h>
 
 #endif /* TNLITERATIVESOLVER_H_ */
