@@ -25,6 +25,7 @@
 #include <core/tnlSharedVector.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
+#include <solvers/linear/tnlLinearResidueGetter.h>
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
