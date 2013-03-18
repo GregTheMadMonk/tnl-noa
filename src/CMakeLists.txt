@@ -14,8 +14,10 @@ ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED
                ${tnl_config_SOURCES}
                ${tnl_core_SOURCES}
                ${tnl_implementation_SOURCES}
+               ${tnl_legacy_SOURCES}
                ${tnl_debug_SOURCES}
                ${tnl_matrix_SOURCES} )
+               
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 
                           SOVERSION 0 
                           VERSION ${tnlVersion} )

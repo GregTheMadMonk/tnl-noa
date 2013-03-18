@@ -123,7 +123,7 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
                       const tnlTuple< 1, bool >& lowerBC,
                       const tnlTuple< 1, bool >& upperBC );
 
-   Real getLpNorm() const;
+   Real getLpNorm( const Real& p ) const;
 
    Real getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const;
 
@@ -264,7 +264,7 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
                       const tnlTuple< 2, bool >& lowerBC,
                       const tnlTuple< 2, bool >& upperBC );
 
-   Real getLpNorm() const;
+   Real getLpNorm( const Real& p ) const;
 
    Real getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const;
 
@@ -434,7 +434,7 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
                       const tnlTuple< 3, bool >& lowerBC,
                       const tnlTuple< 3, bool >& upperBC );
 
-   Real getLpNorm() const;
+   Real getLpNorm( const Real& p ) const;
 
    Real getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const;
 
@@ -466,47 +466,40 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
 #include <legacy/mesh/implementation/tnlGrid2D_impl.h>
 #include <legacy/mesh/implementation/tnlGrid3D_impl.h>
 
+/*
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlGridOld< 1, float,  tnlHost, int >;
+extern template class tnlGridOld< 1, double, tnlHost, int >;
+extern template class tnlGridOld< 1, float,  tnlHost, long int >;
+extern template class tnlGridOld< 1, double, tnlHost, long int >;
+extern template class tnlGridOld< 2, float,  tnlHost, int >;
+extern template class tnlGridOld< 2, double, tnlHost, int >;
+extern template class tnlGridOld< 2, float,  tnlHost, long int >;
+extern template class tnlGridOld< 2, double, tnlHost, long int >;
+extern template class tnlGridOld< 3, float,  tnlHost, int >;
+extern template class tnlGridOld< 3, double, tnlHost, int >;
+extern template class tnlGridOld< 3, float,  tnlHost, long int >;
+extern template class tnlGridOld< 3, double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+
+extern template class tnlGridOld< 1, float,  tnlCuda, int >;
+extern template class tnlGridOld< 1, double, tnlCuda, int >;
+extern template class tnlGridOld< 1, float,  tnlCuda, long int >;
+extern template class tnlGridOld< 1, double, tnlCuda, long int >;
+extern template class tnlGridOld< 2, float,  tnlCuda, int >;
+extern template class tnlGridOld< 2, double, tnlCuda, int >;
+extern template class tnlGridOld< 2, float,  tnlCuda, long int >;
+extern template class tnlGridOld< 2, double, tnlCuda, long int >;
+extern template class tnlGridOld< 3, float,  tnlCuda, int >;
+extern template class tnlGridOld< 3, double, tnlCuda, int >;
+extern template class tnlGridOld< 3, float,  tnlCuda, long int >;
+extern template class tnlGridOld< 3, double, tnlCuda, long int >;
+
+#endif
+
+#endif
+*/
 #endif /* tnlGridOld_H_ */
 
-
-#ifdef UNDEF
-   Real getMax() const;
-
-   Real getMin() const;
-
-   Real getAbsMax() const;
-
-   Real getAbsMin() const;
-
-   Real getLpNorm() const;
-
-   Real getSum() const;
-
-   Real getDifferenceMax( const tnlVector< Real, Device, Index >& v ) const;
-
-   Real getDifferenceMin( const tnlVector< Real, Device, Index >& v ) const;
-
-   Real getDifferenceAbsMax( const tnlVector< Real, Device, Index >& v ) const;
-
-   Real getDifferenceAbsMin( const tnlVector< Real, Device, Index >& v ) const;
-
-   Real getDifferenceLpNorm( const tnlVector< Real, Device, Index >& v, const Real& p ) const;
-
-   Real getDifferenceSum( const tnlVector< Real, Device, Index >& v ) const;
-
-   void scalarMultiplication( const Real& alpha );
-
-   //! Compute scalar dot product
-   Real sdot( const tnlVector< Real, Device, Index >& v ) const;
-
-   //! Compute SAXPY operation (Scalar Alpha X Pus Y ).
-   void saxpy( const Real& alpha,
-                const tnlVector< Real, Device, Index >& x );
-
-   //! Compute SAXMY operation (Scalar Alpha X Minus Y ).
-   /*!**
-    * It is not a standart BLAS function but is useful for GMRES solver.
-    */
-   void saxmy( const Real& alpha,
-                const tnlVector< Real, Device, Index >& x );
-#endif

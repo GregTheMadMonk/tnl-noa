@@ -564,9 +564,9 @@ Real tnlGridOld< 2, Real, Device, Index > :: getAbsMin() const
 }*/
 
 template< typename Real, typename Device, typename Index >
-Real tnlGridOld< 2, Real, Device, Index > :: getLpNorm() const
+Real tnlGridOld< 2, Real, Device, Index > :: getLpNorm( const Real& p ) const
 {
-   Real result = tnlLpNorm( * this );
+   Real result = this -> lpNorm( p );
    return result * getSpaceSteps(). x()
                  * getSpaceSteps(). y();
 }

@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <core/tnlFile.h>
+#include <core/tnlArray.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 
@@ -307,7 +308,23 @@ bool tnlSharedArray< Element, Device, Index > :: save( const tnlString& fileName
    return tnlObject :: save( fileName );
 };
 
-
 //}; // namespace implementation
+
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlSharedArray< float, tnlHost, int >;
+extern template class tnlSharedArray< double, tnlHost, int >;
+extern template class tnlSharedArray< float, tnlHost, long int >;
+extern template class tnlSharedArray< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+extern template class tnlSharedArray< float, tnlCuda, int >;
+extern template class tnlSharedArray< double, tnlCuda, int >;
+extern template class tnlSharedArray< float, tnlCuda, long int >;
+extern template class tnlSharedArray< double, tnlCuda, long int >;
+#endif
+
+#endif
 
 #endif /* TNLSHAREDARRAY_H_IMPLEMENTATION */

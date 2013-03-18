@@ -28,8 +28,9 @@ IF( BUILD_CUDA )
 ELSE()
    ADD_EXECUTABLE( tnl-matrix-solvers-benchmark${debugExt} matrix-solvers-benchmark.cpp )
 ENDIF()
-TARGET_LINK_LIBRARIES( tnl-matrix-solvers-benchmark${debugExt} tnl-mpi${debugExt}-${tnlVersion} )
-
+TARGET_LINK_LIBRARIES( tnl-matrix-solvers-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )                                                                   
+INSTALL( TARGETS tnl-matrix-solvers-benchmark${debugExt}
+         RUNTIME DESTINATION bin )
          
 if( BUILD_MPI )
   IF( BUILD_CUDA )
@@ -42,7 +43,6 @@ if( BUILD_MPI )
    TARGET_LINK_LIBRARIES( tnl-matrix-solvers-benchmark-mpi${debugExt} tnl-mpi${debugExt}-${tnlVersion}
                                                                       ${MPI_LIBRARIES}
                                                                       ${PETSC_LIBRARY} )
-INSTALL( TARGETS tnl-matrix-solvers-benchmark${debugExt}
-                 tnl-matrix-solvers-benchmark-mpi${debugExt}
-         RUNTIME DESTINATION bin )
+   INSTALL( TARGETS tnl-matrix-solvers-benchmark-mpi${debugExt}
+            RUNTIME DESTINATION bin )
 endif()                                                                  

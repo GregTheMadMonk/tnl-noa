@@ -18,6 +18,7 @@ SET( headers cuda-long-vector-kernels.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )    
 set( tnl_implementation_core_SOURCES
      ${CURRENT_DIR}/tnlArray_impl.cpp
+     ${CURRENT_DIR}/tnlSharedArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiVector_impl.cpp
      ${CURRENT_DIR}/tnlSharedVector_impl.cpp

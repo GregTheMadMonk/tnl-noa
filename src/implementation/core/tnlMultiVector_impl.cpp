@@ -37,7 +37,6 @@ template class tnlMultiVector< 4, float,  tnlHost, long int >;
 template class tnlMultiVector< 4, double, tnlHost, long int >;
 
 #ifdef HAVE_CUDA
-#endif
 
 template class tnlMultiVector< 1, float,  tnlCuda, int >;
 template class tnlMultiVector< 1, double, tnlCuda, int >;
@@ -55,6 +54,8 @@ template class tnlMultiVector< 4, float,  tnlCuda, int >;
 template class tnlMultiVector< 4, double, tnlCuda, int >;
 template class tnlMultiVector< 4, float,  tnlCuda, long int >;
 template class tnlMultiVector< 4, double, tnlCuda, long int >;
+
+#endif
 
 #endif
 

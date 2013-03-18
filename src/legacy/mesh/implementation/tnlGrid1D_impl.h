@@ -194,22 +194,22 @@ Real tnlGridOld< 1, Real, Device, Index > :: Partial_x_f( const Index i1 ) const
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            tnlMultiVector< 1, Real, tnlHost, Index > ::  getElement( i1 ) ) / Hx;
+   return ( this -> getElementIndex( i1 + 1 ) -
+            this ->  getElementIndex( i1 ) ) / Hx;
 };
 
 template< typename Real, typename Device, typename Index >
 Real tnlGridOld< 1, Real, Device, Index > :: Partial_x_b( const Index i1 ) const
 {
    tnlAssert( i1 > 0 &&
-              i1 <= ( tnlMultiVector< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
+              i1 <= ( this -> getDimensions()[ tnlX ] - 1 ),
               cerr << " i1 = " << i1 << " and it should be in ( 0, " <<
-                   ( tnlMultiVector< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ] " << endl; );
+                   ( this -> getDimensions()[ tnlX ] - 1  ) << " ] " << endl; );
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 ) -
-            tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / Hx;
+   return ( this -> getElement( i1 ) -
+            this -> getElement( i1 - 1 ) ) / Hx;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -222,23 +222,23 @@ Real tnlGridOld< 1, Real, Device, Index > :: Partial_x( const Index i1 ) const
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( 2.0 * Hx );
+   return ( this -> getElement( i1 + 1 ) -
+            this -> getElement( i1 - 1 ) ) / ( 2.0 * Hx );
 };
 
 template< typename Real, typename Device, typename Index >
 Real tnlGridOld< 1, Real, Device, Index > :: Partial_xx( const Index i1 ) const
 {
    tnlAssert( i1 > 0 &&
-              i1 < ( tnlMultiVector< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1 ),
+              i1 < ( this -> getDimensions()[ tnlX ] - 1 ),
               cerr << " i1 = " << i1 << " and it should be in ( 0, " <<
-                   ( tnlMultiVector< 1, Real, tnlHost, Index > :: getDimensions()[ tnlX ] - 1  ) << " ) " << endl; );
+                   ( this -> getDimensions()[ tnlX ] - 1  ) << " ) " << endl; );
 
    const Real& Hx = spaceSteps[ 0 ];
    tnlAssert( Hx > 0, cerr << "Hx = " << Hx << endl; );
-   return ( tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 + 1 ) -
-            2.0 * tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 ) +
-            tnlMultiVector< 1, Real, tnlHost, Index > :: getElement( i1 - 1 ) ) / ( Hx * Hx );
+   return ( this -> getElement( i1 + 1 ) -
+            2.0 * this -> getElement( i1 ) +
+            this -> getElement( i1 - 1 ) ) / ( Hx * Hx );
 };
 
 
@@ -409,9 +409,9 @@ Real tnlGridOld< 1, Real, Device, Index > :: getAbsMin() const
 */
 
 template< typename Real, typename Device, typename Index >
-Real tnlGridOld< 1, Real, Device, Index > :: getLpNorm() const
+Real tnlGridOld< 1, Real, Device, Index > :: getLpNorm( const Real& p ) const
 {
-   Real result = tnlLpNorm( * this );
+   Real result = this -> lpNorm( p );
    return result * getSpaceSteps(). x();
 }
 
