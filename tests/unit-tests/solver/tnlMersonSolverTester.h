@@ -176,7 +176,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       hostAuxU. setLike( hostU );
 
 #ifdef HAVE_CUDA
-      tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
+      /*tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
                        tnlGridOld< 2, Real, tnlCuda, Index >,
                        Real,
                        tnlCuda,
@@ -184,7 +184,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       mersonSolverCUDA. setVerbosity( 2 );
       mersonSolverCUDA. setAdaptivity( 0.001 );
       mersonSolverCUDA. setTime( 0.0 );
-      mersonSolverCUDA. setTau( 0.001 );
+      mersonSolverCUDA. setTau( 0.001 );*/
 #endif
 
       const Real finalTime = 0.1;
@@ -199,8 +199,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          mersonSolver. solve( *this, hostU );
          cout << "Starting the CUDA Merson solver with stop time " << time << endl;
 #ifdef HAVE_CUDA
-         mersonSolverCUDA. setStopTime( time );
-         mersonSolverCUDA. solve( *this, deviceU );
+         //mersonSolverCUDA. setStopTime( time );
+         //mersonSolverCUDA. solve( *this, deviceU );
 #endif
 
          hostAuxU = deviceU;

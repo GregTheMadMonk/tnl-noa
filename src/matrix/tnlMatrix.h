@@ -49,6 +49,11 @@ class tnlMatrix : public tnlObject
 {
    public:
 
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+
    tnlMatrix( const tnlString& name );
 
    //! Matrix class tells what implementation of matrix we want.
@@ -90,7 +95,7 @@ class tnlMatrix : public tnlObject
    
    template< typename Vector1, typename Vector2 >
    void vectorProduct( const Vector1& vec,
-                       Vector2& result ) const{};
+                       Vector2& result ) const{}
 
    virtual bool performSORIteration( const Real& omega,
                                      const tnlVector< Real, Device, Index >& b,

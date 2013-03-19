@@ -24,6 +24,11 @@ template< typename Real, typename Index >
 class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda, Index >
 {
    public:
+
+   typedef Real RealType;
+   typedef tnlCuda DeviceType;
+   typedef Index IndexType;
+
    //! Basic constructor
    tnlEllpackMatrix( const tnlString& name, Index _row );
 

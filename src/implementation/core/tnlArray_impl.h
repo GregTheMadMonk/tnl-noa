@@ -383,10 +383,10 @@ extern template class tnlArray< float, tnlHost, long int >;
 extern template class tnlArray< double, tnlHost, long int >;
 
 #ifdef HAVE_CUDA
-extern template class tnlArray< float, tnlCuda, int >;
+/*extern template class tnlArray< float, tnlCuda, int >;
 extern template class tnlArray< double, tnlCuda, int >;
 extern template class tnlArray< float, tnlCuda, long int >;
-extern template class tnlArray< double, tnlCuda, long int >;
+extern template class tnlArray< double, tnlCuda, long int >;*/
 #endif
 
 #endif

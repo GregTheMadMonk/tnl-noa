@@ -345,8 +345,8 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-      const Index block_size = 512;
-      const Index grid_size = ( size - 1 ) / block_size + 1;
+      const int block_size = 512;
+      const int grid_size = ( size - 1 ) / block_size + 1;
 
       computeErrorKernel<<< grid_size, block_size >>>( size, tau, _k1, _k3, _k4, _k5, _kAux );
       cudaThreadSynchronize();
@@ -399,8 +399,8 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-      const Index block_size = 512;
-      const Index grid_size = ( size - 1 ) / block_size + 1;
+      const int block_size = 512;
+      const int grid_size = ( size - 1 ) / block_size + 1;
 
       updateU<<< grid_size, block_size >>>( size, tau, _k1, _k4, _k5, _u );
       cudaThreadSynchronize();

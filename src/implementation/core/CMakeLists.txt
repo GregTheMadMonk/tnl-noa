@@ -15,8 +15,14 @@ SET( headers cuda-long-vector-kernels.h
              tnlSharedVector_impl.h
              tnlVector_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )    
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
+IF( BUILD_CUDA )
+   set( tnl_implementation_core_CUDA_SOURCES
+        ${CURRENT_DIR}/tnlArray_impl.cu
+        ${CURRENT_DIR}/tnlVector_impl.cu )
+ENDIF()    
 set( tnl_implementation_core_SOURCES
+     ${tnl_implementation_core_CUDA_SOURCES}
      ${CURRENT_DIR}/tnlArray_impl.cpp
      ${CURRENT_DIR}/tnlSharedArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
@@ -34,6 +40,8 @@ set( tnl_implementation_core_SOURCES
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp     
     PARENT_SCOPE )
+    
+    
         
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/implementation/core )
 

@@ -21,9 +21,11 @@
 #include <fstream>
 #include <core/tnlFile.h>
 #include <core/tnlObject.h>
+#include <core/tnlCuda.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <matrix/tnlCSRMatrix.h>
+#include <matrix/tnlRgCSRMatrix.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
 #include <solvers/linear/krylov/tnlCGSolver.h>
@@ -305,10 +307,10 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    if( device == "cuda" )
    {
 #ifdef HAVE_CUDA
-      typedef tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrixType;
-      rgCSRMatrixType rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
-      rgCSRMatrix = csrMatrix;
-      tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
+      tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
+      // FIX THIS
+      //rgCSRMatrix = csrMatrix;
+      /*tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
       tnlVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
       cudaX. setLike( x );
       cudaX = x;
@@ -316,7 +318,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
       cudaB = b;
       if( ! benchmarkMatrixOnDevice( parameters, rgCSRMatrix, cudaB, cudaX ) )
          return false;
-      x = cudaX;
+      x = cudaX;*/
 #else
       cerr << "CUDA support is missing on this system." << endl;
       return false;

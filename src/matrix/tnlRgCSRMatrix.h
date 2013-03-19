@@ -39,6 +39,11 @@ template< typename Real, typename Device = tnlHost, typename Index = int  >
 class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
    //! Basic constructor
    tnlRgCSRMatrix( const tnlString& name );
 

@@ -118,8 +118,8 @@ class tnlFileTester : public CppUnit :: TestCase
          return;
       }
 
-      file. write( cudaIntData, 1, tnlCuda );
-      file. write( cudaFloatData, 3, tnlCuda );
+      file. write< int, tnlCuda >( cudaIntData );
+      file. write< float, tnlCuda, int >( cudaFloatData, 3 );
       if( ! file. close() )
       {
          cerr << "Unable to close the file test-file.tnl" << endl;
@@ -137,8 +137,8 @@ class tnlFileTester : public CppUnit :: TestCase
       float* newCudaFloatData;
       cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
       cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
-      file. read( newCudaIntData, 1, tnlCuda );
-      file. read( newCudaFloatData, 3, tnlCuda );
+      file. read< int, tnlCuda >( newCudaIntData, 1 );
+      file. read< float, tnlCuda, int >( newCudaFloatData, 3 );
       cudaMemcpy( &newIntData,
                   newCudaIntData,
                   sizeof( int ),

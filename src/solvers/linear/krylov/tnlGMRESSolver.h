@@ -110,7 +110,7 @@ extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, long int > >;
 
-extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
+/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
@@ -118,7 +118,7 @@ extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, long in
 extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
 
 
 #ifdef HAVE_CUDA
@@ -127,7 +127,7 @@ extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
 
-extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
+/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
@@ -135,7 +135,7 @@ extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, long in
 extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;*/
 #endif
 
 #endif

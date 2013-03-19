@@ -22,6 +22,7 @@
 #include <cuda.h>
 #endif
 #include <iostream>
+#include <core/tnlVector.h>
 
 using namespace std;
 

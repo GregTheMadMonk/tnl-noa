@@ -69,7 +69,7 @@ class tnlBICGStabSolver : public tnlObject,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;;
+   tnlVector< RealType, Device, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
 
    const MatrixType* matrix;
    const PreconditionerType* preconditioner;

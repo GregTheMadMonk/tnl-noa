@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVector_impl.cpp  -  description
+                          tnlVector_impl.cu  -  description
                              -------------------
     begin                : Jan 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -19,11 +19,11 @@
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-template class tnlVector< float, tnlHost, int >;
-template class tnlVector< double, tnlHost, int >;
-template class tnlVector< float, tnlHost, long int >;
-template class tnlVector< double, tnlHost, long int >;
-
+#ifdef HAVE_CUDA
+template class tnlVector< float, tnlCuda, int >;
+template class tnlVector< double, tnlCuda, int >;
+template class tnlVector< float, tnlCuda, long int >;
+template class tnlVector< double, tnlCuda, long int >;
 #endif
 
-
+#endif

@@ -18,6 +18,8 @@
 #ifndef MEMORYFUNCTIONS_H_
 #define MEMORYFUNCTIONS_H_
 
+const int tnlGPUvsCPUTransferBufferSize( 1 << 20 );
+
 template< typename Element, typename Index >
 void allocateMemoryHost( Element*& data,
                          const Index size )
@@ -31,7 +33,7 @@ void allocateMemoryCuda( Element*& data,
 {
 #ifdef HAVE_CUDA
    if( cudaMalloc( ( void** ) &data,
-                   ( size_t ) size * sizeof( ElementType ) ) != cudaSuccess )
+                   ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
       data = 0;
 #endif
 }
@@ -73,9 +75,9 @@ bool setMemoryCuda( Element* data,
       gridSize. x = size / 512 + 1;
 
       // TODO: fix this -- the maximum grid size may not by enough
-      tnlVectorCUDASetValueKernel<<< gridSize, blockSize >>>( data,
+      /*tnlVectorCUDASetValueKernel<<< gridSize, blockSize >>>( data,
                                                               size,
-                                                              value );
+                                                              value );*/
 #else
       cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -100,7 +102,7 @@ bool copyMemoryHostToCuda( Element* destination,
 #ifdef HAVE_CUDA
    if( cudaMemcpy( destination,
                    source,
-                   size * sizeof( Elemen ),
+                   size * sizeof( Element ),
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
       cerr << "Transfer of data from host to CUDA device failed." << endl;
@@ -122,7 +124,7 @@ bool copyMemoryCudaToHost( Element* destination,
 #ifdef HAVE_CUDA
    if( cudaMemcpy( destination,
                    source,
-                   size * sizeof( Elemen ),
+                   size * sizeof( Element ),
                    cudaMemcpyDeviceToHost ) != cudaSuccess )
    {
       cerr << "Transfer of data from CUDA device to host failed." << endl;
@@ -182,23 +184,22 @@ bool compareMemoryHostCuda( const Element* hostData,
       return false;
    }
    Index compared( 0 );
-   while( compared < this -> getSize() )
+   while( compared < size )
    {
-      Index transfer = Min( this -> getSize() - compared, host_buffer_size );
+      Index transfer = Min( size - compared, host_buffer_size );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( deviceData[ compared ] ),
                       transfer * sizeof( Element ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
-         cerr << "Transfer of data to the element number of the CUDA long vector " << this -> getName()
-              << " from the device failed." << endl;
+         cerr << "Transfer of data from the device failed." << endl;
          checkCUDAError( __FILE__, __LINE__ );
          delete[] host_buffer;
          return false;
       }
       Index bufferIndex( 0 );
       while( bufferIndex < transfer &&
-             host_buffer[ bufferIndex ] == hostData[ compared ] ) )
+             host_buffer[ bufferIndex ] == hostData[ compared ] )
       {
          bufferIndex ++;
          compared ++;
@@ -225,7 +226,7 @@ bool compareMemoryCuda( const Element* deviceData1,
 #ifdef HAVE_CUDA
    return tnlCUDALongVectorComparison( size,
                                        deviceData1,
-                                       deviceData2 ) )
+                                       deviceData2 );
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;

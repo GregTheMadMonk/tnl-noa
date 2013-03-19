@@ -658,12 +658,13 @@ void cudaVectorScalarMultiplication( Vector& v,
 #ifdef HAVE_CUDA
    dim3 blockSize, gridSize;
    blockSize. x = 512;
-   gridSize. x = this -> getSize() / 512 + 1;
+   gridSize. x = v. getSize() / 512 + 1;
    // TODO: Fix this - the grid size might be limiting for large vectors.
 
+   /*
    tnlVectorCUDAScalaMultiplicationKernel<<< gridSize, blockSize >>>( v. getSize(),
                                                                       alpha,
-                                                                      v. getData() );
+                                                                      v. getData() );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -775,10 +776,11 @@ void cudaVectorSaxpy( Vector1& y,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( y. getSize(),
+   // TODO: fix this
+   /*tnlVectorCUDASaxpyKernel<<< gridSize, blockSize >>>( y. getSize(),
                                                         alpha,
                                                         x. getData(),
-                                                        y. getData() );
+                                                        y. getData() );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -836,10 +838,11 @@ void cudaVectorSaxmy( Vector1& y,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( y. getSize(),
+   // TODO: fix this
+   /*tnlVectorCUDASaxmyKernel<<< gridSize, blockSize >>>( y. getSize(),
                                                         alpha,
                                                         x. getData(),
-                                                        y. getData() );
+                                                        y. getData() );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -899,10 +902,11 @@ void cudaVectorSaxpsby( Vector1& y,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
+   // TODO: fix this
+   /*tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
                                                           alpha,
                                                           x. getData(),
-                                                          beta );
+                                                          beta );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -966,11 +970,12 @@ void cudaVectorSaxpsbz( Vector1& y,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
+   // TODO: fix this
+   /*tnlVectorCUDASaxpsbzKernel<<< gridSize, blockSize >>>( y. getSize(),
                                                           alpha,
                                                           x. getData(),
                                                           beta,
-                                                          z. getData() );
+                                                          z. getData() );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif
@@ -1035,11 +1040,12 @@ void cudaVectorSaxpsbzpy( Vector1& y,
    blockSize. x = 512;
    gridSize. x = x. getSize() / 512 + 1;
 
-   tnlVectorCUDASaxpsbzpyKernel<<< gridSize, blockSize >>>( y. getSize(),
+   // TODO: fix this
+   /*tnlVectorCUDASaxpsbzpyKernel<<< gridSize, blockSize >>>( y. getSize(),
                                                           alpha,
                                                           x. getData(),
                                                           beta,
-                                                          z. getData() );
+                                                          z. getData() );*/
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
 #endif

@@ -245,7 +245,7 @@ void tnlExplicitSolver < Problem > :: setTimerRT( tnlTimerRT* timer )
 template< class Problem >
 void tnlExplicitSolver < Problem > :: setRefreshRate( const IndexType& refreshRate )
 {
-   this -> refreshRate = refreshRate;
+   //this -> refreshRate = refreshRate;
 }
 
 template< class Problem >
