@@ -1,7 +1,10 @@
+ADD_SUBDIRECTORY( cuda )
+
 SET( headers cuda-long-vector-kernels.h
              vector-operations.h
              memory-functions.h
              tnlArray_impl.h
+             tnlHost_impl.h
              tnlLogger_impl.h
              tnlMultiArray1D_impl.h
              tnlMultiArray2D_impl.h
@@ -17,13 +20,15 @@ SET( headers cuda-long-vector-kernels.h
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
 IF( BUILD_CUDA )
-   set( tnl_implementation_core_CUDA_SOURCES
+   set( tnl_implementation_core_CUDA__SOURCES
         ${CURRENT_DIR}/tnlArray_impl.cu
         ${CURRENT_DIR}/tnlVector_impl.cu )
 ENDIF()    
 set( tnl_implementation_core_SOURCES
-     ${tnl_implementation_core_CUDA_SOURCES}
+     ${tnl_implementation_core_CUDA__SOURCES}
+     ${tnl_implementation_core_cuda_SOURCES}
      ${CURRENT_DIR}/tnlArray_impl.cpp
+     ${CURRENT_DIR}/tnlHost_impl.cpp
      ${CURRENT_DIR}/tnlSharedArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiVector_impl.cpp

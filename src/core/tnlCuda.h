@@ -21,7 +21,7 @@
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
-#include <implementation/core/memory-functions.h>
+#include <implementation/core/memory-operations.h>
 
 class tnlCuda
 {

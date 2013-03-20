@@ -1,5 +1,5 @@
 /***************************************************************************
-                          memory-functions.h  -  description
+                          memory-operations.h  -  description
                              -------------------
     begin                : Nov 9, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -17,6 +17,10 @@
 
 #ifndef MEMORYFUNCTIONS_H_
 #define MEMORYFUNCTIONS_H_
+
+#include <core/cuda/device-check.h>
+#include <core/mfuncs.h>
+#include <tnlConfig.h>
 
 const int tnlGPUvsCPUTransferBufferSize( 1 << 20 );
 
@@ -50,7 +54,7 @@ bool freeMemoryCuda( Element* data )
 {
 #ifdef HAVE_CUDA
       cudaFree( data );
-      checkCUDAError( __FILE__, __LINE__ );
+      checkCudaDevice;
 #endif
    return true;
 }
@@ -62,7 +66,17 @@ bool setMemoryHost( Element* data,
 {
    for( Index i = 0; i < size; i ++ )
       data[ i ] = value;
+   return true;
 }
+
+#ifdef HAVE_CUDA
+template< typename Element >
+__global__ void setVectorValueCudaKernel( Element* data,
+                                          const Element value )
+{
+   data[ blockIdx. x * blockDim. x + threadIdx. x ] = value;
+}
+#endif
 
 template< typename Element, typename Index >
 bool setMemoryCuda( Element* data,
@@ -72,14 +86,26 @@ bool setMemoryCuda( Element* data,
 #ifdef HAVE_CUDA
       dim3 blockSize, gridSize;
       blockSize. x = 512;
-      gridSize. x = size / 512 + 1;
+      int blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+      int gridsNumber = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
 
-      // TODO: fix this -- the maximum grid size may not by enough
-      /*tnlVectorCUDASetValueKernel<<< gridSize, blockSize >>>( data,
-                                                              size,
-                                                              value );*/
+      cerr << "Grids number is " << gridsNumber << endl;
+      for( int gridIdx = 0; gridIdx < gridsNumber; gridIdx ++ )
+      {
+         cout << "GridIdx = " << gridIdx << endl;
+         if( gridIdx < gridsNumber - 1 )
+            gridSize. x = maxCudaGridSize;
+         else
+            gridSize. x = blocksNumber - gridIdx * maxCudaGridSize;
+         cout << "GridSize. x = " << gridSize. x << endl;
+         setVectorValueCudaKernel<<< gridSize, blockSize >>>                                 
+                                 ( &( data[ gridIdx * maxCudaGridSize * blockSize. x ] ),
+                                   value );
+      }
+      return checkCudaDevice;
 #else
       cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      return false;
 #endif
 
 }
@@ -108,7 +134,7 @@ bool copyMemoryHostToCuda( Element* destination,
       cerr << "Transfer of data from host to CUDA device failed." << endl;
       return false;
    }
-   return true;
+   return checkCudaDevice;
 #else
    cerr << "CUDA support is missing in this system." << endl;
    return false;
@@ -193,7 +219,7 @@ bool compareMemoryHostCuda( const Element* hostData,
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
          cerr << "Transfer of data from the device failed." << endl;
-         checkCUDAError( __FILE__, __LINE__ );
+         checkCudaDevice;
          delete[] host_buffer;
          return false;
       }

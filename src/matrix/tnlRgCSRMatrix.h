@@ -171,7 +171,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    Index cudaBlockSize;
 
-   int maxCudaGridSize;
+   //int maxCudaGridSize;
 
    Index artificial_zeros;
 
@@ -241,7 +241,7 @@ tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const tnlString& name )
    cudaGetDevice( &cudaDevice );
    cudaDeviceProp deviceProperties;
    cudaGetDeviceProperties( &deviceProperties, cudaDevice );
-   this -> maxCudaGridSize = deviceProperties. maxGridSize[ 0 ];
+   //this -> maxCudaGridSize = deviceProperties. maxGridSize[ 0 ];
 #endif
 };
 
@@ -527,7 +527,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Re
    this -> adaptiveGroupSizes = rgCSRMatrix. adaptiveGroupSizes;
    this -> useAdaptiveGroupSize = rgCSRMatrix. useAdaptiveGroupSize;
    this -> adaptiveGroupSizeStrategy = rgCSRMatrix. adaptiveGroupSizeStrategy;
-   this -> maxCudaGridSize = rgCSRMatrix. maxCudaGridSize;
+   //this -> maxCudaGridSize = rgCSRMatrix. maxCudaGridSize;
    return true;
 };
 
@@ -744,7 +744,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
             //cerr << "Current grid size = " << currentGridSize << endl;
             dim3 gridDim( currentGridSize ), blockDim( blockSize );
             size_t sharedBytes = blockDim. x * sizeof( Real );
-            tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
+            /*tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
                                                               <<< gridDim, blockDim, sharedBytes >>>
                                                               ( gridNumber,
                                                                 this -> maxCudaGridSize,
@@ -755,7 +755,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
                                                                 groupOffsets. getData(),
                                                                 nonzeroElementsInRow. getData(),
                                                                 vec. getData(),
-                                                                result. getData() );
+                                                                result. getData() );*/
             gridSize -= currentGridSize;
             gridNumber ++;
          }
@@ -766,8 +766,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
          int gridNumber( 0 );
          while( gridSize > 0 )
          {
-            int currentGridSize = Min( gridSize, this -> maxCudaGridSize );
-            //cerr << "Current grid size = " << currentGridSize << endl;
+            /*int currentGridSize = Min( gridSize, this -> maxCudaGridSize );
             dim3 gridDim( currentGridSize ), blockDim( blockSize );
             tnlRgCSRMatrixVectorProductKernel< Real, Index >
                                              <<< gridDim, blockDim >>>
@@ -782,11 +781,11 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
                                                vec. getData(),
                                                result. getData() );
             gridSize -= currentGridSize;
-            gridNumber ++;
+            gridNumber ++;*/
          }
       }
        cudaThreadSynchronize();
-       CHECK_CUDA_ERROR;
+       checkCudaDevice;
 
 #else
        cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;

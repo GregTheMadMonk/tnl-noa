@@ -17,3 +17,7 @@
 #define TNL_TESTS_DIRECTORY @testsDirectory@
 
 #define TNL_CPP_COMPILER_NAME "@CMAKE_CXX_COMPILER@"
+
+#define maxCudaGridSize 65536
+
+#define maxCudaBlockSize 1024

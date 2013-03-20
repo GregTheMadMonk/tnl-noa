@@ -21,7 +21,7 @@
 #include <core/tnlAssert.h>
 #include <core/tnlVectorCUDA.h>
 #include <core/low-level/cuda-long-vector-kernels.h>
-#include <core/tnlCudaSupport.h>
+#include <legacy/core/tnlCudaSupport.h>
 
 using namespace std;
 

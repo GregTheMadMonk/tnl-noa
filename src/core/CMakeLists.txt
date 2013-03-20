@@ -1,8 +1,9 @@
+ADD_SUBDIRECTORY( cuda )
+
 set (headers tnlArray.h
              tnlAssert.h               
              tnlCurve.h
       	    tnlCuda.h
-      	    tnlCudaSupport.h
   		       tnlDataElement.h
   		       tnlDevice.h
   		       tnlFile.h 

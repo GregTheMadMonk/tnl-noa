@@ -31,7 +31,7 @@
 
 #include <core/mfuncs.h>
 #include <core/tnlAssert.h>
-#include <core/tnlCudaSupport.h>
+#include <legacy/core/tnlCudaSupport.h>
 #include <core/tnlString.h>
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
