@@ -70,11 +70,21 @@ bool setMemoryHost( Element* data,
 }
 
 #ifdef HAVE_CUDA
-template< typename Element >
+template< typename Element, typename Index >
 __global__ void setVectorValueCudaKernel( Element* data,
-                                          const Element value )
+                                          const Index size,
+                                          const Element value,
+                                          const Index elementsPerThread )
 {
-   data[ blockIdx. x * blockDim. x + threadIdx. x ] = value;
+   Index elementIdx = blockDim. x * blockIdx. x * elementsPerThread + threadIdx. x;
+   Index elementsProcessed( 0 );
+   while( elementsProcessed < elementsPerThread &&
+          elementIdx < size )
+   {
+      data[ elementIdx ] = value;
+      elementIdx += blockDim. x;
+      elementsProcessed ++;
+   }
 }
 #endif
 
@@ -85,11 +95,12 @@ bool setMemoryCuda( Element* data,
 {
 #ifdef HAVE_CUDA
       dim3 blockSize, gridSize;
-      blockSize. x = 512;
+      blockSize. x = 32;
       int blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
       int elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
-
-      setVectorValueCudaKernel<<< gridSize, blockSize >>>( data, size, value, elementsPerThread );
+      gridSize. x = Min( blocksNumber, maxCudaGridSize );
+      cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
+      setVectorValueCudaKernel<<< blockSize, gridSize >>>( data, size, value, elementsPerThread );
 
       return checkCudaDevice;
 #else
