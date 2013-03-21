@@ -87,21 +87,10 @@ bool setMemoryCuda( Element* data,
       dim3 blockSize, gridSize;
       blockSize. x = 512;
       int blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      int gridsNumber = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
+      int elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
 
-      cerr << "Grids number is " << gridsNumber << endl;
-      for( int gridIdx = 0; gridIdx < gridsNumber; gridIdx ++ )
-      {
-         cout << "GridIdx = " << gridIdx << endl;
-         if( gridIdx < gridsNumber - 1 )
-            gridSize. x = maxCudaGridSize;
-         else
-            gridSize. x = blocksNumber - gridIdx * maxCudaGridSize;
-         cout << "GridSize. x = " << gridSize. x << endl;
-         setVectorValueCudaKernel<<< gridSize, blockSize >>>                                 
-                                 ( &( data[ gridIdx * maxCudaGridSize * blockSize. x ] ),
-                                   value );
-      }
+      setVectorValueCudaKernel<<< gridSize, blockSize >>>( data, size, value, elementsPerThread );
+
       return checkCudaDevice;
 #else
       cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
