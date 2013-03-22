@@ -25,20 +25,23 @@
 const int tnlGPUvsCPUTransferBufferSize( 1 << 20 );
 
 template< typename Element, typename Index >
-void allocateMemoryHost( Element*& data,
+bool allocateMemoryHost( Element*& data,
                          const Index size )
 {
-   data = new Element[ size ];
+   if( ! ( data = new Element[ size ] ) )
+      return false;
+   return true;
 }
 
 template< typename Element, typename Index >
-void allocateMemoryCuda( Element*& data,
+bool allocateMemoryCuda( Element*& data,
                          const Index size )
 {
 #ifdef HAVE_CUDA
    if( cudaMalloc( ( void** ) &data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
       data = 0;
+   return checkCudaDevice;
 #endif
 }
 
@@ -54,7 +57,7 @@ bool freeMemoryCuda( Element* data )
 {
 #ifdef HAVE_CUDA
       cudaFree( data );
-      checkCudaDevice;
+      return checkCudaDevice;
 #endif
    return true;
 }
@@ -95,11 +98,11 @@ bool setMemoryCuda( Element* data,
 {
 #ifdef HAVE_CUDA
       dim3 blockSize, gridSize;
-      blockSize. x = 32;
-      int blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      int elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
+      blockSize. x = 256;
+      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+      Index elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
       gridSize. x = Min( blocksNumber, maxCudaGridSize );
-      cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
+      //cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
       setVectorValueCudaKernel<<< blockSize, gridSize >>>( data, size, value, elementsPerThread );
 
       return checkCudaDevice;
@@ -148,15 +151,11 @@ bool copyMemoryCudaToHost( Element* destination,
                            const Index size )
 {
 #ifdef HAVE_CUDA
-   if( cudaMemcpy( destination,
-                   source,
-                   size * sizeof( Element ),
-                   cudaMemcpyDeviceToHost ) != cudaSuccess )
-   {
-      cerr << "Transfer of data from CUDA device to host failed." << endl;
-      return false;
-   }
-   return true;
+   cudaMemcpy( destination,
+               source,
+               size * sizeof( Element ),
+               cudaMemcpyDeviceToHost );
+   return checkCudaDevice;
 #else
    cerr << "CUDA support is missing in this system." << endl;
    return false;
@@ -173,11 +172,7 @@ bool copyMemoryCudaToCuda( Element* destination,
                    source,
                    size * sizeof( Element ),
                    cudaMemcpyDeviceToDevice ) != cudaSuccess )
-   {
-      cerr << "Transfer of data from CUDA device to device failed." << endl;
-      return false;
-   }
-   return true;
+   return checkCudaDevice;
 #else
    cerr << "CUDA support is missing in this system." << endl;
    return false;

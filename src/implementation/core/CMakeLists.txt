@@ -21,8 +21,10 @@ SET( headers cuda-long-vector-kernels.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES
+        ${tnl_implementation_core_cuda_CUDA__SOURCES}
         ${CURRENT_DIR}/tnlArray_impl.cu
-        ${CURRENT_DIR}/tnlVector_impl.cu )
+        ${CURRENT_DIR}/tnlVector_impl.cu 
+        PARENT_SCOPE )
 ENDIF()    
 set( tnl_implementation_core_SOURCES
      ${tnl_implementation_core_CUDA__SOURCES}

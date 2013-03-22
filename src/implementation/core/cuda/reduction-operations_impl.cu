@@ -1,7 +1,7 @@
 /***************************************************************************
-                          reduction-test.cu  -  description
+                          reduction-operations.cu  -  description
                              -------------------
-    begin                : Mar 20, 2013
+    begin                : Mar 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,21 +14,3 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#include <tnlConfig.h>
- 
-#ifdef HAVE_CPPUNIT
-
-#include <cppunit/ui/text/TestRunner.h>
-#include "tnlCudaReductionTester.h"
- 
-int main( int argc, char* argv[] )
-{
-   CppUnit :: TextTestRunner runner;
-   runner. addTest( tnlCudaReductionTester :: suite() );
-   if( ! runner.run() )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-}
-
-#endif

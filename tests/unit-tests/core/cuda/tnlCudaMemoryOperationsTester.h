@@ -51,10 +51,10 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
                                 "smallMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: smallMemorySetTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
                                 "bigMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: bigMemorySetTest )
-                               );
+                               );*/
 
       return suiteOfTests;
    };
@@ -71,7 +71,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void copyTest()
    {
-      const int size( 1 << 20 );
+      const int size( 1 << 22 );
       int *hostData1, *hostData2, *deviceData;
       allocateMemoryHost( hostData1, size );
       allocateMemoryHost( hostData2, size );
