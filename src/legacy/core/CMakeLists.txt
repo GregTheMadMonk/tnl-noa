@@ -1,13 +1,4 @@
-SET( headers tnlBICGSolver.h
-             tnlBICGStabSolver.h
-             tnlCGSolver.h
-             tnlGMRESSolverOld.h
-             tnlILUPreconditioner.h
-             tnlMatrixSolver.h             
-             tnlPETSCPreconditioner.h
-             tnlPETSCSolver.h
-             tnlPreconditioner.h
-             tnlSORSolver.h
+SET( headers tnlCudaSupport.h
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/legacy/solvers )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/legacy/core )

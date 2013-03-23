@@ -129,15 +129,16 @@ bool copyMemoryHostToCuda( Element* destination,
                            const Index size )
 {
 #ifdef HAVE_CUDA
-   if( cudaMemcpy( destination,
-                   source,
-                   size * sizeof( Element ),
-                   cudaMemcpyHostToDevice ) != cudaSuccess )
+   cudaMemcpy( destination,
+               source,
+               size * sizeof( Element ),
+               cudaMemcpyHostToDevice );
+   if( ! checkCudaDevice )
    {
       cerr << "Transfer of data from host to CUDA device failed." << endl;
       return false;
    }
-   return checkCudaDevice;
+   return true;
 #else
    cerr << "CUDA support is missing in this system." << endl;
    return false;
@@ -155,7 +156,12 @@ bool copyMemoryCudaToHost( Element* destination,
                source,
                size * sizeof( Element ),
                cudaMemcpyDeviceToHost );
-   return checkCudaDevice;
+   if( ! checkCudaDevice )
+   {
+      cerr << "Transfer of data from CUDA device to host failed." << endl;
+      return false;
+   }
+   return true;
 #else
    cerr << "CUDA support is missing in this system." << endl;
    return false;

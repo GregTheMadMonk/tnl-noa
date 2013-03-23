@@ -1,5 +1,5 @@
 SET( EXTRA_DIST tnlConfigDescriptionParser.y 
-	            tnlConfigDescriptionScanner.l 	            
+	             tnlConfigDescriptionScanner.l 	            
     )
 
 SET( headers tnlConfigDescription.h     	    

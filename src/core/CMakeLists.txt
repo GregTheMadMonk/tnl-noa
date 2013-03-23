@@ -23,8 +23,7 @@ set (headers tnlArray.h
    		    tnlReal.h
    		    tnlTimerCPU.h  
    		    tnlTimerRT.h  
-   		    tnlTuple.h 
-   	       tnlCudaSupport.h 
+   		    tnlTuple.h  
    		    mfilename.h 
    		    mfuncs.h 
    		    mpi-supp.h 

@@ -22,11 +22,7 @@
 #include <cuda.h>
 #include <core/mfuncs.h>
 
-enum tnlTupleOperation {  tnlParallelReductionMax,
-                          tnlParallelReductionAbsMin,
-                          tnlParallelReductionAbsMax,
-                          tnlParallelReductionAbsSum,
-                          tnlParallelReductionLpNorm,
+enum tnlTupleOperation {  tnlParallelReductionLpNorm,
                           tnlParallelReductionSdot };
 
 
@@ -109,51 +105,60 @@ class tnlParallelReductionSum
 
    typedef Real RealType;
    typedef Index IndexType;
+   typedef Real ResultType;
 
-
-   RealType reduceOnHost( const RealType& data1,
-                          const RealType& data2 ) const
+   ResultType initialValueOnHost( const IndexType idx,
+                                  const RealType* data1,
+                                  const RealType* data2 ) const
    {
-      return data1 + data2;
-   }
+      return data1[ idx ];
+   };
 
-   __device__ RealType initialValueOnDevice( const IndexType idx1,
-                                             const IndexType idx2,
-                                             const RealType* data1,
-                                             const RealType* data2 ) const
+   ResultType reduceOnHost( const IndexType idx,
+                            const ResultType& current,
+                            const RealType* data1,
+                            const RealType* data2 ) const
+   {
+      return current + data1[ idx ];
+   };
+
+   __device__ ResultType initialValueOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const RealType* data1,
+                                               const RealType* data2 ) const
    {
       return data1[ idx1 ] + data1[ idx2 ];
-   }
+   };
 
-   __device__ RealType initialValueOnDevice( const IndexType idx1,
-                                             const RealType* data1,
-                                             const RealType* data2 ) const
+   __device__ ResultType initialValueOnDevice( const IndexType idx1,
+                                               const RealType* data1,
+                                               const RealType* data2 ) const
    {
       return data1[ idx1 ];
    };
 
-   __device__ RealType firstReductionOnDevice( const IndexType idx1,
-                                               const IndexType idx2,
-                                               const IndexType idx3,
-                                               const RealType* data1,
-                                               const RealType* data2,
-                                               const RealType* data3 ) const
+   __device__ ResultType firstReductionOnDevice( const IndexType idx1,
+                                                 const IndexType idx2,
+                                                 const IndexType idx3,
+                                                 const RealType* data1,
+                                                 const RealType* data2,
+                                                 const RealType* data3 ) const
    {
       return data1[ idx1 ] + data2[ idx2 ] + data2[ idx3 ];
    };
 
-   __device__ RealType firstReductionOnDevice( const IndexType idx1,
-                                               const IndexType idx2,
-                                               const RealType* data1,
-                                               const RealType* data2,
-                                               const RealType* data3 ) const
+   __device__ ResultType firstReductionOnDevice( const IndexType idx1,
+                                                 const IndexType idx2,
+                                                 const RealType* data1,
+                                                 const RealType* data2,
+                                                 const RealType* data3 ) const
    {
       return data1[ idx1 ] + data2[ idx2 ];
    };
 
-   __device__ RealType commonReductionOnDevice( const IndexType idx1,
-                                                const IndexType idx2,
-                                                const RealType* data ) const
+   __device__ ResultType commonReductionOnDevice( const IndexType idx1,
+                                                  const IndexType idx2,
+                                                  const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -167,12 +172,20 @@ class tnlParallelReductionMin
    typedef Real RealType;
    typedef Index IndexType;
 
-
-   RealType reduceOnHost( const RealType& data1,
-                          const RealType& data2 ) const
+   RealType initialValueOnHost( const IndexType idx,
+                                const RealType* data1,
+                                const RealType* data2 ) const
    {
-      return Min( data1, data2 );
-   }
+      return data1[ idx ];
+   };
+
+   RealType reduceOnHost( const IndexType idx,
+                          const RealType& current,
+                          const RealType* data1,
+                          const RealType* data2 ) const
+   {
+      return Min( current, data1[ idx ] );
+   };
 
    __device__ RealType initialValueOnDevice( const IndexType idx1,
                                              const IndexType idx2,
@@ -216,7 +229,265 @@ class tnlParallelReductionMin
    };
 };
 
+template< typename Real, typename Index >
+class tnlParallelReductionMax
+{
+   public:
 
+   typedef Real RealType;
+   typedef Index IndexType;
+
+   RealType initialValueOnHost( const IndexType idx,
+                                const RealType* data1,
+                                const RealType* data2 ) const
+   {
+      return data1[ idx ];
+   };
+
+   RealType reduceOnHost( const IndexType idx,
+                          const RealType& current,
+                          const RealType* data1,
+                          const RealType* data2 ) const
+   {
+      return Max( current, data1[ idx ] );
+   };
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const IndexType idx2,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaMax( data1[ idx1 ], data1[ idx2 ] );
+   }
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return data1[ idx1 ];
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const IndexType idx3,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMax( data1[ idx1 ], tnlCudaMax( data2[ idx2 ], data2[ idx3 ] ) );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMax( data1[ idx1 ], data2[ idx2 ] );
+   };
+
+   __device__ RealType commonReductionOnDevice( const IndexType idx1,
+                                                const IndexType idx2,
+                                                const RealType* data ) const
+   {
+      return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
+   };
+};
+
+template< typename Real, typename Index >
+class tnlParallelReductionAbsSum
+{
+   public:
+
+   typedef Real RealType;
+   typedef Index IndexType;
+
+   RealType initialValueOnHost( const IndexType idx,
+                                const RealType* data1,
+                                const RealType* data2 ) const
+   {
+      return tnlAbs( data1[ idx ] );
+   };
+
+   RealType reduceOnHost( const IndexType idx,
+                          const RealType& current,
+                          const RealType* data1,
+                          const RealType* data2 ) const
+   {
+      return current + tnlAbs( data1[ idx ] );
+   };
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const IndexType idx2,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaAbs( data1[ idx1 ] ) + tnlCudaAbs( data1[ idx2 ] );
+   };
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaAbs( data1[ idx1 ] );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const IndexType idx3,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return data1[ idx1 ] + tnlCudaAbs( data2[ idx2 ] ) + tnlCudaAbs( data2[ idx3 ] );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return data1[ idx1 ] + tnlCudaAbs( data2[ idx2 ] );
+   };
+
+   __device__ RealType commonReductionOnDevice( const IndexType idx1,
+                                                const IndexType idx2,
+                                                const RealType* data ) const
+   {
+      return data[ idx1 ] + data[ idx2 ];
+   };
+};
+
+template< typename Real, typename Index >
+class tnlParallelReductionAbsMin
+{
+   public:
+
+   typedef Real RealType;
+   typedef Index IndexType;
+
+   RealType initialValueOnHost( const IndexType idx,
+                                const RealType* data1,
+                                const RealType* data2 ) const
+   {
+      return tnlAbs( data1[ idx ] );
+   };
+
+   RealType reduceOnHost( const IndexType idx,
+                          const RealType& current,
+                          const RealType* data1,
+                          const RealType* data2 ) const
+   {
+      return Min( current, tnlAbs( data1[ idx ] ) );
+   };
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const IndexType idx2,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaMin( tnlCudaAbs( data1[ idx1 ] ), tnlCudaAbs( data1[ idx2 ] ) );
+   }
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaAbs( data1[ idx1 ] );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const IndexType idx3,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMin( data1[ idx1 ], tnlCudaMin(  tnlCudaAbs( data2[ idx2 ] ),  tnlCudaAbs( data2[ idx3 ] ) ) );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMin( data1[ idx1 ], tnlCudaAbs( data2[ idx2 ] ) );
+   };
+
+   __device__ RealType commonReductionOnDevice( const IndexType idx1,
+                                                const IndexType idx2,
+                                                const RealType* data ) const
+   {
+      return tnlCudaMin( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
+   };
+};
+
+template< typename Real, typename Index >
+class tnlParallelReductionAbsMax
+{
+   public:
+
+   typedef Real RealType;
+   typedef Index IndexType;
+
+   RealType initialValueOnHost( const IndexType idx,
+                                const RealType* data1,
+                                const RealType* data2 ) const
+   {
+      return tnlAbs( data1[ idx ] );
+   };
+
+   RealType reduceOnHost( const IndexType idx,
+                          const RealType& current,
+                          const RealType* data1,
+                          const RealType* data2 ) const
+   {
+      return Max( current, tnlAbs( data1[ idx ] ) );
+   };
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const IndexType idx2,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaMax( tnlCudaAbs( data1[ idx1 ] ), tnlCudaAbs( data1[ idx2 ] ) );
+   }
+
+   __device__ RealType initialValueOnDevice( const IndexType idx1,
+                                             const RealType* data1,
+                                             const RealType* data2 ) const
+   {
+      return tnlCudaAbs( data1[ idx1 ] );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const IndexType idx3,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMax( data1[ idx1 ], tnlCudaMax( tnlCudaAbs( data2[ idx2 ] ), tnlCudaAbs( data2[ idx3 ] ) ) );
+   };
+
+   __device__ RealType firstReductionOnDevice( const IndexType idx1,
+                                               const IndexType idx2,
+                                               const RealType* data1,
+                                               const RealType* data2,
+                                               const RealType* data3 ) const
+   {
+      return tnlCudaMax( data1[ idx1 ], tnlCudaAbs( data2[ idx2 ] ) );
+   };
+
+   __device__ RealType commonReductionOnDevice( const IndexType idx1,
+                                                const IndexType idx2,
+                                                const RealType* data ) const
+   {
+      return tnlCudaMax( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
+   };
+};
 
 
 #include <implementation/core/cuda/reduction-operations_impl.h>

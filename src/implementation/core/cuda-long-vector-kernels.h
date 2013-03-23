@@ -52,13 +52,7 @@ __device__ void reduceAligned( const Operation& operation,
    if( tid < s )
    {
       sdata[ tid ] = operation. commonReductionOnDevice( tid, tid + s, sdata );
-      /*if( operation == tnlParallelReductionMin )
-         sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
-      if( operation == tnlParallelReductionMax )
-         sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
-      if( operation == tnlParallelReductionSum )
-         sdata[ tid ] += sdata[ tid + s ];
-      if( operation == tnlParallelReductionAbsMin )
+      /*if( operation == tnlParallelReductionAbsMin )
          sdata[ tid ] = tnlCudaMin( tnlCudaAbs( sdata[ tid ] ), tnlCudaAbs( sdata[ tid + s ] ) );
       if( operation == tnlParallelReductionAbsMax )
          sdata[ tid ] = tnlCudaMax( tnlCudaAbs( sdata[ tid ] ), tnlCudaAbs( sdata[ tid + s ] ) );
@@ -84,13 +78,7 @@ __device__ void reduceNonAligned( const Operation& operation,
    if( tid < s )
    {
       sdata[ tid ] = operation. commonReductionOnDevice( tid, tid + s, sdata );
-      /*if( operation == tnlParallelReductionMin )
-         sdata[ tid ] = tnlCudaMin( sdata[ tid ], sdata[ tid + s ] );
-      if( operation == tnlParallelReductionMax )
-         sdata[ tid ] = tnlCudaMax( sdata[ tid ], sdata[ tid + s ] );
-      if( operation == tnlParallelReductionSum )
-         sdata[ tid ] += sdata[ tid + s ];
-      if( operation == tnlParallelReductionAbsMin )
+      /*if( operation == tnlParallelReductionAbsMin )
          sdata[ tid ] = tnlCudaMin( tnlCudaAbs( sdata[ tid ] ), tnlCudaAbs( sdata[ tid + s ] ) );
       if( operation == tnlParallelReductionAbsMax )
          sdata[ tid ] = tnlCudaMax( tnlCudaAbs( sdata[ tid ] ), tnlCudaAbs( sdata[ tid + s ] ) );
@@ -106,13 +94,7 @@ __device__ void reduceNonAligned( const Operation& operation,
    if( 2 * s < n && tid == n - 1 )
    {
       sdata[ 0 ] = operation. commonReductionOnDevice( 0, tid, sdata );
-      /*if( operation == tnlParallelReductionMin )
-         sdata[ 0 ] = tnlCudaMin( sdata[ 0 ], sdata[ tid ] );
-      if( operation == tnlParallelReductionMax )
-         sdata[ 0 ] = tnlCudaMax( sdata[ 0 ], sdata[ tid ] );
-      if( operation == tnlParallelReductionSum )
-         sdata[ 0 ] += sdata[ tid ];
-      if( operation == tnlParallelReductionAbsMin )
+      /*if( operation == tnlParallelReductionAbsMin )
          sdata[ 0 ] = tnlCudaMin( tnlCudaAbs( sdata[ 0] ), tnlCudaAbs( sdata[ tid + s ] ) );
       if( operation == tnlParallelReductionAbsMax )
          sdata[ 0 ] = tnlCudaMax( tnlCudaAbs( sdata[ 0 ] ), tnlCudaAbs( sdata[ tid + s ] ) );
@@ -357,7 +339,6 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
          reduceNonAligned( operation, tid, s, n, sdata );
          n = s;
       }
-
    }
 
    /***
@@ -367,275 +348,160 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
       deviceOutput[ blockIdx. x ] = sdata[ 0 ];
 }
 
+template< typename Operation >
+typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
+                                                    const typename Operation :: IndexType size,
+                                                    const typename Operation :: RealType* input1,
+                                                    const typename Operation :: RealType* input2,
+                                                    typename Operation :: RealType*& output)
+{
+   typedef typename Operation :: IndexType IndexType;
+   typedef typename Operation :: RealType RealType;
+
+   const int desBlockSize = 512;
+   const int desGridSize = 2048;
+   dim3 blockSize( 0 ), gridSize( 0 );
+
+   /***
+    * Compute the CUDA block size aligned to the power of two.
+    */
+   blockSize. x = :: Min( size, desBlockSize );
+   IndexType alignedBlockSize = 1;
+   while( alignedBlockSize < blockSize. x ) alignedBlockSize <<= 1;
+   blockSize. x = alignedBlockSize;
+
+   gridSize. x = Min( ( IndexType ) ( size / blockSize. x + 1 ) / 2, desGridSize );
+
+   if( ! output &&
+       ! allocateMemoryCuda( output, :: Max( 1, size / desBlockSize ) ) )
+         return false;
+
+   IndexType shmem = blockSize. x * sizeof( RealType );
+   /***
+    * Depending on the blockSize we generate appropriate template instance.
+    */
+      switch( blockSize. x )
+      {
+         case 512:
+            tnlCUDAReductionKernel< Operation, 512 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 256:
+            tnlCUDAReductionKernel< Operation, 256 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 128:
+            tnlCUDAReductionKernel< Operation, 128 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  64:
+            tnlCUDAReductionKernel< Operation,  64 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  32:
+            tnlCUDAReductionKernel< Operation,  32 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  16:
+            tnlCUDAReductionKernel< Operation,  16 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   8:
+            tnlCUDAReductionKernel< Operation,   8 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   4:
+            tnlCUDAReductionKernel< Operation,   4 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   2:
+            tnlCUDAReductionKernel< Operation,   2 >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   1:
+            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+            break;
+         default:
+            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+            break;
+      }
+   return gridSize. x;
+}
 #endif
-/***
- * The template calling the final CUDA kernel for the single vector reduction.
- * The template parameters are:
- * @param T is the type of data we want to reduce
- * @param operation is the operation reducing the data.
- *        It can be tnlParallelReductionSum, tnlParallelReductionMin or tnlParallelReductionMax.
- * The function parameters:
- * @param size tells number of elements in the data array.
- * @param deviceInput1 is the pointer to an array storing the data we want
- *        to reduce. This array must stay on the device!.
- * @param deviceInput2 is the pointer to an array storing the coupling data for example
- *        the second vector for the SDOT operation. This array must stay on the device!.
- * @param result will contain the result of the reduction if everything was ok
- *        and the return code is true.
- * @param parameter can be used for example for the passing the parameter p of Lp norm.
- * @param deviceAux is auxiliary array used to store temporary data during the reduction.
- *        If one calls this function more then once one might provide this array to avoid repetetive
- *        allocation of this array on the device inside of this function.
- *        The size of this array should be size / 128 * sizeof( T ).
- */
+
 template< typename Operation >
 bool tnlCUDALongVectorReduction( const Operation& operation,
                                  const typename Operation :: IndexType size,
                                  const typename Operation :: RealType* deviceInput1,
                                  const typename Operation :: RealType* deviceInput2,
-                                 typename Operation :: RealType& result,
-                                 typename Operation :: RealType* deviceAux = 0 )
+                                 typename Operation :: RealType& result )
 {
 #ifdef HAVE_CUDA
 
    typedef typename Operation :: IndexType IndexType;
    typedef typename Operation :: RealType RealType;
-   /***
-    * Set parameters:
-    * @param desBlockSize is desired block size with which we get the best performance (on CUDA rach 1.0 to 1.3)
-    * @param desGridSize is desired grid size
-    */
-   const int desBlockSize = 512;
-   const int desGridSize = 2048;
 
-   RealType* dbg_array1; // debuging array
-
-   /***
-    * Allocating auxiliary device memory to store temporary reduced arrays.
-    * For example in the first iteration we reduce the number of elements
-    * from size to size / 2. We store this new data in deviceAux array.
-    * If one calls the CUDA reduction more then once then one can provide
-    * auxiliary array by passing it via the parameter deviceAux.
+   /****
+    * First check if the input array(s) is/are large enough for the reduction on GPU.
+    * Otherwise copy it/them to host and reduce on CPU.
     */
-   RealType* myDeviceAux( 0 );
-   if( ! deviceAux )
+   RealType hostArray1[ maxGPUReductionDataSize ];
+   RealType hostArray2[ maxGPUReductionDataSize ];
+   if( size <= maxGPUReductionDataSize )
    {
-      if( ! allocateMemoryCuda( myDeviceAux, :: Max( 1, size / desBlockSize ) ) )
-      {
-         checkCudaDevice;
+      if( ! copyMemoryCudaToHost( hostArray1, deviceInput1, size ) )
          return false;
-      }
-      deviceAux = myDeviceAux;
+      if( deviceInput2 && ! copyMemoryCudaToHost( hostArray2, deviceInput2, size ) )
+         return false;
+      result = operation. initialValueOnHost( 0, hostArray1, hostArray2 );
+      for( IndexType i = 1; i < size; i ++ )
+         result = operation. reduceOnHost( i, result, hostArray1, hostArray2 );
+      return true;
+   }
+
+   /****
+    * Reduce the data on the CUDA device.
+    */
+   RealType* deviceAux1( 0 ), *deviceAux2( 0 );
+   IndexType reducedSize = reduceOnCudaDevice( operation,
+                                               size,
+                                               deviceInput1,
+                                               deviceInput2,
+                                               deviceAux1 );
+
+   while( reducedSize > maxGPUReductionDataSize )
+   {
+      reducedSize = reduceOnCudaDevice( operation,
+                                        reducedSize,
+                                        deviceAux1,
+                                        ( RealType* ) 0,
+                                        deviceAux2 );
+      Swap( deviceAux1, deviceAux2 );
    }
 
    /***
-    * Setup parameters of the kernel:
-    * @param sizeReduced is the size of reduced data after each step of parallel reduction
-    * @param reductionInput tells what data we shell reduce. We start with the input if this fuction
-    *                       and after the 1st reduction step we switch this pointer to deviceAux.
+    * Transfer the reduced data from device to host.
     */
-   IndexType sizeReduced = size;
-   const RealType* reductionInput1 = deviceInput1;
-   const RealType* reductionInput2 = deviceInput2;
-   IndexType reductionSteps( 0 );
-   while( sizeReduced > maxGPUReductionDataSize )
-   {
-      dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = :: Min( ( IndexType ) ( sizeReduced / blockSize. x + 1 ) / 2, desGridSize );
-
-      /***
-       * We align the blockSize to the power of 2.
-       */
-      IndexType alignedBlockSize = 1;
-      while( alignedBlockSize < blockSize. x ) alignedBlockSize <<= 1;
-      blockSize. x = alignedBlockSize;
-      IndexType shmem = blockSize. x * sizeof( RealType );
-      /***
-       * Depending on the blockSize we generate appropriate template instance.
-       */
-#ifdef UNDEF
-      if( reductionSteps > 0 &&
-          ( operation == tnlParallelReductionSdot ||
-            operation == tnlParallelReductionLpNorm ) )
-      {
-         /***
-          * For operations like SDOT or LpNorm we need to switch to tnlParallelReductionSum after the
-          * first reduction step.
-          */
-         switch( blockSize. x )
-         {
-            case 512:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum, 512 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case 256:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum, 256 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case 128:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum, 128 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case  64:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,  64 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case  32:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,  32 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case  16:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,  16 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case   8:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,   8 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case   4:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,   4 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case   2:
-               tnlCUDAReductionKernel< Type, ParameterType, Index, tnlParallelReductionSum,   2 >
-               <<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput1, reductionInput2, deviceAux, parameter, dbg_array1 );
-               break;
-            case   1:
-               tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-               break;
-            default:
-               tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-               break;
-         }
-      }
-      else
-#endif
-         switch( blockSize. x )
-         {
-            case 512:
-               tnlCUDAReductionKernel< Operation, 512 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case 256:
-               tnlCUDAReductionKernel< Operation, 256 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case 128:
-               tnlCUDAReductionKernel< Operation, 128 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case  64:
-               tnlCUDAReductionKernel< Operation,  64 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case  32:
-               tnlCUDAReductionKernel< Operation,  32 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case  16:
-               tnlCUDAReductionKernel< Operation,  16 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case   8:
-               tnlCUDAReductionKernel< Operation,   8 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case   4:
-               tnlCUDAReductionKernel< Operation,   4 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case   2:
-               tnlCUDAReductionKernel< Operation,   2 >
-               <<< gridSize, blockSize, shmem >>>( operation, sizeReduced, reductionInput1, reductionInput2, deviceAux );
-               break;
-            case   1:
-               tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-               break;
-            default:
-               tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-               break;
-         }
-      sizeReduced = gridSize. x;
-      reductionInput1 = deviceAux;
-      reductionSteps ++;
-   }
+   RealType resultArray[ maxGPUReductionDataSize ];
+   if( ! copyMemoryCudaToHost( resultArray, deviceAux1, reducedSize ) )
+      return false;
 
    /***
-    * We transfer reduced data from device to host.
-    * If sizeReduced equals size the previous loop was not processed and we read
-    * data directly from the input.
+    * Reduce the data on the host system.
     */
-   RealType result_array[ maxGPUReductionDataSize ];
-   RealType result_array2[ maxGPUReductionDataSize ];
-   if( sizeReduced == size )
-   {
-      if( ! copyMemoryCudaToHost( result_array, deviceInput1, sizeReduced ) )
-         return false;
-#ifdef UNDEF
-      switch( operation )
-      {
-         case tnlParallelReductionLpNorm:
-            result = pow( tnlAbs( result_array[ 0 ] ), parameter );
-            for( Index i = 1; i < sizeReduced; i ++ )
-               result += pow( tnlAbs( result_array[ i ] ), parameter );
-            result = pow( result, 1.0/ parameter );
-            return true;
-         case tnlParallelReductionSdot:
-            if( ! copyMemoryCudaToHost( result_array2, deviceInput2, sizeReduced ) )
-               return false;
-            else
-            {
-               result = 0;
-               for( Index i = 0; i < sizeReduced; i ++ )
-                  result += result_array[ i ] * result_array2[ i ] ;
-               return true;
-            }
-      }
-#endif
-   }
-   else
-      if( ! copyMemoryCudaToHost( result_array, deviceAux, sizeReduced ) )
-         return false;
-   result = result_array[ 0 ];
-   for( IndexType i = 1; i < sizeReduced; i ++ )
-      result = operation. reduceOnHost( result, result_array[ i ] );
-   /*switch( operation )
-   {
-      case tnlParallelReductionMax:
-         result = result_array[ 0 ];
-         for( Index i = 1; i < sizeReduced; i ++ )
-            result = Max( result, result_array[ i ] );
-         break;
-      case tnlParallelReductionMin:
-         result = result_array[ 0 ];
-         for( Index i = 1; i < sizeReduced; i ++ )
-            result = Min( result, result_array[ i ] );
-         break;
-      case tnlParallelReductionSum:
-      case tnlParallelReductionLpNorm:
-      case tnlParallelReductionSdot:
-         result = result_array[ 0 ];
-         for( Index i = 1; i < sizeReduced; i ++ )
-            result += result_array[ i ];
-         break;
-      case tnlParallelReductionAbsMax:
-         result = tnlAbs( result_array[ 0 ] );
-         for( Index i = 1; i < sizeReduced; i ++ )
-            result = Max( result, tnlAbs( result_array[ i ] ) );
-         break;
-      case tnlParallelReductionAbsMin:
-         result = tnlAbs( result_array[ 0 ] );
-         for( Index i = 1; i < sizeReduced; i ++ )
-            result = Min( result, tnlAbs( result_array[ i ] ) );
-         break;
-   }*/
-   if( myDeviceAux )
-   {
-      freeMemoryCuda( myDeviceAux );
-      if( ! checkCudaDevice )
-         return false;
-   }
+   result = operation. initialValueOnHost( 0, resultArray, ( RealType* ) 0 );
+   for( IndexType i = 1; i < reducedSize; i ++ )
+      result = operation. reduceOnHost( i, result, resultArray, ( RealType*) 0 );
+
+   /****
+    * Free the memory allocated on the device.
+    */
+   if( deviceAux1 && ! freeMemoryCuda( deviceAux1 ) )
+      return false;
+   if( deviceAux2 && ! freeMemoryCuda( deviceAux2 ) )
+      return false;
+
+
    return true;
 #else
    cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
@@ -643,52 +509,34 @@ bool tnlCUDALongVectorReduction( const Operation& operation,
 #endif
 };
 
-#ifdef HAVE_CUDA
-/***
- * This kernel just compares two vectors element by element. It writes
- * the result of the comparison into array result. This array must be
- * then reduced.
- */
-template< typename Real, typename Index >
-__global__ void compareTwoVectorsElementwise( const Index size,
-                                              const Real* vector1,
-                                              const Real* vector2,
-                                              bool* result )
-{
-   Index gid = blockDim. x * blockIdx. x + threadIdx. x;
-   if( gid < size )
-   {
-      if( vector1[ gid ] == vector2[ gid ] )
-         result[ gid ] = true;
-      else
-         result[ gid ] = false;
-   }
-}
-#endif
 
-/***
- * The template for comparison of two long vectors on the CUDA device.
- * The template parameters are:
- * @param T is the type of data we want to reduce
- * @param operation is the operation reducing the data.
- *        It can be tnlParallelReductionSum, tnlParallelReductionMin or tnlParallelReductionMax.
- * The function parameters:
- * @param size tells number of elements in the data array.
- * @param deviceInput1 is the pointer to an array storing the data we want
- *        to reduce. This array must stay on the device!.
- * @param deviceInput2 is the pointer to an array storing the coupling data for example
- *        the second vector for the SDOT operation. This array most stay on the device!.
- * @param result will contain the result of the reduction if everything was ok
- *        and the return code is true.
- * @param deviceAux is auxiliary array used to store temporary data during the reduction.
- *        If one calls this function more then once one might provide this array to avoid repetetive
- *        allocation of this array on the device inside of this function.
- *        The size of this array should be size / 128 * sizeof( T ).
- *
- * This function first calls kernel which compares each couples of elements from both vectors.
- * Result is written into a bool array. The minimum value then says if both vectors equal.
- *
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // TODO: result of comparison should not be returned!!!
 template< typename Type, typename Index >
 bool tnlCUDALongVectorComparison( const Index size,
@@ -714,10 +562,10 @@ bool tnlCUDALongVectorComparison( const Index size,
    blockSize. x = 256;
    gridSize. x = size / blockSize. x + 1;
 
-   compareTwoVectorsElementwise<<< gridSize, blockSize >>>( size,
-                                                            deviceInput1,
-                                                            deviceInput2,
-                                                            deviceBoolAux );
+   //compareTwoVectorsElementwise<<< gridSize, blockSize >>>( size,
+   //                                                         deviceInput1,
+   //                                                         deviceInput2,
+   //                                                         deviceBoolAux );
    if( ! checkCudaDevice )
       return false;
    bool result;

@@ -2,7 +2,7 @@ ADD_SUBDIRECTORY( cuda )
 
 SET( headers cuda-long-vector-kernels.h
              vector-operations.h
-             memory-functions.h
+             memory-operations.h
              tnlArray_impl.h
              tnlHost_impl.h
              tnlLogger_impl.h
