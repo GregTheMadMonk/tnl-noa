@@ -1,7 +1,6 @@
 ADD_SUBDIRECTORY( cuda )
 
-SET( headers cuda-long-vector-kernels.h
-             vector-operations.h
+SET( headers vector-operations.h
              memory-operations.h
              tnlArray_impl.h
              tnlHost_impl.h
@@ -19,23 +18,7 @@ SET( headers cuda-long-vector-kernels.h
              tnlVector_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
-IF( BUILD_CUDA )
-   set( tnl_implementation_core_CUDA__SOURCES
-        ${tnl_implementation_core_cuda_CUDA__SOURCES}
-        ${CURRENT_DIR}/tnlArray_impl.cu
-        ${CURRENT_DIR}/tnlVector_impl.cu 
-        PARENT_SCOPE )
-ENDIF()    
-set( tnl_implementation_core_SOURCES
-     ${tnl_implementation_core_CUDA__SOURCES}
-     ${tnl_implementation_core_cuda_SOURCES}
-     ${CURRENT_DIR}/tnlArray_impl.cpp
-     ${CURRENT_DIR}/tnlHost_impl.cpp
-     ${CURRENT_DIR}/tnlSharedArray_impl.cpp
-     ${CURRENT_DIR}/tnlMultiArray_impl.cpp
-     ${CURRENT_DIR}/tnlMultiVector_impl.cpp
-     ${CURRENT_DIR}/tnlSharedVector_impl.cpp
-     ${CURRENT_DIR}/tnlVector_impl.cpp
+set( common_SOURCES
      ${CURRENT_DIR}/tnlTimerRT.cpp
      ${CURRENT_DIR}/tnlFile.cpp
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
@@ -45,8 +28,29 @@ set( tnl_implementation_core_SOURCES
      ${CURRENT_DIR}/tnlString.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 
-     ${CURRENT_DIR}/mpi-supp.cpp     
-    PARENT_SCOPE )
+     ${CURRENT_DIR}/mpi-supp.cpp
+     ${CURRENT_DIR}/tnlSharedArray_impl.cpp
+     ${CURRENT_DIR}/tnlMultiArray_impl.cpp
+     ${CURRENT_DIR}/tnlMultiVector_impl.cpp
+     ${CURRENT_DIR}/tnlSharedVector_impl.cpp
+     ${CURRENT_DIR}/tnlVector_impl.cpp )     
+
+IF( BUILD_CUDA )
+   set( tnl_implementation_core_CUDA__SOURCES
+        ${tnl_implementation_core_cuda_CUDA__SOURCES}
+        ${common_SOURCES}
+        ${CURRENT_DIR}/memory-operations_impl.cu
+        ${CURRENT_DIR}/tnlArray_impl.cu
+        ${CURRENT_DIR}/tnlVector_impl.cu 
+        PARENT_SCOPE )
+ENDIF()    
+set( tnl_implementation_core_SOURCES     
+     ${tnl_implementation_core_cuda_SOURCES}
+     ${common_SOURCES}
+     ${CURRENT_DIR}/memory-operations_impl.cpp
+     ${CURRENT_DIR}/tnlArray_impl.cpp
+     ${CURRENT_DIR}/tnlHost_impl.cpp
+     PARENT_SCOPE )
     
     
         

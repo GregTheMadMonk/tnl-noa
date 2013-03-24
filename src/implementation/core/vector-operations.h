@@ -18,7 +18,7 @@
 #ifndef VECTOROPERATIONS_H_
 #define VECTOROPERATIONS_H_
 
-#include <implementation/core/cuda-long-vector-kernels.h>
+#include <core/cuda/cuda-reduction.h>
 
 template< typename Vector >
 typename Vector :: RealType getHostVectorMax( const Vector& v )
@@ -38,7 +38,7 @@ typename Vector :: RealType getCudaVectorMax( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionMax >
@@ -85,7 +85,7 @@ typename Vector :: RealType getCudaVectorMin( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionMin >
@@ -132,7 +132,7 @@ typename Vector :: RealType getCudaVectorAbsMax( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionAbsMax >
@@ -179,7 +179,7 @@ typename Vector :: RealType getCudaVectorAbsMin( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionAbsMin >
@@ -249,7 +249,7 @@ typename Vector :: RealType getCudaVectorLpNorm( const Vector& v,
    typedef typename Vector :: IndexType Index;
 
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionLpNorm >
@@ -300,7 +300,7 @@ typename Vector :: RealType getCudaVectorSum( const Vector& v )
    typedef typename Vector :: IndexType Index;
 
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionSum >
@@ -713,7 +713,7 @@ typename Vector1 :: RealType getCudaVectorSdot( const Vector1& v1,
    typedef typename Vector1 :: IndexType Index;
 
    Real result( 0 );
-   /*tnlCUDALongVectorReduction< Real,
+   /*reductionOnCudaDevice< Real,
                                Real,
                                Index,
                                tnlParallelReductionSdot >

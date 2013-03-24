@@ -42,6 +42,8 @@ bool allocateMemoryCuda( Element*& data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
       data = 0;
    return checkCudaDevice;
+#else
+   return false;
 #endif
 }
 
@@ -58,8 +60,10 @@ bool freeMemoryCuda( Element* data )
 #ifdef HAVE_CUDA
       cudaFree( data );
       return checkCudaDevice;
-#endif
+#else
+   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return true;
+#endif
 }
 
 template< typename Element, typename Index >
@@ -101,7 +105,7 @@ bool setMemoryCuda( Element* data,
       blockSize. x = 256;
       Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
       Index elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
-      gridSize. x = Min( blocksNumber, maxCudaGridSize );
+      gridSize. x = Min( blocksNumber, ( Index ) maxCudaGridSize );
       //cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
       setVectorValueCudaKernel<<< blockSize, gridSize >>>( data, size, value, elementsPerThread );
 
@@ -140,7 +144,7 @@ bool copyMemoryHostToCuda( Element* destination,
    }
    return true;
 #else
-   cerr << "CUDA support is missing in this system." << endl;
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;
 #endif
 }
@@ -163,7 +167,7 @@ bool copyMemoryCudaToHost( Element* destination,
    }
    return true;
 #else
-   cerr << "CUDA support is missing in this system." << endl;
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;
 #endif
 }
@@ -180,7 +184,7 @@ bool copyMemoryCudaToCuda( Element* destination,
                    cudaMemcpyDeviceToDevice ) != cudaSuccess )
    return checkCudaDevice;
 #else
-   cerr << "CUDA support is missing in this system." << endl;
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;
 #endif
 }

@@ -25,7 +25,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <core/cuda/device-check.h>
-#include <implementation/core/cuda-long-vector-kernels.h>
+#include <core/cuda/cuda-reduction.h>
 
 class tnlCudaReductionTester : public CppUnit :: TestCase
 {
@@ -42,21 +42,40 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
                                 "shortConstantSequenceTest",
-                                &tnlCudaReductionTester :: shortConstantSequenceTest< float > )
+                                &tnlCudaReductionTester :: shortConstantSequenceTest< double > )
                                );
-
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
                                 "longConstantSequenceTest",
-                                &tnlCudaReductionTester :: longConstantSequenceTest< float > )
+                                &tnlCudaReductionTester :: longConstantSequenceTest< double > )
                                );
-
-
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
                                 "linearSequenceTest",
-                                &tnlCudaReductionTester :: linearSequenceTest< float > )
+                                &tnlCudaReductionTester :: linearSequenceTest< double > )
                                );
-
-
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "shortLogicalOperationsTest",
+                                &tnlCudaReductionTester :: shortLogicalOperationsTest< int > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "longLogicalOperationsTest",
+                                &tnlCudaReductionTester :: longLogicalOperationsTest< int > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "shortComparisonTest",
+                                &tnlCudaReductionTester :: shortComparisonTest< int > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "longComparisonTest",
+                                &tnlCudaReductionTester :: longComparisonTest< int > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "shortSdotTest",
+                                &tnlCudaReductionTester :: shortSdotTest< double > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "longSdotTest",
+                                &tnlCudaReductionTester :: longSdotTest< double > )
+                               );
       return suiteOfTests;
    }
 
@@ -76,44 +95,50 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    void shortConstantSequenceTest()
    {
       const int shortSequence( 128 );
-      const int longSequence( 8192 );
       RealType *hostData, *deviceData;
       allocateMemoryHost( hostData, shortSequence );
       allocateMemoryCuda( deviceData, shortSequence );
       CPPUNIT_ASSERT( checkCudaDevice );
 
-      setConstantSequence( shortSequence, ( RealType ) -1, hostData, deviceData );
       RealType result;
 
+      setConstantSequence( shortSequence, ( RealType ) -1, hostData, deviceData );
       tnlParallelReductionSum< RealType, int > sumOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( sumOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( sumOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -shortSequence );
 
       tnlParallelReductionMin< RealType, int > minOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( minOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( minOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -1 );
 
       tnlParallelReductionMax< RealType, int > maxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( maxOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( maxOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -1 );
 
       tnlParallelReductionAbsSum< RealType, int > absSumOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absSumOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absSumOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == shortSequence );
 
       tnlParallelReductionAbsMin< RealType, int > absMinOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMinOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMinOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == 1 );
 
       tnlParallelReductionAbsMax< RealType, int > absMaxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMaxOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMaxOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == 1 );
+
+      tnlParallelReductionLpNorm< RealType, int > lpNormOperation;
+      lpNormOperation. setPower( 2.0 );
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( lpNormOperation, shortSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == shortSequence );
+
 
       freeMemoryHost( hostData );
       freeMemoryCuda( deviceData );
@@ -123,44 +148,85 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    template< typename RealType >
    void longConstantSequenceTest()
    {
-      const int longSequence( 8192 );
+      const int longSequence( 172892 );
       RealType *hostData, *deviceData;
       allocateMemoryHost( hostData, longSequence );
       allocateMemoryCuda( deviceData, longSequence );
       CPPUNIT_ASSERT( checkCudaDevice );
 
-      setConstantSequence( longSequence, ( RealType ) -1, hostData, deviceData );
       RealType result;
 
+      setConstantSequence( longSequence, ( RealType ) -1, hostData, deviceData );
       tnlParallelReductionSum< RealType, int > sumOperation;
       CPPUNIT_ASSERT( 
-         ( tnlCUDALongVectorReduction( sumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( sumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -longSequence );
 
       tnlParallelReductionMin< RealType, int > minOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( minOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( minOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -1 );
 
       tnlParallelReductionMax< RealType, int > maxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( maxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( maxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -1 );
 
       tnlParallelReductionAbsSum< RealType, int > absSumOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absSumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absSumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == longSequence );
 
       tnlParallelReductionAbsMin< RealType, int > absMinOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMinOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMinOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == 1 );
 
       tnlParallelReductionAbsMax< RealType, int > absMaxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMaxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMaxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == 1 );
+
+      tnlParallelReductionLpNorm< RealType, int > lpNormOperation;
+      lpNormOperation. setPower( 2.0 );
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( lpNormOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == longSequence );
+
+      setConstantSequence( longSequence, ( RealType ) 2, hostData, deviceData );
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( sumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 * longSequence );
+
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( minOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 );
+
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( maxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 );
+
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( absSumOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 * longSequence );
+
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( absMinOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 );
+
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( absMaxOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 2 );
+
+      lpNormOperation. setPower( 2.0 );
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( lpNormOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 4 * longSequence );
+      lpNormOperation. setPower( 3.0 );
+      CPPUNIT_ASSERT(
+         ( reductionOnCudaDevice( lpNormOperation, longSequence, deviceData, ( RealType* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 8 * longSequence );
+
 
       freeMemoryHost( hostData );
       freeMemoryCuda( deviceData );
@@ -170,7 +236,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    template< typename RealType >
    void linearSequenceTest()
    {
-      const int size( 1024 );
+      const int size( 10245 );
       RealType *hostData, *deviceData;
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
@@ -187,31 +253,31 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       tnlParallelReductionSum< RealType, int > sumOperation;
       RealType result;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( sumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( sumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == sum );
       tnlParallelReductionMin< RealType, int > minOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( minOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( minOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -size );
 
       tnlParallelReductionMax< RealType, int > maxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( maxOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( maxOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == -1 );
 
       tnlParallelReductionAbsSum< RealType, int > absSumOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absSumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absSumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == tnlAbs( sum ) );
 
       tnlParallelReductionAbsMin< RealType, int > absMinOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMinOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMinOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == 1 );
 
       tnlParallelReductionAbsMax< RealType, int > absMaxOperation;
       CPPUNIT_ASSERT(
-         ( tnlCUDALongVectorReduction( absMaxOperation, size, deviceData, ( RealType* ) 0, result ) ) );
+         ( reductionOnCudaDevice( absMaxOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == size );
 
       freeMemoryHost( hostData );
@@ -219,6 +285,280 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( checkCudaDevice );
    };
 
+   template< typename Type >
+   void shortLogicalOperationsTest()
+   {
+      int size( 125 );
+      Type *hostData, *deviceData;
+      allocateMemoryHost( hostData, size );
+      allocateMemoryCuda( deviceData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+         hostData[ i ] = 1;
+
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      tnlParallelReductionLogicalAnd< Type, int > andOperation;
+      tnlParallelReductionLogicalOr< Type, int > orOperation;
+      Type result;
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      hostData[ 0 ] = 0;
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      for( int i = 0; i < size; i ++ )
+         hostData[ i ] = 0;
+
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+   }
+
+   template< typename Type >
+   void longLogicalOperationsTest()
+   {
+      int size( 7628198 );
+      Type *hostData, *deviceData;
+      allocateMemoryHost( hostData, size );
+      allocateMemoryCuda( deviceData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+         hostData[ i ] = 1;
+
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      tnlParallelReductionLogicalAnd< Type, int > andOperation;
+      tnlParallelReductionLogicalOr< Type, int > orOperation;
+      Type result;
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      hostData[ 0 ] = 0;
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      for( int i = 0; i < size; i ++ )
+         hostData[ i ] = 0;
+
+      copyMemoryHostToCuda( deviceData, hostData, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( orOperation, size, deviceData, ( Type* ) 0, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+   }
+
+   template< typename Type >
+   void shortComparisonTest()
+   {
+      const int size( 125 );
+      Type *hostData1, *hostData2,
+           *deviceData1, *deviceData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData1, size );
+      allocateMemoryCuda( deviceData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+         hostData1[ i ] = hostData2[ i ] = 1;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      copyMemoryHostToCuda( deviceData2, hostData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      bool result( false );
+      tnlParallelReductionEqualities< Type, int > equalityOperation;
+      tnlParallelReductionInequalities< Type, int > inequalityOperation;
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == true );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      hostData1[ 0 ] = 0;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      for( int i = 0; i < size; i ++ )
+         hostData1[ i ] = 0;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == true );
+   }
+
+   template< typename Type >
+   void longComparisonTest()
+   {
+      const int size( 1258976 );
+      Type *hostData1, *hostData2,
+           *deviceData1, *deviceData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData1, size );
+      allocateMemoryCuda( deviceData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+         hostData1[ i ] = hostData2[ i ] = 1;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      copyMemoryHostToCuda( deviceData2, hostData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      bool result( false );
+      tnlParallelReductionEqualities< Type, int > equalityOperation;
+      tnlParallelReductionInequalities< Type, int > inequalityOperation;
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == true );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      hostData1[ 0 ] = 0;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      for( int i = 0; i < size; i ++ )
+         hostData1[ i ] = 0;
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( equalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == false );
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( inequalityOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == true );
+   };
+
+   template< typename Type >
+   void shortSdotTest()
+   {
+      const int size( 125 );
+      Type *hostData1, *hostData2,
+           *deviceData1, *deviceData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData1, size );
+      allocateMemoryCuda( deviceData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      hostData1[ 0 ] = 0;
+      hostData2[ 0 ] = 1;
+      Type sdot( 0.0 );
+      for( int i = 1; i < size; i ++ )
+      {
+         hostData1[ i ] = i;
+         hostData2[ i ] = -hostData2[ i - 1 ];
+         sdot += hostData1[ i ] * hostData2[ i ];
+      }
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      copyMemoryHostToCuda( deviceData2, hostData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      Type result( 0.0 );
+      tnlParallelReductionSdot< Type, int > sdotOperation;
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( sdotOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == sdot );
+   };
+
+
+   template< typename Type >
+   void longSdotTest()
+   {
+      const int size( 125789 );
+      Type *hostData1, *hostData2,
+           *deviceData1, *deviceData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData1, size );
+      allocateMemoryCuda( deviceData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      hostData1[ 0 ] = 0;
+      hostData2[ 0 ] = 1;
+      Type sdot( 0.0 );
+      for( int i = 1; i < size; i ++ )
+      {
+         hostData1[ i ] = i;
+         hostData2[ i ] = -hostData2[ i - 1 ];
+         sdot += hostData1[ i ] * hostData2[ i ];
+      }
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      copyMemoryHostToCuda( deviceData2, hostData2, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      Type result( 0.0 );
+      tnlParallelReductionSdot< Type, int > sdotOperation;
+
+      CPPUNIT_ASSERT(
+          ( reductionOnCudaDevice( sdotOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == sdot );
+   };
 };
 
 

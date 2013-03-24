@@ -219,19 +219,19 @@ void reductionBenchmark( const int size,
                                                                    device_aux. getData() );
             break;
          default:
-            tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionSum >( size,
+            reductionOnCudaDevice< T, T, int, tnlParallelReductionSum >( size,
                                                                               device_vector. getData(),
                                                                               NULL,
                                                                               sum,
                                                                               0.0,
                                                                               device_aux. getData() );
-            tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionMin >( size,
+            reductionOnCudaDevice< T, T, int, tnlParallelReductionMin >( size,
                                                                               device_vector. getData(),
                                                                               NULL,
                                                                               min,
                                                                               0.0,
                                                                               device_aux. getData() );
-            tnlCUDALongVectorReduction< T, T, int, tnlParallelReductionMax >( size,
+            reductionOnCudaDevice< T, T, int, tnlParallelReductionMax >( size,
                                                                               device_vector. getData(),
                                                                               NULL,
                                                                               max,

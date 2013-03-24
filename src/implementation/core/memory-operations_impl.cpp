@@ -1,7 +1,7 @@
 /***************************************************************************
-                          reduction-operations_impl.h  -  description
+                          memory_operations_impl.cpp  -  description
                              -------------------
-    begin                : Mar 22, 2013
+    begin                : Mar 24, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,9 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef REDUCTION_OPERATIONS_IMPL_H_
-#define REDUCTION_OPERATIONS_IMPL_H_
 
 
 
-#endif /* REDUCTION_OPERATIONS_IMPL_H_ */
