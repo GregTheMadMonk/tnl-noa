@@ -13,11 +13,16 @@ SET( headers tnlAdaptiveRgCSRMatrix.h
 	)
 	
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/matrix )
+set( common_SOURCES ${CURRENT_DIR}/tnlMatrix.cpp )
+
 SET( tnl_matrix_SOURCES 
-     ${CURRENT_DIR}/tnlMatrix.cpp 
+     ${common_SOURCES}
      PARENT_SCOPE )
 
-#SET( libtnlmatrixincludedir  ${TNL_INCLUDE_DIR}/matrix )
-#SET( libtnlmatrixinclude_HEADERS ${headers} )
+if( BUILD_CUDA )
+   SET( tnl_matrix_CUDA__SOURCES 
+        ${common_SOURCES}
+        PARENT_SCOPE )
+endif()
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/matrix )

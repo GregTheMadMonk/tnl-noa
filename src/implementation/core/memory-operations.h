@@ -43,6 +43,7 @@ bool allocateMemoryCuda( Element*& data,
       data = 0;
    return checkCudaDevice;
 #else
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return false;
 #endif
 }
@@ -61,7 +62,7 @@ bool freeMemoryCuda( Element* data )
       cudaFree( data );
       return checkCudaDevice;
 #else
-   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
    return true;
 #endif
 }
@@ -111,7 +112,7 @@ bool setMemoryCuda( Element* data,
 
       return checkCudaDevice;
 #else
-      cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
       return false;
 #endif
 
@@ -263,5 +264,51 @@ bool compareMemoryCuda( const Element* deviceData1,
    return false;
 #endif
 }
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+#ifdef HAVE_CUDA
+extern template bool copyMemoryCudaToHost( char* destination,
+                                    const char* source,
+                                    const int size );
+
+extern template bool copyMemoryCudaToHost( int* destination,
+                                    const int* source,
+                                    const int size );
+
+extern template bool copyMemoryCudaToHost( long int* destination,
+                                    const long int* source,
+                                    const int size );
+
+extern template bool copyMemoryCudaToHost( float* destination,
+                                    const float* source,
+                                    const int size );
+
+extern template bool copyMemoryCudaToHost( double* destination,
+                                    const double* source,
+                                    const int size );
+
+extern template bool copyMemoryCudaToHost( char* destination,
+                                    const char* source,
+                                    const long int size );
+
+extern template bool copyMemoryCudaToHost( int* destination,
+                                    const int* source,
+                                    const long int size );
+
+extern template bool copyMemoryCudaToHost( long int* destination,
+                                    const long int* source,
+                                    const long int size );
+
+extern template bool copyMemoryCudaToHost( float* destination,
+                                    const float* source,
+                                    const long int size );
+
+extern template bool copyMemoryCudaToHost( double* destination,
+                                    const double* source,
+                                    const long int size );
+
+#endif
+#endif
 
 #endif /* MEMORYFUNCTIONS_H_ */

@@ -33,7 +33,9 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiVector_impl.cpp
      ${CURRENT_DIR}/tnlSharedVector_impl.cpp
-     ${CURRENT_DIR}/tnlVector_impl.cpp )     
+     ${CURRENT_DIR}/tnlVector_impl.cpp 
+     ${CURRENT_DIR}/tnlArray_impl.cpp
+     ${CURRENT_DIR}/tnlHost_impl.cpp )       
 
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES
@@ -44,15 +46,12 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/tnlVector_impl.cu 
         PARENT_SCOPE )
 ENDIF()    
+
 set( tnl_implementation_core_SOURCES     
      ${tnl_implementation_core_cuda_SOURCES}
      ${common_SOURCES}
      ${CURRENT_DIR}/memory-operations_impl.cpp
-     ${CURRENT_DIR}/tnlArray_impl.cpp
-     ${CURRENT_DIR}/tnlHost_impl.cpp
      PARENT_SCOPE )
-    
-    
         
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/implementation/core )
 
