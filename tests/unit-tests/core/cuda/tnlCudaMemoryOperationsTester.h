@@ -51,10 +51,10 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
                                 "smallMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: smallMemorySetTest )
                                );
-      /*suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
                                 "bigMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: bigMemorySetTest )
-                               );*/
+                               );
 
       return suiteOfTests;
    };

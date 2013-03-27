@@ -81,17 +81,14 @@ bool setMemoryHost( Element* data,
 template< typename Element, typename Index >
 __global__ void setVectorValueCudaKernel( Element* data,
                                           const Index size,
-                                          const Element value,
-                                          const Index elementsPerThread )
+                                          const Element value )
 {
-   Index elementIdx = blockDim. x * blockIdx. x * elementsPerThread + threadIdx. x;
-   Index elementsProcessed( 0 );
-   while( elementsProcessed < elementsPerThread &&
-          elementIdx < size )
+   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
+   const Index gridSize = blockDim. x * gridDim. x;
+   while( elementIdx < size )
    {
       data[ elementIdx ] = value;
-      elementIdx += blockDim. x;
-      elementsProcessed ++;
+      elementIdx += gridSize;
    }
 }
 #endif
@@ -102,15 +99,14 @@ bool setMemoryCuda( Element* data,
                     const Index size )
 {
 #ifdef HAVE_CUDA
-      dim3 blockSize, gridSize;
-      blockSize. x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      Index elementsPerThread = ceil( ( double ) blocksNumber / ( double ) maxCudaGridSize );
-      gridSize. x = Min( blocksNumber, ( Index ) maxCudaGridSize );
-      //cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
-      setVectorValueCudaKernel<<< blockSize, gridSize >>>( data, size, value, elementsPerThread );
+   dim3 blockSize( 0 ), gridSize( 0 );
+   blockSize. x = 256;
+   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+   gridSize. x = Min( blocksNumber, ( Index ) maxCudaGridSize );
+   //cout << "blocksNumber = " << blocksNumber << "Grid size = " << gridSize. x << " elementsPerThread = " << elementsPerThread << endl;
+   setVectorValueCudaKernel<<< blockSize, gridSize >>>( data, size, value );
 
-      return checkCudaDevice;
+   return checkCudaDevice;
 #else
       cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
       return false;
