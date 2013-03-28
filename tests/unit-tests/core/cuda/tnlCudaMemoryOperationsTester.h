@@ -114,7 +114,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( checkCudaDevice );
       copyMemoryCudaToHost( hostData, deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
-      for( int i = 0; i < size; i ++ )
+      for( int i = 0; i < size; i += 100 )
       {
          if( hostData[ i ] != 13 )
             cout << " i = " << i << " " << hostData[ i ] << endl;

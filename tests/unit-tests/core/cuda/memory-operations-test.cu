@@ -20,12 +20,15 @@
 #ifdef HAVE_CPPUNIT
 
 #include <cppunit/ui/text/TestRunner.h>
+#include <cppunit/CompilerOutputter.h>
+#include <iostream>
 #include "tnlCudaMemoryOperationsTester.h"
  
 int main( int argc, char* argv[] )
 {
    CppUnit :: TextTestRunner runner;
    runner. addTest( tnlCudaMemoryOperationsTester :: suite() );
+   //runner.setOutputter(new CppUnit::CompilerOutputter(&runner.result(), std::cout));
    if( ! runner.run() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
