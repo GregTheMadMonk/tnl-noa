@@ -76,10 +76,8 @@ bool tnlHost :: memcpy( Element* destination,
    {
       case tnlHostDevice:
          return copyMemoryHostToHost( destination, source, size );
-         break;
       case tnlCudaDevice:
          return copyMemoryCudaToHost( destination, source, size );
-         break;
    }
    return true;
 };
@@ -93,10 +91,8 @@ bool tnlHost :: memcmp( const Element* data1,
    {
       case tnlHostDevice:
          return compareMemoryHost( data1, data2, size );
-         break;
       case tnlCudaDevice:
          return compareMemoryHostCuda( data1, data2, size );
-         break;
    }
 };
 

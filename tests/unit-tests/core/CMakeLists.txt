@@ -13,6 +13,10 @@ set( headers tnlFileTester.h
              tnlGridOldTester.h
              tnlSharedMemoryTester.h
              tnlCommunicatorTester.h )
+
+ADD_EXECUTABLE( tnlArrayTest${mpiExt}${debugExt} ${headers} tnlArrayTest.cpp )
+TARGET_LINK_LIBRARIES( tnlArrayTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                           tnl${mpiExt}${debugExt}-0.1 )
              
 if( BUILD_CUDA )
 #    CUDA_ADD_EXECUTABLE( tnl-device-check-test${mpiExt}${debugExt} ${headers} device-check-test.cu )

@@ -88,10 +88,8 @@ class tnlCuda
       {
          case tnlHostDevice:
             return copyMemoryHostToCuda( destination, source, size );
-            break;
          case tnlCudaDevice:
             return copyMemoryCudaToCuda( destination, source, size );
-            break;
       }
       return true;
    }
@@ -105,10 +103,8 @@ class tnlCuda
       {
          case tnlHostDevice:
             return compareMemoryHostCuda( data2, data1, size );
-            break;
          case tnlCudaDevice:
             return compareMemoryCuda( data1, data2, size );
-            break;
       }
    }
 

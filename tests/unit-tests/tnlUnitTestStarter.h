@@ -1,7 +1,7 @@
 /***************************************************************************
-                          reduction-test.cu  -  description
+                          tnlUnitTestStarter.h  -  description
                              -------------------
-    begin                : Mar 20, 2013
+    begin                : Mar 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,12 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlCudaReductionTester.h"
-#include "../../tnlUnitTestStarter.h"
- 
-int main( int argc, char* argv[] )
+#ifndef TNLUNITTESTSTARTER_H_
+#define TNLUNITTESTSTARTER_H_
+
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
+#include <cppunit/ui/text/TestRunner.h>
+#include <cppunit/CompilerOutputter.h>
+#endif
+
+#include <iostream>
+
+class tnlUnitTestStarter
 {
-   if( ! tnlUnitTestStarter :: run< tnlCudaReductionTester >() )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-}
+   public:
+
+   template< typename Tester >
+   static bool run()
+   {
+#ifdef HAVE_CPPUNIT
+      CppUnit :: TextTestRunner runner;
+      runner. addTest( Tester :: suite() );
+      runner. setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
+      if( ! runner.run() )
+         return false;
+      return true;
+#else
+      std :: cerr << "Error: CPPUNIT is missing." << endl;
+      return false;
+#endif
+   };
+};
+
+#endif /* TNLUNITTESTSTARTER_H_ */

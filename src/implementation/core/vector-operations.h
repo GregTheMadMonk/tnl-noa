@@ -18,7 +18,9 @@
 #ifndef VECTOROPERATIONS_H_
 #define VECTOROPERATIONS_H_
 
+#include <core/cuda/device-check.h>
 #include <core/cuda/cuda-reduction.h>
+#include <core/cuda/reduction-operations.h>
 
 template< typename Vector >
 typename Vector :: RealType getHostVectorMax( const Vector& v )
@@ -38,15 +40,12 @@ typename Vector :: RealType getCudaVectorMax( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionMax >
-                            ( v. getSize(),
-                              v. getData(),
-                              ( Real* ) NULL,
-                              result,
-                              ( Real ) 0 );*/
+   tnlParallelReductionMax< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
    return result;
 }
 
@@ -60,10 +59,8 @@ typename Vector :: RealType getVectorMax( const Vector& v )
    {
       case tnlHostDevice:
          return getHostVectorMax( v );
-         break;
       case tnlCudaDevice:
          return getCudaVectorMax( v );
-         break;
    }
 }
 
@@ -85,15 +82,12 @@ typename Vector :: RealType getCudaVectorMin( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionMin >
-                            ( v. getSize(),
-                              v. getData(),
-                              ( Real* ) NULL,
-                              result,
-                              ( Real ) 0 );*/
+   tnlParallelReductionMin< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
    return result;
 }
 
@@ -107,10 +101,8 @@ typename Vector :: RealType getVectorMin( const Vector& v )
    {
       case tnlHostDevice:
          return getHostVectorMin( v );
-         break;
       case tnlCudaDevice:
          return getCudaVectorMin( v );
-         break;
    }
 }
 
@@ -132,15 +124,12 @@ typename Vector :: RealType getCudaVectorAbsMax( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionAbsMax >
-                            ( v. getSize(),
-                              v. getData(),
-                              ( Real* ) NULL,
-                              result,
-                              ( Real ) 0 );*/
+   tnlParallelReductionAbsMax< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
    return result;
 }
 
@@ -154,10 +143,8 @@ typename Vector :: RealType getVectorAbsMax( const Vector& v )
    {
       case tnlHostDevice:
          return getHostVectorAbsMax( v );
-         break;
       case tnlCudaDevice:
          return getCudaVectorAbsMax( v );
-         break;
    }
 }
 
@@ -179,15 +166,12 @@ typename Vector :: RealType getCudaVectorAbsMin( const Vector& v )
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionAbsMin >
-                            ( v. getSize(),
-                              v. getData(),
-                              ( Real* ) NULL,
-                              result,
-                              ( Real ) 0 );*/
+   tnlParallelReductionAbsMin< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
    return result;
 }
 
@@ -201,10 +185,8 @@ typename Vector :: RealType getVectorAbsMin( const Vector& v )
    {
       case tnlHostDevice:
          return getHostVectorAbsMin( v );
-         break;
       case tnlCudaDevice:
          return getCudaVectorAbsMin( v );
-         break;
    }
 }
 
@@ -249,16 +231,14 @@ typename Vector :: RealType getCudaVectorLpNorm( const Vector& v,
    typedef typename Vector :: IndexType Index;
 
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionLpNorm >
-                             ( v. getSize(),
-                               v. getData(),
-                               ( Real* ) NULL,
-                               result,
-                               p );*/
-   return result;
+   tnlParallelReductionLpNorm< Real, Index > operation;
+   operation. setPower( p );
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
+   return pow( result, 1.0 / p );
 }
 
 template< typename Vector >
@@ -274,10 +254,8 @@ typename Vector :: RealType getVectorLpNorm( const Vector& v,
    {
       case tnlHostDevice:
          return getHostVectorLpNorm( v, p );
-         break;
       case tnlCudaDevice:
          return getCudaVectorLpNorm( v, p );
-         break;
    }
 }
 template< typename Vector >
@@ -300,15 +278,12 @@ typename Vector :: RealType getCudaVectorSum( const Vector& v )
    typedef typename Vector :: IndexType Index;
 
    Real result( 0 );
-   /*reductionOnCudaDevice< Real,
-                               Real,
-                               Index,
-                               tnlParallelReductionSum >
-                             ( v. getSize(),
-                               v. getData(),
-                               ( Real* ) NULL,
-                               result,
-                               ( Real ) 0.0 );*/
+   tnlParallelReductionSum< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
    return result;
 }
 
@@ -322,10 +297,8 @@ typename Vector :: RealType getVectorSum( const Vector& v )
    {
       case tnlHostDevice:
          return getHostVectorSum( v );
-         break;
       case tnlCudaDevice:
          return getCudaVectorSum( v );
-         break;
    }
 }
 
@@ -347,7 +320,16 @@ template< typename Vector1, typename Vector2 >
 typename Vector1 :: RealType getCudaVectorDifferenceMax( const Vector1& v1,
                                                          const Vector2& v2 )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffMax< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -369,10 +351,8 @@ typename Vector1 :: RealType getVectorDifferenceMax( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceMax( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceMax( v1, v2 );
-         break;
    }
 }
 
@@ -394,7 +374,16 @@ template< typename Vector1, typename Vector2 >
 typename Vector1 :: RealType getCudaVectorDifferenceMin( const Vector1& v1,
                                                          const Vector2& v2 )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffMin< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -416,10 +405,8 @@ typename Vector1 :: RealType getVectorDifferenceMin( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceMin( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceMin( v1, v2 );
-         break;
    }
 }
 
@@ -441,7 +428,16 @@ template< typename Vector1, typename Vector2 >
 typename Vector1 :: RealType getCudaVectorDifferenceAbsMax( const Vector1& v1,
                                                             const Vector2& v2 )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffAbsMax< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -463,10 +459,8 @@ typename Vector1 :: RealType getVectorDifferenceAbsMax( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceAbsMax( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceAbsMax( v1, v2 );
-         break;
    }
 }
 
@@ -488,7 +482,16 @@ template< typename Vector1, typename Vector2 >
 typename Vector1 :: RealType getCudaVectorDifferenceAbsMin( const Vector1& v1,
                                                             const Vector2& v2 )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffAbsMin< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -510,10 +513,8 @@ typename Vector1 :: RealType getVectorDifferenceAbsMin( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceAbsMin( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceAbsMin( v1, v2 );
-         break;
    }
 }
 
@@ -557,7 +558,16 @@ typename Vector1 :: RealType getCudaVectorDifferenceLpNorm( const Vector1& v1,
                                                             const Vector2& v2,
                                                             const typename Vector1 :: RealType& p )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffLpNorm< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -582,10 +592,8 @@ typename Vector1 :: RealType getVectorDifferenceLpNorm( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceLpNorm( v1, v2, p );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceLpNorm( v1, v2, p );
-         break;
    }
 }
 
@@ -607,7 +615,16 @@ template< typename Vector1, typename Vector2 >
 typename Vector1 :: RealType getCudaVectorDifferenceSum( const Vector1& v1,
                                                          const Vector2& v2 )
 {
-   tnlAssert( false, ); // TODO: fix this
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+   Real result( 0 );
+   tnlParallelReductionDiffSum< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
 }
 
 
@@ -629,10 +646,8 @@ typename Vector1 :: RealType getVectorDifferenceSum( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorDifferenceSum( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorDifferenceSum( v1, v2 );
-         break;
    }
 }
 
@@ -684,10 +699,8 @@ void vectorScalarMultiplication( Vector& v,
    {
       case tnlHostDevice:
          return hostVectorScalarMultiplication( v, alpha );
-         break;
       case tnlCudaDevice:
          return cudaVectorScalarMultiplication( v, alpha );
-         break;
    }
 }
 
@@ -743,10 +756,8 @@ typename Vector1 :: RealType getVectorSdot( const Vector1& v1,
    {
       case tnlHostDevice:
          return getHostVectorSdot( v1, v2 );
-         break;
       case tnlCudaDevice:
          return getCudaVectorSdot( v1, v2 );
-         break;
    }
 }
 
@@ -805,10 +816,8 @@ void vectorSaxpy( Vector1& y,
    {
       case tnlHostDevice:
          return hostVectorSaxpy( y, x, alpha );
-         break;
       case tnlCudaDevice:
          return cudaVectorSaxpy( y, x, alpha );
-         break;
    }
 }
 
@@ -867,10 +876,8 @@ void vectorSaxmy( Vector1& y,
    {
       case tnlHostDevice:
          return hostVectorSaxmy( y, x, alpha );
-         break;
       case tnlCudaDevice:
          return cudaVectorSaxmy( y, x, alpha );
-         break;
    }
 }
 
@@ -933,10 +940,8 @@ void vectorSaxpsby( Vector1& y,
    {
       case tnlHostDevice:
          return hostVectorSaxpsby( y, x, alpha, beta );
-         break;
       case tnlCudaDevice:
          return cudaVectorSaxpsby( y, x, alpha, beta );
-         break;
    }
 }
 
@@ -1003,10 +1008,8 @@ void vectorSaxpsbz( Vector1& y,
    {
       case tnlHostDevice:
          return hostVectorSaxpsbz( y, x, alpha, z, beta );
-         break;
       case tnlCudaDevice:
          return cudaVectorSaxpsbz( y, x, alpha, z, beta );
-         break;
    }
 }
 
@@ -1073,10 +1076,8 @@ void vectorSaxpsbzpy( Vector1& y,
    {
       case tnlHostDevice:
          return hostVectorSaxpsbzpy( y, x, alpha, z, beta );
-         break;
       case tnlCudaDevice:
          return cudaVectorSaxpsbzpy( y, x, alpha, z, beta );
-         break;
    }
 }
 

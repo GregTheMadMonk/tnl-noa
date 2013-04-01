@@ -1,7 +1,7 @@
 /***************************************************************************
-                          reduction-test.cu  -  description
+                          tnlCudaVectorOperationsTest.cu  -  description
                              -------------------
-    begin                : Mar 20, 2013
+    begin                : Mar 31, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,13 +14,13 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#include "tnlCudaReductionTester.h"
+ 
+#include "tnlCudaVectorOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
  
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< tnlCudaReductionTester >() )
+   if( ! tnlUnitTestStarter :: run< tnlCudaVectorOperationsTester< double > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

@@ -76,6 +76,15 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
                                 "longSdotTest",
                                 &tnlCudaReductionTester :: longSdotTest< double > )
                                );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "shortDiffTest",
+                                &tnlCudaReductionTester :: shortDiffTest< double > )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+                                "longDiffTest",
+                                &tnlCudaReductionTester :: longDiffTest< double > )
+                               );
+
       return suiteOfTests;
    }
 
@@ -559,6 +568,241 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
           ( reductionOnCudaDevice( sdotOperation, size, deviceData1, deviceData2, result ) ) );
       CPPUNIT_ASSERT( result == sdot );
    };
+
+   template< typename Type >
+   void shortDiffTest()
+   {
+      const int size( 123 );
+      Type *hostZeros, *hostOnes, *hostLinear,
+           *deviceZeros, *deviceOnes, *deviceLinear;
+      allocateMemoryHost( hostZeros, size );
+      allocateMemoryHost( hostOnes, size );
+      allocateMemoryHost( hostLinear, size );
+      allocateMemoryCuda( deviceZeros, size );
+      allocateMemoryCuda( deviceOnes, size );
+      allocateMemoryCuda( deviceLinear, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+      {
+         hostZeros[ i ] = 0;
+         hostOnes[ i ] = 1;
+         hostLinear[ i ] = i;
+      }
+
+      copyMemoryHostToCuda( deviceZeros, hostZeros, size );
+      copyMemoryHostToCuda( deviceOnes, hostOnes, size );
+      copyMemoryHostToCuda( deviceLinear, hostLinear, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      tnlParallelReductionDiffSum< Type, int > diffSumOp;
+      tnlParallelReductionDiffMin< Type, int > diffMinOp;
+      tnlParallelReductionDiffMax< Type, int > diffMaxOp;
+      tnlParallelReductionDiffAbsSum< Type, int > diffAbsSumOp;
+      tnlParallelReductionDiffAbsMin< Type, int > diffAbsMinOp;
+      tnlParallelReductionDiffAbsMax< Type, int > diffAbsMaxOp;
+      tnlParallelReductionDiffLpNorm< Type, int > diffLpNormOp;
+
+      Type result;
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == -size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == -1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == -1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMinOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsSumOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffLpNormOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceLinear, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == size * ( size - 1 ) / 2 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == - size * ( size - 1 ) / 2 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceLinear, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size * ( size - 1 ) / 2 - size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceLinear, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == -size+1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == size - 1 );
+
+      freeMemoryHost( hostZeros );
+      freeMemoryHost( hostOnes );
+      freeMemoryHost( hostLinear );
+      freeMemoryCuda( deviceZeros );
+      freeMemoryCuda( deviceOnes );
+      freeMemoryCuda( deviceLinear );
+   };
+
+
+   template< typename Type >
+   void longDiffTest()
+   {
+      const int size( 12387 );
+      Type *hostZeros, *hostOnes, *hostLinear,
+           *deviceZeros, *deviceOnes, *deviceLinear;
+      allocateMemoryHost( hostZeros, size );
+      allocateMemoryHost( hostOnes, size );
+      allocateMemoryHost( hostLinear, size );
+      allocateMemoryCuda( deviceZeros, size );
+      allocateMemoryCuda( deviceOnes, size );
+      allocateMemoryCuda( deviceLinear, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      for( int i = 0; i < size; i ++ )
+      {
+         hostZeros[ i ] = 0;
+         hostOnes[ i ] = 1;
+         hostLinear[ i ] = i;
+      }
+
+      copyMemoryHostToCuda( deviceZeros, hostZeros, size );
+      copyMemoryHostToCuda( deviceOnes, hostOnes, size );
+      copyMemoryHostToCuda( deviceLinear, hostLinear, size );
+      CPPUNIT_ASSERT( checkCudaDevice );
+
+      tnlParallelReductionDiffSum< Type, int > diffSumOp;
+      tnlParallelReductionDiffMin< Type, int > diffMinOp;
+      tnlParallelReductionDiffMax< Type, int > diffMaxOp;
+      tnlParallelReductionDiffAbsSum< Type, int > diffAbsSumOp;
+      tnlParallelReductionDiffAbsMin< Type, int > diffAbsMinOp;
+      tnlParallelReductionDiffAbsMax< Type, int > diffAbsMaxOp;
+      tnlParallelReductionDiffLpNorm< Type, int > diffLpNormOp;
+
+      Type result;
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceOnes, result ) ) );
+
+      CPPUNIT_ASSERT( result == -size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == -1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == -1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceOnes, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMinOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsSumOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffLpNormOp, size, deviceZeros, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceLinear, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == size * ( size - 1 ) / 2 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == - size * ( size - 1 ) / 2 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffSumOp, size, deviceLinear, deviceOnes, result ) ) );
+      CPPUNIT_ASSERT( result == size * ( size - 1 ) / 2 - size );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceLinear, deviceZeros, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMinOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == -size + 1 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffMaxOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == 0 );
+
+      CPPUNIT_ASSERT(
+                ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceLinear, result ) ) );
+      CPPUNIT_ASSERT( result == size - 1 );
+
+      freeMemoryHost( hostZeros );
+      freeMemoryHost( hostOnes );
+      freeMemoryHost( hostLinear );
+      freeMemoryCuda( deviceZeros );
+      freeMemoryCuda( deviceOnes );
+      freeMemoryCuda( deviceLinear );
+   };
+
 };
 
 

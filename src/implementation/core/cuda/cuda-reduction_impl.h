@@ -58,7 +58,7 @@ __device__ void reduceAligned( const Operation& operation,
 /***
  * For each thread in block with thread ID smaller then s this function reduces
  * data elements with indices tid and tid + s. This is a modified version of
- * the previous algorithm. Thid one works even for odd number of elements but
+ * the previous algorithm. This one works even for odd number of elements but
  * it is a bit slower.
  */
 template< typename Operation >
@@ -1307,6 +1307,513 @@ extern template bool reductionOnCudaDevice< tnlParallelReductionSdot< double, lo
                                      const typename tnlParallelReductionSdot< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionSdot< long double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionSdot< long double, long int> :: ResultType& result );*/
+
+/****
+ * Diff sum
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< char, int > >
+                                   ( const tnlParallelReductionDiffSum< char, int >& operation,
+                                     const typename tnlParallelReductionDiffSum< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< int, int > >
+                                   ( const tnlParallelReductionDiffSum< int, int >& operation,
+                                     const typename tnlParallelReductionDiffSum< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< float, int > >
+                                   ( const tnlParallelReductionDiffSum< float, int >& operation,
+                                     const typename tnlParallelReductionDiffSum< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< double, int > >
+                                   ( const tnlParallelReductionDiffSum< double, int>& operation,
+                                     const typename tnlParallelReductionDiffSum< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< long double, int > >
+                                   ( const tnlParallelReductionDiffSum< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffSum< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< char, long int > >
+                                   ( const tnlParallelReductionDiffSum< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffSum< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< int, long int > >
+                                   ( const tnlParallelReductionDiffSum< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffSum< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< float, long int > >
+                                   ( const tnlParallelReductionDiffSum< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffSum< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< double, long int > >
+                                   ( const tnlParallelReductionDiffSum< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffSum< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< long double, long int > >
+                                   ( const tnlParallelReductionDiffSum< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffSum< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffSum< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffSum< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffSum< long double, long int> :: ResultType& result );*/
+
+/****
+ * Diff min
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< char, int > >
+                                   ( const tnlParallelReductionDiffMin< char, int >& operation,
+                                     const typename tnlParallelReductionDiffMin< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< int, int > >
+                                   ( const tnlParallelReductionDiffMin< int, int >& operation,
+                                     const typename tnlParallelReductionDiffMin< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< float, int > >
+                                   ( const tnlParallelReductionDiffMin< float, int >& operation,
+                                     const typename tnlParallelReductionDiffMin< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< double, int > >
+                                   ( const tnlParallelReductionDiffMin< double, int>& operation,
+                                     const typename tnlParallelReductionDiffMin< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< long double, int > >
+                                   ( const tnlParallelReductionDiffMin< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffMin< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< char, long int > >
+                                   ( const tnlParallelReductionDiffMin< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffMin< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< int, long int > >
+                                   ( const tnlParallelReductionDiffMin< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffMin< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< float, long int > >
+                                   ( const tnlParallelReductionDiffMin< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffMin< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< double, long int > >
+                                   ( const tnlParallelReductionDiffMin< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffMin< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMin< long double, long int > >
+                                   ( const tnlParallelReductionDiffMin< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffMin< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMin< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMin< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMin< long double, long int> :: ResultType& result );*/
+
+/****
+ * Diff max
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< char, int > >
+                                   ( const tnlParallelReductionDiffMax< char, int >& operation,
+                                     const typename tnlParallelReductionDiffMax< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< int, int > >
+                                   ( const tnlParallelReductionDiffMax< int, int >& operation,
+                                     const typename tnlParallelReductionDiffMax< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< float, int > >
+                                   ( const tnlParallelReductionDiffMax< float, int >& operation,
+                                     const typename tnlParallelReductionDiffMax< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< double, int > >
+                                   ( const tnlParallelReductionDiffMax< double, int>& operation,
+                                     const typename tnlParallelReductionDiffMax< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< long double, int > >
+                                   ( const tnlParallelReductionDiffMax< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffMax< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< char, long int > >
+                                   ( const tnlParallelReductionDiffMax< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffMax< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< int, long int > >
+                                   ( const tnlParallelReductionDiffMax< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffMax< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< float, long int > >
+                                   ( const tnlParallelReductionDiffMax< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffMax< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< double, long int > >
+                                   ( const tnlParallelReductionDiffMax< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffMax< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< long double, long int > >
+                                   ( const tnlParallelReductionDiffMax< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffMax< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffMax< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffMax< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffMax< long double, long int> :: ResultType& result );*/
+
+/****
+ * Diff abs sum
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< char, int > >
+                                   ( const tnlParallelReductionDiffAbsSum< char, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< int, int > >
+                                   ( const tnlParallelReductionDiffAbsSum< int, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< float, int > >
+                                   ( const tnlParallelReductionDiffAbsSum< float, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< double, int > >
+                                   ( const tnlParallelReductionDiffAbsSum< double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< long double, int > >
+                                   ( const tnlParallelReductionDiffAbsSum< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< char, long int > >
+                                   ( const tnlParallelReductionDiffAbsSum< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< int, long int > >
+                                   ( const tnlParallelReductionDiffAbsSum< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< float, long int > >
+                                   ( const tnlParallelReductionDiffAbsSum< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< double, long int > >
+                                   ( const tnlParallelReductionDiffAbsSum< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< long double, long int > >
+                                   ( const tnlParallelReductionDiffAbsSum< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsSum< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsSum< long double, long int> :: ResultType& result );*/
+
+/****
+ * Diff abs min
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< char, int > >
+                                   ( const tnlParallelReductionDiffAbsMin< char, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< int, int > >
+                                   ( const tnlParallelReductionDiffAbsMin< int, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< float, int > >
+                                   ( const tnlParallelReductionDiffAbsMin< float, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< double, int > >
+                                   ( const tnlParallelReductionDiffAbsMin< double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< long double, int > >
+                                   ( const tnlParallelReductionDiffAbsMin< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< char, long int > >
+                                   ( const tnlParallelReductionDiffAbsMin< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< int, long int > >
+                                   ( const tnlParallelReductionDiffAbsMin< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< float, long int > >
+                                   ( const tnlParallelReductionDiffAbsMin< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< double, long int > >
+                                   ( const tnlParallelReductionDiffAbsMin< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMin< long double, long int > >
+                                   ( const tnlParallelReductionDiffAbsMin< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMin< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMin< long double, long int> :: ResultType& result );*/
+/****
+ * Diff abs max
+ */
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< char, int > >
+                                   ( const tnlParallelReductionDiffAbsMax< char, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< char, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< char, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< char, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< char, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< int, int > >
+                                   ( const tnlParallelReductionDiffAbsMax< int, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< int, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< int, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< int, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< int, int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< float, int > >
+                                   ( const tnlParallelReductionDiffAbsMax< float, int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< double, int > >
+                                   ( const tnlParallelReductionDiffAbsMax< double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< long double, int > >
+                                   ( const tnlParallelReductionDiffAbsMax< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< char, long int > >
+                                   ( const tnlParallelReductionDiffAbsMax< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< int, long int > >
+                                   ( const tnlParallelReductionDiffAbsMax< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< float, long int > >
+                                   ( const tnlParallelReductionDiffAbsMax< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< double, long int > >
+                                   ( const tnlParallelReductionDiffAbsMax< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< long double, long int > >
+                                   ( const tnlParallelReductionDiffAbsMax< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffAbsMax< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffAbsMax< long double, long int> :: ResultType& result );*/
+
+
+
+/****
+ * Diff Lp Norm
+ */
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< float, int > >
+                                   ( const tnlParallelReductionDiffLpNorm< float, int >& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< float, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< float, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< float, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< float, int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< double, int > >
+                                   ( const tnlParallelReductionDiffLpNorm< double, int>& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< double, int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long double, int > >
+                                   ( const tnlParallelReductionDiffLpNorm< long double, int>& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< long double, int> :: ResultType& result );*/
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< char, long int > >
+                                   ( const tnlParallelReductionDiffLpNorm< char, long int >& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< char, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< char, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< char, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< char, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< int, long int > >
+                                   ( const tnlParallelReductionDiffLpNorm< int, long int >& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< int, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< int, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< int, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< int, long int > :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< float, long int > >
+                                   ( const tnlParallelReductionDiffLpNorm< float, long int >& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< float, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< float, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< float, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< float, long int> :: ResultType& result );
+
+extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< double, long int > >
+                                   ( const tnlParallelReductionDiffLpNorm< double, long int>& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< double, long int> :: ResultType& result );
+
+/*extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long double, long int > >
+                                   ( const tnlParallelReductionDiffLpNorm< long double, long int>& operation,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, long int > :: IndexType size,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, long int > :: RealType* deviceInput1,
+                                     const typename tnlParallelReductionDiffLpNorm< long double, long int > :: RealType* deviceInput2,
+                                     typename tnlParallelReductionDiffLpNorm< long double, long int> :: ResultType& result );*/
+
+
+
 
 #endif /* TEMPLATE_EXPLICIT_INSTANTIATION */
 

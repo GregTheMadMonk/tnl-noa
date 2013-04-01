@@ -15,23 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tnlConfig.h>
- 
-#ifdef HAVE_CPPUNIT
-
-#include <cppunit/ui/text/TestRunner.h>
-#include <cppunit/CompilerOutputter.h>
-#include <iostream>
 #include "tnlCudaMemoryOperationsTester.h"
+#include "../../tnlUnitTestStarter.h"
  
 int main( int argc, char* argv[] )
 {
-   CppUnit :: TextTestRunner runner;
-   runner. addTest( tnlCudaMemoryOperationsTester :: suite() );
-   //runner.setOutputter(new CppUnit::CompilerOutputter(&runner.result(), std::cout));
-   if( ! runner.run() )
+   if( ! tnlUnitTestStarter :: run< tnlCudaMemoryOperationsTester >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
-#endif

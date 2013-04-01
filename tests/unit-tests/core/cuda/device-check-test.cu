@@ -15,20 +15,13 @@
  *                                                                         *
  ***************************************************************************/
  
-#include <tnlConfig.h>
-
-#ifdef HAVE_CPPUNIT
-
-#include <cppunit/ui/text/TestRunner.h>
 #include "tnlCudaDeviceCheckTester.h"
+#include "../../tnlUnitTestStarter.h"
  
 int main( int argc, char* argv[] )
 {
-   CppUnit :: TextTestRunner runner;
-   runner. addTest( tnlCudaDeviceCheckTester :: suite() );
-   if( ! runner.run() )
+   if( ! tnlUnitTestStarter :: run< tnlCudaDeviceCheckTester >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
-#endif 
+ 
