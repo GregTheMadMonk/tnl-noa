@@ -6,7 +6,7 @@ SET( headers tnlLinearResidueGetter_impl.h
    
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/solvers/linear )
    
-set( tnl_implementation_solvers_linear_stationary_SOURCES
+set( tnl_implementation_solvers_linear_SOURCES
      ${tnl_implementation_solvers_linear_krylov_SOURCES}
      ${tnl_implementation_solvers_linear_stationary_SOURCES}
      PARENT_SCOPE )

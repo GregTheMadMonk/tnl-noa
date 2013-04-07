@@ -136,7 +136,8 @@ tnlExplicitSolver < Problem > :: tnlExplicitSolver()
    cpu_timer( &default_mcore_cpu_timer ),
    rt_timer( &default_mcore_rt_timer ),
    testingMode( false ),
-   problem( 0 )
+   problem( 0 ),
+   solverMonitor( 0 )
    {
    };
 

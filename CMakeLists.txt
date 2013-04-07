@@ -18,20 +18,20 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
-    #AddCompilerFlag( "-std=gnu++0x" )
-    AddCompilerFlag( "-DHAVE_NOT_CXX11" )
+    AddCompilerFlag( "-g" )
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-    #set( CXX_OPTIMIZE_FLAGS "-O3")
     OptimizeForArchitecture()
-    #AddCompilerFlag( "-std=gnu++0x -O3 -DNDEBUG" )
-    AddCompilerFlag( "-DHAVE_NOT_CXX11 -O3 -DNDEBUG" )
+    AddCompilerFlag( "-O3 -DNDEBUG" )
 endif()
 
-#AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION" )
+AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION" )
+AddCompilerFlag( "-std=gnu++0x" )
+#AddCompilerFlag( "-DHAVE_NOT_CXX11" )
+
 
 #####
 # Check for bzip2
