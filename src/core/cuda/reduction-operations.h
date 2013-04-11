@@ -93,6 +93,12 @@ __device__  inline double tnlCudaAbs( const double& a )
 {
    return fabs( a );
 }
+
+template< typename Type1, typename Type2 >
+__device__ Type1 tnlCudaPow( const Type1& x, const Type2& power )
+{
+   return ( Type1 ) pow( ( double ) x, ( double ) power );
+}
 #endif
 
 template< typename Real, typename Index >
@@ -683,14 +689,14 @@ class tnlParallelReductionLpNorm
                                                const RealType* data1,
                                                const RealType* data2 ) const
    {
-      return pow( tnlCudaAbs( data1[ idx1 ] ), p ) + pow( tnlCudaAbs( data1[ idx2 ] ), p );
+      return tnlCudaPow( tnlCudaAbs( data1[ idx1 ] ), p ) + tnlCudaPow( tnlCudaAbs( data1[ idx2 ] ), p );
    }
 
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const RealType* data1,
                                                const RealType* data2 ) const
    {
-      return pow( tnlCudaAbs( data1[ idx1 ] ), p );
+      return tnlCudaPow( tnlCudaAbs( data1[ idx1 ] ), p );
    };
 
    __device__ ResultType firstReductionOnDevice( const IndexType idx1,
@@ -701,8 +707,8 @@ class tnlParallelReductionLpNorm
                                                  const RealType* data3 ) const
    {
       return data1[ idx1 ] +
-             pow( tnlCudaAbs( data2[ idx2 ] ), p ) +
-             pow( tnlCudaAbs( data2[ idx3 ] ), p );
+             tnlCudaPow( tnlCudaAbs( data2[ idx2 ] ), p ) +
+             tnlCudaPow( tnlCudaAbs( data2[ idx3 ] ), p );
    };
 
    __device__ ResultType firstReductionOnDevice( const IndexType idx1,
@@ -711,7 +717,7 @@ class tnlParallelReductionLpNorm
                                                  const RealType* data2,
                                                  const RealType* data3 ) const
    {
-      return data1[ idx1 ] + pow( tnlCudaAbs( data2[ idx2 ] ), p );
+      return data1[ idx1 ] + tnlCudaPow( tnlCudaAbs( data2[ idx2 ] ), p );
    };
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
@@ -1409,15 +1415,15 @@ class tnlParallelReductionDiffLpNorm
                                                const RealType* data1,
                                                const RealType* data2 ) const
    {
-      return pow( tnlCudaAbs( data1[ idx1 ] - data2[ idx1 ] ), p ) +
-             pow( tnlCudaAbs( data1[ idx2 ] - data2[ idx2 ] ), p );
+      return tnlCudaPow( tnlCudaAbs( data1[ idx1 ] - data2[ idx1 ] ), p ) +
+             tnlCudaPow( tnlCudaAbs( data1[ idx2 ] - data2[ idx2 ] ), p );
    }
 
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const RealType* data1,
                                                const RealType* data2 ) const
    {
-      return pow( tnlCudaAbs( data1[ idx1 ] - data2[ idx1 ] ), p );
+      return tnlCudaPow( tnlCudaAbs( data1[ idx1 ] - data2[ idx1 ] ), p );
    };
 
    __device__ ResultType firstReductionOnDevice( const IndexType idx1,
@@ -1428,8 +1434,8 @@ class tnlParallelReductionDiffLpNorm
                                                  const RealType* data3 ) const
    {
       return data1[ idx1 ] +
-             pow( tnlCudaAbs( data2[ idx2 ] - data3[ idx2 ] ), p ) +
-             pow( tnlCudaAbs( data2[ idx3 ] - data3[ idx3 ] ), p );
+             tnlCudaPow( tnlCudaAbs( data2[ idx2 ] - data3[ idx2 ] ), p ) +
+             tnlCudaPow( tnlCudaAbs( data2[ idx3 ] - data3[ idx3 ] ), p );
    };
 
    __device__ ResultType firstReductionOnDevice( const IndexType idx1,
@@ -1438,7 +1444,7 @@ class tnlParallelReductionDiffLpNorm
                                                  const RealType* data2,
                                                  const RealType* data3 ) const
    {
-      return data1[ idx1 ] + pow( tnlCudaAbs( data2[ idx2 ] - data3[ idx2 ] ), p );
+      return data1[ idx1 ] + tnlCudaPow( tnlCudaAbs( data2[ idx2 ] - data3[ idx2 ] ), p );
    };
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,

@@ -76,8 +76,6 @@ bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
       return false;
    }
 
-
-
    if( discreteSolver == "euler" )
    {
       typedef tnlEulerSolver< Problem > DiscreteSolver;

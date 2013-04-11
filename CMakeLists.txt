@@ -28,9 +28,15 @@ else()
     AddCompilerFlag( "-O3 -DNDEBUG" )
 endif()
 
-AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION" )
-AddCompilerFlag( "-std=gnu++0x" )
-#AddCompilerFlag( "-DHAVE_NOT_CXX11" )
+if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
+   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION" )
+endif()   
+
+if( WITH_CUDA STREQUAL "yes" )
+   AddCompilerFlag( "-DHAVE_NOT_CXX11" )
+else()
+   AddCompilerFlag( "-std=gnu++0x" )
+endif()      
 
 
 #####
@@ -288,7 +294,10 @@ if(WIN32 AND NOT UNIX)
   set(CPACK_NSIS_MODIFY_PATH ON)
 else(WIN32 AND NOT UNIX)
 #  set(CPACK_STRIP_FILES "bin/MyExecutable")
-  set(CPACK_SOURCE_STRIP_FILES "")
 endif(WIN32 AND NOT UNIX)
+
+set(CPACK_SOURCE_STRIP_FILES "Debug")
+set(CPACK_SOURCE_STRIP_FILES "Release")
+
 #set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 INCLUDE( CPack )

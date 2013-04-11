@@ -21,19 +21,19 @@
 #include <math.h>
 #include <stdlib.h>
 
-template< class T > T Min( const T& a, const T& b )
+template< typename Type1, typename Type2 > Type1 Min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
-template< class T > T Max( const T& a, const T& b )
+template< typename Type1, typename Type2 > Type1 Max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
 
-template< class T > void Swap( T& a, T& b )
+template< typename Type > void Swap( Type& a, Type& b )
 {
-   T tmp( a );
+   Type tmp( a );
    a = b;
    b = tmp;
 };

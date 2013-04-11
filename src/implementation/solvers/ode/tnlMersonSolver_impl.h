@@ -21,6 +21,14 @@
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
+/****
+ * In this code we do not use constants and references as we would like to.
+ * OpenMP would complain that
+ *
+ *  error: ‘some-variable’ is predetermined ‘shared’ for ‘firstprivate’
+ *
+ */
+
 #ifdef HAVE_CUDA
 
 template< typename Real, typename Index >
