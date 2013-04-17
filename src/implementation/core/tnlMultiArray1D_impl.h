@@ -205,6 +205,18 @@ bool tnlMultiArray< 1, Element, Device, Index > :: load( tnlFile& file )
 }
 
 template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiArray< 1, Element, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+}
+
+template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
 {
    for( Index i = 0; i < array. getDimensions()[ 0 ]; i ++ )

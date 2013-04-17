@@ -18,8 +18,11 @@
 #ifndef TNLGRID1D_IMPL_H_
 #define TNLGRID1D_IMPL_H_
 
+#include <fstream>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
+
+using namespace std;
 
 template< typename Real,
           typename Device,
@@ -58,6 +61,17 @@ void tnlGrid< 1, Real, Device, Index> :: setDimensions( const Index xSize )
               cerr << "The number of nodes along x-axis must be larger than 1." );
    this -> dimensions. x() = xSize;
    dofs = xSize;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlGrid< 1, Real, Device, Index> :: setDimensions( const tnlTuple< 1, Index >& dimensions )
+{
+   tnlAssert( dimensions. x() > 1,
+              cerr << "The number of nodes along x-axis must be larger than 1." );
+   this -> dimensions = dimensions;
+   dofs = this -> dimensions. x();
 }
 
 template< typename Real,
@@ -198,5 +212,38 @@ bool tnlGrid< 1, Real, Device, Index> :: load( const tnlString& fileName )
    return tnlObject :: load( fileName );
 };
 
+template< typename Real,
+           typename Device,
+           typename Index >
+   template< typename MeshFunction >
+bool tnlGrid< 1, Real, Device, Index> :: write( const MeshFunction& function,
+                                                const tnlString& fileName,
+                                                const tnlString& format ) const
+{
+   if( this -> getDofs() != function. getSize() )
+   {
+      cerr << "The size ( " << function. getSize() << " ) of the mesh function " << function. getName()
+           << " does not agree with the DOFs ( " << this -> getDofs() << " ) of the mesh " << this -> getName() << "." << endl;
+      return false;
+   }
+   fstream file;
+   file. open( fileName. getString(), ios :: out );
+   if( ! file )
+   {
+      cerr << "I am not able to open the file " << fileName << "." << endl;
+      return false;
+   }
+   const RealType hx = getSpaceStep(). x();
+   const RealType hy = getSpaceStep(). y();
+   if( format == "gnuplot" )
+      for( IndexType i = 0; i < getDimensions(). x(); i++ )
+      {
+         const RealType x = this -> getLowerCorner(). x() + i * hx;
+         file << x << " " << function[ this -> getNodeIndex( i ) ] << endl;
+      }
+
+   file. close();
+   return true;
+}
 
 #endif /* TNLGRID1D_IMPL_H_ */

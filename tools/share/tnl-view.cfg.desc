@@ -1,6 +1,6 @@
 group IO
 {
-   string mesh( "mesh.tnl" )       [Mesh file.];
+   string mesh( "" )               [Mesh file. If none is given, a regular rectangular mesh is assumed.];
    list of string input-files(!)   [Input files.];
    list of string output-files     [Output files.];
    list of real level-lines        [List of level sets which will be drawn.];

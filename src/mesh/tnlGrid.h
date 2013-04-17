@@ -50,6 +50,8 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    void setDimensions( const Index xSize );
 
+   void setDimensions( const tnlTuple< 1, Index >& );
+
    const tnlTuple< 1, Index >& getDimensions() const;
 
    void setLowerCorner( const tnlTuple< 1, Real >& lowerCorner );
@@ -77,6 +79,11 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
    bool save( const tnlString& fileName ) const;
 
    bool load( const tnlString& fileName );
+
+   template< typename MeshFunction >
+   bool write( const MeshFunction& function,
+                const tnlString& fileName,
+                const tnlString& format ) const;
 
    protected:
 
@@ -107,6 +114,8 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
    tnlString getType() const;
 
    void setDimensions( const Index ySize, const Index xSize );
+
+   void setDimensions( const tnlTuple< 2, Index >& );
 
    const tnlTuple< 2, Index >& getDimensions() const;
 
@@ -175,6 +184,8 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
 
    void setDimensions( const Index zSize, const Index ySize, const Index xSize );
 
+   void setDimensions( const tnlTuple< 3, Index >& );
+
    const tnlTuple< 3, Index >& getDimensions() const;
 
    void setLowerCorner( const tnlTuple< 3, Real >& lowerCorner );
@@ -202,6 +213,11 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
    bool save( const tnlString& fileName ) const;
 
    bool load( const tnlString& fileName );
+
+   template< typename MeshFunction >
+   bool write( const MeshFunction& function,
+                const tnlString& fileName,
+                const tnlString& format ) const;
 
    protected:
 

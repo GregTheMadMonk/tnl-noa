@@ -214,4 +214,16 @@ ostream& operator << ( ostream& str, const tnlMultiVector< 1, Element, Device, I
    return str;
 }
 
+template< typename Element, typename Device, typename Index >
+bool tnlMultiVector< 1, Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiVector< 1, Element, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+}
+
 #endif /* TNLMULTIVECTOR1D_IMPL_H_ */

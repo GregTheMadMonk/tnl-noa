@@ -69,6 +69,20 @@ void tnlGrid< 2, Real, Device, Index> :: setDimensions( const Index ySize, const
 template< typename Real,
           typename Device,
           typename Index >
+void tnlGrid< 2, Real, Device, Index> :: setDimensions( const tnlTuple< 2, Index >& dimensions )
+{
+   tnlAssert( dimensions. x() > 1,
+              cerr << "The number of nodes along x-axis must be larger than 1." );
+   tnlAssert( dimensions. y() > 1,
+              cerr << "The number of nodes along y-axis must be larger than 1." );
+
+   this -> dimensions = dimensions;
+   dofs = this -> dimensions. x() * this -> dimensions. y();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 const tnlTuple< 2, Index >& tnlGrid< 2, Real, Device, Index> :: getDimensions() const
 {
    return this -> dimensions;

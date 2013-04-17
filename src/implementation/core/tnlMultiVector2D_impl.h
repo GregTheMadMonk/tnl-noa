@@ -213,6 +213,18 @@ bool tnlMultiVector< 2, Element, Device, Index > :: load( tnlFile& file )
 }
 
 template< typename Element, typename Device, typename Index >
+bool tnlMultiVector< 2, Element, Device, Index > :: save( const tnlString& fileName ) const
+{
+   return tnlObject :: save( fileName );
+}
+
+template< typename Element, typename Device, typename Index >
+bool tnlMultiVector< 2, Element, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+}
+
+template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiVector< 2, Element, Device, Index >& Vector )
 {
    for( Index j = 0; j < Vector. getDimensions()[ 1 ]; j ++ )

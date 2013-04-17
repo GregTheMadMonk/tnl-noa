@@ -93,6 +93,10 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 1, Index > dimensions;
@@ -161,6 +165,10 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    protected:
 
@@ -232,6 +240,10 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 3, Index > dimensions;
@@ -301,6 +313,10 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    protected:
 

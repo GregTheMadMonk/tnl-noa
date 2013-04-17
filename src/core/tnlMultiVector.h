@@ -92,6 +92,10 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 1, Index > dimensions;
@@ -160,6 +164,10 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
 
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    protected:
 
@@ -231,6 +239,10 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    tnlTuple< 3, Index > dimensions;
@@ -300,6 +312,10 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
 
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
 
    protected:
 

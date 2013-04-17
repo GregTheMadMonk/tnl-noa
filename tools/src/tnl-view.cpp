@@ -17,12 +17,11 @@
 
 #include "tnl-view.h"
 #include <cstdlib>
-#include <core/tnlCurve.h>
 #include <core/tnlFile.h>
 #include <debug/tnlDebug.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <diff/curve-ident.h>
+#include <mesh/tnlDummyMesh.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-view.cfg.desc";
@@ -39,9 +38,16 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
+   int verbose = parameters. GetParameter< int >( "verbose" );
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   if( meshFile == "" )
+   {
+      if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
+         return EXIT_FAILURE;
+      return EXIT_SUCCESS;
+   }
    tnlString meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   if( getObjectType( meshFile, meshType ) )
    {
       cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << endl;
       return EXIT_FAILURE;
@@ -49,7 +55,7 @@ int main( int argc, char* argv[] )
    cout << meshType << " detected in " << meshFile << " file." << endl;
    if( meshType == "tnlGrid< 2, double, tnlHost, int >" )
    {
-      if( ! processMesh< tnlGrid< 2, double, tnlHost, int > >( parameters ) )
+      if( ! processFiles< tnlGrid< 2, double, tnlHost, int > >( parameters ) )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }

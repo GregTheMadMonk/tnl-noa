@@ -18,32 +18,148 @@
 #ifndef TNL_VIEW_H_
 #define TNL_VIEW_H_
 
+#include <cstdlib>
 #include <core/mfilename.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlString.h>
 #include <core/tnlVector.h>
+#include <core/tnlMultiVector.h>
 #include <mesh/tnlGrid.h>
 
+using namespace std;
+
+template< typename Mesh, typename Element, typename Index, int Dimensions >
+bool convertObject( const Mesh& mesh,
+                    const tnlString& inputFileName,
+                    const tnlList< tnlString >& parsedObjectType,
+                    const tnlParameterContainer& parameters )
+{
+   int verbose = parameters. GetParameter< int >( "verbose");
+   tnlString outputFileName( inputFileName );
+   RemoveFileExtension( outputFileName );
+   tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+   if( outputFormat == "gnuplot" )
+      outputFileName += ".gplt";
+   else
+   {
+      cerr << "Unknown file format " << outputFormat << "." << endl;
+      return false;
+   }
+   if( verbose )
+      cout << " writing to " << outputFileName << " ...                 \r" << flush;
+
+
+   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+       parsedObjectType[ 0 ] == "tnlVector" )
+   {
+      tnlVector< Element, tnlHost, Index > vector;
+      if( ! vector. load( inputFileName ) )
+         return false;
+      if( ! mesh. write( vector, outputFileName, outputFormat ) )
+         return false;
+   }
+
+
+   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   {
+      tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
+      if( ! multiVector. load( inputFileName ) )
+         return false;
+      tnlGrid< Dimensions, Element, tnlHost, Index > grid;
+      grid. setDimensions( multiVector. getDimensions() );
+      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
+         return false;
+   }
+}
+
+template< typename Mesh, typename Element, typename Index >
+bool setDimensions( const Mesh& mesh,
+                    const tnlString& inputFileName,
+                    const tnlList< tnlString >& parsedObjectType,
+                    const tnlParameterContainer& parameters )
+{
+   int dimensions( 0 );
+   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+      dimensions = atoi( parsedObjectType[ 1 ]. getString() );
+   switch( dimensions )
+   {
+      case 1:
+         return convertObject< Mesh, Element, Index, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+      case 2:
+         return convertObject< Mesh, Element, Index, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+      case 3:
+         return convertObject< Mesh, Element, Index, 3 >( mesh, inputFileName, parsedObjectType, parameters );
+   }
+   cerr << "Cannot convert objects with " << dimensions << " dimensions." << endl;
+   return false;
+}
+
+template< typename Mesh, typename Element >
+bool setIndexType( const Mesh& mesh,
+                   const tnlString& inputFileName,
+                   const tnlList< tnlString >& parsedObjectType,
+                   const tnlParameterContainer& parameters )
+{
+   tnlString indexType;
+   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+      indexType = parsedObjectType[ 4 ];
+   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+       parsedObjectType[ 0 ] == "tnlVector" )
+      indexType = parsedObjectType[ 2 ];
+
+   if( indexType == "int" )
+      return setDimensions< Mesh, Element, int >( mesh, inputFileName, parsedObjectType, parameters );
+   if( indexType == "long-int" )
+      return setDimensions< Mesh, Element, long int >( mesh, inputFileName, parsedObjectType, parameters );
+   cerr << "Unknown index type " << indexType << "." << endl;
+   return false;
+}
 
 template< typename Mesh >
-bool processMesh( const tnlParameterContainer& parameters )
+bool setElementType( const Mesh& mesh,
+                     const tnlString& inputFileName,
+                     const tnlList< tnlString >& parsedObjectType,
+                     const tnlParameterContainer& parameters )
+{
+   tnlString elementType;
+   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+      elementType = parsedObjectType[ 2 ];
+   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+       parsedObjectType[ 0 ] == "tnlVector" )
+      elementType = parsedObjectType[ 1 ];
+
+   if( elementType == "float" )
+      return setIndexType< Mesh, float >( mesh, inputFileName, parsedObjectType, parameters );
+   if( elementType == "double" )
+      return setIndexType< Mesh, double >( mesh, inputFileName, parsedObjectType, parameters );
+   if( elementType == "long-double" )
+      return setIndexType< Mesh, long double >( mesh, inputFileName, parsedObjectType, parameters );
+   cerr << "Unknown element type " << elementType << "." << endl;
+   return false;
+}
+
+template< typename Mesh >
+bool processFiles( const tnlParameterContainer& parameters )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
    Mesh mesh;
-   if( ! mesh. load( meshFile ) )
-   {
-      cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
-      return false;
-   }
+   if( meshFile != "" )
+      if( ! mesh. load( meshFile ) )
+      {
+         cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
+         return false;
+      }
 
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
-
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
          cout << "Processing file " << inputFiles[ i ] << " ... " << flush;
-
 
       tnlString objectType;
       if( ! getObjectType( inputFiles[ i ], objectType ) )
@@ -53,27 +169,13 @@ bool processMesh( const tnlParameterContainer& parameters )
          if( verbose )
             cout << objectType << " detected ... ";
 
-         tnlString outputFileName( inputFiles[ i ] );
-         RemoveFileExtension( outputFileName );
-         tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
-         if( outputFormat == "gnuplot" )
-            outputFileName += ".gplt";
-         else
+         tnlList< tnlString > parsedObjectType;
+         if( ! parseObjectType( objectType, parsedObjectType ) )
          {
-            cerr << "Unknown file format " << outputFormat << "." << endl;
-            continue;
+            cerr << "Unable to parse object type " << objectType << "." << endl;
+            return false;
          }
-         if( verbose )
-            cout << " writing to " << outputFileName << " ...                 \r" << flush;
-
-         if( objectType == "tnlSharedVector< double, tnlHost, int >" ||
-             objectType == "tnlVector< double, tnlHost, int >" )
-         {
-            tnlVector< double, tnlHost, int > v;
-            if( ! v. load( inputFiles[ i ] ) )
-               continue;
-            mesh. write( v, outputFileName, outputFormat );
-         }
+         return setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
       }
    }
    if( verbose )
