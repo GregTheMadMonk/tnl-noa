@@ -46,7 +46,7 @@ bool convertObject( const Mesh& mesh,
       return false;
    }
    if( verbose )
-      cout << " writing to " << outputFileName << " ...                 \r" << flush;
+      cout << " writing to " << outputFileName << " ... " << flush;
 
 
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
@@ -59,7 +59,6 @@ bool convertObject( const Mesh& mesh,
          return false;
    }
 
-
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
    {
@@ -68,9 +67,16 @@ bool convertObject( const Mesh& mesh,
          return false;
       tnlGrid< Dimensions, Element, tnlHost, Index > grid;
       grid. setDimensions( multiVector. getDimensions() );
+      grid. setLowerCorner( tnlTuple< Dimensions, Element >( 0.0 ) );
+      grid. setUpperCorner( tnlTuple< Dimensions, Element >( 1.0 ) );
+      const Element spaceStep = grid. getSpaceStep(). x();
+      grid. setSpaceStep( tnlTuple< Dimensions, Element >( spaceStep ) );
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
+   if( verbose )
+      cout << "[ OK ].";
+   return true;
 }
 
 template< typename Mesh, typename Element, typename Index >
@@ -175,11 +181,11 @@ bool processFiles( const tnlParameterContainer& parameters )
             cerr << "Unable to parse object type " << objectType << "." << endl;
             return false;
          }
-         return setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+         setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
       }
+      if( verbose )
+         cout << endl;
    }
-   if( verbose )
-      cout << endl;
 }
 
 

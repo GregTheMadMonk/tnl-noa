@@ -48,7 +48,7 @@ tnlString tnlMultiArray< 2, Element, Device, Index > :: getType() const
 
 template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const Index jSize,
-                                                                       const Index iSize )
+                                                                  const Index iSize )
 {
    tnlAssert( xSize > 0 && ySize > 0,
               cerr << "iSize = " << iSize
@@ -64,7 +64,11 @@ bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const tnlTuple
 {
    tnlAssert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0,
               cerr << "dimensions = " << dimensions );
-   this -> dimensions = dimensions;
+   /****
+    * Swap the dimensions in the tuple to be compatible with the previous method.
+    */
+   this -> dimensions. x() = dimensions. y();
+   this -> dimensions. y() = dimensions. x();
    return tnlArray< Element, Device, Index > :: setSize( this -> dimensions[ 1 ] * this -> dimensions[ 0 ] );
 }
 

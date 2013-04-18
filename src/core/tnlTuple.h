@@ -202,7 +202,7 @@ tnlTuple< Size, Real > :: tnlTuple( const tnlTuple< Size, Real >& v )
 
 template< int Size, typename Real >
 tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
-                                      const Real& v2 )
+                                    const Real& v2 )
 {
    tnlAssert( Size == 2,
               cerr << "Using this constructor does not makes sense for Size different then 2.")
