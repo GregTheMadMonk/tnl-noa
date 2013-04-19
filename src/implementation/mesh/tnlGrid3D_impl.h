@@ -93,9 +93,9 @@ const tnlTuple< 3, Index >& tnlGrid< 3, Real, Device, Index> :: getDimensions() 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 3, Real, Device, Index> :: setLowerCorner( const tnlTuple< 3, Real >& lowerCorner )
+void tnlGrid< 3, Real, Device, Index> :: setLowerCorner( const tnlTuple< 3, Real >& origin )
 {
-   this -> lowerCorner = lowerCorner;
+   this -> origin = origin;
 }
 
 template< typename Real,
@@ -103,15 +103,15 @@ template< typename Real,
           typename Index >
 const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getLowerCorner() const
 {
-   return this -> lowerCorner;
+   return this -> origin;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 3, Real, Device, Index> :: setUpperCorner( const tnlTuple< 3, Real >& upperCorner )
+void tnlGrid< 3, Real, Device, Index> :: setUpperCorner( const tnlTuple< 3, Real >& proportions )
 {
-   this -> upperCorner = upperCorner;
+   this -> proportions = proportions;
 }
 
 template< typename Real,
@@ -119,7 +119,7 @@ template< typename Real,
           typename Index >
 const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getUpperCorner() const
 {
-   return this -> upperCorner;
+   return this -> proportions;
 }
 
 template< typename Real,
@@ -127,13 +127,13 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index> :: setSpaceStep( const tnlTuple< 3, Real >& spaceStep )
 {
-   this -> upperCorner. x() = this -> lowerCorner. x() +
+   this -> proportions. x() = this -> origin. x() +
                               this -> dimensions. x() *
                               spaceStep. x();
-   this -> upperCorner. y() = this -> lowerCorner. y() +
+   this -> proportions. y() = this -> origin. y() +
                               this -> dimensions. y() *
                               spaceStep. y();
-   this -> upperCorner. z() = this -> lowerCorner. z() +
+   this -> proportions. z() = this -> origin. z() +
                               this -> dimensions. z() *
                               spaceStep. z();
 }
@@ -155,13 +155,13 @@ tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index> :: getSpaceStep() const
 
    tnlTuple< 3, RealType > spaceStep;
    spaceStep. x() =
-            ( this -> upperCorner. x() - this -> lowerCorner. x() ) /
+            ( this -> proportions. x() - this -> origin. x() ) /
             ( Real ) ( this -> dimensions. x() - 1 );
    spaceStep. y() =
-            ( this -> upperCorner. y() - this -> lowerCorner. y() ) /
+            ( this -> proportions. y() - this -> origin. y() ) /
             ( Real ) ( this -> dimensions. y() - 1 );
    spaceStep. z() =
-            ( this -> upperCorner. z() - this -> lowerCorner. z() ) /
+            ( this -> proportions. z() - this -> origin. z() ) /
             ( Real ) ( this -> dimensions. z() - 1 );
 
    return spaceStep;
@@ -203,8 +203,8 @@ bool tnlGrid< 3, Real, Device, Index> :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) )
       return false;
-   if( ! this -> lowerCorner. save( file ) ||
-       ! this -> upperCorner. save( file ) ||
+   if( ! this -> origin. save( file ) ||
+       ! this -> proportions. save( file ) ||
        ! this -> dimensions. save( file ) )
    {
       cerr << "I was not able to save the domain description of the tnlGrid "
@@ -221,8 +221,8 @@ bool tnlGrid< 3, Real, Device, Index> :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
-   if( ! this -> lowerCorner. load( file ) ||
-       ! this -> upperCorner. load( file ) ||
+   if( ! this -> origin. load( file ) ||
+       ! this -> proportions. load( file ) ||
        ! this -> dimensions. load( file ) )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "

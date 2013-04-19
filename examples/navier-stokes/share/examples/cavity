@@ -1,0 +1,64 @@
+#!/bin/bash
+
+MAX_INFLOW_VELOCITIES="1 2 3 4 5 6 7 8 9 10"
+MAX_INFLOW_VELOCITIES="1"
+
+MU="10 1 0.1 0.01 0.001 2.3263e-5"
+
+max_outflow_velocity="2"
+
+for max_inflow_velocity in $MAX_INFLOW_VELOCITIES;
+do
+
+   mkdir v-${max_inflow_velocity}
+   cd v-${max_inflow_velocity}
+
+   for mu in ${MU};
+   do
+      mkdir mu-${mu}
+      cd mu-${mu}
+      
+      navier-stokes --problem-name cavity \
+                    --max-inflow-velocity ${max_inflow_velocity} \
+                    --max-outflow-velocity ${max_outflow_velocity} \
+                    --width 1 \
+                    --height 1 \
+                    --mu ${mu} \
+                    --R 287.4 \
+                    --T 400.0 \
+                    --p0 101325.0 \
+                    --final-time 10.0 \
+                    --snapshot-period 0.04 \
+                    --scheme lax-fridrichs \
+                    --x-size 51 \
+                    --y-size 51 \
+                    --discrete-solver merson \
+                    --initial-tau 2.0e-6 \
+                    --merson-adaptivity 1.0e-4 \
+                    --verbose 2 \
+                    --device host
+
+      tnl-view --mesh mesh.tnl --input-files u*tnl eps*tnl
+
+      make-png-from-gnuplot u-g 1 1 1.5
+      make-png-from-gnuplot u-s 1 1 1.5
+      make-png-from-gnuplot eps-s 1 1 1
+      
+      rm *.gplt
+
+      mencoder "mf://u-g*.png" -mf fps=25 -o u-g.avi -ovc lavc -lavcopts vcodec=mpeg4
+      mencoder "mf://u-s*.png" -mf fps=25 -o u-s.avi -ovc lavc -lavcopts vcodec=mpeg4
+      mencoder "mf://eps-s*.png" -mf fps=25 -o eps-s.avi -ovc lavc -lavcopts vcodec=mpeg4
+      
+      rm *.png
+      
+      cp u-g.avi ../../../u-g-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
+      cp u-s.avi ../../../u-s-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
+      cp eps-s.avi ../../../eps-s-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
+      
+      cd ..
+
+   done
+
+   cd ..
+done

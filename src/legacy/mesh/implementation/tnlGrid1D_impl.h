@@ -86,17 +86,17 @@ bool tnlGridOld< 1, Real, Device, Index > :: setDimensions( const tnlTuple< 1, I
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGridOld< 1, Real, Device, Index > :: setDomain( const tnlTuple< 1, Real >& lowerCorner,
-                                                     const tnlTuple< 1, Real >& upperCorner )
+bool tnlGridOld< 1, Real, Device, Index > :: setDomain( const tnlTuple< 1, Real >& origin,
+                                                     const tnlTuple< 1, Real >& proportions )
 {
-   if( lowerCorner >= upperCorner )
+   if( origin >= proportions )
    {
       cerr << "Wrong parameters for the grid domain of " << this -> getName() << ". The low corner must by smaller than the high corner." << endl
-               << "lowerCorner = " << lowerCorner << endl << "upperCorner = " << upperCorner << endl;
+               << "origin = " << origin << endl << "proportions = " << proportions << endl;
       return false;
    }
-   domainLowerCorner = lowerCorner;
-   domainUpperCorner = upperCorner;
+   domainLowerCorner = origin;
+   domainUpperCorner = proportions;
    spaceSteps[ 0 ] = ( domainUpperCorner[ 0 ] - domainLowerCorner[ 0 ] ) / ( Real ) ( this -> getDimensions()[ 0 ] - 1 );
    return true;
 }

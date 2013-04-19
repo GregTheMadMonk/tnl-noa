@@ -54,11 +54,11 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 1, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 1, Real >& lowerCorner );
+   void setLowerCorner( const tnlTuple< 1, Real >& origin );
 
    const tnlTuple< 1, Real >& getLowerCorner() const;
 
-   void setUpperCorner( const tnlTuple< 1, Real >& upperCorner );
+   void setUpperCorner( const tnlTuple< 1, Real >& proportions );
 
    const tnlTuple< 1, Real >& getUpperCorner() const;
 
@@ -89,7 +89,7 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    tnlTuple< 1, IndexType > dimensions;
 
-   tnlTuple< 1, RealType > lowerCorner, upperCorner;
+   tnlTuple< 1, RealType > origin, proportions;
 
    IndexType dofs;
 
@@ -119,11 +119,11 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 2, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 2, Real >& lowerCorner );
+   void setLowerCorner( const tnlTuple< 2, Real >& origin );
 
    const tnlTuple< 2, Real >& getLowerCorner() const;
 
-   void setUpperCorner( const tnlTuple< 2, Real >& upperCorner );
+   void setUpperCorner( const tnlTuple< 2, Real >& proportions );
 
    const tnlTuple< 2, Real >& getUpperCorner() const;
 
@@ -158,7 +158,7 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    tnlTuple< 2, IndexType > dimensions;
 
-   tnlTuple< 2, RealType > lowerCorner, upperCorner;
+   tnlTuple< 2, RealType > origin, proportions;
 
    IndexType dofs;
 
@@ -188,11 +188,11 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 3, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 3, Real >& lowerCorner );
+   void setLowerCorner( const tnlTuple< 3, Real >& origin );
 
    const tnlTuple< 3, Real >& getLowerCorner() const;
 
-   void setUpperCorner( const tnlTuple< 3, Real >& upperCorner );
+   void setUpperCorner( const tnlTuple< 3, Real >& proportions );
 
    const tnlTuple< 3, Real >& getUpperCorner() const;
 
@@ -223,7 +223,7 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
 
    tnlTuple< 3, IndexType > dimensions;
 
-   tnlTuple< 3, RealType > lowerCorner, upperCorner;
+   tnlTuple< 3, RealType > origin, proportions;
 
    IndexType dofs;
 
