@@ -31,10 +31,10 @@ uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
 	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
-%.o: %.cpp $(TARGET)-conf.h $(HEADERS)
+%.o: %.cpp $(HEADERS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
 
 $(TARGET)-conf.h:

@@ -49,10 +49,10 @@ uninstall: $(TARGET)
 	rm -rf $(INSTALL_DIR)/bin/make-png-from-gnuplot
 	rm -rf $(INSTALL_DIR)/bin/merge-figures	
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
-%.o: %.cpp $(TARGET)-conf.h  $(HEADERS)
+%.o: %.cpp  $(HEADERS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
 
 $(TARGET)-conf.h:
