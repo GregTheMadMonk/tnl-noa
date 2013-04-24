@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <iomanip>
-#include "tnlLogger.h"
+#include <core/tnlLogger.h>
 
 void tnlLogger :: WriteHeader( const tnlString& title )
 {

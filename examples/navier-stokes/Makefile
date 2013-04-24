@@ -36,6 +36,7 @@ dist: $(DIST)
 install: $(TARGET)
 	cp $(TARGET) $(INSTALL_DIR)/bin
 	cp $(CONFIG_FILE) $(INSTALL_DIR)/share
+	mkdir $(INSTALL_DIR)/share/$(TARGET)
 	cp -rv share/* $(INSTALL_DIR)/share/$(TARGET)
 	cp make-png-from-gnuplot $(INSTALL_DIR)/bin
 	cp merge-figures $(INSTALL_DIR)/bin

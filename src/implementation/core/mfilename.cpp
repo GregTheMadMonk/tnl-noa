@@ -17,9 +17,9 @@
 
 #include <cstring>
 #include <cstdlib>
-#include "mfilename.h"
-#include "tnlString.h"
-#include "mfuncs.h" 
+#include <core/mfilename.h>
+#include <core/tnlString.h>
+#include <core/mfuncs.h>
 
 //--------------------------------------------------------------------------
 void FileNameBaseNumberEnding( const char* base_name,

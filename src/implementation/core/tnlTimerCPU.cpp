@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlTimerCPU.h"
+#include <core/tnlTimerCPU.h>
 
 tnlTimerCPU default_mcore_cpu_timer;
 

@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlTimerRT.h"
-#include "tnlConfig.h"
+#include <core/tnlTimerRT.h>
+#include <tnlConfig.h>
 
 #ifdef HAVE_SYS_TIME_H
    #include <stddef.h>

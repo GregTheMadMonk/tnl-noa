@@ -2,7 +2,7 @@
    //#define _SKIP_YYFLEXLEXER_
    //#include "scanner.ih"
    
-   #include "tnlConfigDescriptionParser.h"
+   #include <config/tnlConfigDescriptionParser.h>
    #include <iostream>
    int yywrap();
 %}

@@ -1,11 +1,10 @@
-INCLUDE_DIRECTORIES( config core debug diff matrix mesh solver )
-
 ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( debug )
 ADD_SUBDIRECTORY( diff )
 ADD_SUBDIRECTORY( matrix )
 ADD_SUBDIRECTORY( mesh )
+ADD_SUBDIRECTORY( schemes )
 ADD_SUBDIRECTORY( solvers )
 ADD_SUBDIRECTORY( legacy )
 ADD_SUBDIRECTORY( implementation )

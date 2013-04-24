@@ -132,7 +132,7 @@ keyword_identifier: IDENTIFIER { SetCurrentEntryId( $1 ); }
 ;
 keyword_comment: COMMENT { SetCurrentEntryComment( $1 ); }
 ;
-string_value: STRING { string_default_value. SetString( $1, 1, 1 );}
+string_value: STRING { string_default_value. setString( $1, 1, 1 );}
 ;
 real_value: REAL { real_default_value = $1; }
 ;

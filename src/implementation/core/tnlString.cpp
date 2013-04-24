@@ -22,7 +22,7 @@
 #include <core/tnlAssert.h>
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
-#include "mfuncs.h"
+#include <core/mfuncs.h>
 #ifdef HAVE_MPI
    #include <mpi.h>
 #endif

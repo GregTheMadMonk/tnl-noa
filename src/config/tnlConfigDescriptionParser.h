@@ -93,8 +93,9 @@ class tnlConfigDescriptionParser: public tnlConfigDescriptionParserBase
         void error(char const *msg);    // called on (syntax) errors
         int lex();                      // returns the next token from the
                                         // lexical scanner. 
-        void print();                   // use, e.g., d_token, d_loc
+        void print__();                   // use, e.g., d_token, d_loc
 
+        void print(){};
     // support functions for parse():
         void executeAction(int ruleNr);
         void errorRecovery();
@@ -109,8 +110,8 @@ inline void tnlConfigDescriptionParser :: error(char const *msg)
 
 // $insert lex
 
-inline void tnlConfigDescriptionParser :: print()      // use d_token, d_loc
-{}
+//inline void tnlConfigDescriptionParser :: print__()      // use d_token, d_loc
+//{}
 
 
 #endif

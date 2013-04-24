@@ -38,23 +38,15 @@ do
                     --verbose 2 \
                     --device host
 
-      tnl-view --mesh mesh.tnl --input-files u*tnl eps*tnl
+      tnl-view --mesh mesh.tnl --input-files u*tnl
 
-      make-png-from-gnuplot u-g 1 1 1.5
-      make-png-from-gnuplot u-s 1 1 1.5
-      make-png-from-gnuplot eps-s 1 1 1
+      make-png-from-gnuplot u 1 1 1.5
       
       rm *.gplt
 
-      mencoder "mf://u-g*.png" -mf fps=25 -o u-g.avi -ovc lavc -lavcopts vcodec=mpeg4
-      mencoder "mf://u-s*.png" -mf fps=25 -o u-s.avi -ovc lavc -lavcopts vcodec=mpeg4
-      mencoder "mf://eps-s*.png" -mf fps=25 -o eps-s.avi -ovc lavc -lavcopts vcodec=mpeg4
+      mencoder "mf://u-*.png" -mf fps=25 -o u.avi -ovc lavc -lavcopts vcodec=mpeg4
       
       rm *.png
-      
-      cp u-g.avi ../../../u-g-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
-      cp u-s.avi ../../../u-s-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
-      cp eps-s.avi ../../../eps-s-v-${max_inflow_velocity}-mu-g-${mu_g}-eps-s-${eps_s}.avi
       
       cd ..
 

@@ -42,7 +42,7 @@ bool convertObject( const Mesh& mesh,
       outputFileName += ".gplt";
    else
    {
-      cerr << "Unknown file format " << outputFormat << "." << endl;
+      cerr << "Unknown file format " << outputFormat << ".";
       return false;
    }
    if( verbose )
@@ -75,7 +75,7 @@ bool convertObject( const Mesh& mesh,
          return false;
    }
    if( verbose )
-      cout << "[ OK ].";
+      cout << "[ OK ].  \r";
    return true;
 }
 
@@ -89,6 +89,9 @@ bool setDimensions( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       dimensions = atoi( parsedObjectType[ 1 ]. getString() );
+   if( parsedObjectType[ 0 ] == "tnlVector" ||
+       parsedObjectType[ 0 ] == "tnlSharedVector" )
+      dimensions = 1;
    switch( dimensions )
    {
       case 1:
@@ -114,7 +117,7 @@ bool setIndexType( const Mesh& mesh,
       indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
        parsedObjectType[ 0 ] == "tnlVector" )
-      indexType = parsedObjectType[ 2 ];
+      indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
       return setDimensions< Mesh, Element, int >( mesh, inputFileName, parsedObjectType, parameters );
@@ -183,9 +186,9 @@ bool processFiles( const tnlParameterContainer& parameters )
          }
          setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
       }
-      if( verbose )
-         cout << endl;
    }
+   if( verbose )
+      cout << endl;
 }
 
 

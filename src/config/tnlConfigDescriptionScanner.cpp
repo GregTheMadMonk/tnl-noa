@@ -557,7 +557,7 @@ static yyconst flex_int16_t yy_rule_linenum[19] =
    //#define _SKIP_YYFLEXLEXER_
    //#include "scanner.ih"
    
-   #include "tnlConfigDescriptionParser.h"
+   #include <config/tnlConfigDescriptionParser.h>
    #include <iostream>
    int yywrap();
 #line 564 "tnlConfigDescriptionScanner.cpp"
@@ -2012,10 +2012,10 @@ void mCDSfree (void * ptr )
 
 
 //extern int yywrap();
-/*int mCDSFlexLexer :: yywrap()
+int mCDSFlexLexer :: yywrap()
 {
    return 1;
-}*/
+}
 
 int yywrap()
 {

@@ -47,7 +47,7 @@ int main( int argc, char* argv[] )
       return EXIT_SUCCESS;
    }
    tnlString meshType;
-   if( getObjectType( meshFile, meshType ) )
+   if( ! getObjectType( meshFile, meshType ) )
    {
       cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << endl;
       return EXIT_FAILURE;
