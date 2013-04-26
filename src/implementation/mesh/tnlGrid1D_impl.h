@@ -58,7 +58,7 @@ template< typename Real,
 void tnlGrid< 1, Real, Device, Index> :: setDimensions( const Index xSize )
 {
    tnlAssert( xSize > 1,
-              cerr << "The number of nodes along x-axis must be larger than 1." );
+              cerr << "The number of Elements along x-axis must be larger than 1." );
    this -> dimensions. x() = xSize;
    dofs = xSize;
 }
@@ -69,7 +69,7 @@ template< typename Real,
 void tnlGrid< 1, Real, Device, Index> :: setDimensions( const tnlTuple< 1, Index >& dimensions )
 {
    tnlAssert( dimensions. x() > 1,
-              cerr << "The number of nodes along x-axis must be larger than 1." );
+              cerr << "The number of Elements along x-axis must be larger than 1." );
    this -> dimensions = dimensions;
    dofs = this -> dimensions. x();
 }
@@ -85,7 +85,7 @@ const tnlTuple< 1, Index >& tnlGrid< 1, Real, Device, Index> :: getDimensions() 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 1, Real, Device, Index> :: setLowerCorner( const tnlTuple< 1, Real >& origin )
+void tnlGrid< 1, Real, Device, Index> :: setOrigin( const tnlTuple< 1, Real >& origin )
 {
    this -> origin = origin;
 }
@@ -93,7 +93,7 @@ void tnlGrid< 1, Real, Device, Index> :: setLowerCorner( const tnlTuple< 1, Real
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index> :: getLowerCorner() const
+const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index> :: getOrigin() const
 {
    return this -> origin;
 }
@@ -101,7 +101,7 @@ const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index> :: getLowerCorner() 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 1, Real, Device, Index> :: setUpperCorner( const tnlTuple< 1, Real >& proportions )
+void tnlGrid< 1, Real, Device, Index> :: setProportions( const tnlTuple< 1, Real >& proportions )
 {
    this -> proportions = proportions;
 }
@@ -109,7 +109,7 @@ void tnlGrid< 1, Real, Device, Index> :: setUpperCorner( const tnlTuple< 1, Real
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index> :: getUpperCorner() const
+const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index> :: getProportions() const
 {
    return this -> proportions;
 }
@@ -119,8 +119,7 @@ template< typename Real,
           typename Index >
 void tnlGrid< 1, Real, Device, Index> :: setSpaceStep( const tnlTuple< 1, Real >& spaceStep )
 {
-   this -> proportions. x() = this -> origin. x() +
-                              this -> dimensions. x() *
+   this -> proportions. x() = this -> dimensions. x() *
                               spaceStep. x();
 }
 
@@ -130,11 +129,11 @@ template< typename Real,
 tnlTuple< 1, Real > tnlGrid< 1, Real, Device, Index> :: getSpaceStep() const
 {
    tnlAssert( dimensions. x() > 0,
-              cerr << "Cannot get the space step hx since number of nodes along the x axis is not known in tnlGrid "
+              cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
                    << this -> getName() );
    tnlTuple< 1, RealType > spaceStep;
    spaceStep. x() =
-            ( this -> proportions. x() - this -> origin. x() ) /
+            ( this -> proportions. x() ) /
             ( Real ) ( this -> dimensions. x() - 1 );
    return spaceStep;
 }
@@ -142,7 +141,7 @@ tnlTuple< 1, Real > tnlGrid< 1, Real, Device, Index> :: getSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlGrid< 1, Real, Device, Index> :: getNodeIndex( const Index i ) const
+Index tnlGrid< 1, Real, Device, Index> :: getElementIndex( const Index i ) const
 {
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
@@ -238,8 +237,8 @@ bool tnlGrid< 1, Real, Device, Index> :: write( const MeshFunction& function,
    if( format == "gnuplot" )
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         const RealType x = this -> getLowerCorner(). x() + i * hx;
-         file << x << " " << function[ this -> getNodeIndex( i ) ] << endl;
+         const RealType x = this -> getOrigin(). x() + i * hx;
+         file << x << " " << function[ this -> getElementIndex( i ) ] << endl;
       }
 
    file. close();

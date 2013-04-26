@@ -67,8 +67,8 @@ bool convertObject( const Mesh& mesh,
          return false;
       tnlGrid< Dimensions, Element, tnlHost, Index > grid;
       grid. setDimensions( multiVector. getDimensions() );
-      grid. setLowerCorner( tnlTuple< Dimensions, Element >( 0.0 ) );
-      grid. setUpperCorner( tnlTuple< Dimensions, Element >( 1.0 ) );
+      grid. setOrigin( tnlTuple< Dimensions, Element >( 0.0 ) );
+      grid. setProportions( tnlTuple< Dimensions, Element >( 1.0 ) );
       const Element spaceStep = grid. getSpaceStep(). x();
       grid. setSpaceStep( tnlTuple< Dimensions, Element >( spaceStep ) );
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )

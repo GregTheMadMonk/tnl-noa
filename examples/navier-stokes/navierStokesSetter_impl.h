@@ -18,6 +18,9 @@
 #ifndef NAVIERSTOKESSETTER_IMPL_H_
 #define NAVIERSTOKESSETTER_IMPL_H_
 
+#include <mesh/tnlGrid.h>
+#include <schemes/euler/fvm/tnlLaxFridrichs.h>
+
 template< typename SolverStarter >
    template< typename RealType,
              typename DeviceType,
@@ -31,10 +34,12 @@ bool navierStokesSetter< SolverStarter > :: run( const tnlParameterContainer& pa
       return false;
    }
    SolverStarter solverStarter;
+   const tnlString& schemeName = parameters. GetParameter< tnlString >( "scheme" );
    if( dimensions == 2 )
    {
       typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
-      return solverStarter. run< navierStokesSolver< MeshType > >( parameters );
+      if( schemeName == "lax-fridrichs" )
+         return solverStarter. run< navierStokesSolver< MeshType, tnlLaxFridrichs< MeshType > > >( parameters );
    }
 }
 

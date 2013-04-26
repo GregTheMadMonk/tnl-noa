@@ -54,11 +54,11 @@ template< typename Real,
 void tnlGrid< 3, Real, Device, Index> :: setDimensions( const Index zSize, const Index ySize, const Index xSize )
 {
    tnlAssert( xSize > 1,
-              cerr << "The number of nodes along x-axis must be larger than 1." );
+              cerr << "The number of Elements along x-axis must be larger than 1." );
    tnlAssert( ySize > 1,
-              cerr << "The number of nodes along y-axis must be larger than 1." );
+              cerr << "The number of Elements along y-axis must be larger than 1." );
    tnlAssert( zSize > 1,
-              cerr << "The number of nodes along z-axis must be larger than 1." );
+              cerr << "The number of Elements along z-axis must be larger than 1." );
 
    this -> dimensions. x() = xSize;
    this -> dimensions. y() = ySize;
@@ -72,11 +72,11 @@ template< typename Real,
 void tnlGrid< 3, Real, Device, Index> :: setDimensions( const tnlTuple< 3, Index >& dimensions )
 {
    tnlAssert( dimensions. x() > 1,
-              cerr << "The number of nodes along x-axis must be larger than 1." );
+              cerr << "The number of Elements along x-axis must be larger than 1." );
    tnlAssert( dimensions. y() > 1,
-              cerr << "The number of nodes along y-axis must be larger than 1." );
+              cerr << "The number of Elements along y-axis must be larger than 1." );
    tnlAssert( dimensions. z() > 1,
-              cerr << "The number of nodes along z-axis must be larger than 1." );
+              cerr << "The number of Elements along z-axis must be larger than 1." );
 
    this -> dimensions = dimensions;
    dofs = this -> dimensions. x() * this -> dimensions. y() * this -> dimensions. z();
@@ -93,7 +93,7 @@ const tnlTuple< 3, Index >& tnlGrid< 3, Real, Device, Index> :: getDimensions() 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 3, Real, Device, Index> :: setLowerCorner( const tnlTuple< 3, Real >& origin )
+void tnlGrid< 3, Real, Device, Index> :: setOrigin( const tnlTuple< 3, Real >& origin )
 {
    this -> origin = origin;
 }
@@ -101,7 +101,7 @@ void tnlGrid< 3, Real, Device, Index> :: setLowerCorner( const tnlTuple< 3, Real
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getLowerCorner() const
+const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getOrigin() const
 {
    return this -> origin;
 }
@@ -109,7 +109,7 @@ const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getLowerCorner() 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 3, Real, Device, Index> :: setUpperCorner( const tnlTuple< 3, Real >& proportions )
+void tnlGrid< 3, Real, Device, Index> :: setProportions( const tnlTuple< 3, Real >& proportions )
 {
    this -> proportions = proportions;
 }
@@ -117,7 +117,7 @@ void tnlGrid< 3, Real, Device, Index> :: setUpperCorner( const tnlTuple< 3, Real
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getUpperCorner() const
+const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index> :: getProportions() const
 {
    return this -> proportions;
 }
@@ -127,14 +127,11 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index> :: setSpaceStep( const tnlTuple< 3, Real >& spaceStep )
 {
-   this -> proportions. x() = this -> origin. x() +
-                              this -> dimensions. x() *
+   this -> proportions. x() = this -> dimensions. x() *
                               spaceStep. x();
-   this -> proportions. y() = this -> origin. y() +
-                              this -> dimensions. y() *
+   this -> proportions. y() = this -> dimensions. y() *
                               spaceStep. y();
-   this -> proportions. z() = this -> origin. z() +
-                              this -> dimensions. z() *
+   this -> proportions. z() = this -> dimensions. z() *
                               spaceStep. z();
 }
 
@@ -144,25 +141,22 @@ template< typename Real,
 tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index> :: getSpaceStep() const
 {
    tnlAssert( dimensions. x() > 0,
-              cerr << "Cannot get the space step hx since number of nodes along the x axis is not known in tnlGrid "
+              cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
                    << this -> getName() );
    tnlAssert( dimensions. y() > 0,
-              cerr << "Cannot get the space step hy since number of nodes along the y axis is not known in tnlGrid "
+              cerr << "Cannot get the space step hy since number of Elements along the y axis is not known in tnlGrid "
                    << this -> getName() );
    tnlAssert( dimensions. z() > 0,
-              cerr << "Cannot get the space step hz since number of nodes along the z axis is not known in tnlGrid "
+              cerr << "Cannot get the space step hz since number of Elements along the z axis is not known in tnlGrid "
                    << this -> getName() );
 
    tnlTuple< 3, RealType > spaceStep;
    spaceStep. x() =
-            ( this -> proportions. x() - this -> origin. x() ) /
-            ( Real ) ( this -> dimensions. x() - 1 );
+            this -> proportions. x() / ( Real ) ( this -> dimensions. x() - 1 );
    spaceStep. y() =
-            ( this -> proportions. y() - this -> origin. y() ) /
-            ( Real ) ( this -> dimensions. y() - 1 );
+            this -> proportions. y() / ( Real ) ( this -> dimensions. y() - 1 );
    spaceStep. z() =
-            ( this -> proportions. z() - this -> origin. z() ) /
-            ( Real ) ( this -> dimensions. z() - 1 );
+            this -> proportions. z() / ( Real ) ( this -> dimensions. z() - 1 );
 
    return spaceStep;
 }
@@ -170,7 +164,7 @@ tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index> :: getSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlGrid< 3, Real, Device, Index> :: getNodeIndex( const Index k, const Index j, const Index i ) const
+Index tnlGrid< 3, Real, Device, Index> :: getElementIndex( const Index k, const Index j, const Index i ) const
 {
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
@@ -230,8 +224,8 @@ bool tnlGrid< 3, Real, Device, Index> :: load( tnlFile& file )
       return false;
    }
    this -> dofs = this -> getDimensions(). x() *
-                   this -> getDimensions(). y() *
-                   this -> getDimensions(). z();
+                  this -> getDimensions(). y() *
+                  this -> getDimensions(). z();
    return true;
 };
 
@@ -282,9 +276,9 @@ bool tnlGrid< 3, Real, Device, Index> :: write( const MeshFunction& function,
       {
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
-            const RealType x = this -> getLowerCorner(). x() + i * hx;
-            const RealType y = this -> getLowerCorner(). y() + j * hy;
-            //file << x << " " << " " << y << " " << function[ this -> getNodeIndex( j, i ) ] << endl;
+            const RealType x = this -> getOrigin(). x() + i * hx;
+            const RealType y = this -> getOrigin(). y() + j * hy;
+            //file << x << " " << " " << y << " " << function[ this -> getElementIndex( j, i ) ] << endl;
          }
          file << endl;
       }

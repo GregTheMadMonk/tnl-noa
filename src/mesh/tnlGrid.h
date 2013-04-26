@@ -54,19 +54,19 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 1, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 1, Real >& origin );
+   void setOrigin( const tnlTuple< 1, Real >& origin );
 
-   const tnlTuple< 1, Real >& getLowerCorner() const;
+   const tnlTuple< 1, Real >& getOrigin() const;
 
-   void setUpperCorner( const tnlTuple< 1, Real >& proportions );
+   void setProportions( const tnlTuple< 1, Real >& proportions );
 
-   const tnlTuple< 1, Real >& getUpperCorner() const;
+   const tnlTuple< 1, Real >& getProportions() const;
 
    void setSpaceStep( const tnlTuple< 1, Real >& spaceStep );
 
    tnlTuple< 1, Real > getSpaceStep() const;
 
-   Index getNodeIndex( const Index i ) const;
+   Index getElementIndex( const Index i ) const;
 
    Index getDofs() const;
 
@@ -119,21 +119,21 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 2, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 2, Real >& origin );
+   void setOrigin( const tnlTuple< 2, Real >& origin );
 
-   const tnlTuple< 2, Real >& getLowerCorner() const;
+   const tnlTuple< 2, Real >& getOrigin() const;
 
-   void setUpperCorner( const tnlTuple< 2, Real >& proportions );
+   void setProportions( const tnlTuple< 2, Real >& proportions );
 
-   const tnlTuple< 2, Real >& getUpperCorner() const;
+   const tnlTuple< 2, Real >& getProportions() const;
 
    void setSpaceStep( const tnlTuple< 2, Real >& spaceStep );
 
    tnlTuple< 2, Real > getSpaceStep() const;
 
-   Index getNodeIndex( const Index j, const Index i ) const;
+   Index getElementIndex( const Index j, const Index i ) const;
 
-   Index getNodeNeighbour( const Index node,
+   Index getElementNeighbour( const Index Element,
                            const Index dy,
                            const Index dx ) const;
 
@@ -188,19 +188,19 @@ class tnlGrid< 3, Real, Device, Index> : public tnlObject
 
    const tnlTuple< 3, Index >& getDimensions() const;
 
-   void setLowerCorner( const tnlTuple< 3, Real >& origin );
+   void setOrigin( const tnlTuple< 3, Real >& origin );
 
-   const tnlTuple< 3, Real >& getLowerCorner() const;
+   const tnlTuple< 3, Real >& getOrigin() const;
 
-   void setUpperCorner( const tnlTuple< 3, Real >& proportions );
+   void setProportions( const tnlTuple< 3, Real >& proportions );
 
-   const tnlTuple< 3, Real >& getUpperCorner() const;
+   const tnlTuple< 3, Real >& getProportions() const;
 
    void setSpaceStep( const tnlTuple< 3, Real >& spaceStep );
 
    tnlTuple< 3, Real > getSpaceStep() const;
 
-   Index getNodeIndex( const Index k, const Index j, const Index i ) const;
+   Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
    Index getDofs() const;
 

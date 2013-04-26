@@ -26,9 +26,9 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include "navierStokesSolverMonitor.h"
-#include "laxFridrichs.h"
+#include <schemes/euler/fvm/tnlLaxFridrichs.h>
 
-template< typename Mesh >
+template< typename Mesh, typename EulerScheme >
 class navierStokesSolver
 {
    public:
@@ -43,8 +43,6 @@ class navierStokesSolver
    typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    enum BoundaryConditionType { dirichlet, neumann, noSlip };
-
-   enum CfdScheme { laxFridrichsEnm, upwindEnm };
 
    enum ProblemType { riser, cavity };
 
@@ -86,8 +84,6 @@ class navierStokesSolver
 
    ProblemType problem;
 
-   CfdScheme scheme;
-
    MeshType mesh;
 
    tnlVector< RealType, DeviceType, IndexType > rho, u1, u2, p;
@@ -97,7 +93,7 @@ class navierStokesSolver
    RealType mu, R, T, p_0, gravity,
             maxInflowVelocity, maxOutflowVelocity, startUp;
 
-   laxFridrichs< MeshType > laxFridrichsScheme;
+   EulerScheme eulerScheme;
 
    navierStokesSolverMonitor< RealType, IndexType > solverMonitor;
 };

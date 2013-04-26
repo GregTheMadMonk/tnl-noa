@@ -29,25 +29,28 @@ class tnlLaxFridrichs
 
    tnlLaxFridrichs();
 
-   template< typename ConservativeVector,
-             typename VelocityVector >
-   void getExplicitRhs( const MeshType& mesh,
-                        const IndexType centralVolume,
-                        const ConservativeVector& rho,
-                        const ConservativeVector& rho_u1,
-                        const ConservativeVector& rho_u2,
-                        ConservativeVector& rho_t,
-                        ConservativeVector& rho_u1_t,
-                        ConservativeVector& rho_u2_t,
-                        const typename MeshType :: RealType viscosityCoeff = 1.0 ) const;
+   template< typename Vector >
+   void getExplicitRhs( const IndexType centralVolume,
+                        const Vector& rho,
+                        const Vector& rho_u1,
+                        const Vector& rho_u2,
+                        Vector& rho_t,
+                        Vector& rho_u1_t,
+                        Vector& rho_u2_t ) const;
 
    void setRegularization( const RealType& epsilon );
 
+   void setViscosityCoefficient( const RealType& v );
+
+   void bindMesh( const MeshType& mesh );
+
    protected:
 
-   RealType regularize( const RealType& r );
+   RealType regularize( const RealType& r ) const;
 
-   RealType regularizeEps;
+   RealType regularizeEps, viscosityCoefficient;
+
+   const MeshType* mesh;
 };
 
 #include <implementation/schemes/euler/fvm/tnlLaxFridrichs_impl.h>

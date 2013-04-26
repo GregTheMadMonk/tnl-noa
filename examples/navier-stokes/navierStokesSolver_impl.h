@@ -46,8 +46,8 @@ __device__ void computeVelocityFieldCuda( const Index size,
                                           Real* p );
 #endif
 
-template< typename Mesh >
-navierStokesSolver< Mesh > :: navierStokesSolver()
+template< typename Mesh, typename EulerScheme >
+navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
 : mu( 0.0 ),
   R( 0.0 ),
   T( 0.0 ),
@@ -62,8 +62,8 @@ navierStokesSolver< Mesh > :: navierStokesSolver()
    this -> dofVector. setName( "navier-stokes-dof-vector" );
 }
 
-template< typename Mesh >
-bool navierStokesSolver< Mesh > :: init( const tnlParameterContainer& parameters )
+template< typename Mesh, typename EulerScheme >
+bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContainer& parameters )
 {
    cout << "Initiating solver ... " << endl;
 
@@ -92,8 +92,8 @@ bool navierStokesSolver< Mesh > :: init( const tnlParameterContainer& parameters
       cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << endl;
       return false;
    }
-   this -> mesh. setLowerCorner( tnlTuple< 2, RealType >( 0, 0 ) );
-   this -> mesh. setUpperCorner( proportions );
+   this -> mesh. setOrigin( tnlTuple< 2, RealType >( 0, 0 ) );
+   this -> mesh. setProportions( proportions );
 
    /****
     * Set-up the space discretization
@@ -144,15 +144,13 @@ bool navierStokesSolver< Mesh > :: init( const tnlParameterContainer& parameters
    /****
     * Set-up numerical scheme
     */
-   const tnlString& schemeName = parameters. GetParameter< tnlString >( "scheme" );
-   if( schemeName == "lax-fridrichs" )
-      this -> scheme = laxFridrichsEnm;
+   this -> eulerScheme. bindMesh( this -> mesh );
 
    return true;
 }
 
-template< typename Mesh >
-bool navierStokesSolver< Mesh > :: setInitialCondition( const tnlParameterContainer& parameters )
+template< typename Mesh, typename EulerScheme >
+bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlParameterContainer& parameters )
 {
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2;
    const IndexType& dofs = mesh. getDofs();
@@ -172,7 +170,7 @@ bool navierStokesSolver< Mesh > :: setInitialCondition( const tnlParameterContai
    for( IndexType j = 0; j < ySize; j ++ )
       for( IndexType i = 0; i < xSize; i ++ )
       {
-         const IndexType c = mesh. getNodeIndex( j, i );
+         const IndexType c = mesh. getElementIndex( j, i );
          const RealType x = i * hx;
          const RealType y = j * hy;
 
@@ -184,14 +182,14 @@ bool navierStokesSolver< Mesh > :: setInitialCondition( const tnlParameterContai
    return true;
 }
 
-template< typename Mesh >
-typename navierStokesSolver< Mesh > :: DofVectorType& navierStokesSolver< Mesh > :: getDofVector()
+template< typename Mesh, typename EulerScheme >
+typename navierStokesSolver< Mesh, EulerScheme > :: DofVectorType& navierStokesSolver< Mesh, EulerScheme > :: getDofVector()
 {
    return this -> dofVector;
 }
 
-template< typename Mesh >
-bool navierStokesSolver< Mesh > :: makeSnapshot( const RealType& t,
+template< typename Mesh, typename EulerScheme >
+bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
                                                  const IndexType step )
 {
    cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
@@ -227,9 +225,9 @@ bool navierStokesSolver< Mesh > :: makeSnapshot( const RealType& t,
    return true;
 }
 
-template< typename Mesh >
+template< typename Mesh, typename EulerScheme >
    template< typename Vector >
-void navierStokesSolver< Mesh > :: updatePhysicalQuantities( const Vector& rho,
+void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const Vector& rho,
                                                              const Vector& rho_u1,
                                                              const Vector& rho_u2 )
 {
@@ -244,7 +242,7 @@ void navierStokesSolver< Mesh > :: updatePhysicalQuantities( const Vector& rho,
       for( IndexType j = 0; j < ySize; j ++ )
          for( IndexType i = 0; i < xSize; i ++ )
          {
-            IndexType c = mesh. getNodeIndex( j, i );
+            IndexType c = mesh. getElementIndex( j, i );
             u1[ c ] = rho_u1[ c ] / rho[ c ];
             u2[ c ] = rho_u2[ c ] / rho[ c ];
             p[ c ] = rho[ c ] * this -> R * this -> T;
@@ -288,8 +286,8 @@ void navierStokesSolver< Mesh > :: updatePhysicalQuantities( const Vector& rho,
 #endif
 }
 
-template< typename Mesh >
-void navierStokesSolver< Mesh > :: GetExplicitRHS(  const RealType& time,
+template< typename Mesh, typename EulerScheme >
+void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType& time,
                                                     const RealType& tau,
                                                     DofVectorType& u,
                                                     DofVectorType& fu )
@@ -328,12 +326,12 @@ void navierStokesSolver< Mesh > :: GetExplicitRHS(  const RealType& time,
        */
       for( IndexType i = 0; i < xSize; i ++ )
       {
-         const IndexType c1 = mesh. getNodeIndex( 0, i );
-         const IndexType c2 = mesh. getNodeIndex( 1, i );
-         const IndexType c3 = mesh. getNodeIndex( ySize - 1, i );
-         const IndexType c4 = mesh. getNodeIndex( ySize - 2, i );
+         const IndexType c1 = mesh. getElementIndex( 0, i );
+         const IndexType c2 = mesh. getElementIndex( 1, i );
+         const IndexType c3 = mesh. getElementIndex( ySize - 1, i );
+         const IndexType c4 = mesh. getElementIndex( ySize - 2, i );
 
-         RealType x = i * hx / mesh. getUpperCorner(). x();
+         RealType x = i * hx / mesh. getProportions(). x();
 
          /****
           * Boundary conditions at the bottom and the top
@@ -357,12 +355,12 @@ void navierStokesSolver< Mesh > :: GetExplicitRHS(  const RealType& time,
       }
       for( IndexType j = 0; j < ySize; j ++ )
       {
-         const IndexType c1 = mesh. getNodeIndex( j, 0 );
-         const IndexType c2 = mesh. getNodeIndex( j, 1 );
-         const IndexType c3 = mesh. getNodeIndex( j, xSize - 1 );
-         const IndexType c4 = mesh. getNodeIndex( j, xSize - 2 );
+         const IndexType c1 = mesh. getElementIndex( j, 0 );
+         const IndexType c2 = mesh. getElementIndex( j, 1 );
+         const IndexType c3 = mesh. getElementIndex( j, xSize - 1 );
+         const IndexType c4 = mesh. getElementIndex( j, xSize - 2 );
 
-         RealType y = j * hy / mesh. getUpperCorner(). y();
+         RealType y = j * hy / mesh. getProportions(). y();
 
          /****
           * Boundary conditions on the left and right
@@ -391,7 +389,7 @@ void navierStokesSolver< Mesh > :: GetExplicitRHS(  const RealType& time,
       for( IndexType j = 0; j < ySize; j ++ )
          for( IndexType i = 0; i < xSize; i ++ )
          {
-            IndexType c = mesh. getNodeIndex( j, i );
+            IndexType c = mesh. getElementIndex( j, i );
             if( i == 0 || j == 0 ||
                 i == xSize - 1 || j == ySize - 1 )
             {
@@ -399,37 +397,27 @@ void navierStokesSolver< Mesh > :: GetExplicitRHS(  const RealType& time,
                continue;
             }
 
-            IndexType e = mesh. getNodeIndex( j, i + 1 );
-            IndexType w = mesh. getNodeIndex( j, i - 1 );
-            IndexType n = mesh. getNodeIndex( j + 1, i );
-            IndexType s = mesh. getNodeIndex( j - 1, i );
+            IndexType e = mesh. getElementIndex( j, i + 1 );
+            IndexType w = mesh. getElementIndex( j, i - 1 );
+            IndexType n = mesh. getElementIndex( j + 1, i );
+            IndexType s = mesh. getElementIndex( j - 1, i );
 
             const RealType& u = this -> u1[ c ];
             const RealType& v = this -> u2[ c ];
             const RealType u_sqr = u * u;
             const RealType v_sqr = v * v;
-            switch( this -> scheme )
-            {
-               case laxFridrichsEnm:
-                  this -> laxFridrichsScheme. getExplicitRhs( mesh,
-                                                              c,
-                                                              rho,
-                                                              rho_u1,
-                                                              rho_u2,
-                                                              rho_t,
-                                                              rho_u1_t,
-                                                              rho_u2_t,
-                                                              1.0 );
-                  /****
-                   * Remark: if fabs( u1_diff ) and fabs( u2_diff ) are used
-                   * instead of u_diff in computeInterphaseFriction, higher beta
-                   * can be used (up to 100 instead of 10).
-                   */
-                  rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
-                  rho_u2_t[ c ] += -( p[ n ] - p[ s ] ) / ( 2.0 * hy );
-                                          - startUpCoefficient * this -> gravity * this -> rho[ c ];
+            eulerScheme. getExplicitRhs( c,
+                                         rho,
+                                         rho_u1,
+                                         rho_u2,
+                                         rho_t,
+                                         rho_u1_t,
+                                         rho_u2_t );
+            
+            rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
+            rho_u2_t[ c ] += -( p[ n ] - p[ s ] ) / ( 2.0 * hy );
+                             - startUpCoefficient * this -> gravity * this -> rho[ c ];
                   break;
-            }
 
             /***
              * Add the viscosity term
@@ -504,30 +492,30 @@ __device__ void computeVelocityFieldCuda( const Index size,
 }
 #endif
 
-template< typename Mesh >
-tnlSolverMonitor< typename navierStokesSolver< Mesh > :: RealType,
-                  typename navierStokesSolver< Mesh > :: IndexType >* 
-   navierStokesSolver< Mesh > ::  getSolverMonitor()
+template< typename Mesh, typename EulerScheme >
+tnlSolverMonitor< typename navierStokesSolver< Mesh, EulerScheme > :: RealType,
+                  typename navierStokesSolver< Mesh, EulerScheme > :: IndexType >* 
+   navierStokesSolver< Mesh, EulerScheme > ::  getSolverMonitor()
 {
    return &solverMonitor;
 }
 
-template< typename Mesh >
-tnlString navierStokesSolver< Mesh > :: getTypeStatic()
+template< typename Mesh, typename EulerScheme >
+tnlString navierStokesSolver< Mesh, EulerScheme > :: getTypeStatic()
 {
    return tnlString( "navierStokesSolver< " ) +
           Mesh :: getTypeStatic() + " >";
 }
 
-template< typename Mesh >
-tnlString navierStokesSolver< Mesh > :: getPrologHeader() const
+template< typename Mesh, typename EulerScheme >
+tnlString navierStokesSolver< Mesh, EulerScheme > :: getPrologHeader() const
 {
    return tnlString( "Navier-Stokes Problem Solver" );
 }
 
-template< typename Mesh >
-void navierStokesSolver< Mesh > :: writeProlog( tnlLogger& logger,
-                                                const tnlParameterContainer& parameters ) const
+template< typename Mesh, typename EulerScheme >
+void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( tnlLogger& logger,
+                                                             const tnlParameterContainer& parameters ) const
 {
    logger. WriteParameter< tnlString >( "Problem name:", "problem-name", parameters );
    const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
@@ -541,8 +529,8 @@ void navierStokesSolver< Mesh > :: writeProlog( tnlLogger& logger,
    logger. WriteParameter< double >( "Pressure:", "p0", parameters );
    logger. WriteParameter< double >( "Gravity:", "gravity", parameters );
    logger. WriteSeparator();
-   logger. WriteParameter< double >( "Domain width:", mesh. getUpperCorner(). x() - mesh. getLowerCorner(). x() );
-   logger. WriteParameter< double >( "Domain height:", mesh. getUpperCorner(). y() - mesh. getLowerCorner(). y() );
+   logger. WriteParameter< double >( "Domain width:", mesh. getProportions(). x() - mesh. getOrigin(). x() );
+   logger. WriteParameter< double >( "Domain height:", mesh. getProportions(). y() - mesh. getOrigin(). y() );
    logger. WriteSeparator();
    logger. WriteParameter< tnlString >( "Space discretisation:", "scheme", parameters );
    logger. WriteParameter< int >( "Meshes along x:", mesh. getDimensions(). x() );
