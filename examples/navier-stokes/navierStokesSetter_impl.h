@@ -20,6 +20,7 @@
 
 #include <mesh/tnlGrid.h>
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
+#include <schemes/gradient/tnlCentralFDMGradient.h>
 
 template< typename SolverStarter >
    template< typename RealType,
@@ -39,7 +40,13 @@ bool navierStokesSetter< SolverStarter > :: run( const tnlParameterContainer& pa
    {
       typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
       if( schemeName == "lax-fridrichs" )
-         return solverStarter. run< navierStokesSolver< MeshType, tnlLaxFridrichs< MeshType > > >( parameters );
+         return solverStarter. run< navierStokesSolver< MeshType,
+                                                        tnlLaxFridrichs< MeshType,
+                                                                        tnlCentralFDMGradient< MeshType :: Dimensions,
+                                                                                               typename MeshType :: RealType,
+                                                                                               typename MeshType :: DeviceType,
+                                                                                               typename MeshType :: IndexType > > > >
+                                                        ( parameters );
    }
 }
 

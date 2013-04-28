@@ -8,6 +8,7 @@ ADD_SUBDIRECTORY( io )
 ADD_SUBDIRECTORY( topology )
 
 SET( headers tnlGrid.h
+             tnlIdenticalGridGeometry.h
              tnlDummyMesh.h
              config.h 
              information.h 

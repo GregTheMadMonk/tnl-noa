@@ -13,7 +13,7 @@ group Problem
    integer y-size(!)                    [Number of grid cells along y-axis.];   
    real max-inflow-velocity(1.0)        [];
    real max-outflow-velocity(0.8)       [];
-   real start-up(1.0)                   [Start-up time of the riser.];
+   real start-up(0.0)                   [Start-up time of the riser.];
    real mu(!)                           [Viscosity.];
    real p0(!)                           [Pressure for the initial condition.];
    real T(!)                            [Temperature.];

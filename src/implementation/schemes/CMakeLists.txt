@@ -1,16 +1,19 @@
 ADD_SUBDIRECTORY( euler )
+ADD_SUBDIRECTORY( gradient )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/schemes )
 
 if( BUILD_CUDA)
       set( tnl_implementation_schemes_CUDA__SOURCES
         ${tnl_implementation_schemes_euler_CUDA__SOURCES}
+        ${tnl_implementation_schemes_gradient_CUDA__SOURCES}
         ${common_SOURCES}
         PARENT_SCOPE )
 endif()
 
 set( tnl_implementation_schemes_SOURCES
      ${tnl_implementation_schemes_euler_SOURCES}
+     ${tnl_implementation_schemes_gradient_SOURCES}
      ${common_SOURCES}
      PARENT_SCOPE )
    

@@ -27,8 +27,10 @@
 #include <solvers/tnlSolverMonitor.h>
 #include "navierStokesSolverMonitor.h"
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
+#include <schemes/gradient/tnlCentralFDMGradient.h>
 
-template< typename Mesh, typename EulerScheme >
+template< typename Mesh,
+          typename EulerScheme >
 class navierStokesSolver
 {
    public:

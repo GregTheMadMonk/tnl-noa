@@ -222,6 +222,27 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! u. save( fileName ) )
       return false;
+   FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
+   if( ! rho_t. save( fileName ) )
+      return false;
+   FileNameBaseNumberEnding( "rho-u1-t-", step, 5, ".tnl", fileName );
+   if( ! rho_u1_t. save( fileName ) )
+      return false;
+
+   FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
+   if( ! rho_u2_t. save( fileName ) )
+      return false;
+
+   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
+   if( ! rho. save( fileName ) )
+      return false;
+   FileNameBaseNumberEnding( "rho-u1-", step, 5, ".tnl", fileName );
+   if( ! rho_u1. save( fileName ) )
+      return false;
+
+   FileNameBaseNumberEnding( "rho-u2-", step, 5, ".tnl", fileName );
+   if( ! rho_u2. save( fileName ) )
+      return false;
    return true;
 }
 
@@ -300,9 +321,15 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
    rho_u1. bind( & u. getData()[ dofs ], dofs );
    rho_u2. bind( & u. getData()[ 2 * dofs ], dofs );
 
+   eulerScheme. setRho( rho );
+   eulerScheme. setRhoU1( rho_u1 );
+   eulerScheme. setRhoU2( rho_u2 );
+
    rho_t. bind( & fu. getData()[ 0 ], dofs );
    rho_u1_t. bind( & fu. getData()[ dofs ], dofs );
    rho_u2_t. bind( & fu. getData()[ 2 * dofs ], dofs );
+
+
 
    updatePhysicalQuantities( rho, rho_u1, rho_u2 );
 
@@ -407,17 +434,13 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
             const RealType u_sqr = u * u;
             const RealType v_sqr = v * v;
             eulerScheme. getExplicitRhs( c,
-                                         rho,
-                                         rho_u1,
-                                         rho_u2,
-                                         rho_t,
-                                         rho_u1_t,
-                                         rho_u2_t );
+                                         rho_t[ c ],
+                                         rho_u1_t[ c ],
+                                         rho_u2_t[ c ] );
             
-            rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
-            rho_u2_t[ c ] += -( p[ n ] - p[ s ] ) / ( 2.0 * hy );
+            //rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
+            rho_u2_t[ c ] += //-( p[ n ] - p[ s ] ) / ( 2.0 * hy );
                              - startUpCoefficient * this -> gravity * this -> rho[ c ];
-                  break;
 
             /***
              * Add the viscosity term

@@ -21,19 +21,22 @@
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/tnlTuple.h>
+#include <mesh/tnlIdenticalGridGeometry.h>
 
 template< int Dimensions,
           typename Real = double,
           typename Device = tnlHost,
-          typename Index = int >
+          typename Index = int,
+          template< int, typename, typename, typename > class Geometry = tnlIdenticalGridGeometry >
 class tnlGrid : public tnlObject
 {
 };
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGrid< 1, Real, Device, Index> : public tnlObject
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 {
    public:
 
@@ -97,8 +100,9 @@ class tnlGrid< 1, Real, Device, Index> : public tnlObject
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGrid< 2, Real, Device, Index> : public tnlObject
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 {
    public:
 
@@ -134,8 +138,8 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
    Index getElementIndex( const Index j, const Index i ) const;
 
    Index getElementNeighbour( const Index Element,
-                           const Index dy,
-                           const Index dx ) const;
+                              const Index dy,
+                              const Index dx ) const;
 
    Index getDofs() const;
 
@@ -166,8 +170,9 @@ class tnlGrid< 2, Real, Device, Index> : public tnlObject
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGrid< 3, Real, Device, Index> : public tnlObject
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 {
    public:
 

@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY( euler )
+ADD_SUBDIRECTORY( gradient )

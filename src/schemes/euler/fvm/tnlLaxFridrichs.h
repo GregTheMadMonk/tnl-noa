@@ -18,31 +18,53 @@
 #ifndef TNLLAXFRIDRICHS_H_
 #define TNLLAXFRIDRICHS_H_
 
-template< typename MeshType >
+#include <core/tnlSharedVector.h>
+#include <mesh/tnlGrid.h>
+#include <schemes/gradient/tnlCentralFDMGradient.h>
+
+template< typename MeshType,
+          typename PressureGradient >
 class tnlLaxFridrichs
+{
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< typename PressureGradient >
+class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient >
 {
    public:
 
-   typedef typename MeshType :: RealType RealType;
-   typedef typename MeshType :: DeviceType DeviceType;
-   typedef typename MeshType :: IndexType IndexType;
+   typedef tnlGrid< 2, Real, Device, Index > MeshType;
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
 
    tnlLaxFridrichs();
 
-   template< typename Vector >
    void getExplicitRhs( const IndexType centralVolume,
-                        const Vector& rho,
-                        const Vector& rho_u1,
-                        const Vector& rho_u2,
-                        Vector& rho_t,
-                        Vector& rho_u1_t,
-                        Vector& rho_u2_t ) const;
+                        RealType& rho_t,
+                        RealType& rho_u1_t,
+                        RealType& rho_u2_t ) const;
 
    void setRegularization( const RealType& epsilon );
 
    void setViscosityCoefficient( const RealType& v );
 
    void bindMesh( const MeshType& mesh );
+
+   template< typename Vector >
+   void setRho( Vector& rho ); // TODO: add const
+
+   template< typename Vector >
+   void setRhoU1( Vector& rho_u1 ); // TODO: add const
+
+   template< typename Vector >
+   void setRhoU2( Vector& rho_u2 ); // TODO: add const
+
+   template< typename Vector >
+   void setPressureGradient( Vector& grad_p ); // TODO: add const
 
    protected:
 
@@ -51,6 +73,10 @@ class tnlLaxFridrichs
    RealType regularizeEps, viscosityCoefficient;
 
    const MeshType* mesh;
+
+   const PressureGradient* pressureGradient;
+
+   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2;
 };
 
 #include <implementation/schemes/euler/fvm/tnlLaxFridrichs_impl.h>
