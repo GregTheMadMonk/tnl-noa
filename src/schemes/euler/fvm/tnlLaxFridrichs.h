@@ -30,8 +30,8 @@ class tnlLaxFridrichs
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient >
 {
    public:

@@ -97,6 +97,8 @@ class navierStokesSolver
 
    EulerScheme eulerScheme;
 
+   tnlCentralFDMGradient< MeshType > pressureGradient;
+
    navierStokesSolverMonitor< RealType, IndexType > solverMonitor;
 };
 

@@ -144,7 +144,10 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    /****
     * Set-up numerical scheme
     */
+   pressureGradient. setFunction( p );
+   pressureGradient. bindMesh( this -> mesh );
    this -> eulerScheme. bindMesh( this -> mesh );
+   this -> eulerScheme. setPressureGradient( this -> pressureGradient );
 
    return true;
 }
@@ -309,9 +312,9 @@ void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const 
 
 template< typename Mesh, typename EulerScheme >
 void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType& time,
-                                                    const RealType& tau,
-                                                    DofVectorType& u,
-                                                    DofVectorType& fu )
+                                                                 const RealType& tau,
+                                                                 DofVectorType& u,
+                                                                 DofVectorType& fu )
 {
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2,
                                                       rho_t, rho_u1_t, rho_u2_t;
@@ -429,18 +432,18 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
             IndexType n = mesh. getElementIndex( j + 1, i );
             IndexType s = mesh. getElementIndex( j - 1, i );
 
-            const RealType& u = this -> u1[ c ];
-            const RealType& v = this -> u2[ c ];
-            const RealType u_sqr = u * u;
-            const RealType v_sqr = v * v;
+            //const RealType& u = this -> u1[ c ];
+            //const RealType& v = this -> u2[ c ];
+            //const RealType u_sqr = u * u;
+            //const RealType v_sqr = v * v;
             eulerScheme. getExplicitRhs( c,
                                          rho_t[ c ],
                                          rho_u1_t[ c ],
                                          rho_u2_t[ c ] );
             
             //rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
-            rho_u2_t[ c ] += //-( p[ n ] - p[ s ] ) / ( 2.0 * hy );
-                             - startUpCoefficient * this -> gravity * this -> rho[ c ];
+            //rho_u2_t[ c ] += -( p[ n ] - p[ s ] ) / ( 2.0 * hy );
+                             //- startUpCoefficient * this -> gravity * this -> rho[ c ];
 
             /***
              * Add the viscosity term
@@ -491,6 +494,9 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
    }
 
    rhsDofVector = fu;
+   //makeSnapshot( 0.0, 1 );
+   //getchar();
+
 }
 
 #ifdef HAVE_CUDA

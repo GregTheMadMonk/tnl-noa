@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCentralFDMGradient_impl.h  -  description
+                          tnlLinearDiffusion_impl.h  -  description
                              -------------------
     begin                : Apr 26, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,43 +15,45 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCENTRALFDMGRADIENT_IMPL_H_
-#define TNLCENTRALFDMGRADIENT_IMPL_H_
+#ifndef TNLLINEARDIFFUSION_IMPL_H_
+#define TNLLINEARDIFFUSION_IMPL_H_
 
 template< typename Real, typename Device, typename Index >
-tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: tnlCentralFDMGradient()
+tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: tnlLinearDiffusion()
 : mesh( 0 )
 {
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: bindMesh( const tnlGrid< 2, RealType, DeviceType, IndexType >& mesh )
+void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: bindMesh( const tnlGrid< 2, RealType, DeviceType, IndexType >& mesh )
 {
    this -> mesh = &mesh;
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename Vector >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: setFunction( Vector& f )
+void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: setFunction( Vector& f )
 {
    this -> f. bind( f );
    this -> f. setName( tnlString( "bind Of " ) + f. getName() );
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( const Index& i,
-                                                                                RealType& f_x,
-                                                                                RealType& f_y ) const
+void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: getGradient( const Index& i,
+                                                                             RealType& diffusion ) const
 {
-   tnlAssert( this -> mesh, cerr << "No mesh was set in tnlCentralFDMGradient. Use the bindMesh method." );
+   tnlAssert( this -> mesh, cerr << "No mesh was set in tnlLinearDiffusion. Use the bindMesh method." );
+
+   const Real hx = mesh -> getSpaceStep(). x() );
+   const Real hy = mesh -> getSpaceStep(). y() );
 
    const Index e = mesh -> getElementNeighbour( i,  0,  1 );
    const Index w = mesh -> getElementNeighbour( i,  0, -1 );
    const Index n = mesh -> getElementNeighbour( i,  1,  0 );
    const Index s = mesh -> getElementNeighbour( i, -1,  0 );
 
-   f_x = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getSpaceStep(). x() );
-   f_y = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getSpaceStep(). y() );
+   diffusion = ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx ) +
+               ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );
 }
 
 #endif

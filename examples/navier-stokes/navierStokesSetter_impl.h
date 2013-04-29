@@ -42,10 +42,7 @@ bool navierStokesSetter< SolverStarter > :: run( const tnlParameterContainer& pa
       if( schemeName == "lax-fridrichs" )
          return solverStarter. run< navierStokesSolver< MeshType,
                                                         tnlLaxFridrichs< MeshType,
-                                                                        tnlCentralFDMGradient< MeshType :: Dimensions,
-                                                                                               typename MeshType :: RealType,
-                                                                                               typename MeshType :: DeviceType,
-                                                                                               typename MeshType :: IndexType > > > >
+                                                                        tnlCentralFDMGradient< MeshType > > > >
                                                         ( parameters );
    }
 }

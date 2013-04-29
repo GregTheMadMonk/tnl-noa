@@ -21,8 +21,8 @@
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >,
                  PressureGradient > :: tnlLaxFridrichs()
 : regularizeEps( 0.0 ),
@@ -34,18 +34,17 @@ tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >,
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: bindMesh( const MeshType& mesh )
 {
    this -> mesh = &mesh;
 }
 
-
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setRegularization( const RealType& epsilon )
 {
    this -> regularizeEps = epsilon;
@@ -53,8 +52,8 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
 {
    this -> viscosityCoefficient = v;
@@ -62,38 +61,41 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setRho( Vector& rho )
 {
    this -> rho. bind( rho );
+   this -> rho. setName( tnlString( "bind Of " ) + rho. getName() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
    this -> rho_u1. bind( rho_u1 );
+   this -> rho_u1. setName( tnlString( "bind Of " ) + rho_u1. getName() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
    this -> rho_u2. bind( rho_u2 );
+   this -> rho_u2. setName( tnlString( "bind Of " ) + rho_u2. getName() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
@@ -102,8 +104,8 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
+          typename Index,
+          typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
                                                                       RealType& rho_t,
                                                                       RealType& rho_u1_t,
@@ -137,7 +139,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    /****
     * Compute the pressure gradient
     */
-   RealType p_x, p_y;
+   RealType p_x( 0.0 ), p_y( 0.0 );
    pressureGradient -> getGradient( c, p_x, p_y );
 
    /****
@@ -158,9 +160,9 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
 
 template< typename Real,
           typename Device,
-          typename Index >
-template< typename PressureGradient >
-typename MeshType :: RealType tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: regularize( const RealType& r ) const
+          typename Index,
+          typename PressureGradient >
+Real tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: regularize( const Real& r ) const
 {
    return r + ( ( r >= 0 ) - ( r < 0 ) ) * this -> regularizeEps;
 }
