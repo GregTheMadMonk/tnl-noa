@@ -39,21 +39,20 @@ void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: setFunction( Vec
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: getGradient( const Index& i,
-                                                                             RealType& diffusion ) const
+Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: getDiffusion( const Index& c ) const
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlLinearDiffusion. Use the bindMesh method." );
 
-   const Real hx = mesh -> getSpaceStep(). x() );
-   const Real hy = mesh -> getSpaceStep(). y() );
+   const Real hx = mesh -> getSpaceStep(). x();
+   const Real hy = mesh -> getSpaceStep(). y();
 
-   const Index e = mesh -> getElementNeighbour( i,  0,  1 );
-   const Index w = mesh -> getElementNeighbour( i,  0, -1 );
-   const Index n = mesh -> getElementNeighbour( i,  1,  0 );
-   const Index s = mesh -> getElementNeighbour( i, -1,  0 );
+   const Index e = mesh -> getElementNeighbour( c,  0,  1 );
+   const Index w = mesh -> getElementNeighbour( c,  0, -1 );
+   const Index n = mesh -> getElementNeighbour( c,  1,  0 );
+   const Index s = mesh -> getElementNeighbour( c, -1,  0 );
 
-   diffusion = ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx ) +
-               ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );
+   return ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx ) +
+          ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );
 }
 
 #endif

@@ -28,6 +28,7 @@
 #include "navierStokesSolverMonitor.h"
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
+#include <schemes/diffusion/tnlLinearDiffusion.h>
 
 template< typename Mesh,
           typename EulerScheme >
@@ -96,6 +97,8 @@ class navierStokesSolver
             maxInflowVelocity, maxOutflowVelocity, startUp;
 
    EulerScheme eulerScheme;
+
+   tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity;
 
    tnlCentralFDMGradient< MeshType > pressureGradient;
 

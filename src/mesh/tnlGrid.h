@@ -109,6 +109,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef Geometry GeometryType;
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -131,17 +132,35 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    const tnlTuple< 2, Real >& getProportions() const;
 
-   void setSpaceStep( const tnlTuple< 2, Real >& spaceStep );
+   void setParametricStep( const tnlTuple< 2, Real >& spaceStep );
 
-   tnlTuple< 2, Real > getSpaceStep() const;
+   tnlTuple< 2, Real > getParametricStep() const;
 
-   Index getElementIndex( const Index j, const Index i ) const;
+   Index getElementIndex( const Index j,
+                          const Index i ) const;
 
    Index getElementNeighbour( const Index Element,
                               const Index dy,
                               const Index dx ) const;
 
    Index getDofs() const;
+
+   Real getElementMeasure( const Index j,
+                           const Index i ) const;
+
+   Real getElementsDistance( const Index j,
+                             const Index i,
+                             const Index dy,
+                             const Index dx ) const;
+
+   template< int dy, int dx >
+   Real getEdgeLength( const Index j,
+                       const Index i ) const;
+
+   template< int dy, int dx >
+   tnlTuple< 2, Real > getEdgeNormal( const Index j,
+                                      const Index i ) const;
+
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -155,14 +174,16 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
-                const tnlString& fileName,
-                const tnlString& format ) const;
+               const tnlString& fileName,
+               const tnlString& format ) const;
 
    protected:
 
    tnlTuple< 2, IndexType > dimensions;
 
    tnlTuple< 2, RealType > origin, proportions;
+
+   GeometryType geometry;
 
    IndexType dofs;
 

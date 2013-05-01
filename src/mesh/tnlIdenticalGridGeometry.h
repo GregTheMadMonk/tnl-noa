@@ -32,7 +32,48 @@ class tnlIdenticalGridGeometry
    typedef Device DeviceType;
    typedef Index IndexType;
 
+   void setParametricStep( const tnlTuple< 2, Real >& parametricStep );
+
+   void getElementCoordinates( const Index j,
+                               const Index i,
+                               tnlTuple< 2, Real >& coordinates ) const;
+
+   Real getElementMeasure( const Index j,
+                           const Index i ) const;
+
+   template< Index dy, Index dx >
+   Real getElementsDistance( const Index j,
+                             const Index i ) const;
+
+   template< Index dy, Index dx >
+   void getEdgeCoordinates( const Index j,
+                            const Index i,
+                            tnlTuple< 2, Real >& coordinates ) const
+
+   template< Index dy, Index dx >
+   Real getEdgeLength( const Index j,
+                       const Index i ) const;
+
+   template< Index dy, Index dx >
+   tnlTuple< 2, Real > getEdgeNormal( const Index j,
+                                      const Index i ) const;
+
+   void getVertexCoordinates( const Index j,
+                              const Index i,
+                              tnlTuple< 2, Real >& coordinates ) const;
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
+
+   protected:
+
+   tnlTuple< Dimensions, Real > parametricStep;
+
+   Real elementMeasure;
 
 };
+
+#include <implementation/mesh/tnlIdenticalGridGeometry_impl.h>
 
 #endif /* TNLIDENTICALGRIDGEOMETRY_H_ */

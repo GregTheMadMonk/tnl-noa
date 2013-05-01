@@ -68,6 +68,10 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index y
    this -> dimensions. x() = xSize;
    this -> dimensions. y() = ySize;
    dofs = ySize * xSize;
+   tnlTuple< 2, Real > parametricStep;
+   parametricStep. x() = proportions. x() / ( xSize - 1 );
+   parametricStep. y() = proportions. y() / ( ySize - 1 );
+   geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -76,13 +80,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 2, Index >& dimensions )
 {
-   tnlAssert( dimensions. x() > 1,
-              cerr << "The number of Elements along x-axis must be larger than 1." );
-   tnlAssert( dimensions. y() > 1,
-              cerr << "The number of Elements along y-axis must be larger than 1." );
-
-   this -> dimensions = dimensions;
-   dofs = this -> dimensions. x() * this -> dimensions. y();
+   this -> setDimensions( dimensions. y(), dimensions. x() );
 }
 
 template< typename Real,
@@ -119,6 +117,10 @@ template< typename Real,
 void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const tnlTuple< 2, Real >& proportions )
 {
    this -> proportions = proportions;
+   tnlTuple< 2, Real > parametricStep;
+   parametricStep. x() = proportions. x() / ( this -> dimensions. x() - 1 );
+   parametricStep. y() = proportions. y() / ( this -> dimensions. y() - 1 );
+   geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -134,20 +136,19 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setSpaceStep( const tnlTuple< 2, Real >& spaceStep )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const tnlTuple< 2, Real >& spaceStep )
 {
    this -> proportions. x() = this -> dimensions. x() *
-                              spaceStep. x();
+                              parametricStep. x();
    this -> proportions. y() = this -> dimensions. y() *
-                              spaceStep. y();
-
+                              parametricStep. y();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getSpaceStep() const
+tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
 {
    tnlAssert( dimensions. x() > 0,
               cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
@@ -156,12 +157,12 @@ tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getSpaceStep(
               cerr << "Cannot get the space step hy since number of Elements along the y axis is not known in tnlGrid "
                    << this -> getName() );
 
-   tnlTuple< 2, RealType > spaceStep;
-   spaceStep. x() =
+   tnlTuple< 2, RealType > parametricStep;
+   parametricStep. x() =
             this -> proportions. x() / ( Real ) ( this -> dimensions. x() - 1 );
-   spaceStep. y() =
+   parametricStep. y() =
             this -> proportions. y() / ( Real ) ( this -> dimensions. y() - 1 );
-   return spaceStep;
+   return parametricStep;
 }
 
 template< typename Real,
@@ -212,6 +213,50 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const Index j,
+                                                                       const Index i ) const
+{
+   return geometry. getElementMeasure( j, i );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementsDistance( const Index j,
+                                                                         const Index i,
+                                                                         const Index dy,
+                                                                         const Index dx ) const
+{
+   return geometry. getElementsDistance( j, i, dy, dx );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+template< int dy, int dx >
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeLength( const Index j,
+                                                                   const Index i ) const
+{
+   return geometry. getEdgeLength< dy, dx >( j, i );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+template< int dy, int dx >
+tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const Index j,
+                                                                                  const Index i ) const
+{
+   return geometry. getEdgeNormal< dy, dx >( j, i );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
 bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) )
@@ -224,6 +269,8 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
            << this -> getName() << endl;
       return false;
    }
+   if( ! geometry. save( file ) )
+      return false;
    return true;
 };
 
@@ -243,8 +290,14 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( tnlFile& file )
            << this -> getName() << endl;
       return false;
    }
+   if( ! geometry. load( file ) )
+      return false;
    this -> dofs = this -> getDimensions(). x() *
-                   this -> getDimensions(). y();
+                  this -> getDimensions(). y();
+   tnlTuple< 2, Real > parametricStep;
+   parametricStep. x() = proportions. x() / ( this -> dimensions. x() - 1 );
+   parametricStep. y() = proportions. y() / ( this -> dimensions. y() - 1 );
+   geometry. setParametricStep( parametricStep );
    return true;
 };
 

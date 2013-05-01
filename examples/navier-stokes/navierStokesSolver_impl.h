@@ -148,7 +148,10 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    pressureGradient. bindMesh( this -> mesh );
    this -> eulerScheme. bindMesh( this -> mesh );
    this -> eulerScheme. setPressureGradient( this -> pressureGradient );
-
+   this -> u1Viscosity. bindMesh( this -> mesh );
+   this -> u1Viscosity. setFunction( this -> u1 );
+   this -> u2Viscosity. bindMesh( this -> mesh );
+   this -> u2Viscosity. setFunction( this -> u2 );
    return true;
 }
 
@@ -427,33 +430,19 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                continue;
             }
 
-            IndexType e = mesh. getElementIndex( j, i + 1 );
-            IndexType w = mesh. getElementIndex( j, i - 1 );
-            IndexType n = mesh. getElementIndex( j + 1, i );
-            IndexType s = mesh. getElementIndex( j - 1, i );
-
-            //const RealType& u = this -> u1[ c ];
-            //const RealType& v = this -> u2[ c ];
-            //const RealType u_sqr = u * u;
-            //const RealType v_sqr = v * v;
             eulerScheme. getExplicitRhs( c,
                                          rho_t[ c ],
                                          rho_u1_t[ c ],
                                          rho_u2_t[ c ] );
             
-            //rho_u1_t[ c ] += -( p[ e ] - p[ w ] ) / ( 2.0 * hx );
-            //rho_u2_t[ c ] += -( p[ n ] - p[ s ] ) / ( 2.0 * hy );
-                             //- startUpCoefficient * this -> gravity * this -> rho[ c ];
+            //rho_u1_t[ c ] += ;
+            rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];
 
             /***
              * Add the viscosity term
              */
-            rho_u1_t[ c ] += this -> mu *
-                                   ( ( u1[ e ] - 2.0 * u1[ c ] + u1[ w ] ) / ( hx * hx ) +
-                                     ( u1[ n ] - 2.0 * u1[ c ] + u1[ s ] ) / ( hy * hy ) );
-            rho_u2_t[ c ] += this -> mu *
-                                   ( ( u2[ e ] - 2.0 * u2[ c ] + u2[ w ] ) / ( hx * hx ) +
-                                     ( u2[ n ] - 2.0 * u2[ c ] + u2[ s ] ) / ( hy * hy ) );
+            rho_u1_t[ c ] += this -> mu * u1Viscosity. getDiffusion( c );
+            rho_u2_t[ c ] += this -> mu * u2Viscosity. getDiffusion( c );
 
          }
    }

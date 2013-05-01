@@ -42,8 +42,7 @@ class tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > >
    template< typename Vector >
    void setFunction( Vector& f ); // TODO: add const
 
-   void getGradient( const Index& i,
-                     RealType& diffusion ) const;
+   RealType getDiffusion( const Index& i ) const;
    protected:
 
    // TODO: change to ConstSharedVector
@@ -52,6 +51,6 @@ class tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > >
    const tnlGrid< 2, RealType, DeviceType, IndexType >* mesh;
 };
 
-#include <implementation/schemes/gradient/tnlLinearDiffusion_impl.h>
+#include <implementation/schemes/diffusion/tnlLinearDiffusion_impl.h>
 
 #endif
