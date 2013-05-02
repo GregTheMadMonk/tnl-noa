@@ -136,7 +136,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setSpaceStep( const tnlTuple< 3, Real >& spaceStep )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setParametricStep( const tnlTuple< 3, Real >& spaceStep )
 {
    this -> proportions. x() = this -> dimensions. x() *
                               spaceStep. x();
@@ -150,7 +150,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index, Geometry > :: getSpaceStep() const
+tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index, Geometry > :: getParametricStep() const
 {
    tnlAssert( dimensions. x() > 0,
               cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
@@ -286,8 +286,8 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
-   const RealType hx = getSpaceStep(). x();
-   const RealType hy = getSpaceStep(). y();
+   const RealType hx = getParametricStep(). x();
+   const RealType hy = getParametricStep(). y();
    if( format == "gnuplot" )
    {
       tnlAssert( false, cerr << "TODO");

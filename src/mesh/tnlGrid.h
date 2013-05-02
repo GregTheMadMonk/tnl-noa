@@ -43,6 +43,7 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef Geometry< 1, Real, Device, Index > GeometryType;
    enum { Dimensions = 1};
 
    tnlGrid();
@@ -65,9 +66,9 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    const tnlTuple< 1, Real >& getProportions() const;
 
-   void setSpaceStep( const tnlTuple< 1, Real >& spaceStep );
+   void setParametricStep( const tnlTuple< 1, Real >& spaceStep );
 
-   tnlTuple< 1, Real > getSpaceStep() const;
+   const tnlTuple< 1, Real >& getParametricStep() const;
 
    Index getElementIndex( const Index i ) const;
 
@@ -96,6 +97,8 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    IndexType dofs;
 
+   GeometryType geometry;
+
 };
 
 template< typename Real,
@@ -109,7 +112,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Geometry GeometryType;
+   typedef Geometry< 2, Real, Device, Index > GeometryType;
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -134,7 +137,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    void setParametricStep( const tnlTuple< 2, Real >& spaceStep );
 
-   tnlTuple< 2, Real > getParametricStep() const;
+   const tnlTuple< 2, Real >& getParametricStep() const;
 
    Index getElementIndex( const Index j,
                           const Index i ) const;
@@ -148,10 +151,9 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    Real getElementMeasure( const Index j,
                            const Index i ) const;
 
+   template< Index dy, Index dx >
    Real getElementsDistance( const Index j,
-                             const Index i,
-                             const Index dy,
-                             const Index dx ) const;
+                             const Index i ) const;
 
    template< int dy, int dx >
    Real getEdgeLength( const Index j,
@@ -222,9 +224,9 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    const tnlTuple< 3, Real >& getProportions() const;
 
-   void setSpaceStep( const tnlTuple< 3, Real >& spaceStep );
+   void setParametricStep( const tnlTuple< 3, Real >& spaceStep );
 
-   tnlTuple< 3, Real > getSpaceStep() const;
+   tnlTuple< 3, Real > getParametricStep() const;
 
    Index getElementIndex( const Index k, const Index j, const Index i ) const;
 

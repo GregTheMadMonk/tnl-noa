@@ -50,8 +50,8 @@ void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( 
    const Index n = mesh -> getElementNeighbour( i,  1,  0 );
    const Index s = mesh -> getElementNeighbour( i, -1,  0 );
 
-   f_x = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getSpaceStep(). x() );
-   f_y = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getSpaceStep(). y() );
+   f_x = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
+   f_y = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );
 }
 
 #endif

@@ -116,8 +116,8 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
 
    const IndexType& xSize = this -> mesh -> getDimensions(). x();
    const IndexType& ySize = this -> mesh -> getDimensions(). y();
-   const RealType hx = this -> mesh -> getSpaceStep(). x();
-   const RealType hy = this -> mesh -> getSpaceStep(). y();
+   const RealType hx = this -> mesh -> getParametricStep(). x();
+   const RealType hy = this -> mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
    const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );

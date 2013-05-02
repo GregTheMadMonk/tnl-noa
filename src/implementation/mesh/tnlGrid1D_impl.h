@@ -61,10 +61,14 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry  >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const Index xSize )
 {
-   tnlAssert( xSize > 1,
-              cerr << "The number of Elements along x-axis must be larger than 1." );
+   tnlAssert( xSize > 0,
+              cerr << "The number of Elements along x-axis must be larger than 0." );
    this -> dimensions. x() = xSize;
    dofs = xSize;
+
+   tnlTuple< 1, Real > parametricStep;
+   parametricStep. x() = proportions. x() / xSize;
+   geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -73,10 +77,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry  >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 1, Index >& dimensions )
 {
-   tnlAssert( dimensions. x() > 1,
-              cerr << "The number of Elements along x-axis must be larger than 1." );
-   this -> dimensions = dimensions;
-   dofs = this -> dimensions. x();
+   this -> setDimensions( dimensions. x() );
 }
 
 template< typename Real,
@@ -113,6 +114,7 @@ template< typename Real,
 void tnlGrid< 1, Real, Device, Index, Geometry > :: setProportions( const tnlTuple< 1, Real >& proportions )
 {
    this -> proportions = proportions;
+   this -> setDimensions( this -> dimensions );
 }
 
 template< typename Real,
@@ -128,26 +130,19 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-void tnlGrid< 1, Real, Device, Index, Geometry > :: setSpaceStep( const tnlTuple< 1, Real >& spaceStep )
+void tnlGrid< 1, Real, Device, Index, Geometry > :: setParametricStep( const tnlTuple< 1, Real >& parametricStep )
 {
-   this -> proportions. x() = this -> dimensions. x() *
-                              spaceStep. x();
+   this -> proportions. x() = this -> dimensions. x() * parametricStep. x();
+   geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-tnlTuple< 1, Real > tnlGrid< 1, Real, Device, Index, Geometry > :: getSpaceStep() const
+const tnlTuple< 1, Real >& tnlGrid< 1, Real, Device, Index, Geometry > :: getParametricStep() const
 {
-   tnlAssert( dimensions. x() > 0,
-              cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
-                   << this -> getName() );
-   tnlTuple< 1, RealType > spaceStep;
-   spaceStep. x() =
-            ( this -> proportions. x() ) /
-            ( Real ) ( this -> dimensions. x() - 1 );
-   return spaceStep;
+   return geometry. getParametricStep();
 }
 
 template< typename Real,
@@ -251,8 +246,8 @@ bool tnlGrid< 1, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
-   const RealType hx = getSpaceStep(). x();
-   const RealType hy = getSpaceStep(). y();
+   const RealType hx = getParametricStep(). x();
+   const RealType hy = getParametricStep(). y();
    if( format == "gnuplot" )
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {

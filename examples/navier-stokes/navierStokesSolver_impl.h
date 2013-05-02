@@ -112,8 +112,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
       return false;
    }
    this -> mesh. setDimensions( meshes. y(), meshes. x() );
-   RealType hx = this -> mesh. getSpaceStep(). x();
-   RealType hy = this -> mesh. getSpaceStep(). y();
+   RealType hx = this -> mesh. getParametricStep(). x();
+   RealType hy = this -> mesh. getParametricStep(). y();
    mesh. save( tnlString( "mesh.tnl" ) );
 
    /****
@@ -170,8 +170,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
 
    const IndexType& xSize = mesh. getDimensions(). x();
    const IndexType& ySize = mesh. getDimensions(). y();
-   const RealType hx = mesh. getSpaceStep(). x();
-   const RealType hy = mesh. getSpaceStep(). y();
+   const RealType hx = mesh. getParametricStep(). x();
+   const RealType hy = mesh. getParametricStep(). y();
 
    for( IndexType j = 0; j < ySize; j ++ )
       for( IndexType i = 0; i < xSize; i ++ )
@@ -344,8 +344,8 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
     */
    const IndexType& xSize = mesh. getDimensions(). x();
    const IndexType& ySize = mesh. getDimensions(). y();
-   const RealType hx = mesh. getSpaceStep(). x();
-   const RealType hy = mesh. getSpaceStep(). y();
+   const RealType hx = mesh. getParametricStep(). x();
+   const RealType hy = mesh. getParametricStep(). y();
    RealType startUpCoefficient( 1.0 );
    if( this -> startUp != 0.0 )
       startUpCoefficient = Min( ( RealType ) 1.0, time / this -> startUp );
@@ -553,8 +553,8 @@ void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( tnlLogger& logger,
    logger. WriteParameter< tnlString >( "Space discretisation:", "scheme", parameters );
    logger. WriteParameter< int >( "Meshes along x:", mesh. getDimensions(). x() );
    logger. WriteParameter< int >( "Meshes along y:", mesh. getDimensions(). y() );
-   logger. WriteParameter< double >( "Space step along x:", mesh. getSpaceStep(). x() );
-   logger. WriteParameter< double >( "Space step along y:", mesh. getSpaceStep(). y() );
+   logger. WriteParameter< double >( "Space step along x:", mesh. getParametricStep(). x() );
+   logger. WriteParameter< double >( "Space step along y:", mesh. getParametricStep(). y() );
 }
 
 #endif /* NAVIERSTOKESSOLVER_IMPL_H_ */

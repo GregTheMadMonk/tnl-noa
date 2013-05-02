@@ -26,6 +26,64 @@ template< int Dimensions,
           typename Index = int >
 class tnlIdenticalGridGeometry
 {
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlIdenticalGridGeometry< 1, Real, Device, Index >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   void setParametricStep( const tnlTuple< 1, Real >& parametricStep );
+
+   const tnlTuple< 1, Real >& getParametricStep() const;
+
+   void getElementCoordinates( const Index i,
+                               const tnlTuple< 1, Real >& origin,
+                               tnlTuple< 1, Real >& coordinates ) const;
+
+   Real getElementMeasure( const Index i ) const;
+
+   template< Index dx >
+   Real getElementsDistance( const Index i ) const;
+
+   template< Index dx >
+   void getEdgeCoordinates( const Index i,
+                            const tnlTuple< 1, Real >& origin,
+                            tnlTuple< 1, Real >& coordinates ) const;
+
+   template< Index dx >
+   Real getEdgeLength( const Index i ) const;
+
+   template< Index dx >
+   void getEdgeNormal( const Index i,
+                       tnlTuple< 1, Real >& normal ) const;
+
+   void getVertexCoordinates( const Index i,
+                              const tnlTuple< 1, Real >& origin,
+                              tnlTuple< 1, Real >& coordinates ) const;
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
+
+   protected:
+
+   tnlTuple< 1, Real > parametricStep;
+
+   Real elementMeasure;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlIdenticalGridGeometry< 2, Real, Device, Index >
+{
    public:
 
    typedef Real RealType;
@@ -34,8 +92,11 @@ class tnlIdenticalGridGeometry
 
    void setParametricStep( const tnlTuple< 2, Real >& parametricStep );
 
+   const tnlTuple< 2, Real >& getParametricStep() const;
+
    void getElementCoordinates( const Index j,
                                const Index i,
+                               const tnlTuple< 2, Real >& origin,
                                tnlTuple< 2, Real >& coordinates ) const;
 
    Real getElementMeasure( const Index j,
@@ -48,18 +109,21 @@ class tnlIdenticalGridGeometry
    template< Index dy, Index dx >
    void getEdgeCoordinates( const Index j,
                             const Index i,
-                            tnlTuple< 2, Real >& coordinates ) const
+                            const tnlTuple< 2, Real >& origin,
+                            tnlTuple< 2, Real >& coordinates ) const;
 
    template< Index dy, Index dx >
    Real getEdgeLength( const Index j,
                        const Index i ) const;
 
    template< Index dy, Index dx >
-   tnlTuple< 2, Real > getEdgeNormal( const Index j,
-                                      const Index i ) const;
+   void getEdgeNormal( const Index j,
+                       const Index i,
+                       tnlTuple< 2, Real >& normal ) const;
 
    void getVertexCoordinates( const Index j,
                               const Index i,
+                              const tnlTuple< 2, Real >& origin,
                               tnlTuple< 2, Real >& coordinates ) const;
 
    bool save( tnlFile& file ) const;
@@ -68,10 +132,9 @@ class tnlIdenticalGridGeometry
 
    protected:
 
-   tnlTuple< Dimensions, Real > parametricStep;
+   tnlTuple< 2, Real > parametricStep;
 
    Real elementMeasure;
-
 };
 
 #include <implementation/mesh/tnlIdenticalGridGeometry_impl.h>

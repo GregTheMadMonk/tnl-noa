@@ -43,8 +43,8 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: getDiffusion( co
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlLinearDiffusion. Use the bindMesh method." );
 
-   const Real hx = mesh -> getSpaceStep(). x();
-   const Real hy = mesh -> getSpaceStep(). y();
+   const Real hx = mesh -> getParametricStep(). x();
+   const Real hy = mesh -> getParametricStep(). y();
 
    const Index e = mesh -> getElementNeighbour( c,  0,  1 );
    const Index w = mesh -> getElementNeighbour( c,  0, -1 );
