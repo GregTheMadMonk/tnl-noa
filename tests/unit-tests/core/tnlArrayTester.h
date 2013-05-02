@@ -18,6 +18,7 @@
 #ifndef TNLARRAYMANAGERTESTER_H_
 #define TNLARRAYMANAGERTESTER_H_
 
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -208,5 +209,6 @@ class tnlArrayTester : public CppUnit :: TestCase
 
 };
 
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLARRAYMANAGERTESTER_H_ */

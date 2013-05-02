@@ -208,6 +208,7 @@ bool parseObjectType( const tnlString& objectType,
          templateBrackets --;
       i ++;
    }
+   return true;
 }
 
 

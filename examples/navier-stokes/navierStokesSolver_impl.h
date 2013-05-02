@@ -436,7 +436,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                                          rho_u2_t[ c ] );
             
             //rho_u1_t[ c ] += ;
-            rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];
+            //rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];
 
             /***
              * Add the viscosity term

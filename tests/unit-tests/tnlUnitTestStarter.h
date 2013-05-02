@@ -42,7 +42,7 @@ class tnlUnitTestStarter
          return false;
       return true;
 #else
-      std :: cerr << "Error: CPPUNIT is missing." << endl;
+      std :: cerr << "Error: CPPUNIT is missing." << std :: endl;
       return false;
 #endif
    };

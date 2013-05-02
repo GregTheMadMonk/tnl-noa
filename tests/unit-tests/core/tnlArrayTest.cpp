@@ -20,6 +20,7 @@
 
 int main( int argc, char* argv[] )
 {
+#ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, int > >() ||
@@ -34,4 +35,7 @@ int main( int argc, char* argv[] )
        ! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, long int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
 }
