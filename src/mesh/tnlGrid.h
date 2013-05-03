@@ -121,7 +121,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    tnlString getType() const;
 
-   void setDimensions( const Index ySize, const Index xSize );
+   void setDimensions( const Index xSize, const Index ySize );
 
    void setDimensions( const tnlTuple< 2, Index >& );
 
@@ -139,8 +139,11 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    const tnlTuple< 2, Real >& getParametricStep() const;
 
-   Index getElementIndex( const Index j,
-                          const Index i ) const;
+   Index getElementIndex( const Index i,
+                          const Index j ) const;
+
+   void getElementCoordinates( const Index i,
+                               tnlTuple< 2, Index >& coordinates ) const;
 
    Index getElementNeighbour( const Index Element,
                               const Index dy,
@@ -148,10 +151,12 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    Index getDofs() const;
 
-   Real getElementMeasure( const Index j,
-                           const Index i ) const;
+   void getElementCenter( const tnlTuple< 2, Index >& coordinates,
+                          tnlTuple< 2, Real >& center ) const;
 
-   template< Index dy, Index dx >
+   Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
+
+   /*template< Index dy, Index dx >
    Real getElementsDistance( const Index j,
                              const Index i ) const;
 
@@ -161,7 +166,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    template< int dy, int dx >
    tnlTuple< 2, Real > getEdgeNormal( const Index j,
-                                      const Index i ) const;
+                                      const Index i ) const;*/
 
 
    //! Method for saving the object to a file as a binary data
@@ -210,7 +215,7 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    tnlString getType() const;
 
-   void setDimensions( const Index zSize, const Index ySize, const Index xSize );
+   void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
    void setDimensions( const tnlTuple< 3, Index >& );
 
@@ -228,7 +233,7 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    tnlTuple< 3, Real > getParametricStep() const;
 
-   Index getElementIndex( const Index k, const Index j, const Index i ) const;
+   Index getElementIndex( const Index i, const Index j, const Index k ) const;
 
    Index getDofs() const;
 

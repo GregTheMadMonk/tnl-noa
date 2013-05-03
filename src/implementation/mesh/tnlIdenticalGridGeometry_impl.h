@@ -45,11 +45,11 @@ const tnlTuple< 1, Real >& tnlIdenticalGridGeometry< 1, Real, Device, Index > ::
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCoordinates( const Index i,
-                                                                                  const tnlTuple< 1, Real >& origin,
-                                                                                  tnlTuple< 1, Real >& coordinates ) const
+void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( const tnlTuple< 1, Real >& origin,
+                                                                             const tnlTuple< 1, Index >& coordinates,
+                                                                             tnlTuple< 1, Real >& center ) const
 {
-   coordinates. x() = ( i + 0.5 ) * parametricStep. x();
+   center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
 }
 
 template< typename Real,
@@ -145,20 +145,18 @@ const tnlTuple< 2, Real >& tnlIdenticalGridGeometry< 2, Real, Device, Index > ::
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCoordinates( const Index j,
-                                                                                  const Index i,
-                                                                                  const tnlTuple< 2, Real >& origin,
-                                                                                  tnlTuple< 2, Real >& coordinates ) const
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( const tnlTuple< 2, Real >& origin,
+                                                                             const tnlTuple< 2, Index >& coordinates,
+                                                                             tnlTuple< 2, Real >& center ) const
 {
-   coordinates. x() = ( i + 0.5 ) * parametricStep. x();
-   coordinates. y() = ( j + 0.5 ) * parametricStep. y();
+   center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
+   center. y() = ( coordinates. y() + 0.5 ) * parametricStep. y();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( const Index j,
-                                                                              const Index i ) const
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const
 {
    return elementMeasure;
 }
@@ -166,9 +164,9 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( co
 template< typename Real,
           typename Device,
           typename Index >
-   template< Index dy, Index dx >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const Index j,
-                                                                                const Index i ) const
+   template< Index dx, Index dy >
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const Index i,
+                                                                                const Index j ) const
 {
    if( dy == 0 && dx == 1 )
       return parametricStep. x();
@@ -182,9 +180,9 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( 
 template< typename Real,
           typename Device,
           typename Index >
-template< Index dy, Index dx >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeCoordinates( const Index j,
-                                                                               const Index i,
+template< Index dx, Index dy >
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeCoordinates( const Index i,
+                                                                               const Index j,
                                                                                const tnlTuple< 2, Real >& origin,
                                                                                tnlTuple< 2, Real >& coordinates ) const
 {
@@ -195,9 +193,9 @@ void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeCoordinates( c
 template< typename Real,
           typename Device,
           typename Index >
-template< Index dy, Index dx >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeLength( const Index j,
-                                                                          const Index i ) const
+template< Index dx, Index dy >
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeLength( const Index i,
+                                                                          const Index j ) const
 {
    if( dy == 0 && dx == 1 )
       return parametricStep. y();
@@ -209,9 +207,9 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeLength( const 
 template< typename Real,
           typename Device,
           typename Index >
-template< Index dy, Index dx >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const Index j,
-                                                                          const Index i,
+template< Index dx, Index dy >
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const Index i,
+                                                                          const Index j,
                                                                           tnlTuple< 2, Real >& normal ) const
 {
    tnlAssert( ( dx == 0 || dx == 1 || dx == -1 ||

@@ -43,9 +43,10 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
 
    const tnlTuple< 1, Real >& getParametricStep() const;
 
-   void getElementCoordinates( const Index i,
-                               const tnlTuple< 1, Real >& origin,
-                               tnlTuple< 1, Real >& coordinates ) const;
+   void getElementCenter( const tnlTuple< 1, Real >& origin,
+                          const tnlTuple< 1, Index >& coordinates,
+                          tnlTuple< 1, Real >& center ) const;
+
 
    Real getElementMeasure( const Index i ) const;
 
@@ -94,35 +95,33 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
 
    const tnlTuple< 2, Real >& getParametricStep() const;
 
-   void getElementCoordinates( const Index j,
-                               const Index i,
-                               const tnlTuple< 2, Real >& origin,
-                               tnlTuple< 2, Real >& coordinates ) const;
+   void getElementCenter( const tnlTuple< 2, Real >& origin,
+                          const tnlTuple< 2, Index >& coordinates,
+                          tnlTuple< 2, Real >& center ) const;
 
-   Real getElementMeasure( const Index j,
-                           const Index i ) const;
+   Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
 
-   template< Index dy, Index dx >
-   Real getElementsDistance( const Index j,
-                             const Index i ) const;
+   template< Index dx, Index dy >
+   Real getElementsDistance( const Index i,
+                             const Index j ) const;
 
-   template< Index dy, Index dx >
-   void getEdgeCoordinates( const Index j,
-                            const Index i,
+   template< Index dx, Index dy >
+   void getEdgeCoordinates( const Index i,
+                            const Index j,
                             const tnlTuple< 2, Real >& origin,
                             tnlTuple< 2, Real >& coordinates ) const;
 
-   template< Index dy, Index dx >
-   Real getEdgeLength( const Index j,
-                       const Index i ) const;
+   template< Index dx, Index dy >
+   Real getEdgeLength( const Index i,
+                       const Index j ) const;
 
-   template< Index dy, Index dx >
-   void getEdgeNormal( const Index j,
-                       const Index i,
+   template< Index dx, Index dy >
+   void getEdgeNormal( const Index i,
+                       const Index j,
                        tnlTuple< 2, Real >& normal ) const;
 
-   void getVertexCoordinates( const Index j,
-                              const Index i,
+   void getVertexCoordinates( const Index i,
+                              const Index j,
                               const tnlTuple< 2, Real >& origin,
                               tnlTuple< 2, Real >& coordinates ) const;
 

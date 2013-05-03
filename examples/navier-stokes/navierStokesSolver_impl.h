@@ -111,7 +111,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
       cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
       return false;
    }
-   this -> mesh. setDimensions( meshes. y(), meshes. x() );
+   this -> mesh. setDimensions( meshes. x(), meshes. y() );
    RealType hx = this -> mesh. getParametricStep(). x();
    RealType hy = this -> mesh. getParametricStep(). y();
    mesh. save( tnlString( "mesh.tnl" ) );
@@ -176,7 +176,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
    for( IndexType j = 0; j < ySize; j ++ )
       for( IndexType i = 0; i < xSize; i ++ )
       {
-         const IndexType c = mesh. getElementIndex( j, i );
+         const IndexType c = mesh. getElementIndex( i, j );
          const RealType x = i * hx;
          const RealType y = j * hy;
 
@@ -269,7 +269,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const 
       for( IndexType j = 0; j < ySize; j ++ )
          for( IndexType i = 0; i < xSize; i ++ )
          {
-            IndexType c = mesh. getElementIndex( j, i );
+            IndexType c = mesh. getElementIndex( i, j );
             u1[ c ] = rho_u1[ c ] / rho[ c ];
             u2[ c ] = rho_u2[ c ] / rho[ c ];
             p[ c ] = rho[ c ] * this -> R * this -> T;
@@ -359,10 +359,10 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
        */
       for( IndexType i = 0; i < xSize; i ++ )
       {
-         const IndexType c1 = mesh. getElementIndex( 0, i );
-         const IndexType c2 = mesh. getElementIndex( 1, i );
-         const IndexType c3 = mesh. getElementIndex( ySize - 1, i );
-         const IndexType c4 = mesh. getElementIndex( ySize - 2, i );
+         const IndexType c1 = mesh. getElementIndex( i, 0 );
+         const IndexType c2 = mesh. getElementIndex( i, 1 );
+         const IndexType c3 = mesh. getElementIndex( i, ySize - 1 );
+         const IndexType c4 = mesh. getElementIndex( i, ySize - 2 );
 
          RealType x = i * hx / mesh. getProportions(). x();
 
@@ -388,10 +388,10 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
       }
       for( IndexType j = 0; j < ySize; j ++ )
       {
-         const IndexType c1 = mesh. getElementIndex( j, 0 );
-         const IndexType c2 = mesh. getElementIndex( j, 1 );
-         const IndexType c3 = mesh. getElementIndex( j, xSize - 1 );
-         const IndexType c4 = mesh. getElementIndex( j, xSize - 2 );
+         const IndexType c1 = mesh. getElementIndex( 0, j );
+         const IndexType c2 = mesh. getElementIndex( 1, j );
+         const IndexType c3 = mesh. getElementIndex( xSize - 1, j );
+         const IndexType c4 = mesh. getElementIndex( xSize - 2, j );
 
          RealType y = j * hy / mesh. getProportions(). y();
 
@@ -422,7 +422,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
       for( IndexType j = 0; j < ySize; j ++ )
          for( IndexType i = 0; i < xSize; i ++ )
          {
-            IndexType c = mesh. getElementIndex( j, i );
+            IndexType c = mesh. getElementIndex( i, j );
             if( i == 0 || j == 0 ||
                 i == xSize - 1 || j == ySize - 1 )
             {

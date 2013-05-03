@@ -55,7 +55,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index zSize, const Index ySize, const Index xSize )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
    tnlAssert( xSize > 1,
               cerr << "The number of Elements along x-axis must be larger than 1." );
@@ -76,15 +76,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 3, Index >& dimensions )
 {
-   tnlAssert( dimensions. x() > 1,
-              cerr << "The number of Elements along x-axis must be larger than 1." );
-   tnlAssert( dimensions. y() > 1,
-              cerr << "The number of Elements along y-axis must be larger than 1." );
-   tnlAssert( dimensions. z() > 1,
-              cerr << "The number of Elements along z-axis must be larger than 1." );
-
-   this -> dimensions = dimensions;
-   dofs = this -> dimensions. x() * this -> dimensions. y() * this -> dimensions. z();
+   this -> setDimensions( this -> dimensions. x(), this -> dimensions. y(), this -> dimensions. z() );
 }
 
 template< typename Real,
@@ -177,7 +169,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 3, Real, Device, Index, Geometry > :: getElementIndex( const Index k, const Index j, const Index i ) const
+Index tnlGrid< 3, Real, Device, Index, Geometry > :: getElementIndex( const Index i, const Index j, const Index k ) const
 {
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
@@ -297,7 +289,7 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: write( const MeshFunction& f
          {
             const RealType x = this -> getOrigin(). x() + i * hx;
             const RealType y = this -> getOrigin(). y() + j * hy;
-            //file << x << " " << " " << y << " " << function[ this -> getElementIndex( j, i ) ] << endl;
+            //file << x << " " << " " << y << " " << function[ this -> getElementIndex( i, j ) ] << endl;
          }
          file << endl;
       }

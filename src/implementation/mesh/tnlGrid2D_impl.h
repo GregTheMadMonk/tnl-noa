@@ -58,7 +58,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index ySize, const Index xSize )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize )
 {
    tnlAssert( xSize > 0,
               cerr << "The number of Elements along x-axis must be larger than 0." );
@@ -80,7 +80,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 2, Index >& dimensions )
 {
-   this -> setDimensions( dimensions. y(), dimensions. x() );
+   this -> setDimensions( dimensions. x(), dimensions. y() );
 }
 
 template< typename Real,
@@ -169,7 +169,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Index j, const Index i ) const
+Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Index i, const Index j ) const
 {
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
@@ -181,6 +181,21 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Inde
                    << " ) in tnlGrid " << this -> getName(); )
 
    return j * this -> dimensions. x() + i;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
+                                                                           tnlTuple< 2, Index >& coordinates ) const
+{
+   tnlAssert( i >= 0 && i < dofs,
+              cerr << " i = " << i << " dofs = " << dofs
+                   << " in tnlGrid " << this -> getName(); );
+
+   coordinates. x() = element % this -> dimensions. x();
+   coordinates. y() = element / this -> dimensions. x();
 }
 
 template< typename Real,
@@ -201,9 +216,9 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const 
 
 
 template< typename Real,
-           typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
 Index tnlGrid< 2, Real, Device, Index, Geometry > :: getDofs() const
 {
    return this -> dofs;
@@ -213,13 +228,22 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const Index j,
-                                                                       const Index i ) const
+void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const tnlTuple< 2, Index >& coordinates,
+                                                                      tnlTuple< 2, Real >& center ) const
 {
-   return geometry. getElementMeasure( j, i );
+      geometry. getElementCenter( origin, coordinates, center );
 }
 
 template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const
+{
+   return geometry. getElementMeasure( coordinates );
+}
+
+/*template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
@@ -250,7 +274,7 @@ tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal
                                                                                   const Index i ) const
 {
    return geometry. getEdgeNormal< dy, dx >( j, i );
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -349,7 +373,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
          {
             const RealType x = this -> getOrigin(). x() + i * hx;
             const RealType y = this -> getOrigin(). y() + j * hy;
-            file << x << " " << " " << y << " " << function[ this -> getElementIndex( j, i ) ] << endl;
+            file << x << " " << " " << y << " " << function[ this -> getElementIndex( i, j ) ] << endl;
          }
          file << endl;
       }
