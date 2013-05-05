@@ -28,7 +28,7 @@
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: setParametricStep( const tnlTuple< 1, Real >& parametricStep )
+void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: setParametricStep( const VertexType& parametricStep )
 {
    this -> parametricStep = parametricStep;
    this -> elementMeasure = this -> parametricStep. x();
@@ -37,7 +37,8 @@ void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: setParametricStep( co
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 1, Real >& tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getParametricStep() const
+const typename tnlIdenticalGridGeometry< 1, Real, Device, Index > :: VertexType& 
+   tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getParametricStep() const
 {
    return this -> parametricStep;
 }
@@ -45,9 +46,9 @@ const tnlTuple< 1, Real >& tnlIdenticalGridGeometry< 1, Real, Device, Index > ::
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( const tnlTuple< 1, Real >& origin,
-                                                                             const tnlTuple< 1, Index >& coordinates,
-                                                                             tnlTuple< 1, Real >& center ) const
+void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( const VertexType& origin,
+                                                                             const CoordinatesType& coordinates,
+                                                                             VertexType& center ) const
 {
    center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
 }
@@ -55,7 +56,7 @@ void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( con
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementMeasure( const Index i ) const
+Real tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementMeasure( const CoordinatesType& i ) const
 {
    return elementMeasure;
 }
@@ -74,8 +75,8 @@ template< typename Real,
           typename Index >
 template< Index dx >
 void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getEdgeCoordinates( const Index i,
-                                                                               const tnlTuple< 1, Real >& origin,
-                                                                               tnlTuple< 1, Real >& coordinates ) const
+                                                                               const VertexType& origin,
+                                                                               VertexType& coordinates ) const
 {
    coordinates. x() = origin. x() + ( i + 0.5 * ( 1.0 + dx ) ) * parametricStep. x();
 }
@@ -94,7 +95,7 @@ template< typename Real,
           typename Index >
 template< Index dx >
 void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getEdgeNormal( const Index i,
-                                                                          tnlTuple< 1, Real >& normal ) const
+                                                                          VertexType& normal ) const
 {
    tnlAssert( dx == 1 || dx == -1, cerr << " dx = " << dx << " dy = " << dy << endl );
    normal. x() = dx;
@@ -128,7 +129,7 @@ bool tnlIdenticalGridGeometry< 1, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: setParametricStep( const tnlTuple< 2, Real >& parametricStep )
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: setParametricStep( const VertexType& parametricStep )
 {
    this -> parametricStep = parametricStep;
    this -> elementMeasure = this -> parametricStep. x() * this -> parametricStep. y();
@@ -137,7 +138,8 @@ void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: setParametricStep( co
 template< typename Real,
           typename Device,
           typename Index >
-const tnlTuple< 2, Real >& tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getParametricStep() const
+const typename tnlIdenticalGridGeometry< 2, Real, Device, Index > :: VertexType&
+   tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getParametricStep() const
 {
    return this -> parametricStep;
 }
@@ -145,9 +147,9 @@ const tnlTuple< 2, Real >& tnlIdenticalGridGeometry< 2, Real, Device, Index > ::
 template< typename Real,
           typename Device,
           typename Index >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( const tnlTuple< 2, Real >& origin,
-                                                                             const tnlTuple< 2, Index >& coordinates,
-                                                                             tnlTuple< 2, Real >& center ) const
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( const VertexType& origin,
+                                                                             const CoordinatesType& coordinates,
+                                                                             VertexType& center ) const
 {
    center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
    center. y() = ( coordinates. y() + 0.5 ) * parametricStep. y();
@@ -156,12 +158,12 @@ void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( con
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
    return elementMeasure;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< Index dx, Index dy >
@@ -183,8 +185,8 @@ template< typename Real,
 template< Index dx, Index dy >
 void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeCoordinates( const Index i,
                                                                                const Index j,
-                                                                               const tnlTuple< 2, Real >& origin,
-                                                                               tnlTuple< 2, Real >& coordinates ) const
+                                                                               const VertexType& origin,
+                                                                               VertexType& coordinates ) const
 {
    coordinates. x() = origin. x() + ( i + 0.5 * ( 1.0 + dx ) ) * parametricStep. x();
    coordinates. y() = origin. y() + ( j + 0.5 * ( 1.0 + dy ) ) * parametricStep. y();
@@ -202,21 +204,20 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeLength( const 
    if( dy == 1 && dx == 0 )
       return parametricStep. x();
    tnlAssert( false, cerr << "Bad values of dx and dy - dx = " << dx << " dy = " << dy );
-}
+}*/
 
 template< typename Real,
           typename Device,
           typename Index >
 template< Index dx, Index dy >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const Index i,
-                                                                          const Index j,
-                                                                          tnlTuple< 2, Real >& normal ) const
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const CoordinatesType& coordinates,                                                                     
+                                                                          VertexType& normal ) const
 {
    tnlAssert( ( dx == 0 || dx == 1 || dx == -1 ||
                 dy == 0 || dy == 1 || dy == -1 ) &&
                dx * dy == 0, cerr << " dx = " << dx << " dy = " << dy << endl );
-   normal. x() = dx;
-   normal. y() = dy;
+   normal. x() = dx * parametricStep. y();
+   normal. y() = dy * parametricStep. x();;
 }
 
 template< typename Real,

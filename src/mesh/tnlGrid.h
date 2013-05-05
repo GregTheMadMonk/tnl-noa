@@ -44,6 +44,9 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Geometry< 1, Real, Device, Index > GeometryType;
+   typedef tnlTuple< 1, Real > VertexType;
+   typedef tnlTuple< 1, Index > CoordinatesType;
+
    enum { Dimensions = 1};
 
    tnlGrid();
@@ -54,21 +57,21 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    void setDimensions( const Index xSize );
 
-   void setDimensions( const tnlTuple< 1, Index >& );
+   void setDimensions( const CoordinatesType& );
 
-   const tnlTuple< 1, Index >& getDimensions() const;
+   const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const tnlTuple< 1, Real >& origin );
+   void setOrigin( const VertexType& origin );
 
-   const tnlTuple< 1, Real >& getOrigin() const;
+   const VertexType& getOrigin() const;
 
-   void setProportions( const tnlTuple< 1, Real >& proportions );
+   void setProportions( const VertexType& proportions );
 
-   const tnlTuple< 1, Real >& getProportions() const;
+   const VertexType& getProportions() const;
 
-   void setParametricStep( const tnlTuple< 1, Real >& spaceStep );
+   void setParametricStep( const VertexType& spaceStep );
 
-   const tnlTuple< 1, Real >& getParametricStep() const;
+   const VertexType& getParametricStep() const;
 
    Index getElementIndex( const Index i ) const;
 
@@ -113,6 +116,8 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Geometry< 2, Real, Device, Index > GeometryType;
+   typedef tnlTuple< 2, Real > VertexType;
+   typedef tnlTuple< 2, Index > CoordinatesType;
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -123,38 +128,46 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    void setDimensions( const Index xSize, const Index ySize );
 
-   void setDimensions( const tnlTuple< 2, Index >& );
+   void setDimensions( const CoordinatesType& );
 
-   const tnlTuple< 2, Index >& getDimensions() const;
+   const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const tnlTuple< 2, Real >& origin );
+   void setOrigin( const VertexType& origin );
 
-   const tnlTuple< 2, Real >& getOrigin() const;
+   const VertexType& getOrigin() const;
 
-   void setProportions( const tnlTuple< 2, Real >& proportions );
+   void setProportions( const VertexType& proportions );
 
-   const tnlTuple< 2, Real >& getProportions() const;
+   const VertexType& getProportions() const;
 
-   void setParametricStep( const tnlTuple< 2, Real >& spaceStep );
+   void setParametricStep( const VertexType& spaceStep );
 
-   const tnlTuple< 2, Real >& getParametricStep() const;
+   const VertexType& getParametricStep() const;
 
    Index getElementIndex( const Index i,
                           const Index j ) const;
 
    void getElementCoordinates( const Index i,
-                               tnlTuple< 2, Index >& coordinates ) const;
+                                   CoordinatesType& coordinates ) const;
 
    Index getElementNeighbour( const Index Element,
-                              const Index dy,
-                              const Index dx ) const;
+                              const Index dx,
+                              const Index dy ) const;
 
    Index getDofs() const;
 
-   void getElementCenter( const tnlTuple< 2, Index >& coordinates,
-                          tnlTuple< 2, Real >& center ) const;
+   void getElementCenter( const CoordinatesType& coordinates,
+                          VertexType& center ) const;
 
-   Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
+   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< int dx, int dy >
+   void getEdgeNormal( const CoordinatesType& elementCoordinates,
+                       VertexType& normal ) const;
+
+   template< int dx, int dy >
+   void getVertex( const CoordinatesType& elementCoordinates,
+                   VertexType& vertex ) const;
 
    /*template< Index dy, Index dx >
    Real getElementsDistance( const Index j,
@@ -162,12 +175,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    template< int dy, int dx >
    Real getEdgeLength( const Index j,
-                       const Index i ) const;
-
-   template< int dy, int dx >
-   tnlTuple< 2, Real > getEdgeNormal( const Index j,
-                                      const Index i ) const;*/
-
+                       const Index i ) const;*/
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -207,6 +215,9 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef Geometry< 2, Real, Device, Index > GeometryType;
+   typedef tnlTuple< 3, Real > VertexType;
+   typedef tnlTuple< 3, Index > CoordinatesType;
    enum { Dimensions = 3};
 
    tnlGrid();
@@ -217,21 +228,21 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
-   void setDimensions( const tnlTuple< 3, Index >& );
+   void setDimensions( const CoordinatesType& );
 
-   const tnlTuple< 3, Index >& getDimensions() const;
+   const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const tnlTuple< 3, Real >& origin );
+   void setOrigin( const VertexType& origin );
 
-   const tnlTuple< 3, Real >& getOrigin() const;
+   const VertexType& getOrigin() const;
 
-   void setProportions( const tnlTuple< 3, Real >& proportions );
+   void setProportions( const VertexType& proportions );
 
-   const tnlTuple< 3, Real >& getProportions() const;
+   const VertexType& getProportions() const;
 
-   void setParametricStep( const tnlTuple< 3, Real >& spaceStep );
+   void setParametricStep( const VertexType& spaceStep );
 
-   tnlTuple< 3, Real > getParametricStep() const;
+   const VertexType& getParametricStep() const;
 
    Index getElementIndex( const Index i, const Index j, const Index k ) const;
 

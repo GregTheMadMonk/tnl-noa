@@ -46,10 +46,10 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > > :: getDiffusion( co
    const Real hx = mesh -> getParametricStep(). x();
    const Real hy = mesh -> getParametricStep(). y();
 
-   const Index e = mesh -> getElementNeighbour( c,  0,  1 );
-   const Index w = mesh -> getElementNeighbour( c,  0, -1 );
-   const Index n = mesh -> getElementNeighbour( c,  1,  0 );
-   const Index s = mesh -> getElementNeighbour( c, -1,  0 );
+   const Index e = mesh -> getElementNeighbour( c,  1,  0 );
+   const Index w = mesh -> getElementNeighbour( c, -1,  0 );
+   const Index n = mesh -> getElementNeighbour( c,  0,  1 );
+   const Index s = mesh -> getElementNeighbour( c,  0, -1 );
 
    return ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx ) +
           ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );

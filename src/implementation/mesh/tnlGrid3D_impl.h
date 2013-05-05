@@ -74,7 +74,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 3, Index >& dimensions )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
 {
    this -> setDimensions( this -> dimensions. x(), this -> dimensions. y(), this -> dimensions. z() );
 }
@@ -83,7 +83,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 3, Index >& tnlGrid< 3, Real, Device, Index, Geometry > :: getDimensions() const
+const typename tnlGrid< 3, Real, Device, Index, Geometry > :: CoordinatesType& 
+   tnlGrid< 3, Real, Device, Index, Geometry > :: getDimensions() const
 {
    return this -> dimensions;
 }
@@ -92,7 +93,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setOrigin( const tnlTuple< 3, Real >& origin )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setOrigin( const VertexType& origin )
 {
    this -> origin = origin;
 }
@@ -101,7 +102,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index, Geometry > :: getOrigin() const
+const typename tnlGrid< 3, Real, Device, Index, Geometry > :: VertexType&
+   tnlGrid< 3, Real, Device, Index, Geometry > :: getOrigin() const
 {
    return this -> origin;
 }
@@ -110,7 +112,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setProportions( const tnlTuple< 3, Real >& proportions )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
 {
    this -> proportions = proportions;
 }
@@ -119,7 +121,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 3, Real >& tnlGrid< 3, Real, Device, Index, Geometry > :: getProportions() const
+const typename tnlGrid< 3, Real, Device, Index, Geometry > :: VertexType&
+   tnlGrid< 3, Real, Device, Index, Geometry > :: getProportions() const
 {
    return this -> proportions;
 }
@@ -128,7 +131,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setParametricStep( const tnlTuple< 3, Real >& spaceStep )
+void tnlGrid< 3, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& spaceStep )
 {
    this -> proportions. x() = this -> dimensions. x() *
                               spaceStep. x();
@@ -142,27 +145,10 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-tnlTuple< 3, Real > tnlGrid< 3, Real, Device, Index, Geometry > :: getParametricStep() const
+const typename tnlGrid< 3, Real, Device, Index, Geometry > :: VertexType&
+   tnlGrid< 3, Real, Device, Index, Geometry > :: getParametricStep() const
 {
-   tnlAssert( dimensions. x() > 0,
-              cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
-                   << this -> getName() );
-   tnlAssert( dimensions. y() > 0,
-              cerr << "Cannot get the space step hy since number of Elements along the y axis is not known in tnlGrid "
-                   << this -> getName() );
-   tnlAssert( dimensions. z() > 0,
-              cerr << "Cannot get the space step hz since number of Elements along the z axis is not known in tnlGrid "
-                   << this -> getName() );
-
-   tnlTuple< 3, RealType > spaceStep;
-   spaceStep. x() =
-            this -> proportions. x() / ( Real ) ( this -> dimensions. x() - 1 );
-   spaceStep. y() =
-            this -> proportions. y() / ( Real ) ( this -> dimensions. y() - 1 );
-   spaceStep. z() =
-            this -> proportions. z() / ( Real ) ( this -> dimensions. z() - 1 );
-
-   return spaceStep;
+   //return geometry. getParametricStep();
 }
 
 template< typename Real,

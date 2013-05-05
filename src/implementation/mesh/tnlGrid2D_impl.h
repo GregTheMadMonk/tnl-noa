@@ -68,7 +68,7 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index x
    this -> dimensions. x() = xSize;
    this -> dimensions. y() = ySize;
    dofs = ySize * xSize;
-   tnlTuple< 2, Real > parametricStep;
+   VertexType parametricStep;
    parametricStep. x() = proportions. x() / xSize;
    parametricStep. y() = proportions. y() / ySize;
    geometry. setParametricStep( parametricStep );
@@ -78,7 +78,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const tnlTuple< 2, Index >& dimensions )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
 {
    this -> setDimensions( dimensions. x(), dimensions. y() );
 }
@@ -87,7 +87,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 2, Index >& tnlGrid< 2, Real, Device, Index, Geometry > :: getDimensions() const
+const typename tnlGrid< 2, Real, Device, Index, Geometry > :: CoordinatesType& 
+   tnlGrid< 2, Real, Device, Index, Geometry > :: getDimensions() const
 {
    return this -> dimensions;
 }
@@ -96,7 +97,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setOrigin( const tnlTuple< 2, Real >& origin )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setOrigin( const VertexType& origin )
 {
    this -> origin = origin;
 }
@@ -105,7 +106,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 2, Real >& tnlGrid< 2, Real, Device, Index, Geometry > :: getOrigin() const
+const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
+   tnlGrid< 2, Real, Device, Index, Geometry > :: getOrigin() const
 {
    return this -> origin;
 }
@@ -114,10 +116,10 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const tnlTuple< 2, Real >& proportions )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
 {
    this -> proportions = proportions;
-   tnlTuple< 2, Real > parametricStep;
+   VertexType parametricStep;
    parametricStep. x() = proportions. x() / ( this -> dimensions. x() - 1 );
    parametricStep. y() = proportions. y() / ( this -> dimensions. y() - 1 );
    geometry. setParametricStep( parametricStep );
@@ -127,7 +129,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 2, Real >& tnlGrid< 2, Real, Device, Index, Geometry > :: getProportions() const
+const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
+   tnlGrid< 2, Real, Device, Index, Geometry > :: getProportions() const
 {
    return this -> proportions;
 }
@@ -136,7 +139,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const tnlTuple< 2, Real >& spaceStep )
+void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& spaceStep )
 {
    this -> proportions. x() = this -> dimensions. x() *
                               geometry. getParametricStep(). x();
@@ -148,7 +151,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-const tnlTuple< 2, Real >& tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
+const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
+   tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
 {
    /*tnlAssert( dimensions. x() > 0,
               cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
@@ -188,7 +192,7 @@ template< typename Real,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
-                                                                           tnlTuple< 2, Index >& coordinates ) const
+                                                                           CoordinatesType& coordinates ) const
 {
    tnlAssert( i >= 0 && i < dofs,
               cerr << " i = " << i << " dofs = " << dofs
@@ -203,8 +207,8 @@ template< typename Real,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
 Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const Index Element,
-                                                            const Index dy,
-                                                            const Index dx ) const
+                                                                          const Index dx,
+                                                                          const Index dy ) const
 {
    tnlAssert( Element + dy * this -> dimensions. x() + dx < getDofs(),
               cerr << "Index of neighbour with dx = " << dx
@@ -228,8 +232,8 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const tnlTuple< 2, Index >& coordinates,
-                                                                      tnlTuple< 2, Real >& center ) const
+void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
+                                                                      VertexType& center ) const
 {
       geometry. getElementCenter( origin, coordinates, center );
 }
@@ -238,7 +242,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
    return geometry. getElementMeasure( coordinates );
 }
@@ -263,18 +267,29 @@ Real tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeLength( const Index j
                                                                    const Index i ) const
 {
    return geometry. getEdgeLength< dy, dx >( j, i );
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+template< int dx, int dy >
+void tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const CoordinatesType& coordinates,
+                                                                   VertexType& normal ) const
+{
+   return geometry. getEdgeNormal< dx, dy >( coordinates, normal );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-template< int dy, int dx >
-tnlTuple< 2, Real > tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const Index j,
-                                                                                  const Index i ) const
+   template< int dx, int dy >
+void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
+                                                               VertexType& vertex ) const
 {
-   return geometry. getEdgeNormal< dy, dx >( j, i );
-}*/
+   return geometry. getVertex< dx, dy >( elementCoordinates, vertex );
+}
 
 template< typename Real,
           typename Device,
@@ -317,7 +332,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( tnlFile& file )
       return false;
    this -> dofs = this -> getDimensions(). x() *
                   this -> getDimensions(). y();
-   tnlTuple< 2, Real > parametricStep;
+   VertexType parametricStep;
    parametricStep. x() = proportions. x() / ( this -> dimensions. x() - 1 );
    parametricStep. y() = proportions. y() / ( this -> dimensions. y() - 1 );
    geometry. setParametricStep( parametricStep );

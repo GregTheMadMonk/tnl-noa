@@ -45,10 +45,10 @@ void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( 
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlCentralFDMGradient. Use the bindMesh method." );
 
-   const Index e = mesh -> getElementNeighbour( i,  0,  1 );
-   const Index w = mesh -> getElementNeighbour( i,  0, -1 );
-   const Index n = mesh -> getElementNeighbour( i,  1,  0 );
-   const Index s = mesh -> getElementNeighbour( i, -1,  0 );
+   const Index e = mesh -> getElementNeighbour( i,  1,  0 );
+   const Index w = mesh -> getElementNeighbour( i, -1,  0 );
+   const Index n = mesh -> getElementNeighbour( i,  0,  1 );
+   const Index s = mesh -> getElementNeighbour( i,  0, -1 );
 
    f_x = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
    f_y = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );

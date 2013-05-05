@@ -120,10 +120,10 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    const RealType hy = this -> mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
-   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
-   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
+   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
+   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
 
    /****
     * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
@@ -132,7 +132,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
    const RealType u2_n = rho_u2[ n ] / regularize( rho[ n ] );
    const RealType u2_s = rho_u2[ s ] / regularize( rho[ s ] );
-   rho_t= this -> viscosityCoefficient * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
+   rho_t = this -> viscosityCoefficient * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
                - ( rho[ e ] * u1_e - rho[ w ] * u1_w ) / ( 2.0 * hx )
                - ( rho[ n ] * u2_n - rho[ s ] * u2_s ) / ( 2.0 * hy );
 
@@ -157,6 +157,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
                    - p_y;
 
+
    /****
     * Scheme for deformed grids
     */
@@ -171,7 +172,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    /****
     * Get the central volume and its neighbours (east, north, west, south) coordinates
     */
-   tnlTuple< 2, IndexType > c_coordinates, e_coordinates, n_coordinates, w_coordinates, s_coordinates;
+   CoordinatesType c_coordinates, e_coordinates, n_coordinates, w_coordinates, s_coordinates;
    this -> mesh -> getElementCoordinates( c, c_coordinates );
    e_coordinates = n_coordinates = w_coordinates = s_coordinates = c_coordinates;
    e_coordinates. x() ++;
@@ -189,26 +190,13 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    const RealType mu_D_s = this -> mesh -> getElementMeasure( s_coordinates );
 
    /****
-    * Get the volumes centers of gravity
+    * Get the edge normals
     */
-   tnlTuple< 2, RealType > c_center, e_center, w_center, n_center, s_center;
-   this -> mesh -> getElementCenter( c_coordinates, c_center );
-   this -> mesh -> getElementCenter( c_coordinates, e_center );
-   this -> mesh -> getElementCenter( c_coordinates, w_center );
-   this -> mesh -> getElementCenter( c_coordinates, n_center );
-   this -> mesh -> getElementCenter( c_coordinates, s_center );
-
-   /****
-    * Get delta x and delta y between the volumes
-    */
-   const RealType dx_e = e_center. x() - c_center. x();
-   const RealType dx_w = w_center. x() - w_center. x();
-   const RealType dx_n = n_center. x() - n_center. x();
-   const RealType dx_s = s_center. x() - s_center. x();
-   const RealType dy_e = e_center. y() - c_center. y();
-   const RealType dy_w = w_center. y() - w_center. y();
-   const RealType dy_n = n_center. y() - n_center. y();
-   const RealType dy_s = s_center. y() - s_center. y();
+   VertexType e_normal, w_normal, n_normal, s_normal;
+   this -> mesh -> template getEdgeNormal<  1,  0 >( c_coordinates, e_normal );
+   this -> mesh -> template getEdgeNormal< -1,  0 >( c_coordinates, w_normal );
+   this -> mesh -> template getEdgeNormal<  0,  1 >( c_coordinates, n_normal );
+   this -> mesh -> template getEdgeNormal<  0, -1 >( c_coordinates, s_normal );
 
    /****
     * Compute the fluxes
@@ -222,15 +210,16 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    const RealType rho_g_n = 0.5 * ( rho[ c ] * u2_c + rho[ n ] * u2_n );
    const RealType rho_g_s = 0.5 * ( rho[ c ] * u2_c + rho[ s ] * u2_s );
 
-   rho_t = - 1.0 / mu_D_c * ( rho_f_e * dy_e - rho_g_e * dx_e +
-                              rho_f_n * dy_n - rho_g_n * dx_n +
-                              rho_f_w * dy_w - rho_g_w * dx_w +
-                              rho_f_s * dy_s - rho_g_s * dx_s )
+   rho_t = - 1.0 / mu_D_c * ( rho_f_e * e_normal. x() + rho_g_e * e_normal. y() +
+                              rho_f_n * n_normal. x() + rho_g_n * n_normal. y() +
+                              rho_f_w * w_normal. x() + rho_g_w * w_normal. y() +
+                              rho_f_s * s_normal. x() + rho_g_s * s_normal. y() )
            + 1.0 / ( 8.0 * mu_D_c ) *
                             ( ( mu_D_c + mu_D_e ) * ( rho[ e ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_n ) * ( rho[ n ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_w ) * ( rho[ w ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_s ) * ( rho[ s ] - rho[ c ] ) );
+
 }
 
 template< typename Real,

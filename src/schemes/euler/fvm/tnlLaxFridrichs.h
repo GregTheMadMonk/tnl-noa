@@ -40,6 +40,8 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    tnlLaxFridrichs();
 
