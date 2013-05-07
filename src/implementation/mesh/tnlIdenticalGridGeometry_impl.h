@@ -163,22 +163,22 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( co
    return elementMeasure;
 }
 
-/*template< typename Real,
+template< typename Real,
           typename Device,
           typename Index >
-   template< Index dx, Index dy >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const Index i,
-                                                                                const Index j ) const
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const CoordinatesType& c1,
+                                                                                const CoordinatesType& c2 ) const
 {
-   if( dy == 0 && dx == 1 )
-      return parametricStep. x();
-   if( dy == 1 && dx == 0 )
-      return parametricStep. y();
-   const Real x = dx * parametricStep. x();
-   const Real y = dy * parametricStep. y();
-   return sqrt( dx * dx + dy * dy );
+   CoordinatesType c( c2 );
+   c -= c1;
+   if( c. y() == 0 )
+      return parametricStep. x() * fabs( c. x() );
+   if( c. x() == 0 )
+      return parametricStep. y() * fabs( c. y() );
+   return sqrt( c. x() * c. x() + c. y() * c. y() );
 }
 
+/*
 template< typename Real,
           typename Device,
           typename Index >

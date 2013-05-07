@@ -40,8 +40,7 @@ void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: setFunction( 
 
 template< typename Real, typename Device, typename Index >
 void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( const Index& i,
-                                                                                RealType& f_x,
-                                                                                RealType& f_y ) const
+                                                                                VertexType& grad_f  ) const
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlCentralFDMGradient. Use the bindMesh method." );
 
@@ -49,9 +48,23 @@ void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( 
    const Index w = mesh -> getElementNeighbour( i, -1,  0 );
    const Index n = mesh -> getElementNeighbour( i,  0,  1 );
    const Index s = mesh -> getElementNeighbour( i,  0, -1 );
+   CoordinatesType cCoordinates;
+   mesh -> getElementCoordinates( i, cCoordinates );
+   CoordinatesType eCoordinates( cCoordinates ),
+                   wCoordinates( cCoordinates ),
+                   nCoordinates( cCoordinates ),
+                   sCoordinates( cCoordinates );
+   eCoordinates. x() ++;
+   wCoordinates. x() --;
+   nCoordinates. y() ++;
+   sCoordinates. y() --;
 
-   f_x = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
-   f_y = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );
+
+   //grad_f. x() = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
+   //grad_f. y() = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );
+
+   grad_f. x() = ( f[ e ] - f[ w ] ) / ( mesh -> getElementsDistance( eCoordinates, wCoordinates ) );
+   grad_f. y() = ( f[ n ] - f[ s ] ) / ( mesh -> getElementsDistance( nCoordinates, sCoordinates ) );
 }
 
 #endif

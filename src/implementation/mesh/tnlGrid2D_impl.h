@@ -247,17 +247,17 @@ Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const Coo
    return geometry. getElementMeasure( coordinates );
 }
 
-/*template< typename Real,
+template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-   template< Index dy, Index dx >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementsDistance( const Index j,
-                                                                         const Index i ) const
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementsDistance( const CoordinatesType& c1,
+                                                                         const CoordinatesType& c2 ) const
 {
-   return geometry. getElementsDistance< dy, dx >( j, i );
+   return geometry. getElementsDistance( c1, c2 );
 }
 
+/*
 template< typename Real,
           typename Device,
           typename Index,

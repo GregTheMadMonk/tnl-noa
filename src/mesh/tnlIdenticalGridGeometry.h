@@ -105,9 +105,8 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
 
    Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
 
-   /*template< Index dx, Index dy >
-   Real getElementsDistance( const Index i,
-                             const Index j ) const;*/
+   Real getElementsDistance( const CoordinatesType& c1,
+                             const CoordinatesType& c2 ) const;
 
    /*template< Index dx, Index dy >
    void getEdgeCoordinates( const Index i,

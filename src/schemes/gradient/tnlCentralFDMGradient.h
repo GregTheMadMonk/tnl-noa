@@ -34,6 +34,8 @@ class tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlGrid< 2, Real, Device, Index > :: CoordinatesType CoordinatesType;
+   typedef typename tnlGrid< 2, Real, Device, Index > :: VertexType VertexType;
 
    tnlCentralFDMGradient();
 
@@ -43,8 +45,7 @@ class tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > >
    void setFunction( Vector& f ); // TODO: add const
 
    void getGradient( const Index& i,
-                     RealType& f_x,
-                     RealType& f_y ) const;
+                     VertexType& grad_f ) const;
    protected:
 
    // TODO: change to ConstSharedVector

@@ -148,7 +148,7 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
                           const Index j ) const;
 
    void getElementCoordinates( const Index i,
-                                   CoordinatesType& coordinates ) const;
+                               CoordinatesType& coordinates ) const;
 
    Index getElementNeighbour( const Index Element,
                               const Index dx,
@@ -169,11 +169,10 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    void getVertex( const CoordinatesType& elementCoordinates,
                    VertexType& vertex ) const;
 
-   /*template< Index dy, Index dx >
-   Real getElementsDistance( const Index j,
-                             const Index i ) const;
+   Real getElementsDistance( const CoordinatesType& c1,
+                             const CoordinatesType& c2 ) const;
 
-   template< int dy, int dx >
+   /*template< int dy, int dx >
    Real getEdgeLength( const Index j,
                        const Index i ) const;*/
 

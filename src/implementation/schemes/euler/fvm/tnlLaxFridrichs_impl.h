@@ -139,8 +139,8 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    /****
     * Compute the pressure gradient
     */
-   RealType p_x( 0.0 ), p_y( 0.0 );
-   pressureGradient -> getGradient( c, p_x, p_y );
+   VertexType grad_p;
+   pressureGradient -> getGradient( c, grad_p );
 
    /****
     * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
@@ -148,14 +148,14 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    rho_u1_t = this -> viscosityCoefficient * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
                    - ( rho_u1[ e ] * u1_e - rho_u1[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u1[ n ] * u2_n - rho_u1[ s ] * u2_s ) / ( 2.0 * hy )
-                   - p_x;
+                   - grad_p. x();
    /****
-    * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_y =  0
+    * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
     */
    rho_u2_t = this -> viscosityCoefficient * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
                    - ( rho_u2[ e ] * u1_e - rho_u2[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
-                   - p_y;
+                   - grad_p. y();
 
 
    /****
@@ -210,16 +210,64 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient  > :: 
    const RealType rho_g_n = 0.5 * ( rho[ c ] * u2_c + rho[ n ] * u2_n );
    const RealType rho_g_s = 0.5 * ( rho[ c ] * u2_c + rho[ s ] * u2_s );
 
+   const RealType rho_u1_f_e = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ e ] * u1_e );
+   const RealType rho_u1_f_w = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ w ] * u1_w );
+   const RealType rho_u1_f_n = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ n ] * u1_n );
+   const RealType rho_u1_f_s = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ s ] * u1_s );
+   const RealType rho_u1_g_e = 0.5 * ( rho_u1[ c ] * u2_c + rho_u1[ e ] * u2_e );
+   const RealType rho_u1_g_w = 0.5 * ( rho_u1[ c ] * u2_c + rho_u1[ w ] * u2_w );
+   const RealType rho_u1_g_n = 0.5 * ( rho_u1[ c ] * u2_c + rho_u1[ n ] * u2_n );
+   const RealType rho_u1_g_s = 0.5 * ( rho_u1[ c ] * u2_c + rho_u1[ s ] * u2_s );
+
+   const RealType rho_u2_f_e = 0.5 * ( rho_u2[ c ] * u1_c + rho_u2[ e ] * u1_e );
+   const RealType rho_u2_f_w = 0.5 * ( rho_u2[ c ] * u1_c + rho_u2[ w ] * u1_w );
+   const RealType rho_u2_f_n = 0.5 * ( rho_u2[ c ] * u1_c + rho_u2[ n ] * u1_n );
+   const RealType rho_u2_f_s = 0.5 * ( rho_u2[ c ] * u1_c + rho_u2[ s ] * u1_s );
+   const RealType rho_u2_g_e = 0.5 * ( rho_u2[ c ] * u2_c + rho_u2[ e ] * u2_e );
+   const RealType rho_u2_g_w = 0.5 * ( rho_u2[ c ] * u2_c + rho_u2[ w ] * u2_w );
+   const RealType rho_u2_g_n = 0.5 * ( rho_u2[ c ] * u2_c + rho_u2[ n ] * u2_n );
+   const RealType rho_u2_g_s = 0.5 * ( rho_u2[ c ] * u2_c + rho_u2[ s ] * u2_s );
+
+   /****
+    * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
+    */
    rho_t = - 1.0 / mu_D_c * ( rho_f_e * e_normal. x() + rho_g_e * e_normal. y() +
                               rho_f_n * n_normal. x() + rho_g_n * n_normal. y() +
                               rho_f_w * w_normal. x() + rho_g_w * w_normal. y() +
                               rho_f_s * s_normal. x() + rho_g_s * s_normal. y() )
-           + 1.0 / ( 8.0 * mu_D_c ) *
+           + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
                             ( ( mu_D_c + mu_D_e ) * ( rho[ e ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_n ) * ( rho[ n ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_w ) * ( rho[ w ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_s ) * ( rho[ s ] - rho[ c ] ) );
 
+   /****
+    * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
+    */
+   rho_u1_t = - 1.0 / mu_D_c * ( rho_u1_f_e * e_normal. x() + rho_u1_g_e * e_normal. y() +
+                                 rho_u1_f_n * n_normal. x() + rho_u1_g_n * n_normal. y() +
+                                 rho_u1_f_w * w_normal. x() + rho_u1_g_w * w_normal. y() +
+                                 rho_u1_f_s * s_normal. x() + rho_u1_g_s * s_normal. y() )
+              + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
+                               ( ( mu_D_c + mu_D_e ) * ( rho_u1[ e ] - rho_u1[ c ] ) +
+                                 ( mu_D_c + mu_D_n ) * ( rho_u1[ n ] - rho_u1[ c ] ) +
+                                 ( mu_D_c + mu_D_w ) * ( rho_u1[ w ] - rho_u1[ c ] ) +
+                                 ( mu_D_c + mu_D_s ) * ( rho_u1[ s ] - rho_u1[ c ] ) )
+                                 - grad_p. x();
+
+   /****
+    * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
+    */
+   rho_u2_t = - 1.0 / mu_D_c * ( rho_u2_f_e * e_normal. x() + rho_u2_g_e * e_normal. y() +
+                                 rho_u2_f_n * n_normal. x() + rho_u2_g_n * n_normal. y() +
+                                 rho_u2_f_w * w_normal. x() + rho_u2_g_w * w_normal. y() +
+                                 rho_u2_f_s * s_normal. x() + rho_u2_g_s * s_normal. y() )
+              + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
+                               ( ( mu_D_c + mu_D_e ) * ( rho_u2[ e ] - rho_u2[ c ] ) +
+                                 ( mu_D_c + mu_D_n ) * ( rho_u2[ n ] - rho_u2[ c ] ) +
+                                 ( mu_D_c + mu_D_w ) * ( rho_u2[ w ] - rho_u2[ c ] ) +
+                                 ( mu_D_c + mu_D_s ) * ( rho_u2[ s ] - rho_u2[ c ] ) )
+                                 - grad_p. y();
 }
 
 template< typename Real,

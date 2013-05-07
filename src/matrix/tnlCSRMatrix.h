@@ -146,7 +146,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool load( const tnlString& fileName );
 
-   tnlCSRMatrix< Real, Device, Index >& operator = ( const tnlCSRMatrix< Real, Device, Index >& csrMatrix );
+   template< typename Real2 >
+   tnlCSRMatrix< Real, Device, Index >& operator = ( const tnlCSRMatrix< Real2, Device, Index >& csrMatrix );
 
    //! Prints out the matrix structure
    void printOut( ostream& str,
@@ -776,7 +777,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 }
 
 template< typename Real, typename Device, typename Index >
-tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: operator = ( const tnlCSRMatrix< Real, Device, Index >& csrMatrix )
+   template< typename Real2 >
+tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: operator = ( const tnlCSRMatrix< Real2, Device, Index >& csrMatrix )
 {
    if( ! nonzero_elements. setSize( csrMatrix. nonzero_elements. getSize() ) ||
        ! columns. setSize( csrMatrix. columns. getSize() ) ||
