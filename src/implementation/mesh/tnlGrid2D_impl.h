@@ -251,6 +251,16 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+   template< int dx, int dy >
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
+{
+   return geometry. getElementCoVolumeMeasure< dx, dy >( coordinates );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
 Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementsDistance( const CoordinatesType& c1,
                                                                          const CoordinatesType& c2 ) const
 {
@@ -288,7 +298,9 @@ template< typename Real,
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
                                                                VertexType& vertex ) const
 {
-   return geometry. getVertex< dx, dy >( elementCoordinates, vertex );
+   return geometry. getVertex< dx, dy >( elementCoordinates,
+                                         this -> origin,
+                                         vertex );
 }
 
 template< typename Real,

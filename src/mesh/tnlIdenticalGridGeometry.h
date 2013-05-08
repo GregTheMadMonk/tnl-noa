@@ -49,7 +49,6 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
                           const CoordinatesType& coordinates,
                           VertexType& center ) const;
 
-
    Real getElementMeasure( const CoordinatesType& i ) const;
 
    template< Index dx >
@@ -104,6 +103,9 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
                           VertexType& center ) const;
 
    Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
+
+   template< int dx, int dy >
+   Real getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const;
 
    Real getElementsDistance( const CoordinatesType& c1,
                              const CoordinatesType& c2 ) const;

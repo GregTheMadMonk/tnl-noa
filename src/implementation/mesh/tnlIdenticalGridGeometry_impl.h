@@ -166,6 +166,16 @@ Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementMeasure( co
 template< typename Real,
           typename Device,
           typename Index >
+   template< int dx, int dy >
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
+{
+   return elementMeasure;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const CoordinatesType& c1,
                                                                                 const CoordinatesType& c2 ) const
 {
@@ -217,7 +227,21 @@ void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const 
                 dy == 0 || dy == 1 || dy == -1 ) &&
                dx * dy == 0, cerr << " dx = " << dx << " dy = " << dy << endl );
    normal. x() = dx * parametricStep. y();
-   normal. y() = dy * parametricStep. x();;
+   normal. y() = dy * parametricStep. x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< Index dx, Index dy >
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getVertex( const CoordinatesType& coordinates,
+                                                                      const VertexType& origin,
+                                                                      VertexType& vertex ) const
+{
+   tnlAssert( ( dx == 0 || dx == 1 || dx == -1 ||
+                dy == 0 || dy == 1 || dy == -1 ), cerr << " dx = " << dx << " dy = " << dy << endl );
+   vertex. x() = origin. x() + ( coordinates. x() + 0.5 * ( 1 + dx ) ) * parametricStep. x();
+   vertex. y() = origin. y() + ( coordinates. y() + 0.5 * ( 1 + dy ) ) * parametricStep. y();
 }
 
 template< typename Real,

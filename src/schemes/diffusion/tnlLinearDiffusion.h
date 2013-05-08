@@ -34,6 +34,8 @@ class tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index > >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlGrid< 2, Real, Device, Index > :: CoordinatesType CoordinatesType;
+   typedef typename tnlGrid< 2, Real, Device, Index > :: VertexType VertexType;
 
    tnlLinearDiffusion();
 

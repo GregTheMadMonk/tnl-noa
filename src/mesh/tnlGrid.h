@@ -162,6 +162,9 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
    template< int dx, int dy >
+   Real getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const;
+
+   template< int dx, int dy >
    void getEdgeNormal( const CoordinatesType& elementCoordinates,
                        VertexType& normal ) const;
 
