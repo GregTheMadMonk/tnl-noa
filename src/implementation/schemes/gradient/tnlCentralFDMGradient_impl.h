@@ -18,29 +18,41 @@
 #ifndef TNLCENTRALFDMGRADIENT_IMPL_H_
 #define TNLCENTRALFDMGRADIENT_IMPL_H_
 
-template< typename Real, typename Device, typename Index >
-tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: tnlCentralFDMGradient()
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class GridGeometry >
+tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: tnlCentralFDMGradient()
 : mesh( 0 )
 {
 }
 
-template< typename Real, typename Device, typename Index >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: bindMesh( const tnlGrid< 2, RealType, DeviceType, IndexType >& mesh )
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class GridGeometry >
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: bindMesh( const MeshType& mesh )
 {
    this -> mesh = &mesh;
 }
 
-template< typename Real, typename Device, typename Index >
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: setFunction( Vector& f )
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: setFunction( Vector& f )
 {
    this -> f. bind( f );
    this -> f. setName( tnlString( "bind Of " ) + f. getName() );
 }
 
-template< typename Real, typename Device, typename Index >
-void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( const Index& i,
-                                                                                VertexType& grad_f  ) const
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class GridGeometry >
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: getGradient( const Index& i,
+                                                                                              VertexType& grad_f  ) const
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlCentralFDMGradient. Use the bindMesh method." );
 
@@ -59,12 +71,48 @@ void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index > > :: getGradient( 
    nCoordinates. y() ++;
    sCoordinates. y() --;
 
-
-   //grad_f. x() = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
-   //grad_f. y() = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );
-
    grad_f. x() = ( f[ e ] - f[ w ] ) / ( mesh -> getElementsDistance( eCoordinates, wCoordinates ) );
    grad_f. y() = ( f[ n ] - f[ s ] ) / ( mesh -> getElementsDistance( nCoordinates, sCoordinates ) );
 }
+
+/****
+ * Specialization for the grids with no deformations (Identical grid geometry)
+ */
+
+template< typename Real, typename Device, typename Index >
+tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: tnlCentralFDMGradient()
+: mesh( 0 )
+{
+}
+
+template< typename Real, typename Device, typename Index >
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: bindMesh( const MeshType& mesh )
+{
+   this -> mesh = &mesh;
+}
+
+template< typename Real, typename Device, typename Index >
+   template< typename Vector >
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: setFunction( Vector& f )
+{
+   this -> f. bind( f );
+   this -> f. setName( tnlString( "bind Of " ) + f. getName() );
+}
+
+template< typename Real, typename Device, typename Index >
+void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: getGradient( const Index& i,
+                                                                                                          VertexType& grad_f  ) const
+{
+   tnlAssert( this -> mesh, cerr << "No mesh was set in tnlCentralFDMGradient. Use the bindMesh method." );
+
+   const Index e = mesh -> getElementNeighbour( i,  1,  0 );
+   const Index w = mesh -> getElementNeighbour( i, -1,  0 );
+   const Index n = mesh -> getElementNeighbour( i,  0,  1 );
+   const Index s = mesh -> getElementNeighbour( i,  0, -1 );
+
+   grad_f. x() = ( f[ e ] - f[ w ] ) / ( 2.0 * mesh -> getParametricStep(). x() );
+   grad_f. y() = ( f[ n ] - f[ s ] ) / ( 2.0 * mesh -> getParametricStep(). y() );
+}
+
 
 #endif

@@ -20,6 +20,7 @@
 
 #include <core/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
+#include <mesh/tnlIdenticalGridGeometry.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 
 template< typename MeshType,
@@ -31,12 +32,66 @@ class tnlLaxFridrichs
 template< typename Real,
           typename Device,
           typename Index,
-          typename PressureGradient >
-class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index >, PressureGradient >
+          typename PressureGradient,
+          template< int, typename, typename, typename > class GridGeometry >
+class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient >
 {
    public:
 
-   typedef tnlGrid< 2, Real, Device, Index > MeshType;
+   typedef tnlGrid< 2, Real, Device, Index, GridGeometry > MeshType;
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: CoordinatesType CoordinatesType;
+
+   tnlLaxFridrichs();
+
+   void getExplicitRhs( const IndexType centralVolume,
+                        RealType& rho_t,
+                        RealType& rho_u1_t,
+                        RealType& rho_u2_t ) const;
+
+   void setRegularization( const RealType& epsilon );
+
+   void setViscosityCoefficient( const RealType& v );
+
+   void bindMesh( const MeshType& mesh );
+
+   template< typename Vector >
+   void setRho( Vector& rho ); // TODO: add const
+
+   template< typename Vector >
+   void setRhoU1( Vector& rho_u1 ); // TODO: add const
+
+   template< typename Vector >
+   void setRhoU2( Vector& rho_u2 ); // TODO: add const
+
+   template< typename Vector >
+   void setPressureGradient( Vector& grad_p ); // TODO: add const
+
+   protected:
+
+   RealType regularize( const RealType& r ) const;
+
+   RealType regularizeEps, viscosityCoefficient;
+
+   const MeshType* mesh;
+
+   const PressureGradient* pressureGradient;
+
+   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient >
+class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient >
+{
+   public:
+
+   typedef tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;

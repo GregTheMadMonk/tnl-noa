@@ -169,7 +169,7 @@ template< typename Real,
    template< int dx, int dy >
 Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
 {
-   return elementMeasure;
+   return 0.5 * elementMeasure;
 }
 
 

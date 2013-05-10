@@ -391,16 +391,14 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
-   const RealType hx = getParametricStep(). x();
-   const RealType hy = getParametricStep(). y();
    if( format == "gnuplot" )
       for( IndexType j = 0; j < getDimensions(). y(); j++ )
       {
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
-            const RealType x = this -> getOrigin(). x() + i * hx;
-            const RealType y = this -> getOrigin(). y() + j * hy;
-            file << x << " " << " " << y << " " << function[ this -> getElementIndex( i, j ) ] << endl;
+            VertexType v;
+            this -> getElementCenter( CoordinatesType( i, j ), v );
+            file << v. x() << " " << " " << v. y() << " " << function[ this -> getElementIndex( i, j ) ] << endl;
          }
          file << endl;
       }
