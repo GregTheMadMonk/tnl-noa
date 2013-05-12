@@ -127,7 +127,8 @@ class tnlMatrix : public tnlObject
 
    bool load( const tnlString& fileName );
 
-   tnlMatrix< Real, Device, Index >& operator = ( const tnlMatrix< Real, Device, Index >& matrix );
+   template< typename Real2 >
+   tnlMatrix< Real, Device, Index >& operator = ( const tnlMatrix< Real2, Device, Index >& matrix );
 
    /*!
     * Computes permutation of the rows such that the rows would be

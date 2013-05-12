@@ -24,7 +24,7 @@
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 
 template< typename MeshType,
-          typename PressureGradient >
+          typename PressureGradient = tnlCentralFDMGradient >
 class tnlLaxFridrichs
 {
 };
