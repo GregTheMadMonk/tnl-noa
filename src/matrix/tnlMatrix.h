@@ -273,7 +273,8 @@ bool tnlMatrix< Real, Device, Index > :: load( const tnlString& fileName )
 }
 
 template< typename Real, typename Device, typename Index >
-tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real, Device, Index >& matrix )
+   template< typename Real2 >
+tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real2, Device, Index >& matrix )
 {
    this -> size = matrix. getSize();
    /*if( ! rowsReorderingPermutation. setSize( matrix. rowsReorderingPermutation. getSize() ) )
