@@ -38,6 +38,19 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
+tnlString tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >,
+                           PressureGradient > :: getTypeStatic()
+{
+   return tnlString( "tnlLaxFridrichs< " ) +
+          tnlGrid< 2, Real, Device, Index, GridGeometry > :: getTypeStatic() + ", " +
+          PressureGradient :: getTypeStatic() + " >";
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient,
+          template< int, typename, typename, typename > class GridGeometry >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: bindMesh( const MeshType& mesh )
 {
    this -> mesh = &mesh;
@@ -116,9 +129,9 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
-                                                                                                RealType& rho_t,
-                                                                                                RealType& rho_u1_t,
-                                                                                                RealType& rho_u2_t ) const
+                                                                                                              RealType& rho_t,
+                                                                                                              RealType& rho_u1_t,
+                                                                                                              RealType& rho_u2_t ) const
 {
    tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )

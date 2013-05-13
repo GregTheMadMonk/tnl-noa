@@ -23,8 +23,8 @@
 #include <mesh/tnlIdenticalGridGeometry.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 
-template< typename MeshType,
-          typename PressureGradient = tnlCentralFDMGradient >
+template< typename Mesh,
+          typename PressureGradient = tnlCentralFDMGradient< Mesh > >
 class tnlLaxFridrichs
 {
 };
@@ -46,6 +46,8 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
    typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    tnlLaxFridrichs();
+
+   static tnlString getTypeStatic();
 
    void getExplicitRhs( const IndexType centralVolume,
                         RealType& rho_t,
