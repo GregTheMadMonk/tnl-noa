@@ -194,8 +194,8 @@ template< typename Real,
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
                                                                            CoordinatesType& coordinates ) const
 {
-   tnlAssert( i >= 0 && i < dofs,
-              cerr << " i = " << i << " dofs = " << dofs
+   tnlAssert( element >= 0 && element < dofs,
+              cerr << " element = " << element << " dofs = " << dofs
                    << " in tnlGrid " << this -> getName(); );
 
    coordinates. x() = element % this -> dimensions. x();

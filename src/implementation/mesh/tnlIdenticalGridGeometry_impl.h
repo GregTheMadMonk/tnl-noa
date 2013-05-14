@@ -97,7 +97,7 @@ template< Index dx >
 void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getEdgeNormal( const Index i,
                                                                           VertexType& normal ) const
 {
-   tnlAssert( dx == 1 || dx == -1, cerr << " dx = " << dx << " dy = " << dy << endl );
+   tnlAssert( dx == 1 || dx == -1, cerr << " dx = " << dx << endl );
    normal. x() = dx;
 }
 
