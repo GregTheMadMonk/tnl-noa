@@ -403,7 +403,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
       line. parse( parsed_line );
       Index I = atoi( parsed_line[ 0 ]. getString() );
       Index J = atoi( parsed_line[ 1 ]. getString() );
-      double A = atof( parsed_line[ 2 ]. getString() );
+      Real A = ( Real ) atof( parsed_line[ 2 ]. getString() );
       parsed_elements ++;
       if( verbose )
          cout << "Parsed elements:   " << setw( 9 ) << right << parsed_elements << "\r" << flush;

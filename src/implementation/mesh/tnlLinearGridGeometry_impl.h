@@ -96,7 +96,7 @@ template< Index dx >
 void tnlLinearGridGeometry< 1, Real, Device, Index > :: getEdgeNormal( const Index i,
                                                                           VertexType& normal ) const
 {
-   tnlAssert( dx == 1 || dx == -1, cerr << " dx = " << dx << " dy = " << dy << endl );
+   tnlAssert( dx == 1 || dx == -1, cerr << " dx = " << dx << endl );
    normal. x() = dx;
 }
 
@@ -159,7 +159,16 @@ template< typename Real,
           typename Index >
 Real tnlLinearGridGeometry< 2, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
-   return elementMeasure;
+   VertexType v0, v1, v2, v3;
+   const VertexType origin( 0.0 );
+   this -> template getVertex< -1, -1 >( coordinates, origin, v0 );
+   this -> template getVertex<  1, -1  >( coordinates, origin, v1 );
+   this -> template getVertex<  1,  1 >( coordinates, origin, v2 );
+   this -> template getVertex< -1,  1 >( coordinates, origin, v3 );
+
+   return tnlTriangleArea( v0, v1, v3 ) + tnlTriangleArea( v2, v3, v1 );
+
+   //return elementMeasure;
 }
 
 template< typename Real,
@@ -168,6 +177,10 @@ template< typename Real,
    template< int dx, int dy >
 Real tnlLinearGridGeometry< 2, Real, Device, Index > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
 {
+   tnlAssert( ( dx == 0 && ( dy == 1 || dy == -1 ) ) ||
+              ( dy == 0 && ( dx == 1 || dx == -1 ) ),
+              cerr << " dx = " << dx << " dy = " << dy << endl );
+
    return 0.5 * elementMeasure;
 }
 
@@ -222,10 +235,10 @@ template< Index dx, Index dy >
 void tnlLinearGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const CoordinatesType& coordinates,
                                                                        VertexType& normal ) const
 {
-   tnlAssert( ( dx == 0 || dx == 1 || dx == -1 ||
-                dy == 0 || dy == 1 || dy == -1 ) &&
-               dx * dy == 0 && dx + dy != 0 , cerr << " dx = " << dx << " dy = " << dy << endl );
-   /*VertexType v1, v2, origin( 0 );
+   tnlAssert( ( dx == 0 && ( dy == 1 || dy == -1 ) ) ||
+              ( dy == 0 && ( dx == 1 || dx == -1 ) ),
+              cerr << " dx = " << dx << " dy = " << dy << endl );
+   VertexType v1, v2, origin( 0.0 );
    if( dy == 0 )
    {
       if( dx == 1 )
@@ -253,11 +266,7 @@ void tnlLinearGridGeometry< 2, Real, Device, Index > :: getEdgeNormal( const Coo
       }
    }
    normal. x() = v1. y() - v2. y();
-   normal. y() = v2. x() - v1. x();*/
-
-   normal. x() = dx * parametricStep. y();
-   normal. y() = dy * parametricStep. x();
-
+   normal. y() = v2. x() - v1. x();
 }
 
 template< typename Real,

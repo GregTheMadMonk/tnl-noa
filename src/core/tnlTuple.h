@@ -637,4 +637,48 @@ template< int Size, typename Real > tnlString getParameterType()
           tnlString( " >" );
 };
 
+template< typename Real >
+tnlTuple< 3, Real > tnlVectorProduct( const tnlTuple< 3, Real >& u,
+                                      const tnlTuple< 3, Real >& v )
+{
+   tnlTuple< 3, Real > p;
+   p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
+   p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
+   p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
+   return p;
+};
+
+template< typename Real >
+Real tnlScalarProduct( const tnlTuple< 2, Real >& u,
+                       const tnlTuple< 2, Real >& v )
+{
+   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
+};
+
+template< typename Real >
+Real tnlScalarProduct( const tnlTuple< 3, Real >& u,
+                       const tnlTuple< 3, Real >& v )
+{
+   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
+};
+
+template< typename Real >
+Real tnlTriangleArea( const tnlTuple< 2, Real >& a,
+                      const tnlTuple< 2, Real >& b,
+                      const tnlTuple< 2, Real >& c )
+{
+   tnlTuple< 3, Real > u1, u2;
+   u1. x() = b. x() - a. x();
+   u1. y() = b. y() - a. y();
+   u1. z() = 0.0;
+   u2. x() = c. x() - a. x();
+   u2. y() = c. y() - a. y();
+   u2. z() = 0;
+
+   const tnlTuple< 3, Real > v = tnlVectorProduct( u1, u2 );
+   return 0.5 * sqrt( tnlScalarProduct( v, v ) );
+};
+
+
+
 #endif

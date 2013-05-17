@@ -1064,7 +1064,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       }
       Index I = atoi( parsed_line[ 0 ]. getString() ) - 1;
       Index J = atoi( parsed_line[ 1 ]. getString() ) - 1;
-      double A = atof( parsed_line[ 2 ]. getString() );
+      Real A = ( Real ) atof( parsed_line[ 2 ]. getString() );
 
       if( I < 0 || I >= size || J < 0 || J >= size )
       {
