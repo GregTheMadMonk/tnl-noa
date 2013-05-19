@@ -121,45 +121,45 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
    this -> mesh -> template getVertex< -1,  1 >( cCoordinates, wnVertex );
    this -> mesh -> template getVertex< -1, -1 >( cCoordinates, wsVertex );
 
-   const RealType f_x_e = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 1, 0 >( cCoordinates ) *
+   const RealType f_x_e = 1.0 / this -> mesh -> template getDualElementMeasure< 1, 0 >( cCoordinates ) *
                           ( f_cen * ( cCenter. y() - enVertex. y() ) +
                             f_ces * ( esVertex. y() - cCenter. y() ) +
                             0.5 * ( f_es + f[ e ] ) * ( eCenter. y() - esVertex. y() ) +
                             0.5 * ( f_en + f[ e ] ) * ( enVertex. y() - eCenter. y() ) );
-   const RealType f_y_e = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 1, 0 >( cCoordinates ) *
+   const RealType f_y_e = 1.0 / this -> mesh -> template getDualElementMeasure< 1, 0 >( cCoordinates ) *
                           ( f_cen * ( enVertex. x() - cCenter. x() ) +
                             f_ces * ( cCenter. x() - esVertex. x() ) +
                             0.5 * ( f_es + f[ e ] ) * ( esVertex. x() - eCenter. x() ) +
                             0.5 * ( f_en + f[ e ] ) * ( eCenter. x() ) - enVertex. x() );
 
-   const RealType f_x_w = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< -1, 0 >( cCoordinates ) *
+   const RealType f_x_w = 1.0 / this -> mesh -> template getDualElementMeasure< -1, 0 >( cCoordinates ) *
                           ( f_cwn * ( wnVertex. y() - cCenter. y() ) +
                             f_cws * ( cCenter. y() - wsVertex. y()  ) +
                             0.5 * ( f_ws + f[ w ] ) * ( wsVertex. y() - wCenter. y() ) +
                             0.5 * ( f_wn + f[ w ] ) * ( wCenter. y() - wnVertex. y() ) );
-   const RealType f_y_w = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< -1, 0 >( cCoordinates ) *
+   const RealType f_y_w = 1.0 / this -> mesh -> template getDualElementMeasure< -1, 0 >( cCoordinates ) *
                           ( f_cwn * ( cCenter. x() - wnVertex. x() ) +
                             f_cws * ( wsVertex. x() - cCenter. x() ) +
                             0.5 * ( f_ws + f[ w ] ) * ( wCenter. x() - wsVertex. x() ) +
                             0.5 * ( f_wn + f[ w ] ) * ( wnVertex. x() - wCenter. x() ) );
 
-   const RealType f_x_n = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 0, 1 >( cCoordinates ) *
+   const RealType f_x_n = 1.0 / this -> mesh -> template getDualElementMeasure< 0, 1 >( cCoordinates ) *
                           ( f_cen * ( enVertex. y() - cCenter. y() ) +
                             f_cwn * ( cCenter. y() - wnVertex. y() ) +
                             0.5 * ( f_en + f[ n ] ) * ( nCenter. y() - enVertex. y() ) +
                             0.5 * ( f_wn + f[ n ] ) * ( wnVertex. y() - nCenter. y() ) );
-   const RealType f_y_n = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 0, 1 >( cCoordinates ) *
+   const RealType f_y_n = 1.0 / this -> mesh -> template getDualElementMeasure< 0, 1 >( cCoordinates ) *
                           ( f_cen * ( cCenter. x() - enVertex. x() ) +
                             f_cwn * ( wnVertex. x() - cCenter. x() ) +
                             0.5 * ( f_en + f[ n ] ) * ( enVertex. x() - nCenter. x() ) +
                             0.5 * ( f_wn + f[ n ] ) * ( nCenter. x() - wnVertex. x() ) );
 
-   const RealType f_x_s = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 0, -1 >( cCoordinates ) *
+   const RealType f_x_s = 1.0 / this -> mesh -> template getDualElementMeasure< 0, -1 >( cCoordinates ) *
                           ( f_ces * ( cCenter. y() - esVertex. y() ) +
                             f_cws * ( wsVertex. y() - cCenter. y() ) +
                             0.5 * ( f_es + f[ s ] ) * ( esVertex. y() - sCenter. y() ) +
                             0.5 * ( f_ws + f[ s ] ) * ( sCenter. y() - wsVertex. y() ) );
-   const RealType f_y_s = 1.0 / this -> mesh -> template getElementCoVolumeMeasure< 0, -1 >( cCoordinates ) *
+   const RealType f_y_s = 1.0 / this -> mesh -> template getDualElementMeasure< 0, -1 >( cCoordinates ) *
                           ( f_ces * ( esVertex. x() - cCenter. x() ) +
                             f_cws * ( cCenter. x() - wsVertex. x() ) +
                             0.5 * ( f_es + f[ s ] ) * ( sCenter. x() - esVertex. x() ) +

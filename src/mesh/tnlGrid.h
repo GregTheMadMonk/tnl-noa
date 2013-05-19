@@ -21,6 +21,7 @@
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/tnlTuple.h>
+#include <core/tnlVector.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 
 template< int Dimensions,
@@ -147,6 +148,13 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    Index getElementIndex( const Index i,
                           const Index j ) const;
 
+   Index getEdgeIndex( const Index i,
+                       const Index j,
+                       const Index dx,
+                       const Index dy ) const;
+
+   void refresh();
+
    void getElementCoordinates( const Index i,
                                CoordinatesType& coordinates ) const;
 
@@ -156,13 +164,15 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    Index getDofs() const;
 
+   Index getNumberOfEdges() const;
+
    void getElementCenter( const CoordinatesType& coordinates,
                           VertexType& center ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
    template< int dx, int dy >
-   Real getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const;
+   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
 
    template< int dx, int dy >
    void getEdgeNormal( const CoordinatesType& elementCoordinates,
@@ -171,13 +181,6 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    template< int dx, int dy >
    void getVertex( const CoordinatesType& elementCoordinates,
                    VertexType& vertex ) const;
-
-   Real getElementsDistance( const CoordinatesType& c1,
-                             const CoordinatesType& c2 ) const;
-
-   /*template< int dy, int dx >
-   Real getEdgeLength( const Index j,
-                       const Index i ) const;*/
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -196,13 +199,16 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    protected:
 
-   tnlTuple< 2, IndexType > dimensions;
+   CoordinatesType dimensions;
 
-   tnlTuple< 2, RealType > origin, proportions;
+   VertexType origin, proportions;
 
    GeometryType geometry;
 
    IndexType dofs;
+
+   tnlVector< Real, Device, Index > elementsMeasure, dualElementsMeasure;
+   tnlVector< VertexType, Device, Index > edgeNormals;
 
 };
 

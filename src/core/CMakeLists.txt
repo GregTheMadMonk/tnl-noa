@@ -6,6 +6,7 @@ set (headers tnlArray.h
       	    tnlCuda.h
   		       tnlDataElement.h
   		       tnlDevice.h
+  		       tnlFeature.h
   		       tnlFile.h 
   		       tnlFlopsCounter.h
    		    tnlHost.h 

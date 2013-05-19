@@ -94,6 +94,10 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
    typedef Index IndexType;
    typedef tnlTuple< 2, Index > CoordinatesType;
    typedef tnlTuple< 2, Real > VertexType;
+   typedef tnlFeature< true > ElementMeasureStorage;
+   typedef tnlFeature< true > DualElementMeasureStorage;
+   typedef tnlFeature< true > EdgeNormalStorage;
+
 
    void setParametricStep( const VertexType& parametricStep );
 
@@ -106,20 +110,7 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
    Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
 
    template< int dx, int dy >
-   Real getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const;
-
-   Real getElementsDistance( const CoordinatesType& c1,
-                             const CoordinatesType& c2 ) const;
-
-   /*template< Index dx, Index dy >
-   void getEdgeCoordinates( const Index i,
-                            const Index j,
-                            const VertexType& origin,
-                            VertexType& coordinates ) const;
-
-   template< Index dx, Index dy >
-   Real getEdgeLength( const Index i,
-                       const Index j ) const;*/
+   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
 
    template< Index dx, Index dy >
    void getEdgeNormal( const CoordinatesType& coordinates,

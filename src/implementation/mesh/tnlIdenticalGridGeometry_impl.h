@@ -167,54 +167,10 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int dx, int dy >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
+Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
 {
    return 0.5 * elementMeasure;
 }
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementsDistance( const CoordinatesType& c1,
-                                                                                const CoordinatesType& c2 ) const
-{
-   CoordinatesType c( c2 );
-   c -= c1;
-   if( c. y() == 0 )
-      return parametricStep. x() * fabs( c. x() );
-   if( c. x() == 0 )
-      return parametricStep. y() * fabs( c. y() );
-   return sqrt( c. x() * c. x() + c. y() * c. y() );
-}
-
-/*
-template< typename Real,
-          typename Device,
-          typename Index >
-template< Index dx, Index dy >
-void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeCoordinates( const Index i,
-                                                                               const Index j,
-                                                                               const VertexType& origin,
-                                                                               VertexType& coordinates ) const
-{
-   coordinates. x() = origin. x() + ( i + 0.5 * ( 1.0 + dx ) ) * parametricStep. x();
-   coordinates. y() = origin. y() + ( j + 0.5 * ( 1.0 + dy ) ) * parametricStep. y();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< Index dx, Index dy >
-Real tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getEdgeLength( const Index i,
-                                                                          const Index j ) const
-{
-   if( dy == 0 && dx == 1 )
-      return parametricStep. y();
-   if( dy == 1 && dx == 0 )
-      return parametricStep. x();
-   tnlAssert( false, cerr << "Bad values of dx and dy - dx = " << dx << " dy = " << dy );
-}*/
 
 template< typename Real,
           typename Device,

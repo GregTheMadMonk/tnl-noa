@@ -72,6 +72,12 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index x
    parametricStep. x() = proportions. x() / xSize;
    parametricStep. y() = proportions. y() / ySize;
    geometry. setParametricStep( parametricStep );
+   if( GeometryType :: ElementMeasureStorage :: enabled )
+   {
+      elementsMeasure. setSize( this -> getDofs() );
+      dualElementsMeasure. setSize( this -> getDofs() );
+      edgeNormals. setSize( this -> getNumberOfEdges() );
+   }
 }
 
 template< typename Real,
@@ -154,18 +160,6 @@ template< typename Real,
 const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
    tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
 {
-   /*tnlAssert( dimensions. x() > 0,
-              cerr << "Cannot get the space step hx since number of Elements along the x axis is not known in tnlGrid "
-                   << this -> getName() );
-   tnlAssert( dimensions. y() > 0,
-              cerr << "Cannot get the space step hy since number of Elements along the y axis is not known in tnlGrid "
-                   << this -> getName() );
-
-   tnlTuple< 2, RealType > parametricStep;
-   parametricStep. x() =
-            this -> proportions. x() / ( Real ) ( this -> dimensions. x() - 1 );
-   parametricStep. y() =
-            this -> proportions. y() / ( Real ) ( this -> dimensions. y() - 1 );*/
    return geometry. getParametricStep();
 }
 
@@ -178,13 +172,78 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Inde
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
                    << " ) is out of range ( " << dimensions. x()
-                   << " ) in tnlGrid " << this -> getName(); )
+                   << " ) in tnlGrid " << this -> getName(); );
    tnlAssert( j < dimensions. y(),
               cerr << "Index j ( " << j
                    << " ) is out of range ( " << dimensions. y()
-                   << " ) in tnlGrid " << this -> getName(); )
+                   << " ) in tnlGrid " << this -> getName(); );
 
    return j * this -> dimensions. x() + i;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+Index tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeIndex( const Index i,
+                                                                   const Index j,
+                                                                   const Index dx,
+                                                                   const Index dy ) const
+{
+   tnlAssert( i < dimensions. x(),
+              cerr << "Index i ( " << i
+                   << " ) is out of range ( " << dimensions. x()
+                   << " ) in tnlGrid " << this -> getName(); );
+   tnlAssert( j < dimensions. y(),
+              cerr << "Index j ( " << j
+                   << " ) is out of range ( " << dimensions. y()
+                   << " ) in tnlGrid " << this -> getName(); );
+   tnlAssert( dx == 0 && ( dy == 1 || dy == -1 ) ||
+              dy == 0 && ( dx == 1 || dx == -1 ),
+              cerr << "dx = " << dx << ", dy = " << dy << endl;);
+   return ( j + dy ) * this -> dimensions. x() + i + dx;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+void tnlGrid< 2, Real, Device, Index, Geometry > :: refresh()
+{
+   if( GeometryType :: ElementMeasureStorage :: enabled )
+      for( IndexType j = 0; j < dimensions. y(); j ++ )
+         for( IndexType i = 0; i < dimensions. x(); i ++ )
+            elementsMeasure[ getElementIndex( i, j ) ] =
+                     geometry. getElementMeasure( CoordinatesType( i, j ) );
+
+   if( GeometryType :: DualElementMeasureStorage :: enabled )
+      for( IndexType j = 1; j < dimensions. y() - 1; j ++ )
+         for( IndexType i = 1; i < dimensions. x() - 1; i ++ )
+         {
+            dualElementsMeasure[ getElementIndex( i + 1, j ) ] =
+                     geometry. getDualElementMeasure<  1,  0 >( CoordinatesType( i, j ) );
+            dualElementsMeasure[ getElementIndex( i - 1, j ) ] =
+                     geometry. getDualElementMeasure< -1,  0 >( CoordinatesType( i, j ) );
+            dualElementsMeasure[ getElementIndex( i, j + 1 ) ] =
+                     geometry. getDualElementMeasure<  0,  1 >( CoordinatesType( i, j ) );
+            dualElementsMeasure[ getElementIndex( i, j - 1 ) ] =
+                     geometry. getDualElementMeasure<  0, -1 >( CoordinatesType( i, j ) );
+         }
+
+   if( GeometryType :: EdgeNormalStorage :: enabled )
+      for( IndexType j = 0; j < dimensions. y(); j ++ )
+         for( IndexType i = 0; i < dimensions. x(); i ++ )
+         {
+            geometry. getEdgeNormal<  1,  0 >( CoordinatesType( i, j ),
+                                               edgeNormals[ getEdgeIndex( i, j, 1, 0 ) ] );
+            geometry. getEdgeNormal< -1,  0 >( CoordinatesType( i, j ),
+                                                edgeNormals[ getEdgeIndex( i, j, -1, 0 ) ] );
+            geometry. getEdgeNormal<  0,  1 >( CoordinatesType( i, j ),
+                                               edgeNormals[ getEdgeIndex( i, j, 0, 1 ) ]  );
+            geometry. getEdgeNormal<  0, -1 >( CoordinatesType( i, j ),
+                                               edgeNormals[ getEdgeIndex( i, j, 0, -1 ) ] );
+         }
 }
 
 template< typename Real,
@@ -218,7 +277,6 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const 
    return Element + dy * this -> dimensions. x() + dx;
 }
 
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -227,6 +285,15 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getDofs() const
 {
    return this -> dofs;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfEdges() const
+{
+   return ( this -> dimensions. x() + 1 ) * ( this -> dimensions. y() + 1 );
+}
 
 template< typename Real,
           typename Device,
@@ -244,6 +311,8 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
+   if( GeometryType :: ElementMeasureStorage :: enabled )
+      return elementsMeasure[ getElementIndex( coordinates. x(), coordinates. y() ) ];
    return geometry. getElementMeasure( coordinates );
 }
 
@@ -252,32 +321,12 @@ template< typename Real,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
    template< int dx, int dy >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoVolumeMeasure( const CoordinatesType& coordinates ) const
+Real tnlGrid< 2, Real, Device, Index, Geometry > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
 {
-   return geometry. getElementCoVolumeMeasure< dx, dy >( coordinates );
+   if( GeometryType :: DualElementMeasureStorage :: enabled )
+      return dualElementsMeasure[ getElementIndex( coordinates. x() + dx, coordinates. y() + dy ) ];
+   return geometry. getDualElementMeasure< dx, dy >( coordinates );
 }
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementsDistance( const CoordinatesType& c1,
-                                                                         const CoordinatesType& c2 ) const
-{
-   return geometry. getElementsDistance( c1, c2 );
-}
-
-/*
-template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-template< int dy, int dx >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeLength( const Index j,
-                                                                   const Index i ) const
-{
-   return geometry. getEdgeLength< dy, dx >( j, i );
-}*/
 
 template< typename Real,
           typename Device,
@@ -287,7 +336,10 @@ template< int dx, int dy >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const CoordinatesType& coordinates,
                                                                    VertexType& normal ) const
 {
-   return geometry. getEdgeNormal< dx, dy >( coordinates, normal );
+   //if( GeometryType :: EdgeNormalStorage :: enabled )
+   //   normal = edgeNormals[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
+   //else
+      return geometry. getEdgeNormal< dx, dy >( coordinates, normal );
 }
 
 template< typename Real,
