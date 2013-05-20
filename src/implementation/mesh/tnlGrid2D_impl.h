@@ -201,7 +201,8 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeIndex( const Index i
    tnlAssert( dx == 0 && ( dy == 1 || dy == -1 ) ||
               dy == 0 && ( dx == 1 || dx == -1 ),
               cerr << "dx = " << dx << ", dy = " << dy << endl;);
-   return ( j + dy ) * this -> dimensions. x() + i + dx;
+   return ( j + 1 + dy ) * ( 2 * this -> dimensions. x() + 1 ) + i + dx;
+   //return j * ( 2 * this -> dimensions. x() + 1 ) + ( dy + 1 )
 }
 
 
@@ -221,13 +222,13 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: refresh()
       for( IndexType j = 1; j < dimensions. y() - 1; j ++ )
          for( IndexType i = 1; i < dimensions. x() - 1; i ++ )
          {
-            dualElementsMeasure[ getElementIndex( i + 1, j ) ] =
+            dualElementsMeasure[ getEdgeIndex( i, j,  1, 0 ) ] =
                      geometry. getDualElementMeasure<  1,  0 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getElementIndex( i - 1, j ) ] =
+            dualElementsMeasure[ getEdgeIndex( i, j, -1, 0 ) ] =
                      geometry. getDualElementMeasure< -1,  0 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getElementIndex( i, j + 1 ) ] =
+            dualElementsMeasure[ getEdgeIndex( i, j,  0,  1 ) ] =
                      geometry. getDualElementMeasure<  0,  1 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getElementIndex( i, j - 1 ) ] =
+            dualElementsMeasure[ getEdgeIndex( i, j,  0, -1 ) ] =
                      geometry. getDualElementMeasure<  0, -1 >( CoordinatesType( i, j ) );
          }
 

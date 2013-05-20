@@ -226,6 +226,8 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
     */
    bool backwardSpMV;
 
+   template< typename, typename, typename >
+      friend class tnlCSRMatrix;
    friend class tnlMatrix< Real, tnlHost, Index >;
    friend class tnlMatrix< Real, tnlCuda, Index >;
    friend class tnlCusparseCSRMatrix< Real, tnlCuda, Index >;
@@ -662,7 +664,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
          cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << endl;
          return false;
       }
-      x[ i ] = ( 1.0 - omega ) * x[ i ] + omega / diagonal * update;
+      x[ i ] = ( ( Real ) 1.0 - omega ) * x[ i ] + omega / diagonal * update;
    }
    return true;
 }
