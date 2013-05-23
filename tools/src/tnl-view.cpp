@@ -22,6 +22,9 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlDummyMesh.h>
+#include <mesh/tnlGrid.h>
+#include <mesh/tnlIdenticalGridGeometry.h>
+#include <mesh/tnlLinearGridGeometry.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-view.cfg.desc";
@@ -53,11 +56,35 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
    cout << meshType << " detected in " << meshFile << " file." << endl;
-   if( meshType == "tnlGrid< 2, double, tnlHost, int >" )
+   tnlList< tnlString > parsedMeshType;
+   if( ! parseObjectType( meshType, parsedMeshType ) )
    {
-      if( ! processFiles< tnlGrid< 2, double, tnlHost, int > >( parameters ) )
-         return EXIT_FAILURE;
-      return EXIT_SUCCESS;
+      cerr << "Unable to parse the mesh type " << meshType << "." << endl;
+      return false;
+   }
+   if( parsedMeshType[ 0 ] == "tnlGrid" )
+   {
+      tnlList< tnlString > parsedGeometryType;
+      if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
+      {
+         cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
+         return false;
+      }
+      if( parsedGeometryType[ 0 ] == "tnlIdenticalGridGeometry" )
+      {
+         typedef tnlGrid< 2, double, tnlHost, int, tnlIdenticalGridGeometry > MeshType;
+         if( ! processFiles< MeshType >( parameters ) )
+            return EXIT_FAILURE;
+         return EXIT_SUCCESS;
+      }
+      if( parsedGeometryType[ 0 ] == "tnlLinearGridGeometry" )
+      {
+         typedef tnlGrid< 2, double, tnlHost, int, tnlLinearGridGeometry > MeshType;
+         if( ! processFiles< MeshType >( parameters ) )
+            return EXIT_FAILURE;
+         return EXIT_SUCCESS;
+      }
+
    }
    return EXIT_FAILURE;
 }

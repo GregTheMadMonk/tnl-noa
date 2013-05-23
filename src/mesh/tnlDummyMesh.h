@@ -36,6 +36,10 @@ class tnlDummyMesh
 
    bool load( const tnlString& fileName ){};
 
+   bool writeMesh( const tnlString& fileName,
+                   const tnlString& format ) const{};
+
+
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
                 const tnlString& fileName,

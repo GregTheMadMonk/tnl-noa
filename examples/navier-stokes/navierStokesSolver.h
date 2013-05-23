@@ -29,6 +29,7 @@
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 #include <schemes/diffusion/tnlLinearDiffusion.h>
+#include <mesh/tnlLinearGridGeometry.h>
 
 template< typename Mesh,
           typename EulerScheme >
@@ -57,6 +58,11 @@ class navierStokesSolver
 
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const;
+
+   template< typename Geom >
+   bool setMeshGeometry( Geom& geometry ) const;
+
+   bool setMeshGeometry( tnlLinearGridGeometry< 2, RealType, DeviceType, IndexType >& geometry ) const;
 
    bool init( const tnlParameterContainer& parameters );
 

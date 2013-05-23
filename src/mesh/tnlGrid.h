@@ -127,9 +127,9 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    tnlString getType() const;
 
-   void setDimensions( const Index xSize, const Index ySize );
+   bool setDimensions( const Index xSize, const Index ySize );
 
-   void setDimensions( const CoordinatesType& );
+   bool setDimensions( const CoordinatesType& );
 
    const CoordinatesType& getDimensions() const;
 
@@ -153,6 +153,10 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
                        const Index dx,
                        const Index dy ) const;
 
+   template< int dx, int dy >
+   Index getVertexIndex( const Index i,
+                         const Index j ) const;
+
    void refresh();
 
    void getElementCoordinates( const Index i,
@@ -165,6 +169,12 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    Index getDofs() const;
 
    Index getNumberOfEdges() const;
+
+   Index getNumberOfVertices() const;
+
+   GeometryType& getGeometry();
+
+   const GeometryType& getGeometry() const;
 
    void getElementCenter( const CoordinatesType& coordinates,
                           VertexType& center ) const;
@@ -192,6 +202,9 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    bool load( const tnlString& fileName );
 
+   bool writeMesh( const tnlString& fileName,
+                   const tnlString& format ) const;
+
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
                const tnlString& fileName,
@@ -201,14 +214,14 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    CoordinatesType dimensions;
 
-   VertexType origin, proportions;
+   VertexType origin;
 
    GeometryType geometry;
 
    IndexType dofs;
 
    tnlVector< Real, Device, Index > elementsMeasure, dualElementsMeasure;
-   tnlVector< VertexType, Device, Index > edgeNormals;
+   tnlVector< VertexType, Device, Index > edgeNormals, vertices, elementCenters;
 
 };
 

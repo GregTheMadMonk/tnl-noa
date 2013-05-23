@@ -163,6 +163,7 @@ bool processFiles( const tnlParameterContainer& parameters )
          cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
          return false;
       }
+   mesh. writeMesh( "mesh.asy", "asymptote" );
 
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
    for( int i = 0; i < inputFiles. getSize(); i ++ )

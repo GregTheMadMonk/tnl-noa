@@ -36,11 +36,12 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
 {
    public:
 
+   enum { Dimensions = 1};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< 1, Index > CoordinatesType;
-   typedef tnlTuple< 1, Real > VertexType;
+   typedef tnlTuple< Dimensions, Index > CoordinatesType;
+   typedef tnlTuple< Dimensions, Real > VertexType;
 
    void setParametricStep( const VertexType& parametricStep );
 
@@ -89,24 +90,32 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
 {
    public:
 
+   enum { Dimensions = 2};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< 2, Index > CoordinatesType;
-   typedef tnlTuple< 2, Real > VertexType;
-   typedef tnlFeature< false > ElementMeasureStorage;
-   typedef tnlFeature< false > DualElementMeasureStorage;
-   typedef tnlFeature< false > EdgeNormalStorage;
+   typedef tnlTuple< Dimensions, Index > CoordinatesType;
+   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlFeature< false > ElementsMeasureStorage;
+   typedef tnlFeature< false > DualElementsMeasureStorage;
+   typedef tnlFeature< false > EdgeNormalsStorage;
+   typedef tnlFeature< false > VerticesStorage;
+
+   static tnlString getTypeStatic();
 
    void setParametricStep( const VertexType& parametricStep );
 
    const VertexType& getParametricStep() const;
 
+   void setProportions( const VertexType& proportions );
+
+   const VertexType& getProportions() const;
+
    void getElementCenter( const VertexType& origin,
-                          const tnlTuple< 2, Index >& coordinates,
+                          const CoordinatesType& coordinates,
                           VertexType& center ) const;
 
-   Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
+   Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
    template< int dx, int dy >
    Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
@@ -127,6 +136,8 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
    protected:
 
    VertexType parametricStep;
+
+   VertexType proportions;
 
    Real elementMeasure;
 };

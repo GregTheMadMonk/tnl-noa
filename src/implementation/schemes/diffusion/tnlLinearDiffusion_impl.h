@@ -109,11 +109,11 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
    const RealType f_cws = 0.5 * ( f[ c ] + f_ws );
 
    VertexType cCenter, eCenter, nCenter, wCenter, sCenter;
-   this -> mesh -> getElementCenter( cCoordinates, cCenter );
-   this -> mesh -> getElementCenter( eCoordinates, eCenter );
-   this -> mesh -> getElementCenter( wCoordinates, wCenter );
-   this -> mesh -> getElementCenter( nCoordinates, nCenter );
-   this -> mesh -> getElementCenter( sCoordinates, sCenter );
+   this -> mesh -> template getVertex< 0, 0 >( cCoordinates, cCenter );
+   this -> mesh -> template getVertex< 0, 0 >( eCoordinates, eCenter );
+   this -> mesh -> template getVertex< 0, 0 >( wCoordinates, wCenter );
+   this -> mesh -> template getVertex< 0, 0 >( nCoordinates, nCenter );
+   this -> mesh -> template getVertex< 0, 0 >( sCoordinates, sCenter );
 
    VertexType enVertex, esVertex, wnVertex, wsVertex;
    this -> mesh -> template getVertex<  1,  1 >( cCoordinates, enVertex );
@@ -130,7 +130,7 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
                           ( f_cen * ( enVertex. x() - cCenter. x() ) +
                             f_ces * ( cCenter. x() - esVertex. x() ) +
                             0.5 * ( f_es + f[ e ] ) * ( esVertex. x() - eCenter. x() ) +
-                            0.5 * ( f_en + f[ e ] ) * ( eCenter. x() ) - enVertex. x() );
+                            0.5 * ( f_en + f[ e ] ) * ( eCenter. x() - enVertex. x() ) );
 
    const RealType f_x_w = 1.0 / this -> mesh -> template getDualElementMeasure< -1, 0 >( cCoordinates ) *
                           ( f_cwn * ( wnVertex. y() - cCenter. y() ) +
@@ -179,12 +179,16 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
    {
 
       cout << "cCoordinates = " << cCoordinates << endl;
-      cout << "this -> mesh -> template getElementCoVolumeMeasure< 1, 0 >( cCoordinates ) = " <<
-               this -> mesh -> template getElementCoVolumeMeasure< 1, 0 >( cCoordinates ) << endl;
+      cout << "this -> mesh -> template getDualElementMeasure< 1, 0 >( cCoordinates ) = " <<
+               this -> mesh -> template getDualElementMeasure< 1, 0 >( cCoordinates ) << endl;
       cout << "enVertex. y() - cCenter. y() = " << enVertex. y() - cCenter. y() << endl;
       cout << "esVertex. y() - cCenter. y() = " << esVertex. y() - cCenter. y() << endl;
       cout << "enVertex. y() - eCenter. y() = " << enVertex. y() - eCenter. y() << endl;
       cout << "esVertex. y() - eCenter. y() = " << esVertex. y() - eCenter. y() << endl;
+      cout << "enVertex. x() - cCenter. x() = " << enVertex. x() - cCenter. x() << endl;
+      cout << "esVertex. x() - cCenter. x() = " << esVertex. x() - cCenter. x() << endl;
+      cout << "enVertex. x() - eCenter. x() = " << enVertex. x() - eCenter. x() << endl;
+      cout << "esVertex. x() - eCenter. x() = " << esVertex. x() - eCenter. x() << endl;
       cout << "cMeasure = " << cMeasure << endl;
       cout << "eMeasure = " << eMeasure << endl;
       cout << "nMeasure = " << nMeasure << endl;
@@ -210,12 +214,14 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
       cout << "0.5 * ( f_es + f[ e ] ) = " << 0.5 * ( f_es + f[ e ] ) << endl;
       cout << "0.5 * ( f_en + f[ e ] ) = " << 0.5 * ( f_en + f[ e ] ) << endl;
 
-      cout << "( f[ e ] - f[ c ] ) / hx = " << ( f[ e ] - f[ c ] ) / hx << endl;
-      cout << "( f[ c ] - f[ w ] ) / hx = " << ( f[ c ] - f[ w ] ) / hx << endl;
-      cout << "( f[ n ] - f[ c ] ) / hy = " << ( f[ n ] - f[ c ] ) / hy << endl;
-      cout << "( f[ c ] - f[ s ] ) / hy = " << ( f[ c ] - f[ s ] ) / hy << endl;
+      //cout << "( f[ e ] - f[ c ] ) / hx = " << ( f[ e ] - f[ c ] ) / hx << endl;
+      //cout << "( f[ c ] - f[ w ] ) / hx = " << ( f[ c ] - f[ w ] ) / hx << endl;
+      //cout << "( f[ n ] - f[ c ] ) / hy = " << ( f[ n ] - f[ c ] ) / hy << endl;
+      //cout << "( f[ c ] - f[ s ] ) / hy = " << ( f[ c ] - f[ s ] ) / hy << endl;
       cout << " f_x_e = " << f_x_e << endl;
+      cout << " f_y_e = " << f_y_e << endl;
       cout << " f_x_w = " << f_x_w << endl;
+      cout << " f_y_w = " << f_y_w << endl;
       cout << " f_y_n = " << f_y_n << endl;
       cout << " f_y_s = " << f_y_s << endl;
 
@@ -232,7 +238,8 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
             f_y_e * eNormal. y() +
             f_y_n * nNormal. y() +
             f_y_w * wNormal. y() +
-            f_y_s * sNormal. y() );
+            f_y_s * sNormal. y()
+            );
 }
 
 /****

@@ -308,7 +308,7 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( ! file. write( &this -> size ) )
       return false;
 #endif      
-   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   if( this -> size != 0 && ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
       cerr << "I was not able to WRITE tnlArray " << this -> getName()
            << " with size " << this -> getSize() << endl;
@@ -332,17 +332,20 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
    if( ! file. read( &_size, 1 ) )
       return false;
 #endif      
-   if( _size <= 0 )
+   if( _size < 0 )
    {
-      cerr << "Error: The size " << _size << " of the file is not a positive number." << endl;
+      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
       return false;
    }
-   setSize( _size );
-   if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+   if( _size )
    {
-      cerr << "I was not able to READ tnlArray " << this -> getName()
-           << " with size " << this -> getSize() << endl;
-      return false;
+      setSize( _size );
+      if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+      {
+         cerr << "I was not able to READ tnlArray " << this -> getName()
+              << " with size " << this -> getSize() << endl;
+         return false;
+      }
    }
    return true;
 }

@@ -129,6 +129,17 @@ bool tnlIdenticalGridGeometry< 1, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getTypeStatic()
+{
+   return tnlString( "tnlIdenticalGridGeometry< 2, " ) +
+          getParameterType< RealType >() + ", " +
+          Device :: getDeviceType() + ", " +
+          getParameterType< IndexType >() + " > ";
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: setParametricStep( const VertexType& parametricStep )
 {
    this -> parametricStep = parametricStep;
@@ -142,6 +153,23 @@ const typename tnlIdenticalGridGeometry< 2, Real, Device, Index > :: VertexType&
    tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getParametricStep() const
 {
    return this -> parametricStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: setProportions( const VertexType& proportions )
+{
+   this -> proportions = proportions;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const typename tnlIdenticalGridGeometry< 2, Real, Device, Index > :: VertexType&
+   tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getProportions() const
+{
+   return this -> proportions;
 }
 
 template< typename Real,
@@ -205,7 +233,8 @@ template< typename Real,
           typename Index >
 bool tnlIdenticalGridGeometry< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
-   if( ! this -> parametricStep. save( file ) )
+   if( ! this -> parametricStep. save( file ) ||
+       ! this -> proportions. save( file ) )
       return false;
    return true;
 };
@@ -215,7 +244,8 @@ template< typename Real,
           typename Index >
 bool tnlIdenticalGridGeometry< 2, Real, Device, Index > :: load( tnlFile& file )
 {
-   if( ! this -> parametricStep. load( file ) )
+   if( ! this -> parametricStep. load( file ) ||
+       ! this -> proportions. load( file ) )
       return false;
    this -> elementMeasure = this -> parametricStep. x() * this -> parametricStep. y();
    return true;

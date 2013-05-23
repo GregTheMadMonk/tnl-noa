@@ -63,6 +63,24 @@ navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
 }
 
 template< typename Mesh, typename EulerScheme >
+   template< typename Geom >
+bool navierStokesSolver< Mesh, EulerScheme > :: setMeshGeometry( Geom& geometry ) const
+{
+   return true;
+}
+
+template< typename Mesh, typename EulerScheme >
+bool navierStokesSolver< Mesh, EulerScheme > :: setMeshGeometry( tnlLinearGridGeometry< 2, RealType, DeviceType, IndexType >& geometry ) const
+{
+   geometry. setNumberOfSegments( 3 );
+   geometry. setSegmentData( 0, 0.0,  0.0,  1.0 );
+   geometry. setSegmentData( 1, 0.5,  0.15, 0.85 );
+   geometry. setSegmentData( 2, 1.0,  0.0,  1.0 );
+   return true;
+}
+
+
+template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContainer& parameters )
 {
    cout << "Initiating solver ... " << endl;
@@ -112,8 +130,10 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
       return false;
    }
    this -> mesh. setDimensions( meshes. x(), meshes. y() );
+   this -> setMeshGeometry( this -> mesh. getGeometry() );
    RealType hx = this -> mesh. getParametricStep(). x();
    RealType hy = this -> mesh. getParametricStep(). y();
+   mesh. refresh();
    mesh. save( tnlString( "mesh.tnl" ) );
 
    /****
