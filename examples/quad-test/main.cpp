@@ -46,6 +46,6 @@ int main(int argc, char* argv[]) {
 	binaryFile.close();
 	
 	tnlCSRMatrix <QuadDouble> quadMatrix("quad");
-	//quadMatrix = doubleMatrix;
+	quadMatrix = doubleMatrix;
 	return EXIT_SUCCESS;
 }
