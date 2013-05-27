@@ -226,7 +226,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
     */
    bool backwardSpMV;
 
-   template< typename, typename, typename >
+   template< typename Real2, typename Device2, typename Index2 >
       friend class tnlCSRMatrix;
    friend class tnlMatrix< Real, tnlHost, Index >;
    friend class tnlMatrix< Real, tnlCuda, Index >;
