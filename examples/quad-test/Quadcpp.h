@@ -3,8 +3,11 @@ private:
 public:
 	double data[4];
 	QuadDouble();
-	explicit QuadDouble(double);
+	explicit QuadDouble(const double&);
+   explicit QuadDouble(int);
+	//QuadDouble(double);
 	QuadDouble(const QuadDouble&);
+	
 	//QuadDouble(double*);
 	double& operator[](int);
 	const double& operator[](int) const;
@@ -13,11 +16,11 @@ public:
 	QuadDouble& operator -=(const QuadDouble&);
 	QuadDouble& operator *=(const QuadDouble&);
 	QuadDouble& operator /=(const QuadDouble&);
-	QuadDouble& operator =(double);
-	QuadDouble& operator +=(double);
-	QuadDouble& operator -=(double);
-	QuadDouble& operator *=(double);
-	QuadDouble& operator /=(double);
+	QuadDouble& operator =(const double&);
+	QuadDouble& operator +=(const double&);
+	QuadDouble& operator -=(const double&);
+	QuadDouble& operator *=(const double&);
+	QuadDouble& operator /=(const double&);
 	QuadDouble operator +(const QuadDouble&) const;
 	QuadDouble operator -(const QuadDouble&) const;
 	QuadDouble operator *(const QuadDouble&) const;

@@ -307,7 +307,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    if( ! nonzero_elements. setSize( elements ) )
       return false;
-   nonzero_elements. setValue( 0 );
+   nonzero_elements. setValue( (Real) 0 );
    if( ! columns. setSize( elements ) )
       return false;
    columns. setValue( -1 );

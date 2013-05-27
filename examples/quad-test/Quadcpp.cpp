@@ -7,8 +7,15 @@ QuadDouble::QuadDouble() {
 	zeroQuad(data);
 }
 
-QuadDouble::QuadDouble(double value) {
+QuadDouble::QuadDouble(const double& value) {
 	data[0] = value;
+	data[1] = 0;
+	data[2] = 0;
+	data[3] = 0;
+}
+
+QuadDouble::QuadDouble(int value) {
+	data[0] = (double)value;
 	data[1] = 0;
 	data[2] = 0;
 	data[3] = 0;
@@ -67,7 +74,7 @@ QuadDouble& QuadDouble::operator /=(const QuadDouble& rhs) {
 	return *this;
 }
 
-QuadDouble& QuadDouble::operator =(double rhs) {
+QuadDouble& QuadDouble::operator =(const double& rhs) {
 	data[0] = rhs;
 	data[1] = 0;
 	data[2] = 0;
@@ -75,22 +82,22 @@ QuadDouble& QuadDouble::operator =(double rhs) {
 	return *this;
 }
 
-QuadDouble& QuadDouble::operator +=(double rhs) {
+QuadDouble& QuadDouble::operator +=(const double& rhs) {
 	doublePlusQuad(rhs, data, data);
 	return *this;
 }
 
-QuadDouble& QuadDouble::operator -=(double rhs) {
+QuadDouble& QuadDouble::operator -=(const double& rhs) {
 	doublePlusQuad(-rhs, data, data);
 	return *this;
 }
 
-QuadDouble& QuadDouble::operator *=(double rhs) {
+QuadDouble& QuadDouble::operator *=(const double& rhs) {
 	doubleTimesQuad(rhs, data, data);
 	return *this;
 }
 
-QuadDouble& QuadDouble::operator /=(double rhs) {
+QuadDouble& QuadDouble::operator /=(const double& rhs) {
 	quadDivDouble(data, rhs, data);
 	return *this;
 }
@@ -231,25 +238,25 @@ QuadDouble::operator double() const{
 	return data[0];
 }
 
-QuadDouble operator+(double v1, const QuadDouble& v2) {
+QuadDouble operator+(const double& v1, const QuadDouble& v2) {
     QuadDouble qd(v1);
     qd += v2;
     return qd;
 }
 
-QuadDouble operator-(double v1, const QuadDouble& v2) {
+QuadDouble operator-(const double& v1, const QuadDouble& v2) {
     QuadDouble qd(v1);
     qd -= v2;
     return qd;
 }
 
-QuadDouble operator*(double v1, const QuadDouble& v2) {
+QuadDouble operator*(const double& v1, const QuadDouble& v2) {
     QuadDouble qd(v1);
     qd *= v2;
     return qd;
 }
 
-QuadDouble operator/(double v1, const QuadDouble& v2) {
+QuadDouble operator/(const double& v1, const QuadDouble& v2) {
     QuadDouble qd(v1);
     qd /= v2;
     return qd;
