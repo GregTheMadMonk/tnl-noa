@@ -79,9 +79,12 @@ class tnlCuda
       abort();
    }
 
-   template< typename Element, typename Index, typename Device >
-   static bool memcpy( Element* destination,
-                       const Element* source,
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index,
+             typename Device >
+   static bool memcpy( DestinationElement* destination,
+                       const SourceElement* source,
                        const Index size )
    {
       switch( Device :: getDevice() )
@@ -92,6 +95,18 @@ class tnlCuda
             return copyMemoryCudaToCuda( destination, source, size );
       }
       return true;
+   }
+
+
+   template< typename Element, typename Index, typename Device >
+   static bool memcpy( Element* destination,
+                       const Element* source,
+                       const Index size )
+   {
+      return tnlCuda :: memcpy< Element, Element, Index, Device >
+                              ( destination,
+                                source,
+                                size );
    }
 
    template< typename Element, typename Index, typename Device >

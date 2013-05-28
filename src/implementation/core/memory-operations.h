@@ -23,6 +23,7 @@
 #include <core/cuda/reduction-operations.h>
 #include <core/mfuncs.h>
 #include <tnlConfig.h>
+#include <string.h>
 
 const int tnlGPUvsCPUTransferBufferSize( 1 << 20 );
 
@@ -115,15 +116,25 @@ bool setMemoryCuda( Element* data,
 
 }
 
+template< typename DestinationElement, typename SourceElement, typename Index >
+bool copyMemoryHostToHost( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size )
+{
+   for( Index i = 0; i < size; i ++ )
+      destination[ i ] = ( DestinationElement) source[ i ];
+   return true;
+}
+
 template< typename Element, typename Index >
 bool copyMemoryHostToHost( Element* destination,
                            const Element* source,
                            const Index size )
 {
-   for( Index i = 0; i < size; i ++ )
-      destination[ i ] = source[ i ];
+   memcpy( destination, source, size * sizeof( Element ) );
    return true;
 }
+
 
 template< typename Element, typename Index >
 bool copyMemoryHostToCuda( Element* destination,
@@ -169,6 +180,32 @@ bool copyMemoryCudaToHost( Element* destination,
    return false;
 #endif
 }
+
+template< typename DestinationElement,
+          typename SourceElement,
+          typename Index >
+bool copyMemoryCudaToHost( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size )
+{
+#ifdef HAVE_CUDA
+   abort(); // TODO: fix this
+   cudaMemcpy( destination,
+               source,
+               size * sizeof( Element ),
+               cudaMemcpyDeviceToHost );
+   if( ! checkCudaDevice )
+   {
+      cerr << "Transfer of data from CUDA device to host failed." << endl;
+      return false;
+   }
+   return true;
+#else
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   return false;
+#endif
+}
+
 
 template< typename Element, typename Index >
 bool copyMemoryCudaToCuda( Element* destination,

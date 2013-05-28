@@ -67,10 +67,10 @@ const Element& tnlHost :: getArrayElementReference(const Element* data, const In
    return data[ i ];
 };
 
-template< typename Element, typename Index, typename Device >
-bool tnlHost :: memcpy( Element* destination,
-                               const Element* source,
-                               const Index size )
+template< typename DestinationElement, typename SourceElement, typename Index, typename Device >
+bool tnlHost :: memcpy( DestinationElement* destination,
+                        const SourceElement* source,
+                        const Index size )
 {
    switch( Device :: getDevice() )
    {
@@ -80,6 +80,17 @@ bool tnlHost :: memcpy( Element* destination,
          return copyMemoryCudaToHost( destination, source, size );
    }
    return true;
+};
+
+template< typename Element, typename Index, typename Device >
+bool tnlHost :: memcpy( Element* destination,
+                        const Element* source,
+                        const Index size )
+{
+   return tnlHost :: memcpy< Element, Element, Index, Device >
+                           ( destination,
+                             source,
+                             size );
 };
 
 template< typename Element, typename Index, typename Device >
@@ -168,30 +179,30 @@ extern template const float&       tnlHost :: getArrayElementReference< float,  
 extern template const double&      tnlHost :: getArrayElementReference< double,      long int >( const double* data, const long int i );
 extern template const long double& tnlHost :: getArrayElementReference< long double, long int >( const long double* data, const long int i );
 
-extern template bool tnlHost :: memcpy< char,        int, tnlHost >( char* destination, const char* source, const int size );
-extern template bool tnlHost :: memcpy< int,         int, tnlHost >( int* destination, const int* source, const int size );
-extern template bool tnlHost :: memcpy< long int,    int, tnlHost >( long int* destination, const long int* source, const int size );
-extern template bool tnlHost :: memcpy< float,       int, tnlHost >( float* destination, const float* source, const int size );
-extern template bool tnlHost :: memcpy< double,      int, tnlHost >( double* destination, const double* source, const int size );
-extern template bool tnlHost :: memcpy< long double, int, tnlHost >( long double* destination, const long double* source, const int size );
-extern template bool tnlHost :: memcpy< char,        long int, tnlHost >( char* destination, const char* source, const long int size );
-extern template bool tnlHost :: memcpy< int,         long int, tnlHost >( int* destination, const int* source, const long int size );
-extern template bool tnlHost :: memcpy< long int,    long int, tnlHost >( long int* destination, const long int* source, const long int size );
-extern template bool tnlHost :: memcpy< float,       long int, tnlHost >( float* destination, const float* source, const long int size );
-extern template bool tnlHost :: memcpy< double,      long int, tnlHost >( double* destination, const double* source, const long int size );
-extern template bool tnlHost :: memcpy< long double, long int, tnlHost >( long double* destination, const long double* source, const long int size );
-extern template bool tnlHost :: memcpy< char,        int, tnlCuda >( char* destination, const char* source, const int size );
-extern template bool tnlHost :: memcpy< int,         int, tnlCuda >( int* destination, const int* source, const int size );
-extern template bool tnlHost :: memcpy< long int,    int, tnlCuda >( long int* destination, const long int* source, const int size );
-extern template bool tnlHost :: memcpy< float,       int, tnlCuda >( float* destination, const float* source, const int size );
-extern template bool tnlHost :: memcpy< double,      int, tnlCuda >( double* destination, const double* source, const int size );
-extern template bool tnlHost :: memcpy< long double, int, tnlCuda >( long double* destination, const long double* source, const int size );
-extern template bool tnlHost :: memcpy< char,        long int, tnlCuda >( char* destination, const char* source, const long int size );
-extern template bool tnlHost :: memcpy< int,         long int, tnlCuda >( int* destination, const int* source, const long int size );
-extern template bool tnlHost :: memcpy< long int,    long int, tnlCuda >( long int* destination, const long int* source, const long int size );
-extern template bool tnlHost :: memcpy< float,       long int, tnlCuda >( float* destination, const float* source, const long int size );
-extern template bool tnlHost :: memcpy< double,      long int, tnlCuda >( double* destination, const double* source, const long int size );
-extern template bool tnlHost :: memcpy< long double, long int, tnlCuda >( long double* destination, const long double* source, const long int size );
+extern template bool tnlHost :: memcpy< char,        char,        int, tnlHost >( char* destination, const char* source, const int size );
+extern template bool tnlHost :: memcpy< int,         int,         int, tnlHost >( int* destination, const int* source, const int size );
+extern template bool tnlHost :: memcpy< long int,    long int,    int, tnlHost >( long int* destination, const long int* source, const int size );
+extern template bool tnlHost :: memcpy< float,       float,       int, tnlHost >( float* destination, const float* source, const int size );
+extern template bool tnlHost :: memcpy< double,      double,      int, tnlHost >( double* destination, const double* source, const int size );
+extern template bool tnlHost :: memcpy< long double, long double, int, tnlHost >( long double* destination, const long double* source, const int size );
+extern template bool tnlHost :: memcpy< char,        char,        long int, tnlHost >( char* destination, const char* source, const long int size );
+extern template bool tnlHost :: memcpy< int,         int,         long int, tnlHost >( int* destination, const int* source, const long int size );
+extern template bool tnlHost :: memcpy< long int,    long int,    long int, tnlHost >( long int* destination, const long int* source, const long int size );
+extern template bool tnlHost :: memcpy< float,       float,       long int, tnlHost >( float* destination, const float* source, const long int size );
+extern template bool tnlHost :: memcpy< double,      double,      long int, tnlHost >( double* destination, const double* source, const long int size );
+extern template bool tnlHost :: memcpy< long double, long double, long int, tnlHost >( long double* destination, const long double* source, const long int size );
+extern template bool tnlHost :: memcpy< char,        char,        int, tnlCuda >( char* destination, const char* source, const int size );
+extern template bool tnlHost :: memcpy< int,         int,         int, tnlCuda >( int* destination, const int* source, const int size );
+extern template bool tnlHost :: memcpy< long int,    long int,    int, tnlCuda >( long int* destination, const long int* source, const int size );
+extern template bool tnlHost :: memcpy< float,       float,       int, tnlCuda >( float* destination, const float* source, const int size );
+extern template bool tnlHost :: memcpy< double,      double,      int, tnlCuda >( double* destination, const double* source, const int size );
+extern template bool tnlHost :: memcpy< long double, long double, int, tnlCuda >( long double* destination, const long double* source, const int size );
+extern template bool tnlHost :: memcpy< char,        char,        long int, tnlCuda >( char* destination, const char* source, const long int size );
+extern template bool tnlHost :: memcpy< int,         int,         long int, tnlCuda >( int* destination, const int* source, const long int size );
+extern template bool tnlHost :: memcpy< long int,    long int,    long int, tnlCuda >( long int* destination, const long int* source, const long int size );
+extern template bool tnlHost :: memcpy< float,       float,       long int, tnlCuda >( float* destination, const float* source, const long int size );
+extern template bool tnlHost :: memcpy< double,      double,      long int, tnlCuda >( double* destination, const double* source, const long int size );
+extern template bool tnlHost :: memcpy< long double, long double, long int, tnlCuda >( long double* destination, const long double* source, const long int size );
 
 extern template bool tnlHost :: memcmp< char,        int, tnlHost >( const char* data1, const char* data2, const int size );
 extern template bool tnlHost :: memcmp< int,         int, tnlHost >( const int* data1, const int* data2, const int size );

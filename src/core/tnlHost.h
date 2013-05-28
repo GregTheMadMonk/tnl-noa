@@ -49,6 +49,11 @@ class tnlHost
    template< typename Element, typename Index >
    static const Element& getArrayElementReference(const Element* data, const Index i );
 
+   template< typename DestinationElement, typename SourceElement, typename Index, typename Device >
+   static bool memcpy( DestinationElement* destination,
+                       const SourceElement* source,
+                       const Index size );
+
    template< typename Element, typename Index, typename Device >
    static bool memcpy( Element* destination,
                        const Element* source,
@@ -56,8 +61,8 @@ class tnlHost
 
    template< typename Element, typename Index, typename Device >
    static bool memcmp( const Element* data1,
-                         const Element* data2,
-                         const Index size );
+                       const Element* data2,
+                       const Index size );
 
    template< typename Element, typename Index >
    static bool memset( Element* destination,
