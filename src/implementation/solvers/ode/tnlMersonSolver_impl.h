@@ -182,8 +182,8 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          if( currentTau + time == this -> stopTime ) residue = lastResidue;
          time += currentTau;
          iteration ++;
-         this -> refreshSolverMonitor();
       }
+      this -> refreshSolverMonitor();
 
       /****
        * Compute the new time step.
