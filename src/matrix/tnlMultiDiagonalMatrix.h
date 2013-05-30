@@ -195,7 +195,7 @@ Index tnlMultiDiagonalMatrix< Real, Device, Index > :: getNonzeroElements() cons
 template< typename Real, typename Device, typename Index >
 void tnlMultiDiagonalMatrix< Real, Device, Index > :: setDiagonalsOffsets( const tnlVector< Index, Device, Index >& diagonalsOffsets )
 {
-   tnlAssert( diagonalsOffsets. getSize() == this -> diagonalsOffsest. getSize(),
+   tnlAssert( diagonalsOffsets. getSize() == this -> diagonalsOffsets. getSize(),
               cerr << "diagonalsOffsets. getSize() = " << diagonalsOffsets. getSize()
                    << " this -> diagonalsOffsets. getSize() = " << this -> diagonalsOffsets. getSize() << endl; );
    this -> diagonalsOffsets = diagonalsOffsets;

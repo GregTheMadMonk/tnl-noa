@@ -7,7 +7,7 @@
 
 #ifndef TNLASSERT_H_
 
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #include <iostream>
 #include <stdlib.h>
