@@ -119,6 +119,9 @@ class tnlArray : public tnlObject
    Element* data;
 };
 
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
+
 #include <implementation/core/tnlArray_impl.h>
 
 #endif /* TNLARRAY_H_ */

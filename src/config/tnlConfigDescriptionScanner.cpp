@@ -2012,10 +2012,10 @@ void mCDSfree (void * ptr )
 
 
 //extern int yywrap();
-int mCDSFlexLexer :: yywrap()
+/*int mCDSFlexLexer :: yywrap()
 {
    return 1;
-}
+}*/
 
 int yywrap()
 {

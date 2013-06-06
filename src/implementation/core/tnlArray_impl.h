@@ -26,9 +26,6 @@
 
 using namespace std;
 
-//namespace implementation
-//{
-
 template< typename Element,
            typename Device,
            typename Index >
@@ -377,7 +374,15 @@ tnlArray< Element, Device, Index > :: ~tnlArray()
       Device :: freeMemory( this -> data );
 }
 
-//}; // namespace implementation
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v )
+{
+   str << "[ " << v.getElement( 0 );
+   for( Index i = 1; i < v.getSize(); i++ )
+      str << ", " << v. getElement( i );
+   str << " ]";
+}
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

@@ -297,6 +297,7 @@ void tnlLinearGridGeometry< 2, Real, Device, Index > :: getVertex( const Coordin
    }
    else
    {
+      //y = proportions. y() * pow( y / proportions. y(), 2.0 );
       Index i( 0 );
       while( ySegments[ i ] < y && i < this -> numberOfSegments ) i++;
       tnlAssert( i > 0, cerr << " i = " << i  ;)
@@ -309,7 +310,9 @@ void tnlLinearGridGeometry< 2, Real, Device, Index > :: getVertex( const Coordin
       const RealType r = ( y - y0 ) / ( y1 - y0 );
       const RealType x4 = x0 + ( x2 - x0 ) * r;
       const RealType x5 = x1 + ( x3 - x1 ) * r;
-      vertex. x() = origin. x() + x4 + ( x5 - x4 ) * x / proportions. x();
+      //cout << coordinates << " => " << x << " => " << M_PI * x / proportions. x()<< endl;
+      //const RealType xParameter =  M_PI * ( x / proportions. x() - 0.5 );
+      vertex. x() = origin. x() + x4 + ( x5 - x4 ) * ( x / proportions. x() );
       vertex. y() = origin. y() + y;
    }
    //vertex. x() = origin. x() + ( coordinates. x() + 0.5 * ( 1 + dx ) ) * parametricStep. x();
