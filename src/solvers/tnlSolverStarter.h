@@ -62,6 +62,10 @@ class tnlSolverStarter
 
    protected:
 
+   template< typename IterativeSolver >
+   bool setIterativeSolver( IterativeSolver& solver,
+                            const tnlParameterContainer& parameters ) const;
+
    int verbose;
 
    int logWidth;

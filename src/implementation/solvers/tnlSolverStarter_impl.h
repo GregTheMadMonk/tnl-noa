@@ -87,6 +87,8 @@ bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
          solver. setSolverMonitor( odeSolverMonitor );
       else
          solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+      if( ! setIterativeSolver( solver, parameters ) )
+         return false;
       return setExplicitTimeDiscretisation( problem, parameters, solver );
    }
 
@@ -103,7 +105,8 @@ bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
          solver. setSolverMonitor( odeSolverMonitor );
       else
          solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
-
+      if( ! setIterativeSolver( solver, parameters ) )
+         return false;
       return setExplicitTimeDiscretisation( problem, parameters, solver );
    }
 
@@ -165,6 +168,17 @@ bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
    cerr << "Unknown discrete solver " << discreteSolver << "." << endl;
    return false;
 }
+
+template< typename IterativeSolver >
+bool tnlSolverStarter :: setIterativeSolver( IterativeSolver& solver,
+                                             const tnlParameterContainer& parameters ) const
+{
+   int maxSolverIterations( 0 );
+   if( parameters.GetParameter< int >( "max-solver-iterations", maxSolverIterations ) )
+      solver. setMaxIterationsNumber( maxSolverIterations );
+   return true;
+}
+
 
 template< typename Problem,
           template < typename > class DiscreteSolver >
@@ -252,7 +266,8 @@ bool tnlSolverStarter :: runPDESolver( Problem& problem,
    if( verbose )
       writeProlog( cout, parameters, problem );
    tnlString logFileName;
-   if( parameters. GetParameter< tnlString >( "log-file", logFileName ) )
+   bool haveLogFile = parameters. GetParameter< tnlString >( "log-file", logFileName );
+   if( haveLogFile )
    {
       fstream logFile;
       logFile. open( logFileName. getString(), ios :: out );
@@ -285,8 +300,25 @@ bool tnlSolverStarter :: runPDESolver( Problem& problem,
    /****
     * Start the solver
     */
+   bool returnCode( true );
    if( ! solver. solve() )
-      return false;
+   {
+      returnCode = false;
+      if( verbose )
+         cerr << endl << "The solver did not converge. " << endl;
+      fstream logFile;
+      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      if( ! logFile )
+      {
+         cerr << "Unable to open the log file " << logFileName << "." << endl;
+         return false;
+      }
+      else
+      {
+         logFile << "The solver did not converge. " << endl;
+         logFile. close();
+      }
+   }
 
    /****
     * Stop timers
@@ -301,7 +333,7 @@ bool tnlSolverStarter :: runPDESolver( Problem& problem,
     */
    if( verbose )
       writeEpilog( cout );
-   if( parameters. GetParameter< tnlString >( "log-file", logFileName ) )
+   if( haveLogFile )
    {
       fstream logFile;
       logFile. open( logFileName. getString(), ios :: out | ios :: app );
@@ -316,7 +348,7 @@ bool tnlSolverStarter :: runPDESolver( Problem& problem,
          logFile. close();
       }
    }
-   return true;
+   return returnCode;
 }
 
 bool tnlSolverStarter :: writeEpilog( ostream& str )
