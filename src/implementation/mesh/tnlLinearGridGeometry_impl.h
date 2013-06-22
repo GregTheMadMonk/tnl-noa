@@ -299,7 +299,7 @@ void tnlLinearGridGeometry< 2, Real, Device, Index > :: getVertex( const Coordin
    {
       //y = proportions. y() * pow( y / proportions. y(), 2.0 );
       Index i( 0 );
-      while( ySegments[ i ] < y && i < this -> numberOfSegments ) i++;
+      while( ySegments[ i ] <= y && i < this -> numberOfSegments - 1 ) i++;
       tnlAssert( i > 0, cerr << " i = " << i  ;)
       const RealType y0 = ySegments[ i - 1 ];
       const RealType y1 = ySegments[ i ];
