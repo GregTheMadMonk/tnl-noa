@@ -366,9 +366,10 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
-                                                                                                RealType& rho_t,
-                                                                                                RealType& rho_u1_t,
-                                                                                                RealType& rho_u2_t ) const
+                                                                                                                          RealType& rho_t,
+                                                                                                                          RealType& rho_u1_t,
+                                                                                                                          RealType& rho_u2_t,
+                                                                                                                          const RealType& tau ) const
 {
    tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
@@ -391,7 +392,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
    const RealType u2_n = rho_u2[ n ] / regularize( rho[ n ] );
    const RealType u2_s = rho_u2[ s ] / regularize( rho[ s ] );
-   rho_t = this -> viscosityCoefficient * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
+   rho_t = this -> viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
                - ( rho[ e ] * u1_e - rho[ w ] * u1_w ) / ( 2.0 * hx )
                - ( rho[ n ] * u2_n - rho[ s ] * u2_s ) / ( 2.0 * hy );
 
@@ -404,14 +405,14 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    /****
     * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
     */
-   rho_u1_t = this -> viscosityCoefficient * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
+   rho_u1_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
                    - ( rho_u1[ e ] * u1_e - rho_u1[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u1[ n ] * u2_n - rho_u1[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. x();
    /****
     * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
     */
-   rho_u2_t = this -> viscosityCoefficient * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
+   rho_u2_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
                    - ( rho_u2[ e ] * u1_e - rho_u2[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. y();

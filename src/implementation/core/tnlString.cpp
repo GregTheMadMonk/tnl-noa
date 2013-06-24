@@ -81,7 +81,7 @@ tnlString :: ~tnlString()
 {
    if( string ) delete[] string;
 }
-//---------------------------------------------------------------------------
+
 void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_off )
 {
    if( ! c )
@@ -111,27 +111,27 @@ void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_of
    memcpy( string, c + Min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
-//---------------------------------------------------------------------------
+
 const char& tnlString :: operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < length,
               cerr << "Accessing char outside the string." );
    return string[ i ];
 }
-//---------------------------------------------------------------------------
+
 char& tnlString :: operator[]( int i )
 {
    tnlAssert( i >= 0 && i < length,
               cerr << "Accessing char outside the string." );
    return string[ i ];
 }
-//---------------------------------------------------------------------------
+
 tnlString& tnlString :: operator = ( const tnlString& str )
 {
    setString( str. getString() );
    return * this;
 }
-//---------------------------------------------------------------------------
+
 tnlString& tnlString :: operator += ( const char* str )
 {
    if( str )
@@ -151,7 +151,7 @@ tnlString& tnlString :: operator += ( const char* str )
    }
    return * this;
 }
-//---------------------------------------------------------------------------
+
 tnlString& tnlString :: operator += ( const char str )
 {
    int len1 = strlen( string );
@@ -172,22 +172,22 @@ tnlString& tnlString :: operator += ( const char str )
 
    return * this;
 }
-//---------------------------------------------------------------------------
+
 tnlString& tnlString :: operator += ( const tnlString& str )
 {
    return operator += ( str. getString() );
 }
-//---------------------------------------------------------------------------
+
 tnlString tnlString :: operator + ( const tnlString& str )
 {
    return tnlString( *this ) += str;
 }
-//---------------------------------------------------------------------------
+
 tnlString tnlString :: operator + ( const char* str )
 {
    return tnlString( *this ) += str;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: operator == ( const tnlString& str ) const
 {
    assert( string && str. string );
@@ -197,12 +197,12 @@ bool tnlString :: operator == ( const tnlString& str ) const
       return true;
    return false;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: operator != ( const tnlString& str ) const
 {
    return ! operator == ( str );
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: operator == ( const char* str ) const
 {
    //cout << ( void* ) string << " " << ( void* ) str << endl;
