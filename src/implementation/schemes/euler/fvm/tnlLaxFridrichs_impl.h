@@ -134,7 +134,8 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
                                                                                                               RealType& rho_t,
                                                                                                               RealType& rho_u1_t,
-                                                                                                              RealType& rho_u2_t ) const
+                                                                                                              RealType& rho_u2_t,
+                                                                                                              const RealType& tau ) const
 {
    tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
@@ -188,14 +189,14 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
    /****
     * Compute the fluxes
     */
-   const RealType rho_f_e = 0.5 * ( rho[ c ] * u1_c + rho[ e ] * u1_e );
-   const RealType rho_f_w = 0.5 * ( rho[ c ] * u1_c + rho[ w ] * u1_w );
-   const RealType rho_f_n = 0.5 * ( rho[ c ] * u1_c + rho[ n ] * u1_n );
-   const RealType rho_f_s = 0.5 * ( rho[ c ] * u1_c + rho[ s ] * u1_s );
-   const RealType rho_g_e = 0.5 * ( rho[ c ] * u2_c + rho[ e ] * u2_e );
-   const RealType rho_g_w = 0.5 * ( rho[ c ] * u2_c + rho[ w ] * u2_w );
-   const RealType rho_g_n = 0.5 * ( rho[ c ] * u2_c + rho[ n ] * u2_n );
-   const RealType rho_g_s = 0.5 * ( rho[ c ] * u2_c + rho[ s ] * u2_s );
+   const RealType rho_f_e = 0.5 * ( rho_u1[ c ] + rho_u1[ e ] );
+   const RealType rho_f_w = 0.5 * ( rho_u1[ c ] + rho_u1[ w ] );
+   const RealType rho_f_n = 0.5 * ( rho_u1[ c ] + rho_u1[ n ] );
+   const RealType rho_f_s = 0.5 * ( rho_u1[ c ] + rho_u1[ s ] );
+   const RealType rho_g_e = 0.5 * ( rho_u2[ c ] + rho_u2[ e ] );
+   const RealType rho_g_w = 0.5 * ( rho_u2[ c ] + rho_u2[ w ] );
+   const RealType rho_g_n = 0.5 * ( rho_u2[ c ] + rho_u2[ n ] );
+   const RealType rho_g_s = 0.5 * ( rho_u2[ c ] + rho_u2[ s ] );
 
    const RealType rho_u1_f_e = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ e ] * u1_e );
    const RealType rho_u1_f_w = 0.5 * ( rho_u1[ c ] * u1_c + rho_u1[ w ] * u1_w );
@@ -228,7 +229,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                               rho_f_n * n_normal. x() + rho_g_n * n_normal. y() +
                               rho_f_w * w_normal. x() + rho_g_w * w_normal. y() +
                               rho_f_s * s_normal. x() + rho_g_s * s_normal. y() )
-           + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
+           + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                             ( ( mu_D_c + mu_D_e ) * ( rho[ e ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_n ) * ( rho[ n ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_w ) * ( rho[ w ] - rho[ c ] ) +
@@ -241,7 +242,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                                  rho_u1_f_n * n_normal. x() + rho_u1_g_n * n_normal. y() +
                                  rho_u1_f_w * w_normal. x() + rho_u1_g_w * w_normal. y() +
                                  rho_u1_f_s * s_normal. x() + rho_u1_g_s * s_normal. y() )
-              + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
+              + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                                ( ( mu_D_c + mu_D_e ) * ( rho_u1[ e ] - rho_u1[ c ] ) +
                                  ( mu_D_c + mu_D_n ) * ( rho_u1[ n ] - rho_u1[ c ] ) +
                                  ( mu_D_c + mu_D_w ) * ( rho_u1[ w ] - rho_u1[ c ] ) +
@@ -255,7 +256,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                                  rho_u2_f_n * n_normal. x() + rho_u2_g_n * n_normal. y() +
                                  rho_u2_f_w * w_normal. x() + rho_u2_g_w * w_normal. y() +
                                  rho_u2_f_s * s_normal. x() + rho_u2_g_s * s_normal. y() )
-              + this -> viscosityCoefficient * 1.0 / 8.0 * mu_D_c *
+              + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                                ( ( mu_D_c + mu_D_e ) * ( rho_u2[ e ] - rho_u2[ c ] ) +
                                  ( mu_D_c + mu_D_n ) * ( rho_u2[ n ] - rho_u2[ c ] ) +
                                  ( mu_D_c + mu_D_w ) * ( rho_u2[ w ] - rho_u2[ c ] ) +

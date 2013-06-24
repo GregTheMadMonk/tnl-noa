@@ -166,6 +166,9 @@ bool processFiles( const tnlParameterContainer& parameters )
    mesh. writeMesh( "mesh.asy", "asymptote" );
 
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
