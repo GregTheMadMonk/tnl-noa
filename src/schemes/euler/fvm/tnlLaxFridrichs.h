@@ -106,7 +106,8 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
    void getExplicitRhs( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
-                        RealType& rho_u2_t ) const;
+                        RealType& rho_u2_t,
+                        const RealType& tau ) const;
 
    void setRegularization( const RealType& epsilon );
 
