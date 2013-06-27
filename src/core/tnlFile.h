@@ -19,6 +19,7 @@
 #define TNLFILE_H_
 
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <tnlConfig.h>
@@ -331,5 +332,15 @@ bool tnlFile ::  write( const Type* buffer,
    return true;
 };
 
+inline bool fileExists( const tnlString& fileName )
+{
+  fstream file;
+  file.open( fileName. getString(), ios::in );
+  bool result( true );
+  if( ! file )
+     result = false;
+  file.close();
+  return result;
+};
 
 #endif /* TNLFILE_H_ */

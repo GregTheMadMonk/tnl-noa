@@ -35,6 +35,7 @@ bool convertObject( const Mesh& mesh,
                     const tnlParameterContainer& parameters )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
+   bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
    tnlString outputFileName( inputFileName );
    RemoveFileExtension( outputFileName );
    tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
@@ -44,6 +45,12 @@ bool convertObject( const Mesh& mesh,
    {
       cerr << "Unknown file format " << outputFormat << ".";
       return false;
+   }
+   if( checkOutputFile && fileExists( outputFileName ) )
+   {
+      if( verbose )
+         cout << " file already exists. Skipping.            \r" << flush;
+      return true;
    }
    if( verbose )
       cout << " writing to " << outputFileName << " ... " << flush;
@@ -156,6 +163,7 @@ bool processFiles( const tnlParameterContainer& parameters )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+
    Mesh mesh;
    if( meshFile != "" )
       if( ! mesh. load( meshFile ) )
