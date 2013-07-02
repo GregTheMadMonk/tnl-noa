@@ -76,6 +76,10 @@ tnlString :: tnlString( double number )
    sprintf( string, "%f", number );
 }
 
+tnlString tnlString :: getType()
+{
+   return tnlString( "tnlString" );
+}
 
 tnlString :: ~tnlString()
 {

@@ -30,7 +30,12 @@
 
 class testingClassForArrayManagerTester
 {
+   public:
 
+      static tnlString getType()
+      {
+         return tnlString( "testingClassForArrayManagerTester" );
+      };
 };
 
 tnlString GetParameterType( const testingClassForArrayManagerTester& c )

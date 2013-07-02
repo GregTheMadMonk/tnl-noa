@@ -33,7 +33,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-tnlString tnlGrid< 3, Real, Device, Index, Geometry > :: getTypeStatic()
+tnlString tnlGrid< 3, Real, Device, Index, Geometry > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
@@ -46,9 +46,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-tnlString tnlGrid< 3, Real, Device, Index, Geometry > :: getType() const
+tnlString tnlGrid< 3, Real, Device, Index, Geometry > :: getTypeVirtual() const
 {
-   return this -> getTypeStatic();
+   return this -> getType();
 }
 
 template< typename Real,

@@ -21,6 +21,7 @@
 #include <core/tnlAssert.h>
 #include <string.h>
 #include <core/tnlFile.h>
+#include <core/tnlString.h>
 #include "param-types.h"
 
 //! Aliases for the coordinates
@@ -47,8 +48,10 @@ class tnlTuple
 
    //! This is constructore of vector with Size = 3.
    tnlTuple( const Real& v1,
-              const Real& v2,
-              const Real& v3 );
+             const Real& v2,
+             const Real& v3 );
+
+   static tnlString getType();
 
    const Real& operator[]( int i ) const;
 
@@ -220,6 +223,16 @@ tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
    data[ 0 ] = v1;
    data[ 1 ] = v2;
    data[ 2 ] = v3;
+}
+
+template< int Size, typename Real >
+tnlString tnlTuple< Size, Real > :: getType()
+{
+   return tnlString( "tnlTuple< " ) +
+          tnlString( Size ) +
+          tnlString( ", " ) +
+          getParameterType< Real >() +
+          tnlString( " >" );
 }
 
 template< int Size, typename Real >
@@ -628,15 +641,6 @@ ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v )
    return str;
 };
 
-template< int Size, typename Real > tnlString getParameterType()
-{ 
-   return tnlString( "tnlTuple< " ) +
-          tnlString( Size ) +
-          tnlString( ", " ) +
-          tnlString( getParameterType< Real >() ) +
-          tnlString( " >" );
-};
-
 template< typename Real >
 tnlTuple< 3, Real > tnlVectorProduct( const tnlTuple< 3, Real >& u,
                                       const tnlTuple< 3, Real >& v )
@@ -678,7 +682,5 @@ Real tnlTriangleArea( const tnlTuple< 2, Real >& a,
    const tnlTuple< 3, Real > v = tnlVectorProduct( u1, u2 );
    return 0.5 * sqrt( tnlScalarProduct( v, v ) );
 };
-
-
 
 #endif

@@ -39,7 +39,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    tnlVector( const tnlString& name, const Index size );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
 
    tnlVector< Real, Device, Index >& operator = ( const tnlVector< Real, Device, Index >& array );
 

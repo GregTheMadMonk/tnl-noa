@@ -23,13 +23,15 @@
 #include <core/tnlString.h>
 
 template< typename T >
-tnlString getParameterType() { return tnlString( "unknown type" ); };
+tnlString getParameterType() { return T :: getType(); };
 
 template<> inline tnlString getParameterType< bool >() { return tnlString( "bool" ); };
 template<> inline tnlString getParameterType< int >() { return tnlString( "int" ); };
+template<> inline tnlString getParameterType< long int >() { return tnlString( "long int" ); };
 template<> inline tnlString getParameterType< char >() { return tnlString( "char" ); };
 template<> inline tnlString getParameterType< float >() { return tnlString( "float" ); };
 template<> inline tnlString getParameterType< double >() { return tnlString( "double" ); };
+template<> inline tnlString getParameterType< long double >() { return tnlString( "long double" ); };
 template<> inline tnlString getParameterType< tnlFloat >() { return tnlString( "tnlFloat" ); };
 template<> inline tnlString getParameterType< tnlDouble> () { return tnlString( "tnlDouble" ); };
 

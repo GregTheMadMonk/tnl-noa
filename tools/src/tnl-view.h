@@ -28,30 +28,37 @@
 
 using namespace std;
 
-template< typename Mesh, typename Element, typename Index, int Dimensions >
+bool getOutputFileName( const tnlString& inputFileName,
+                        const tnlString& outputFormat,
+                        tnlString& outputFileName )
+{
+   outputFileName = inputFileName;
+   RemoveFileExtension( outputFileName );
+   if( outputFormat == "gnuplot" )
+   {
+      outputFileName += ".gplt";
+      return true;
+   }
+   else
+   {
+      cerr << "Unknown file format " << outputFormat << ".";
+      return false;
+   }
+}
+
+template< typename Mesh, typename Element, typename Real, typename Index, int Dimensions >
 bool convertObject( const Mesh& mesh,
                     const tnlString& inputFileName,
                     const tnlList< tnlString >& parsedObjectType,
                     const tnlParameterContainer& parameters )
 {
    int verbose = parameters. GetParameter< int >( "verbose");
-   bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
-   tnlString outputFileName( inputFileName );
-   RemoveFileExtension( outputFileName );
    tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
-   if( outputFormat == "gnuplot" )
-      outputFileName += ".gplt";
-   else
-   {
-      cerr << "Unknown file format " << outputFormat << ".";
+   tnlString outputFileName;
+   if( ! getOutputFileName( inputFileName,
+                            outputFormat,
+                            outputFileName ) )
       return false;
-   }
-   if( checkOutputFile && fileExists( outputFileName ) )
-   {
-      if( verbose )
-         cout << " file already exists. Skipping.            \r" << flush;
-      return true;
-   }
    if( verbose )
       cout << " writing to " << outputFileName << " ... " << flush;
 
@@ -72,12 +79,12 @@ bool convertObject( const Mesh& mesh,
       tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      tnlGrid< Dimensions, Element, tnlHost, Index > grid;
+      tnlGrid< Dimensions, Real, tnlHost, Index > grid;
       grid. setDimensions( multiVector. getDimensions() );
-      grid. setOrigin( tnlTuple< Dimensions, Element >( 0.0 ) );
-      grid. setProportions( tnlTuple< Dimensions, Element >( 1.0 ) );
-      const Element spaceStep = grid. getParametricStep(). x();
-      grid. setParametricStep( tnlTuple< Dimensions, Element >( spaceStep ) );
+      grid. setOrigin( tnlTuple< Dimensions, Real >( 0.0 ) );
+      grid. setProportions( tnlTuple< Dimensions, Real >( 1.0 ) );
+      const Real spaceStep = grid. getParametricStep(). x();
+      grid. setParametricStep( tnlTuple< Dimensions, Real >( spaceStep ) );
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
@@ -86,7 +93,7 @@ bool convertObject( const Mesh& mesh,
    return true;
 }
 
-template< typename Mesh, typename Element, typename Index >
+template< typename Mesh, typename Element, typename Real, typename Index >
 bool setDimensions( const Mesh& mesh,
                     const tnlString& inputFileName,
                     const tnlList< tnlString >& parsedObjectType,
@@ -102,17 +109,17 @@ bool setDimensions( const Mesh& mesh,
    switch( dimensions )
    {
       case 1:
-         return convertObject< Mesh, Element, Index, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< Mesh, Element, Real, Index, 1 >( mesh, inputFileName, parsedObjectType, parameters );
       case 2:
-         return convertObject< Mesh, Element, Index, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< Mesh, Element, Real, Index, 2 >( mesh, inputFileName, parsedObjectType, parameters );
       case 3:
-         return convertObject< Mesh, Element, Index, 3 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< Mesh, Element, Real, Index, 3 >( mesh, inputFileName, parsedObjectType, parameters );
    }
    cerr << "Cannot convert objects with " << dimensions << " dimensions." << endl;
    return false;
 }
 
-template< typename Mesh, typename Element >
+template< typename Mesh, typename Element, typename Real >
 bool setIndexType( const Mesh& mesh,
                    const tnlString& inputFileName,
                    const tnlList< tnlString >& parsedObjectType,
@@ -127,11 +134,61 @@ bool setIndexType( const Mesh& mesh,
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
-      return setDimensions< Mesh, Element, int >( mesh, inputFileName, parsedObjectType, parameters );
+      return setDimensions< Mesh, Element, Real, int >( mesh, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
-      return setDimensions< Mesh, Element, long int >( mesh, inputFileName, parsedObjectType, parameters );
+      return setDimensions< Mesh, Element, Real, long int >( mesh, inputFileName, parsedObjectType, parameters );
    cerr << "Unknown index type " << indexType << "." << endl;
    return false;
+}
+
+template< typename Mesh >
+bool setTupleType( const Mesh& mesh,
+                   const tnlString& inputFileName,
+                   const tnlList< tnlString >& parsedObjectType,
+                   const tnlList< tnlString >& parsedElementType,
+                   const tnlParameterContainer& parameters )
+{
+   int dimensions = atoi( parsedElementType[ 1 ].getString() );
+   tnlString dataType = parsedElementType[ 2 ];
+   if( dataType == "float" )
+      switch( dimensions )
+      {
+         case 1:
+            return setIndexType< Mesh, tnlTuple< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 2:
+            return setIndexType< Mesh, tnlTuple< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 3:
+            return setIndexType< Mesh, tnlTuple< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+      }
+   if( dataType == "double" )
+      switch( dimensions )
+      {
+         case 1:
+            return setIndexType< Mesh, tnlTuple< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 2:
+            return setIndexType< Mesh, tnlTuple< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 3:
+            return setIndexType< Mesh, tnlTuple< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+      }
+   if( dataType == "long double" )
+      switch( dimensions )
+      {
+         case 1:
+            return setIndexType< Mesh, tnlTuple< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 2:
+            return setIndexType< Mesh, tnlTuple< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+         case 3:
+            return setIndexType< Mesh, tnlTuple< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            break;
+      }
 }
 
 template< typename Mesh >
@@ -141,6 +198,7 @@ bool setElementType( const Mesh& mesh,
                      const tnlParameterContainer& parameters )
 {
    tnlString elementType;
+
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
@@ -148,12 +206,22 @@ bool setElementType( const Mesh& mesh,
        parsedObjectType[ 0 ] == "tnlVector" )
       elementType = parsedObjectType[ 1 ];
 
+
    if( elementType == "float" )
-      return setIndexType< Mesh, float >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< Mesh, float, float >( mesh, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
-      return setIndexType< Mesh, double >( mesh, inputFileName, parsedObjectType, parameters );
-   if( elementType == "long-double" )
-      return setIndexType< Mesh, long double >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< Mesh, double, double >( mesh, inputFileName, parsedObjectType, parameters );
+   if( elementType == "long double" )
+      return setIndexType< Mesh, long double, long double >( mesh, inputFileName, parsedObjectType, parameters );
+   tnlList< tnlString > parsedElementType;
+   if( ! parseObjectType( elementType, parsedElementType ) )
+   {
+      cerr << "Unable to parse object type " << elementType << "." << endl;
+      return false;
+   }
+   if( parsedElementType[ 0 ] == "tnlTuple" )
+      return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
+
    cerr << "Unknown element type " << elementType << "." << endl;
    return false;
 }
@@ -173,6 +241,7 @@ bool processFiles( const tnlParameterContainer& parameters )
       }
    mesh. writeMesh( "mesh.asy", "asymptote" );
 
+   bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
 #ifdef HAVE_OPENMP
 #pragma omp parallel for
@@ -181,6 +250,19 @@ bool processFiles( const tnlParameterContainer& parameters )
    {
       if( verbose )
          cout << "Processing file " << inputFiles[ i ] << " ... " << flush;
+
+      tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+      tnlString outputFileName;
+      if( ! getOutputFileName( inputFiles[ i ],
+                               outputFormat,
+                               outputFileName ) )
+         return false;
+      if( checkOutputFile && fileExists( outputFileName ) )
+      {
+         if( verbose )
+            cout << " file already exists. Skipping.            \r" << flush;
+         continue;
+      }
 
       tnlString objectType;
       if( ! getObjectType( inputFiles[ i ], objectType ) )

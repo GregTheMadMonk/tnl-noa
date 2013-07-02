@@ -42,7 +42,9 @@ class tnlArray : public tnlObject
 
    tnlArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
 
    bool setSize( Index size );
 

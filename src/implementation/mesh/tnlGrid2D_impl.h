@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iomanip>
 #include <core/tnlAssert.h>
+#include <mesh/tnlGnuplotWriter.h>
 
 using namespace std;
 
@@ -37,7 +38,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getTypeStatic()
+tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
@@ -51,9 +52,9 @@ template< typename Real,
            typename Device,
            typename Index,
            template< int, typename, typename, typename > class Geometry >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType() const
+tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getTypeVirtual() const
 {
-   return this -> getTypeStatic();
+   return this -> getType();
 }
 
 template< typename Real,
@@ -537,7 +538,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
            << this -> getProportions(). y() << "cm );"
            << endl << endl;
       VertexType v;
-      for( Index j = 0; j <= this -> dimensions. y(); j ++ )
+      for( Index j = 0; j < this -> dimensions. y(); j ++ )
       {
          file << "draw( ";
          this -> getVertex< -1, -1 >( CoordinatesType( 0, j ), v );
@@ -550,7 +551,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
          file << " );" << endl;
       }
       file << endl;
-      for( Index i = 0; i <= this -> dimensions. x(); i ++ )
+      for( Index i = 0; i < this -> dimensions. x(); i ++ )
       {
          file << "draw( ";
          this -> getVertex< -1, -1 >( CoordinatesType( i, 0 ), v );
@@ -653,7 +654,9 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
          {
             VertexType v;
             this -> getVertex< 0, 0 >( CoordinatesType( i, j ), v );
-            file << v. x() << " " << " " << v. y() << " " << function[ this -> getElementIndex( i, j ) ] << endl;
+            file << v. x() << " " << " " << v. y() << " ";
+            tnlGnuplotWriter::write( file,  function[ this -> getElementIndex( i, j ) ] );
+            file << endl;
          }
          file << endl;
       }

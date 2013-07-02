@@ -49,13 +49,22 @@ tnlVector< Real, Device, Index > :: tnlVector( const tnlString& name, const Inde
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlVector< Real, Device, Index > :: getType() const
+tnlString tnlVector< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlVector< " ) +
                      getParameterType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                      getParameterType< Index >() + " >";
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlVector< Real, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
 
 template< typename Real,
            typename Device,

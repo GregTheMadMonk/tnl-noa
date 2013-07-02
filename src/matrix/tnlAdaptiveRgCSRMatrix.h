@@ -36,6 +36,11 @@ struct tnlARGCSRGroupProperties
    int chunkSize;
    int firstRow;
    int offset;
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlARGCSRGroupProperties" );
+   };
 };
 
 inline tnlString GetParameterType( const tnlARGCSRGroupProperties& a )

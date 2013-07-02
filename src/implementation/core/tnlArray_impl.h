@@ -46,13 +46,21 @@ tnlArray< Element, Device, Index > :: tnlArray( const tnlString& name )
 template< typename Element,
            typename Device,
            typename Index >
-tnlString tnlArray< Element, Device, Index > :: getType() const
+tnlString tnlArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlArray< " ) +
                      getParameterType< Element >() +
                      Device :: getDeviceType() +
                      getParameterType< Index >() +
                      " >";
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlString tnlArray< Element, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
 };
 
 template< typename Element,

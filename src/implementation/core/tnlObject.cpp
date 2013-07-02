@@ -42,9 +42,14 @@ tnlObject :: tnlObject( const tnlString& _name )
    dbgCout( "Initiating object " << getName() );
 }
 
-tnlString tnlObject :: getType() const
+tnlString tnlObject :: getType()
 {
    return tnlString( "tnlObject" );
+}
+
+tnlString tnlObject :: getTypeVirtual() const
+{
+   return this->getType();
 }
 
 void tnlObject :: setName( const tnlString& name)
@@ -68,7 +73,7 @@ bool tnlObject :: save( tnlFile& file ) const
 #endif      
       return false;
    dbgCout( "Writing object name " << name );
-   if( ! this -> getType(). save( file ) || ! name. save( file ) ) return false;
+   if( ! this->getTypeVirtual().save( file ) || ! name. save( file ) ) return false;
    return true;
 }
 
@@ -79,9 +84,9 @@ bool tnlObject :: load( tnlFile& file )
    tnlString load_type;
    if( ! getObjectType( file, load_type ) )
       return false;
-   if( load_type != getType() )
+   if( load_type != getTypeVirtual() )
    {
-      cerr << "Given file contains instance of " << load_type << " but " << getType() << " is expected." << endl;
+      cerr << "Given file contains instance of " << load_type << " but " << getTypeVirtual() << " is expected." << endl;
       return false;
    }
    dbgCout( "Reading object name " );

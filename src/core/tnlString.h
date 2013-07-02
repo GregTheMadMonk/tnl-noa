@@ -49,6 +49,8 @@ class tnlString
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
 
+   static tnlString getType();
+
    //! Copy constructor
    tnlString( const tnlString& str );
 

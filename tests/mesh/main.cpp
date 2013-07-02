@@ -68,6 +68,7 @@ void testWithoutOutput(MeshType &mesh)
 
 int main()
 {
+   /*
    cout << "Testing linear mesh ... " << endl;
 	Mesh<LinearMeshConfig> mesh0;
 	mesh0.load( lineVtkFile);
@@ -143,6 +144,6 @@ int main()
 	tetramesh.write( canyon3DVtkOutFile );
 
 	cout << "done" << endl;
-
+*/
 	return 0;
 }

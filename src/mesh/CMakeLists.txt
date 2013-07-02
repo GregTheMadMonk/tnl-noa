@@ -11,6 +11,7 @@ SET( headers tnlGrid.h
              tnlIdenticalGridGeometry.h
              tnlLinearGridGeometry.h
              tnlDummyMesh.h
+             tnlGnuplotWriter.h
              config.h 
              information.h 
              mesh.h 

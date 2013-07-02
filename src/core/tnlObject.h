@@ -48,7 +48,9 @@ class tnlObject
     * Type getter. This returns the type in C++ style - for example the returned value
     * may look ass follows: "tnlVector< double, tnlCuda >".
     */
-   virtual tnlString getType() const;
+   static tnlString getType();
+
+   virtual tnlString getTypeVirtual() const;
 
    /****
     *  Name getter
