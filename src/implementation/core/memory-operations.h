@@ -192,7 +192,7 @@ bool copyMemoryCudaToHost( DestinationElement* destination,
    abort(); // TODO: fix this
    cudaMemcpy( destination,
                source,
-               size * sizeof( Element ),
+               size * sizeof( SourceElement ),
                cudaMemcpyDeviceToHost );
    if( ! checkCudaDevice )
    {

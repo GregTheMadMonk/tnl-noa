@@ -18,6 +18,9 @@
 #ifndef TNLCUDAMEMORYOPERATIONSTESTER_H_
 #define TNLCUDAMEMORYOPERATIONSTESTER_H_
 
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -126,6 +129,9 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
 };
 
-
+#else
+class tnlCudaMemoryOperationsTester
+{};
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLCUDAMEMORYOPERATIONSTESTER_H_ */

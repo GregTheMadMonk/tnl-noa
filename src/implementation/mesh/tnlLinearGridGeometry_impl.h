@@ -354,7 +354,7 @@ bool tnlLinearGridGeometry< 2, Real, Device, Index > :: save( tnlFile& file ) co
 {
    if( ! this -> parametricStep. save( file ) ||
        ! this -> proportions. save( file ) ||
-       ! file. write( &this -> numberOfSegments ) ||
+       ! file. write< IndexType, DeviceType >( &this -> numberOfSegments ) ||       
        ! this -> ySegments. save( file ) ||
        ! this -> ySegmentsLeftOffsets. save( file ) ||
        ! this -> ySegmentsRightOffsets. save( file ) )
@@ -369,13 +369,11 @@ bool tnlLinearGridGeometry< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! this -> parametricStep. load( file ) ||
        ! this -> proportions. load( file ) ||
-       ! file. read( &this -> numberOfSegments ) ||
+       ! file. read< IndexType, DeviceType >( &this -> numberOfSegments ) ||
        ! this -> ySegments. load( file ) ||
        ! this -> ySegmentsLeftOffsets. load( file ) ||
        ! this -> ySegmentsRightOffsets. load( file ) )
-   {
       return false;
-   }
    return true;
 };
 

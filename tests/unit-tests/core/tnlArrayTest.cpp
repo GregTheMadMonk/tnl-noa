@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdlib>
 #include "tnlArrayTester.h"
 #include "../tnlUnitTestStarter.h"
 

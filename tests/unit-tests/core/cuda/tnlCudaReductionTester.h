@@ -19,6 +19,9 @@
 #ifndef TNLCUDAREDUCTIONTESTER_H_
 #define TNLCUDAREDUCTIONTESTER_H_
 
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -805,5 +808,9 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
 };
 
+#else
+class tnlCudaReductionTester
+{};
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLCUDAREDUCTIONTESTER_H_ */

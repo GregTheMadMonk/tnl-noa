@@ -45,7 +45,7 @@ class tnlUnitTestStarter
       std :: cerr << "Error: CPPUNIT is missing." << std :: endl;
       return false;
 #endif
-   };
+   }
 };
 
 #endif /* TNLUNITTESTSTARTER_H_ */

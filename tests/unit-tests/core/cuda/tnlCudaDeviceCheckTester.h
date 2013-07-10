@@ -18,6 +18,9 @@
 #ifndef TNLCUDADEVICECHECKTESTER_H_
 #define TNLCUDADEVICECHECKTESTER_H_
 
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -30,6 +33,7 @@
 __global__ void simpleKernel()
 {
    int tIdx = threadIdx. x;
+   tIdx ++;
 }
 #endif
 
@@ -71,5 +75,9 @@ class tnlCudaDeviceCheckTester : public CppUnit :: TestCase
    };
 };
 
+#else
+class tnlCudaDeviceCheckTester
+{};
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLCUDADEVICECHECKTESTER_H_ */

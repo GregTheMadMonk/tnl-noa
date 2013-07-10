@@ -500,7 +500,7 @@ template< typename Real, typename Device, typename Index >
 bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
-   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " < rgCSRMatrix. getName() << " with non-positiove size." );
+   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " << rgCSRMatrix. getName() << " with non-positiove size." );
 
    this -> cudaBlockSize = rgCSRMatrix. cudaBlockSize;
    this -> groupSize = rgCSRMatrix. groupSize;

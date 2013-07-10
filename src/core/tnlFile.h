@@ -118,7 +118,7 @@ class tnlFile
 	            const Index elements );
 
 	template< typename Type, typename Device >
-	bool write( Type* buffer );
+	bool write( const Type* buffer );
 #else        
    template< typename Type, typename Device = tnlHost, typename Index = int >
    bool read( Type* buffer,
@@ -132,7 +132,7 @@ class tnlFile
                const Index elements );
 
    template< typename Type, typename Device = tnlHost >
-   bool write( Type* buffer );
+   bool write( const Type* buffer );
 
 #endif
 
@@ -149,7 +149,7 @@ bool tnlFile :: read( Type* buffer )
 };
 
 template< typename Type, typename Device >
-bool tnlFile :: write( Type* buffer )
+bool tnlFile :: write( const Type* buffer )
 {
    return write< Type, Device, int >( buffer, 1 );
 };
@@ -247,7 +247,7 @@ bool tnlFile :: read( Type* buffer,
 
 template< class Type, typename Device, typename Index >
 bool tnlFile ::  write( const Type* buffer,
-                           const Index elements )
+                        const Index elements )
 {
    if( ! fileOK )
    {

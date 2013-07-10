@@ -18,6 +18,9 @@
 #ifndef TNLCUDAVECTOROPERATIONSTESTER_H_
 #define TNLCUDAVECTOROPERATIONSTESTER_H_
 
+#include <tnlConfig.h>
+
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -213,5 +216,10 @@ class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
 
 };
 
+#else
+template< typename Type >
+class tnlCudaVectorOperationsTester
+{};
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLCUDAVECTOROPERATIONSTESTER_H_ */
