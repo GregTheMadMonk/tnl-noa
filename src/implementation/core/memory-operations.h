@@ -87,11 +87,11 @@ __global__ void setVectorValueCudaKernel( Element* data,
                                           const Element value )
 {
    Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index gridSize = blockDim. x * gridDim. x;
+   const Index maxGridSize = blockDim. x * gridDim. x;
    while( elementIdx < size )
    {
       data[ elementIdx ] = value;
-      elementIdx += gridSize;
+      elementIdx += maxGridSize;
    }
 }
 #endif
@@ -159,6 +159,42 @@ bool copyMemoryHostToCuda( Element* destination,
 #endif
 }
 
+template< typename DestinationElement,
+          typename SourceElement,
+          typename Index >
+bool copyMemoryHostToCuda( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size )
+{
+#ifdef HAVE_CUDA
+   DestinationElement* buffer = new DestinationElement[ tnlGPUvsCPUTransferBufferSize ];
+   if( ! buffer )
+   {
+      cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
+      return false;
+   }
+   Index i( 0 );
+   while( i < size )
+   {
+      Index j( 0 );
+      while( j < tnlGPUvsCPUTransferBufferSize && i + j < size )
+         buffer[ j ] = source[ i + j++ ];
+      if( ! copyMemoryHostTuCuda( buffer,
+                                  &destination[ i ],
+                                  j ) )
+      {
+         delete[] buffer;
+         return false;
+      }
+      i += j;
+   }
+   delete[] buffer;
+   return true;
+#else
+   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   return false;
+#endif
+}
 
 template< typename Element, typename Index >
 bool copyMemoryCudaToHost( Element* destination,
@@ -189,22 +225,29 @@ bool copyMemoryCudaToHost( DestinationElement* destination,
                            const SourceElement* source,
                            const Index size )
 {
-#ifdef HAVE_CUDA
-   abort(); // TODO: fix this
-   cudaMemcpy( destination,
-               source,
-               size * sizeof( SourceElement ),
-               cudaMemcpyDeviceToHost );
-   if( ! checkCudaDevice )
+   SourceElement* buffer = new SourceElement[ tnlGPUvsCPUTransferBufferSize ];
+   if( ! buffer )
    {
-      cerr << "Transfer of data from CUDA device to host failed." << endl;
+      cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
       return false;
    }
+   Index i( 0 );
+   while( i < size )
+   {
+      if( ! copyMemoryCudaToHost( &source[ i ],
+                                  buffer,
+                                  Min( size - i, tnlGPUvsCPUTransferBufferSize ) ) )
+      {
+         delete[] buffer;
+         return false;
+      }
+      Index j( 0 );
+      while( j < tnlGPUvsCPUTransferBufferSize && i + j < size )
+         destination[ i + j ] = buffer[ j++ ];
+      i += j;
+   }
+   delete[] buffer;
    return true;
-#else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-   return false;
-#endif
 }
 
 
@@ -363,19 +406,19 @@ extern template bool setMemoryHost( float* data, const float& value, const long 
 extern template bool setMemoryHost( double* data, const double& value, const long int size );
 extern template bool setMemoryHost( long double* data, const long double& value, const long int size );
 
-extern template bool setMemoryCuda( char* data, const char& value, const int size );
-extern template bool setMemoryCuda( int* data, const int& value, const int size );
-extern template bool setMemoryCuda( long int* data, const long int& value, const int size );
-extern template bool setMemoryCuda( float* data, const float& value, const int size );
-extern template bool setMemoryCuda( double* data, const double& value, const int size );
-extern template bool setMemoryCuda( long double* data, const long double& value, const int size );
+extern template bool setMemoryCuda( char* data, const char& value, const int size, const int maxGridSize );
+extern template bool setMemoryCuda( int* data, const int& value, const int size, const int maxGridSize );
+extern template bool setMemoryCuda( long int* data, const long int& value, const int size, const int maxGridSize );
+extern template bool setMemoryCuda( float* data, const float& value, const int size, const int maxGridSize );
+extern template bool setMemoryCuda( double* data, const double& value, const int size, const int maxGridSize );
+extern template bool setMemoryCuda( long double* data, const long double& value, const int size, const int maxGridSize );
 
-extern template bool setMemoryCuda( char* data, const char& value, const long int size );
-extern template bool setMemoryCuda( int* data, const int& value, const long int size );
-extern template bool setMemoryCuda( long int* data, const long int& value, const long int size );
-extern template bool setMemoryCuda( float* data, const float& value, const long int size );
-extern template bool setMemoryCuda( double* data, const double& value, const long int size );
-extern template bool setMemoryCuda( long double* data, const long double& value, const long int size );
+extern template bool setMemoryCuda( char* data, const char& value, const long int size, const int maxGridSize );
+extern template bool setMemoryCuda( int* data, const int& value, const long int size, const int maxGridSize );
+extern template bool setMemoryCuda( long int* data, const long int& value, const long int size, const int maxGridSize );
+extern template bool setMemoryCuda( float* data, const float& value, const long int size, const int maxGridSize );
+extern template bool setMemoryCuda( double* data, const double& value, const long int size, const int maxGridSize );
+extern template bool setMemoryCuda( long double* data, const long double& value, const long int size, const int maxGridSize );
 
 extern template bool copyMemoryHostToHost( char* destination, const char* source, const int size );
 extern template bool copyMemoryHostToHost( int* destination, const int* source, const int size );

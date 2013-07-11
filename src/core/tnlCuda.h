@@ -27,57 +27,29 @@ class tnlCuda
 {
    public:
 
-   static tnlString getDeviceType()
-   {
-      return tnlString( "tnlCuda" );
-   }
+   static tnlString getDeviceType();
 
-   static tnlDeviceEnum getDevice()
-   {
-      return tnlCudaDevice;
-   };
+   static tnlDeviceEnum getDevice();
 
    template< typename Element, typename Index >
-   static void allocateMemory( Element*& data, const Index size )
-   {
-      allocateMemoryCuda( data, size );
-   }
+   static void allocateMemory( Element*& data, const Index size );
 
    template< typename Element >
-   static void freeMemory( Element* data )
-   {
-      freeMemoryCuda( data );
-   }
+   static void freeMemory( Element* data );
 
 
    template< typename Element >
    static void setMemoryElement( Element* data,
-                                 const Element& value )
-   {
-      setMemoryCuda( data, value, 1 );
-   }
+                                 const Element& value );
 
    template< typename Element >
-   static Element getMemoryElement( const Element* data )
-   {
-      Element result;
-      copyMemoryCudaToHost( &result, data, 1 );
-      return result;
-   }
+   static Element getMemoryElement( const Element* data );
 
    template< typename Element, typename Index >
-   static Element& getArrayElementReference( Element* data, const Index i )
-   {
-      tnlAssert( false, );
-      abort();
-   }
+   static Element& getArrayElementReference( Element* data, const Index i );
 
    template< typename Element, typename Index >
-   static const Element& getArrayElementReference(const Element* data, const Index i )
-   {
-      tnlAssert( false, );
-      abort();
-   }
+   static const Element& getArrayElementReference(const Element* data, const Index i );
 
    template< typename DestinationElement,
              typename SourceElement,
@@ -85,76 +57,36 @@ class tnlCuda
              typename Device >
    static bool memcpy( DestinationElement* destination,
                        const SourceElement* source,
-                       const Index size )
-   {
-      switch( Device :: getDevice() )
-      {
-         case tnlHostDevice:
-            return copyMemoryHostToCuda( destination, source, size );
-         case tnlCudaDevice:
-            return copyMemoryCudaToCuda( destination, source, size );
-      }
-      return true;
-   }
-
+                       const Index size );
 
    template< typename Element, typename Index, typename Device >
    static bool memcpy( Element* destination,
                        const Element* source,
-                       const Index size )
-   {
-      return tnlCuda :: memcpy< Element, Element, Index, Device >
-                              ( destination,
-                                source,
-                                size );
-   }
+                       const Index size );
 
    template< typename Element, typename Index, typename Device >
    static bool memcmp( const Element* data1,
                        const Element* data2,
-                       const Index size )
-   {
-      switch( Device :: getDevice() )
-      {
-         case tnlHostDevice:
-            return compareMemoryHostCuda( data2, data1, size );
-         case tnlCudaDevice:
-            return compareMemoryCuda( data1, data2, size );
-      }
-   }
+                       const Index size );
 
    template< typename Element, typename Index >
    static bool memset( Element* destination,
                        const Element& value,
-                       const Index size )
-   {
-      return setMemoryCuda( destination, value, size );
-   }
+                       const Index size );
 
-   static int getMaxGridSize()
-   {
-      return maxGridSize;
-   }
+   static int getMaxGridSize();
 
-   static void setMaxGridSize( int newMaxGridSize )
-   {
-      maxGridSize = newMaxGridSize;
-   }
+   static void setMaxGridSize( int newMaxGridSize );
 
-   static int getMaxBlockSize()
-   {
-      return maxBlockSize;
-   }
+   static int getMaxBlockSize();
 
-   static void setMaxBlockSize( int newMaxBlockSize )
-   {
-      maxBlockSize = newMaxBlockSize;
-   }
+   static void setMaxBlockSize( int newMaxBlockSize );
 
    protected:
 
    static int maxGridSize, maxBlockSize;
 };
 
+#include <implementation/core/tnlCuda_impl.h>
 
 #endif /* TNLCUDA_H_ */

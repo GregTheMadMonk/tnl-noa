@@ -95,7 +95,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
       setMemoryHost( hostData, 0, size );
-      setMemoryCuda( deviceData, 13, size );
+      setMemoryCuda( deviceData, 13, size, maxCudaGridSize );
       CPPUNIT_ASSERT( checkCudaDevice );
       copyMemoryCudaToHost( hostData, deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
@@ -113,7 +113,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
       setMemoryHost( hostData, 0, size );
-      setMemoryCuda( deviceData, 13, size );
+      setMemoryCuda( deviceData, 13, size, maxCudaGridSize );
       CPPUNIT_ASSERT( checkCudaDevice );
       copyMemoryCudaToHost( hostData, deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );

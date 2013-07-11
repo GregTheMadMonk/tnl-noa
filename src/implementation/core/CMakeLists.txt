@@ -3,6 +3,7 @@ ADD_SUBDIRECTORY( cuda )
 SET( headers vector-operations.h
              memory-operations.h
              tnlArray_impl.h
+             tnlCuda_impl.h
              tnlHost_impl.h
              tnlLogger_impl.h
              tnlMultiArray1D_impl.h

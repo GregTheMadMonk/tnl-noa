@@ -75,19 +75,19 @@ template bool setMemoryHost( float* data, const float& value, const long int siz
 template bool setMemoryHost( double* data, const double& value, const long int size );
 template bool setMemoryHost( long double* data, const long double& value, const long int size );
 
-template bool setMemoryCuda( char* data, const char& value, const int size );
-template bool setMemoryCuda( int* data, const int& value, const int size );
-template bool setMemoryCuda( long int* data, const long int& value, const int size );
-template bool setMemoryCuda( float* data, const float& value, const int size );
-template bool setMemoryCuda( double* data, const double& value, const int size );
-template bool setMemoryCuda( long double* data, const long double& value, const int size );
+template bool setMemoryCuda( char* data, const char& value, const int size, const int maxGridSize );
+template bool setMemoryCuda( int* data, const int& value, const int size, const int maxGridSize );
+template bool setMemoryCuda( long int* data, const long int& value, const int size, const int maxGridSize );
+template bool setMemoryCuda( float* data, const float& value, const int size, const int maxGridSize );
+template bool setMemoryCuda( double* data, const double& value, const int size, const int maxGridSize );
+template bool setMemoryCuda( long double* data, const long double& value, const int size, const int maxGridSize );
 
-template bool setMemoryCuda( char* data, const char& value, const long int size );
-template bool setMemoryCuda( int* data, const int& value, const long int size );
-template bool setMemoryCuda( long int* data, const long int& value, const long int size );
-template bool setMemoryCuda( float* data, const float& value, const long int size );
-template bool setMemoryCuda( double* data, const double& value, const long int size );
-template bool setMemoryCuda( long double* data, const long double& value, const long int size );
+template bool setMemoryCuda( char* data, const char& value, const long int size, const int maxGridSize );
+template bool setMemoryCuda( int* data, const int& value, const long int size, const int maxGridSize );
+template bool setMemoryCuda( long int* data, const long int& value, const long int size, const int maxGridSize );
+template bool setMemoryCuda( float* data, const float& value, const long int size, const int maxGridSize );
+template bool setMemoryCuda( double* data, const double& value, const long int size, const int maxGridSize );
+template bool setMemoryCuda( long double* data, const long double& value, const long int size, const int maxGridSize );
 
 template bool copyMemoryHostToHost( char* destination, const char* source, const int size );
 template bool copyMemoryHostToHost( int* destination, const int* source, const int size );
