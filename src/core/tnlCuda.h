@@ -130,6 +130,30 @@ class tnlCuda
    {
       return setMemoryCuda( destination, value, size );
    }
+
+   static int getMaxGridSize()
+   {
+      return maxGridSize;
+   }
+
+   static void setMaxGridSize( int newMaxGridSize )
+   {
+      maxGridSize = newMaxGridSize;
+   }
+
+   static int getMaxBlockSize()
+   {
+      return maxBlockSize;
+   }
+
+   static void setMaxBlockSize( int newMaxBlockSize )
+   {
+      maxBlockSize = newMaxBlockSize;
+   }
+
+   protected:
+
+   static int maxGridSize, maxBlockSize;
 };
 
 

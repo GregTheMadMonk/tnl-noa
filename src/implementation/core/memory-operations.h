@@ -99,13 +99,14 @@ __global__ void setVectorValueCudaKernel( Element* data,
 template< typename Element, typename Index >
 bool setMemoryCuda( Element* data,
                     const Element& value,
-                    const Index size )
+                    const Index size,
+                    const int maxGridSize )
 {
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
    Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-   gridSize. x = Min( blocksNumber, ( Index ) maxCudaGridSize - 1 );
+   gridSize. x = Min( blocksNumber, maxGridSize );
    setVectorValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
 
    return checkCudaDevice;

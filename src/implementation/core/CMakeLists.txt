@@ -43,7 +43,8 @@ IF( BUILD_CUDA )
         ${common_SOURCES}
         ${CURRENT_DIR}/memory-operations_impl.cu
         ${CURRENT_DIR}/tnlArray_impl.cu
-        ${CURRENT_DIR}/tnlVector_impl.cu 
+        ${CURRENT_DIR}/tnlVector_impl.cu
+        ${CURRENT_DIR}/tnlCuda.cu 
         PARENT_SCOPE )
 ENDIF()    
 

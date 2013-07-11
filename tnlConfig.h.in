@@ -18,6 +18,6 @@
 
 #define TNL_CPP_COMPILER_NAME "@CMAKE_CXX_COMPILER@"
 
-#define maxCudaGridSize 65536
+#define maxCudaGridSize 65535
 
-#define maxCudaBlockSize 1024
+#define maxCudaBlockSize 1023
