@@ -108,13 +108,11 @@ bool setMemoryCuda( Element* data,
    Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
    gridSize. x = Min( blocksNumber, maxGridSize );
    setVectorValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
-
    return checkCudaDevice;
 #else
       cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
       return false;
 #endif
-
 }
 
 template< typename DestinationElement, typename SourceElement, typename Index >
@@ -166,7 +164,6 @@ bool copyMemoryHostToCuda( DestinationElement* destination,
                            const SourceElement* source,
                            const Index size )
 {
-#ifdef HAVE_CUDA
    DestinationElement* buffer = new DestinationElement[ tnlGPUvsCPUTransferBufferSize ];
    if( ! buffer )
    {
@@ -179,8 +176,8 @@ bool copyMemoryHostToCuda( DestinationElement* destination,
       Index j( 0 );
       while( j < tnlGPUvsCPUTransferBufferSize && i + j < size )
          buffer[ j ] = source[ i + j++ ];
-      if( ! copyMemoryHostTuCuda( buffer,
-                                  &destination[ i ],
+      if( ! copyMemoryHostToCuda( &destination[ i ],
+                                  buffer,
                                   j ) )
       {
          delete[] buffer;
@@ -190,10 +187,6 @@ bool copyMemoryHostToCuda( DestinationElement* destination,
    }
    delete[] buffer;
    return true;
-#else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-   return false;
-#endif
 }
 
 template< typename Element, typename Index >
@@ -234,8 +227,8 @@ bool copyMemoryCudaToHost( DestinationElement* destination,
    Index i( 0 );
    while( i < size )
    {
-      if( ! copyMemoryCudaToHost( &source[ i ],
-                                  buffer,
+      if( ! copyMemoryCudaToHost( buffer,
+                                  &source[ i ],
                                   Min( size - i, tnlGPUvsCPUTransferBufferSize ) ) )
       {
          delete[] buffer;
@@ -268,9 +261,62 @@ bool copyMemoryCudaToCuda( Element* destination,
 #endif
 }
 
-template< typename Element, typename Index >
+#ifdef HAVE_CUDA
+template< typename DestinationElement,
+          typename SourceElement,
+          typename Index >
+__global__ void copyMemoryCudaToCudaKernel( DestinationElement* destination,
+                                            const SourceElement* source,
+                                            const Index size )
+{
+   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
+   const Index maxGridSize = blockDim. x * gridDim. x;
+   while( elementIdx < size )
+   {
+      destination[ elementIdx ] = source[ elementIdx ];
+      elementIdx += maxGridSize;
+   }
+}
+#endif
+
+
+template< typename DestinationElement,
+          typename SourceElement,
+          typename Index >
+bool copyMemoryCudaToCuda( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size,
+                           const Index maxGridSize )
+{
+#ifdef HAVE_CUDA
+   dim3 blockSize( 0 ), gridSize( 0 );
+   blockSize. x = 256;
+   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+   gridSize. x = Min( blocksNumber, maxGridSize );
+   copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
+   return checkCudaDevice;
+#else
+      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      return false;
+#endif
+}
+
+template< typename Element,
+          typename Index >
 bool compareMemoryHost( const Element* data1,
                         const Element* data2,
+                        const Index size )
+{
+   if( memcmp( data1, data2, size * sizeof( Element ) ) != 0 )
+      return false;
+   return true;
+}
+
+template< typename Element1,
+          typename Element2,
+          typename Index >
+bool compareMemoryHost( const Element1* data1,
+                        const Element2* data2,
                         const Index size )
 {
    for( Index i = 0; i < size; i ++ )
@@ -279,15 +325,15 @@ bool compareMemoryHost( const Element* data1,
    return true;
 }
 
-template< typename Element, typename Index >
-bool compareMemoryHostCuda( const Element* hostData,
-                               const Element* deviceData,
-                               const Index size )
+template< typename Element1,
+          typename Element2,
+          typename Index >
+bool compareMemoryHostCuda( const Element1* hostData,
+                            const Element2* deviceData,
+                            const Index size )
 {
 #ifdef HAVE_CUDA
-   Index host_buffer_size = :: Min( ( Index ) ( tnlGPUvsCPUTransferBufferSize / sizeof( Element ) ),
-                                                size );
-   Element* host_buffer = new Element[ host_buffer_size ];
+   Element2* host_buffer = new Element2[ tnlGPUvsCPUTransferBufferSize ];
    if( ! host_buffer )
    {
       cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << endl;
@@ -296,10 +342,10 @@ bool compareMemoryHostCuda( const Element* hostData,
    Index compared( 0 );
    while( compared < size )
    {
-      Index transfer = Min( size - compared, host_buffer_size );
+      Index transfer = Min( size - compared, tnlGPUvsCPUTransferBufferSize );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( deviceData[ compared ] ),
-                      transfer * sizeof( Element ),
+                      transfer * sizeof( Element2 ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
          cerr << "Transfer of data from the device failed." << endl;
@@ -328,7 +374,8 @@ bool compareMemoryHostCuda( const Element* hostData,
 #endif
 }
 
-template< typename Element, typename Index >
+template< typename Element,
+          typename Index >
 bool compareMemoryCuda( const Element* deviceData1,
                         const Element* deviceData2,
                         const Index size )

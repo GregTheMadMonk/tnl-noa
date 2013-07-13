@@ -15,14 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
 #include <cstdlib>
+
 #include "tnlArrayTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-/*   if( ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, int > >() ||
+   if( ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, int > >() ||
@@ -34,7 +37,7 @@ int main( int argc, char* argv[] )
        ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, long int > >() )
-     return EXIT_FAILURE;*/
+     return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else
    return EXIT_FAILURE;

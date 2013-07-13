@@ -39,7 +39,7 @@ if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-memory-operations-test${mpiExt}${debugExt} )
    SET_TESTS_PROPERTIES ( core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-device-check-test${mpiExt}${debugExt} )
    ADD_TEST( core/cuda/tnl-reduction-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-reduction-test${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( core/cuda/tnl-reduction-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( core/cuda/tnl-reduction-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} )   
    ADD_TEST( core/cuda/tnlCudaVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaVectorOperationsTest${mpiExt}${debugExt} )
    SET_TESTS_PROPERTIES ( core/cuda/tnlCudaVectorOperationsTest${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-reduction-test${mpiExt}${debugExt} )   
       

@@ -47,16 +47,36 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
                                 &tnlCudaMemoryOperationsTester :: allocationTest )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
-                                "copyTest",
-                                &tnlCudaMemoryOperationsTester :: allocationTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
                                 "smallMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: smallMemorySetTest )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
                                 "bigMemorySetTest",
                                 &tnlCudaMemoryOperationsTester :: bigMemorySetTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "copyMemoryTest",
+                                &tnlCudaMemoryOperationsTester :: copyMemoryTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "copyMemoryWithConversionHostToCudaTest",
+                                &tnlCudaMemoryOperationsTester :: copyMemoryWithConversionHostToCudaTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "copyMemoryWithConversionCudaToHostTest",
+                                &tnlCudaMemoryOperationsTester :: copyMemoryWithConversionCudaToHostTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "copyMemoryWithConversionCudaToCudaTest",
+                                &tnlCudaMemoryOperationsTester :: copyMemoryWithConversionCudaToCudaTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "compareMemoryHostCudaTest",
+                                &tnlCudaMemoryOperationsTester :: compareMemoryHostCudaTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaMemoryOperationsTester >(
+                                "compareMemoryWithConevrsionHostCudaTest",
+                                &tnlCudaMemoryOperationsTester :: compareMemoryWithConversionHostCudaTest )
                                );
 
       return suiteOfTests;
@@ -70,22 +90,6 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
       freeMemoryCuda( data );
       CPPUNIT_ASSERT( checkCudaDevice );
-   };
-
-   void copyTest()
-   {
-      const int size( 1 << 22 );
-      int *hostData1, *hostData2, *deviceData;
-      allocateMemoryHost( hostData1, size );
-      allocateMemoryHost( hostData2, size );
-      allocateMemoryCuda( deviceData, size );
-      setMemoryHost( hostData1, 13, size );
-      copyMemoryHostToCuda( deviceData, hostData1, size );
-      copyMemoryCudaToHost( hostData2, deviceData, size );
-      CPPUNIT_ASSERT( compareMemoryHost( hostData1, hostData2, size) );
-      freeMemoryHost( hostData1 );
-      freeMemoryHost( hostData2 );
-      freeMemoryCuda( deviceData );
    };
 
    void smallMemorySetTest()
@@ -108,7 +112,6 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
    void bigMemorySetTest()
    {
       const int size( 1.1 * maxCudaGridSize * maxCudaBlockSize );
-      cout << "Size = " << size << endl;
       int *hostData, *deviceData;
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
@@ -120,12 +123,112 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < size; i += 100 )
       {
          if( hostData[ i ] != 13 )
-            cout << " i = " << i << " " << hostData[ i ] << endl;
          CPPUNIT_ASSERT( hostData[ i ] == 13 );
       }
       freeMemoryHost( hostData );
       freeMemoryCuda( deviceData );
    };
+
+   void copyMemoryTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData1, *hostData2, *deviceData;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData, size );
+      setMemoryHost( hostData1, 13, size );
+      copyMemoryHostToCuda( deviceData, hostData1, size );
+      copyMemoryCudaToHost( hostData2, deviceData, size );
+      CPPUNIT_ASSERT( compareMemoryHost( hostData1, hostData2, size) );
+      freeMemoryHost( hostData1 );
+      freeMemoryHost( hostData2 );
+      freeMemoryCuda( deviceData );
+   };
+
+   void copyMemoryWithConversionHostToCudaTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData1;
+      float *hostData2, *deviceData;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData, size );
+      setMemoryHost( hostData1, 13, size );
+      copyMemoryHostToCuda( deviceData, hostData1, size );
+      copyMemoryCudaToHost( hostData2, deviceData, size );
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
+      freeMemoryHost( hostData1 );
+      freeMemoryHost( hostData2 );
+      freeMemoryCuda( deviceData );
+   };
+
+   void copyMemoryWithConversionCudaToHostTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData1, *deviceData;
+      float *hostData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData, size );
+      setMemoryHost( hostData1, 13, size );
+      copyMemoryHostToCuda( deviceData, hostData1, size );
+      copyMemoryCudaToHost( hostData2, deviceData, size );
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
+      freeMemoryHost( hostData1 );
+      freeMemoryHost( hostData2 );
+      freeMemoryCuda( deviceData );
+   };
+
+   void copyMemoryWithConversionCudaToCudaTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData1, *deviceData1;
+      float *hostData2, *deviceData2;
+      allocateMemoryHost( hostData1, size );
+      allocateMemoryHost( hostData2, size );
+      allocateMemoryCuda( deviceData1, size );
+      allocateMemoryCuda( deviceData2, size );
+      setMemoryHost( hostData1, 13, size );
+      copyMemoryHostToCuda( deviceData1, hostData1, size );
+      copyMemoryCudaToCuda( deviceData2, deviceData1, size, maxCudaGridSize );
+      copyMemoryCudaToHost( hostData2, deviceData2, size );
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
+      freeMemoryHost( hostData1 );
+      freeMemoryHost( hostData2 );
+      freeMemoryCuda( deviceData1 );
+      freeMemoryCuda( deviceData2 );
+   };
+
+   void compareMemoryHostCudaTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData, *deviceData;
+      allocateMemoryHost( hostData, size );
+      allocateMemoryCuda( deviceData, size );
+      setMemoryHost( hostData, 7, size );
+      setMemoryCuda( deviceData, 8, size, maxCudaGridSize );
+      CPPUNIT_ASSERT( ! compareMemoryHostCuda( hostData, deviceData, size ) );
+      setMemoryCuda( deviceData, 7, size, maxCudaGridSize );
+      CPPUNIT_ASSERT( compareMemoryHostCuda( hostData, deviceData, size ) );
+   };
+
+   void compareMemoryWithConversionHostCudaTest()
+   {
+      const int size( 1 << 22 );
+      int *hostData;
+      float *deviceData;
+      allocateMemoryHost( hostData, size );
+      allocateMemoryCuda( deviceData, size );
+      setMemoryHost( hostData, 7, size );
+      setMemoryCuda( deviceData, ( float ) 8.0, size, maxCudaGridSize );
+      CPPUNIT_ASSERT( ! compareMemoryHostCuda( hostData, deviceData, size ) );
+      setMemoryCuda( deviceData, ( float ) 7.0, size, maxCudaGridSize );
+      CPPUNIT_ASSERT( compareMemoryHostCuda( hostData, deviceData, size ) );
+   };
+
 
 };
 
