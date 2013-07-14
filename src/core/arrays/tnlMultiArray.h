@@ -19,7 +19,7 @@
 #define TNLMULTIARRAY_H_
 
 #include <iostream>
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 #include <core/tnlTuple.h>
 #include <core/tnlAssert.h>
 
@@ -336,10 +336,10 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 
-#include <implementation/core/tnlMultiArray1D_impl.h>
-#include <implementation/core/tnlMultiArray2D_impl.h>
-#include <implementation/core/tnlMultiArray3D_impl.h>
-#include <implementation/core/tnlMultiArray4D_impl.h>
+#include <implementation/core/arrays/tnlMultiArray1D_impl.h>
+#include <implementation/core/arrays/tnlMultiArray2D_impl.h>
+#include <implementation/core/arrays/tnlMultiArray3D_impl.h>
+#include <implementation/core/arrays/tnlMultiArray4D_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

@@ -28,8 +28,8 @@
 #include <cppunit/Message.h>
 #include <core/cuda/device-check.h>
 #include <implementation/core/memory-operations.h>
-#include <core/tnlVector.h>
-#include <implementation/core/vector-operations.h>
+#include <core/vectors/tnlVector.h>
+#include <implementation/core/vectors/vector-operations.h>
 
 template< typename Type >
 class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
@@ -77,6 +77,19 @@ class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
                                 "getVectorDifferenceMinTest",
                                 &tnlCudaVectorOperationsTester :: getVectorDifferenceMinTest )
                                );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+                                "getVectorDifferenceAbsMaxTest",
+                                &tnlCudaVectorOperationsTester :: getVectorDifferenceAbsMaxTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+                                "getVectorDifferenceAbsMinTest",
+                                &tnlCudaVectorOperationsTester :: getVectorDifferenceAbsMinTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+                                "getVectorDifferenceLpNormTest",
+                                &tnlCudaVectorOperationsTester :: getVectorDifferenceLpNormTest )
+                               );
+
       return suiteOfTests;
    };
 
@@ -210,9 +223,50 @@ class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
       setLinearSequence( u );
       setOnesSequence( v );
 
-      cout << getCudaVectorDifferenceMin( u, v ) << endl;
       CPPUNIT_ASSERT( getCudaVectorDifferenceMin( u, v ) == -1 );
+      CPPUNIT_ASSERT( getCudaVectorDifferenceMin( v, u ) == -1234565 );
    }
+
+   void getVectorDifferenceAbsMaxTest()
+   {
+      const int size( 1234567 );
+      tnlVector< Type, tnlCuda > u, v;
+      u. setSize( size );
+      v. setSize( size );
+      setNegativeLinearSequence( u );
+      setOnesSequence( v );
+
+      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMax( u, v ) == size );
+   }
+
+   void getVectorDifferenceAbsMinTest()
+   {
+      const int size( 1234567 );
+      tnlVector< Type, tnlCuda > u, v;
+      u. setSize( size );
+      v. setSize( size );
+      setLinearSequence( u );
+      setOnesSequence( v );
+
+      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMin( u, v ) == 0 );
+      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMin( v, u ) == 0 );
+   }
+
+
+   void getVectorDifferenceLpNormTest()
+   {
+      const int size( 1024 );
+      tnlVector< Type, tnlCuda > u, v;
+      u. setSize( size );
+      v. setSize( size );
+      u. setValue( 3.0 );
+      v. setValue( 1.0 );
+
+      cout << getCudaVectorDifferenceLpNorm( u, v, 1.0 ) << " " << 2.0 * size << endl;
+      CPPUNIT_ASSERT( getCudaVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
+      CPPUNIT_ASSERT( getCudaVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
+   }
+
 
 };
 

@@ -82,10 +82,17 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
       return suiteOfTests;
    };
 
+   int getTestSize()
+   {
+      const int cudaGridSize = 256;
+      return 1.5 * cudaGridSize * maxCudaBlockSize;
+      //return  1 << 22;
+   };
+
    void allocationTest()
    {
       int* data;
-      allocateMemoryCuda( data, 100 );
+      allocateMemoryCuda( data, getTestSize() );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       freeMemoryCuda( data );
@@ -94,7 +101,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void smallMemorySetTest()
    {
-      const int size( 1024 );
+      const int size = 1024;
       int *hostData, *deviceData;
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
@@ -111,7 +118,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void bigMemorySetTest()
    {
-      const int size( 1.1 * maxCudaGridSize * maxCudaBlockSize );
+      const int size( getTestSize() );
       int *hostData, *deviceData;
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
@@ -131,7 +138,8 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void copyMemoryTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
+
       int *hostData1, *hostData2, *deviceData;
       allocateMemoryHost( hostData1, size );
       allocateMemoryHost( hostData2, size );
@@ -147,7 +155,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void copyMemoryWithConversionHostToCudaTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
       int *hostData1;
       float *hostData2, *deviceData;
       allocateMemoryHost( hostData1, size );
@@ -165,7 +173,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void copyMemoryWithConversionCudaToHostTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
       int *hostData1, *deviceData;
       float *hostData2;
       allocateMemoryHost( hostData1, size );
@@ -183,7 +191,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void copyMemoryWithConversionCudaToCudaTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
       int *hostData1, *deviceData1;
       float *hostData2, *deviceData2;
       allocateMemoryHost( hostData1, size );
@@ -204,7 +212,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void compareMemoryHostCudaTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
       int *hostData, *deviceData;
       allocateMemoryHost( hostData, size );
       allocateMemoryCuda( deviceData, size );
@@ -217,7 +225,7 @@ class tnlCudaMemoryOperationsTester : public CppUnit :: TestCase
 
    void compareMemoryWithConversionHostCudaTest()
    {
-      const int size( 1 << 22 );
+      const int size = getTestSize();
       int *hostData;
       float *deviceData;
       allocateMemoryHost( hostData, size );

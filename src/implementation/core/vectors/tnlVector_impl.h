@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSharedVector.h  -  description
+                          tnlVector.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,34 +15,64 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSHAREDVECTOR_H_IMPLEMENTATION
-#define TNLSHAREDVECTOR_H_IMPLEMENTATION
+#ifndef TNLVECTOR_H_IMPLEMENTATION
+#define TNLVECTOR_H_IMPLEMENTATION
 
-#include <implementation/core/vector-operations.h>
+#include <implementation/core/vectors/vector-operations.h>
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlSharedVector< Real, Device, Index > :: getType() const
+tnlVector< Real, Device, Index > :: tnlVector()
+{
+
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlVector< Real, Device, Index > :: tnlVector( const tnlString& name )
+{
+   this -> setName( name );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlVector< Real, Device, Index > :: tnlVector( const tnlString& name, const Index size )
+{
+   this -> setName( name );
+   this -> setSize( size );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlVector< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlVector< " ) +
                      getParameterType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                      getParameterType< Index >() + " >";
-   /****
-    * It seems that there is no reason to differ here between vector and shared vector.
-    * This method is used mainly (or only) for loading and saving of objects.
-    * Making difference between shared vector and vector only complicates thinks.
-    */
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlVector< Real, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
 
 template< typename Real,
            typename Device,
            typename Index >
-tnlSharedVector< Real, Device, Index >&
-   tnlSharedVector< Real, Device, Index > :: operator = ( const tnlSharedVector< Real, Device, Index >& vector )
+tnlVector< Real, Device, Index >&
+   tnlVector< Real, Device, Index > :: operator = ( const tnlVector< Real, Device, Index >& vector )
 {
-   tnlSharedArray< Real, Device, Index > :: operator = ( vector );
+   tnlArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
 };
 
@@ -50,10 +80,10 @@ template< typename Real,
            typename Device,
            typename Index >
    template< typename Vector >
-tnlSharedVector< Real, Device, Index >&
-   tnlSharedVector< Real, Device, Index > :: operator = ( const Vector& vector )
+tnlVector< Real, Device, Index >&
+   tnlVector< Real, Device, Index > :: operator = ( const Vector& vector )
 {
-   tnlSharedArray< Real, Device, Index > :: operator = ( vector );
+   tnlArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
 };
 
@@ -61,56 +91,24 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool tnlSharedVector< Real, Device, Index > :: operator == ( const Vector& vector ) const
+bool tnlVector< Real, Device, Index > :: operator == ( const Vector& vector ) const
 {
-   return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
+   return tnlArray< Real, Device, Index > :: operator == ( vector );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
+bool tnlVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
+   return tnlArray< Real, Device, Index > :: operator == ( vector );
 }
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool tnlSharedVector< Element, Device, Index > :: save( tnlFile& file ) const
-{
-   tnlAssert( this -> size != 0,
-              cerr << "You try to save empty vector. Its name is " << this -> getName() );
-   if( ! tnlObject :: save( file ) )
-      return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this -> size ) )
-#else               
-   if( ! file. write( &this -> size ) )
-#endif      
-      return false;
-   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
-   {
-      cerr << "I was not able to SAVE tnlSharedVector " << this -> getName()
-           << " with size " << this -> getSize() << endl;
-      return false;
-   }
-   return true;
-};
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool tnlSharedVector< Element, Device, Index > :: save( const tnlString& fileName ) const
-{
-   return tnlObject :: save( fileName );
-};
 
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: max() const
+Real tnlVector< Real, Device, Index > :: max() const
 {
    return getVectorMax( *this );
 }
@@ -118,7 +116,7 @@ Real tnlSharedVector< Real, Device, Index > :: max() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: min() const
+Real tnlVector< Real, Device, Index > :: min() const
 {
    return getVectorMin( *this );
 }
@@ -127,7 +125,7 @@ Real tnlSharedVector< Real, Device, Index > :: min() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: absMax() const
+Real tnlVector< Real, Device, Index > :: absMax() const
 {
    return getVectorAbsMax( *this );
 }
@@ -135,7 +133,7 @@ Real tnlSharedVector< Real, Device, Index > :: absMax() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: absMin() const
+Real tnlVector< Real, Device, Index > :: absMin() const
 {
    return getVectorAbsMin( *this );
 }
@@ -143,7 +141,7 @@ Real tnlSharedVector< Real, Device, Index > :: absMin() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
+Real tnlVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 {
    return getVectorLpNorm( *this, p );
 }
@@ -152,7 +150,7 @@ Real tnlSharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: sum() const
+Real tnlVector< Real, Device, Index > :: sum() const
 {
    return getVectorSum( *this );
 }
@@ -162,7 +160,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
+Real tnlVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
 {
    return getVectorDifferenceMax( *this, v );
 }
@@ -172,7 +170,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
+Real tnlVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
 {
    return getVectorDifferenceMin( *this, v );
 }
@@ -182,7 +180,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
+Real tnlVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
 {
    return getVectorDifferenceAbsMax( *this, v );
 }
@@ -191,7 +189,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
+Real tnlVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
 {
    return getVectorDifferenceAbsMin( *this, v );
 }
@@ -200,7 +198,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
+Real tnlVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
 {
    return getVectorDifferenceLpNorm( *this, v, p );
 }
@@ -210,7 +208,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
+Real tnlVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
 {
    return getVectorDifferenceSum( *this, v );
 }
@@ -219,7 +217,7 @@ Real tnlSharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
+void tnlVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
 {
    vectorScalarMultiplication( *this, alpha );
 }
@@ -229,7 +227,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: sdot( const Vector& v )
+Real tnlVector< Real, Device, Index > :: sdot( const Vector& v )
 {
    return getVectorSdot( *this, v );
 }
@@ -239,7 +237,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpy( const Real& alpha,
+void tnlVector< Real, Device, Index > :: saxpy( const Real& alpha,
                                                       const Vector& x )
 {
    vectorSaxpy( *this, x, alpha );
@@ -249,20 +247,19 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxmy( const Real& alpha,
-                                                      const Vector& x )
+void tnlVector< Real, Device, Index > :: saxmy( const Real& alpha,
+                                                const Vector& x )
 {
    vectorSaxmy( *this, x, alpha );
 }
-
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsby( const Real& alpha,
-                                                        const Vector& x,
-                                                        const Real& beta )
+void tnlVector< Real, Device, Index > :: saxpsby( const Real& alpha,
+                                                  const Vector& x,
+                                                  const Real& beta )
 {
       vectorSaxpsby( *this, x, alpha, beta );
 }
@@ -271,10 +268,10 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
-                                                        const Vector& x,
-                                                        const Real& beta,
-                                                        const Vector& z )
+void tnlVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
+                                                  const Vector& x,
+                                                  const Real& beta,
+                                                  const Vector& z )
 {
       vectorSaxpsbz( *this, x, alpha, z, beta );
 }
@@ -283,14 +280,29 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
-                                                          const Vector& x,
-                                                          const Real& beta,
-                                                          const Vector& z )
+void tnlVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
+                                                    const Vector& x,
+                                                    const Real& beta,
+                                                    const Vector& z )
 {
-      vectorSaxpsbz( *this, x, alpha, z, beta );
+      vectorSaxpsbzpy( *this, x, alpha, z, beta );
 }
 
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-#endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */
+extern template class tnlVector< float, tnlHost, int >;
+extern template class tnlVector< double, tnlHost, int >;
+extern template class tnlVector< float, tnlHost, long int >;
+extern template class tnlVector< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+/*extern template class tnlVector< float, tnlCuda, int >;
+extern template class tnlVector< double, tnlCuda, int >;
+extern template class tnlVector< float, tnlCuda, long int >;
+extern template class tnlVector< double, tnlCuda, long int >;*/
+#endif
+
+#endif
+
+#endif /* TNLVECTOR_H_IMPLEMENTATION */

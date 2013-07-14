@@ -17,7 +17,7 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 
-#include <core/tnlVectorCUDATester.h>
+#include <core/vectors/tnlVectorCUDATester.h>
 #include <core/tnlFieldCUDA2DTester.h>
 #include <core/tnlCUDAKernelsTester.h>
 #include <diff/tnlGridOldCUDA2DTester.h>

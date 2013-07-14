@@ -21,8 +21,8 @@
 
 #include <math.h>
 #include <core/tnlObject.h>
-#include <core/tnlVector.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>

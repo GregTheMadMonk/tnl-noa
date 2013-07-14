@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlMultiArray.h>
+#include <core/arrays/tnlMultiArray.h>
 #include <core/tnlFile.h>
 
 

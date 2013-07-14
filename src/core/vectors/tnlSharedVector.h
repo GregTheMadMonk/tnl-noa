@@ -18,7 +18,7 @@
 #ifndef TNLSHAREDVECTOR_H_
 #define TNLSHAREDVECTOR_H_
 
-#include <core/tnlSharedArray.h>
+#include <core/arrays/tnlSharedArray.h>
 
 class tnlHost;
 
@@ -131,7 +131,7 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
 };
 
-#include <implementation/core/tnlSharedVector_impl.h>
+#include <implementation/core/vectors/tnlSharedVector_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

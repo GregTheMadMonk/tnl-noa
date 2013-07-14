@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSharedArray_impl.cpp  -  description
+                          tnlVector_impl.cu  -  description
                              -------------------
-    begin                : Mar 18, 2013
+    begin                : Jan 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,23 +14,16 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <core/tnlSharedArray.h>
+
+#include <core/vectors/tnlVector.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-template class tnlSharedArray< float, tnlHost, int >;
-template class tnlSharedArray< double, tnlHost, int >;
-template class tnlSharedArray< float, tnlHost, long int >;
-template class tnlSharedArray< double, tnlHost, long int >;
-
 #ifdef HAVE_CUDA
-template class tnlSharedArray< float, tnlCuda, int >;
-template class tnlSharedArray< double, tnlCuda, int >;
-template class tnlSharedArray< float, tnlCuda, long int >;
-template class tnlSharedArray< double, tnlCuda, long int >;
+template class tnlVector< float, tnlCuda, int >;
+template class tnlVector< double, tnlCuda, int >;
+template class tnlVector< float, tnlCuda, long int >;
+template class tnlVector< double, tnlCuda, long int >;
 #endif
 
 #endif
-
-
-

@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

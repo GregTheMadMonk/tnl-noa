@@ -1047,7 +1047,7 @@ class tnlParallelReductionDiffMin
                                                const RealType* data1,
                                                const RealType* data2 ) const
    {
-      return tnlCudaMin( data1[ idx1 ], data1[ idx2 ] - data2[ idx2 ] );
+      return tnlCudaMin( data1[ idx1 ] - data2[ idx1 ], data1[ idx2 ] - data2[ idx2 ] );
    }
 
    __device__ ResultType initialValueOnDevice( const IndexType idx1,

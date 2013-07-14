@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlSharedArray.h>
+#include <core/arrays/tnlSharedArray.h>
 #include <core/tnlFile.h>
 
 template< typename ElementType, typename Device, typename IndexType >

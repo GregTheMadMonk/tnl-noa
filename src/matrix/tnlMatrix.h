@@ -25,7 +25,7 @@
 #include <core/tnlString.h>
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <debug/tnlDebug.h>
 
 using namespace std;

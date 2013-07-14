@@ -19,7 +19,7 @@
 #define TNLCUDAKERNELS_H_
 
 #include <core/tnlAssert.h>
-#include <core/tnlVectorCUDA.h>
+#include <core/vectors/tnlVectorCUDA.h>
 #include <core/low-level/cuda-long-vector-kernels.h>
 #include <legacy/core/tnlCudaSupport.h>
 

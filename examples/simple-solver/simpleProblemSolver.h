@@ -22,7 +22,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <core/tnlSharedVector.h>
 
 template< typename Mesh >

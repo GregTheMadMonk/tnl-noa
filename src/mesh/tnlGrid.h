@@ -21,7 +21,7 @@
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/tnlTuple.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 
 template< int Dimensions,

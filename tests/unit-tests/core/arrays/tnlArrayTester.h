@@ -24,7 +24,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 #include <core/tnlFile.h>
 
 

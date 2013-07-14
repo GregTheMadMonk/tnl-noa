@@ -25,7 +25,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <core/tnlFile.h>
 
 

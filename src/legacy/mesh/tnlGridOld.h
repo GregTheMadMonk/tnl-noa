@@ -21,8 +21,8 @@
 #include <iomanip>
 #include <fstream>
 #include <core/tnlAssert.h>
-#include <core/tnlMultiVector.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlMultiVector.h>
+#include <core/vectors/tnlVector.h>
 
 using namespace std;
 

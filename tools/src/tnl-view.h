@@ -22,8 +22,8 @@
 #include <core/mfilename.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlString.h>
-#include <core/tnlVector.h>
-#include <core/tnlMultiVector.h>
+#include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlMultiVector.h>
 #include <mesh/tnlGrid.h>
 
 using namespace std;

@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <core/tnlFile.h>
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 

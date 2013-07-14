@@ -20,7 +20,7 @@
 #include <cstdlib>
 
 #include "tnlArrayTester.h"
-#include "../tnlUnitTestStarter.h"
+#include "../../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {

@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <core/tnlFile.h>
 
 template< typename RealType, typename Device, typename IndexType >

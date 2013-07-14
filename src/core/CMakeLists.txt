@@ -1,7 +1,8 @@
+ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( cuda )
+ADD_SUBDIRECTORY( vectors )
 
-set (headers tnlArray.h
-             tnlAssert.h               
+set (headers tnlAssert.h               
              tnlCurve.h
       	    tnlCuda.h
   		       tnlDataElement.h
@@ -11,11 +12,6 @@ set (headers tnlArray.h
   		       tnlFlopsCounter.h
    		    tnlHost.h 
    		    tnlList.h
-   		    tnlMultiArray.h
-   		    tnlMultiVector.h 
-   		    tnlSharedArray.h
-   		    tnlSharedVector.h
-   		    tnlVector.h 
    		    tnlLogger.h 
    		    tnlObject.h 
    		    tnlStack.h

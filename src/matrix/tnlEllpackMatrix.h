@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrix/tnlCSRMatrix.h>

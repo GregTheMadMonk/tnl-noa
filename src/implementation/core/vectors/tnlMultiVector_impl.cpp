@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <core/tnlMultiVector.h>
+#include <core/vectors/tnlMultiVector.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

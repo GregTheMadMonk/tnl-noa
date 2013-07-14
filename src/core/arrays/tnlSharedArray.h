@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlArray.h -  description
+                          tnlSharedArray.h  -  description
                              -------------------
-    begin                : Jul 4, 2012
+    begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,22 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLARRAY_H_
-#define TNLARRAY_H_
+#ifndef TNLSHAREDARRAY_H_
+#define TNLSHAREDARRAY_H_
 
 #include <core/tnlObject.h>
-#include <core/tnlSharedArray.h>
 
 class tnlFile;
 class tnlHost;
 
 template< typename Element, typename Device, typename Index >
-class tnlSharedArray;
+class tnlArray;
 
 template< typename Element,
           typename Device = tnlHost,
           typename Index = int >
-class tnlArray : public tnlObject
+class tnlSharedArray : public tnlObject
 {
    public:
 
@@ -38,20 +37,18 @@ class tnlArray : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   tnlArray();
+   tnlSharedArray();
 
-   tnlArray( const tnlString& name );
+   tnlString getType() const;
 
-   static tnlString getType();
+   void bind( Element* _data,
+              const Index _size );
 
-   tnlString getTypeVirtual() const;
+   void bind( tnlArray< Element, Device, Index >& array );
 
-   bool setSize( Index size );
+   void bind( tnlSharedArray< Element, Device, Index >& array );
 
-   template< typename Array >
-   bool setLike( const Array& array );
-
-   void swap( tnlArray< Element, Device, Index >& array );
+   void swap( tnlSharedArray< Element, Device, Index >& array );
 
    void reset();
 
@@ -65,10 +62,10 @@ class tnlArray : public tnlObject
 
    const Element& operator[] ( Index i ) const;
 
-   tnlArray< Element, Device, Index >& operator = ( const tnlArray< Element, Device, Index >& array );
+   tnlSharedArray< Element, Device, Index >& operator = ( const tnlSharedArray< Element, Device, Index >& array );
 
    template< typename Array >
-   tnlArray< Element, Device, Index >& operator = ( const Array& array );
+   tnlSharedArray< Element, Device, Index >& operator = ( const Array& array );
 
    template< typename Array >
    bool operator == ( const Array& array ) const;
@@ -95,22 +92,15 @@ class tnlArray : public tnlObject
 #ifdef HAVE_NOT_CXX11
    template< typename IndexType2 >
    void touch( IndexType2 touches = 1 ) const;
-#else
+#else   
    template< typename IndexType2 = Index >
    void touch( IndexType2 touches = 1 ) const;
-#endif      
+#endif   
 
    //! Method for saving the object to a file as a binary data.
    bool save( tnlFile& file ) const;
 
-   //! Method for loading the object from a file as a binary data.
-   bool load( tnlFile& file );
-
    bool save( const tnlString& fileName ) const;
-
-   bool load( const tnlString& fileName );
-
-   ~tnlArray();
 
    protected:
 
@@ -121,9 +111,6 @@ class tnlArray : public tnlObject
    Element* data;
 };
 
-template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
+#include <implementation/core/arrays/tnlSharedArray_impl.h>
 
-#include <implementation/core/tnlArray_impl.h>
-
-#endif /* TNLARRAY_H_ */
+#endif /* TNLSHAREDARRAY_H_ */

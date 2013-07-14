@@ -18,7 +18,7 @@
 #ifndef TNLVECTOR_H_
 #define TNLVECTOR_H_
 
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 
 class tnlHost;
 
@@ -133,6 +133,6 @@ class tnlVector : public tnlArray< Real, Device, Index >
                    const Vector& z );
 };
 
-#include <implementation/core/tnlVector_impl.h>
+#include <implementation/core/vectors/tnlVector_impl.h>
 
 #endif /* TNLVECTOR_H_ */

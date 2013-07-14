@@ -24,8 +24,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <core/tnlVectorCUDA.h>
-#include <core/tnlVectorHost.h>
+#include <core/vectors/tnlVectorCUDA.h>
+#include <core/vectors/tnlVectorHost.h>
 #include <core/mfuncs.h>
 
 using namespace std;

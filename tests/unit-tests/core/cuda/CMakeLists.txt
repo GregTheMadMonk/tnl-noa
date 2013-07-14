@@ -1,6 +1,5 @@
 set( headers tnlCudaDeviceCheckTester.h
-             tnlCudaMemoryOperationsTester.h
-             tnlCudaVectorOperationsTester.h
+             tnlCudaMemoryOperationsTester.h             
              tnlCudaReductionTester.h )
              
 if( BUILD_CUDA )
@@ -16,9 +15,6 @@ if( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( tnl-reduction-test${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )                                                                
 
-    CUDA_ADD_EXECUTABLE( tnlCudaVectorOperationsTest${mpiExt}${debugExt} ${headers} tnlCudaVectorOperationsTest.cu )
-    TARGET_LINK_LIBRARIES( tnlCudaVectorOperationsTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )                                                                
                                                                                                                                                                                                                                                             
 endif()
 

@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <debug/tnlDebug.h>
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <core/tnlCriticalSection.h>
 #include <core/tnlSharedMemory.h>
 

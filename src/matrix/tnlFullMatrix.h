@@ -18,7 +18,7 @@
 #ifndef tnlFullMatrixH
 #define tnlFullMatrixH
 
-#include <core/tnlMultiArray.h>
+#include <core/arrays/tnlMultiArray.h>
 #include <matrix/tnlMatrix.h>
 
 const int tnlMaxFullMatrixSize = 65536;

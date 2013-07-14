@@ -1,22 +1,11 @@
+ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( cuda )
+ADD_SUBDIRECTORY( vectors )
 
-SET( headers vector-operations.h
-             memory-operations.h
-             tnlArray_impl.h
+SET( headers memory-operations.h
              tnlCuda_impl.h
              tnlHost_impl.h
-             tnlLogger_impl.h
-             tnlMultiArray1D_impl.h
-             tnlMultiArray2D_impl.h
-             tnlMultiArray3D_impl.h
-             tnlMultiArray4D_impl.h
-             tnlMultiVector1D_impl.h
-             tnlMultiVector2D_impl.h
-             tnlMultiVector3D_impl.h
-             tnlMultiVector4D_impl.h            
-             tnlSharedArray_impl.h
-             tnlSharedVector_impl.h
-             tnlVector_impl.h )
+             tnlLogger_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
 set( common_SOURCES
@@ -29,28 +18,24 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlString.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 
-     ${CURRENT_DIR}/mpi-supp.cpp
-     ${CURRENT_DIR}/tnlSharedArray_impl.cpp
-     ${CURRENT_DIR}/tnlMultiArray_impl.cpp
-     ${CURRENT_DIR}/tnlMultiVector_impl.cpp
-     ${CURRENT_DIR}/tnlSharedVector_impl.cpp
-     ${CURRENT_DIR}/tnlVector_impl.cpp 
-     ${CURRENT_DIR}/tnlArray_impl.cpp
+     ${CURRENT_DIR}/mpi-supp.cpp 
      ${CURRENT_DIR}/tnlHost_impl.cpp )       
 
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES
+        ${tnl_implementation_core_arrays_CUDA__SOURCES}
         ${tnl_implementation_core_cuda_CUDA__SOURCES}
+        ${tnl_implementation_core_vectors_CUDA__SOURCES}
         ${common_SOURCES}
         ${CURRENT_DIR}/memory-operations_impl.cu
-        ${CURRENT_DIR}/tnlArray_impl.cu
-        ${CURRENT_DIR}/tnlVector_impl.cu
         ${CURRENT_DIR}/tnlCuda.cu 
         PARENT_SCOPE )
 ENDIF()    
 
 set( tnl_implementation_core_SOURCES     
+     ${tnl_implementation_core_arrays_SOURCES}
      ${tnl_implementation_core_cuda_SOURCES}
+     ${tnl_implementation_core_vectors_SOURCES}
      ${common_SOURCES}
      ${CURRENT_DIR}/memory-operations_impl.cpp
      PARENT_SCOPE )

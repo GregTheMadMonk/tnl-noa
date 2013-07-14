@@ -18,7 +18,7 @@
 #ifndef TNLMULTIVECTOR_H_
 #define TNLMULTIVECTOR_H_
 
-#include <core/tnlVector.h>
+#include <core/vectors/tnlVector.h>
 #include <core/tnlTuple.h>
 #include <core/tnlAssert.h>
 
@@ -335,9 +335,9 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiVector< 4, Element, device, Index >& Vector );
 
 
-#include <implementation/core/tnlMultiVector1D_impl.h>
-#include <implementation/core/tnlMultiVector2D_impl.h>
-#include <implementation/core/tnlMultiVector3D_impl.h>
-#include <implementation/core/tnlMultiVector4D_impl.h>
+#include <implementation/core/vectors/tnlMultiVector1D_impl.h>
+#include <implementation/core/vectors/tnlMultiVector2D_impl.h>
+#include <implementation/core/vectors/tnlMultiVector3D_impl.h>
+#include <implementation/core/vectors/tnlMultiVector4D_impl.h>
 
 #endif /* TNLMULTIVECTOR_H_ */

@@ -5,7 +5,7 @@
 #include <list>
 #include <stdexcept>
 #include <mesh/global/array.h>
-#include <core/tnlArray.h>
+#include <core/arrays/tnlArray.h>
 #include <mesh/global/static_array.h>
 
 
