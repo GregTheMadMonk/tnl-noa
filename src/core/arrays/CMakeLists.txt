@@ -1,4 +1,5 @@
 set( headers tnlArray.h
+             tnlArrayOperations.h
              tnlMultiArray.h
              tnlSharedArray.h )
 

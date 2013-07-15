@@ -265,12 +265,10 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
    }
-
-
 };
 
 #else
-template< typename Device >
+template< typename Real, typename Device >
 class tnlVectorOperationsTester
 {};
 #endif /* HAVE_CPPUNIT */
