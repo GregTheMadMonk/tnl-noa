@@ -31,6 +31,7 @@ else()
                                                               tnl${mpiExt}${debugExt}-0.1 )
 endif()
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )
+ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorOperationsTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnl-device-check-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-device-check-test${mpiExt}${debugExt} )

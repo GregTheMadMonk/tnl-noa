@@ -18,7 +18,7 @@
 #ifndef TNLVECTOR_H_IMPLEMENTATION
 #define TNLVECTOR_H_IMPLEMENTATION
 
-#include <implementation/core/vectors/vector-operations.h>
+#include <core/vectors/tnlVectorOperations.h>
 
 template< typename Real,
           typename Device,
@@ -110,7 +110,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: max() const
 {
-   return getVectorMax( *this );
+   return tnlVectorOperations< Device > :: getVectorMax( *this );
 }
 
 template< typename Real,
@@ -118,7 +118,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: min() const
 {
-   return getVectorMin( *this );
+   return tnlVectorOperations< Device > :: getVectorMin( *this );
 }
 
 
@@ -127,7 +127,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: absMax() const
 {
-   return getVectorAbsMax( *this );
+   return tnlVectorOperations< Device > :: getVectorAbsMax( *this );
 }
 
 template< typename Real,
@@ -135,7 +135,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: absMin() const
 {
-   return getVectorAbsMin( *this );
+   return tnlVectorOperations< Device > :: getVectorAbsMin( *this );
 }
 
 template< typename Real,
@@ -143,7 +143,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 {
-   return getVectorLpNorm( *this, p );
+   return tnlVectorOperations< Device > :: getVectorLpNorm( *this, p );
 }
 
 
@@ -152,7 +152,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: sum() const
 {
-   return getVectorSum( *this );
+   return tnlVectorOperations< Device > :: getVectorSum( *this );
 }
 
 
@@ -162,7 +162,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
 {
-   return getVectorDifferenceMax( *this, v );
+   return tnlVectorOperations< Device > :: getVectorDifferenceMax( *this, v );
 }
 
 
@@ -172,7 +172,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
 {
-   return getVectorDifferenceMin( *this, v );
+   return tnlVectorOperations< Device > :: getVectorDifferenceMin( *this, v );
 }
 
 
@@ -182,7 +182,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
 {
-   return getVectorDifferenceAbsMax( *this, v );
+   return tnlVectorOperations< Device > :: getVectorDifferenceAbsMax( *this, v );
 }
 
 template< typename Real,
@@ -191,7 +191,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
 {
-   return getVectorDifferenceAbsMin( *this, v );
+   return tnlVectorOperations< Device > :: getVectorDifferenceAbsMin( *this, v );
 }
 
 template< typename Real,
@@ -200,7 +200,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
 {
-   return getVectorDifferenceLpNorm( *this, v, p );
+   return tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( *this, v, p );
 }
 
 
@@ -210,7 +210,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
 {
-   return getVectorDifferenceSum( *this, v );
+   return tnlVectorOperations< Device > :: getVectorDifferenceSum( *this, v );
 }
 
 
@@ -219,7 +219,7 @@ template< typename Real,
           typename Index >
 void tnlVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
 {
-   vectorScalarMultiplication( *this, alpha );
+   tnlVectorOperations< Device > :: vectorScalarMultiplication( *this, alpha );
 }
 
 
@@ -229,7 +229,7 @@ template< typename Real,
 template< typename Vector >
 Real tnlVector< Real, Device, Index > :: sdot( const Vector& v )
 {
-   return getVectorSdot( *this, v );
+   return tnlVectorOperations< Device > :: getVectorSdot( *this, v );
 }
 
 
@@ -240,7 +240,7 @@ template< typename Vector >
 void tnlVector< Real, Device, Index > :: saxpy( const Real& alpha,
                                                       const Vector& x )
 {
-   vectorSaxpy( *this, x, alpha );
+   tnlVectorOperations< Device > :: vectorSaxpy( *this, x, alpha );
 }
 
 template< typename Real,
@@ -250,7 +250,7 @@ template< typename Vector >
 void tnlVector< Real, Device, Index > :: saxmy( const Real& alpha,
                                                 const Vector& x )
 {
-   vectorSaxmy( *this, x, alpha );
+   tnlVectorOperations< Device > :: vectorSaxmy( *this, x, alpha );
 }
 
 template< typename Real,
@@ -261,7 +261,7 @@ void tnlVector< Real, Device, Index > :: saxpsby( const Real& alpha,
                                                   const Vector& x,
                                                   const Real& beta )
 {
-      vectorSaxpsby( *this, x, alpha, beta );
+   tnlVectorOperations< Device > :: vectorSaxpsby( *this, x, alpha, beta );
 }
 
 template< typename Real,
@@ -273,7 +273,7 @@ void tnlVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
                                                   const Real& beta,
                                                   const Vector& z )
 {
-      vectorSaxpsbz( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: vectorSaxpsbz( *this, x, alpha, z, beta );
 }
 
 template< typename Real,
@@ -285,7 +285,7 @@ void tnlVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
                                                     const Real& beta,
                                                     const Vector& z )
 {
-      vectorSaxpsbzpy( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: vectorSaxpsbzpy( *this, x, alpha, z, beta );
 }
 
 

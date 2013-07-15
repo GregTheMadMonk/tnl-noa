@@ -19,7 +19,8 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp 
-     ${CURRENT_DIR}/tnlHost_impl.cpp )       
+     ${CURRENT_DIR}/tnlHost_impl.cpp
+     ${CURRENT_DIR}/tnlCuda.cpp )       
 
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES
@@ -27,8 +28,7 @@ IF( BUILD_CUDA )
         ${tnl_implementation_core_cuda_CUDA__SOURCES}
         ${tnl_implementation_core_vectors_CUDA__SOURCES}
         ${common_SOURCES}
-        ${CURRENT_DIR}/memory-operations_impl.cu
-        ${CURRENT_DIR}/tnlCuda.cu 
+        ${CURRENT_DIR}/memory-operations_impl.cu 
         PARENT_SCOPE )
 ENDIF()    
 

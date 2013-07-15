@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlCudaVectorOperationsTest.cu  -  description
+                          tnlCuda.cpp  -  description
                              -------------------
-    begin                : Mar 31, 2013
+    begin                : Jul 11, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,13 +14,10 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include <core/tnlCuda.h>
+#include <tnlConfig.h>
  
-#include "tnlVectorOperationsTester.h"
-#include "../../tnlUnitTestStarter.h"
+int tnlCuda :: maxGridSize = maxCudaGridSize;
  
-int main( int argc, char* argv[] )
-{
-   if( ! tnlUnitTestStarter :: run< tnlVectorOperationsTester< double, tnlCuda > >() )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-}
+int tnlCuda :: maxBlockSize = maxCudaBlockSize;

@@ -4,7 +4,8 @@ SET( headers tnlMultiVector1D_impl.h
              tnlMultiVector4D_impl.h            
              tnlSharedVector_impl.h
              tnlVector_impl.h
-             vector-operations.h )
+             tnlVectorOperationsHost_impl.h
+             tnlVectorOperationsCuda_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core/vectors )
 set( common_SOURCES

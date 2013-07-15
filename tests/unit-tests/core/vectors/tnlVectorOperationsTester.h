@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaVectorOperationsTester.h  -  description
+                          tnlVectorOperationsTester.h  -  description
                              -------------------
     begin                : Mar 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCUDAVECTOROPERATIONSTESTER_H_
-#define TNLCUDAVECTOROPERATIONSTESTER_H_
+#ifndef TNLVECTOROPERATIONSTESTER_H_
+#define TNLVECTOROPERATIONSTESTER_H_
 
 #include <tnlConfig.h>
 
@@ -26,68 +26,67 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/cuda/device-check.h>
-#include <implementation/core/memory-operations.h>
-#include <core/vectors/tnlVector.h>
-#include <implementation/core/vectors/vector-operations.h>
 
-template< typename Type >
-class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
+#include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlVectorOperations.h>
+
+template< typename Real, typename Device >
+class tnlVectorOperationsTester : public CppUnit :: TestCase
 {
    public:
-   tnlCudaVectorOperationsTester(){};
+   tnlVectorOperationsTester(){};
 
    virtual
-   ~tnlCudaVectorOperationsTester(){};
+   ~tnlVectorOperationsTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCudaVectorOperationsTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorOperationsTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorMaxTest",
-                                &tnlCudaVectorOperationsTester :: getVectorMaxTest )
+                                &tnlVectorOperationsTester :: getVectorMaxTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorMinTest",
-                                &tnlCudaVectorOperationsTester :: getVectorMinTest )
+                                &tnlVectorOperationsTester :: getVectorMinTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorAbsMaxTest",
-                                &tnlCudaVectorOperationsTester :: getVectorAbsMaxTest )
+                                &tnlVectorOperationsTester :: getVectorAbsMaxTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorAbsMinTest",
-                                &tnlCudaVectorOperationsTester :: getVectorAbsMinTest )
+                                &tnlVectorOperationsTester :: getVectorAbsMinTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorLpNormTest",
-                                &tnlCudaVectorOperationsTester :: getVectorLpNormTest )
+                                &tnlVectorOperationsTester :: getVectorLpNormTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorSumTest",
-                                &tnlCudaVectorOperationsTester :: getVectorSumTest )
+                                &tnlVectorOperationsTester :: getVectorSumTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorDifferenceMaxTest",
-                                &tnlCudaVectorOperationsTester :: getVectorDifferenceMaxTest )
+                                &tnlVectorOperationsTester :: getVectorDifferenceMaxTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorDifferenceMinTest",
-                                &tnlCudaVectorOperationsTester :: getVectorDifferenceMinTest )
+                                &tnlVectorOperationsTester :: getVectorDifferenceMinTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorDifferenceAbsMaxTest",
-                                &tnlCudaVectorOperationsTester :: getVectorDifferenceAbsMaxTest )
+                                &tnlVectorOperationsTester :: getVectorDifferenceAbsMaxTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorDifferenceAbsMinTest",
-                                &tnlCudaVectorOperationsTester :: getVectorDifferenceAbsMinTest )
+                                &tnlVectorOperationsTester :: getVectorDifferenceAbsMinTest )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaVectorOperationsTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
                                 "getVectorDifferenceLpNormTest",
-                                &tnlCudaVectorOperationsTester :: getVectorDifferenceLpNormTest )
+                                &tnlVectorOperationsTester :: getVectorDifferenceLpNormTest )
                                );
 
       return suiteOfTests;
@@ -141,139 +140,139 @@ class tnlCudaVectorOperationsTester : public CppUnit :: TestCase
    void getVectorMaxTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorMax( v ) == size - 1 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMax( v ) == size - 1 );
    }
 
    void getVectorMinTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorMin( v ) == 0 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMin( v ) == 0 );
    }
 
    void getVectorAbsMaxTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorAbsMax( v ) == size - 1 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorAbsMax( v ) == size - 1 );
    }
 
    void getVectorAbsMinTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorAbsMin( v ) == 0 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorAbsMin( v ) == 0 );
    }
 
    void getVectorLpNormTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorLpNorm( v, 2.0 ) == sqrt( size ) );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == sqrt( size ) );
    }
 
    void getVectorSumTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > v;
+      tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorSum( v ) == size );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorSum( v ) == size );
 
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorSum( v ) == ( ( Type ) size ) * ( ( Type ) size - 1 ) / 2 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorSum( v ) == ( ( Real ) size ) * ( ( Real ) size - 1 ) / 2 );
    }
 
    void getVectorDifferenceMaxTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > u, v;
+      tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorDifferenceMax( u, v ) == size - 2 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMax( u, v ) == size - 2 );
    }
 
    void getVectorDifferenceMinTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > u, v;
+      tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorDifferenceMin( u, v ) == -1 );
-      CPPUNIT_ASSERT( getCudaVectorDifferenceMin( v, u ) == -1234565 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( u, v ) == -1 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -1234565 );
    }
 
    void getVectorDifferenceAbsMaxTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > u, v;
+      tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setNegativeLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMax( u, v ) == size );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceAbsMax( u, v ) == size );
    }
 
    void getVectorDifferenceAbsMinTest()
    {
       const int size( 1234567 );
-      tnlVector< Type, tnlCuda > u, v;
+      tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMin( u, v ) == 0 );
-      CPPUNIT_ASSERT( getCudaVectorDifferenceAbsMin( v, u ) == 0 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceAbsMin( u, v ) == 0 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceAbsMin( v, u ) == 0 );
    }
 
 
    void getVectorDifferenceLpNormTest()
    {
       const int size( 1024 );
-      tnlVector< Type, tnlCuda > u, v;
+      tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       u. setValue( 3.0 );
       v. setValue( 1.0 );
 
-      cout << getCudaVectorDifferenceLpNorm( u, v, 1.0 ) << " " << 2.0 * size << endl;
-      CPPUNIT_ASSERT( getCudaVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
-      CPPUNIT_ASSERT( getCudaVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
+      cout << tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) << " " << 2.0 * size << endl;
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
    }
 
 
 };
 
 #else
-template< typename Type >
-class tnlCudaVectorOperationsTester
+template< typename Device >
+class tnlVectorOperationsTester
 {};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLCUDAVECTOROPERATIONSTESTER_H_ */
+#endif /* TNLVECTOROPERATIONSTESTER_H_ */
