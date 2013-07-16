@@ -20,7 +20,6 @@
 
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
-#include <implementation/core/memory-operations.h>
 
 class tnlHost
 {
@@ -29,46 +28,6 @@ class tnlHost
    static tnlString getDeviceType();
 
    static tnlDeviceEnum getDevice();
-
-   template< typename Element, typename Index >
-   static void allocateMemory( Element*& data, const Index size );
-
-   template< typename Element >
-   static void freeMemory( Element* data );
-
-   template< typename Element >
-   static void setMemoryElement( Element* data,
-                                 const Element& value );
-
-   template< typename Element >
-   static Element getMemoryElement( Element* data );
-
-   template< typename Element, typename Index >
-   static Element& getArrayElementReference( Element* data, const Index i );
-
-   template< typename Element, typename Index >
-   static const Element& getArrayElementReference(const Element* data, const Index i );
-
-   template< typename DestinationElement, typename SourceElement, typename Index, typename Device >
-   static bool memcpy( DestinationElement* destination,
-                       const SourceElement* source,
-                       const Index size );
-
-   template< typename Element, typename Index, typename Device >
-   static bool memcpy( Element* destination,
-                       const Element* source,
-                       const Index size );
-
-   template< typename Element, typename Index, typename Device >
-   static bool memcmp( const Element* data1,
-                       const Element* data2,
-                       const Index size );
-
-   template< typename Element, typename Index >
-   static bool memset( Element* destination,
-                       const Element& value,
-                       const Index size );
-
 };
 
 #include <implementation/core/tnlHost_impl.h>

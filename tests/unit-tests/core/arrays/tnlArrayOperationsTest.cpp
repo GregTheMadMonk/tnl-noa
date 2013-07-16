@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlCuda.h  -  description
+                          tnlArrayOperationsTest.cpp  -  description
                              -------------------
-    begin                : Nov 7, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Jul 15, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,34 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCUDA_H_
-#define TNLCUDA_H_
+#include "tnlArrayOperationsTester.h"
+#include "../../tnlUnitTestStarter.h"
+#include <core/tnlHost.h>
 
-#include <core/tnlDevice.h>
-#include <core/tnlString.h>
-#include <core/tnlAssert.h>
-
-class tnlCuda
+int main( int argc, char* argv[] )
 {
-   public:
+   if( ! tnlUnitTestStarter :: run< tnlArrayOperationsTester< int, tnlHost > >() )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
 
-   static tnlString getDeviceType();
 
-   static tnlDeviceEnum getDevice();
 
-   static int getMaxGridSize();
 
-   static void setMaxGridSize( int newMaxGridSize );
-
-   static int getMaxBlockSize();
-
-   static void setMaxBlockSize( int newMaxBlockSize );
-
-   protected:
-
-   static int maxGridSize, maxBlockSize;
-};
-
-#include <implementation/core/tnlCuda_impl.h>
-
-#endif /* TNLCUDA_H_ */

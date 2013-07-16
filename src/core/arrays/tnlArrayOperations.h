@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayOperationsTest.cpp  -  description
+                          tnlArrayOperations.h  -  description
                              -------------------
     begin                : Jul 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -34,57 +34,56 @@ class tnlArrayOperations< tnlHost >
                                const Index size );
 
    template< typename Element >
-   bool freeMemory( Element* data );
+   static bool freeMemory( Element* data );
+
+   template< typename Element >
+   static void setMemoryElement( Element* data,
+                                 const Element& value );
+
+   template< typename Element >
+   static Element getMemoryElement( Element* data );
 
    template< typename Element, typename Index >
-   bool setMemory( Element* data,
-                       const Element& value,
-                       const Index size );
+   static Element& getArrayElementReference( Element* data, const Index i );
 
-   template< typename DestinationElement, typename SourceElement, typename Index >
-   bool copyMemoryToHost( DestinationElement* destination,
-                          const SourceElement* source,
+   template< typename Element, typename Index >
+   static const Element& getArrayElementReference( const Element* data, const Index i );
+
+
+   template< typename Element, typename Index >
+   static bool setMemory( Element* data,
+                          const Element& value,
                           const Index size );
 
-   template< typename Element, typename Index >
-   bool copyMemoryToHost( Element* destination,
-                              const Element* source,
-                              const Index size );
-
-   template< typename DestinationElement, typename SourceElement, typename Index >
-   bool copyMemoryToCuda( DestinationElement* destination,
-                          const SourceElement* source,
-                          const Index size );
-
-   template< typename Element, typename Index >
-   bool copyMemoryToCuda( Element* destination,
-                              const Element* source,
-                              const Index size );
-
-   template< typename Element,
+   template< typename DestinationElement,
+             typename DestinationDevice,
+             typename SourceElement,
              typename Index >
-   bool compareMemoryOnHost( const Element* data1,
-                           const Element* data2,
+   static bool copyMemory( DestinationElement* destination,
+                           const SourceElement* source,
                            const Index size );
 
-   template< typename Element1,
-             typename Element2,
+   /*template< typename Element,
+             typename DestinationDevice,
              typename Index >
-   bool compareMemoryOnHost( const Element1* data1,
-                           const Element2* data2,
-                           const Index size );
+   static bool copyMemory( Element* destination,
+                           const Element* source,
+                           const Index size );*/
 
    template< typename Element1,
+             typename DestinationDevice,
              typename Element2,
              typename Index >
-   bool compareMemoryOnCuda( const Element1* hostData,
-                               const Element2* deviceData,
-                               const Index size );
-   template< typename Element,
+   static bool compareMemory( const Element1* destination,
+                              const Element2* source,
+                              const Index size );
+
+   /*template< typename Element,
+             typename DestinationDevice,
              typename Index >
-   bool compareMemoryOnCuda( const Element* deviceData1,
-                             const Element* deviceData2,
-                             const Index size );
+   static bool compareMemory( const Element* destination,
+                              const Element* source,
+                              const Index size );*/
 };
 
 template<>
@@ -97,58 +96,58 @@ class tnlArrayOperations< tnlCuda >
                                const Index size );
 
    template< typename Element >
-   bool freeMemory( Element* data );
+   static bool freeMemory( Element* data );
+
+   template< typename Element >
+   static void setMemoryElement( Element* data,
+                                 const Element& value );
+
+   template< typename Element >
+   static Element getMemoryElement( const Element* data );
 
    template< typename Element, typename Index >
-   bool setMemory( Element* data,
-                       const Element& value,
-                       const Index size );
+   static Element& getArrayElementReference( Element* data, const Index i );
 
-   template< typename DestinationElement, typename SourceElement, typename Index >
-   bool copyMemoryToHost( DestinationElement* destination,
-                          const SourceElement* source,
+   template< typename Element, typename Index >
+   static const Element& getArrayElementReference( const Element* data, const Index i );
+
+   template< typename Element, typename Index >
+   static bool setMemory( Element* data,
+                          const Element& value,
                           const Index size );
 
-   template< typename Element, typename Index >
-   bool copyMemoryToHost( Element* destination,
-                              const Element* source,
-                              const Index size );
-
-   template< typename DestinationElement, typename SourceElement, typename Index >
-   bool copyMemoryToCuda( DestinationElement* destination,
-                          const SourceElement* source,
-                          const Index size );
-
-   template< typename Element, typename Index >
-   bool copyMemoryToCuda( Element* destination,
-                              const Element* source,
-                              const Index size );
-
-   template< typename Element,
+   template< typename DestinationElement,
+             typename DestinationDevice,
+             typename SourceElement,
              typename Index >
-   bool compareMemoryOnHost( const Element* data1,
-                           const Element* data2,
+   static bool copyMemory( DestinationElement* destination,
+                           const SourceElement* source,
                            const Index size );
 
-   template< typename Element1,
-             typename Element2,
+   /*template< typename Element,
+             typename DestinationDevice,
              typename Index >
-   bool compareMemoryOnHost( const Element1* data1,
-                           const Element2* data2,
+   static bool copyMemory( Element* destination,
+                           const Element* source,
                            const Index size );
 
+   template< typename Element,
+             typename DestinationDevice,
+             typename Index >
+   static bool compareMemory( const Element* destination,
+                              const Element* source,
+                              const Index size );*/
+
    template< typename Element1,
+             typename DestinationDevice,
              typename Element2,
              typename Index >
-   bool compareMemoryOnCuda( const Element1* hostData,
-                               const Element2* deviceData,
-                               const Index size );
-   template< typename Element,
-             typename Index >
-   bool compareMemoryOnCuda( const Element* deviceData1,
-                             const Element* deviceData2,
-                             const Index size );
+   static bool compareMemory( const Element1* destination,
+                              const Element2* source,
+                              const Index size );
 };
 
+#include <implementation/core/arrays/tnlArrayOperationsHost_impl.h>
+#include <implementation/core/arrays/tnlArrayOperationsCuda_impl.h>
 
 #endif /* TNLARRAYOPERATIONS_H_ */

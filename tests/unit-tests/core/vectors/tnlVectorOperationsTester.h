@@ -251,7 +251,6 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceAbsMin( v, u ) == 0 );
    }
 
-
    void getVectorDifferenceLpNormTest()
    {
       const int size( 1024 );

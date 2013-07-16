@@ -30,17 +30,21 @@ else()
     TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
 endif()
+ADD_TEST( core/arrays/tnlArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorOperationsTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnl-device-check-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-device-check-test${mpiExt}${debugExt} )
-   ADD_TEST( core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-memory-operations-test${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-device-check-test${mpiExt}${debugExt} )
+   
    ADD_TEST( core/cuda/tnl-reduction-test${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-reduction-test${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( core/cuda/tnl-reduction-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-memory-operations-test${mpiExt}${debugExt} )   
+   SET_TESTS_PROPERTIES ( core/cuda/tnl-reduction-test${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-device-check-test${mpiExt}${debugExt} )   
+   
+   ADD_TEST( core/arrays/tnlArrayOperationsTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayOperationsTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( core/cuda/tnlArrayOperationsTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-reduction-test${mpiExt}${debugExt} )
+   
    ADD_TEST( core/vectors/tnlCudaVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaVectorOperationsTest${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( core/vectors/tnlCudaVectorOperationsTest${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnl-reduction-test${mpiExt}${debugExt} )         
+   SET_TESTS_PROPERTIES ( core/vectors/tnlCudaVectorOperationsTest${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlArrayOperationsTest-cuda${mpiExt}${debugExt} )         
 endif()
 
 ADD_TEST( tnl-unit-tests${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-unit-tests${mpiExt}${debugExt}  )                                                                       

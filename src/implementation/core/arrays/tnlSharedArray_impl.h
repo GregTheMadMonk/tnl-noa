@@ -21,6 +21,7 @@
 #include <iostream>
 #include <core/tnlFile.h>
 #include <core/arrays/tnlArray.h>
+#include <core/arrays/tnlArrayOperations.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 
@@ -44,7 +45,7 @@ tnlString tnlSharedArray< Element, Device, Index > :: getType() const
 {
    return tnlString( "tnlSharedArray< " ) + ", " +
                      getParameterType< Element >() + ", " +
-                     Device :: getDeviceType() + ", " +
+                     Device::getDeviceType() + ", " +
                      getParameterType< Index >() + " >";
 };
 
@@ -120,7 +121,7 @@ void tnlSharedArray< Element, Device, Index > :: setElement( const Index i, cons
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   return Device :: setMemoryElement( & ( this -> data[ i ] ), x );
+   return tnlArrayOperations< Device >::setMemoryElement( & ( this -> data[ i ] ), x );
 };
 
 template< typename Element,
@@ -133,7 +134,7 @@ Element tnlSharedArray< Element, Device, Index > :: getElement( Index i ) const
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   return Device :: getMemoryElement( &( this -> data[ i ] ) );
+   return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
 };
 
 template< typename Element,
@@ -147,7 +148,7 @@ Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return Device :: getArrayElementReference( this -> data, i );
+   return tnlArrayOperations< Device >::getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,
@@ -161,7 +162,7 @@ const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i 
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return Device :: getArrayElementReference( this -> data, i );
+   return tnlArrayOperations< Device >::getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,
@@ -175,12 +176,14 @@ tnlSharedArray< Element, Device, Index >&
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
-   Device :: template memcpy< Element,
-                              Index,
-                              Device >
-                   ( this -> getData(),
-                     array. getData(),
-                     array. getSize() );
+   tnlArrayOperations< Device > ::
+   template copyMemory< Element,
+                        Device,
+                        Element,
+                        Index >
+                       ( this -> getData(),
+                         array. getData(),
+                         array. getSize() );
    return ( *this );
 };
 
@@ -195,12 +198,14 @@ tnlSharedArray< Element, Device, Index >& tnlSharedArray< Element, Device, Index
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
-   Device :: template memcpy< typename Array :: ElementType,
-                              typename Array :: IndexType,
-                              typename Array :: DeviceType >
-                            ( this -> getData(),
-                              array. getData(),
-                              array. getSize() );
+   tnlArrayOperations< typename Array :: DeviceType > ::
+    template copyMemory< Element,
+                         Device,
+                         typename Array :: ElementType,
+                         typename Array :: IndexType >
+                       ( this -> getData(),
+                         array. getData(),
+                         array. getSize() );
    return ( *this );
 };
 
@@ -212,12 +217,14 @@ bool tnlSharedArray< Element, Device, Index > :: operator == ( const Array& arra
 {
    if( array. getSize() != this -> getSize() )
       return false;
-   return Device :: template memcmp< typename Array :: ElementType,
-                                     typename Array :: IndexType,
-                                     typename Array :: DeviceType >
-                                   ( this -> getData(),
-                                     array. getData(),
-                                     array. getSize() );
+   return tnlArrayOperations< Device > ::
+    template compareMemory< typename Array :: ElementType,
+                            typename Array :: DeviceType,
+                            Element,
+                            typename Array :: IndexType >
+                          ( this -> getData(),
+                            array. getData(),
+                            array. getSize() );
 }
 
 template< typename Element,
@@ -236,7 +243,7 @@ void tnlSharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
    tnlAssert( this -> size != 0,
               cerr << "Array name is " << this -> getName() );
-   Device :: template memset< Element, Index >
+   tnlArrayOperations< Device >::template setMemory< Element, Index >
                               ( this -> getData(), e, this -> getSize() );
 
 }
