@@ -24,7 +24,7 @@
 #include <iostream>
 #include <core/tnlAssert.h>
 #include <core/cuda/reduction-operations.h>
-#include <implementation/core/memory-operations.h>
+#include <core/arrays/tnlArrayOperations.h>
 
 using namespace std;
 
@@ -296,7 +296,7 @@ typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
    gridSize. x = Min( ( IndexType ) ( size / blockSize. x + 1 ) / 2, desGridSize );
 
    if( ! output &&
-       ! allocateMemoryCuda( output, :: Max( ( IndexType ) 1, size / desBlockSize ) ) )
+       ! tnlArrayOperations< tnlCuda >::allocateMemory( output, :: Max( ( IndexType ) 1, size / desBlockSize ) ) )
          return false;
 
    IndexType shmem = blockSize. x * sizeof( ResultType );
@@ -372,9 +372,10 @@ bool reductionOnCudaDevice( const Operation& operation,
    RealType hostArray2[ maxGPUReductionDataSize ];
    if( size <= maxGPUReductionDataSize )
    {
-      if( ! copyMemoryCudaToHost( hostArray1, deviceInput1, size ) )
+      if( ! tnlArrayOperations< tnlCuda >::copyMemory< RealType, tnlCuda, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
-      if( deviceInput2 && ! copyMemoryCudaToHost( hostArray2, deviceInput2, size ) )
+      if( deviceInput2 && ! 
+          tnlArrayOperations< tnlCuda >::copyMemory< RealType, tnlHost, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation. initialValueOnHost( 0, hostArray1, hostArray2 );
       for( IndexType i = 1; i < size; i ++ )
@@ -407,7 +408,7 @@ bool reductionOnCudaDevice( const Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ maxGPUReductionDataSize ];
-   if( ! copyMemoryCudaToHost( resultArray, deviceAux1, reducedSize ) )
+   if( ! tnlArrayOperations< tnlCuda >::copyMemory< ResultType, tnlHost, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
 
    /***
@@ -422,9 +423,9 @@ bool reductionOnCudaDevice( const Operation& operation,
    /****
     * Free the memory allocated on the device.
     */
-   if( deviceAux1 && ! freeMemoryCuda( deviceAux1 ) )
+   if( deviceAux1 && ! tnlArrayOperations< tnlCuda >::freeMemory( deviceAux1 ) )
       return false;
-   if( deviceAux2 && ! freeMemoryCuda( deviceAux2 ) )
+   if( deviceAux2 && ! tnlArrayOperations< tnlCuda >::freeMemory( deviceAux2 ) )
       return false;
    return true;
 #else

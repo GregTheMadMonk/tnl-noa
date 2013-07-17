@@ -100,7 +100,12 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
 
-      copyMemoryHostToCuda( deviceVector. getData(),
+      tnlArrayOperations< tnlHost >::
+         copyMemory< typename Vector::RealType,
+                     tnlCuda, 
+                     typename Vector::RealType,
+                     typename Vector::IndexType >
+                  ( deviceVector. getData(),
                         a. getData(),
                         a. getSize() );
       CPPUNIT_ASSERT( checkCudaDevice );
@@ -115,7 +120,12 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
 
-      copyMemoryHostToCuda( deviceVector. getData(),
+      tnlArrayOperations< tnlHost >::
+         copyMemory< typename Vector::RealType,
+                     tnlCuda, 
+                     typename Vector::RealType,
+                     typename Vector::IndexType >
+                  ( deviceVector. getData(),
                         a. getData(),
                         a. getSize() );
       CPPUNIT_ASSERT( checkCudaDevice );
@@ -130,7 +140,12 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
 
-      copyMemoryHostToCuda( deviceVector. getData(),
+      tnlArrayOperations< tnlHost >::
+         copyMemory< typename Vector::RealType,
+                     tnlCuda, 
+                     typename Vector::RealType,
+                     typename Vector::IndexType >
+                  ( deviceVector. getData(),
                         a. getData(),
                         a. getSize() );
       CPPUNIT_ASSERT( checkCudaDevice );

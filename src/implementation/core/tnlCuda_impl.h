@@ -48,5 +48,10 @@ inline void tnlCuda :: setMaxBlockSize( int newMaxBlockSize )
    maxBlockSize = newMaxBlockSize;
 }
 
+inline int tnlCuda::getGPUTransferBufferSize()
+{
+   return 1 << 20;
+}
+
 
 #endif /* TNLCUDA_IMPL_H_ */

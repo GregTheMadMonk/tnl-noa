@@ -18,6 +18,8 @@
 #ifndef TNLARRAYOPERATIONSHOST_IMPL_H_
 #define TNLARRAYOPERATIONSHOST_IMPL_H_
 
+#include <core/cuda/device-check.h>
+
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlHost > :: allocateMemory( Element*& data,
                                                       const Index size )
@@ -83,29 +85,33 @@ bool tnlArrayOperations< tnlHost > :: copyMemory( DestinationElement* destinatio
          destination[ i ] = ( DestinationElement) source[ i ];
    if( DestinationDevice :: getDevice() == tnlCudaDevice )
    {
-      DestinationElement* buffer = new DestinationElement[ tnlGPUvsCPUTransferBufferSize ];
-      if( ! buffer )
-      {
-         cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
-         return false;
-      }
-      Index i( 0 );
-      while( i < size )
-      {
-         Index j( 0 );
-         while( j < tnlGPUvsCPUTransferBufferSize && i + j < size )
-            buffer[ j ] = source[ i + j++ ];
-         if( ! copyMemoryHostToCuda( &destination[ i ],
-                                     buffer,
-                                     j ) )
+      #ifdef HAVE_CUDA      
+         DestinationElement* buffer = new DestinationElement[ tnlCuda::getGPUTransferBufferSize() ];
+         if( ! buffer )
          {
-            delete[] buffer;
+            cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
             return false;
          }
-         i += j;
-      }
-      delete[] buffer;
-      return true;
+         Index i( 0 );
+         while( i < size )
+         {
+            Index j( 0 );
+            while( j < tnlCuda::getGPUTransferBufferSize() && i + j < size )
+               buffer[ j ] = source[ i + j++ ];
+            if( cudaMemcpy( &destination[ i ], buffer, j, cudaMemcpyHostToDevice ) != cudaSuccess )
+            {
+               checkCudaDevice;
+               delete[] buffer;
+               return false;
+            }
+            i += j;
+         }
+         delete[] buffer;
+         return true;
+      #else
+         cerr << "The CUDA support is missing on this system." << endl;
+         return false;
+      #endif
    }
    return true;
 }

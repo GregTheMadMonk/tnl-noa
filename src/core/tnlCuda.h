@@ -38,6 +38,8 @@ class tnlCuda
 
    static void setMaxBlockSize( int newMaxBlockSize );
 
+   static int getGPUTransferBufferSize();
+
    protected:
 
    static int maxGridSize, maxBlockSize;

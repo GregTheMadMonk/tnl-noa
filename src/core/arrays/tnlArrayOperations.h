@@ -63,12 +63,12 @@ class tnlArrayOperations< tnlHost >
                            const SourceElement* source,
                            const Index size );
 
-   /*template< typename Element,
+   template< typename Element,
              typename DestinationDevice,
              typename Index >
    static bool copyMemory( Element* destination,
                            const Element* source,
-                           const Index size );*/
+                           const Index size );
 
    template< typename Element1,
              typename DestinationDevice,

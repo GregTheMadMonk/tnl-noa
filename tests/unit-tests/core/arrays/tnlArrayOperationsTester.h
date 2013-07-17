@@ -28,6 +28,7 @@
 #include <cppunit/Message.h>
 
 #include <core/arrays/tnlArrayOperations.h>
+#include <core/cuda/device-check.h>
 
 template< typename Element, typename Device >
 class tnlArrayOperationsTester{};
@@ -81,10 +82,10 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
     void allocationTest()
     {
        Element* data;
-       tnlArrayOperations< tnlHost > :: allocateMemory( data, getTestSize() );
+       tnlArrayOperations< tnlHost >::allocateMemory( data, getTestSize() );
        CPPUNIT_ASSERT( data != 0 );
 
-       freeMemoryCuda( data );
+       tnlArrayOperations< tnlHost >::freeMemory( data );
     };
 
     void memorySetTest()
@@ -220,10 +221,10 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
     void allocationTest()
     {
        int* data;
-       allocateMemoryCuda( data, getTestSize() );
+       tnlArrayOperations< tnlCuda >::allocateMemory( data, getTestSize() );
        CPPUNIT_ASSERT( checkCudaDevice );
 
-       freeMemoryCuda( data );
+       tnlArrayOperations< tnlCuda >::freeMemory( data );
        CPPUNIT_ASSERT( checkCudaDevice );
     };
 
@@ -231,37 +232,37 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
     {
        const int size = 1024;
        int *hostData, *deviceData;
-       allocateMemoryHost( hostData, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData, 0, size );
-       setMemoryCuda( deviceData, 13, size, maxCudaGridSize );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData, 0, size );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, 13, size );
        CPPUNIT_ASSERT( checkCudaDevice );
-       copyMemoryCudaToHost( hostData, deviceData, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData, deviceData, size );
        CPPUNIT_ASSERT( checkCudaDevice );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData[ i ] == 13 );
-       freeMemoryHost( hostData );
-       freeMemoryCuda( deviceData );
+       tnlArrayOperations< tnlCuda >::freeMemory( hostData );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
     };
 
     void bigMemorySetTest()
     {
        const int size( getTestSize() );
        int *hostData, *deviceData;
-       allocateMemoryHost( hostData, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData, 0, size );
-       setMemoryCuda( deviceData, 13, size, maxCudaGridSize );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData, 0, size );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, 13, size );
        CPPUNIT_ASSERT( checkCudaDevice );
-       copyMemoryCudaToHost( hostData, deviceData, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData, deviceData, size );
        CPPUNIT_ASSERT( checkCudaDevice );
        for( int i = 0; i < size; i += 100 )
        {
           if( hostData[ i ] != 13 )
           CPPUNIT_ASSERT( hostData[ i ] == 13 );
        }
-       freeMemoryHost( hostData );
-       freeMemoryCuda( deviceData );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
     };
 
     void copyMemoryTest()
@@ -269,16 +270,16 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        const int size = getTestSize();
 
        int *hostData1, *hostData2, *deviceData;
-       allocateMemoryHost( hostData1, size );
-       allocateMemoryHost( hostData2, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData1, 13, size );
-       copyMemoryHostToCuda( deviceData, hostData1, size );
-       copyMemoryCudaToHost( hostData2, deviceData, size );
-       CPPUNIT_ASSERT( compareMemoryHost( hostData1, hostData2, size) );
-       freeMemoryHost( hostData1 );
-       freeMemoryHost( hostData2 );
-       freeMemoryCuda( deviceData );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
+       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData2, deviceData, size );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost >::compareMemory< int, tnlHost, int, int >( hostData1, hostData2, size) ) );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData2 );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
     };
 
     void copyMemoryWithConversionHostToCudaTest()
@@ -286,17 +287,17 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        const int size = getTestSize();
        int *hostData1;
        float *hostData2, *deviceData;
-       allocateMemoryHost( hostData1, size );
-       allocateMemoryHost( hostData2, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData1, 13, size );
-       copyMemoryHostToCuda( deviceData, hostData1, size );
-       copyMemoryCudaToHost( hostData2, deviceData, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
+       tnlArrayOperations< tnlHost >::copyMemory< float, tnlCuda, int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, float, int >( hostData2, deviceData, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
-       freeMemoryHost( hostData1 );
-       freeMemoryHost( hostData2 );
-       freeMemoryCuda( deviceData );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData2 );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
     };
 
     void copyMemoryWithConversionCudaToHostTest()
@@ -304,17 +305,17 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        const int size = getTestSize();
        int *hostData1, *deviceData;
        float *hostData2;
-       allocateMemoryHost( hostData1, size );
-       allocateMemoryHost( hostData2, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData1, 13, size );
-       copyMemoryHostToCuda( deviceData, hostData1, size );
-       copyMemoryCudaToHost( hostData2, deviceData, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
+       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, int, int >( hostData2, deviceData, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
-       freeMemoryHost( hostData1 );
-       freeMemoryHost( hostData2 );
-       freeMemoryCuda( deviceData );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData2 );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
     };
 
     void copyMemoryWithConversionCudaToCudaTest()
@@ -322,33 +323,33 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        const int size = getTestSize();
        int *hostData1, *deviceData1;
        float *hostData2, *deviceData2;
-       allocateMemoryHost( hostData1, size );
-       allocateMemoryHost( hostData2, size );
-       allocateMemoryCuda( deviceData1, size );
-       allocateMemoryCuda( deviceData2, size );
-       setMemoryHost( hostData1, 13, size );
-       copyMemoryHostToCuda( deviceData1, hostData1, size );
-       copyMemoryCudaToCuda( deviceData2, deviceData1, size, maxCudaGridSize );
-       copyMemoryCudaToHost( hostData2, deviceData2, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
+       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData1, hostData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlCuda, int, int >( deviceData2, deviceData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, float, int >( hostData2, deviceData2, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
-       freeMemoryHost( hostData1 );
-       freeMemoryHost( hostData2 );
-       freeMemoryCuda( deviceData1 );
-       freeMemoryCuda( deviceData2 );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
+       tnlArrayOperations< tnlHost >::freeMemory( hostData2 );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData1 );
+       tnlArrayOperations< tnlCuda >::freeMemory( deviceData2 );
     };
 
     void compareMemoryHostCudaTest()
     {
        const int size = getTestSize();
        int *hostData, *deviceData;
-       allocateMemoryHost( hostData, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData, 7, size );
-       setMemoryCuda( deviceData, 8, size, maxCudaGridSize );
-       CPPUNIT_ASSERT( ! compareMemoryHostCuda( hostData, deviceData, size ) );
-       setMemoryCuda( deviceData, 7, size, maxCudaGridSize );
-       CPPUNIT_ASSERT( compareMemoryHostCuda( hostData, deviceData, size ) );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData, 7, size );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, 8, size );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, int, int >( hostData, deviceData, size ) ) );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, 7, size );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, int, int >( hostData, deviceData, size ) ) );
     };
 
     void compareMemoryWithConversionHostCudaTest()
@@ -356,13 +357,13 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        const int size = getTestSize();
        int *hostData;
        float *deviceData;
-       allocateMemoryHost( hostData, size );
-       allocateMemoryCuda( deviceData, size );
-       setMemoryHost( hostData, 7, size );
-       setMemoryCuda( deviceData, ( float ) 8.0, size, maxCudaGridSize );
-       CPPUNIT_ASSERT( ! compareMemoryHostCuda( hostData, deviceData, size ) );
-       setMemoryCuda( deviceData, ( float ) 7.0, size, maxCudaGridSize );
-       CPPUNIT_ASSERT( compareMemoryHostCuda( hostData, deviceData, size ) );
+       tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
+       tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+       tnlArrayOperations< tnlHost >::setMemory( hostData, 7, size );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, ( float ) 8.0, size );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, float, int >( hostData, deviceData, size ) ) );
+       tnlArrayOperations< tnlCuda >::setMemory( deviceData, ( float ) 7.0, size );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, float, int >( hostData, deviceData, size ) ) );
     };
 };
 

@@ -18,6 +18,7 @@
 #ifndef TNLARRAYOPERATIONSCUDA_IMPL_H_
 #define TNLARRAYOPERATIONSCUDA_IMPL_H_
 
+#include <core/mfuncs.h>
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlCuda > :: allocateMemory( Element*& data,
@@ -50,14 +51,14 @@ template< typename Element >
 void tnlArrayOperations< tnlCuda > :: setMemoryElement( Element* data,
                                          const Element& value )
 {
-   setMemoryCuda( data, value, 1, tnlCuda::getMaxGridSize() );
+   tnlArrayOperations< tnlCuda >::setMemory( data, value, 1 );
 }
 
 template< typename Element >
 Element tnlArrayOperations< tnlCuda > :: getMemoryElement( const Element* data )
 {
    Element result;
-   copyMemoryCudaToHost( &result, data, 1 );
+   tnlArrayOperations< tnlCuda >::copyMemory< Element, tnlHost, Element, int >( &result, data, 1 );
    return result;
 }
 
@@ -78,9 +79,9 @@ const Element& tnlArrayOperations< tnlCuda > :: getArrayElementReference(const E
 
 #ifdef HAVE_CUDA
 template< typename Element, typename Index >
-__global__ void tnlArrayOperations< tnlCuda > :: setArrayValueCudaKernel( Element* data,
-                                                                          const Index size,
-                                                                          const Element value )
+__global__ void setArrayValueCudaKernel( Element* data,
+                                         const Index size,
+                                         const Element value )
 {
    Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
    const Index maxGridSize = blockDim. x * gridDim. x;
@@ -180,29 +181,34 @@ bool tnlArrayOperations< tnlCuda > :: copyMemory( DestinationElement* destinatio
 {
    if( DestinationDevice :: getDevice() == tnlHostDevice )
    {
-      SourceElement* buffer = new SourceElement[ tnlGPUvsCPUTransferBufferSize ];
-      if( ! buffer )
-      {
-         cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
-         return false;
-      }
-      Index i( 0 );
-      while( i < size )
-      {
-         if( ! copyMemoryCudaToHost( buffer,
-                                     &source[ i ],
-                                     Min( size - i, tnlGPUvsCPUTransferBufferSize ) ) )
+      #ifdef HAVE_CUDA
+         SourceElement* buffer = new SourceElement[ tnlCuda::getGPUTransferBufferSize() ];
+         if( ! buffer )
          {
-            delete[] buffer;
+            cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
             return false;
          }
-         Index j( 0 );
-         while( j < tnlGPUvsCPUTransferBufferSize && i + j < size )
-            destination[ i + j ] = buffer[ j++ ];
-         i += j;
-      }
-      delete[] buffer;
-      return true;
+         Index i( 0 );
+         while( i < size )
+         {
+            if( cudaMemcpy( buffer, 
+                            &source[ i ],
+                            Min( size - i, tnlCuda::getGPUTransferBufferSize() ), cudaMemcpyDeviceToHost ) != cudaSuccess )
+            {
+               checkCudaDevice;
+               delete[] buffer;
+               return false;
+            }
+            Index j( 0 );
+            while( j < tnlCuda::getGPUTransferBufferSize() && i + j < size )
+               destination[ i + j ] = buffer[ j++ ];
+            i += j;
+         }
+         delete[] buffer;
+      #else
+         cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+         return false;
+      #endif
    }
    if( DestinationDevice::getDevice() == tnlCudaDevice )
    {
@@ -210,7 +216,7 @@ bool tnlArrayOperations< tnlCuda > :: copyMemory( DestinationElement* destinatio
          dim3 blockSize( 0 ), gridSize( 0 );
          blockSize. x = 256;
          Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-         gridSize. x = Min( blocksNumber, maxGridSize );
+         gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
          copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
          return checkCudaDevice;
       #else
@@ -218,7 +224,7 @@ bool tnlArrayOperations< tnlCuda > :: copyMemory( DestinationElement* destinatio
             return false;
       #endif
    }
-
+   return true;
 }
 
 template< typename Element1,
@@ -226,13 +232,13 @@ template< typename Element1,
           typename Element2,
           typename Index >
 bool tnlArrayOperations< tnlCuda > :: compareMemory( const Element1* destination,
-                    const Element2* source,
-                    const Index size )
+                                                     const Element2* source,
+                                                     const Index size )
 {
    if( DestinationDevice::getDevice() == tnlHostDevice )
    {
       #ifdef HAVE_CUDA
-         Element2* host_buffer = new Element2[ tnlGPUvsCPUTransferBufferSize ];
+         Element2* host_buffer = new Element2[ tnlCuda::getGPUTransferBufferSize() ];
          if( ! host_buffer )
          {
             cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << endl;
@@ -241,9 +247,9 @@ bool tnlArrayOperations< tnlCuda > :: compareMemory( const Element1* destination
          Index compared( 0 );
          while( compared < size )
          {
-            Index transfer = Min( size - compared, tnlGPUvsCPUTransferBufferSize );
+            Index transfer = Min( size - compared, tnlCuda::getGPUTransferBufferSize() );
             if( cudaMemcpy( ( void* ) host_buffer,
-                            ( void* ) & ( deviceData[ compared ] ),
+                            ( void* ) & ( source[ compared ] ),
                             transfer * sizeof( Element2 ),
                             cudaMemcpyDeviceToHost ) != cudaSuccess )
             {
@@ -254,7 +260,7 @@ bool tnlArrayOperations< tnlCuda > :: compareMemory( const Element1* destination
             }
             Index bufferIndex( 0 );
             while( bufferIndex < transfer &&
-                   host_buffer[ bufferIndex ] == hostData[ compared ] )
+                   host_buffer[ bufferIndex ] == destination[ compared ] )
             {
                bufferIndex ++;
                compared ++;

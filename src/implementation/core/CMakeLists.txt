@@ -2,8 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
-SET( headers memory-operations.h
-             tnlCuda_impl.h
+SET( headers tnlCuda_impl.h
              tnlHost_impl.h
              tnlLogger_impl.h )
 
