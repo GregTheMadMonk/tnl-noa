@@ -17,7 +17,7 @@
 
 #ifndef TNLARRAYOPERATIONSHOST_IMPL_H_
 #define TNLARRAYOPERATIONSHOST_IMPL_H_
-
+#include <tnlConfig.h>
 #include <core/cuda/device-check.h>
 
 template< typename Element, typename Index >
@@ -85,6 +85,7 @@ bool tnlArrayOperations< tnlHost > :: copyMemory( DestinationElement* destinatio
          destination[ i ] = ( DestinationElement) source[ i ];
    if( DestinationDevice :: getDevice() == tnlCudaDevice )
    {
+
       #ifdef HAVE_CUDA      
          DestinationElement* buffer = new DestinationElement[ tnlCuda::getGPUTransferBufferSize() ];
          if( ! buffer )

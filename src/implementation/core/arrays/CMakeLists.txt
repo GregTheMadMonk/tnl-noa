@@ -8,9 +8,7 @@ SET( headers tnlArray_impl.h
              tnlSharedArray_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core/arrays )
-set( common_SOURCES
-     ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cpp
-     ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cpp
+set( common_SOURCES     
      ${CURRENT_DIR}/tnlSharedArray_impl.cpp
      ${CURRENT_DIR}/tnlMultiArray_impl.cpp
      ${CURRENT_DIR}/tnlArray_impl.cpp )       
@@ -18,9 +16,14 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_implementation_core_arrays_CUDA__SOURCES
         ${common_SOURCES}
+        ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cu
         ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/tnlArray_impl.cu
         PARENT_SCOPE )
+ELSE()
+   set( common_SOURCES
+        ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cpp
+        ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cpp )               
 ENDIF()    
 
 set( tnl_implementation_core_arrays_SOURCES     

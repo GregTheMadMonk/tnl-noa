@@ -18,6 +18,7 @@
 #ifndef TNLARRAYOPERATIONSCUDA_IMPL_H_
 #define TNLARRAYOPERATIONSCUDA_IMPL_H_
 
+#include <tnlConfig.h>
 #include <core/mfuncs.h>
 
 template< typename Element, typename Index >

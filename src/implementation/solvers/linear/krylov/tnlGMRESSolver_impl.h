@@ -228,6 +228,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
             return true;
          }
          //DBG_WAIT;
+         this -> refreshSolverMonitor();
          if( ! this -> nextIteration() )
             return false;
       }
@@ -252,6 +253,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       this -> setResidue( beta / normb );
+      this -> refreshSolverMonitor();
       if( ! this -> nextIteration() )
          return false;
    }
