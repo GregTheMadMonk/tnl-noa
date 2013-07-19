@@ -43,6 +43,8 @@ struct tnlARGCSRGroupProperties
    };
 };
 
+ostream& operator << ( ostream& str, const tnlARGCSRGroupProperties& p ){};
+
 inline tnlString GetParameterType( const tnlARGCSRGroupProperties& a )
 {
    return tnlString( "tnlARGCSRGroupProperties" );

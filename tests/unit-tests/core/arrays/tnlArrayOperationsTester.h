@@ -107,7 +107,7 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost > :: allocateMemory( data1, size );
        tnlArrayOperations< tnlHost > :: allocateMemory( data2, size );
        tnlArrayOperations< tnlHost > :: setMemory( data1, 13, size );
-       tnlArrayOperations< tnlHost > :: copyMemory< Element, tnlHost, Element, int >( data2, data1, size );
+       tnlArrayOperations< tnlHost > :: copyMemory< Element, Element, int >( data2, data1, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( data1[ i ] == data2[ i ]);
        tnlArrayOperations< tnlHost > :: freeMemory( data1 );
@@ -122,7 +122,7 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost > :: allocateMemory( data1, size );
        tnlArrayOperations< tnlHost > :: allocateMemory( data2, size );
        tnlArrayOperations< tnlHost > :: setMemory( data1, 13, size );
-       tnlArrayOperations< tnlHost > :: copyMemory< float, tnlHost, int, int >( data2, data1, size );
+       tnlArrayOperations< tnlHost > :: copyMemory< float, int, int >( data2, data1, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( data1[ i ] == data2[ i ] );
        tnlArrayOperations< tnlHost > :: freeMemory( data1 );
@@ -137,9 +137,9 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost > :: allocateMemory( data1, size );
        tnlArrayOperations< tnlHost > :: allocateMemory( data2, size );
        tnlArrayOperations< tnlHost > :: setMemory( data1, 7, size );
-       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost > :: compareMemory< int, tnlHost, int, int >( data1, data2, size ) ) );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost > :: compareMemory< int, int, int >( data1, data2, size ) ) );
        tnlArrayOperations< tnlHost > :: setMemory( data2, 7, size );
-       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost > :: compareMemory< int, tnlHost, int, int >( data1, data2, size ) ) );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost > :: compareMemory< int, int, int >( data1, data2, size ) ) );
     };
 
     void compareMemoryWithConversionTest()
@@ -150,9 +150,9 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost > :: allocateMemory( data1, size );
        tnlArrayOperations< tnlHost > :: allocateMemory( data2, size );
        tnlArrayOperations< tnlHost > :: setMemory( data1, 7, size );
-       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost > :: compareMemory< int, tnlHost, float, int >( data1, data2, size ) ) );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost > :: compareMemory< int, float, int >( data1, data2, size ) ) );
        tnlArrayOperations< tnlHost > :: setMemory( data2, ( float ) 7.0, size );
-       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost > :: compareMemory< int, tnlHost, float, int >( data1, data2, size ) ) );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost > :: compareMemory< int, float, int >( data1, data2, size ) ) );
     };
 };
 
@@ -173,6 +173,14 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
                                  "allocationTest",
                                  &tnlArrayOperationsTester :: allocationTest )
+                                );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
+                                 "setMemoryElementTest",
+                                 &tnlArrayOperationsTester :: setMemoryElementTest )
+                                );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
+                                 "getMemoryElementTest",
+                                 &tnlArrayOperationsTester :: getMemoryElementTest )
                                 );
        suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
                                  "smallMemorySetTest",
@@ -208,7 +216,7 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
                                 );
 
        return suiteOfTests;
-    };
+    }
 
     int getTestSize()
     {
@@ -216,7 +224,7 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        //const int cudaGridSize = 256;
        //return 1.5 * cudaGridSize * maxCudaBlockSize;
        //return  1 << 22;
-    };
+    }
 
     void allocationTest()
     {
@@ -226,7 +234,48 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
 
        tnlArrayOperations< tnlCuda >::freeMemory( data );
        CPPUNIT_ASSERT( checkCudaDevice );
-    };
+    }
+
+    void setMemoryElementTest()
+    {
+#ifdef HAVE_CUDA
+       const int size( 1024 );
+       int* data;
+       tnlArrayOperations< tnlCuda >::allocateMemory( data, size );
+       CPPUNIT_ASSERT( checkCudaDevice );
+
+       for( int i = 0; i < getTestSize(); i++ )
+          tnlArrayOperations< tnlCuda >::setMemoryElement( &data[ i ], i );
+
+       for( int i = 0; i < size; i++ )
+       {
+          int d;
+          CPPUNIT_ASSERT( cudaMemcpy( &d, &data[ i ], sizeof( int ), cudaMemcpyDeviceToHost ) == cudaSuccess );
+          CPPUNIT_ASSERT( d == i );
+       }
+
+       tnlArrayOperations< tnlCuda >::freeMemory( data );
+       CPPUNIT_ASSERT( checkCudaDevice );
+#endif
+    }
+
+    void getMemoryElementTest()
+    {
+       const int size( 1024 );
+       int* data;
+       tnlArrayOperations< tnlCuda >::allocateMemory( data, size );
+       CPPUNIT_ASSERT( checkCudaDevice );
+
+       for( int i = 0; i < getTestSize(); i++ )
+          tnlArrayOperations< tnlCuda >::setMemoryElement( &data[ i ], i );
+
+       for( int i = 0; i < size; i++ )
+          CPPUNIT_ASSERT( ( tnlArrayOperations< tnlCuda >::getMemoryElement( &data[ i ] ) == i ) );
+
+       tnlArrayOperations< tnlCuda >::freeMemory( data );
+       CPPUNIT_ASSERT( checkCudaDevice );
+    }
+
 
     void smallMemorySetTest()
     {
@@ -237,7 +286,7 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost >::setMemory( hostData, 0, size );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, 13, size );
        CPPUNIT_ASSERT( checkCudaDevice );
-       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData, deviceData, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< int, int >( hostData, deviceData, size );
        CPPUNIT_ASSERT( checkCudaDevice );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData[ i ] == 13 );
@@ -254,7 +303,7 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost >::setMemory( hostData, 0, size );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, 13, size );
        CPPUNIT_ASSERT( checkCudaDevice );
-       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData, deviceData, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< int, int >( hostData, deviceData, size );
        CPPUNIT_ASSERT( checkCudaDevice );
        for( int i = 0; i < size; i += 100 )
        {
@@ -274,9 +323,9 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
-       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData, hostData1, size );
-       tnlArrayOperations< tnlCuda >::copyMemory< int, tnlHost, int, int >( hostData2, deviceData, size );
-       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost >::compareMemory< int, tnlHost, int, int >( hostData1, hostData2, size) ) );
+       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< int, int >( hostData2, deviceData, size );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost >::compareMemory< int, int >( hostData1, hostData2, size) ) );
        tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
        tnlArrayOperations< tnlHost >::freeMemory( hostData2 );
        tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
@@ -291,8 +340,8 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
-       tnlArrayOperations< tnlHost >::copyMemory< float, tnlCuda, int, int >( deviceData, hostData1, size );
-       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, float, int >( hostData2, deviceData, size );
+       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< float, int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< float, float, int >( hostData2, deviceData, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
        tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
@@ -309,8 +358,8 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
-       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData, hostData1, size );
-       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, int, int >( hostData2, deviceData, size );
+       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< int, int >( deviceData, hostData1, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< float, int, int >( hostData2, deviceData, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
        tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
@@ -328,9 +377,9 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData1, 13, size );
-       tnlArrayOperations< tnlHost >::copyMemory< int, tnlCuda, int, int >( deviceData1, hostData1, size );
-       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlCuda, int, int >( deviceData2, deviceData1, size );
-       tnlArrayOperations< tnlCuda >::copyMemory< float, tnlHost, float, int >( hostData2, deviceData2, size );
+       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< int, int, int >( deviceData1, hostData1, size );
+       tnlArrayOperations< tnlCuda >::copyMemory< float, int, int >( deviceData2, deviceData1, size );
+       tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< float, float, int >( hostData2, deviceData2, size );
        for( int i = 0; i < size; i ++ )
           CPPUNIT_ASSERT( hostData1[ i ] == hostData2[ i ] );
        tnlArrayOperations< tnlHost >::freeMemory( hostData1 );
@@ -347,9 +396,9 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData, 7, size );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, 8, size );
-       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, int, int >( hostData, deviceData, size ) ) );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int, int, int >( hostData, deviceData, size ) ) );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, 7, size );
-       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, int, int >( hostData, deviceData, size ) ) );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int, int, int >( hostData, deviceData, size ) ) );
     };
 
     void compareMemoryWithConversionHostCudaTest()
@@ -361,9 +410,9 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
        tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
        tnlArrayOperations< tnlHost >::setMemory( hostData, 7, size );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, ( float ) 8.0, size );
-       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, float, int >( hostData, deviceData, size ) ) );
+       CPPUNIT_ASSERT( ( ! tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int, float, int >( hostData, deviceData, size ) ) );
        tnlArrayOperations< tnlCuda >::setMemory( deviceData, ( float ) 7.0, size );
-       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlCuda >::compareMemory< int, tnlHost, float, int >( hostData, deviceData, size ) ) );
+       CPPUNIT_ASSERT( ( tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int, float, int >( hostData, deviceData, size ) ) );
     };
 };
 

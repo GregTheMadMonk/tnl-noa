@@ -100,9 +100,8 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
 
-      tnlArrayOperations< tnlHost >::
+      tnlArrayOperations< tnlCuda, tnlHost >::
          copyMemory< typename Vector::RealType,
-                     tnlCuda, 
                      typename Vector::RealType,
                      typename Vector::IndexType >
                   ( deviceVector. getData(),
@@ -120,9 +119,8 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
 
-      tnlArrayOperations< tnlHost >::
+      tnlArrayOperations< tnlCuda, tnlHost >::
          copyMemory< typename Vector::RealType,
-                     tnlCuda, 
                      typename Vector::RealType,
                      typename Vector::IndexType >
                   ( deviceVector. getData(),
@@ -140,9 +138,8 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
 
-      tnlArrayOperations< tnlHost >::
+      tnlArrayOperations< tnlCuda, tnlHost >::
          copyMemory< typename Vector::RealType,
-                     tnlCuda, 
                      typename Vector::RealType,
                      typename Vector::IndexType >
                   ( deviceVector. getData(),

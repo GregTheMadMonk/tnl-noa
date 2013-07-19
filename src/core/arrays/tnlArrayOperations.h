@@ -21,7 +21,8 @@
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
-template< typename Device >
+template< typename DestinationDevice,
+          typename SourceDevice = DestinationDevice >
 class tnlArrayOperations{};
 
 template<>
@@ -56,34 +57,18 @@ class tnlArrayOperations< tnlHost >
                           const Index size );
 
    template< typename DestinationElement,
-             typename DestinationDevice,
              typename SourceElement,
              typename Index >
    static bool copyMemory( DestinationElement* destination,
                            const SourceElement* source,
                            const Index size );
 
-   template< typename Element,
-             typename DestinationDevice,
-             typename Index >
-   static bool copyMemory( Element* destination,
-                           const Element* source,
-                           const Index size );
-
    template< typename Element1,
-             typename DestinationDevice,
              typename Element2,
              typename Index >
    static bool compareMemory( const Element1* destination,
                               const Element2* source,
                               const Index size );
-
-   /*template< typename Element,
-             typename DestinationDevice,
-             typename Index >
-   static bool compareMemory( const Element* destination,
-                              const Element* source,
-                              const Index size );*/
 };
 
 template<>
@@ -117,35 +102,76 @@ class tnlArrayOperations< tnlCuda >
                           const Index size );
 
    template< typename DestinationElement,
-             typename DestinationDevice,
              typename SourceElement,
              typename Index >
    static bool copyMemory( DestinationElement* destination,
                            const SourceElement* source,
                            const Index size );
 
-   /*template< typename Element,
-             typename DestinationDevice,
-             typename Index >
-   static bool copyMemory( Element* destination,
-                           const Element* source,
-                           const Index size );
-
-   template< typename Element,
-             typename DestinationDevice,
-             typename Index >
-   static bool compareMemory( const Element* destination,
-                              const Element* source,
-                              const Index size );*/
-
    template< typename Element1,
-             typename DestinationDevice,
              typename Element2,
              typename Index >
    static bool compareMemory( const Element1* destination,
                               const Element2* source,
                               const Index size );
 };
+
+template<>
+class tnlArrayOperations< tnlCuda, tnlHost >
+{
+   public:
+
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool copyMemory( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size );
+
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool compareMemory( const DestinationElement* destination,
+                              const SourceElement* source,
+                              const Index size );
+};
+
+template<>
+class tnlArrayOperations< tnlHost, tnlCuda >
+{
+   public:
+
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool copyMemory( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size );
+
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   static bool compareMemory( const Element1* destination,
+                              const Element2* source,
+                              const Index size );
+};
+
+template< typename Type1, typename Type2 >
+class tnlFastArrayOperations
+{
+   public:
+
+      enum{ enabled = false };
+};
+
+template< typename Type >
+class tnlFastArrayOperations< Type, Type >
+{
+   public:
+
+      enum{ enabled = true };
+};
+
 
 #include <implementation/core/arrays/tnlArrayOperationsHost_impl.h>
 #include <implementation/core/arrays/tnlArrayOperationsCuda_impl.h>

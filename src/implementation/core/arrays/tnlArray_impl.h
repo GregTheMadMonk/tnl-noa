@@ -200,7 +200,6 @@ tnlArray< Element, Device, Index >&
                 << "Target size: " << this -> getSize() << endl );
    tnlArrayOperations< Device > :: 
    template copyMemory< Element,
-                        Device,
                         Element,
                         Index >
                        ( this -> getData(),
@@ -221,9 +220,9 @@ tnlArray< Element, Device, Index >&
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
-   tnlArrayOperations< typename Array :: DeviceType > ::
+   tnlArrayOperations< typename Array :: DeviceType,
+                       Device > ::
     template copyMemory< Element,
-                         Device, 
                          typename Array :: ElementType,
                          typename Array :: IndexType >
                        ( this -> getData(),
@@ -240,9 +239,9 @@ bool tnlArray< Element, Device, Index > :: operator == ( const Array& array ) co
 {
    if( array. getSize() != this -> getSize() )
       return false;
-   return tnlArrayOperations< Device > ::
+   return tnlArrayOperations< Device,
+                              typename Array :: DeviceType > ::
     template compareMemory< typename Array :: ElementType,
-                            typename Array :: DeviceType,
                             Element,
                             typename Array :: IndexType >
                           ( this -> getData(),
@@ -336,9 +335,9 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
-   int _size;
+   Index _size;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< int, tnlHost >( &_size ) )
+   if( ! file. read< Index, tnlHost >( &_size ) )
       return false;
 #else   
    if( ! file. read( &_size, 1 ) )

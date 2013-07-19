@@ -30,13 +30,14 @@ int main( int argc, char* argv[] )
        ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, int > >() ||
+       //! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlHost, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, long int > >() )
+       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, long int > >()
+       //! tnlUnitTestStarter :: run< tnlArrayTester< long double, tnlHost, long int > >()
+       )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else

@@ -372,10 +372,10 @@ bool reductionOnCudaDevice( const Operation& operation,
    RealType hostArray2[ maxGPUReductionDataSize ];
    if( size <= maxGPUReductionDataSize )
    {
-      if( ! tnlArrayOperations< tnlCuda >::copyMemory< RealType, tnlCuda, RealType, IndexType >( hostArray1, deviceInput1, size ) )
+      if( ! tnlArrayOperations< tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 && ! 
-          tnlArrayOperations< tnlCuda >::copyMemory< RealType, tnlHost, RealType, IndexType >( hostArray2, deviceInput2, size ) )
+          tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation. initialValueOnHost( 0, hostArray1, hostArray2 );
       for( IndexType i = 1; i < size; i ++ )
@@ -408,7 +408,7 @@ bool reductionOnCudaDevice( const Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ maxGPUReductionDataSize ];
-   if( ! tnlArrayOperations< tnlCuda >::copyMemory< ResultType, tnlHost, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+   if( ! tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
 
    /***

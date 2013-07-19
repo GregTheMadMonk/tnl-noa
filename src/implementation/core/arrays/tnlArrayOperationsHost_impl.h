@@ -19,9 +19,10 @@
 #define TNLARRAYOPERATIONSHOST_IMPL_H_
 #include <tnlConfig.h>
 #include <core/cuda/device-check.h>
+#include <string.h>
 
 template< typename Element, typename Index >
-bool tnlArrayOperations< tnlHost > :: allocateMemory( Element*& data,
+bool tnlArrayOperations< tnlHost >::allocateMemory( Element*& data,
                                                       const Index size )
 {
    if( ! ( data = new Element[ size ] ) )
@@ -30,42 +31,42 @@ bool tnlArrayOperations< tnlHost > :: allocateMemory( Element*& data,
 }
 
 template< typename Element >
-bool tnlArrayOperations< tnlHost > :: freeMemory( Element* data )
+bool tnlArrayOperations< tnlHost >::freeMemory( Element* data )
 {
    delete[] data;
    return true;
 }
 template< typename Element >
-void tnlArrayOperations< tnlHost > :: setMemoryElement( Element* data,
+void tnlArrayOperations< tnlHost >::setMemoryElement( Element* data,
                                                         const Element& value )
 {
    *data = value;
 };
 
 template< typename Element >
-Element tnlArrayOperations< tnlHost > :: getMemoryElement( Element* data )
+Element tnlArrayOperations< tnlHost >::getMemoryElement( Element* data )
 {
    return *data;
 };
 
 template< typename Element, typename Index >
-Element& tnlArrayOperations< tnlHost > :: getArrayElementReference( Element* data,
+Element& tnlArrayOperations< tnlHost >::getArrayElementReference( Element* data,
                                                                     const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
-const Element& tnlArrayOperations< tnlHost > :: getArrayElementReference( const Element* data,
+const Element& tnlArrayOperations< tnlHost >::getArrayElementReference( const Element* data,
                                                                           const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
-bool tnlArrayOperations< tnlHost > :: setMemory( Element* data,
-                                                 const Element& value,
-                                                 const Index size )
+bool tnlArrayOperations< tnlHost >::setMemory( Element* data,
+                                                        const Element& value,
+                                                        const Index size )
 {
    for( Index i = 0; i < size; i ++ )
       data[ i ] = value;
@@ -73,159 +74,38 @@ bool tnlArrayOperations< tnlHost > :: setMemory( Element* data,
 }
 
 template< typename DestinationElement,
-          typename DestinationDevice,
           typename SourceElement,
           typename Index >
-bool tnlArrayOperations< tnlHost > :: copyMemory( DestinationElement* destination,
-                                                  const SourceElement* source,
-                                                  const Index size )
+bool tnlArrayOperations< tnlHost >::copyMemory( DestinationElement* destination,
+                                                const SourceElement* source,
+                                                const Index size )
 {
-   if( DestinationDevice :: getDevice() == tnlHostDevice )
+   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+      memcpy( destination, source, size * sizeof( DestinationElement ) );
+   else
       for( Index i = 0; i < size; i ++ )
-         destination[ i ] = ( DestinationElement) source[ i ];
-   if( DestinationDevice :: getDevice() == tnlCudaDevice )
-   {
-
-      #ifdef HAVE_CUDA      
-         DestinationElement* buffer = new DestinationElement[ tnlCuda::getGPUTransferBufferSize() ];
-         if( ! buffer )
-         {
-            cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
-            return false;
-         }
-         Index i( 0 );
-         while( i < size )
-         {
-            Index j( 0 );
-            while( j < tnlCuda::getGPUTransferBufferSize() && i + j < size )
-               buffer[ j ] = source[ i + j++ ];
-            if( cudaMemcpy( &destination[ i ], buffer, j, cudaMemcpyHostToDevice ) != cudaSuccess )
-            {
-               checkCudaDevice;
-               delete[] buffer;
-               return false;
-            }
-            i += j;
-         }
-         delete[] buffer;
-         return true;
-      #else
-         cerr << "The CUDA support is missing on this system." << endl;
-         return false;
-      #endif
-   }
+         destination[ i ] = ( DestinationElement ) source[ i ];
    return true;
 }
 
-/*template< typename Element,
-          typename DestinationDevice,
+template< typename DestinationElement,
+          typename SourceElement,
           typename Index >
-bool tnlArrayOperations< tnlHost > :: copyMemory( Element* destination,
-                                                  const Element* source,
-                                                  const Index size )
+bool tnlArrayOperations< tnlHost >::compareMemory( const DestinationElement* destination,
+                                                   const SourceElement* source,
+                                                   const Index size )
 {
-   if( DestinationDevice :: getDevice() == tnlHostDevice )
-      memcpy( destination, source, size * sizeof( Element ) );
-   if( DestinationDevice :: getDevice() == tnlCudaDevice )
+   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
    {
-   #ifdef HAVE_CUDA
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( Element ),
-                  cudaMemcpyHostToDevice );
-      if( ! checkCudaDevice )
-      {
-         cerr << "Transfer of data from host to CUDA device failed." << endl;
+      if( memcmp( destination, source, size * sizeof( DestinationElement ) ) != 0 )
          return false;
-      }
-      return true;
-   #else
-      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-      return false;
-   #endif
    }
-   return true;
-}*/
-
-/*template< typename Element,
-          typename DestinationDevice,
-          typename Index >
-bool tnlArrayOperations< tnlHost > :: compareMemory( const Element* destination,
-                                                     const Element* source,
-                                                     const Index size )
-{
-   if( DestinationDevice :: getDevice() == tnlHostDevice )
-      if( memcmp( destination, source, size * sizeof( Element ) ) != 0 )
-         return false;
-   return true;
-}*/
-
-template< typename Element1,
-          typename DestinationDevice,
-          typename Element2,
-          typename Index >
-bool tnlArrayOperations< tnlHost > :: compareMemory( const Element1* destination,
-                                                     const Element2* source,
-                                                     const Index size )
-{
-   if( DestinationDevice :: getDevice() == tnlHostDevice )
+   else
       for( Index i = 0; i < size; i ++ )
          if( destination[ i ] != source[ i ] )
             return false;
    return true;
 }
-
-#ifdef UNDEF
-template< typename Element1,
-          typename Element2,
-          typename Index >
-bool tnlArrayOperations< tnlHost > :: compareMemoryOnCuda( const Element1* hostData,
-                                                           const Element2* deviceData,
-                                                           const Index size )
-{
-#ifdef HAVE_CUDA
-   Element2* host_buffer = new Element2[ tnlGPUvsCPUTransferBufferSize ];
-   if( ! host_buffer )
-   {
-      cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << endl;
-      return false;
-   }
-   Index compared( 0 );
-   while( compared < size )
-   {
-      Index transfer = Min( size - compared, tnlGPUvsCPUTransferBufferSize );
-      if( cudaMemcpy( ( void* ) host_buffer,
-                      ( void* ) & ( deviceData[ compared ] ),
-                      transfer * sizeof( Element2 ),
-                      cudaMemcpyDeviceToHost ) != cudaSuccess )
-      {
-         cerr << "Transfer of data from the device failed." << endl;
-         checkCudaDevice;
-         delete[] host_buffer;
-         return false;
-      }
-      Index bufferIndex( 0 );
-      while( bufferIndex < transfer &&
-             host_buffer[ bufferIndex ] == hostData[ compared ] )
-      {
-         bufferIndex ++;
-         compared ++;
-      }
-      if( bufferIndex < transfer )
-      {
-         delete[] host_buffer;
-         return false;
-      }
-   }
-   delete[] host_buffer;
-   return true;
-#else
-   cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
-   return false;
-#endif
-}
-#endif
-
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -291,55 +171,31 @@ extern template const float&       tnlArrayOperations< tnlHost >::getArrayElemen
 extern template const double&      tnlArrayOperations< tnlHost >::getArrayElementReference< double,      long int >( const double* data, const long int i );
 extern template const long double& tnlArrayOperations< tnlHost >::getArrayElementReference< long double, long int >( const long double* data, const long int i );
 
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,        tnlHost,        char, int >( char* destination, const char* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,         tnlHost,         int, int >( int* destination, const int* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,    tnlHost,    long int, int >( long int* destination, const long int* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,       tnlHost,       float, int >( float* destination, const float* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,      tnlHost,      double, int >( double* destination, const double* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double, tnlHost, long double, int >( long double* destination, const long double* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,        tnlHost,        char, long int >( char* destination, const char* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,         tnlHost,         int, long int >( int* destination, const int* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,    tnlHost,    long int, long int >( long int* destination, const long int* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,       tnlHost,       float, long int >( float* destination, const float* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,      tnlHost,      double, long int >( double* destination, const double* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double, tnlHost, long double, long int >( long double* destination, const long double* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,        tnlCuda,        char, int >( char* destination, const char* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,         tnlCuda,         int, int >( int* destination, const int* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,    tnlCuda,    long int, int >( long int* destination, const long int* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,       tnlCuda,       float, int >( float* destination, const float* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,      tnlCuda,      double, int >( double* destination, const double* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double, tnlCuda, long double, int >( long double* destination, const long double* source, const int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,        tnlCuda,        char, long int >( char* destination, const char* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,         tnlCuda,         int, long int >( int* destination, const int* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,    tnlCuda,    long int, long int >( long int* destination, const long int* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,       tnlCuda,       float, long int >( float* destination, const float* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,      tnlCuda,      double, long int >( double* destination, const double* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double, tnlCuda, long double, long int >( long double* destination, const long double* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,                char, int >( char* destination, const char* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,                  int, int >( int* destination, const int* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,        long int, int >( long int* destination, const long int* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,              float, int >( float* destination, const float* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,            double, int >( double* destination, const double* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double,  long double, int >( long double* destination, const long double* source, const int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< char,                char, long int >( char* destination, const char* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< int,                  int, long int >( int* destination, const int* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< long int,        long int, long int >( long int* destination, const long int* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< float,              float, long int >( float* destination, const float* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< double,            double, long int >( double* destination, const double* source, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::copyMemory< long double,  long double, long int >( long double* destination, const long double* source, const long int size );
 
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,        tnlHost,        char, int >( const char* data1, const char* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,         tnlHost,         int, int >( const int* data1, const int* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,    tnlHost,    long int, int >( const long int* data1, const long int* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,       tnlHost,       float, int >( const float* data1, const float* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,      tnlHost,      double, int >( const double* data1, const double* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, tnlHost, long double, int >( const long double* data1, const long double* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,        tnlHost,        char, long int >( const char* data1, const char* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,         tnlHost,         int, long int >( const int* data1, const int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,    tnlHost,    long int, long int >( const long int* data1, const long int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,       tnlHost,       float, long int >( const float* data1, const float* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,      tnlHost,      double, long int >( const double* data1, const double* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, tnlHost, long double, long int >( const long double* data1, const long double* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,        tnlCuda,        char, int >( const char* data1, const char* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,         tnlCuda,         int, int >( const int* data1, const int* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,    tnlCuda,    long int, int >( const long int* data1, const long int* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,       tnlCuda,       float, int >( const float* data1, const float* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,      tnlCuda,      double, int >( const double* data1, const double* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, tnlCuda, long double, int >( const long double* data1, const long double* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,        tnlCuda,        char, long int >( const char* data1, const char* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,         tnlCuda,         int, long int >( const int* data1, const int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,    tnlCuda,    long int, long int >( const long int* data1, const long int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,       tnlCuda,       float, long int >( const float* data1, const float* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,      tnlCuda,      double, long int >( const double* data1, const double* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, tnlCuda, long double, long int >( const long double* data1, const long double* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,               char, int >( const char* data1, const char* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,                 int, int >( const int* data1, const int* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,       long int, int >( const long int* data1, const long int* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,             float, int >( const float* data1, const float* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,           double, int >( const double* data1, const double* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, long double, int >( const long double* data1, const long double* data2, const int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< char,               char, long int >( const char* data1, const char* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< int,                 int, long int >( const int* data1, const int* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< long int,       long int, long int >( const long int* data1, const long int* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< float,             float, long int >( const float* data1, const float* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< double,           double, long int >( const double* data1, const double* data2, const long int size );
+extern template bool tnlArrayOperations< tnlHost >::compareMemory< long double, long double, long int >( const long double* data1, const long double* data2, const long int size );
 
 extern template bool tnlArrayOperations< tnlHost >::setMemory< char,        int >( char* destination, const char& value, const int size );
 extern template bool tnlArrayOperations< tnlHost >::setMemory< int,         int >( int* destination, const int& value, const int size );
