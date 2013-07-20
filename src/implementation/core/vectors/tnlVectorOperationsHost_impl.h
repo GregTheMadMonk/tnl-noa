@@ -18,17 +18,15 @@
 #ifndef TNLVECTOROPERATIONSHOST_IMPL_H_
 #define TNLVECTOROPERATIONSHOST_IMPL_H_
 
-template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorMax( const Vector& v )
+template< typename Real, typename Index >
+Real tnlVectorOperations< tnlHost > :: getVectorMax( const Real* v,
+                                                     const Index size )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
-   Real result = v. getElement( 0 );
-   const Index n = v. getSize();
-   for( Index i = 1; i < n; i ++ )
-      result = Max( result, v. getElement( i ) );
+   tnlAssert( size > 0,
+              cerr << "size = " << size );
+   Real result = v[ 0 ];
+   for( Index i = 1; i < size; i ++ )
+      result = Max( result, v[ i ] );
    return result;
 }
 
@@ -283,8 +281,8 @@ void tnlVectorOperations< tnlHost > :: vectorScalarMultiplication( Vector& v,
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorSdot( const Vector1& v1,
-                                                                              const Vector2& v2 )
+typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct( const Vector1& v1,
+                                                                                 const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -302,7 +300,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorSdot( co
 }
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: vectorSaxpy( Vector1& y,
+void tnlVectorOperations< tnlHost > :: alphaXPlusY( Vector1& y,
                                                     const Vector2& x,
                                                     const typename Vector1 :: RealType& alpha )
 {
@@ -320,9 +318,10 @@ void tnlVectorOperations< tnlHost > :: vectorSaxpy( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: vectorSaxmy( Vector1& y,
-                                                    const Vector2& x,
-                                                    const typename Vector1 :: RealType& alpha )
+void tnlVectorOperations< tnlHost > :: alphaXPlusBetaY( Vector1& y,
+                                                        const Vector2& x,
+                                                        const typename Vector1::RealType& alpha,
+                                                        const typename Vector1::RealType& beta )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -334,35 +333,16 @@ void tnlVectorOperations< tnlHost > :: vectorSaxmy( Vector1& y,
 
    const Index n = y. getSize();
    for( Index i = 0; i < n; i ++ )
-      y[ i ] = alpha * x[ i ] - y[ i ];
+      y[ i ] = alpha * x[ i ] + beta * y[ i ];
 }
 
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: vectorSaxpsby( Vector1& y,
-                                                      const Vector2& x,
-                                                      const typename Vector1 :: RealType& alpha,
-                                                      const typename Vector1 :: RealType& beta )
-{
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
-
-   tnlAssert( x. getSize() > 0,
-              cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
-
-   const Index n = y. getSize();
-   for( Index i = 0; i < n; i ++ )
-      y[ i ] = alpha * x[ i ] + beta *  y[ i ];
-}
-
-template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: vectorSaxpsbz( Vector1& y,
-                                                      const Vector2& x,
-                                                      const typename Vector1 :: RealType& alpha,
-                                                      const Vector2& z,
-                                                      const typename Vector1 :: RealType& beta )
+void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZ( Vector1& y,
+                                                        const Vector2& x,
+                                                        const typename Vector1 :: RealType& alpha,
+                                                        const Vector2& z,
+                                                        const typename Vector1 :: RealType& beta )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -381,11 +361,11 @@ void tnlVectorOperations< tnlHost > :: vectorSaxpsbz( Vector1& y,
 }
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: vectorSaxpsbzpy( Vector1& y,
-                                                        const Vector2& x,
-                                                        const typename Vector1 :: RealType& alpha,
-                                                        const Vector2& z,
-                                                        const typename Vector1 :: RealType& beta )
+void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZPlusY( Vector1& y,
+                                                             const Vector2& x,
+                                                             const typename Vector1 :: RealType& alpha,
+                                                             const Vector2& z,
+                                                             const typename Vector1 :: RealType& beta )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -401,5 +381,17 @@ void tnlVectorOperations< tnlHost > :: vectorSaxpsbzpy( Vector1& y,
    for( Index i = 0; i < n; i ++ )
       y[ i ] += alpha * x[ i ] + beta *  z[ i ];
 }
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template float       tnlVectorOperations< tnlHost >::getVectorMax( const float* v,       const int size );
+extern template double      tnlVectorOperations< tnlHost >::getVectorMax( const double* v,      const int size );
+extern template long double tnlVectorOperations< tnlHost >::getVectorMax( const long double* v, const int size );
+extern template float       tnlVectorOperations< tnlHost >::getVectorMax( const float* v,       const long int size );
+extern template double      tnlVectorOperations< tnlHost >::getVectorMax( const double* v,      const long int size );
+extern template long double tnlVectorOperations< tnlHost >::getVectorMax( const long double* v, const long int size );
+
+#endif
+
 
 #endif /* TNLVECTOROPERATIONSHOST_IMPL_H_ */

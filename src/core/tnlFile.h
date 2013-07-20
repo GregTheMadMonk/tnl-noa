@@ -234,7 +234,7 @@ bool tnlFile :: read( Type* buffer,
       free( host_buffer );
       return true;
 #else
-      cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
 #endif
    }
@@ -320,7 +320,7 @@ bool tnlFile ::  write( const Type* buffer,
          free( host_buffer );
          return true;
 #else
-         cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+         tnlCudaSupportMissingMessage;;
          return false;
 #endif
    }

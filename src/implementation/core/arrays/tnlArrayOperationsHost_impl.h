@@ -18,7 +18,7 @@
 #ifndef TNLARRAYOPERATIONSHOST_IMPL_H_
 #define TNLARRAYOPERATIONSHOST_IMPL_H_
 #include <tnlConfig.h>
-#include <core/cuda/device-check.h>
+#include <core/tnlCuda.h>
 #include <string.h>
 
 template< typename Element, typename Index >

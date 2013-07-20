@@ -120,7 +120,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    {
       matrix -> vectorProduct( x, _r );
       normb = b. lpNorm( ( RealType ) 2.0 );
-      _r. saxmy( ( RealType ) 1.0, b );
+      _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
    }
 
@@ -177,13 +177,13 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
             /***
              * H_{k,i} = ( w, v_k )
              */
-            RealType H_k_i = _w. sdot( vk );
+            RealType H_k_i = _w. scalarProduct( vk );
             H[ k + i * ( m + 1 ) ] = H_k_i;
 
             /****
              * w = w - H_{k,i} v_k
              */
-            _w. saxpy( -H_k_i, vk );
+            _w. alphaXPlusY( -H_k_i, vk );
          }
          /***
           * H_{i+1,i} = |w|
@@ -249,7 +249,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       else
       {
          matrix -> vectorProduct( x, _r );
-         _r. saxmy( ( RealType ) 1.0, b );
+         _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
          beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       this -> setResidue( beta / normb );
@@ -301,7 +301,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
-      x. saxpy( y[ i ], vi );
+      x. alphaXPlusY( y[ i ], vi );
    }
 };
 

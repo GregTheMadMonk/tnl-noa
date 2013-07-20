@@ -139,7 +139,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
-      cout << "CUDA support is missing.";
+      tnlCudaSupportMissingMessage;;
 #endif
       cout << endl;
 }

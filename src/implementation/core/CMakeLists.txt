@@ -2,9 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
-SET( headers tnlCuda_impl.h
-             tnlHost_impl.h
-             tnlLogger_impl.h )
+SET( headers tnlLogger_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
 set( common_SOURCES
@@ -18,7 +16,8 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp 
-     ${CURRENT_DIR}/tnlCuda.cpp )       
+     ${CURRENT_DIR}/tnlCuda.cpp
+     ${CURRENT_DIR}/tnlHost.cpp )       
 
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES

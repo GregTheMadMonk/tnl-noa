@@ -15,11 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLONGVECTORHOSTTESTER_H_
-#define TNLLONGVECTORHOSTTESTER_H_
-/*
- *
- */
+#ifndef TNLVECTORHOSTTESTER_H_
+#define TNLVECTORHOSTTESTER_H_
+
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -95,8 +94,8 @@ class tnlVectorTester : public CppUnit :: TestCase
                                 & tnlVectorTester< RealType, Device, IndexType > :: testScalarMultiplication )
                                 );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testSdot",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testSdot )
+                                "testScalarProduct",
+                                & tnlVectorTester< RealType, Device, IndexType > :: testScalarProduct )
                                 );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
                                 "testSaxpy",
@@ -261,7 +260,7 @@ class tnlVectorTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( v. getElement( i ) == 5 * i );
    };
 
-   void testSdot()
+   void testScalarProduct()
    {
       tnlVector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
@@ -273,7 +272,7 @@ class tnlVectorTester : public CppUnit :: TestCase
          v1[ i ] = v1[ i - 1 ] * -1;
          v2[ i ] = v2[ i - 1 ];
       }
-      CPPUNIT_ASSERT( v1. sdot( v2 ) == 0.0 );
+      CPPUNIT_ASSERT( v1. scalarProduct( v2 ) == 0.0 );
    };
 
    void testSaxpy()
@@ -286,7 +285,7 @@ class tnlVectorTester : public CppUnit :: TestCase
          v1[ i ] = i;
          v2[ i ] = 2.0 * i;
       }
-      v1. saxpy( 2.0, v2 );
+      v1. alphaXPlusY( 2.0, v2 );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( v1. getElement( i ) == 5.0 * i );
    };
@@ -307,5 +306,11 @@ class tnlVectorTester : public CppUnit :: TestCase
    };
 };
 
+#else /* HAVE_CPPUNIT */
 
-#endif /* TNLLONGVECTORHOSTTESTER_H_ */
+template< typename RealType, typename Device, typename IndexType >
+class tnlVectorTester{};
+
+#endif /* HAVE_CPPUNIT */
+
+#endif /* TNLVECTORHOSTTESTER_H_ */

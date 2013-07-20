@@ -1,7 +1,7 @@
 SET( headers cuda-reduction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core/cuda )
-set( common_SOURCES ${CURRENT_DIR}/device-check.cpp ) 
+#set( common_SOURCES  ) 
 IF( BUILD_CUDA )
    set( tnl_implementation_core_cuda_CUDA__SOURCES
         ${common_SOURCES}

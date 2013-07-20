@@ -27,7 +27,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/cuda/device-check.h>
+#include <core/tnlCuda.h>
 #include <core/cuda/cuda-reduction.h>
 
 class tnlCudaReductionTester : public CppUnit :: TestCase
@@ -72,12 +72,12 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
                                 &tnlCudaReductionTester :: longComparisonTest< int > )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
-                                "shortSdotTest",
-                                &tnlCudaReductionTester :: shortSdotTest< double > )
+                                "shortScalarProductTest",
+                                &tnlCudaReductionTester :: shortScalarProductTest< double > )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
-                                "longSdotTest",
-                                &tnlCudaReductionTester :: longSdotTest< double > )
+                                "longScalarProductTest",
+                                &tnlCudaReductionTester :: longScalarProductTest< double > )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
                                 "shortDiffTest",
@@ -241,7 +241,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
 
       tnlArrayOperations< tnlHost >::freeMemory( hostData );
-      tnlArrayOperations< tnlHost >::freeMemory( deviceData );
+      tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
       CPPUNIT_ASSERT( checkCudaDevice );
    }
 
@@ -506,7 +506,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    }
 
    template< typename Type >
-   void shortSdotTest()
+   void shortScalarProductTest()
    {
       const int size( 125 );
       Type *hostData1, *hostData2,
@@ -519,28 +519,28 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
       hostData1[ 0 ] = 0;
       hostData2[ 0 ] = 1;
-      Type sdot( 0.0 );
+      Type scalarProduct( 0.0 );
       for( int i = 1; i < size; i ++ )
       {
          hostData1[ i ] = i;
          hostData2[ i ] = -hostData2[ i - 1 ];
-         sdot += hostData1[ i ] * hostData2[ i ];
+         scalarProduct += hostData1[ i ] * hostData2[ i ];
       }
       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       Type result( 0.0 );
-      tnlParallelReductionSdot< Type, int > sdotOperation;
+      tnlParallelReductionScalarProduct< Type, int > scalarProductOperation;
 
       CPPUNIT_ASSERT(
-          ( reductionOnCudaDevice( sdotOperation, size, deviceData1, deviceData2, result ) ) );
-      CPPUNIT_ASSERT( result == sdot );
+          ( reductionOnCudaDevice( scalarProductOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == scalarProduct );
    }
 
 
    template< typename Type >
-   void longSdotTest()
+   void longScalarProductTest()
    {
       const int size( 125789 );
       Type *hostData1, *hostData2,
@@ -553,23 +553,23 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
       hostData1[ 0 ] = 0;
       hostData2[ 0 ] = 1;
-      Type sdot( 0.0 );
+      Type scalarProduct( 0.0 );
       for( int i = 1; i < size; i ++ )
       {
          hostData1[ i ] = i;
          hostData2[ i ] = -hostData2[ i - 1 ];
-         sdot += hostData1[ i ] * hostData2[ i ];
+         scalarProduct += hostData1[ i ] * hostData2[ i ];
       }
       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       Type result( 0.0 );
-      tnlParallelReductionSdot< Type, int > sdotOperation;
+      tnlParallelReductionScalarProduct< Type, int > scalarProductOperation;
 
       CPPUNIT_ASSERT(
-          ( reductionOnCudaDevice( sdotOperation, size, deviceData1, deviceData2, result ) ) );
-      CPPUNIT_ASSERT( result == sdot );
+          ( reductionOnCudaDevice( scalarProductOperation, size, deviceData1, deviceData2, result ) ) );
+      CPPUNIT_ASSERT( result == scalarProduct );
    }
 
    template< typename Type >

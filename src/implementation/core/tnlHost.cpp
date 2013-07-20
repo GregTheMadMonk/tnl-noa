@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCuda.h  -  description
+                          tnlHost.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,42 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCUDA_H_
-#define TNLCUDA_H_
+#ifndef TNLHOSTL_H_
+#define TNLHOSTL_H_
 
-#include <iostream>
-#include <core/tnlDevice.h>
-#include <core/tnlString.h>
-#include <core/tnlAssert.h>
+#include <core/tnlHost.h>
 
-class tnlCuda
+tnlString tnlHost :: getDeviceType()
 {
-   public:
-
-   static tnlString getDeviceType();
-
-   static tnlDeviceEnum getDevice();
-
-   static int getMaxGridSize();
-
-   static void setMaxGridSize( int newMaxGridSize );
-
-   static int getMaxBlockSize();
-
-   static void setMaxBlockSize( int newMaxBlockSize );
-
-   static int getGPUTransferBufferSize();
-
-   static bool checkDevice( const char* file_name, int line );
-
-   protected:
-
-   static int maxGridSize, maxBlockSize;
+   return tnlString( "tnlHost" );
 };
 
-#define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )
+tnlDeviceEnum tnlHost :: getDevice()
+{
+   return tnlHostDevice;
+};
 
-#define tnlCudaSupportMissingMessage \
-   std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
-
-#endif /* TNLCUDA_H_ */
+#endif /* TNLHOST_H_ */

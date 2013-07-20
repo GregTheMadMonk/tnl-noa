@@ -342,7 +342,7 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVecto
 	                                              vec,
 	                                              result );*/
 #else
-	cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   tnlCudaSupportMissingMessage;;
 #endif
 };
 

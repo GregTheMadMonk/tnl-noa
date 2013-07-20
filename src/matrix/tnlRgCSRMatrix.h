@@ -788,7 +788,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
        checkCudaDevice;
 
 #else
-       cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+       tnlCudaSupportMissingMessage;;
 #endif
    }
 

@@ -219,7 +219,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
             /***
              * H_{k,i} = ( w, v_k )
              */
-            Real H_k_i = vk. sdot( _w );
+            Real H_k_i = vk. scalarProduct( _w );
             H[ k + i * ( m + 1 ) ] = H_k_i;
             
             /****

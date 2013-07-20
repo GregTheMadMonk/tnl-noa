@@ -84,7 +84,7 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    //! Computes scalar dot product
    template< typename Vector >
-   Real sdot( const Vector& v );
+   Real scalarProduct( const Vector& v );
 
    //! Computes SAXPY operation (Y = Scalar Alpha X Pus Y ).
    template< typename Vector >

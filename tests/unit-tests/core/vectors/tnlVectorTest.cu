@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlHost.h  -  description
+                          tnlVectorTest.cu  -  description
                              -------------------
-    begin                : Nov 7, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Jul 20, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,19 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLHOST_H_
-#define TNLHOST_H_
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
+#include <cstdlib>
 
-#include <core/tnlDevice.h>
-#include <core/tnlString.h>
+#include "tnlVectorTester.h"
+#include "../../tnlUnitTestStarter.h"
 
-class tnlHost
+int main( int argc, char* argv[] )
 {
-   public:
+#ifdef HAVE_CPPUNIT
+   if( ! tnlUnitTestStarter :: run< tnlVectorTester< float, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlVectorTester< double, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlVectorTester< float, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlVectorTester< double, tnlCuda, long int > >()
+       )
+     return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
+}
 
-   static tnlString getDeviceType();
-
-   static tnlDeviceEnum getDevice();
-};
-
-#endif /* TNLHOST_H_ */

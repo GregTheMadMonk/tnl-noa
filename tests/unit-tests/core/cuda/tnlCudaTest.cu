@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlHost_impl.h  -  description
+                          tnlCudaTest.cu  -  description
                              -------------------
-    begin                : Nov 7, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Mar 20, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,20 +14,14 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef TNLHOST_IMPL_H_
-#define TNLHOST_IMPL_H_
-
-#include <core/tnlCuda.h>
-
-inline tnlString tnlHost :: getDeviceType()
+ 
+#include "tnlCudaTester.h"
+#include "../../tnlUnitTestStarter.h"
+ 
+int main( int argc, char* argv[] )
 {
-   return tnlString( "tnlHost" );
-};
-
-inline tnlDeviceEnum tnlHost :: getDevice()
-{
-   return tnlHostDevice;
-};
-
-#endif /* TNLHOST_IMPL_H_ */
+   if( ! tnlUnitTestStarter :: run< tnlCudaTester >() )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
+ 

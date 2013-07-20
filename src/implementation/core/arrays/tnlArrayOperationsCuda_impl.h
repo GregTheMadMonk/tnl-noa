@@ -33,7 +33,7 @@ bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
       data = 0;
    return checkCudaDevice;
 #else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+   tnlCudaSupportMissingMessage;;
    return false;
 #endif
 }
@@ -45,7 +45,7 @@ bool tnlArrayOperations< tnlCuda >::freeMemory( Element* data )
       cudaFree( data );
       return checkCudaDevice;
 #else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      tnlCudaSupportMissingMessage;;
    return true;
 #endif
 }
@@ -109,7 +109,7 @@ bool tnlArrayOperations< tnlCuda >::setMemory( Element* data,
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
    return checkCudaDevice;
 #else
-      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
 #endif
 }
@@ -158,7 +158,7 @@ bool tnlArrayOperations< tnlCuda >::copyMemory( DestinationElement* destination,
          return checkCudaDevice;
       }
    #else
-         cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+         tnlCudaSupportMissingMessage;;
          return false;
    #endif
 }
@@ -226,7 +226,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
       delete[] buffer;
    }
    #else
-      cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
    #endif
 }
@@ -278,7 +278,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
    delete[] host_buffer;
    return true;
    #else
-      cerr << "I am sorry but CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
    #endif
 }
@@ -336,7 +336,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
       return true;
    }
    #else
-      cerr << "The CUDA support is missing on this system." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
    #endif
 }

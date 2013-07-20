@@ -112,7 +112,7 @@ template< typename Real,
           typename Index >
 Real tnlSharedVector< Real, Device, Index > :: max() const
 {
-   return tnlVectorOperations< Device > :: getVectorMax( *this );
+   return tnlVectorOperations< Device > :: getVectorMax( this->getData(), this->getSize() );
 }
 
 template< typename Real,
@@ -229,9 +229,9 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: sdot( const Vector& v )
+Real tnlSharedVector< Real, Device, Index > :: scalarProduct( const Vector& v )
 {
-   return tnlVectorOperations< Device > :: getVectorSdot( *this, v );
+   return tnlVectorOperations< Device > :: getScalarProduct( *this, v );
 }
 
 
@@ -242,7 +242,7 @@ template< typename Vector >
 void tnlSharedVector< Real, Device, Index > :: saxpy( const Real& alpha,
                                                       const Vector& x )
 {
-   tnlVectorOperations< Device > :: vectorSaxpy( *this, x, alpha );
+   tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
 }
 
 template< typename Real,

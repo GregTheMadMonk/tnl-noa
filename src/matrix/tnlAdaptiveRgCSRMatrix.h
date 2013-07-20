@@ -883,7 +883,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
     cudaThreadSynchronize();
     CHECK_CUDA_ERROR;
 #else
-   cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+    tnlCudaSupportMissingMessage;;
 #endif
    }
 

@@ -78,13 +78,11 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlTupleTester< 3, double > :: suite() );
    runner. addTest( tnlTupleTester< 4, double > :: suite() );
 
-   runner. addTest( tnlArrayTester< int, tnlHost, int > :: suite() );
 
    runner. addTest( tnlSharedArrayTester< int, tnlHost, int > :: suite() );
 
    runner. addTest( tnlSharedVectorTester< double, tnlHost, int > :: suite() );
 
-   runner. addTest( tnlVectorTester< double, tnlHost, int > :: suite() );
 
    runner. addTest( tnlMultiArrayTester< 1, int, tnlHost, int > :: suite() );
 

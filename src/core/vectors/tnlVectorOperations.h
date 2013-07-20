@@ -18,7 +18,7 @@
 #ifndef TNLVECTOROPERATIONS_H_
 #define TNLVECTOROPERATIONS_H_
 
-#include <core/cuda/device-check.h>
+#include <core/tnlCuda.h>
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 #include <core/tnlHost.h>
@@ -32,8 +32,8 @@ class tnlVectorOperations< tnlHost >
 {
    public:
 
-   template< typename Vector >
-   static typename Vector :: RealType getVectorMax( const Vector& v );
+   template< typename Real, typename Index >
+   static Real getVectorMax( const Real* v, const Index size );
 
    template< typename Vector >
    static typename Vector :: RealType getVectorMin( const Vector& v );
@@ -80,38 +80,33 @@ class tnlVectorOperations< tnlHost >
                                            const typename Vector :: RealType& alpha );
 
    template< typename Vector1, typename Vector2 >
-   static typename Vector1 :: RealType getVectorSdot( const Vector1& v1,
-                                                      const Vector2& v2 );
+   static typename Vector1 :: RealType getScalarProduct( const Vector1& v1,
+                                                         const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpy( Vector1& y,
-                     const Vector2& x,
-                     const typename Vector1 :: RealType& alpha );
-   template< typename Vector1, typename Vector2 >
-   static void vectorSaxmy( Vector1& y,
+   static void alphaXPlusY( Vector1& y,
                             const Vector2& x,
-                            const typename Vector1 :: RealType& alpha );
+                            const typename Vector1::RealType& alpha );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsby( Vector1& y,
-                              const Vector2& x,
-                              const typename Vector1 :: RealType& alpha,
-                              const typename Vector1 :: RealType& beta );
-
-
-   template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsbz( Vector1& y,
-                              const Vector2& x,
-                              const typename Vector1 :: RealType& alpha,
-                              const Vector2& z,
-                              const typename Vector1 :: RealType& beta );
+   static void alphaXPlusBetaY( Vector1& y,
+                                const Vector2& x,
+                                const typename Vector1::RealType& alpha,
+                                const typename Vector1::RealType& beta );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsbzpy( Vector1& y,
+   static void alphaXPlusBetaZ( Vector1& y,
                                 const Vector2& x,
                                 const typename Vector1 :: RealType& alpha,
                                 const Vector2& z,
                                 const typename Vector1 :: RealType& beta );
+
+   template< typename Vector1, typename Vector2 >
+   static void alphaXPlusBetaZPlusY( Vector1& y,
+                                     const Vector2& x,
+                                     const typename Vector1 :: RealType& alpha,
+                                     const Vector2& z,
+                                     const typename Vector1 :: RealType& beta );
 };
 
 template<>
@@ -119,8 +114,9 @@ class tnlVectorOperations< tnlCuda >
 {
    public:
 
-   template< typename Vector >
-   static typename Vector :: RealType getVectorMax( const Vector& v );
+   template< typename Real, typename Index >
+   static Real getVectorMax( const Real* v,
+                             const Index size );
 
    template< typename Vector >
    static typename Vector :: RealType getVectorMin( const Vector& v );
@@ -167,38 +163,33 @@ class tnlVectorOperations< tnlCuda >
                                            const typename Vector :: RealType& alpha );
 
    template< typename Vector1, typename Vector2 >
-   static typename Vector1 :: RealType getVectorSdot( const Vector1& v1,
-                                                      const Vector2& v2 );
+   static typename Vector1 :: RealType getScalarProduct( const Vector1& v1,
+                                                         const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpy( Vector1& y,
-                     const Vector2& x,
-                     const typename Vector1 :: RealType& alpha );
-   template< typename Vector1, typename Vector2 >
-   static void vectorSaxmy( Vector1& y,
+   static void alphaXPlusY( Vector1& y,
                             const Vector2& x,
                             const typename Vector1 :: RealType& alpha );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsby( Vector1& y,
-                              const Vector2& x,
-                              const typename Vector1 :: RealType& alpha,
-                              const typename Vector1 :: RealType& beta );
-
-
-   template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsbz( Vector1& y,
-                              const Vector2& x,
-                              const typename Vector1 :: RealType& alpha,
-                              const Vector2& z,
-                              const typename Vector1 :: RealType& beta );
+   static void alphaXPlusBetaY( Vector1& y,
+                                const Vector2& x,
+                                const typename Vector1::RealType& alpha,
+                                const typename Vector1::RealType& beta );
 
    template< typename Vector1, typename Vector2 >
-   static void vectorSaxpsbzpy( Vector1& y,
+   static void alphaXPlusBetaZ( Vector1& y,
                                 const Vector2& x,
                                 const typename Vector1 :: RealType& alpha,
                                 const Vector2& z,
                                 const typename Vector1 :: RealType& beta );
+
+   template< typename Vector1, typename Vector2 >
+   static void alphaXPlusBetaZPlusY( Vector1& y,
+                                     const Vector2& x,
+                                     const typename Vector1 :: RealType& alpha,
+                                     const Vector2& z,
+                                     const typename Vector1 :: RealType& beta );
 };
 
 #include <implementation/core/vectors/tnlVectorOperationsHost_impl.h>

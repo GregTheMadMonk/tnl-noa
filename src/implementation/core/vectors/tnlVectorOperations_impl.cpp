@@ -1,7 +1,7 @@
 /***************************************************************************
-                          device-check.h -  description
+                          tnlVectorOperations_impl.cpp  -  description
                              -------------------
-    begin                : Mar 20, 2013
+    begin                : Jul 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,20 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ERROR_CHECK_H_
-#define ERROR_CHECK_H_
+#include <core/vectors/tnlVectorOperations.h>
 
-#include <iostream>
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-#ifdef HAVE_CUDA
-#include <cuda_runtime.h>
-#include <cuda.h>
+template float       tnlVectorOperations< tnlHost >::getVectorMax( const float* v,       const int size );
+template double      tnlVectorOperations< tnlHost >::getVectorMax( const double* v,      const int size );
+template long double tnlVectorOperations< tnlHost >::getVectorMax( const long double* v, const int size );
+template float       tnlVectorOperations< tnlHost >::getVectorMax( const float* v,       const long int size );
+template double      tnlVectorOperations< tnlHost >::getVectorMax( const double* v,      const long int size );
+template long double tnlVectorOperations< tnlHost >::getVectorMax( const long double* v, const long int size );
+
 #endif
 
-using namespace std;
 
-#define checkCudaDevice __checkCudaDevice( __FILE__, __LINE__ )
-
-bool __checkCudaDevice( const char* file_name, int line );
-
-#endif /* ERROR_CHECK_H_ */

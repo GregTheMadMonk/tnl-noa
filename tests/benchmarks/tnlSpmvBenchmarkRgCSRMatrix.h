@@ -142,7 +142,7 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
         cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError << ". ";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
-      cout << "CUDA support is missing.";
+      tnlCudaSupportMissingMessage;;
 #endif
       cout << endl;
 }

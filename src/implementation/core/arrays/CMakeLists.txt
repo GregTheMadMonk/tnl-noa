@@ -22,6 +22,7 @@ IF( BUILD_CUDA )
         PARENT_SCOPE )
 ELSE()
    set( common_SOURCES
+        ${common_SOURCES}
         ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cpp
         ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cpp )               
 ENDIF()    

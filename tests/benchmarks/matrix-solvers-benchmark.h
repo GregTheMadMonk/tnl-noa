@@ -320,7 +320,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
          return false;
       x = cudaX;*/
 #else
-      cerr << "CUDA support is missing on this system." << endl;
+      tnlCudaSupportMissingMessage;;
       return false;
 #endif
    }

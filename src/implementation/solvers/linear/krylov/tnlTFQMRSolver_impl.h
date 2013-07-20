@@ -79,7 +79,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
    else*/
    {
-      r. saxpy( -1.0, b );
+      r. alphaXPlusBetaY( -1.0, b, -1.0 );
       w = u = r;
       matrix -> vectorProduct( u, v );
       d. setValue( 0.0 );
@@ -88,7 +88,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       eta = 0.0;
       r_ast = r;
       //cerr << "r_ast = " << r_ast << endl;
-      rho = this -> r_ast. sdot( this -> r_ast );
+      rho = this -> r_ast. scalarProduct( this -> r_ast );
    }
 
    while( this -> getIterations() < this -> getMaxIterations() &&
@@ -99,31 +99,31 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       if( this -> getIterations() % 2 == 0 )
       {
          //cerr << "rho = " << rho << endl;
-         alpha = rho / v. sdot( this -> r_ast );
+         alpha = rho / v. scalarProduct( this -> r_ast );
          //cerr << "new alpha = " << alpha << endl;
-         u_new. saxpy( -alpha, v );
+         u_new. alphaXPlusY( -alpha, v );
       }
       matrix -> vectorProduct( u, Au );
-      w. saxpy( -alpha, Au );
+      w. alphaXPlusY( -alpha, Au );
       //cerr << "alpha = " << alpha << endl;
       //cerr << "theta * theta / alpha * eta = " << theta * theta / alpha * eta << endl;
-      d. saxpsby( 1.0, u, theta * theta / alpha * eta );
+      d. alphaXPlusBetaY( 1.0, u, theta * theta / alpha * eta );
       theta = w. lpNorm( 2.0 ) / tau;
       const RealType c = sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
       eta = c * c  * alpha;
       //cerr << "eta = " << eta << endl;
-      x. saxpy( eta, d );
+      x. alphaXPlusY( eta, d );
       if( this -> getIterations() % 2 == 1 )
       {
-         const RealType rho_new  = w. sdot( this -> r_ast );
+         const RealType rho_new  = w. scalarProduct( this -> r_ast );
          const RealType beta = rho_new / rho;
          rho = rho_new;
          matrix -> vectorProduct( u, Au );
-         Au. saxpy( beta, v );
-         u. saxpsby( 1.0, w, beta );
+         Au. alphaXPlusY( beta, v );
+         u. alphaXPlusBetaY( 1.0, w, beta );
          matrix -> vectorProduct( u, Au_new );
-         v. saxpsbz( 1.0, Au_new, beta, Au );
+         v. alphaXPlusBetaZ( 1.0, Au_new, beta, Au );
       }
       
       //this -> setResidue( residue );

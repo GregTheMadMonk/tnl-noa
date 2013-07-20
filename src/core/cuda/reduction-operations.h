@@ -876,7 +876,7 @@ class tnlParallelReductionInequalities
 };
 
 template< typename Real, typename Index >
-class tnlParallelReductionSdot
+class tnlParallelReductionScalarProduct
 {
    public:
 

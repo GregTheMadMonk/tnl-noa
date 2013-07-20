@@ -199,7 +199,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       u. setValue( 2 );
       v. setValue( 3 );
 
-      CPPUNIT_ASSERT( u. sdot( v ) == 60 );
+      CPPUNIT_ASSERT( u. scalarProduct( v ) == 60 );
 
       u. saxpy( ( T ) 2, v );
       for( int i = 0; i < 10; i ++ )

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaDeviceCheckTester.h  -  description
+                          tnlCudaTester.h  -  description
                              -------------------
     begin                : Mar 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCUDADEVICECHECKTESTER_H_
-#define TNLCUDADEVICECHECKTESTER_H_
+#ifndef TNLCUDATESTER_H_
+#define TNLCUDATESTER_H_
 
 #include <tnlConfig.h>
 
@@ -26,7 +26,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/cuda/device-check.h>
+#include <core/tnlCuda.h>
 
 
 #ifdef HAVE_CUDA
@@ -38,22 +38,22 @@ __global__ void simpleKernel()
 #endif
 
 
-class tnlCudaDeviceCheckTester : public CppUnit :: TestCase
+class tnlCudaTester : public CppUnit :: TestCase
 {
    public:
-   tnlCudaDeviceCheckTester(){};
+   tnlCudaTester(){};
 
    virtual
-   ~tnlCudaDeviceCheckTester(){};
+   ~tnlCudaTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCudaDeviceCheckTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCudaTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaDeviceCheckTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaTester >(
                                 "deviceTest",
-                                &tnlCudaDeviceCheckTester :: deviceTest )
+                                &tnlCudaTester :: deviceTest )
                                );
       return suiteOfTests;
    };
@@ -76,8 +76,8 @@ class tnlCudaDeviceCheckTester : public CppUnit :: TestCase
 };
 
 #else
-class tnlCudaDeviceCheckTester
+class tnlCudaTester
 {};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLCUDADEVICECHECKTESTER_H_ */
+#endif /* TNLCUDATESTER_H_ */

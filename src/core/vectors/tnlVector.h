@@ -46,7 +46,7 @@ class tnlVector : public tnlArray< Real, Device, Index >
    tnlVector< Real, Device, Index >& operator = ( const tnlVector< Real, Device, Index >& array );
 
    template< typename Vector >
-   tnlVector< Real, Device, Index >& operator = ( const Vector& array );
+   tnlVector< Real, Device, Index >& operator = ( const Vector& vector );
 
    template< typename Vector >
    bool operator == ( const Vector& array ) const;
@@ -88,49 +88,32 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    //! Computes scalar dot product
    template< typename Vector >
-   Real sdot( const Vector& v );
+   Real scalarProduct( const Vector& v );
 
-   //! Computes SAXPY operation (Y = Scalar Alpha X Plus Y ).
+   //! Computes Y = alpha * X + Y.
    template< typename Vector >
-   void saxpy( const Real& alpha,
-               const Vector& x );
+   void alphaXPlusY( const Real& alpha,
+                     const Vector& x );
 
-   //! Computes SAXMY operation (Y = Scalar Alpha X Minus Y ).
-   /*!**
-    * It is not a standard BLAS function but is useful for linear solvers.
-    */
+   //! Computes Y = alpha * X + beta * Y.
    template< typename Vector >
-   void saxmy( const Real& alpha,
-               const Vector& x );
+   void alphaXPlusBetaY( const Real& alpha,
+                         const Vector& x,
+                         const Real& beta );
 
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Y
-   /*!**
-    * It is not standard BLAS function as well.
-    */
+   //! Computes Y = alpha * X + beta * Z
    template< typename Vector >
-   void saxpsby( const Real& alpha,
-                 const Vector& x,
-                 const Real& beta );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z
-   /*!**
-    * It is not standard BLAS function as well.
-    */
-   template< typename Vector >
-   void saxpsbz( const Real& alpha,
-                 const Vector& x,
-                 const Real& beta,
-                 const Vector& z );
+   void alphaXPlusBetaZ( const Real& alpha,
+                         const Vector& x,
+                         const Real& beta,
+                         const Vector& z );
 
    //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   /*!**
-    * It is not standard BLAS function as well.
-    */
    template< typename Vector >
-   void saxpsbzpy( const Real& alpha,
-                   const Vector& x,
-                   const Real& beta,
-                   const Vector& z );
+   void alphaXPlusBetaZPlusY( const Real& alpha,
+                              const Vector& x,
+                              const Real& beta,
+                              const Vector& z );
 };
 
 #include <implementation/core/vectors/tnlVector_impl.h>

@@ -62,7 +62,7 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
 
    // r_0 = b - A x_0, p_0 = r_0
    this -> matrix -> vectorProduct( x, r );
-   r. saxmy( 1.0, b );
+   r. alphaXPlusBetaY( 1.0, b, -1.0 );
    p = r;
 
    while( this -> getIterations() < this -> getMaxIterations() &&
@@ -71,29 +71,29 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
       // 1. alpha_j = ( r_j, r_j ) / ( A * p_j, p_j )
       this -> matrix -> vectorProduct( p, Ap );
 
-      s1 = r. sdot( r );
-      s2 = Ap. sdot( p );
+      s1 = r. scalarProduct( r );
+      s2 = Ap. scalarProduct( p );
       s1 = s2 = 0.0;
       // if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = s1 / s2;
       
       // 2. x_{j+1} = x_j + \alpha_j p_j
-      x. saxpy( alpha, p );
+      x. alphaXPlusY( alpha, p );
       
       // 3. r_{j+1} = r_j - \alpha_j A * p_j
       new_r = r;
-      new_r. saxpy( -alpha, Ap );
+      new_r. alphaXPlusY( -alpha, Ap );
 
       //4. beta_j = ( r_{j+1}, r_{j+1} ) / ( r_j, r_j )
-      s1 = new_r. sdot( new_r );
-      s2 = r. sdot( r );
+      s1 = new_r. scalarProduct( new_r );
+      s2 = r. scalarProduct( r );
       // if s2 = 0 => r = 0 => we have the solution
       if( s2 == 0.0 ) beta = 0.0;
       else beta = s1 / s2;
 
       // 5. p_{j+1} = r_{j+1} + beta_j * p_j
-      p. saxpsby( 1.0, new_r, beta );
+      p. alphaXPlusBetaY( 1.0, new_r, beta );
 
       // 6. r_{j+1} = new_r
       new_r. swap( r );

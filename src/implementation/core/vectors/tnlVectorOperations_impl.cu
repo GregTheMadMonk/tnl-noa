@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlCuda_impl.h  -  description
+                          tnlVectorOperations_impl.cu  -  description
                              -------------------
-    begin                : Jul 11, 2013
+    begin                : Jul 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,43 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCUDA_IMPL_H_
-#define TNLCUDA_IMPL_H_
+#include <core/vectors/tnlVectorOperations.h> 
 
-inline tnlString tnlCuda :: getDeviceType()
-{
-   return tnlString( "tnlCuda" );
-}
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-inline tnlDeviceEnum tnlCuda :: getDevice()
-{
-   return tnlCudaDevice;
-};
-
-inline int tnlCuda :: getMaxGridSize()
-{
-   return maxGridSize;
-}
-
-inline void tnlCuda :: setMaxGridSize( int newMaxGridSize )
-{
-   maxGridSize = newMaxGridSize;
-}
-
-inline int tnlCuda :: getMaxBlockSize()
-{
-   return maxBlockSize;
-}
-
-inline void tnlCuda :: setMaxBlockSize( int newMaxBlockSize )
-{
-   maxBlockSize = newMaxBlockSize;
-}
-
-inline int tnlCuda::getGPUTransferBufferSize()
-{
-   return 1 << 20;
-}
-
-
-#endif /* TNLCUDA_IMPL_H_ */
+template float       tnlVectorOperations< tnlCuda >::getVectorMax( const float* v,       const int size );
+template double      tnlVectorOperations< tnlCuda >::getVectorMax( const double* v,      const int size );
+template long double tnlVectorOperations< tnlCuda >::getVectorMax( const long double* v, const int size );
+template float       tnlVectorOperations< tnlCuda >::getVectorMax( const float* v,       const long int size );
+template double      tnlVectorOperations< tnlCuda >::getVectorMax( const double* v,      const long int size );
+template long double tnlVectorOperations< tnlCuda >::getVectorMax( const long double* v, const long int size );
+         
+#endif
+ 

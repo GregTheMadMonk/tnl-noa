@@ -522,7 +522,7 @@ void tnlGridOld< 1, Real, Device, Index > :: scalarMultiplication( const Real& a
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGridOld< 1, Real, Device, Index > :: sdot( const tnlVector< Real, Device, Index >& v ) const
+Real tnlGridOld< 1, Real, Device, Index > :: scalarProduct( const tnlVector< Real, Device, Index >& v ) const
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
               cerr << "The grid names are " << this -> getName()
@@ -533,7 +533,7 @@ Real tnlGridOld< 1, Real, Device, Index > :: sdot( const tnlVector< Real, Device
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   return this -> sdot( v );
+   return this -> scalarProduct( v );
 };
 
 template< typename Real, typename Device, typename Index >

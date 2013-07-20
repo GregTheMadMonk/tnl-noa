@@ -110,7 +110,9 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: max() const
 {
-   return tnlVectorOperations< Device > :: getVectorMax( *this );
+   tnlAssert( this->getSize() > 0,
+              cerr << "Vector name is " << this->getName() );
+   return tnlVectorOperations< Device > :: getVectorMax( this->getData(), this->getSize() );
 }
 
 template< typename Real,
@@ -227,9 +229,9 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlVector< Real, Device, Index > :: sdot( const Vector& v )
+Real tnlVector< Real, Device, Index > :: scalarProduct( const Vector& v )
 {
-   return tnlVectorOperations< Device > :: getVectorSdot( *this, v );
+   return tnlVectorOperations< Device > :: getScalarProduct( *this, v );
 }
 
 
@@ -237,70 +239,63 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlVector< Real, Device, Index > :: saxpy( const Real& alpha,
+void tnlVector< Real, Device, Index > :: alphaXPlusY( const Real& alpha,
                                                       const Vector& x )
 {
-   tnlVectorOperations< Device > :: vectorSaxpy( *this, x, alpha );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< typename Vector >
-void tnlVector< Real, Device, Index > :: saxmy( const Real& alpha,
-                                                const Vector& x )
-{
-   tnlVectorOperations< Device > :: vectorSaxmy( *this, x, alpha );
+   tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlVector< Real, Device, Index > :: saxpsby( const Real& alpha,
-                                                  const Vector& x,
-                                                  const Real& beta )
+void tnlVector< Real, Device, Index > :: alphaXPlusBetaY( const Real& alpha,
+                                                          const Vector& x,
+                                                          const Real& beta )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsby( *this, x, alpha, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaY( *this, x, alpha, beta );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
-                                                  const Vector& x,
-                                                  const Real& beta,
-                                                  const Vector& z )
+void tnlVector< Real, Device, Index > :: alphaXPlusBetaZ( const Real& alpha,
+                                                          const Vector& x,
+                                                          const Real& beta,
+                                                          const Vector& z )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsbz( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaZ( *this, x, alpha, z, beta );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
+void tnlVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real& alpha,
                                                     const Vector& x,
                                                     const Real& beta,
                                                     const Vector& z )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsbzpy( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
 }
 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 extern template class tnlVector< float, tnlHost, int >;
+extern template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
+
 extern template class tnlVector< double, tnlHost, int >;
 extern template class tnlVector< float, tnlHost, long int >;
 extern template class tnlVector< double, tnlHost, long int >;
 
+
 #ifdef HAVE_CUDA
-/*extern template class tnlVector< float, tnlCuda, int >;
+extern template class tnlVector< float, tnlCuda, int >;
 extern template class tnlVector< double, tnlCuda, int >;
 extern template class tnlVector< float, tnlCuda, long int >;
-extern template class tnlVector< double, tnlCuda, long int >;*/
+extern template class tnlVector< double, tnlCuda, long int >;
 #endif
 
 #endif

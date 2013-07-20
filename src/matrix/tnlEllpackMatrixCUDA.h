@@ -274,7 +274,7 @@ void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector<
 	                                       x,
 	                                       b );
 #else
-	cerr << "CUDA support is missing on this system " << __FILE__ << " line " << __LINE__ << "." << endl;
+	tnlCudaSupportMissingMessage;;
 #endif
 };
 

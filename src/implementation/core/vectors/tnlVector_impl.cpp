@@ -20,6 +20,8 @@
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 template class tnlVector< float, tnlHost, int >;
+template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
+
 template class tnlVector< double, tnlHost, int >;
 template class tnlVector< float, tnlHost, long int >;
 template class tnlVector< double, tnlHost, long int >;

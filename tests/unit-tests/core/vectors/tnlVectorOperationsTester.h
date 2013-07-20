@@ -88,7 +88,34 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
                                 "getVectorDifferenceLpNormTest",
                                 &tnlVectorOperationsTester :: getVectorDifferenceLpNormTest )
                                );
-
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "getVectorDifferenceSumTest",
+                                &tnlVectorOperationsTester :: getVectorDifferenceSumTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "vectorScalarMultiplicationTest",
+                                &tnlVectorOperationsTester :: vectorScalarMultiplicationTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "getSclaraProductTest",
+                                &tnlVectorOperationsTester :: getVectorScalarProductTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "alphaXPlusYTest",
+                                &tnlVectorOperationsTester :: alphaXPlusYTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "alphaXPlusBetaYTest",
+                                &tnlVectorOperationsTester :: alphaXPlusBetaYTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "alphaXPlusBetaZTest",
+                                &tnlVectorOperationsTester :: alphaXPlusBetaZTest )
+                               );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
+                                "alphaXPlusBetaZPlusYTest",
+                                &tnlVectorOperationsTester :: alphaXPlusBetaZPlusYTest )
+                               );
       return suiteOfTests;
    };
 
@@ -100,14 +127,14 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::
-         copyMemory< typename Vector::RealType,
-                     typename Vector::RealType,
-                     typename Vector::IndexType >
-                  ( deviceVector. getData(),
-                        a. getData(),
-                        a. getSize() );
-      CPPUNIT_ASSERT( checkCudaDevice );
+      tnlArrayOperations< typename Vector::DeviceType,
+                          tnlHost >::
+      template copyMemory< typename Vector::RealType,
+                           typename Vector::RealType,
+                           typename Vector::IndexType >
+                         ( deviceVector.getData(),
+                           a.getData(),
+                           a.getSize() );
    }
 
 
@@ -119,14 +146,14 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::
-         copyMemory< typename Vector::RealType,
-                     typename Vector::RealType,
-                     typename Vector::IndexType >
-                  ( deviceVector. getData(),
-                        a. getData(),
-                        a. getSize() );
-      CPPUNIT_ASSERT( checkCudaDevice );
+      tnlArrayOperations< typename Vector::DeviceType,
+                          tnlHost >::
+      template copyMemory< typename Vector::RealType,
+                           typename Vector::RealType,
+                           typename Vector::IndexType >
+                         ( deviceVector.getData(),
+                           a.getData(),
+                           a.getSize() );
    }
 
 
@@ -138,14 +165,34 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::
-         copyMemory< typename Vector::RealType,
-                     typename Vector::RealType,
-                     typename Vector::IndexType >
-                  ( deviceVector. getData(),
-                        a. getData(),
-                        a. getSize() );
-      CPPUNIT_ASSERT( checkCudaDevice );
+      tnlArrayOperations< typename Vector::DeviceType,
+                          tnlHost >::
+      template copyMemory< typename Vector::RealType,
+                           typename Vector::RealType,
+                           typename Vector::IndexType >
+                         ( deviceVector.getData(),
+                           a.getData(),
+                           a.getSize() );
+   }
+
+   template< typename Vector >
+   void setOscilatingSequence( Vector& deviceVector,
+                               typename Vector::RealType v )
+   {
+      tnlVector< typename Vector::RealType, tnlHost > a;
+      a.setSize( deviceVector. getSize() );
+      a[ 0 ] = v;
+      for( int i = 1; i < a. getSize(); i ++ )
+         a.getData()[ i ] = a.getData()[ i-1 ] * -1;
+
+      tnlArrayOperations< typename Vector::DeviceType,
+                          tnlHost >::
+      template copyMemory< typename Vector::RealType,
+                           typename Vector::RealType,
+                           typename Vector::IndexType >
+                         ( deviceVector.getData(),
+                           a.getData(),
+                           a.getSize() );
    }
 
 
@@ -156,7 +203,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMax( v ) == size - 1 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMax( v.getData(), size ) == size - 1 );      
    }
 
    void getVectorMinTest()
@@ -272,10 +319,105 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       u. setValue( 3.0 );
       v. setValue( 1.0 );
 
-      cout << tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) << " " << 2.0 * size << endl;
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
    }
+
+   void getVectorDifferenceSumTest()
+   {
+      const int size( 1024 );
+      tnlVector< Real, Device > u, v;
+      u. setSize( size );
+      v. setSize( size );
+      u. setValue( 3.0 );
+      v. setValue( 1.0 );
+
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceSum( u, v ) == 2.0 * size );
+   }
+
+   void vectorScalarMultiplicationTest()
+   {
+      const int size( 1025 );
+      tnlVector< Real, Device > u;
+      u. setSize( size );
+      setLinearSequence( u );
+
+      tnlVectorOperations< Device >::vectorScalarMultiplication( u, 3.0 );
+
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( u.getElement( i ) == 3.0 * i );
+   }
+
+   void getVectorScalarProductTest()
+   {
+      const int size( 1025 );
+      tnlVector< Real, Device > u, v;
+      u. setSize( size );
+      v. setSize( size );
+      setOscilatingSequence( u, 1.0 );
+      setOnesSequence( v );
+
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getScalarProduct( u, v ) == 1.0 );
+   }
+
+   void alphaXPlusYTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > x, y;
+      x.setSize( size );
+      y.setSize( size );
+      setLinearSequence( x );
+      setOnesSequence( y );
+      tnlVectorOperations< Device >:: alphaXPlusY( y, x, 3.0 );
+
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );
+   };
+
+   void alphaXPlusBetaYTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > x, y;
+      x.setSize( size );
+      y.setSize( size );
+      setLinearSequence( x );
+      setOnesSequence( y );
+      tnlVectorOperations< Device >:: alphaXPlusBetaY( y, x, 3.0, -2.0 );
+
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( y.getElement( i ) == -2.0 + 3.0 * i );
+   };
+
+   void alphaXPlusBetaZTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > x, y, z;
+      x.setSize( size );
+      y.setSize( size );
+      z.setSize( size );
+      setLinearSequence( x );
+      setOnesSequence( z );
+      tnlVectorOperations< Device >:: alphaXPlusBetaZ( y, x, 3.0, z, -2.0 );
+
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( y.getElement( i ) == -2.0 + 3.0 * i );
+   };
+
+   void alphaXPlusBetaZPlusYTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > x, y, z;
+      x.setSize( size );
+      y.setSize( size );
+      z.setSize( size );
+      setLinearSequence( x );
+      setOnesSequence( z );
+      setOnesSequence( y );
+      tnlVectorOperations< Device >:: alphaXPlusBetaZPlusY( y, x, 3.0, z, -2.0 );
+
+      for( int i = 0; i < size; i ++ )
+         CPPUNIT_ASSERT( y.getElement( i ) == -1.0 + 3.0 * i );
+   };
 };
 
 #else

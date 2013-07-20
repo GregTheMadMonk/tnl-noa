@@ -93,9 +93,9 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    }
    else*/
    {
-      r. saxmy( 1.0, b );
+      r. alphaXPlusBetaY( 1.0, b, -1.0 );
       p = r_ast = r;
-      rho = r. sdot( r_ast );
+      rho = r. scalarProduct( r_ast );
       bNorm = b. lpNorm( 2.0 );
    }
 
@@ -114,12 +114,12 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
           this -> matrix -> vectorProduct( p, Ap );
 
       //dbgCout( "Computing alpha" );
-      s2 = Ap. sdot( r_ast );
+      s2 = Ap. scalarProduct( r_ast );
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = rho / s2;
 
       // s_j = r_j - alpha_j * A p_j
-      s. saxpsbz( 1.0, r, -alpha, Ap );
+      s. alphaXPlusBetaZ( 1.0, r, -alpha, Ap );
 
       // omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
       //dbgCout( "Computing As" );
@@ -132,20 +132,20 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       else*/
           this -> matrix -> vectorProduct( s, As );
       s1 = s2 = 0.0;
-      s1 = As. sdot( s );
-      s2 = As. sdot( As );
+      s1 = As. scalarProduct( s );
+      s2 = As. scalarProduct( As );
       if( s2 == 0.0 ) omega = 0.0;
       else omega = s1 / s2;
       
       // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
       // r_{j+1} = s_j - omega_j * A * s_j
       //dbgCout( "Computing new x and new r." );
-      x. saxpsbzpy( alpha, p, omega, s );
-      r. saxpsbz( 1.0, s, -omega, As );
+      x. alphaXPlusBetaZPlusY( alpha, p, omega, s );
+      r. alphaXPlusBetaZ( 1.0, s, -omega, As );
       
       // beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
       s1 = 0.0;
-      s1 = r. sdot( r_ast );
+      s1 = r. scalarProduct( r_ast );
       if( rho == 0.0 ) beta = 0.0;
       else beta = ( s1 / rho ) * ( alpha / omega );
       rho = s1;

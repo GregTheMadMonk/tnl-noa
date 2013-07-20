@@ -28,7 +28,7 @@
 #include <cppunit/Message.h>
 
 #include <core/arrays/tnlArrayOperations.h>
-#include <core/cuda/device-check.h>
+#include <core/tnlCuda.h>
 
 template< typename Element, typename Device >
 class tnlArrayOperationsTester{};
