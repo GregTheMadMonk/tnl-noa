@@ -112,7 +112,7 @@ template< typename Real,
           typename Index >
 Real tnlSharedVector< Real, Device, Index > :: max() const
 {
-   return tnlVectorOperations< Device > :: getVectorMax( this->getData(), this->getSize() );
+   return tnlVectorOperations< Device > :: getVectorMax( *this );
 }
 
 template< typename Real,

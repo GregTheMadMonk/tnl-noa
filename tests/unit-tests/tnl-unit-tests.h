@@ -26,7 +26,6 @@
 
 #include <debug/tnlDebug.h>
 #include "core/tnlFileTester.h"
-#include "core/tnlStringTester.h"
 #include "core/tnlObjectTester.h"
 #include "core/tnlRealTester.h"
 #include "core/tnlTupleTester.h"
@@ -57,8 +56,6 @@ int main( int argc, char* argv[] )
    CppUnit :: TextTestRunner runner;
 
    runner. addTest( tnlFileTester :: suite() );
-
-   runner. addTest( tnlStringTester :: suite() );
 
    runner. addTest( tnlObjectTester :: suite() );
 

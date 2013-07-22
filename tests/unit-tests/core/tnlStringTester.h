@@ -18,6 +18,8 @@
 #ifndef TNLSTRINGTESTER_H_
 #define TNLSTRINGTESTER_H_
 
+#ifdef HAVE_CPPUNIT
+
 #include <string.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
@@ -176,5 +178,9 @@ class tnlStringTester : public CppUnit :: TestCase
    };
 
 };
+
+#else /* HAVE_CPPUNIT */
+class tnlStringTester {};
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLSTRINGTESTER_H_ */

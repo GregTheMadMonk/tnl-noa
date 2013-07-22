@@ -84,6 +84,11 @@ __device__  inline int tnlCudaAbs( const int& a )
    return abs( a );
 }
 
+__device__  inline long int tnlCudaAbs( const long int& a )
+{
+   return abs( a );
+}
+
 __device__  inline float tnlCudaAbs( const float& a )
 {
    return fabs( a );
@@ -92,6 +97,11 @@ __device__  inline float tnlCudaAbs( const float& a )
 __device__  inline double tnlCudaAbs( const double& a )
 {
    return fabs( a );
+}
+
+__device__  inline long double tnlCudaAbs( const long double& a )
+{
+   return fabs( ( double ) a );
 }
 
 template< typename Type1, typename Type2 >

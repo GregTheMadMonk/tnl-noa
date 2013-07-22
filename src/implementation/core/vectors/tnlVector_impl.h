@@ -110,9 +110,7 @@ template< typename Real,
           typename Index >
 Real tnlVector< Real, Device, Index > :: max() const
 {
-   tnlAssert( this->getSize() > 0,
-              cerr << "Vector name is " << this->getName() );
-   return tnlVectorOperations< Device > :: getVectorMax( this->getData(), this->getSize() );
+   return tnlVectorOperations< Device > :: getVectorMax( *this );
 }
 
 template< typename Real,

@@ -122,7 +122,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = i;
+         v. setElement( i, i );
       CPPUNIT_ASSERT( v. min() == 0 );
    };
 
@@ -131,7 +131,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = -i;
+         v.setElement( i, -i );
       CPPUNIT_ASSERT( v. absMax() == 9 );
    };
 
@@ -267,7 +267,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       v1[ 0 ] = -1;
       v2[ 0 ] = 1;
-      for( int i = 0; i < 10; i ++ )
+      for( int i = 1; i < 10; i ++ )
       {
          v1[ i ] = v1[ i - 1 ] * -1;
          v2[ i ] = v2[ i - 1 ];

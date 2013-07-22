@@ -203,7 +203,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMax( v.getData(), size ) == size - 1 );      
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorMax( v ) == size - 1 );
    }
 
    void getVectorMinTest()
