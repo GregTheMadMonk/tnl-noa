@@ -18,6 +18,7 @@
 #ifndef TNLOBJECTTESTER_H_
 #define TNLOBJECTTESTER_H_
 
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -54,5 +55,9 @@ class tnlObjectTester : public CppUnit :: TestCase
    };
 
 };
+
+#else /* HAVE_CPPUNIT */
+class tnlObjectTester{};
+#endif  /* HAVE_CPPUNIT */
 
 #endif /* TNLOBJECTTESTER_H_ */
