@@ -46,10 +46,11 @@ template< typename Real,
           typename Device,
           typename Index >
 void tnlLinearGridGeometry< 1, Real, Device, Index > :: getElementCenter( const VertexType& origin,
-                                                                             const CoordinatesType& coordinates,
-                                                                             VertexType& center ) const
+                                                                          const CoordinatesType& coordinates,
+                                                                          VertexType& center ) const
 {
    center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
+   //getVertex<0, 0>(coordinates, origin, center);
 }
 
 template< typename Real,
@@ -185,8 +186,7 @@ void tnlLinearGridGeometry< 2, Real, Device, Index > :: getElementCenter( const 
                                                                           const CoordinatesType& coordinates,
                                                                           VertexType& center ) const
 {
-   center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
-   center. y() = ( coordinates. y() + 0.5 ) * parametricStep. y();
+   getVertex<0, 0>( coordinates, origin, center );
 }
 
 template< typename Real,

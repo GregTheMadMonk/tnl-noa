@@ -18,7 +18,7 @@
 #ifndef TNLLAXFRIDRICHS_H_
 #define TNLLAXFRIDRICHS_H_
 
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>

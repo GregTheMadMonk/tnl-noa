@@ -21,7 +21,7 @@
 #include <mesh/tnlGrid.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 #include <core/tnlHost.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 
 template< typename Mesh >
 class tnlLinearDiffusion
