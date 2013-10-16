@@ -104,7 +104,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
     */
    if( preconditioner )
    {
-      //precond -> Solve( b, M_tmp );
+      this->preconditioner->Solve( b, M_tmp );
       for( i = 0; i < _size; i ++ )
          normb += M_tmp[ i ] * M_tmp[ i ];
 
@@ -112,7 +112,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       for( i = 0; i < size; i ++ )
          M_tmp[ i ] = b[ i ] - M_tmp[ i ];
 
-      //precond -> Solve( M_tmp, r );
+      this->preconditioner->Solve( M_tmp, r );
       for( i = 0; i < size; i ++ )
          beta += r[ i ] * r[ i ];
    }
@@ -166,7 +166,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          if( preconditioner )
          {
             matrix -> vectorProduct( vi, _M_tmp );
-            //preconditioner -> Solve( M_tmp, w );
+            this->preconditioner->Solve( M_tmp, w );
          }
          else
              matrix -> vectorProduct( vi, _w );
