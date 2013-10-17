@@ -104,7 +104,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
     */
    if( preconditioner )
    {
-      this->preconditioner->Solve( b, M_tmp );
+      this->preconditioner->solve( b, _M_tmp );
       for( i = 0; i < _size; i ++ )
          normb += M_tmp[ i ] * M_tmp[ i ];
 
@@ -112,7 +112,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       for( i = 0; i < size; i ++ )
          M_tmp[ i ] = b[ i ] - M_tmp[ i ];
 
-      this->preconditioner->Solve( M_tmp, r );
+      this->preconditioner->solve( _M_tmp, _r );
       for( i = 0; i < size; i ++ )
          beta += r[ i ] * r[ i ];
    }
@@ -149,7 +149,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
        * v_0 = r / | r | =  1.0 / beta * r
        */
       vi. bind( _v. getData(), size );
-      vi. saxpy( ( RealType ) 1.0 / beta, _r );
+      vi. alphaXPlusY( ( RealType ) 1.0 / beta, _r );
 
       _s. setValue( ( RealType ) 0.0 );
       _s[ 0 ] = beta;
@@ -166,7 +166,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          if( preconditioner )
          {
             matrix -> vectorProduct( vi, _M_tmp );
-            this->preconditioner->Solve( M_tmp, w );
+            this->preconditioner->solve( _M_tmp, _w );
          }
          else
              matrix -> vectorProduct( vi, _w );
@@ -195,7 +195,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         vi. saxpy( ( RealType ) 1.0 / normw, _w );
+         vi. alphaXPlusY( ( RealType ) 1.0 / normw, _w );
 
 
          //dbgCout( "Applying rotations" );

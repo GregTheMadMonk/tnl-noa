@@ -122,7 +122,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       w. setValue( 8 );
       CPPUNIT_ASSERT( tnlSDOT( u, v ) == 6 * u. getSize() );
 
-      tnlSAXPY( ( T ) 2, v, u );
+      tnlalphaXPlusY( ( T ) 2, v, u );
       CPPUNIT_ASSERT( u == w );
    }
 

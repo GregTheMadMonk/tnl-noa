@@ -98,12 +98,12 @@ class tnlVectorTester : public CppUnit :: TestCase
                                 & tnlVectorTester< RealType, Device, IndexType > :: testScalarProduct )
                                 );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testSaxpy",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testSaxpy )
+                                "testalphaXPlusY",
+                                & tnlVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                 );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testSaxpy",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testSaxpy )
+                                "testalphaXPlusY",
+                                & tnlVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                 );
       return suiteOfTests;
    }
@@ -275,7 +275,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( v1. scalarProduct( v2 ) == 0.0 );
    };
 
-   void testSaxpy()
+   void testalphaXPlusY()
    {
       tnlVector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );

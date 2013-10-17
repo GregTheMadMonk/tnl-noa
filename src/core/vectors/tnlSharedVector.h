@@ -86,49 +86,30 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    template< typename Vector >
    Real scalarProduct( const Vector& v );
 
-   //! Computes SAXPY operation (Y = Scalar Alpha X Pus Y ).
+   //! Computes Y = alpha * X + Y.
    template< typename Vector >
-   void saxpy( const Real& alpha,
-               const Vector& x );
+   void alphaXPlusY( const Real& alpha,
+                     const Vector& x );
 
-   //! Computes SAXMY operation (Y = Scalar Alpha X Minus Y ).
-   /*!**
-    * It is not a standart BLAS function but is useful for GMRES solver.
-    */
+   //! Computes Y = alpha * X + beta * Y.
    template< typename Vector >
-   void saxmy( const Real& alpha,
-               const Vector& x );
+   void alphaXPlusBetaY( const Real& alpha,
+                         const Vector& x,
+                         const Real& beta );
 
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Y
-   /*!**
-    * It is not standard BLAS function as well.
-    */
+   //! Computes Y = alpha * X + beta * Z
    template< typename Vector >
-   void saxpsby( const Real& alpha,
-                 const Vector& x,
-                 const Real& beta );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z
-   /*!**
-    * It is not standard BLAS function as well.
-    */
-   template< typename Vector >
-   void saxpsbz( const Real& alpha,
-                 const Vector& x,
-                 const Real& beta,
-                 const Vector& z );
+   void alphaXPlusBetaZ( const Real& alpha,
+                         const Vector& x,
+                         const Real& beta,
+                         const Vector& z );
 
    //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   /*!**
-    * It is not standard BLAS function as well.
-    */
    template< typename Vector >
-   void saxpsbzpy( const Real& alpha,
-                   const Vector& x,
-                   const Real& beta,
-                   const Vector& z );
-
-
+   void alphaXPlusBetaZPlusY( const Real& alpha,
+                              const Vector& x,
+                              const Real& beta,
+                              const Vector& z );
 };
 
 #include <implementation/core/vectors/tnlSharedVector_impl.h>

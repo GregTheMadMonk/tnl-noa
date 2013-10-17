@@ -25,9 +25,8 @@
 #include <core/tnlString.h>
 #include <core/mfilename.h>
 #include <core/mfuncs.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <solvers/ode/tnlMersonSolver.h>
-#include <legacy/mesh/tnlGridOld.h>
 
 
 #ifdef HAVE_CUDA

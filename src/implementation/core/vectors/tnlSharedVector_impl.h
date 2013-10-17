@@ -234,13 +234,12 @@ Real tnlSharedVector< Real, Device, Index > :: scalarProduct( const Vector& v )
    return tnlVectorOperations< Device > :: getScalarProduct( *this, v );
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpy( const Real& alpha,
-                                                      const Vector& x )
+void tnlSharedVector< Real, Device, Index > :: alphaXPlusY( const Real& alpha,
+                                                            const Vector& x )
 {
    tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
 }
@@ -248,49 +247,36 @@ void tnlSharedVector< Real, Device, Index > :: saxpy( const Real& alpha,
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxmy( const Real& alpha,
-                                                      const Vector& x )
-{
-   tnlVectorOperations< Device > :: vectorSaxmy( *this, x, alpha );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsby( const Real& alpha,
-                                                        const Vector& x,
-                                                        const Real& beta )
+void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaY( const Real& alpha,
+                                                                const Vector& x,
+                                                                const Real& beta )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsby( *this, x, alpha, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaY( *this, x, alpha, beta );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsbz( const Real& alpha,
-                                                        const Vector& x,
-                                                        const Real& beta,
-                                                        const Vector& z )
+void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaZ( const Real& alpha,
+                                                                const Vector& x,
+                                                                const Real& beta,
+                                                                const Vector& z )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsbz( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaZ( *this, x, alpha, z, beta );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: saxpsbzpy( const Real& alpha,
-                                                          const Vector& x,
-                                                          const Real& beta,
-                                                          const Vector& z )
+void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real& alpha,
+                                                                     const Vector& x,
+                                                                     const Real& beta,
+                                                                     const Vector& z )
 {
-   tnlVectorOperations< Device > :: vectorSaxpsbz( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
 }
-
-
 
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */

@@ -201,7 +201,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
       CPPUNIT_ASSERT( u. scalarProduct( v ) == 60 );
 
-      u. saxpy( ( T ) 2, v );
+      u. alphaXPlusY( ( T ) 2, v );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u. getElement( i ) == 8 );
    }

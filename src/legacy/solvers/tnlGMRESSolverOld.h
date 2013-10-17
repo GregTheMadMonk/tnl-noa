@@ -20,7 +20,7 @@
 
 
 #include <math.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <legacy/solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
@@ -164,7 +164,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
    {
       A. vectorProduct( x, _r );
       normb = b. lpNorm( ( Real ) 2.0 );
-      _r. saxmy( ( Real ) 1.0, b );
+      _r.alphaXPlusBetaY( ( Real ) 1.0, b, -1.0 );
       beta = _r. lpNorm( ( Real ) 2.0 );
    }
 
@@ -191,7 +191,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
        * v_0 = r / | r | =  1.0 / beta * r
        */
       vi. bind( _v. getData(), size );
-      vi. saxpy( ( Real ) 1.0 / beta, _r );
+      vi. alphaXPlusY( ( Real ) 1.0 / beta, _r );
                 
       _s. setValue( ( Real ) 0.0 );
       _s[ 0 ] = beta;
@@ -225,7 +225,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
             /****
              * w = w - H_{k,i} v_k
              */
-            _w. saxpy( -H_k_i, vk );
+            _w. alphaXPlusY( -H_k_i, vk );
          }
          /***
           * H_{i+1,i} = |w|
@@ -237,7 +237,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         vi. saxpy( ( Real ) 1.0 / normw, _w );
+         vi. alphaXPlusY( ( Real ) 1.0 / normw, _w );
 
 
          //dbgCout( "Applying rotations" );
@@ -292,7 +292,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
       else
       {
          A. vectorProduct( x, _r );
-         _r. saxmy( ( Real ) 1.0, b );
+         _r.alphaXPlusBetaY( ( Real ) 1.0, b, -1.0 );
          beta = _r. lpNorm( ( Real ) 2.0 );
       }
       //beta = sqrt( beta );
@@ -343,7 +343,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
-      x. saxpy( y[ i ], vi );
+      x. alphaXPlusY( y[ i ], vi );
    }
 };
 

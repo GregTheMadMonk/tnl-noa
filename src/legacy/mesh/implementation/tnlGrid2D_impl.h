@@ -692,7 +692,7 @@ Real tnlGridOld< 2, Real, Device, Index > :: scalarProduct( const tnlVector< Rea
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGridOld< 2, Real, Device, Index > :: saxpy( const Real& alpha,
+void tnlGridOld< 2, Real, Device, Index > :: alphaXPlusY( const Real& alpha,
                                                          const tnlVector< Real, Device, Index >& x )
 {
    tnlAssert( this -> getDimensions() == v. getDimensions(),
@@ -704,7 +704,7 @@ void tnlGridOld< 2, Real, Device, Index > :: saxpy( const Real& alpha,
               cerr << "The grid names are " << this -> getName()
                    << " and " << v. getName()
                    << "To get grids with the same parameters use the method setLike." << endl; );
-   this -> saxpy( alpha, x );
+   this -> alphaXPlusY( alpha, x );
 };
 
 template< typename Real, typename Device, typename Index >

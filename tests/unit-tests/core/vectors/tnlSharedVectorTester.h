@@ -96,12 +96,12 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
                                & tnlSharedVectorTester< RealType, Device, IndexType > :: testScalarProduct )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
-                               "testSaxpy",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testSaxpy )
+                               "testalphaXPlusY",
+                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
-                               "testSaxpy",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testSaxpy )
+                               "testalphaXPlusY",
+                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                );
       return suiteOfTests;
    }
@@ -287,7 +287,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( v1. scalarProduct( v2 ) == 0.0 );
    };
 
-   void testSaxpy()
+   void testalphaXPlusY()
    {
       RealType data1[ 10 ], data2[ 10 ];
       tnlSharedVector< RealType, Device, IndexType > v1, v2;
@@ -298,7 +298,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
          data1[ i ] = i;
          data2[ i ] = 2.0 * i;
       }
-      v1. saxpy( 2.0, v2 );
+      v1. alphaXPlusY( 2.0, v2 );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( v1. getElement( i ) == 5.0 * i );
    };

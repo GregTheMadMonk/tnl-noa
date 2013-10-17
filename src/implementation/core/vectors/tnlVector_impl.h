@@ -232,7 +232,6 @@ Real tnlVector< Real, Device, Index > :: scalarProduct( const Vector& v )
    return tnlVectorOperations< Device > :: getScalarProduct( *this, v );
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
