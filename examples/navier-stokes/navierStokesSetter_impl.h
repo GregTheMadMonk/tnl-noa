@@ -39,8 +39,8 @@ bool navierStokesSetter< SolverStarter > :: run( const tnlParameterContainer& pa
    const tnlString& schemeName = parameters. GetParameter< tnlString >( "scheme" );
    if( dimensions == 2 )
    {
-      typedef tnlGrid< 2, RealType, DeviceType, IndexType, tnlLinearGridGeometry > MeshType;
-      //typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
+      //typedef tnlGrid< 2, RealType, DeviceType, IndexType, tnlLinearGridGeometry > MeshType;
+      typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
       if( schemeName == "lax-fridrichs" )
          return solverStarter. run< navierStokesSolver< MeshType,
                                                         tnlLaxFridrichs< MeshType,

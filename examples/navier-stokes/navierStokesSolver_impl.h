@@ -502,7 +502,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
 #endif
    }
 
-   rhsDofVector = fu;
+   //rhsDofVector = fu;
    //makeSnapshot( 0.0, 1 );
    //getchar();
 

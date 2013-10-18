@@ -46,6 +46,14 @@ tnlString tnlMultiVector< 2, Element, Device, Index > :: getType() const
           tnlString( " >" );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlMultiVector< 2, Real, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
 template< typename Element, typename Device, typename Index >
 bool tnlMultiVector< 2, Element, Device, Index > :: setDimensions( const Index jSize,
                                                                        const Index iSize )

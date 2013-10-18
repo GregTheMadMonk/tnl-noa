@@ -43,6 +43,8 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
 
    tnlString getType() const;
 
+   tnlString getTypeVirtual() const;
+
    bool setDimensions( const Index iSize );
 
    bool setDimensions( const tnlTuple< 1, Index >& dimensions );
@@ -115,6 +117,8 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
    tnlMultiVector( const tnlString& name );
 
    tnlString getType() const;
+
+   tnlString getTypeVirtual() const;
 
    bool setDimensions( const Index jSize, const Index iSize );
 
@@ -190,6 +194,8 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
 
    tnlString getType() const;
 
+   tnlString getTypeVirtual() const;
+
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
    bool setDimensions( const tnlTuple< 3, Index >& dimensions );
@@ -263,6 +269,8 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
    tnlMultiVector( const tnlString& name );
 
    tnlString getType() const;
+
+   tnlString getTypeVirtual() const;
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 

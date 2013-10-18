@@ -37,6 +37,14 @@ tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 };
 
 template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlSharedVector< Real, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Real,
            typename Device,
            typename Index >
 tnlSharedVector< Real, Device, Index >&
@@ -75,7 +83,7 @@ bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vecto
    return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
 }
 
-template< typename Element,
+/*template< typename Element,
           typename Device,
           typename Index >
 bool tnlSharedVector< Element, Device, Index > :: save( tnlFile& file ) const
@@ -105,7 +113,7 @@ template< typename Element,
 bool tnlSharedVector< Element, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
-};
+};*/
 
 template< typename Real,
           typename Device,

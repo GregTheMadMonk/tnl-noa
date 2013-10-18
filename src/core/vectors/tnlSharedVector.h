@@ -35,6 +35,8 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    tnlString getType() const;
 
+   tnlString getTypeVirtual() const;
+
    tnlSharedVector< Real, Device, Index >& operator = ( const tnlSharedVector< Real, Device, Index >& array );
 
    template< typename Vector >
@@ -46,9 +48,9 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    template< typename Vector >
    bool operator != ( const Vector& array ) const;
 
-   bool save( tnlFile& file ) const;
+   //bool save( tnlFile& file ) const;
 
-   bool save( const tnlString& fileName ) const;
+   //bool save( const tnlString& fileName ) const;
 
    Real max() const;
 
