@@ -114,7 +114,7 @@ class tnlSharedArrayTester : public CppUnit :: TestCase
       for( int i = 0; i < 100; i ++ )
          v. setElement( i, 3.14147 );
       tnlFile file;
-      file. open( "test-file.tnl", tnlWriteMode, tnlCompressionBzip2 );
+      file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
       tnlSharedArray< ElementType, Device, IndexType > u( "test-array-u" );

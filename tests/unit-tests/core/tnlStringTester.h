@@ -173,7 +173,7 @@ class tnlStringTester : public CppUnit :: TestCase
    {
       tnlString str1( "testing-string" );
       tnlFile file;
-      file. open( "test-file.tnl", tnlWriteMode, tnlCompressionBzip2 );
+      file. open( "test-file.tnl", tnlWriteMode );
       str1. save( file );
    };
 

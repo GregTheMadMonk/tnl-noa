@@ -70,7 +70,7 @@ bool convertMatrix( const tnlString& input_file,
    if( verbose )
       cout << endl << "Writing to a file " << output_file << " ... " << flush;
    tnlFile binaryFile;
-   if( ! binaryFile. open( output_file. getString(), tnlWriteMode, tnlCompressionBzip2 ) )
+   if( ! binaryFile. open( output_file. getString(), tnlWriteMode ) )
    {
       cerr << endl << "I was not able to open the output file " << output_file << "." << endl;
       return false;

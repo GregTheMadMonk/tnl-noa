@@ -212,7 +212,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       v. setSize( 100 );
       v. setValue( 3.14147 );
       tnlFile file;
-      file. open( "test-file.tnl", tnlWriteMode, tnlCompressionBzip2 );
+      file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
       tnlVector< T, tnlHost > u( "test-long-vector-u" );

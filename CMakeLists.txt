@@ -38,18 +38,6 @@ else()
    AddCompilerFlag( "-std=gnu++0x" )
 endif()      
 
-
-#####
-# Check for bzip2
-#
-find_package(BZip2)
-if( BZIP2_FOUND )
-    set( HAVE_LIBBZ2 "#define HAVE_BZIP2" )    
-    include_directories("${BZIP2_INCLUDE_DIR}")
-else( BZIP2_FOUND )
-    set( HAVE_LIBBZ2 "// #define HAVE_BZIP2" )
-endif( BZIP2_FOUND )
-
 #####
 # Check for CUDA
 #

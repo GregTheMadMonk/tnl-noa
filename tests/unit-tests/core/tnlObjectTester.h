@@ -50,7 +50,7 @@ class tnlObjectTester : public CppUnit :: TestCase
    {
       tnlObject obj( "testing-object" );
       tnlFile file;
-      file. open( "test-file.tnl", tnlWriteMode, tnlCompressionBzip2 );
+      file. open( "test-file.tnl", tnlWriteMode );
       obj. save( file );
    };
 

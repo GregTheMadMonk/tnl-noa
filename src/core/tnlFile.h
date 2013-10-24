@@ -23,9 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <tnlConfig.h>
-#ifdef HAVE_BZIP2
-   #include <bzlib.h>
-#endif
 #ifdef HAVE_CUDA
    #include <cuda_runtime.h>
 #endif
@@ -39,10 +36,6 @@
 #include <core/tnlCuda.h>
 
 using namespace std;
-
-enum tnlCompression { tnlCompressionNone = 0,
-                      tnlCompressionBzip2,
-                      tnlCompressionGzip };
 
 enum tnlIOMode { tnlUndefinedMode = 0,
                  tnlReadMode = 1,
@@ -63,8 +56,6 @@ class tnlFile
 {
    tnlIOMode mode;
 
-   tnlCompression compression;
-
    FILE* file;
 
    bool fileOK;
@@ -75,33 +66,27 @@ class tnlFile
 
    long int readElements;
 
-#ifdef HAVE_BZIP2
-   BZFILE* bzFile;
-#endif
-
-   bool checkBz2Error( int bzerror ) const;
-
    public:
 
    tnlFile();
 
-	bool open( const tnlString& fileName,
-                   const tnlIOMode mode,
-		   const tnlCompression compression = tnlCompressionBzip2 );
+   bool open( const tnlString& fileName,
+              const tnlIOMode mode );
+
 
 	const tnlString& getFileName() const
    {
-	   return fileName;
+	   return this->fileName;
    }
 
 	long int getReadElements() const
 	{
-	   return readElements;
+	   return this->readElements;
 	}
 
 	long int getWrittenElements() const
 	{
-	   return writtenElements;
+	   return this->writtenElements;
 	}
 
 	// TODO: this does not work for constant types
@@ -157,7 +142,7 @@ bool tnlFile :: write( const Type* buffer )
 
 template< typename Type, typename Device, typename Index >
 bool tnlFile :: read( Type* buffer,
-                         const Index& elements )
+                      const Index& elements )
 {
    if( ! fileOK )
    {
@@ -169,21 +154,21 @@ bool tnlFile :: read( Type* buffer,
       cerr << "File " << fileName << " was not opened for reading. " << endl;
       return false;
    }
-#ifdef HAVE_BZIP2
-   int bzerror;
+
    int bytes_read( 0 );
+   this->readElements = 0;
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    void* host_buffer( 0 );
    if( Device :: getDeviceType() == "tnlHost" )
    {
-         bytes_read = BZ2_bzRead( &bzerror,
-                                  bzFile,
-                                  buffer,
-                                  elements * sizeof( Type ) );
-         if( bzerror == BZ_OK || bzerror == BZ_STREAM_END )
-            readElements = bytes_read / sizeof( Type );
-         return checkBz2Error( bzerror );
+      if( fread( buffer,
+             sizeof( Type ),
+             elements,
+             file ) != elements )
+         return false;
+      this->readElements = elements;
+      return true;
    }
    if( Device :: getDeviceType() == "tnlCuda" )
    {
@@ -209,15 +194,12 @@ bool tnlFile :: read( Type* buffer,
       while( readElements < elements )
       {
          int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
-         int bytesRead = BZ2_bzRead( &bzerror,
-                                     bzFile,
-                                     host_buffer,
-                                     transfer * sizeof( Type ) );
-         if( ! checkBz2Error( bzerror) )
-         {
-            free( host_buffer );
+         if( fread( host_buffer,
+                    sizeof( Type ),
+                    transfer,
+                    file ) != transfer * sizeof( Type ) )
             return false;
-         }
+
          if( cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
                          host_buffer,
                          bytesRead,
@@ -238,10 +220,6 @@ bool tnlFile :: read( Type* buffer,
       return false;
 #endif
    }
-#else
-   cerr << "Bzip2 compression is not supported on this system." << endl;
-   return false;
-#endif
    return true;
 };
 
@@ -259,20 +237,24 @@ bool tnlFile ::  write( const Type* buffer,
       cerr << "File " << fileName << " was not opened for writing. " << endl;
       return false;
    }
-#ifdef HAVE_BZIP2
-   int bzerror;
+
    Type* buf = const_cast< Type* >( buffer );
    void* host_buffer( 0 );
-   Index writtenElements( 0 );
+   this->writtenElements = 0;
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    if( Device :: getDeviceType() == "tnlHost" )
    {
-      BZ2_bzWrite( &bzerror,
-                   bzFile,
-                   ( void* ) buf,
-                   elements * sizeof( Type ) );
-      return checkBz2Error( bzerror );
+      if( fwrite( buf,
+                  sizeof( Type ),
+                  elements,
+                  this->file ) != elements )
+      {
+         cerr << "Writing to the file " << this->fileName << " failed." << endl;
+         return false;
+      }
+      this->writtenElements = elements;
+      return true;
    }
    if( Device :: getDeviceType() == "tnlCuda" )
    {
@@ -306,15 +288,11 @@ bool tnlFile ::  write( const Type* buffer,
                free( host_buffer );
                return false;
             }
-            BZ2_bzWrite( &bzerror,
-                         bzFile,
-                         ( void* ) host_buffer,
-                         transfer * sizeof( Type ) );
-            if( ! checkBz2Error( bzerror ) )
-            {
-               free( host_buffer );
+            if( fwrite( host_buffer,
+                        sizeof( Type ),
+                        transfer,
+                        this->file ) != transfer*sizeof( Type ) )
                return false;
-            }
             writtenElements += transfer;
          }
          free( host_buffer );
@@ -324,11 +302,6 @@ bool tnlFile ::  write( const Type* buffer,
          return false;
 #endif
    }
-
-#else
-   cerr << "Bzip2 compression is not supported on this system." << endl;
-   return false;
-#endif
    return true;
 };
 
