@@ -21,13 +21,15 @@
 #include <core/tnlString.h>
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
+          typename DiffusionScheme,
+          typename BoundaryConditions >
 class tnlNavierStokes
 {
    public:
 
    typedef AdvectionScheme AdvectionSchemeType;
    typedef DiffusionScheme DiffusionSchemeType;
+   typedef BoundaryConditions BoundaryConditionsType;
    typedef typename AdvectionScheme::MeshType MeshType;
    typedef typename AdvectionScheme::Real RealType;
    typedef typename AdvectionScheme::Device DeviceType;
@@ -38,6 +40,10 @@ class tnlNavierStokes
    static tnlString getTypeStatic();
 
    void setAdvectionScheme( AdvectionSchemeType& advection );
+
+   void setDiffusionScheme( DiffusionSchemeType& diffusion );
+
+   void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
    void updatePhysicalQuantities( const Vector& rho,
                                   const Vector& rho_u1,
@@ -52,6 +58,10 @@ class tnlNavierStokes
    protected:
 
    AdvectionSchemeType* advection;
+
+   DiffusionSchemeType* diffusion;
+
+   BoundaryConditionsType* boundaryConditions;
 
 };
 

@@ -54,9 +54,20 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: bindMesh( const MeshType& mesh )
+void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::bindMesh( const MeshType& mesh )
 {
    this -> mesh = &mesh;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient,
+          template< int, typename, typename, typename > class GridGeometry >
+const typename tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::MeshType&
+   tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::getMesh() const
+{
+   return * this->mesh;
 }
 
 template< typename Real,

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          navierStokesSetter.h  -  description
+                          navierStokesBoundaryConditions.h  -  description
                              -------------------
-    begin                : Feb 23, 2013
+    begin                : Oct 24, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,23 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEMTYPESSETTER_H_
-#define SIMPLEPROBLEMTYPESSETTER_H_
+#ifndef NAVIERSTOKESBOUNDARYCONDITIONS_H_
+#define NAVIERSTOKESBOUNDARYCONDITIONS_H_
 
 #include <config/tnlParameterContainer.h>
-#include "navierStokesSolver.h"
 
-template< typename SolverStarter >
-class navierStokesSetter
+template< typename Mesh >
+class navierStokesBoundaryConditions
 {
    public:
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   bool run( const tnlParameterContainer& parameters ) const;
+
+   typedef Mesh MeshType;
+   typedef typename Mesh::RealType RealType;
+   typedef typename Mesh::DeviceType DeviceType;
+   typedef typename Mesh::IndexType IndexType;
+
+   navierStokesBoundaryConditions();
+
+   bool init( const tnlParameterContainer& parameters );
+
+   void setMesh( const MeshType& mesh );
+
+   template< typename Vector >
+   void apply( const RealType& time,
+               Vector& rho,
+               Vector& u1,
+               Vector& u2 );
+
+   protected:
+
+   const MeshType* mesh;
+
+   RealType maxInflowVelocity, startUp;
 };
 
-#include "navierStokesSetter_impl.h"
+#include "navierStokesBoundaryConditions_impl.h"
 
-
-#endif /* SIMPLEPROBLEMSETTER_H_ */
+#endif /* NAVIERSTOKESBOUNDARYCONDITIONS_H_ */

@@ -138,27 +138,27 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    /****
     * Set-up model coefficients
     */
-   this -> p_0 = parameters. GetParameter< double >( "p0" );
-   this -> mu = parameters. GetParameter< double >( "mu");
-   this -> T = parameters. GetParameter< double >( "T" );
-   this -> R = parameters. GetParameter< double >( "R" );
-   this -> gravity = parameters. GetParameter< double >( "gravity" );
-   this -> maxInflowVelocity = parameters. GetParameter< double >( "max-inflow-velocity" );
-   this -> maxOutflowVelocity = parameters. GetParameter< double >( "max-outflow-velocity" );
-   this -> startUp = parameters. GetParameter< double >( "start-up" );
+   this->p_0 = parameters. GetParameter< double >( "p0" );
+   this->mu = parameters. GetParameter< double >( "mu");
+   this->T = parameters. GetParameter< double >( "T" );
+   this->R = parameters. GetParameter< double >( "R" );
+   this->gravity = parameters. GetParameter< double >( "gravity" );
+   if( ! this->boundaryConditions.init( parameters ) )
+      return false;
 
    /****
     * Set-up grid functions
     */
    const IndexType variablesNumber = 3;
 
-   rho. setSize( mesh. getDofs() );
-   u1. setSize( mesh. getDofs() );
-   u2. setSize( mesh. getDofs() );
-   p. setSize( mesh. getDofs() );
+   rho.setSize( mesh.getDofs() );
+   u1.setSize( mesh.getDofs() );
+   u2.setSize( mesh.getDofs() );
+   p.setSize( mesh.getDofs() );
 
    dofVector. setSize( variablesNumber * mesh. getDofs() );
    rhsDofVector. setLike( dofVector );
+   this->boundaryConditions.setMesh( this->mesh );
 
    /****
     * Set-up numerical scheme
@@ -274,8 +274,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
 template< typename Mesh, typename EulerScheme >
    template< typename Vector >
 void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const Vector& rho,
-                                                             const Vector& rho_u1,
-                                                             const Vector& rho_u2 )
+                                                                          const Vector& rho_u1,
+                                                                          const Vector& rho_u2 )
 {
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
@@ -294,42 +294,6 @@ void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const 
             p[ c ] = rho[ c ] * this -> R * this -> T;
          }
    }
-#ifdef HAVE_CUDA
-   if( Mesh :: DeviceType :: getDevice() == tnlCudaDevice )
-   {
-      const int cudaBlockSize = 256;
-      const int maxGridSize = 65536;
-      const int cudaBlocks = ceil( u1. getSize() / cudaBlockSize );
-      const int gridNumbers = ceil( cudaBlocks / maxGridSize );
-      dim3 blockSize, gridSize;
-      blockSize. x = cudaBlockSize;
-      for( int grid = 0; grid < gridNumbers; grid ++ )
-      {
-
-         Index size( 0 );
-         if( grid < gridNumbers )
-         {
-            gridSize. x = maxGridSize;
-            size = gridSize. x * blockSize. x;
-         }
-         else
-         {
-            gridSize. x = cudaBlocks % maxGridSize;
-            size = u1. getSize() - ( gridNumbers - 1 ) * maxGridSize * cudaBlockSize;
-         }
-         Index startIndex = grid * maxGridSize * cudaBlockSize;
-         computeVelocityFieldCuda<<< blockSize, gridSize >>>( size,
-                                                              this -> R,
-                                                              this -> T,
-                                                              & rho. getData()[ startIndex ],
-                                                              & rho_u1. getData()[ startIndex ],
-                                                              & rho_u2. getData()[ startIndex ],
-                                                              & u1. getData()[ startIndex ],
-                                                              & u2. getData()[ startIndex ],
-                                                              & p. getData()[ startIdex ] );
-
-   }
-#endif
 }
 
 template< typename Mesh, typename EulerScheme >
@@ -338,11 +302,11 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                                                                  DofVectorType& u,
                                                                  DofVectorType& fu )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2,
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, rho_u1, rho_u2,
                                                       rho_t, rho_u1_t, rho_u2_t;
 
    const IndexType& dofs = mesh. getDofs();
-   rho. bind( & u. getData()[ 0 ], dofs );
+   dofs_rho. bind( & u. getData()[ 0 ], dofs );
    rho_u1. bind( & u. getData()[ dofs ], dofs );
    rho_u2. bind( & u. getData()[ 2 * dofs ], dofs );
 
@@ -354,83 +318,46 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
    rho_u1_t. bind( & fu. getData()[ dofs ], dofs );
    rho_u2_t. bind( & fu. getData()[ 2 * dofs ], dofs );
 
-
-
-   updatePhysicalQuantities( rho, rho_u1, rho_u2 );
+   updatePhysicalQuantities( dofs_rho, rho_u1, rho_u2 );
 
    /****
     * Compute RHS
     */
    const IndexType& xSize = mesh. getDimensions(). x();
    const IndexType& ySize = mesh. getDimensions(). y();
-   const RealType hx = mesh. getParametricStep(). x();
-   const RealType hy = mesh. getParametricStep(). y();
-   RealType startUpCoefficient( 1.0 );
-   if( this -> startUp != 0.0 )
-      startUpCoefficient = Min( ( RealType ) 1.0, time / this -> startUp );
+   /*const RealType hx = mesh. getParametricStep(). x();
+   const RealType hy = mesh. getParametricStep(). y();*/
 
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
-      /****
-       * Set the boundary conditions.
-       * Speed: DBC on inlet, NBC on outlet, 0 DBC on walls.
-       * Density: NBS on inlet, DBC on outlet, NBC on walls
-       */
+      this->boundaryConditions.apply( time, this->rho, this->u1, this->u2 );
       for( IndexType i = 0; i < xSize; i ++ )
       {
-         const IndexType c1 = mesh. getElementIndex( i, 0 );
-         const IndexType c2 = mesh. getElementIndex( i, 1 );
-         const IndexType c3 = mesh. getElementIndex( i, ySize - 1 );
-         const IndexType c4 = mesh. getElementIndex( i, ySize - 2 );
+         const IndexType c1 = mesh.getElementIndex( i, 0 );
+         const IndexType c2 = mesh.getElementIndex( i, 1 );
+         const IndexType c3 = mesh.getElementIndex( i, ySize - 1 );
+         const IndexType c4 = mesh.getElementIndex( i, ySize - 2 );
 
-         RealType x = i * hx / mesh. getProportions(). x();
-
-         /****
-          * Boundary conditions at the bottom and the top
-          */
-         if( problem == cavity )
-         {
-            this -> u1[ c1 ] = 0;
-            this -> u2[ c1 ] = 0;
-            this -> u1[ c3 ] = sin( M_PI * x ) * startUpCoefficient * this -> maxOutflowVelocity;
-            this -> u2[ c3 ] = 0;
-
-            rho[ c1 ] = rho[ c2 ];
-            rho[ c3 ] = rho[ c4 ];
-            //rho[ c3 ] = this -> p_0 / ( this -> R * this -> T );
-         }
-
-         rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
-         rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];
-         rho_u1[ c3 ] = rho[ c3 ] * this -> u1[ c3 ];
-         rho_u2[ c3 ] = rho[ c3 ] * this -> u2[ c3 ];
+         dofs_rho[ c1 ] = this->rho[ c1 ];
+         rho_u1[ c1 ]   = this->rho[ c1 ] * this->u1[ c1 ];
+         rho_u2[ c1 ]   = this->rho[ c1 ] * this->u2[ c1 ];
+         dofs_rho[ c3 ] = this->rho[ c3 ];
+         rho_u1[ c3 ]   = this->rho[ c3 ] * this->u1[ c3 ];
+         rho_u2[ c3 ]   = this->rho[ c3 ] * this->u2[ c3 ];
       }
       for( IndexType j = 0; j < ySize; j ++ )
       {
-         const IndexType c1 = mesh. getElementIndex( 0, j );
-         const IndexType c2 = mesh. getElementIndex( 1, j );
-         const IndexType c3 = mesh. getElementIndex( xSize - 1, j );
-         const IndexType c4 = mesh. getElementIndex( xSize - 2, j );
+         const IndexType c1 = mesh.getElementIndex( 0, j );
+         const IndexType c2 = mesh.getElementIndex( 1, j );
+         const IndexType c3 = mesh.getElementIndex( xSize - 1, j );
+         const IndexType c4 = mesh.getElementIndex( xSize - 2, j );
 
-         RealType y = j * hy / mesh. getProportions(). y();
-
-         /****
-          * Boundary conditions on the left and right
-          */
-         if( problem == cavity )
-         {
-            this -> u1[ c1 ] = 0;
-            this -> u2[ c1 ] = 0;
-            this -> u1[ c3 ] = 0;
-            this -> u2[ c3 ] = 0;
-
-            rho[ c1 ] = rho[ c2 ];
-            rho[ c3 ] = rho[ c4 ];
-         }
-         rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
-         rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];
-         rho_u1[ c3 ] = rho[ c3 ] * this -> u1[ c3 ];
-         rho_u2[ c3 ] = rho[ c3 ] * this -> u2[ c3 ];
+         dofs_rho[ c1 ] = this->rho[ c1 ];
+         rho_u1[ c1 ]   = this->rho[ c1 ] * this -> u1[ c1 ];
+         rho_u2[ c1 ]   = this->rho[ c1 ] * this -> u2[ c1 ];
+         dofs_rho[ c3 ] = this->rho[ c3 ];
+         rho_u1[ c3 ]   = this->rho[ c3 ] * this -> u1[ c3 ];
+         rho_u2[ c3 ]   = this->rho[ c3 ] * this -> u2[ c3 ];
 
       }
 
@@ -466,69 +393,12 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
 
          }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
-   {
-#ifdef HAVE_CUDA
-      const int cudaBlockSize = 256;
-      const int maxGridSize = 65536;
-      const int cudaBlocks = ceil( u1. getSize() / cudaBlockSize );
-      const int gridNumbers = ceil( cudaBlocks / maxGridSize );
-      dim3 blockSize, gridSize;
-      blockSize. x = cudaBlockSize;
-      for( int grid = 0; grid < gridNumbers; grid ++ )
-      {
-         if( grid < gridNumbers )
-            gridSize. x = maxGridSize;
-         else
-            gridSize. x = cudaBlocks % maxGridSize;
-
-         computeRhsCuda<<< blockSize, gridSize >>>
-                                ( gridIdx,
-                                  xSize,
-                                  ySize,
-                                  hx,
-                                  hy,
-                                  rho. getData(),
-                                  rho_u1. getData(),
-                                  rho_u2. getData(),
-                                  u1. getData(),
-                                  u2. getData(),
-                                  p. getData(),
-                                  rho_t. getData(),
-                                  rho_u1_t. getData(),
-                                  rho_u2_t. getData() );
-
-      }
-#endif
-   }
 
    //rhsDofVector = fu;
    //makeSnapshot( 0.0, 1 );
    //getchar();
 
 }
-
-#ifdef HAVE_CUDA
-template< typename Real, typename Index >
-__device__ void computeVelocityFieldCuda( const Index size,
-                                          const Real R,
-                                          const Real T,
-                                          const Real* rho,
-                                          const Real* rho_u1,
-                                          const Real* rho_u2,
-                                          Real* u1,
-                                          Real* u2,
-                                          Real* p )
-{
-   int globalThreadIdx = blockIdx. x * blockDim. x + threadIdx. x;
-   if( globalThreadIdx > size )
-      return;
-
-   u1[ globalThreadIdx ] = rho_u1[ globalThreadIdx ] / rho[ globalThreadIdx ];
-   u2[ globalThreadIdx ] = rho_u2[ globalThreadIdx ] / rho[ globalThreadIdx ];
-   p[ globalThreadIdx ] = rho[ globalThreadIdx ] * R * T;
-}
-#endif
 
 template< typename Mesh, typename EulerScheme >
 tnlSolverMonitor< typename navierStokesSolver< Mesh, EulerScheme > :: RealType,

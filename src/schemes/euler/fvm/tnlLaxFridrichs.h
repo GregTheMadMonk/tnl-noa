@@ -61,6 +61,8 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
 
    void bindMesh( const MeshType& mesh );
 
+   const MeshType& getMesh() const;
+
    template< typename Vector >
    void setRho( Vector& rho ); // TODO: add const
 

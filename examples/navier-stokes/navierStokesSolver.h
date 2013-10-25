@@ -25,11 +25,13 @@
 #include <matrix/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
-#include "navierStokesSolverMonitor.h"
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 #include <schemes/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlLinearGridGeometry.h>
+
+#include "navierStokesSolverMonitor.h"
+#include "navierStokesBoundaryConditions.h"
 
 template< typename Mesh,
           typename EulerScheme >
@@ -99,14 +101,15 @@ class navierStokesSolver
 
    DofVectorType dofVector, rhsDofVector;
 
-   RealType mu, R, T, p_0, gravity,
-            maxInflowVelocity, maxOutflowVelocity, startUp;
+   RealType mu, R, T, p_0, gravity;
 
    EulerScheme eulerScheme;
 
    tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity;
 
    tnlCentralFDMGradient< MeshType > pressureGradient;
+
+   navierStokesBoundaryConditions< MeshType > boundaryConditions;
 
    navierStokesSolverMonitor< RealType, IndexType > solverMonitor;
 };
