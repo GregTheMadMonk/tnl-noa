@@ -314,6 +314,19 @@ bool tnlSharedArray< Element, Device, Index > :: save( const tnlString& fileName
    return tnlObject :: save( fileName );
 };
 
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v )
+{
+   str << "[ ";
+   if( v.getSize() > 0 )
+   {
+      str << v.getElement( 0 );
+      for( Index i = 1; i < v.getSize(); i++ )
+         str << ", " << v. getElement( i );
+   }
+   str << " ]";
+}
+
 //}; // namespace implementation
 
 

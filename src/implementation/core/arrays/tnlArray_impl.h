@@ -390,9 +390,13 @@ tnlArray< Element, Device, Index > :: ~tnlArray()
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v )
 {
-   str << "[ " << v.getElement( 0 );
-   for( Index i = 1; i < v.getSize(); i++ )
-      str << ", " << v. getElement( i );
+   str << "[ ";
+   if( v.getSize() > 0 )
+   {
+      str << v.getElement( 0 );
+      for( Index i = 1; i < v.getSize(); i++ )
+         str << ", " << v. getElement( i );
+   }
    str << " ]";
 }
 

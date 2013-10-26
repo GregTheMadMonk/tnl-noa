@@ -111,6 +111,9 @@ class tnlSharedArray : public tnlObject
    Element* data;
 };
 
+template< typename Element, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v );
+
 #include <implementation/core/arrays/tnlSharedArray_impl.h>
 
 #endif /* TNLSHAREDARRAY_H_ */

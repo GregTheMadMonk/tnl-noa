@@ -16,6 +16,7 @@ CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR) -O3 $(OMP_FLAGS) -DTEMPLATE_EXPLIC
 
 
 LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1 -lgomp
+#LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-dbg-0.1 -lgomp
 
 SOURCES = main.cpp
 HEADERS = navierStokesSetter.h \

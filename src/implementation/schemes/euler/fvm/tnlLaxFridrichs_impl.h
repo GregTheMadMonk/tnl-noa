@@ -98,8 +98,8 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
-   this -> rho. bind( rho );
-   this -> rho. setName( tnlString( "bind Of " ) + rho. getName() );
+   this->rho.bind( rho );
+   this->rho.setName( tnlString( "bind Of " ) + rho. getName() );
 }
 
 template< typename Real,
@@ -295,7 +295,7 @@ template< typename Real,
           typename PressureGradient >
 tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >,
                  PressureGradient > :: tnlLaxFridrichs()
-: regularizeEps( 0.0 ),
+: regularizeEps( 1.0e-5 ),
   viscosityCoefficient( 1.0 ),
   mesh( 0 ),
   pressureGradient( 0 )
