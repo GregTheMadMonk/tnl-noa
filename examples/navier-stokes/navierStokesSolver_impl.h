@@ -53,10 +53,7 @@ navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
   p_0( 0.0 ),
   gravity( 0.0 )
 {
-   this -> rho. setName( "rho-g" );
-   this -> u1. setName( "u1-g");
-   this -> u2. setName( "u2-g" );
-   this -> p. setName( "p" );
+
    this -> mesh. setName( "navier-stokes-mesh" );
    this -> dofVector. setName( "navier-stokes-dof-vector" );
 }
@@ -151,11 +148,6 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
     */
    const IndexType variablesNumber = 3;
 
-   rho.setSize( mesh.getDofs() );
-   u1.setSize( mesh.getDofs() );
-   u2.setSize( mesh.getDofs() );
-   p.setSize( mesh.getDofs() );
-
    dofVector. setSize( variablesNumber * mesh. getDofs() );
    rhsDofVector. setLike( dofVector );
    this->boundaryConditions.setMesh( this->mesh );
@@ -163,14 +155,17 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    /****
     * Set-up numerical scheme
     */
-   pressureGradient. setFunction( p );
-   pressureGradient. bindMesh( this -> mesh );
-   this -> eulerScheme. bindMesh( this -> mesh );
-   this -> eulerScheme. setPressureGradient( this -> pressureGradient );
-   this -> u1Viscosity. bindMesh( this -> mesh );
-   this -> u1Viscosity. setFunction( this -> u1 );
-   this -> u2Viscosity. bindMesh( this -> mesh );
-   this -> u2Viscosity. setFunction( this -> u2 );
+   pressureGradient.setFunction( navierStokesScheme.getPressure() );
+   pressureGradient.bindMesh( this -> mesh );
+   this->eulerScheme. bindMesh( this -> mesh );
+   this->eulerScheme. setPressureGradient( this -> pressureGradient );
+   this->u1Viscosity. bindMesh( this -> mesh );
+   this->u1Viscosity. setFunction( this -> navierStokesScheme.getU1() );
+   this->u2Viscosity. bindMesh( this -> mesh );
+   this->u2Viscosity. setFunction( this -> navierStokesScheme.getU2() );
+   navierStokesScheme.setAdvectionScheme( this->eulerScheme );
+   navierStokesScheme.setMesh( this->mesh );
+   //navierStokesScheme.setDifusionScheme( this)
    return true;
 }
 
@@ -229,11 +224,15 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
    rho_u2_t. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
 
 
-   updatePhysicalQuantities( rho, rho_u1, rho_u2 );
+   navierStokesScheme.updatePhysicalQuantities( rho, rho_u1, rho_u2 );
    tnlVector< RealType, DeviceType, IndexType > u;
-   u. setLike( u1 );
+   u. setLike( navierStokesScheme.getU1() );
    for( IndexType i = 0; i < this -> u1. getSize(); i ++ )
-      u[ i ] = sqrt( u1[ i ] * u1[ i ] + u2[ i ] * u2[ i ] );
+   {
+      const RealType& u1 = navierStokesScheme.getU1()[ i ];
+      const RealType& u2 = navierStokesScheme.getU2()[ i ];
+      u[ i ] = sqrt( u1 * u1 + u2 * u2 );
+   }
    tnlString fileName;
    /*FileNameBaseNumberEnding( "u-1-", step, 5, ".tnl", fileName );
    if( ! this -> u1. save( fileName ) )
@@ -247,7 +246,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! u. save( fileName ) )
       return false;
-   FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
+   /*FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
    if( ! rho_t. save( fileName ) )
       return false;
    FileNameBaseNumberEnding( "rho-u1-t-", step, 5, ".tnl", fileName );
@@ -256,10 +255,10 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
 
    FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
    if( ! rho_u2_t. save( fileName ) )
-      return false;
+      return false;*/
 
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! rho. save( fileName ) )
+   if( ! navierStokesScheme.getRho(). save( fileName ) )
       return false;
    FileNameBaseNumberEnding( "rho-u1-", step, 5, ".tnl", fileName );
    if( ! rho_u1. save( fileName ) )
@@ -271,7 +270,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
    return true;
 }
 
-template< typename Mesh, typename EulerScheme >
+/*template< typename Mesh, typename EulerScheme >
    template< typename Vector >
 void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const Vector& dofs_rho,
                                                                           const Vector& rho_u1,
@@ -295,7 +294,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const 
             this->p[ c ] = this->rho[ c ] * this -> R * this -> T;
          }
    }
-}
+}*/
 
 template< typename Mesh, typename EulerScheme >
 void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType& time,
@@ -319,7 +318,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
    rho_u1_t. bind( & fu. getData()[ dofs ], dofs );
    rho_u2_t. bind( & fu. getData()[ 2 * dofs ], dofs );
 
-   updatePhysicalQuantities( dofs_rho, rho_u1, rho_u2 );
+   navierStokesScheme.updatePhysicalQuantities( dofs_rho, rho_u1, rho_u2 );
 
    /****
     * Compute RHS

@@ -21,76 +21,181 @@
 #include <schemes/navier-stokes/tnlNavierStokes.h>
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-tnlNavierStokes< AdvectionScheme, DiffusionScheme >::tnlNavierStokes()
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::tnlNavierStokes()
 : advection( 0 ),
   diffusion( 0 )
 {
+   this->rho.setName( "navier-stokes-rho" );
+   this->u1.setName( "navier-stokes-u1");
+   this->u2.setName( "navier-stokes-u2" );
+   this->p.setName( "navier-stokes-p" );
 }
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-tnlString tnlNavierStokes< AdvectionScheme, DiffusionScheme >::getTypeStatic()
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+tnlString tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
 {
    return tnlString( "tnlNavierStokes< " ) +
-          AdvectionScheme::getTypeStatic() + ", "
+          AdvectionScheme::getTypeStatic() + ", " +
           DiffusionScheme::getTypeStatic() + " >";
 }
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::setAdvectionScheme( AdvectionSchemeType& advection )
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setAdvectionScheme( AdvectionSchemeType& advection )
 {
-   this->advection = advection;
+   this->advection = &advection;
 }
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::setDiffusionScheme( DiffusionSchemeType& diffusion )
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& diffusion )
 {
-   this->diffusion = diffusion;
+   this->diffusion = &diffusion;
 }
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::setBoundaryConditions( BoundaryConditionsType& boundaryConditions )
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setBoundaryConditions( BoundaryConditionsType& boundaryConditions )
 {
-   this->boundaryConditions = boundaryConditions;
+   this->boundaryConditions = &boundaryConditions;
 }
 
 template< typename AdvectionScheme,
-          typename DiffusionScheme >
-void tnlNavierStokes< AdvectionScheme, DiffusionScheme > :: updatePhysicalQuantities( const Vector& rho,
-                                                                                      const Vector& rho_u1,
-                                                                                      const Vector& rho_u2 )
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMesh( MeshType& mesh )
+{
+   this->mesh = &mesh;
+   this->rho.setSize( this->mesh->getDofs() );
+   this->u1.setSize(  this->mesh->getDofs() );
+   this->u2.setSize(  this->mesh->getDofs() );
+   this->p.setSize(   this->mesh->getDofs() );
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho()
+{
+   return this->rho;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho() const
+{
+   return this->rho;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1()
+{
+   return this->u1;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1() const
+{
+   return this->u1;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2()
+{
+   return this->u2;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2() const
+{
+   return this->u2;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure()
+{
+   return this->p;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure() const
+{
+   return this->p;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+   template< typename Vector >
+void tnlNavierStokes< AdvectionScheme,
+                      DiffusionScheme,
+                      BoundaryConditions > :: updatePhysicalQuantities( const Vector& dofs_rho,
+                                                                        const Vector& dofs_rho_u1,
+                                                                        const Vector& dofs_rho_u2 )
 {
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
-      const IndexType& xSize = mesh. getDimensions(). x();
-      const IndexType& ySize = mesh. getDimensions(). y();
+      //const IndexType& xSize = mesh. getDimensions(). x();
+      //const IndexType& ySize = mesh. getDimensions(). y();
+      const IndexType size = dofs_rho.getSize();
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for
    #endif
-      for( IndexType j = 0; j < ySize; j ++ )
-         for( IndexType i = 0; i < xSize; i ++ )
+      //for( IndexType j = 0; j < ySize; j ++ )
+      //   for( IndexType i = 0; i < xSize; i ++ )
+      for( IndexType c = 0; c < size; c++ )
          {
-            IndexType c = mesh. getElementIndex( i, j );
-            u1[ c ] = rho_u1[ c ] / rho[ c ];
-            u2[ c ] = rho_u2[ c ] / rho[ c ];
-            p[ c ] = rho[ c ] * this -> R * this -> T;
+            //IndexType c = mesh. getElementIndex( i, j );
+            this->rho[ c ] = dofs_rho[ c ];
+            this->u1[ c ] = dofs_rho_u1[ c ] / dofs_rho[ c ];
+            this->u2[ c ] = dofs_rho_u2[ c ] / dofs_rho[ c ];
+            this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
          }
    }
 }
 
-void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::getExplicitRhs( const RealType& time,
-                                                                          const RealType& tau,
-                                                                          DofVectorType& u,
-                                                                          DofVectorType& fu )
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme,
+                      DiffusionScheme,
+                      BoundaryConditions >::getExplicitRhs( const RealType& time,
+                                                            const RealType& tau,
+                                                            DofVectorType& u,
+                                                            DofVectorType& fu ) const
 {
-   tnlAssert( this->advection );
-   tnlAssert( this->diffusion );
-   tnlAssert( this->boundaryConditions );
+   tnlAssert( this->advection, );
+   tnlAssert( this->diffusion, );
+   tnlAssert( this->boundaryConditions, );
 
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2,
                                                       rho_t, rho_u1_t, rho_u2_t;
@@ -100,15 +205,18 @@ void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::getExplicitRhs( const 
    rho_u1. bind( & u. getData()[ dofs ], dofs );
    rho_u2. bind( & u. getData()[ 2 * dofs ], dofs );
 
-   eulerScheme. setRho( rho );
-   eulerScheme. setRhoU1( rho_u1 );
-   eulerScheme. setRhoU2( rho_u2 );
+   advection.setRho( rho );
+   advection.setRhoU1( rho_u1 );
+   advection.setRhoU2( rho_u2 );
 
-   rho_t. bind( & fu. getData()[ 0 ], dofs );
-   rho_u1_t. bind( & fu. getData()[ dofs ], dofs );
-   rho_u2_t. bind( & fu. getData()[ 2 * dofs ], dofs );
+   rho_t.bind( & fu. getData()[ 0 ], dofs );
+   rho_u1_t.bind( & fu. getData()[ dofs ], dofs );
+   rho_u2_t.bind( & fu. getData()[ 2 * dofs ], dofs );
 
    updatePhysicalQuantities( rho, rho_u1, rho_u2 );
+
+   const IndexType& xSize = this->mesh->getDimensions().x();
+   const IndexType& ySize = this->mesh->getDimensions().y();
 
 #ifdef HAVE_OPENMP
   #pragma omp parallel for
@@ -124,11 +232,11 @@ void tnlNavierStokes< AdvectionScheme, DiffusionScheme >::getExplicitRhs( const 
            continue;
         }
 
-        eulerScheme. getExplicitRhs( c,
-                                     rho_t[ c ],
-                                     rho_u1_t[ c ],
-                                     rho_u2_t[ c ],
-                                     tau );
+        this->advection->getExplicitRhs( c,
+                                         rho_t[ c ],
+                                         rho_u1_t[ c ],
+                                         rho_u2_t[ c ],
+                                         tau );
 
         //rho_u1_t[ c ] += ;
         //rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];

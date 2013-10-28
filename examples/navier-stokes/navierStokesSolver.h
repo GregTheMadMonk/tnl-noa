@@ -29,6 +29,7 @@
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 #include <schemes/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlLinearGridGeometry.h>
+#include <schemes/navier-stokes/tnlNavierStokes.h>
 
 #include "navierStokesSolverMonitor.h"
 #include "navierStokesBoundaryConditions.h"
@@ -97,13 +98,17 @@ class navierStokesSolver
 
    MeshType mesh;
 
-   tnlVector< RealType, DeviceType, IndexType > rho, u1, u2, p;
+   //tnlVector< RealType, DeviceType, IndexType > rho, u1, u2, p;
 
    DofVectorType dofVector, rhsDofVector;
 
    RealType mu, R, T, p_0, gravity;
 
    EulerScheme eulerScheme;
+
+   tnlNavierStokes< EulerScheme,
+                    tnlLinearDiffusion< MeshType >,
+                    navierStokesBoundaryConditions< MeshType > > navierStokesScheme;
 
    tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity;
 

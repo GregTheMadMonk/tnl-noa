@@ -19,6 +19,7 @@
 #define TNLNAVIERSTOKES_H_
 
 #include <core/tnlString.h>
+#include <core/vectors/tnlVector.h>
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
@@ -31,9 +32,11 @@ class tnlNavierStokes
    typedef DiffusionScheme DiffusionSchemeType;
    typedef BoundaryConditions BoundaryConditionsType;
    typedef typename AdvectionScheme::MeshType MeshType;
-   typedef typename AdvectionScheme::Real RealType;
-   typedef typename AdvectionScheme::Device DeviceType;
-   typedef typename AdvectionScheme::Index IndexType;
+   typedef typename AdvectionScheme::RealType RealType;
+   typedef typename AdvectionScheme::DeviceType DeviceType;
+   typedef typename AdvectionScheme::IndexType IndexType;
+   typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
+   typedef VectorType DofVectorType;
 
    tnlNavierStokes();
 
@@ -45,6 +48,25 @@ class tnlNavierStokes
 
    void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
+   void setMesh( MeshType& mesh );
+
+   VectorType& getRho();
+
+   const VectorType& getRho() const;
+
+   VectorType& getU1();
+
+   const VectorType& getU1() const;
+
+   VectorType& getU2();
+
+   const VectorType& getU2() const;
+
+   VectorType& getPressure();
+
+   const VectorType& getPressure() const;
+
+   template< typename Vector >
    void updatePhysicalQuantities( const Vector& rho,
                                   const Vector& rho_u1,
                                   const Vector& rho_u2 );
@@ -63,7 +85,12 @@ class tnlNavierStokes
 
    BoundaryConditionsType* boundaryConditions;
 
+   MeshType* mesh;
+
+   VectorType rho, u1, u2, p;
+
 };
 
+#include <implementation/schemes/navier-stokes/tnlNavierStokes_impl.h>
 
 #endif /* TNLNAVIERSTOKES_H_ */
