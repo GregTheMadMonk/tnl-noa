@@ -105,16 +105,15 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    if( preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
-      for( i = 0; i < _size; i ++ )
-         normb += M_tmp[ i ] * M_tmp[ i ];
+      normb = _M_tmp. lpNorm( ( RealType ) 2.0 );
 
       matrix -> vectorProduct( x, _M_tmp );
-      for( i = 0; i < size; i ++ )
-         M_tmp[ i ] = b[ i ] - M_tmp[ i ];
+      _M_tmp. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
+      /*for( i = 0; i < size; i ++ )
+         M_tmp[ i ] = b[ i ] - M_tmp[ i ];*/
 
       this->preconditioner->solve( _M_tmp, _r );
-      for( i = 0; i < size; i ++ )
-         beta += r[ i ] * r[ i ];
+      beta = _r. lpNorm( ( RealType ) 2.0 );
    }
    else
    {

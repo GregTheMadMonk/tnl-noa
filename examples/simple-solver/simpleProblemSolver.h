@@ -66,6 +66,8 @@ class simpleProblemSolver
 
    tnlSharedVector< RealType, DeviceType, IndexType > u, v;
 
+   MeshType mesh;
+
 };
 
 #include "simpleProblemSolver_impl.h"
