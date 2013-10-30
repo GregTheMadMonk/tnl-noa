@@ -25,7 +25,9 @@ template< typename AdvectionScheme,
           typename BoundaryConditions >
 tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::tnlNavierStokes()
 : advection( 0 ),
-  diffusion( 0 )
+  diffusion( 0 ),
+  mu( 0.0 ),
+  gravity( 0.0 )
 {
    this->rho.setName( "navier-stokes-rho" );
    this->u1.setName( "navier-stokes-u1");
@@ -77,6 +79,40 @@ void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::se
    this->u1.setSize(  this->mesh->getDofs() );
    this->u2.setSize(  this->mesh->getDofs() );
    this->p.setSize(   this->mesh->getDofs() );
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMu( const RealType& mu )
+{
+   this->mu = mu;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getMu() const
+{
+   return this->mu;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setGravity( const RealType& gravity )
+{
+   this->gravity = gravity;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getMu() const
+{
+   return this->mu;
 }
 
 template< typename AdvectionScheme,
@@ -244,8 +280,8 @@ void tnlNavierStokes< AdvectionScheme,
         /***
          * Add the viscosity term
          */
-        rho_u1_t[ c ] += this -> mu * diffusion->getDiffusion( c );
-        rho_u2_t[ c ] += this -> mu * diffusion->getDiffusion( c );
+        rho_u1_t[ c ] += this->mu * diffusion->getDiffusion( c );
+        rho_u2_t[ c ] += this->mu * diffusion->getDiffusion( c );
 
      }
 }

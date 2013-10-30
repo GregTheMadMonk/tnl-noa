@@ -47,11 +47,9 @@ __device__ void computeVelocityFieldCuda( const Index size,
 
 template< typename Mesh, typename EulerScheme >
 navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
-: mu( 0.0 ),
-  R( 0.0 ),
+: R( 0.0 ),
   T( 0.0 ),
-  p_0( 0.0 ),
-  gravity( 0.0 )
+  p_0( 0.0 )
 {
 
    this -> mesh. setName( "navier-stokes-mesh" );
@@ -136,10 +134,11 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
     * Set-up model coefficients
     */
    this->p_0 = parameters. GetParameter< double >( "p0" );
-   this->mu = parameters. GetParameter< double >( "mu");
+   this->mu = ;
    this->T = parameters. GetParameter< double >( "T" );
    this->R = parameters. GetParameter< double >( "R" );
-   this->gravity = parameters. GetParameter< double >( "gravity" );
+   navierStokesScheme.setMu( parameters. GetParameter< double >( "mu") );
+   navierStokesScheme.setGravity( parameters. GetParameter< double >( "gravity") );
    if( ! this->boundaryConditions.init( parameters ) )
       return false;
 
@@ -210,7 +209,7 @@ typename navierStokesSolver< Mesh, EulerScheme > :: DofVectorType& navierStokesS
 
 template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
-                                                 const IndexType step )
+                                                              const IndexType step )
 {
    cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2,

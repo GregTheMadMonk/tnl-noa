@@ -50,6 +50,14 @@ class tnlNavierStokes
 
    void setMesh( MeshType& mesh );
 
+   void setMu( const RealType& mu );
+
+   const RealType& getMu() const;
+
+   void setGravity( const RealType& gravity );
+
+   const RealType& getGravity() const;
+
    VectorType& getRho();
 
    const VectorType& getRho() const;
@@ -88,6 +96,8 @@ class tnlNavierStokes
    MeshType* mesh;
 
    VectorType rho, u1, u2, p;
+
+   RealType mu, gravity;
 
 };
 
