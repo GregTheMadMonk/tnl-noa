@@ -27,7 +27,9 @@ tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::tnlNavi
 : advection( 0 ),
   diffusion( 0 ),
   mu( 0.0 ),
-  gravity( 0.0 )
+  gravity( 0.0 ),
+  R( 0.0 ),
+  T( 0.0 )
 {
    this->rho.setName( "navier-stokes-rho" );
    this->u1.setName( "navier-stokes-u1");
@@ -101,6 +103,40 @@ const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setR( const RealType& R )
+{
+   this->R = R;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getR() const
+{
+   return this->R;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setT( const RealType& T )
+{
+   this->T = T;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getT() const
+{
+   return this->T;
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
 void tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setGravity( const RealType& gravity )
 {
    this->gravity = gravity;
@@ -110,9 +146,9 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 const typename tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getMu() const
+   tnlNavierStokes< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getGravity() const
 {
-   return this->mu;
+   return this->gravity;
 }
 
 template< typename AdvectionScheme,

@@ -134,10 +134,9 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
     * Set-up model coefficients
     */
    this->p_0 = parameters. GetParameter< double >( "p0" );
-   this->mu = ;
-   this->T = parameters. GetParameter< double >( "T" );
-   this->R = parameters. GetParameter< double >( "R" );
    navierStokesScheme.setMu( parameters. GetParameter< double >( "mu") );
+   navierStokesScheme.setT( parameters. GetParameter< double >( "T") );
+   navierStokesScheme.setR( parameters. GetParameter< double >( "R") );
    navierStokesScheme.setGravity( parameters. GetParameter< double >( "gravity") );
    if( ! this->boundaryConditions.init( parameters ) )
       return false;
@@ -226,7 +225,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
    navierStokesScheme.updatePhysicalQuantities( rho, rho_u1, rho_u2 );
    tnlVector< RealType, DeviceType, IndexType > u;
    u. setLike( navierStokesScheme.getU1() );
-   for( IndexType i = 0; i < this -> u1. getSize(); i ++ )
+   for( IndexType i = 0; i < navierStokesScheme.getU1().getSize(); i ++ )
    {
       const RealType& u1 = navierStokesScheme.getU1()[ i ];
       const RealType& u2 = navierStokesScheme.getU2()[ i ];
@@ -329,7 +328,10 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
 
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
-      this->boundaryConditions.apply( time, this->rho, this->u1, this->u2 );
+      this->boundaryConditions.apply( time,
+                                      this->navierStokesScheme.getRho(),
+                                      this->navierStokesScheme.getU1(),
+                                      this->navierStokesScheme.getU2() );
       for( IndexType i = 0; i < xSize; i ++ )
       {
          const IndexType c1 = mesh.getElementIndex( i, 0 );
@@ -337,12 +339,12 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
          const IndexType c3 = mesh.getElementIndex( i, ySize - 1 );
          const IndexType c4 = mesh.getElementIndex( i, ySize - 2 );
 
-         dofs_rho[ c1 ] = this->rho[ c1 ];
-         rho_u1[ c1 ]   = this->rho[ c1 ] * this->u1[ c1 ];
-         rho_u2[ c1 ]   = this->rho[ c1 ] * this->u2[ c1 ];
-         dofs_rho[ c3 ] = this->rho[ c3 ];
-         rho_u1[ c3 ]   = this->rho[ c3 ] * this->u1[ c3 ];
-         rho_u2[ c3 ]   = this->rho[ c3 ] * this->u2[ c3 ];
+         dofs_rho[ c1 ] = this->navierStokesScheme.getRho()[ c1 ];
+         rho_u1[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU1()[ c1 ];
+         rho_u2[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU2()[ c1 ];
+         dofs_rho[ c3 ] = this->navierStokesScheme.getRho()[ c3 ];
+         rho_u1[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU1()[ c3 ];
+         rho_u2[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU2()[ c3 ];
       }
       for( IndexType j = 0; j < ySize; j ++ )
       {
@@ -351,12 +353,12 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
          const IndexType c3 = mesh.getElementIndex( xSize - 1, j );
          const IndexType c4 = mesh.getElementIndex( xSize - 2, j );
 
-         dofs_rho[ c1 ] = this->rho[ c1 ];
-         rho_u1[ c1 ]   = this->rho[ c1 ] * this -> u1[ c1 ];
-         rho_u2[ c1 ]   = this->rho[ c1 ] * this -> u2[ c1 ];
-         dofs_rho[ c3 ] = this->rho[ c3 ];
-         rho_u1[ c3 ]   = this->rho[ c3 ] * this -> u1[ c3 ];
-         rho_u2[ c3 ]   = this->rho[ c3 ] * this -> u2[ c3 ];
+         dofs_rho[ c1 ] = this->navierStokesScheme.getRho()[ c1 ];
+         rho_u1[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU1()[ c1 ];
+         rho_u2[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU2()[ c1 ];
+         dofs_rho[ c3 ] = this->navierStokesScheme.getRho()[ c3 ];
+         rho_u1[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU1()[ c3 ];
+         rho_u2[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU2()[ c3 ];
 
       }
 
@@ -386,8 +388,8 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
             /***
              * Add the viscosity term
              */
-            rho_u1_t[ c ] += this -> mu * u1Viscosity. getDiffusion( c );
-            rho_u2_t[ c ] += this -> mu * u2Viscosity. getDiffusion( c );
+            rho_u1_t[ c ] += this->navierStokesScheme.getMu() * u1Viscosity. getDiffusion( c );
+            rho_u2_t[ c ] += this->navierStokesScheme.getMu() * u2Viscosity. getDiffusion( c );
 
          }
    }
