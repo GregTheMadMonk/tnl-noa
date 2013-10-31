@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlNavierStokes.h  -  description
+                          tnlNavierStokesSolverSolver.h  -  description
                              -------------------
     begin                : Oct 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLNAVIERSTOKES_H_
-#define TNLNAVIERSTOKES_H_
+#ifndef tnlNavierStokesSolver_H_
+#define tnlNavierStokesSolver_H_
 
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
@@ -24,7 +24,7 @@
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-class tnlNavierStokes
+class tnlNavierStokesSolver
 {
    public:
 
@@ -36,15 +36,16 @@ class tnlNavierStokes
    typedef typename AdvectionScheme::DeviceType DeviceType;
    typedef typename AdvectionScheme::IndexType IndexType;
    typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
-   typedef VectorType DofVectorType;
+   typedef tnlSharedVector< RealType, DeviceType, IndexType > DofVectorType;
 
-   tnlNavierStokes();
+   tnlNavierStokesSolver();
 
    static tnlString getTypeStatic();
 
    void setAdvectionScheme( AdvectionSchemeType& advection );
 
-   void setDiffusionScheme( DiffusionSchemeType& diffusion );
+   void setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
+                            DiffusionSchemeType& u2Viscosity );
 
    void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
@@ -82,22 +83,35 @@ class tnlNavierStokes
 
    const VectorType& getPressure() const;
 
+   IndexType getDofs() const;
+
+   void bindDofVector( RealType* );
+
+   DofVectorType& getDofVector();
+
    template< typename Vector >
    void updatePhysicalQuantities( const Vector& rho,
                                   const Vector& rho_u1,
                                   const Vector& rho_u2 );
 
+   template< typename SolverVectorType >
    void getExplicitRhs( const RealType& time,
                         const RealType& tau,
-                        DofVectorType& u,
-                        DofVectorType& fu ) const;
+                        SolverVectorType& u,
+                        SolverVectorType& fu );
+
+   bool writePhysicalVariables( const RealType& t,
+                                const IndexType step );
+
+   bool writeConservativeVariables( const RealType& t,
+                                   const IndexType step );
 
 
    protected:
 
    AdvectionSchemeType* advection;
 
-   DiffusionSchemeType* diffusion;
+   DiffusionSchemeType  *u1Viscosity, *u2Viscosity;
 
    BoundaryConditionsType* boundaryConditions;
 
@@ -107,8 +121,10 @@ class tnlNavierStokes
 
    RealType mu, gravity, R, T;
 
+   DofVectorType dofVector;
+
 };
 
-#include <implementation/schemes/navier-stokes/tnlNavierStokes_impl.h>
+#include <implementation/solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
 
-#endif /* TNLNAVIERSTOKES_H_ */
+#endif /* tnlNavierStokesSolver_H_ */

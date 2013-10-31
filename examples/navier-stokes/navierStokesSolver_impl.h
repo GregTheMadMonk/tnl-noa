@@ -47,9 +47,7 @@ __device__ void computeVelocityFieldCuda( const Index size,
 
 template< typename Mesh, typename EulerScheme >
 navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
-: R( 0.0 ),
-  T( 0.0 ),
-  p_0( 0.0 )
+: p_0( 0.0 )
 {
 
    this -> mesh. setName( "navier-stokes-mesh" );
@@ -153,6 +151,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    /****
     * Set-up numerical scheme
     */
+   navierStokesScheme.setMesh( this->mesh );
    pressureGradient.setFunction( navierStokesScheme.getPressure() );
    pressureGradient.bindMesh( this -> mesh );
    this->eulerScheme. bindMesh( this -> mesh );
@@ -162,7 +161,11 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    this->u2Viscosity. bindMesh( this -> mesh );
    this->u2Viscosity. setFunction( this -> navierStokesScheme.getU2() );
    navierStokesScheme.setAdvectionScheme( this->eulerScheme );
-   navierStokesScheme.setMesh( this->mesh );
+   navierStokesScheme.setDiffusionScheme( this->u1Viscosity,
+                                          this->u2Viscosity );
+   navierStokesScheme.setBoundaryConditions( this->boundaryConditions );
+   navierStokesScheme.bindDofVector( dofVector.getData() );
+
    //navierStokesScheme.setDifusionScheme( this)
    return true;
 }
@@ -176,7 +179,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
    rho_u1.   bind( & dofVector. getData()[     dofs ], dofs );
    rho_u2.   bind( & dofVector. getData()[ 2 * dofs ], dofs );
 
-   dofs_rho. setValue( p_0 / ( this -> R * this -> T ) );
+   dofs_rho. setValue( p_0 / ( this->navierStokesScheme.getR() *
+                               this->navierStokesScheme.getT() ) );
    rho_u1. setValue( 0.0 );
    rho_u2. setValue( 0.0 );
 
@@ -192,7 +196,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
          const RealType x = i * hx;
          const RealType y = j * hy;
 
-         dofs_rho. setElement( c, p_0 / ( this -> R * this -> T ) );
+         dofs_rho. setElement( c, p_0 / ( this->navierStokesScheme.getR() *
+                                          this->navierStokesScheme.getT() ) );
          rho_u1. setElement( c, 0.0 );
          rho_u2. setElement( c, 0.0 );
 
@@ -211,88 +216,12 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
                                                               const IndexType step )
 {
    cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2,
-                                                      rho_t, rho_u1_t, rho_u2_t;
-   const IndexType& dofs = mesh. getDofs();
-   rho.    bind( & dofVector.getData()[ 0        ], dofs );
-   rho_u1. bind( & dofVector.getData()[     dofs ], dofs );
-   rho_u2. bind( & dofVector.getData()[ 2 * dofs ], dofs );
-   rho_t.    bind( & this->rhsDofVector.getData()[ 0        ], dofs );
-   rho_u1_t. bind( & this->rhsDofVector.getData()[     dofs ], dofs );
-   rho_u2_t. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
-
-
-   navierStokesScheme.updatePhysicalQuantities( rho, rho_u1, rho_u2 );
-   tnlVector< RealType, DeviceType, IndexType > u;
-   u. setLike( navierStokesScheme.getU1() );
-   for( IndexType i = 0; i < navierStokesScheme.getU1().getSize(); i ++ )
-   {
-      const RealType& u1 = navierStokesScheme.getU1()[ i ];
-      const RealType& u2 = navierStokesScheme.getU2()[ i ];
-      u[ i ] = sqrt( u1 * u1 + u2 * u2 );
-   }
-   tnlString fileName;
-   /*FileNameBaseNumberEnding( "u-1-", step, 5, ".tnl", fileName );
-   if( ! this -> u1. save( fileName ) )
+   if( !navierStokesScheme.writePhysicalVariables( t, step ) )
       return false;
-   FileNameBaseNumberEnding( "u-2-", step, 5, ".tnl", fileName );
-   if( ! this -> u2. save( fileName ) )
-      return false;*/
-   /*FileNameBaseNumberEnding( "p-", step, 5, ".tnl", fileName );
-   if( ! p. save( fileName ) )
-      return false;*/
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! u. save( fileName ) )
-      return false;
-   /*FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
-   if( ! rho_t. save( fileName ) )
-      return false;
-   FileNameBaseNumberEnding( "rho-u1-t-", step, 5, ".tnl", fileName );
-   if( ! rho_u1_t. save( fileName ) )
-      return false;
-
-   FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
-   if( ! rho_u2_t. save( fileName ) )
-      return false;*/
-
-   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! navierStokesScheme.getRho(). save( fileName ) )
-      return false;
-   FileNameBaseNumberEnding( "rho-u1-", step, 5, ".tnl", fileName );
-   if( ! rho_u1. save( fileName ) )
-      return false;
-
-   FileNameBaseNumberEnding( "rho-u2-", step, 5, ".tnl", fileName );
-   if( ! rho_u2. save( fileName ) )
-      return false;
+   if( !navierStokesScheme.writeConservativeVariables( t, step ) )
+         return false;
    return true;
 }
-
-/*template< typename Mesh, typename EulerScheme >
-   template< typename Vector >
-void navierStokesSolver< Mesh, EulerScheme > :: updatePhysicalQuantities( const Vector& dofs_rho,
-                                                                          const Vector& rho_u1,
-                                                                          const Vector& rho_u2 )
-{
-   if( DeviceType :: getDevice() == tnlHostDevice )
-   {
-      const IndexType& xSize = mesh. getDimensions(). x();
-      const IndexType& ySize = mesh. getDimensions(). y();
-
-   #ifdef HAVE_OPENMP
-   #pragma omp parallel for
-   #endif
-      for( IndexType j = 0; j < ySize; j ++ )
-         for( IndexType i = 0; i < xSize; i ++ )
-         {
-            IndexType c = mesh. getElementIndex( i, j );
-            this->rho[ c ] = dofs_rho[ c ];
-            this->u1[ c ] = rho_u1[ c ] / this->rho[ c ];
-            this->u2[ c ] = rho_u2[ c ] / this->rho[ c ];
-            this->p[ c ] = this->rho[ c ] * this -> R * this -> T;
-         }
-   }
-}*/
 
 template< typename Mesh, typename EulerScheme >
 void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType& time,
@@ -300,104 +229,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                                                                  DofVectorType& u,
                                                                  DofVectorType& fu )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, rho_u1, rho_u2,
-                                                      rho_t, rho_u1_t, rho_u2_t;
-
-   const IndexType& dofs = mesh. getDofs();
-   dofs_rho. bind( & u. getData()[ 0 ], dofs );
-   rho_u1. bind( & u. getData()[ dofs ], dofs );
-   rho_u2. bind( & u. getData()[ 2 * dofs ], dofs );
-
-   eulerScheme. setRho( dofs_rho );
-   eulerScheme. setRhoU1( rho_u1 );
-   eulerScheme. setRhoU2( rho_u2 );
-
-   rho_t. bind( & fu. getData()[ 0 ], dofs );
-   rho_u1_t. bind( & fu. getData()[ dofs ], dofs );
-   rho_u2_t. bind( & fu. getData()[ 2 * dofs ], dofs );
-
-   navierStokesScheme.updatePhysicalQuantities( dofs_rho, rho_u1, rho_u2 );
-
-   /****
-    * Compute RHS
-    */
-   const IndexType& xSize = mesh. getDimensions(). x();
-   const IndexType& ySize = mesh. getDimensions(). y();
-   /*const RealType hx = mesh. getParametricStep(). x();
-   const RealType hy = mesh. getParametricStep(). y();*/
-
-   if( DeviceType :: getDevice() == tnlHostDevice )
-   {
-      this->boundaryConditions.apply( time,
-                                      this->navierStokesScheme.getRho(),
-                                      this->navierStokesScheme.getU1(),
-                                      this->navierStokesScheme.getU2() );
-      for( IndexType i = 0; i < xSize; i ++ )
-      {
-         const IndexType c1 = mesh.getElementIndex( i, 0 );
-         const IndexType c2 = mesh.getElementIndex( i, 1 );
-         const IndexType c3 = mesh.getElementIndex( i, ySize - 1 );
-         const IndexType c4 = mesh.getElementIndex( i, ySize - 2 );
-
-         dofs_rho[ c1 ] = this->navierStokesScheme.getRho()[ c1 ];
-         rho_u1[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU1()[ c1 ];
-         rho_u2[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU2()[ c1 ];
-         dofs_rho[ c3 ] = this->navierStokesScheme.getRho()[ c3 ];
-         rho_u1[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU1()[ c3 ];
-         rho_u2[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU2()[ c3 ];
-      }
-      for( IndexType j = 0; j < ySize; j ++ )
-      {
-         const IndexType c1 = mesh.getElementIndex( 0, j );
-         const IndexType c2 = mesh.getElementIndex( 1, j );
-         const IndexType c3 = mesh.getElementIndex( xSize - 1, j );
-         const IndexType c4 = mesh.getElementIndex( xSize - 2, j );
-
-         dofs_rho[ c1 ] = this->navierStokesScheme.getRho()[ c1 ];
-         rho_u1[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU1()[ c1 ];
-         rho_u2[ c1 ]   = this->navierStokesScheme.getRho()[ c1 ] * this->navierStokesScheme.getU2()[ c1 ];
-         dofs_rho[ c3 ] = this->navierStokesScheme.getRho()[ c3 ];
-         rho_u1[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU1()[ c3 ];
-         rho_u2[ c3 ]   = this->navierStokesScheme.getRho()[ c3 ] * this->navierStokesScheme.getU2()[ c3 ];
-
-      }
-
-   #ifdef HAVE_OPENMP
-   #pragma omp parallel for
-   #endif
-      for( IndexType j = 0; j < ySize; j ++ )
-         for( IndexType i = 0; i < xSize; i ++ )
-         {
-            IndexType c = mesh. getElementIndex( i, j );
-            if( i == 0 || j == 0 ||
-                i == xSize - 1 || j == ySize - 1 )
-            {
-               rho_t[ c ] = rho_u1_t[ c ] = rho_u2_t[ c ] = 0.0;
-               continue;
-            }
-
-            eulerScheme. getExplicitRhs( c,
-                                         rho_t[ c ],
-                                         rho_u1_t[ c ],
-                                         rho_u2_t[ c ],
-                                         tau );
-            
-            //rho_u1_t[ c ] += ;
-            //rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];
-
-            /***
-             * Add the viscosity term
-             */
-            rho_u1_t[ c ] += this->navierStokesScheme.getMu() * u1Viscosity. getDiffusion( c );
-            rho_u2_t[ c ] += this->navierStokesScheme.getMu() * u2Viscosity. getDiffusion( c );
-
-         }
-   }
-
-   /*rhsDofVector = fu;
-   makeSnapshot( 0.0, 1 );
-   getchar();*/
-
+   navierStokesScheme.getExplicitRhs( time, tau, u, fu );
 }
 
 template< typename Mesh, typename EulerScheme >

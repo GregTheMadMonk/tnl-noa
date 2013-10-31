@@ -1,7 +1,6 @@
 ADD_SUBDIRECTORY( gradient )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
-ADD_SUBDIRECTORY( navier-stokes )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/schemes )
 
