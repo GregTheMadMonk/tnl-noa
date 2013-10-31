@@ -83,6 +83,11 @@ class tnlNavierStokesSolver
 
    const VectorType& getPressure() const;
 
+   VectorType& getEnergy();
+
+   const VectorType& getEnergy() const;
+
+
    IndexType getDofs() const;
 
    void bindDofVector( RealType* );
@@ -92,7 +97,8 @@ class tnlNavierStokesSolver
    template< typename Vector >
    void updatePhysicalQuantities( const Vector& rho,
                                   const Vector& rho_u1,
-                                  const Vector& rho_u2 );
+                                  const Vector& rho_u2,
+                                  const Vector& e );
 
    template< typename SolverVectorType >
    void getExplicitRhs( const RealType& time,
@@ -117,7 +123,7 @@ class tnlNavierStokesSolver
 
    MeshType* mesh;
 
-   VectorType rho, u1, u2, p;
+   VectorType rho, u1, u2, p, e;
 
    RealType mu, gravity, R, T;
 

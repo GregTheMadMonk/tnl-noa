@@ -87,12 +87,7 @@ class navierStokesSolver
 
    protected:
 
-   RealType regularize( const RealType& r ) const;
-
-   template< typename Vector >
-   void updatePhysicalQuantities( const Vector& rho,
-                                  const Vector& rho_u1,
-                                  const Vector& rho_u2 );
+   //RealType regularize( const RealType& r ) const;
 
    ProblemType problem;
 
@@ -108,7 +103,7 @@ class navierStokesSolver
 
    tnlNavierStokesSolver< EulerScheme,
                           tnlLinearDiffusion< MeshType >,
-                          navierStokesBoundaryConditions< MeshType > > navierStokesScheme;
+                          navierStokesBoundaryConditions< MeshType > > nsSolver;
 
    tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity;
 

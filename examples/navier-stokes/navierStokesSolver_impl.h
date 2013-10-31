@@ -127,46 +127,47 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    RealType hy = this -> mesh. getParametricStep(). y();
    mesh. refresh();
    mesh. save( tnlString( "mesh.tnl" ) );
+   nsSolver.setMesh( this->mesh );
 
    /****
     * Set-up model coefficients
     */
    this->p_0 = parameters. GetParameter< double >( "p0" );
-   navierStokesScheme.setMu( parameters. GetParameter< double >( "mu") );
-   navierStokesScheme.setT( parameters. GetParameter< double >( "T") );
-   navierStokesScheme.setR( parameters. GetParameter< double >( "R") );
-   navierStokesScheme.setGravity( parameters. GetParameter< double >( "gravity") );
+   nsSolver.setMu( parameters. GetParameter< double >( "mu") );
+   nsSolver.setT( parameters. GetParameter< double >( "T") );
+   nsSolver.setR( parameters. GetParameter< double >( "R") );
+   nsSolver.setGravity( parameters. GetParameter< double >( "gravity") );
    if( ! this->boundaryConditions.init( parameters ) )
       return false;
 
    /****
     * Set-up grid functions
     */
-   const IndexType variablesNumber = 3;
-
-   dofVector. setSize( variablesNumber * mesh. getDofs() );
+   dofVector. setSize( nsSolver. getDofs() );
    rhsDofVector. setLike( dofVector );
+   nsSolver.bindDofVector( dofVector.getData() );
+
+   /****
+    * Set-up boundary conditions
+    */
    this->boundaryConditions.setMesh( this->mesh );
+   nsSolver.setBoundaryConditions( this->boundaryConditions );
 
    /****
     * Set-up numerical scheme
     */
-   navierStokesScheme.setMesh( this->mesh );
-   pressureGradient.setFunction( navierStokesScheme.getPressure() );
+
+   pressureGradient.setFunction( nsSolver.getPressure() );
    pressureGradient.bindMesh( this -> mesh );
    this->eulerScheme. bindMesh( this -> mesh );
    this->eulerScheme. setPressureGradient( this -> pressureGradient );
    this->u1Viscosity. bindMesh( this -> mesh );
-   this->u1Viscosity. setFunction( this -> navierStokesScheme.getU1() );
+   this->u1Viscosity. setFunction( this -> nsSolver.getU1() );
    this->u2Viscosity. bindMesh( this -> mesh );
-   this->u2Viscosity. setFunction( this -> navierStokesScheme.getU2() );
-   navierStokesScheme.setAdvectionScheme( this->eulerScheme );
-   navierStokesScheme.setDiffusionScheme( this->u1Viscosity,
+   this->u2Viscosity. setFunction( this -> nsSolver.getU2() );
+   nsSolver.setAdvectionScheme( this->eulerScheme );
+   nsSolver.setDiffusionScheme( this->u1Viscosity,
                                           this->u2Viscosity );
-   navierStokesScheme.setBoundaryConditions( this->boundaryConditions );
-   navierStokesScheme.bindDofVector( dofVector.getData() );
-
-   //navierStokesScheme.setDifusionScheme( this)
    return true;
 }
 
@@ -179,8 +180,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
    rho_u1.   bind( & dofVector. getData()[     dofs ], dofs );
    rho_u2.   bind( & dofVector. getData()[ 2 * dofs ], dofs );
 
-   dofs_rho. setValue( p_0 / ( this->navierStokesScheme.getR() *
-                               this->navierStokesScheme.getT() ) );
+   dofs_rho. setValue( p_0 / ( this->nsSolver.getR() *
+                               this->nsSolver.getT() ) );
    rho_u1. setValue( 0.0 );
    rho_u2. setValue( 0.0 );
 
@@ -196,8 +197,8 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
          const RealType x = i * hx;
          const RealType y = j * hy;
 
-         dofs_rho. setElement( c, p_0 / ( this->navierStokesScheme.getR() *
-                                          this->navierStokesScheme.getT() ) );
+         dofs_rho. setElement( c, p_0 / ( this->nsSolver.getR() *
+                                          this->nsSolver.getT() ) );
          rho_u1. setElement( c, 0.0 );
          rho_u2. setElement( c, 0.0 );
 
@@ -216,9 +217,9 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
                                                               const IndexType step )
 {
    cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
-   if( !navierStokesScheme.writePhysicalVariables( t, step ) )
+   if( !nsSolver.writePhysicalVariables( t, step ) )
       return false;
-   if( !navierStokesScheme.writeConservativeVariables( t, step ) )
+   if( !nsSolver.writeConservativeVariables( t, step ) )
          return false;
    return true;
 }
@@ -229,7 +230,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                                                                  DofVectorType& u,
                                                                  DofVectorType& fu )
 {
-   navierStokesScheme.getExplicitRhs( time, tau, u, fu );
+   nsSolver.getExplicitRhs( time, tau, u, fu );
 }
 
 template< typename Mesh, typename EulerScheme >
