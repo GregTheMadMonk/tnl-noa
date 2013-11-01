@@ -16,6 +16,7 @@ group Problem
    real start-up(0.0)                   [Start-up time of the riser.];
    real mu(!)                           [Viscosity.];
    real p0(!)                           [Pressure for the initial condition.];
+   real gamma(!)                         [Heat capacity ratio.];
    real T(!)                            [Temperature.];
    real R(!)                            [Gas constant.]; 
    real gravity(9.81)                   [Gravity force.];

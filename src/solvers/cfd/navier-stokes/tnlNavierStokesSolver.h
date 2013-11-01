@@ -63,6 +63,10 @@ class tnlNavierStokesSolver
 
    const RealType& getT() const;
 
+   void setHeatCapacityRatio( const RealType& gamma );
+
+   const RealType& getHeatCapacityRatio() const;
+
    void setGravity( const RealType& gravity );
 
    const RealType& getGravity() const;
@@ -115,6 +119,12 @@ class tnlNavierStokesSolver
 
    protected:
 
+   RealType computeEnergy( const RealType& rho,
+                           const RealType& temperature,
+                           const RealType& gamma,
+                           const RealType& u1,
+                           const RealType& u2 ) const;
+
    AdvectionSchemeType* advection;
 
    DiffusionSchemeType  *u1Viscosity, *u2Viscosity;
@@ -123,9 +133,9 @@ class tnlNavierStokesSolver
 
    MeshType* mesh;
 
-   VectorType rho, u1, u2, p, e;
+   VectorType rho, u1, u2, p, temperature;
 
-   RealType mu, gravity, R, T;
+   RealType mu, gravity, R, T, gamma;
 
    DofVectorType dofVector;
 

@@ -47,7 +47,8 @@ __device__ void computeVelocityFieldCuda( const Index size,
 
 template< typename Mesh, typename EulerScheme >
 navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
-: p_0( 0.0 )
+: p_0( 0.0 ),
+  T( 0.0 )
 {
 
    this -> mesh. setName( "navier-stokes-mesh" );
@@ -133,8 +134,9 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
     * Set-up model coefficients
     */
    this->p_0 = parameters. GetParameter< double >( "p0" );
+   this->T =  parameters. GetParameter< double >( "T");
+   nsSolver.setHeatCapacityRatio( parameters. GetParameter< double >( "gamma" ) );
    nsSolver.setMu( parameters. GetParameter< double >( "mu") );
-   nsSolver.setT( parameters. GetParameter< double >( "T") );
    nsSolver.setR( parameters. GetParameter< double >( "R") );
    nsSolver.setGravity( parameters. GetParameter< double >( "gravity") );
    if( ! this->boundaryConditions.init( parameters ) )
@@ -174,16 +176,16 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
 template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlParameterContainer& parameters )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, rho_u1, rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
    const IndexType& dofs = mesh. getDofs();
-   dofs_rho. bind( & dofVector. getData()[ 0        ], dofs );
-   rho_u1.   bind( & dofVector. getData()[     dofs ], dofs );
-   rho_u2.   bind( & dofVector. getData()[ 2 * dofs ], dofs );
+   dofs_rho.    bind( & dofVector. getData()[ 0        ], dofs );
+   dofs_rho_u1. bind( & dofVector. getData()[     dofs ], dofs );
+   dofs_rho_u2. bind( & dofVector. getData()[ 2 * dofs ], dofs );
 
    dofs_rho. setValue( p_0 / ( this->nsSolver.getR() *
                                this->nsSolver.getT() ) );
-   rho_u1. setValue( 0.0 );
-   rho_u2. setValue( 0.0 );
+   dofs_rho_u1. setValue( 0.0 );
+   dofs_rho_u2. setValue( 0.0 );
 
    const IndexType& xSize = mesh. getDimensions(). x();
    const IndexType& ySize = mesh. getDimensions(). y();
@@ -199,8 +201,9 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
 
          dofs_rho. setElement( c, p_0 / ( this->nsSolver.getR() *
                                           this->nsSolver.getT() ) );
-         rho_u1. setElement( c, 0.0 );
-         rho_u2. setElement( c, 0.0 );
+         dofs_rho_u1. setElement( c, 0.0 );
+         dofs_rho_u2. setElement( c, 0.0 );
+         dofs_e. setElement( c, p_0 / ( this->nsSolver.getHeatCapacityRatio() - 1.0 ) );
 
       }
    return true;

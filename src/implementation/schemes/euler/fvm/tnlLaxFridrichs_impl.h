@@ -132,6 +132,18 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
+void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setE( Vector& e )
+{
+   this->e.bind( e );
+   this->e.setName( tnlString( "bind Of " ) + e.getName() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient,
+          template< int, typename, typename, typename > class GridGeometry >
+   template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
    this -> pressureGradient = &grad_p;
@@ -367,6 +379,28 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
+void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setE( Vector& e )
+{
+   this->energy.bind( e );
+   this->energy.setName( tnlString( "bind Of " ) + e.getName() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient >
+   template< typename Vector >
+void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setP( Vector& p )
+{
+   this->p.bind( p );
+   this->p.setName( tnlString( "bind Of " ) + p.getName() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient >
+   template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
    this -> pressureGradient = &grad_p;
@@ -428,6 +462,72 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. y();
 }
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename PressureGradient >
+void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+                                                                                                                          RealType& rho_t,
+                                                                                                                          RealType& rho_u1_t,
+                                                                                                                          RealType& rho_u2_t,
+                                                                                                                          RealType& e_t,
+                                                                                                                          const RealType& tau ) const
+{
+   tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
+   tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+
+   const IndexType& xSize = this -> mesh -> getDimensions(). x();
+   const IndexType& ySize = this -> mesh -> getDimensions(). y();
+   const RealType hx = this -> mesh -> getParametricStep(). x();
+   const RealType hy = this -> mesh -> getParametricStep(). y();
+
+   const IndexType& c = centralVolume;
+   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
+   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
+   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
+
+   /****
+    * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
+    */
+   const RealType u1_e = rho_u1[ e ] / regularize( rho[ e ] );
+   const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
+   const RealType u2_n = rho_u2[ n ] / regularize( rho[ n ] );
+   const RealType u2_s = rho_u2[ s ] / regularize( rho[ s ] );
+   rho_t = this -> viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
+               - ( rho[ e ] * u1_e - rho[ w ] * u1_w ) / ( 2.0 * hx )
+               - ( rho[ n ] * u2_n - rho[ s ] * u2_s ) / ( 2.0 * hy );
+
+   /****
+    * Compute the pressure gradient
+    */
+   VertexType grad_p;
+   pressureGradient -> getGradient( c, grad_p );
+
+   /****
+    * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
+    */
+   rho_u1_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
+                   - ( rho_u1[ e ] * u1_e - rho_u1[ w ] * u1_w ) / ( 2.0 * hx )
+                   - ( rho_u1[ n ] * u2_n - rho_u1[ s ] * u2_s ) / ( 2.0 * hy )
+                   - grad_p. x();
+   /****
+    * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
+    */
+   rho_u2_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
+                   - ( rho_u2[ e ] * u1_e - rho_u2[ w ] * u1_w ) / ( 2.0 * hx )
+                   - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
+                   - grad_p. y();
+
+   /****
+    * e_t + ( ( e + p ) * u )_x + ( ( e + p ) * v )_y = 0
+    */
+   e_t = this -> viscosityCoefficient / tau * 0.25 * ( energy[ e ] + energy[ w ] + energy[ s ] + energy[ n ] - 4.0 * energy[ c ] )
+              - ( ( energy[ e ] + p[ e ] ) * u1_e - ( energy[ w ] + p[ w ] ) * u1_w ) / ( 2.0 * hx )
+              - ( ( energy[ n ] + p[ n ] ) * u2_n - ( energy[ s ] + p[ s ] ) * u2_s ) / ( 2.0 * hy );
+}
+
 
 template< typename Real,
           typename Device,

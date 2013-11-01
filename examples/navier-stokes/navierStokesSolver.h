@@ -93,11 +93,9 @@ class navierStokesSolver
 
    MeshType mesh;
 
-   //tnlVector< RealType, DeviceType, IndexType > rho, u1, u2, p;
-
    DofVectorType dofVector, rhsDofVector;
 
-   RealType p_0, gravity;
+   RealType p_0, gravity, T;
 
    EulerScheme eulerScheme;
 

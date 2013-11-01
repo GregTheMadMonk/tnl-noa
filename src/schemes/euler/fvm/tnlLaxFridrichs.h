@@ -55,6 +55,13 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
+   void getExplicitRhs( const IndexType centralVolume,
+                        RealType& rho_t,
+                        RealType& rho_u1_t,
+                        RealType& rho_u2_t,
+                        RealType& e_t,
+                        const RealType& tau ) const;
+
    void setRegularization( const RealType& epsilon );
 
    void setViscosityCoefficient( const RealType& v );
@@ -73,6 +80,10 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
    void setRhoU2( Vector& rho_u2 ); // TODO: add const
 
    template< typename Vector >
+   void setE( Vector& e ); // TODO: add const
+
+
+   template< typename Vector >
    void setPressureGradient( Vector& grad_p ); // TODO: add const
 
    protected:
@@ -85,7 +96,7 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
 
    const PressureGradient* pressureGradient;
 
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, e;
 };
 
 template< typename Real,
@@ -111,6 +122,13 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
+   void getExplicitRhs( const IndexType centralVolume,
+                        RealType& rho_t,
+                        RealType& rho_u1_t,
+                        RealType& rho_u2_t,
+                        RealType& e_t,
+                        const RealType& tau ) const;
+
    void setRegularization( const RealType& epsilon );
 
    void setViscosityCoefficient( const RealType& v );
@@ -127,6 +145,14 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
    void setRhoU2( Vector& rho_u2 ); // TODO: add const
 
    template< typename Vector >
+   void setE( Vector& e ); // TODO: add const
+
+   template< typename Vector >
+   void setP( Vector& p ); // TODO: add const
+
+
+
+   template< typename Vector >
    void setPressureGradient( Vector& grad_p ); // TODO: add const
 
    protected:
@@ -139,7 +165,7 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
 
    const PressureGradient* pressureGradient;
 
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, energy, p;
 };
 
 #include <implementation/schemes/euler/fvm/tnlLaxFridrichs_impl.h>
