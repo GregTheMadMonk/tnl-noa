@@ -27,6 +27,7 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
 : advection( 0 ),
   u1Viscosity( 0 ),
   u2Viscosity( 0 ),
+  eViscosity( 0 ),
   mu( 0.0 ),
   gravity( 0.0 ),
   R( 0.0 ),
@@ -61,10 +62,12 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
-                                                                                                  DiffusionSchemeType& u2Viscosity )
+                                                                                                        DiffusionSchemeType& u2Viscosity,
+                                                                                                        DiffusionSchemeType& eViscosity )
 {
    this->u1Viscosity = &u1Viscosity;
    this->u2Viscosity = &u2Viscosity;
+   this->eViscosity = &eViscosity;
 }
 
 template< typename AdvectionScheme,
@@ -249,18 +252,18 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy()
+   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTemperature()
 {
-   return this->e;
+   return this->temperature;
 }
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy() const
+   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTemperature() const
 {
-   return this->e;
+   return this->temperature;
 }
 
 template< typename AdvectionScheme,
@@ -312,9 +315,9 @@ void tnlNavierStokesSolver< AdvectionScheme,
             this->rho[ c ] = dofs_rho[ c ];
             this->u1[ c ] = dofs_rho_u1[ c ] / dofs_rho[ c ];
             this->u2[ c ] = dofs_rho_u2[ c ] / dofs_rho[ c ];
-            //this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
-            this->p[ c ] = ( this->gamma - 1.0 ) *
-                           ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
+            this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
+            //this->p[ c ] = ( this->gamma - 1.0 ) *
+            //               ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
             this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
          }
    }
@@ -349,6 +352,8 @@ void tnlNavierStokesSolver< AdvectionScheme,
    this->advection->setRhoU1( dofs_rho_u1 );
    this->advection->setRhoU2( dofs_rho_u2 );
    this->advection->setE( dofs_e );
+   this->advection->setP( this->p );
+   this->eViscosity->setFunction( dofs_e );
 
    rho_t.bind( & fu. getData()[ 0 ], dofs );
    rho_u1_t.bind( & fu. getData()[ dofs ], dofs );
@@ -448,7 +453,8 @@ void tnlNavierStokesSolver< AdvectionScheme,
          */
         rho_u1_t[ c ] += this->mu * u1Viscosity->getDiffusion( c );
         rho_u2_t[ c ] += this->mu * u2Viscosity->getDiffusion( c );
-
+        e_t[ c ] += eViscosity->getDiffusion( c );
+        e_t[ c ] = 0.0;
      }
 
   /*rhsDofVector = fu;

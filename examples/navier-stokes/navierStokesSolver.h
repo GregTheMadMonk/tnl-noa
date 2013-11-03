@@ -103,8 +103,7 @@ class navierStokesSolver
                           tnlLinearDiffusion< MeshType >,
                           navierStokesBoundaryConditions< MeshType > > nsSolver;
 
-   tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity;
-
+   tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity, eViscosity;
    tnlCentralFDMGradient< MeshType > pressureGradient;
 
    navierStokesBoundaryConditions< MeshType > boundaryConditions;

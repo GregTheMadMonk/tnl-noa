@@ -134,7 +134,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
     * Set-up model coefficients
     */
    this->p_0 = parameters. GetParameter< double >( "p0" );
-   this->T =  parameters. GetParameter< double >( "T");
+   nsSolver.setT( parameters. GetParameter< double >( "T") );
    nsSolver.setHeatCapacityRatio( parameters. GetParameter< double >( "gamma" ) );
    nsSolver.setMu( parameters. GetParameter< double >( "mu") );
    nsSolver.setR( parameters. GetParameter< double >( "R") );
@@ -167,9 +167,11 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    this->u1Viscosity. setFunction( this -> nsSolver.getU1() );
    this->u2Viscosity. bindMesh( this -> mesh );
    this->u2Viscosity. setFunction( this -> nsSolver.getU2() );
+   this->eViscosity. bindMesh( this -> mesh );
    nsSolver.setAdvectionScheme( this->eulerScheme );
    nsSolver.setDiffusionScheme( this->u1Viscosity,
-                                          this->u2Viscosity );
+                                this->u2Viscosity,
+                                this->eViscosity );
    return true;
 }
 
@@ -181,11 +183,13 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
    dofs_rho.    bind( & dofVector. getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & dofVector. getData()[     dofs ], dofs );
    dofs_rho_u2. bind( & dofVector. getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & dofVector. getData()[ 3 * dofs ], dofs );
 
    dofs_rho. setValue( p_0 / ( this->nsSolver.getR() *
                                this->nsSolver.getT() ) );
    dofs_rho_u1. setValue( 0.0 );
    dofs_rho_u2. setValue( 0.0 );
+   dofs_e. setValue( p_0 / ( this->nsSolver.getHeatCapacityRatio() - 1.0 ) );
 
    const IndexType& xSize = mesh. getDimensions(). x();
    const IndexType& ySize = mesh. getDimensions(). y();

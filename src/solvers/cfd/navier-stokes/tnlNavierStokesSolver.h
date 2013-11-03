@@ -45,7 +45,8 @@ class tnlNavierStokesSolver
    void setAdvectionScheme( AdvectionSchemeType& advection );
 
    void setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
-                            DiffusionSchemeType& u2Viscosity );
+                            DiffusionSchemeType& u2Viscosity,
+                            DiffusionSchemeType& eViscosity);
 
    void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
@@ -87,9 +88,9 @@ class tnlNavierStokesSolver
 
    const VectorType& getPressure() const;
 
-   VectorType& getEnergy();
+   VectorType& getTemperature();
 
-   const VectorType& getEnergy() const;
+   const VectorType& getTemperature() const;
 
 
    IndexType getDofs() const;
@@ -127,7 +128,7 @@ class tnlNavierStokesSolver
 
    AdvectionSchemeType* advection;
 
-   DiffusionSchemeType  *u1Viscosity, *u2Viscosity;
+   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *eViscosity;
 
    BoundaryConditionsType* boundaryConditions;
 
