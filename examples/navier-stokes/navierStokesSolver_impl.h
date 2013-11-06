@@ -72,9 +72,49 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setMeshGeometry( tnlLinearGridGe
    return true;
 }
 
+template< typename Mesh, typename EulerScheme >
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
+                                                        const tnlParameterContainer& parameters ) const
+{
+
+}
 
 template< typename Mesh, typename EulerScheme >
-bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContainer& parameters )
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
+                                                        const tnlParameterContainer& parameters ) const
+{
+   tnlTuple< 2, IndexType > meshes;
+   meshes.x() = parameters.GetParameter< int >( "x-size" );
+   meshes.y() = parameters.GetParameter< int >( "y-size" );
+   if( meshes.x() <= 0 )
+   {
+      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      return false;
+   }
+   if( meshes.y() <= 0 )
+   {
+      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
+      return false;
+   }
+   mesh.setDimensions( meshes. x(), meshes. y() );
+   return this->setMeshGeometry( mesh.getGeometry() );
+}
+
+template< typename Mesh, typename EulerScheme >
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
+                                                        const tnlParameterContainer& parameters ) const
+{
+
+}
+
+template< typename Mesh, typename EulerScheme >
+bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer& parameters )
 {
    cout << "Initiating solver ... " << endl;
 
@@ -109,25 +149,10 @@ bool navierStokesSolver< Mesh, EulerScheme > :: init( const tnlParameterContaine
    /****
     * Set-up the space discretization
     */
-   tnlTuple< 2, IndexType > meshes;
-   meshes. x() = parameters. GetParameter< int >( "x-size" );
-   meshes. y() = parameters. GetParameter< int >( "y-size" );
-   if( meshes. x() <= 0 )
-   {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+   if( ! this->initMesh( this->mesh, parameters ) )
       return false;
-   }
-   if( meshes. y() <= 0 )
-   {
-      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
-      return false;
-   }
-   this -> mesh. setDimensions( meshes. x(), meshes. y() );
-   this -> setMeshGeometry( this -> mesh. getGeometry() );
-   RealType hx = this -> mesh. getParametricStep(). x();
-   RealType hy = this -> mesh. getParametricStep(). y();
-   mesh. refresh();
-   mesh. save( tnlString( "mesh.tnl" ) );
+   mesh.refresh();
+   mesh.save( tnlString( "mesh.tnl" ) );
    nsSolver.setMesh( this->mesh );
 
    /****

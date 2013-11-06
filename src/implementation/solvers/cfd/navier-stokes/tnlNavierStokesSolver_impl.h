@@ -27,7 +27,7 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
 : advection( 0 ),
   u1Viscosity( 0 ),
   u2Viscosity( 0 ),
-  eViscosity( 0 ),
+  temperatureViscosity( 0 ),
   mu( 0.0 ),
   gravity( 0.0 ),
   R( 0.0 ),
@@ -63,11 +63,11 @@ template< typename AdvectionScheme,
           typename BoundaryConditions >
 void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
                                                                                                         DiffusionSchemeType& u2Viscosity,
-                                                                                                        DiffusionSchemeType& eViscosity )
+                                                                                                        DiffusionSchemeType& temperatureViscosity )
 {
    this->u1Viscosity = &u1Viscosity;
    this->u2Viscosity = &u2Viscosity;
-   this->eViscosity = &eViscosity;
+   this->temperatureViscosity = &temperatureViscosity;
 }
 
 template< typename AdvectionScheme,
@@ -89,6 +89,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
    this->u2.setSize(  this->mesh->getDofs() );
    this->p.setSize(   this->mesh->getDofs() );
    this->temperature.setSize(   this->mesh->getDofs() );
+   this->rhsDofVector.setSize(  this->getDofs() );
 }
 
 template< typename AdvectionScheme,
@@ -353,7 +354,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    this->advection->setRhoU2( dofs_rho_u2 );
    this->advection->setE( dofs_e );
    this->advection->setP( this->p );
-   this->eViscosity->setFunction( dofs_e );
+   this->temperatureViscosity->setFunction( this->temperature );
 
    rho_t.bind( & fu. getData()[ 0 ], dofs );
    rho_u1_t.bind( & fu. getData()[ dofs ], dofs );
@@ -451,15 +452,32 @@ void tnlNavierStokesSolver< AdvectionScheme,
         /***
          * Add the viscosity term
          */
-        rho_u1_t[ c ] += this->mu * u1Viscosity->getDiffusion( c );
-        rho_u2_t[ c ] += this->mu * u2Viscosity->getDiffusion( c );
-        e_t[ c ] += eViscosity->getDiffusion( c );
+        rho_u1_t[ c ] += this->mu*u1Viscosity->getDiffusion( c );;
+        rho_u2_t[ c ] += this->mu*u2Viscosity->getDiffusion( c );
+
+        IndexType e = this->mesh->getElementIndex( i+1, j );
+        IndexType w = this->mesh->getElementIndex( i-1, j );
+        IndexType n = this->mesh->getElementIndex( i, j+1 );
+        IndexType s = this->mesh->getElementIndex( i, j-1 );
+        RealType u1_e = 0.5*( this->u1[ c ] + this->u1[ e ] );
+        RealType u1_w = 0.5*( this->u1[ c ] + this->u1[ w ] );
+        RealType u2_n = 0.5*( this->u2[ c ] + this->u2[ n ] );
+        RealType u2_s = 0.5*( this->u2[ c ] + this->u2[ s ] );
+        RealType hx = mesh->getParametricStep().x();
+        RealType hy = mesh->getParametricStep().y();
+        RealType u1_x_e = ( this->u1[ e ] - this->u1[ c ] ) / hx;
+        RealType u1_x_w = ( this->u1[ c ] - this->u1[ w ] ) / hx;
+        RealType u2_y_n = ( this->u2[ n ] - this->u2[ c ] ) / hy;
+        RealType u2_y_s = ( this->u2[ c ] - this->u2[ s ] ) / hy;
+
+
+        e_t[ c ] += this->mu*( ( u1_e * u1_x_e - u1_w * u1_x_w ) / hx +
+                               ( u2_n * u2_y_n - u2_s * u2_y_s ) / hy );
         e_t[ c ] = 0.0;
      }
 
-  /*rhsDofVector = fu;
-   makeSnapshot( 0.0, 1 );
-   getchar();*/
+   writeExplicitRhs( time, -1 );
+   getchar();
 }
 
 template< typename AdvectionScheme,
@@ -546,6 +564,37 @@ typename tnlNavierStokesSolver< AdvectionScheme,
 {
    return rho * ( this->R * temperature / ( gamma - 1.0 ) +
                   0.5 * ( u1*u1 + u2*u2 ) );
+}
+
+template< typename AdvectionScheme,
+          typename DiffusionScheme,
+          typename BoundaryConditions >
+bool tnlNavierStokesSolver< AdvectionScheme,
+                      DiffusionScheme,
+                      BoundaryConditions >::writeExplicitRhs( const RealType& t,
+                                                              const IndexType step )
+{
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2;
+
+   const IndexType& dofs = mesh->getDofs();
+   dofs_rho.    bind( & this->rhsDofVector.getData()[ 0        ], dofs );
+   dofs_rho_u1. bind( & this->rhsDofVector.getData()[     dofs ], dofs );
+   dofs_rho_u2. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
+
+   tnlString fileName;
+   FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
+   if( ! dofs_rho. save( fileName ) )
+      return false;
+
+   FileNameBaseNumberEnding( "rho-u1-t-", step, 5, ".tnl", fileName );
+   if( ! dofs_rho_u1. save( fileName ) )
+      return false;
+
+   FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
+   if( ! dofs_rho_u2. save( fileName ) )
+      return false;
+
+   return true;
 }
 
 

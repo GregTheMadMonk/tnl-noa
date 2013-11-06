@@ -60,6 +60,76 @@ void simpleProblemSolver< Mesh> :: writeProlog( tnlLogger& logger,
 }
 
 template< typename Mesh >
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
+                                            const tnlParameterContainer& parameters ) const
+{
+   tnlTuple< 1, IndexType > meshes;
+   meshes.x() = parameters.GetParameter< int >( "x-size" );
+   if( meshes.x() <= 0 )
+   {
+      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      return false;
+   }
+   mesh.setDimensions( meshes. x() );
+   return true;
+}
+
+template< typename Mesh >
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
+                                            const tnlParameterContainer& parameters ) const
+{
+   tnlTuple< 2, IndexType > meshes;
+   meshes.x() = parameters.GetParameter< int >( "x-size" );
+   meshes.y() = parameters.GetParameter< int >( "y-size" );
+   if( meshes.x() <= 0 )
+   {
+      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      return false;
+   }
+   if( meshes.y() <= 0 )
+   {
+      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
+      return false;
+   }
+   mesh.setDimensions( meshes. x(), meshes. y() );
+   return true;
+}
+
+template< typename Mesh >
+   template< typename Real, typename Device, typename Index,
+             template< int, typename, typename, typename > class Geometry >
+bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
+                                            const tnlParameterContainer& parameters ) const
+{
+   tnlTuple< 3, IndexType > meshes;
+   meshes.x() = parameters.GetParameter< int >( "x-size" );
+   meshes.y() = parameters.GetParameter< int >( "y-size" );
+   meshes.z() = parameters.GetParameter< int >( "z-size" );
+   if( meshes.x() <= 0 )
+   {
+      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      return false;
+   }
+   if( meshes.y() <= 0 )
+   {
+      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
+      return false;
+   }
+   if( meshes.z() <= 0 )
+   {
+      cerr << "Error: z-size must be positive integer number! It is " << meshes. z() << " now." << endl;
+      return false;
+   }
+
+   mesh.setDimensions( meshes.x(), meshes.y(). meshses.z() );
+   return true;
+}
+
+template< typename Mesh >
 bool simpleProblemSolver< Mesh> :: init( const tnlParameterContainer& parameters )
 {
    /****
@@ -70,29 +140,31 @@ bool simpleProblemSolver< Mesh> :: init( const tnlParameterContainer& parameters
 
    /****
     * 2. Set-up geometry of the problem domain using some mesh like tnlGrid.
+    * Implement additional template specializations of the method initMesh
+    * if necessary.
     */
+   if( ! this->initMesh( this->mesh, parameters ) )
+      return false;
+   if( ! this->mesh.save( "mesh.tnl" ) )
+   {
+      cerr << "I am not able to save the mesh into a file mesh.tnl." << endl;
+      return false;
+   }
 
    /****
     * 3. Set-up DOFs and supporting grid functions
     */
-   dofVector. setSize( 100 );
+   const IndexType& dofs = this->mesh.getDofs();
+   dofVector. setSize( 2*dofs );
+
    /****
     * You may use tnlSharedVector if you need to split the dofVector into more
     * grid functions like the following example:
     */
-
-   const IndexType& dofs = 50;
-   /****
-    * Usually you will replace this by:
-    *
-    *    const IndexType& dofs = mesh. getDofs();
-    *
-    */
-
    this -> u. bind( & dofVector. getData()[ 0 * dofs ], dofs );
    this -> v. bind( & dofVector. getData()[ 1 * dofs ], dofs );
    /****
-    * You may now treat u and v as usual vectors and indirectly work with this -> dofVector.
+    * You may now treat u and v as usual vectors and indirectly work with this->dofVector.
     */
 
    return true;

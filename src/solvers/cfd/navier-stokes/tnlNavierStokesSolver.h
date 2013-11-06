@@ -46,7 +46,7 @@ class tnlNavierStokesSolver
 
    void setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
                             DiffusionSchemeType& u2Viscosity,
-                            DiffusionSchemeType& eViscosity);
+                            DiffusionSchemeType& temperatureViscosity);
 
    void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
@@ -117,6 +117,8 @@ class tnlNavierStokesSolver
    bool writeConservativeVariables( const RealType& t,
                                    const IndexType step );
 
+   bool writeExplicitRhs( const RealType& t,
+                          const IndexType step );
 
    protected:
 
@@ -128,7 +130,7 @@ class tnlNavierStokesSolver
 
    AdvectionSchemeType* advection;
 
-   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *eViscosity;
+   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *temperatureViscosity;
 
    BoundaryConditionsType* boundaryConditions;
 
@@ -139,6 +141,8 @@ class tnlNavierStokesSolver
    RealType mu, gravity, R, T, gamma;
 
    DofVectorType dofVector;
+
+   VectorType rhsDofVector;
 
 };
 

@@ -23,7 +23,7 @@
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
-#include <core/tnlSharedVector.h>
+#include <core/vectors/tnlSharedVector.h>
 
 template< typename Mesh >
 class simpleProblemSolver
@@ -44,6 +44,21 @@ class simpleProblemSolver
 
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const;
+
+   template< typename InitMesh >
+   bool initMesh( InitMesh& mesh, const tnlParameterContainer& parameters ) const;
+
+   template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
+   bool initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
+                  const tnlParameterContainer& parameters ) const;
+
+   template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
+   bool initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
+                  const tnlParameterContainer& parameters ) const;
+
+   template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
+   bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
+                  const tnlParameterContainer& parameters ) const;
 
    bool init( const tnlParameterContainer& parameters );
 
