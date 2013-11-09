@@ -267,21 +267,92 @@ void tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeomet
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: getDiffusion( const Index& c ) const
+Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: getDiffusion( const Index& c,
+                                                                                                        const RealType t_11,
+                                                                                                        const RealType t_22,
+                                                                                                        const RealType t_12  ) const
 {
    tnlAssert( this -> mesh, cerr << "No mesh was set in tnlLinearDiffusion. Use the bindMesh method." );
 
-   const Real hx = mesh -> getParametricStep(). x();
-   const Real hy = mesh -> getParametricStep(). y();
+   const Real hx = mesh->getParametricStep(). x();
+   const Real hy = mesh->getParametricStep(). y();
 
-   const Index e = mesh -> getElementNeighbour( c,  1,  0 );
-   const Index w = mesh -> getElementNeighbour( c, -1,  0 );
-   const Index n = mesh -> getElementNeighbour( c,  0,  1 );
-   const Index s = mesh -> getElementNeighbour( c,  0, -1 );
+   const Index e = mesh->getElementNeighbour( c,  1,  0 );
+   const Index w = mesh->getElementNeighbour( c, -1,  0 );
+   const Index n = mesh->getElementNeighbour( c,  0,  1 );
+   const Index s = mesh->getElementNeighbour( c,  0, -1 );
 
-   return ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx ) +
-          ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );
+   RealType F_xx( 0.0 ), F_yy( 0.0 ), F_xy( 0.0 );
+   if( t_11 != 0.0 )
+      F_xx = ( f[ e ] - 2.0 * f[ c ] + f[ w ] ) / ( hx * hx );
+   if( t_22 != 0.0 )
+      F_yy = ( f[ n ] - 2.0 * f[ c ] + f[ s ] ) / ( hy * hy );
+   if( t_12 != 0.0 )
+   {
+      const Index en = mesh->getElementNeighbour( c,  1,  1 );
+      const Index wn = mesh->getElementNeighbour( c, -1,  1 );
+      const Index es = mesh->getElementNeighbour( c,  1, -1 );
+      const Index ws = mesh->getElementNeighbour( c, -1, -1 );
+
+      const RealType F_en = 0.25 * ( f[ c ] + f[ e ] + f[ n ] + f[ en ] );
+      const RealType F_wn = 0.25 * ( f[ c ] + f[ w ] + f[ n ] + f[ wn ] );
+      const RealType F_es = 0.25 * ( f[ c ] + f[ e ] + f[ s ] + f[ es ] );
+      const RealType F_ws = 0.25 * ( f[ c ] + f[ w ] + f[ s ] + f[ ws ] );
+
+      const RealType F_y_e = ( F_en - F_es ) / hy;
+      const RealType F_y_w = ( F_wn - F_ws ) / hy;
+      F_xy = ( F_y_e - F_y_w ) / hx;
+   }
+   return  t_11 * F_xx + t_22 * F_yy + t_12 * F_xy;
 }
 
+template< typename Real, typename Device, typename Index >
+   template< typename Vector >
+Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > >::getDiffusion( const IndexType& c,
+                                                                                                      const Vector& v_11,
+                                                                                                      const Vector& v_22,
+                                                                                                      const Vector& v_12,
+                                                                                                      RealType t_11,
+                                                                                                      RealType t_22,
+                                                                                                      RealType t_12 ) const
+{
+   tnlAssert( this -> mesh, cerr << "No mesh was set in tnlLinearDiffusion. Use the bindMesh method." );
+
+   const Real hx = mesh->getParametricStep().x();
+   const Real hy = mesh->getParametricStep().y();
+
+   const Index e = mesh->getElementNeighbour( c,  1,  0 );
+   const Index w = mesh->getElementNeighbour( c, -1,  0 );
+   const Index n = mesh->getElementNeighbour( c,  0,  1 );
+   const Index s = mesh->getElementNeighbour( c,  0, -1 );
+
+   const RealType F_x_e = ( f[ e ] - f[ c ] ) / hx;
+   const RealType F_x_w = ( f[ c ] - f[ w ] ) / hx;
+   const RealType F_y_n = ( f[ n ] - f[ c ] ) / hy;
+   const RealType F_y_s = ( f[ c ] - f[ s ] ) / hy;
+
+   RealType F_xx( 0.0 ), F_yy( 0.0 ), F_xy( 0.0 );
+   if( t_11 != 0.0 )
+      F_xx = ( v_11[ e ] * f[ e ] - v_11[ w ] * f[ w ] ) / hx;
+   if( t_22 != 0.0 )
+      F_yy = ( v_22[ n ] * f[ n ] - v_22[ s ] * f[ s ] ) / hy;
+   if( t_12 != 0.0 )
+   {
+      const Index en = mesh->getElementNeighbour( c,  1,  1 );
+      const Index wn = mesh->getElementNeighbour( c, -1,  1 );
+      const Index es = mesh->getElementNeighbour( c,  1, -1 );
+      const Index ws = mesh->getElementNeighbour( c, -1, -1 );
+
+      const RealType F_en = 0.25 * ( f[ c ] + f[ e ] + f[ n ] + f[ en ] );
+      const RealType F_wn = 0.25 * ( f[ c ] + f[ w ] + f[ n ] + f[ wn ] );
+      const RealType F_es = 0.25 * ( f[ c ] + f[ e ] + f[ s ] + f[ es ] );
+      const RealType F_ws = 0.25 * ( f[ c ] + f[ w ] + f[ s ] + f[ ws ] );
+
+      const RealType F_y_e = ( F_en - F_es ) / hy;
+      const RealType F_y_w = ( F_wn - F_ws ) / hy;
+      const RealType F_xy = ( v_12[ e ] * F_y_e - v_12[ w ] * F_y_w ) / hx;
+   }
+   return t_11 * F_xx + t_12 * F_xy + t_22 * F_yy;
+}
 
 #endif

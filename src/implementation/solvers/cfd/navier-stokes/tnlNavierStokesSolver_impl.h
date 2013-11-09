@@ -316,9 +316,9 @@ void tnlNavierStokesSolver< AdvectionScheme,
             this->rho[ c ] = dofs_rho[ c ];
             this->u1[ c ] = dofs_rho_u1[ c ] / dofs_rho[ c ];
             this->u2[ c ] = dofs_rho_u2[ c ] / dofs_rho[ c ];
-            this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
-            //this->p[ c ] = ( this->gamma - 1.0 ) *
-            //               ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
+            //this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
+            this->p[ c ] = ( this->gamma - 1.0 ) *
+                           ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
             this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
          }
    }
@@ -452,32 +452,31 @@ void tnlNavierStokesSolver< AdvectionScheme,
         /***
          * Add the viscosity term
          */
-        rho_u1_t[ c ] += this->mu*u1Viscosity->getDiffusion( c );;
-        rho_u2_t[ c ] += this->mu*u2Viscosity->getDiffusion( c );
-
-        IndexType e = this->mesh->getElementIndex( i+1, j );
-        IndexType w = this->mesh->getElementIndex( i-1, j );
-        IndexType n = this->mesh->getElementIndex( i, j+1 );
-        IndexType s = this->mesh->getElementIndex( i, j-1 );
-        RealType u1_e = 0.5*( this->u1[ c ] + this->u1[ e ] );
-        RealType u1_w = 0.5*( this->u1[ c ] + this->u1[ w ] );
-        RealType u2_n = 0.5*( this->u2[ c ] + this->u2[ n ] );
-        RealType u2_s = 0.5*( this->u2[ c ] + this->u2[ s ] );
-        RealType hx = mesh->getParametricStep().x();
-        RealType hy = mesh->getParametricStep().y();
-        RealType u1_x_e = ( this->u1[ e ] - this->u1[ c ] ) / hx;
-        RealType u1_x_w = ( this->u1[ c ] - this->u1[ w ] ) / hx;
-        RealType u2_y_n = ( this->u2[ n ] - this->u2[ c ] ) / hy;
-        RealType u2_y_s = ( this->u2[ c ] - this->u2[ s ] ) / hy;
+        rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 4.0/3.0, 1.0, 0.0 ) +
+                                    u2Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
+        rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 4.0/3.0, 0.0 ) +
+                                    u1Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
 
 
-        e_t[ c ] += this->mu*( ( u1_e * u1_x_e - u1_w * u1_x_w ) / hx +
-                               ( u2_n * u2_y_n - u2_s * u2_y_s ) / hy );
-        e_t[ c ] = 0.0;
+        RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
+        e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
+                                                          this->u1, this->u1, this->u2,
+                                                          4.0/3.0, 1.0, -2.0/3.0 ) +
+                               u1Viscosity->getDiffusion( c,
+                                                          this->u1, this->u1, this->u2,
+                                                          0.0, 0.0, 1.0 ) +
+                               u2Viscosity->getDiffusion( c,
+                                                          this->u2, this->u2, this->u1,
+                                                          1.0, 4.0/3.0, -2.0/3.0 ) +
+                               u2Viscosity->getDiffusion( c,
+                                                          this->u2, this->u2, this->u1,
+                                                          0.0, 0.0, 1.0 ) +
+                               k * temperatureViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+        //e_t[ c ] = 0.0;
      }
 
-   writeExplicitRhs( time, -1 );
-   getchar();
+   //writeExplicitRhs( time, -1 );
+   //getchar();
 }
 
 template< typename AdvectionScheme,

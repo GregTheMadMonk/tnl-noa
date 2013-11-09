@@ -77,7 +77,20 @@ class tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeome
    template< typename Vector >
    void setFunction( Vector& f ); // TODO: add const
 
-   RealType getDiffusion( const Index& i ) const;
+   RealType getDiffusion( const IndexType& i,
+                          const RealType t_11 = 1.0,
+                          const RealType t_22 = 1.0,
+                          const RealType t_12 = 0.0 ) const;
+
+   template< typename Vector >
+   RealType getDiffusion( const IndexType& i,
+                          const Vector& v_11,
+                          const Vector& v_22,
+                          const Vector& v_12,
+                          RealType t_11,
+                          RealType t_22,
+                          RealType t_12 ) const;
+
    protected:
 
    // TODO: change to ConstSharedVector
