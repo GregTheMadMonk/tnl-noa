@@ -47,6 +47,15 @@ tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getTypeStatic()
 }
 
 template< typename Real,
+           typename Device,
+           typename Index,
+           template< int, typename, typename, typename > class Geometry >
+tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getTypeVirtual() const
+{
+   return this -> getType();
+}
+
+template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >

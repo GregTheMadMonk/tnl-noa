@@ -144,6 +144,8 @@ class tnlNavierStokesSolver
 
    VectorType rhsDofVector;
 
+   IndexType rhsIndex;
+
 };
 
 #include <implementation/solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>

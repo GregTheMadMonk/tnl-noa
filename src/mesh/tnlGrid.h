@@ -54,6 +54,8 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    static tnlString getTypeStatic();
 
+   tnlString getTypeVirtual() const;
+
    tnlString getType() const;
 
    void setDimensions( const Index xSize );

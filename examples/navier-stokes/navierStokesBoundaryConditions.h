@@ -47,7 +47,7 @@ class navierStokesBoundaryConditions
 
    const MeshType* mesh;
 
-   RealType maxInflowVelocity, startUp, T;
+   RealType maxInflowVelocity, startUp, T, p0;
 };
 
 #include "navierStokesBoundaryConditions_impl.h"

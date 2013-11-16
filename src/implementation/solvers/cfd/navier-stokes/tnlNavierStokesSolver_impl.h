@@ -31,7 +31,8 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
   mu( 0.0 ),
   gravity( 0.0 ),
   R( 0.0 ),
-  T( 0.0 )
+  T( 0.0 ),
+  rhsIndex( 0 )
 {
    this->rho.setName( "navier-stokes-rho" );
    this->u1.setName( "navier-stokes-u1");
@@ -319,7 +320,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
             //this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
             this->p[ c ] = ( this->gamma - 1.0 ) *
                            ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
-            this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
+            //this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
          }
    }
 }
@@ -452,7 +453,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
         /***
          * Add the viscosity term
          */
-        rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 4.0/3.0, 1.0, 0.0 ) +
+        /*rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 4.0/3.0, 1.0, 0.0 ) +
                                     u2Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
         rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 4.0/3.0, 0.0 ) +
                                     u1Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
@@ -471,12 +472,31 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                u2Viscosity->getDiffusion( c,
                                                           this->u2, this->u2, this->u1,
                                                           0.0, 0.0, 1.0 ) +
+                               k * temperatureViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );*/
+
+        rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+        rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+
+
+        RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
+        e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
+                                                          this->u1, this->u1, this->u2,
+                                                          1.0, 1.0, 0.0 ) +
+                               u2Viscosity->getDiffusion( c,
+                                                          this->u2, this->u2, this->u1,
+                                                          1.0, 1.0, -0.0 )  +
                                k * temperatureViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+
+
+
         //e_t[ c ] = 0.0;
      }
 
-   //writeExplicitRhs( time, -1 );
-   //getchar();
+   this->rhsDofVector = fu;
+   writePhysicalVariables( time, this->rhsIndex );
+   writeConservativeVariables( time, this->rhsIndex );
+   writeExplicitRhs( time, this->rhsIndex++ );
+   getchar();
 }
 
 template< typename AdvectionScheme,
@@ -524,12 +544,13 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writeConservativeVariables( const RealType& t,
                                                                         const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & dofVector.getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & dofVector.getData()[     dofs ], dofs );
    dofs_rho_u2. bind( & dofVector.getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & dofVector.getData()[ 3 * dofs ], dofs );
 
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
@@ -544,6 +565,11 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    if( ! dofs_rho_u2. save( fileName ) )
       return false;
 
+   FileNameBaseNumberEnding( "e-", step, 5, ".tnl", fileName );
+   if( ! dofs_e. save( fileName ) )
+      return false;
+
+
    return true;
 }
 
@@ -556,13 +582,16 @@ typename tnlNavierStokesSolver< AdvectionScheme,
    tnlNavierStokesSolver< AdvectionScheme,
                           DiffusionScheme,
                           BoundaryConditions >::computeEnergy( const RealType& rho,
-                                                               const RealType& temperature,
+                                                               const RealType& pressure,
                                                                const RealType& gamma,
                                                                const RealType& u1,
                                                                const RealType& u2 ) const
 {
-   return rho * ( this->R * temperature / ( gamma - 1.0 ) +
-                  0.5 * ( u1*u1 + u2*u2 ) );
+   /*return rho * this->R * temperature / ( gamma - 1.0 ) +
+                  0.5 * rho * ( u1*u1 + u2*u2 );*/
+   return pressure / ( gamma - 1.0 ) +
+                  0.5 * rho * ( u1*u1 + u2*u2 );
+
 }
 
 template< typename AdvectionScheme,
@@ -573,12 +602,13 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writeExplicitRhs( const RealType& t,
                                                               const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & this->rhsDofVector.getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & this->rhsDofVector.getData()[     dofs ], dofs );
    dofs_rho_u2. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
 
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
@@ -592,6 +622,11 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
    if( ! dofs_rho_u2. save( fileName ) )
       return false;
+
+   FileNameBaseNumberEnding( "e-t-", step, 5, ".tnl", fileName );
+   if( ! dofs_e. save( fileName ) )
+      return false;
+
 
    return true;
 }
