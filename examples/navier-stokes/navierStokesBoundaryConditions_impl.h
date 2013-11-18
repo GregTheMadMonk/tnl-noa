@@ -121,7 +121,6 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
          rho[ c3 ] = rho[ c4 ];
          energy[ c1 ] = energy[ c2 ];
          energy[ c3 ] = energy[ c4 ];
-
       }
       /*rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
       rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];

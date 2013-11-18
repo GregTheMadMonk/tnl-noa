@@ -459,7 +459,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
         /***
          * Add the viscosity term
          */
-        rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 4.0/3.0, 1.0, 0.0 ) +
+        /*rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 4.0/3.0, 1.0, 0.0 ) +
                                     u2Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
         rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 4.0/3.0, 0.0 ) +
                                     u1Viscosity->getDiffusion( c, 0.0, 0.0, 1.0/3.0 ) );
@@ -479,8 +479,8 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                                           this->u2, this->u2, this->u1,
                                                           0.0, 0.0, 1.0 ) +
                                k * energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
-
-        /*rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+        */
+        rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
         rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
 
 
@@ -575,8 +575,6 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    /*FileNameBaseNumberEnding( "e-", step, 5, ".tnl", fileName );
    if( ! dofs_e. save( fileName ) )
       return false;*/
-
-
    return true;
 }
 
