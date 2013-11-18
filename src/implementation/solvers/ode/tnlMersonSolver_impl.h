@@ -18,6 +18,7 @@
 #ifndef tnlMersonSolver_implH
 #define tnlMersonSolver_implH
 
+#include <cmath>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
@@ -207,7 +208,9 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          this -> refreshSolverMonitor();
          return true;
        }
-      if( iteration == this -> getMaxIterationsNumber() ) return false;
+      if( iteration == this -> getMaxIterationsNumber() ||
+          std::isnan( residue ) )
+         return false;
    }
 };
 

@@ -88,9 +88,9 @@ class tnlNavierStokesSolver
 
    const VectorType& getPressure() const;
 
-   VectorType& getTemperature();
+   VectorType& getEnergy();
 
-   const VectorType& getTemperature() const;
+   const VectorType& getEnergy() const;
 
 
    IndexType getDofs() const;
@@ -130,19 +130,21 @@ class tnlNavierStokesSolver
 
    AdvectionSchemeType* advection;
 
-   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *temperatureViscosity;
+   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *energyViscosity;
 
    BoundaryConditionsType* boundaryConditions;
 
    MeshType* mesh;
 
-   VectorType rho, u1, u2, p, temperature;
+   VectorType rho, u1, u2, p, energy;
 
    RealType mu, gravity, R, T, gamma;
 
    DofVectorType dofVector;
 
    VectorType rhsDofVector;
+
+   IndexType rhsIndex;
 
 };
 

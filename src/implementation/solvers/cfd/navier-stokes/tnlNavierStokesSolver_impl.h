@@ -27,17 +27,18 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
 : advection( 0 ),
   u1Viscosity( 0 ),
   u2Viscosity( 0 ),
-  temperatureViscosity( 0 ),
+  energyViscosity( 0 ),
   mu( 0.0 ),
   gravity( 0.0 ),
   R( 0.0 ),
-  T( 0.0 )
+  T( 0.0 ),
+  rhsIndex( 0 )
 {
    this->rho.setName( "navier-stokes-rho" );
    this->u1.setName( "navier-stokes-u1");
    this->u2.setName( "navier-stokes-u2" );
    this->p.setName( "navier-stokes-p" );
-   this->temperature.setName( "navier-stokes-temperature" );
+   this->energy.setName( "navier-stokes-energy" );
 }
 
 template< typename AdvectionScheme,
@@ -63,11 +64,11 @@ template< typename AdvectionScheme,
           typename BoundaryConditions >
 void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
                                                                                                         DiffusionSchemeType& u2Viscosity,
-                                                                                                        DiffusionSchemeType& temperatureViscosity )
+                                                                                                        DiffusionSchemeType& energyViscosity )
 {
    this->u1Viscosity = &u1Viscosity;
    this->u2Viscosity = &u2Viscosity;
-   this->temperatureViscosity = &temperatureViscosity;
+   this->energyViscosity = &energyViscosity;
 }
 
 template< typename AdvectionScheme,
@@ -88,7 +89,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
    this->u1.setSize(  this->mesh->getDofs() );
    this->u2.setSize(  this->mesh->getDofs() );
    this->p.setSize(   this->mesh->getDofs() );
-   this->temperature.setSize(   this->mesh->getDofs() );
+   this->energy.setSize(   this->mesh->getDofs() );
    this->rhsDofVector.setSize(  this->getDofs() );
 }
 
@@ -253,18 +254,18 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTemperature()
+   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy()
 {
-   return this->temperature;
+   return this->energy;
 }
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
 const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTemperature() const
+   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy() const
 {
-   return this->temperature;
+   return this->energy;
 }
 
 template< typename AdvectionScheme,
@@ -319,7 +320,8 @@ void tnlNavierStokesSolver< AdvectionScheme,
             //this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
             this->p[ c ] = ( this->gamma - 1.0 ) *
                            ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
-            this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
+            this->energy[ c ] = dofs_e[ c ];
+            //this->temperature[ c ] = this->p[ c ] / ( this->rho[ c ] * this->R );
          }
    }
 }
@@ -354,7 +356,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    this->advection->setRhoU2( dofs_rho_u2 );
    this->advection->setE( dofs_e );
    this->advection->setP( this->p );
-   this->temperatureViscosity->setFunction( this->temperature );
+   this->energyViscosity->setFunction( this->energy );
 
    rho_t.bind( & fu. getData()[ 0 ], dofs );
    rho_u1_t.bind( & fu. getData()[ dofs ], dofs );
@@ -363,7 +365,8 @@ void tnlNavierStokesSolver< AdvectionScheme,
 
    updatePhysicalQuantities( dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e );
 
-   this->boundaryConditions->apply( time, this->rho, this->u1, this->u2, this->temperature );
+
+   this->boundaryConditions->apply( time, this->rho, this->u1, this->u2, this->energy );
 
    const IndexType& xSize = this->mesh->getDimensions().x();
    const IndexType& ySize = this->mesh->getDimensions().y();
@@ -380,20 +383,22 @@ void tnlNavierStokesSolver< AdvectionScheme,
          dofs_rho[ c1 ]    = this->rho[ c1 ];
          dofs_rho_u1[ c1 ] = this->rho[ c1 ] * this->u1[ c1 ];
          dofs_rho_u2[ c1 ] = this->rho[ c1 ] * this->u2[ c1 ];
-         dofs_e[ c1 ]      = this->computeEnergy( this->rho[ c1 ],
+         dofs_e[ c1 ] = this->energy[ c1 ];
+         /*dofs_e[ c1 ]      = this->computeEnergy( this->rho[ c1 ],
                                                   this->temperature[ c1 ],
                                                   this->gamma,
                                                   this->u1[ c1 ],
-                                                  this->u2[ c1 ] );
+                                                  this->u2[ c1 ] );*/
 
          dofs_rho[ c3 ]    = this->rho[ c3 ];
          dofs_rho_u1[ c3 ] = this->rho[ c3 ] * this->u1[ c3 ];
          dofs_rho_u2[ c3 ] = this->rho[ c3 ] * this->u2[ c3 ];
-         dofs_e[ c3 ]      = this->computeEnergy( this->rho[ c3 ],
+         dofs_e[ c3 ] = this->energy[ c3 ];
+         /*dofs_e[ c3 ]      = this->computeEnergy( this->rho[ c3 ],
                                                   this->temperature[ c3 ],
                                                   this->gamma,
                                                   this->u1[ c3 ],
-                                                  this->u2[ c3 ] );
+                                                  this->u2[ c3 ] );*/
       }
       for( IndexType j = 0; j < ySize; j ++ )
       {
@@ -405,25 +410,27 @@ void tnlNavierStokesSolver< AdvectionScheme,
          dofs_rho[ c1 ]    = this->rho[ c1 ];
          dofs_rho_u1[ c1 ] = this->rho[ c1 ] * this->u1[ c1 ];
          dofs_rho_u2[ c1 ] = this->rho[ c1 ] * this->u2[ c1 ];
-         dofs_e[ c1 ]      = this->computeEnergy( this->rho[ c1 ],
+         dofs_e[ c1 ] = this->energy[ c1 ];
+         /*dofs_e[ c1 ]      = this->computeEnergy( this->rho[ c1 ],
                                                   this->temperature[ c1 ],
                                                   this->gamma,
                                                   this->u1[ c1 ],
-                                                  this->u2[ c1 ] );
+                                                  this->u2[ c1 ] );*/
 
 
          dofs_rho[ c3 ]    = this->rho[ c3 ];
          dofs_rho_u1[ c3 ] = this->rho[ c3 ] * this->u1[ c3 ];
          dofs_rho_u2[ c3 ] = this->rho[ c3 ] * this->u2[ c3 ];
-         dofs_e[ c3 ]      = this->computeEnergy( this->rho[ c3 ],
+         dofs_e[ c3 ] = this->energy[ c3 ];
+         /*dofs_e[ c3 ] = this->computeEnergy( this->rho[ c3 ],
                                                   this->temperature[ c3 ],
                                                   this->gamma,
                                                   this->u1[ c3 ],
-                                                  this->u2[ c3 ] );
+                                                  this->u2[ c3 ] );*/
 
       }
    }
-
+   writePhysicalVariables( time, -4 );
 
 #ifdef HAVE_OPENMP
   #pragma omp parallel for
@@ -471,12 +478,32 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                u2Viscosity->getDiffusion( c,
                                                           this->u2, this->u2, this->u1,
                                                           0.0, 0.0, 1.0 ) +
-                               k * temperatureViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
-        //e_t[ c ] = 0.0;
+                               k * energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+
+        /*rho_u1_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+        rho_u2_t[ c ] += this->mu*( u2Viscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+
+
+        RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
+        //cout << k << endl;
+        e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
+                                                          this->u1, this->u1, this->u2,
+                                                          1.0, 1.0, 0.0 ) +
+                               u2Viscosity->getDiffusion( c,
+                                                          this->u2, this->u2, this->u1,
+                                                          1.0, 1.0, -0.0 )  +
+                               k * energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+
+
+        //e_t[ c ] = 0.0;*/
      }
 
-   //writeExplicitRhs( time, -1 );
-   //getchar();
+   /*this->rhsDofVector = fu;
+   this->rhsIndex++;
+   writePhysicalVariables( time, this->rhsIndex );
+   writeConservativeVariables( time, this->rhsIndex );
+   writeExplicitRhs( time, this->rhsIndex );
+   getchar();*/
 }
 
 template< typename AdvectionScheme,
@@ -510,8 +537,8 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    FileNameBaseNumberEnding( "p-", step, 5, ".tnl", fileName );
    if( ! this->p.save( fileName ) )
       return false;
-   FileNameBaseNumberEnding( "T-", step, 5, ".tnl", fileName );
-   if( ! this->temperature.save( fileName ) )
+   FileNameBaseNumberEnding( "e-", step, 5, ".tnl", fileName );
+   if( ! this->energy.save( fileName ) )
       return false;
    return true;
 }
@@ -524,12 +551,13 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writeConservativeVariables( const RealType& t,
                                                                         const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & dofVector.getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & dofVector.getData()[     dofs ], dofs );
    dofs_rho_u2. bind( & dofVector.getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & dofVector.getData()[ 3 * dofs ], dofs );
 
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
@@ -544,6 +572,11 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    if( ! dofs_rho_u2. save( fileName ) )
       return false;
 
+   /*FileNameBaseNumberEnding( "e-", step, 5, ".tnl", fileName );
+   if( ! dofs_e. save( fileName ) )
+      return false;*/
+
+
    return true;
 }
 
@@ -556,13 +589,16 @@ typename tnlNavierStokesSolver< AdvectionScheme,
    tnlNavierStokesSolver< AdvectionScheme,
                           DiffusionScheme,
                           BoundaryConditions >::computeEnergy( const RealType& rho,
-                                                               const RealType& temperature,
+                                                               const RealType& pressure,
                                                                const RealType& gamma,
                                                                const RealType& u1,
                                                                const RealType& u2 ) const
 {
-   return rho * ( this->R * temperature / ( gamma - 1.0 ) +
-                  0.5 * ( u1*u1 + u2*u2 ) );
+   /*return rho * this->R * temperature / ( gamma - 1.0 ) +
+                  0.5 * rho * ( u1*u1 + u2*u2 );*/
+   return pressure / ( gamma - 1.0 ) +
+                  0.5 * rho * ( u1*u1 + u2*u2 );
+
 }
 
 template< typename AdvectionScheme,
@@ -573,12 +609,13 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writeExplicitRhs( const RealType& t,
                                                               const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2;
+   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & this->rhsDofVector.getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & this->rhsDofVector.getData()[     dofs ], dofs );
    dofs_rho_u2. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & this->rhsDofVector.getData()[ 3 * dofs ], dofs );
 
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
@@ -592,6 +629,11 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    FileNameBaseNumberEnding( "rho-u2-t-", step, 5, ".tnl", fileName );
    if( ! dofs_rho_u2. save( fileName ) )
       return false;
+
+   FileNameBaseNumberEnding( "e-t-", step, 5, ".tnl", fileName );
+   if( ! dofs_e. save( fileName ) )
+      return false;
+
 
    return true;
 }

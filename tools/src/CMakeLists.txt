@@ -15,10 +15,15 @@ SET( tnlmatrixconvertsources tnl-matrix-convert.cpp
 
 set( tnl_view_SOURCES tnl-view.cpp
                       tnl-view.h )
+                      
+set( tnl_diff_SOURCES tnl-diff.cpp
+                      tnl-diff.h )                      
 
 ADD_EXECUTABLE(tnl-view${debugExt} ${tnl_view_SOURCES})
 target_link_libraries (tnl-view${debugExt} tnl${debugExt}-${tnlVersion} )
 
+ADD_EXECUTABLE(tnl-diff${debugExt} ${tnl_diff_SOURCES})
+target_link_libraries (tnl-diff${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} ${tnlfunctionsbenchmarksources} )
 target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -38,6 +43,7 @@ target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion
 INSTALL( TARGETS tnl-err-norms${debugExt}
                  tnl-grid-view${debugExt}
                  tnl-view${debugExt}
+                 tnl-diff${debugExt}
                  tnl-curve2gnuplot${debugExt}
                  tnl-matrix-convert${debugExt}
          RUNTIME DESTINATION bin

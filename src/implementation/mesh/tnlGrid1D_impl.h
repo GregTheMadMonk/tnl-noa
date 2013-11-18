@@ -21,6 +21,7 @@
 #include <fstream>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
+#include <mesh/tnlGnuplotWriter.h>
 
 using namespace std;
 
@@ -37,29 +38,30 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getTypeStatic()
+tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
           tnlString( getParameterType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + " >";
+          tnlString( getParameterType< IndexType >() ) + ", " +
+          Geometry< 1, Real, Device, Index > :: getType() + " >";
 }
 
 template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry  >
-tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getType() const
+           typename Device,
+           typename Index,
+           template< int, typename, typename, typename > class Geometry >
+tnlString tnlGrid< 1, Real, Device, Index, Geometry > :: getTypeVirtual() const
 {
-   return this -> getTypeStatic();
+   return this -> getType();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-void tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const Index xSize )
+bool tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const Index xSize )
 {
    tnlAssert( xSize > 0,
               cerr << "The number of Elements along x-axis must be larger than 0." );
@@ -67,17 +69,18 @@ void tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const Index x
    dofs = xSize;
 
    VertexType parametricStep;
-   parametricStep. x() = proportions. x() / xSize;
+   parametricStep. x() = geometry. getProportions(). x() / xSize;
    geometry. setParametricStep( parametricStep );
+   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry  >
-void tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
+bool tnlGrid< 1, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
 {
-   this -> setDimensions( dimensions. x() );
+   return this -> setDimensions( dimensions. x() );
 }
 
 template< typename Real,
@@ -115,7 +118,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry  >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
 {
-   this -> proportions = proportions;
+   this->geometry.setProportions( proportions );
    this -> setDimensions( this -> dimensions );
 }
 
@@ -126,7 +129,7 @@ template< typename Real,
 const typename tnlGrid< 1, Real, Device, Index, Geometry > :: VertexType& 
    tnlGrid< 1, Real, Device, Index, Geometry > :: getProportions() const
 {
-   return this -> proportions;
+   return this -> geometry.getProportions();
 }
 
 template< typename Real,
@@ -135,7 +138,9 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry  >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& parametricStep )
 {
-   this -> proportions. x() = this -> dimensions. x() * parametricStep. x();
+   VertexType v;
+   v.x() = this -> dimensions. x() * parametricStep. x();
+   this->geometry.setProportions( v );
    geometry. setParametricStep( parametricStep );
 }
 
@@ -175,16 +180,82 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 1, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
+   template< int dx >
+void tnlGrid< 1, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
+                                                               VertexType& vertex ) const
+{
+   tnlAssert( elementCoordinates.x() >= 0 &&
+              elementCoordinates.x() < this -> dimensions.x(),
+              cerr << "elementCoordinates = " << elementCoordinates << endl; );
+   vertex.x() = this->origin.x() + elementCoordinates.x() * getParametricStep().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+Real tnlGrid< 1, Real, Device, Index, Geometry >::getElementMeasure( const CoordinatesType& coordinates ) const
+{
+   return getParametricStep().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 1, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
+                                                                           const GridFunction& f2 ) const
+{
+   typename GridFunction::RealType maxDiff( -1.0 );
+   for( IndexType i = 0; i < getDimensions(). x(); i++ )
+   {
+      IndexType c = this -> getElementIndex( i );
+      maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
+   }
+   return maxDiff;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 1, Real, Device, Index, Geometry >::getDifferenceLpNorm( const GridFunction& f1,
+                                                                           const GridFunction& f2,
+                                                                           const typename GridFunction::RealType& p ) const
+{
+   typename GridFunction::RealType lpNorm( 0.0 );
+   for( IndexType i = 0; i < getDimensions(). x(); i++ )
+   {
+      IndexType c = this->getElementIndex( i );
+      lpNorm += pow( p, tnlAbs( f1[ c ] - f2[ c ] ) ) *
+         this->getElementMeasure( CoordinatesType( i ) );
+   }
+   return pow( 1.0 / p, lpNorm );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+bool tnlGrid< 1, Real, Device, Index, Geometry >::save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) )
       return false;
    if( ! this -> origin. save( file ) ||
-       ! this -> proportions. save( file ) ||
        ! this -> dimensions. save( file ) )
    {
       cerr << "I was not able to save the domain description of the tnlGrid "
            << this -> getName() << endl;
+      return false;
+   }
+   if( ! geometry. save( file ) )
+   {
+      cerr << "I was not able to save the mesh." << endl;
       return false;
    }
    return true;
@@ -198,15 +269,25 @@ bool tnlGrid< 1, Real, Device, Index, Geometry > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
+   CoordinatesType dim;
    if( ! this -> origin. load( file ) ||
-       ! this -> proportions. load( file ) ||
-       ! this -> dimensions. load( file ) )
+       ! dim. load( file ) )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
-   this -> dofs = this -> getDimensions(). x();
+   if( ! geometry. load( file ) )
+   {
+      cerr << "I am not able to load the grid geometry." << endl;
+      return false;
+   }
+   if( ! this -> setDimensions( dim ) )
+   {
+      cerr << "I am not able to allocate the loaded grid." << endl;
+      return false;
+   }
+   //this -> refresh();
    return true;
 };
 
@@ -216,8 +297,8 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 bool tnlGrid< 1, Real, Device, Index, Geometry > :: save( const tnlString& fileName ) const
 {
-   return tnlObject :: save( fileName );
-};
+   return tnlObject::save( fileName );
+}
 
 template< typename Real,
           typename Device,
@@ -225,8 +306,18 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 bool tnlGrid< 1, Real, Device, Index, Geometry > :: load( const tnlString& fileName )
 {
-   return tnlObject :: load( fileName );
-};
+   return tnlObject::load( fileName );
+}
+
+template< typename Real,
+           typename Device,
+           typename Index,
+           template< int, typename, typename, typename > class Geometry >
+bool tnlGrid< 1, Real, Device, Index, Geometry >::writeMesh( const tnlString& fileName,
+                                                             const tnlString& format ) const
+{
+   return true;
+}
 
 template< typename Real,
            typename Device,
@@ -234,8 +325,8 @@ template< typename Real,
            template< int, typename, typename, typename > class Geometry >
    template< typename MeshFunction >
 bool tnlGrid< 1, Real, Device, Index, Geometry > :: write( const MeshFunction& function,
-                                                const tnlString& fileName,
-                                                const tnlString& format ) const
+                                                           const tnlString& fileName,
+                                                           const tnlString& format ) const
 {
    if( this -> getDofs() != function. getSize() )
    {
@@ -251,14 +342,17 @@ bool tnlGrid< 1, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       return false;
    }
    const RealType hx = getParametricStep(). x();
-   const RealType hy = getParametricStep(). y();
    if( format == "gnuplot" )
+   {
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         const RealType x = this -> getOrigin(). x() + i * hx;
-         file << x << " " << function[ this -> getElementIndex( i ) ] << endl;
+         VertexType v;
+         this -> getVertex< 0 >( CoordinatesType( i ), v );
+         tnlGnuplotWriter::write( file,  v );
+         tnlGnuplotWriter::write( file,  function[ this -> getElementIndex( i ) ] );
+         file << endl;
       }
-
+   }
    file. close();
    return true;
 }

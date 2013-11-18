@@ -34,7 +34,8 @@ bool navierStokesBoundaryConditions< Mesh >::init( const tnlParameterContainer& 
    this -> maxInflowVelocity = parameters. GetParameter< double >( "max-inflow-velocity" );
    //this -> maxOutflowVelocity = parameters. GetParameter< double >( "max-outflow-velocity" );
    this -> startUp = parameters. GetParameter< double >( "start-up" );
-   this -> T = parameters. GetParameter< double >( "T" );
+   //this -> T = parameters. GetParameter< double >( "T" );
+   this->p0 = parameters. GetParameter< double >( "p0" );
    return true;
 }
 
@@ -50,7 +51,7 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
                                                     Vector& rho,
                                                     Vector& u1,
                                                     Vector& u2,
-                                                    Vector& temperature )
+                                                    Vector& energy )
 {
    /****
      * Set the boundary conditions.
@@ -87,8 +88,8 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
 
          rho[ c1 ] = rho[ c2 ];
          rho[ c3 ] = rho[ c4 ];
-         temperature[ c1 ] = this->T;
-         temperature[ c3 ] = this->T;
+         energy[ c1 ] = energy[ c2 ];
+         energy[ c3 ] = energy[ c4 ];
           //rho[ c3 ] = this -> p_0 / ( this -> R * this -> T );
       }
 
@@ -118,8 +119,8 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
 
          rho[ c1 ] = rho[ c2 ];
          rho[ c3 ] = rho[ c4 ];
-         temperature[ c1 ] = this->T;
-         temperature[ c3 ] = this->T;
+         energy[ c1 ] = energy[ c2 ];
+         energy[ c3 ] = energy[ c4 ];
 
       }
       /*rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];

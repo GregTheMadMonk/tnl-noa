@@ -27,6 +27,18 @@ class tnlDummyMesh
    typedef Device DeviceType;
    typedef Index IndexType;
 
+
+   const Real& getParametricStep(){};
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
+                                                        const GridFunction& f2 ) const { return 0.0; };
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
+                                                        const GridFunction& f2,
+                                                        const typename GridFunction::RealType& p ) const { return 0.0; };
+
    bool save( tnlFile& file ) const{};
 
    //! Method for restoring the object from a file

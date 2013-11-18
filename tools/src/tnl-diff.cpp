@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnl-view.cpp  -  description
+                          tnl-diff.cpp  -  description
                              -------------------
-    begin                : Jan 21, 2013
+    begin                : Nov 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,19 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnl-view.h"
-#include <cstdlib>
-#include <core/tnlFile.h>
-#include <debug/tnlDebug.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include "tnl-diff.h"
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
 #include <mesh/tnlLinearGridGeometry.h>
 
 #include "tnlConfig.h"
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-view.cfg.desc";
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-diff.cfg.desc";
 
 int main( int argc, char* argv[] )
 {
@@ -120,3 +114,5 @@ int main( int argc, char* argv[] )
    }
    return EXIT_FAILURE;
 }
+
+

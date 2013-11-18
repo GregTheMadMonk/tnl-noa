@@ -36,15 +36,22 @@ class tnlLinearGridGeometry< 1, Real, Device, Index >
 {
    public:
 
+   enum { Dimensions = 1};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlTuple< 1, Index > CoordinatesType;
    typedef tnlTuple< 1, Real > VertexType;
 
+   static tnlString getType();
+
    void setParametricStep( const VertexType& parametricStep );
 
    const VertexType& getParametricStep() const;
+
+   void setProportions( const VertexType& proportions );
+
+   const VertexType& getProportions() const;
 
    void getElementCenter( const VertexType& origin,
                           const CoordinatesType& coordinates,
@@ -79,6 +86,8 @@ class tnlLinearGridGeometry< 1, Real, Device, Index >
 
    VertexType parametricStep;
 
+   VertexType proportions;
+
    Real elementMeasure;
 };
 
@@ -89,11 +98,12 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
 {
    public:
 
+   enum { Dimensions = 2};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< 2, Index > CoordinatesType;
-   typedef tnlTuple< 2, Real > VertexType;
+   typedef tnlTuple< Dimensions, Index > CoordinatesType;
+   typedef tnlTuple< Dimensions, Real > VertexType;
    typedef tnlFeature< true > ElementsMeasureStorage;
    typedef tnlFeature< true > DualElementsMeasureStorage;
    typedef tnlFeature< true > EdgeNormalsStorage;
@@ -101,7 +111,7 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
 
    tnlLinearGridGeometry();
 
-   static tnlString getTypeStatic();
+   static tnlString getType();
 
    void setParametricStep( const VertexType& parametricStep );
 
@@ -112,10 +122,10 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
    const VertexType& getProportions() const;
 
    void getElementCenter( const VertexType& origin,
-                          const tnlTuple< 2, Index >& coordinates,
+                          const tnlTuple< Dimensions, Index >& coordinates,
                           VertexType& center ) const;
 
-   Real getElementMeasure( const tnlTuple< 2, Index >& coordinates ) const;
+   Real getElementMeasure( const tnlTuple< Dimensions, Index >& coordinates ) const;
 
    template< int dx, int dy >
    Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
@@ -150,6 +160,77 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
 
    tnlVector< RealType, DeviceType, IndexType > ySegments, ySegmentsLeftOffsets, ySegmentsRightOffsets;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlLinearGridGeometry< 3, Real, Device, Index >
+{
+   public:
+
+   enum { Dimensions = 3};
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef tnlTuple< Dimensions, Index > CoordinatesType;
+   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlFeature< true > ElementsMeasureStorage;
+   typedef tnlFeature< true > DualElementsMeasureStorage;
+   typedef tnlFeature< true > EdgeNormalsStorage;
+   typedef tnlFeature< true > VerticesStorage;
+
+   tnlLinearGridGeometry();
+
+   static tnlString getType();
+
+   void setParametricStep( const VertexType& parametricStep );
+
+   const VertexType& getParametricStep() const;
+
+   void setProportions( const VertexType& proportions );
+
+   const VertexType& getProportions() const;
+
+   void getElementCenter( const VertexType& origin,
+                          const tnlTuple< Dimensions, Index >& coordinates,
+                          VertexType& center ) const;
+
+   Real getElementMeasure( const tnlTuple< Dimensions, Index >& coordinates ) const;
+
+   template< int dx, int dy >
+   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< Index dx, Index dy >
+   void getEdgeNormal( const CoordinatesType& coordinates,
+                       VertexType& normal ) const;
+
+   template< Index dx, Index dy >
+   void getVertex( const CoordinatesType& coordinates,
+                   const VertexType& origin,
+                   VertexType& vertex ) const;
+
+   void setNumberOfSegments( const IndexType segments );
+
+   void setSegmentData( const IndexType segment,
+                        const RealType& segmentHeight,
+                        const RealType& leftOffset,
+                        const RealType& rightOffset );
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
+
+   protected:
+
+   VertexType parametricStep;
+
+   VertexType proportions;
+
+   IndexType numberOfSegments;
+
+   tnlVector< RealType, DeviceType, IndexType > ySegments, ySegmentsLeftOffsets, ySegmentsRightOffsets;
+};
+
 
 #include <implementation/mesh/tnlLinearGridGeometry_impl.h>
 

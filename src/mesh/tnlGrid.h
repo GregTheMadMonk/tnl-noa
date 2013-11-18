@@ -52,13 +52,13 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    tnlGrid();
 
-   static tnlString getTypeStatic();
+   static tnlString getType();
 
-   tnlString getType() const;
+   tnlString getTypeVirtual() const;
 
-   void setDimensions( const Index xSize );
+   bool setDimensions( const Index xSize );
 
-   void setDimensions( const CoordinatesType& );
+   bool setDimensions( const CoordinatesType& );
 
    const CoordinatesType& getDimensions() const;
 
@@ -78,6 +78,21 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    Index getDofs() const;
 
+   template< int dx >
+   void getVertex( const CoordinatesType& elementCoordinates,
+                   VertexType& vertex ) const;
+
+   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
+                                                        const GridFunction& f2 ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
+                                                        const GridFunction& f2,
+                                                        const typename GridFunction::RealType& p ) const;
+
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
 
@@ -88,6 +103,9 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    bool load( const tnlString& fileName );
 
+   bool writeMesh( const tnlString& fileName,
+                   const tnlString& format ) const;
+
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
                const tnlString& fileName,
@@ -97,7 +115,7 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    tnlTuple< 1, IndexType > dimensions;
 
-   tnlTuple< 1, RealType > origin, proportions;
+   tnlTuple< 1, RealType > origin;
 
    IndexType dofs;
 
@@ -192,6 +210,15 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    void getVertex( const CoordinatesType& elementCoordinates,
                    VertexType& vertex ) const;
 
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
+                                                        const GridFunction& f2 ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
+                                                        const GridFunction& f2,
+                                                        const typename GridFunction::RealType& p ) const;
+
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
 
@@ -269,6 +296,20 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    Index getDofs() const;
 
+   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< int dx, int dy >
+   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
+                                                        const GridFunction& f2 ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
+                                                        const GridFunction& f2,
+                                                        const typename GridFunction::RealType& p ) const;
+
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
 
@@ -278,6 +319,9 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    bool save( const tnlString& fileName ) const;
 
    bool load( const tnlString& fileName );
+
+   bool writeMesh( const tnlString& fileName,
+                   const tnlString& format ) const;
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,

@@ -43,9 +43,17 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
    typedef tnlTuple< Dimensions, Index > CoordinatesType;
    typedef tnlTuple< Dimensions, Real > VertexType;
 
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
    void setParametricStep( const VertexType& parametricStep );
 
    const VertexType& getParametricStep() const;
+
+   void setProportions( const VertexType& proportions );
+
+   const VertexType& getProportions() const;
 
    void getElementCenter( const VertexType& origin,
                           const CoordinatesType& coordinates,
@@ -80,6 +88,8 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
 
    VertexType parametricStep;
 
+   VertexType proportions;
+
    Real elementMeasure;
 };
 
@@ -101,7 +111,9 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
    typedef tnlFeature< false > EdgeNormalsStorage;
    typedef tnlFeature< false > VerticesStorage;
 
-   static tnlString getTypeStatic();
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
 
    void setParametricStep( const VertexType& parametricStep );
 
@@ -141,6 +153,68 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
 
    Real elementMeasure;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlIdenticalGridGeometry< 3, Real, Device, Index >
+{
+   public:
+
+   enum { Dimensions = 3};
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef tnlTuple< Dimensions, Index > CoordinatesType;
+   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlFeature< false > ElementsMeasureStorage;
+   typedef tnlFeature< false > DualElementsMeasureStorage;
+   typedef tnlFeature< false > EdgeNormalsStorage;
+   typedef tnlFeature< false > VerticesStorage;
+
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   void setParametricStep( const VertexType& parametricStep );
+
+   const VertexType& getParametricStep() const;
+
+   void setProportions( const VertexType& proportions );
+
+   const VertexType& getProportions() const;
+
+   void getElementCenter( const VertexType& origin,
+                          const CoordinatesType& coordinates,
+                          VertexType& center ) const;
+
+   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< int dx, int dy, int dz >
+   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
+
+   template< Index dx, Index dy, Index dz >
+   void getEdgeNormal( const CoordinatesType& coordinates,
+                       VertexType& normal ) const;
+
+   template< Index dx, Index dy, Index dz >
+   void getVertex( const CoordinatesType& coordinates,
+                   const VertexType& origin,
+                   VertexType& vertex ) const;
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
+
+   protected:
+
+   VertexType parametricStep;
+
+   VertexType proportions;
+
+   Real elementMeasure;
+};
+
 
 #include <implementation/mesh/tnlIdenticalGridGeometry_impl.h>
 

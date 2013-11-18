@@ -1,0 +1,14 @@
+group IO
+{
+   string mesh( "mesh.tnl" )            [The mesh file.];
+   list of string input-files(!)        [The first set of the input files.];   
+   string output-file( "tnl-diff.log" ) [Write the output to given file.];
+   string mode( "couples")              [Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.];
+   bool write-difference(no)            [Write difference grid function.];
+   bool write-exact-curve(no)           [Write exact curve with given radius.];
+   integer edges-skip(0)                [Width of the edges that will be skipped - not included into the error norms.];
+   bool write-graph( true )             [Draws a graph in the Gnuplot format of the dependence of the error norm on t.]; 
+   bool write-log-graph( true )         [Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.]; 
+   real tau( 0.0 )                      [Time period between the subsequent solutions.]; 
+   integer verbose(1)                   [Sets verbosity.];
+},[Arguments describing input and output data.];

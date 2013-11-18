@@ -23,6 +23,16 @@
 /****
  * Linear geometry for 1D
  */
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlLinearGridGeometry< 1, Real, Device, Index > :: getType()
+{
+   return tnlString( "tnlLinearGridGeometry< 1, " ) +
+          getParameterType< RealType >() + ", " +
+          Device :: getDeviceType() + ", " +
+          getParameterType< IndexType >() + " > ";
+}
 
 template< typename Real,
           typename Device,
@@ -40,6 +50,23 @@ const typename tnlLinearGridGeometry< 1, Real, Device, Index > :: VertexType&
    tnlLinearGridGeometry< 1, Real, Device, Index > :: getParametricStep() const
 {
    return this -> parametricStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 1, Real, Device, Index > :: setProportions( const VertexType& proportions )
+{
+   this -> proportions = proportions;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const typename tnlLinearGridGeometry< 1, Real, Device, Index > :: VertexType&
+   tnlLinearGridGeometry< 1, Real, Device, Index > :: getProportions() const
+{
+   return this -> proportions;
 }
 
 template< typename Real,
@@ -137,7 +164,7 @@ tnlLinearGridGeometry< 2, Real, Device, Index > :: tnlLinearGridGeometry()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlLinearGridGeometry< 2, Real, Device, Index > :: getTypeStatic()
+tnlString tnlLinearGridGeometry< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlLinearGridGeometry< 2, " ) +
           getParameterType< RealType >() + ", " +
@@ -377,7 +404,180 @@ bool tnlLinearGridGeometry< 2, Real, Device, Index > :: load( tnlFile& file )
    return true;
 };
 
+/****
+ * Linear geometry for 3D
+ */
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlLinearGridGeometry< 3, Real, Device, Index > :: tnlLinearGridGeometry()
+: numberOfSegments( 0 )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlLinearGridGeometry< 3, Real, Device, Index > :: getType()
+{
+   return tnlString( "tnlLinearGridGeometry< 3, " ) +
+          getParameterType< RealType >() + ", " +
+          Device :: getDeviceType() + ", " +
+          getParameterType< IndexType >() + " > ";
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: setParametricStep( const VertexType& parametricStep )
+{
+   this -> parametricStep = parametricStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: setProportions( const VertexType& proportions )
+{
+   this -> proportions = proportions;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const typename tnlLinearGridGeometry< 3, Real, Device, Index > :: VertexType&
+   tnlLinearGridGeometry< 3, Real, Device, Index > :: getProportions() const
+{
+   return this -> proportions;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const typename tnlLinearGridGeometry< 3, Real, Device, Index > :: VertexType&
+   tnlLinearGridGeometry< 3, Real, Device, Index > :: getParametricStep() const
+{
+   return this -> parametricStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: getElementCenter( const VertexType& origin,
+                                                                          const CoordinatesType& coordinates,
+                                                                          VertexType& center ) const
+{
+   getVertex<0, 0>( coordinates, origin, center );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlLinearGridGeometry< 3, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
+{
+   VertexType v0, v1, v2, v3;
+   const VertexType origin( 0.0 );
+   this -> template getVertex< -1, -1 >( coordinates, origin, v0 );
+   this -> template getVertex<  1, -1 >( coordinates, origin, v1 );
+   this -> template getVertex<  1,  1 >( coordinates, origin, v2 );
+   this -> template getVertex< -1,  1 >( coordinates, origin, v3 );
+
+   return tnlTriangleArea( v0, v1, v3 ) + tnlTriangleArea( v2, v3, v1 );
+
+   //return elementMeasure;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int dx, int dy >
+Real tnlLinearGridGeometry< 3, Real, Device, Index > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
+{
+   tnlAssert( ( dx == 0 && ( dy == 1 || dy == -1 ) ) ||
+              ( dy == 0 && ( dx == 1 || dx == -1 ) ),
+              cerr << " dx = " << dx << " dy = " << dy << endl );
+   tnlAssert( false, );
+   return 0;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< Index dx, Index dy >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: getEdgeNormal( const CoordinatesType& coordinates,
+                                                                       VertexType& normal ) const
+{
+   tnlAssert( ( dx == 0 && ( dy == 1 || dy == -1 ) ) ||
+              ( dy == 0 && ( dx == 1 || dx == -1 ) ),
+              cerr << " dx = " << dx << " dy = " << dy << endl );
+   tnlAssert( false, );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< Index dx, Index dy >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: getVertex( const CoordinatesType& coordinates,
+                                                                   const VertexType& origin,
+                                                                   VertexType& vertex ) const
+{
+   tnlAssert( ( dx == 0 || dx == 1 || dx == -1 ||
+                dy == 0 || dy == 1 || dy == -1 ), cerr << " dx = " << dx << " dy = " << dy << endl );
+   tnlAssert( false, );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: setNumberOfSegments( const IndexType segments )
+{
+   tnlAssert( segments >= 0, cerr << " segments = " << segments );
+   tnlAssert( false, );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlLinearGridGeometry< 3, Real, Device, Index > :: setSegmentData( const IndexType segment,
+                                                                        const RealType& segmentHeight,
+                                                                        const RealType& leftOffset,
+                                                                        const RealType& rightOffset )
+{
+   tnlAssert( segment >= 0 && ( segment < this -> numberOfSegments || this -> numberOfSegments == 0 ),
+              cerr << " segment = " << segment << ", this -> numberOfSegments = " << this -> numberOfSegments );
+   tnlAssert( false, );
+}
 
 
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlLinearGridGeometry< 3, Real, Device, Index > :: save( tnlFile& file ) const
+{
+   if( ! this -> parametricStep. save( file ) ||
+       ! this -> proportions. save( file ) ||
+       ! file. write< IndexType, DeviceType >( &this -> numberOfSegments ) ||
+       ! this -> ySegments. save( file ) ||
+       ! this -> ySegmentsLeftOffsets. save( file ) ||
+       ! this -> ySegmentsRightOffsets. save( file ) )
+      return false;
+   return true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlLinearGridGeometry< 3, Real, Device, Index > :: load( tnlFile& file )
+{
+   if( ! this -> parametricStep. load( file ) ||
+       ! this -> proportions. load( file ) ||
+       ! file. read< IndexType, DeviceType >( &this -> numberOfSegments ) ||
+       ! this -> ySegments. load( file ) ||
+       ! this -> ySegmentsLeftOffsets. load( file ) ||
+       ! this -> ySegmentsRightOffsets. load( file ) )
+      return false;
+   return true;
+};
 
 #endif /* TNLLINEARGRIDGEOMETRY_IMPL_H_ */

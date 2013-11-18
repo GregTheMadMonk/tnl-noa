@@ -45,7 +45,7 @@ tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType()
           tnlString( getParameterType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( getParameterType< IndexType >() ) + ", " +
-          Geometry< 2, Real, Device, Index > :: getTypeStatic() + " >";
+          Geometry< 2, Real, Device, Index > :: getType() + " >";
 }
 
 template< typename Real,
@@ -450,6 +450,46 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
+                                                                           const GridFunction& f2 ) const
+{
+   typename GridFunction::RealType maxDiff( -1.0 );
+   for( IndexType j = 0; j < getDimensions(). y(); j++ )
+      for( IndexType i = 0; i < getDimensions(). x(); i++ )
+      {
+         IndexType c = this -> getElementIndex( i, j );
+         maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
+      }
+   return maxDiff;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceLpNorm( const GridFunction& f1,
+                                                                           const GridFunction& f2,
+                                                                           const typename GridFunction::RealType& p ) const
+{
+   typename GridFunction::RealType lpNorm( 0.0 );
+   for( IndexType j = 0; j < getDimensions(). y(); j++ )
+      for( IndexType i = 0; i < getDimensions(). x(); i++ )
+      {
+         IndexType c = this->getElementIndex( i, j );
+         lpNorm += pow( p, tnlAbs( f1[ c ] - f2[ c ] ) ) *
+            this->getElementMeasure( CoordinatesType( i, j ) );
+      }
+   return pow( 1.0 / p, lpNorm );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
 bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) )
@@ -654,7 +694,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
          {
             VertexType v;
             this -> getVertex< 0, 0 >( CoordinatesType( i, j ), v );
-            file << v. x() << " " << " " << v. y() << " ";
+            tnlGnuplotWriter::write( file,  v );
             tnlGnuplotWriter::write( file,  function[ this -> getElementIndex( i, j ) ] );
             file << endl;
          }
