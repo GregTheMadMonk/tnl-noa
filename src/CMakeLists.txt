@@ -1,4 +1,5 @@
 INCLUDE_DIRECTORIES( config )
+ADD_SUBDIRECTORY( generators )
 ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( debug )
@@ -10,14 +11,16 @@ ADD_SUBDIRECTORY( solvers )
 ADD_SUBDIRECTORY( legacy )
 ADD_SUBDIRECTORY( implementation )
 
-set( tnl_SOURCES ${tnl_config_SOURCES}
+set( tnl_SOURCES ${tnl_generators_SOURCES}
+                 ${tnl_config_SOURCES}
                  ${tnl_core_SOURCES}
                  ${tnl_implementation_SOURCES}
                  ${tnl_legacy_SOURCES}
                  ${tnl_debug_SOURCES}
                  ${tnl_matrix_SOURCES} )
 
-set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
+set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
+                       ${tnl_config_CUDA__SOURCES}
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_implementation_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}

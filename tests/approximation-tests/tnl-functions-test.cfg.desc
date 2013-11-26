@@ -1,0 +1,10 @@
+group FunctionDescription
+{
+   integer dimensions(!)                  [Number of dimensions of the domain of the function.];
+   string function-name(!)               [The function name.];
+},[Function description.];
+
+group InputOutput
+{
+   string output-file( "f.tnl")          [The file the function will be writte to.];
+}, [I/O definition.]

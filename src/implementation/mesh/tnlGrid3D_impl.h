@@ -178,6 +178,25 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+void tnlGrid< 3, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
+                                                                           CoordinatesType& coordinates ) const
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+void tnlGrid< 3, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
+                                                                      VertexType& center ) const
+{
+      //geometry. getElementCenter( origin, coordinates, center );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
 Index tnlGrid< 3, Real, Device, Index, Geometry > :: getDofs() const
 {
    return this -> dofs;

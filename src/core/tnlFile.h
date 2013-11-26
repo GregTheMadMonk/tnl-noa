@@ -155,7 +155,7 @@ bool tnlFile :: read( Type* buffer,
       return false;
    }
 
-   int bytes_read( 0 );
+   int bytesRead( 0 );
    this->readElements = 0;
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );

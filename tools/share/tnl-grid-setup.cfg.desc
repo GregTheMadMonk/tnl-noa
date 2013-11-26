@@ -1,0 +1,22 @@
+group IO
+{
+   string output-file( "mesh.tnl" ) [Output file.];
+   integer verbose(1)               [Set the verbosity of the program.];
+},[Arguments describing input and output data.];
+
+group Grid
+{
+   string grid-name( "tnl-grid" )    [The grid name.]; 
+   integer dimensions(!)             [The grid dimensions.];
+   string real-type( "double" )      [Precision of the real type describing the grid. It can be: float, double or long-double.];
+   string index-type( "int" )        [Type for the indexing of the grid elements. It can be: int or long-int.];
+   real origin-x( 0.0 )              [The x-coordinate of the origin.];
+   real origin-y( 0.0 )              [The y-coordinate of the origin (only for dimensions > 1).];
+   real origin-z( 0.0 )              [The z-coordinate of the origin (only for dimensions > 2).];
+   real proportions-x( 1.0 )         [The proportions of the grid along the x axis.];
+   real proportions-y( 1.0 )         [The proportions of the grid along the y axis (only for dimensions > 1).];
+   real proportions-z( 1.0 )         [The proportions of the grid along the z axis (only for dimensions > 2).];
+   integer size-x                    [Number of the elements along the x axis];
+   integer size-y                    [Number of the elements along the y axis];
+   integer size-z                    [Number of the elements along the z axis];   
+},[The grid description.];

@@ -31,6 +31,7 @@ template< int Size, typename Real = double >
 class tnlTuple
 {
    public:
+   typedef Real RealType;
 
    tnlTuple();
 

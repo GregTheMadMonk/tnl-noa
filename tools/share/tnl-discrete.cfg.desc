@@ -1,0 +1,19 @@
+group IO
+{
+   string mesh( "mesh.tnl" )             [Mesh file. If none is given, a regular rectangular mesh is assumed.];
+   string function(!)                    [Input files.];
+   string output-file                    [Output files.];
+   bool check-output-file(false)         [If the output file already exists, do not recreate it.];
+   string help                           [Write help.];   
+},[Arguments describing input and output data.];
+
+group Functions
+{
+   integer x-derivative( 0 )             [Order of the partial derivative w.r.t x (sum of all partial derivatives can be at most 4).];
+   integer y-derivative( 0 )             [Order of the partial derivative w.r.t x (sum of all partial derivatives can be at most 4).];
+   integer z-derivative( 0 )             [Order of the partial derivative w.r.t x (sum of all partial derivatives can be at most 4).];
+   bool approximate-derivatives( false ) [Compute the partial derivatives numericaly.];
+   real wave-length(1.0)                 [Wave length.];
+   real amplitude(1.0)                   [Amplitude];
+   real phase(0.0)                       [Phase.];
+},[The functions definitions.];

@@ -76,6 +76,12 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    Index getElementIndex( const Index i ) const;
 
+   void getElementCoordinates( const Index i,
+                               CoordinatesType& coordinates ) const;
+
+   void getElementCenter( const CoordinatesType& coordinates,
+                          VertexType& v ) const;
+
    Index getDofs() const;
 
    template< int dx >
@@ -293,6 +299,12 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    const VertexType& getParametricStep() const;
 
    Index getElementIndex( const Index i, const Index j, const Index k ) const;
+
+   void getElementCoordinates( const Index i,
+                               CoordinatesType& coordinates ) const;
+
+   void getElementCenter( const CoordinatesType& coordinates,
+                          VertexType& center ) const;
 
    Index getDofs() const;
 
