@@ -43,8 +43,12 @@ template< typename Vertex, typename Device >
       typename Vertex::RealType tnlSinWaveFunction< 1, Vertex, Device >::getF( const Vertex& v ) const
 {
    const RealType& x = v.x();
-   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return this->amplitude * sin( this->phase + x / ( M_PI * this->waveLength) );
+   if( YDiffOrder != 0 || ZDiffOrder != 0 )
+      return 0.0;
+   if( XDiffOrder == 0 )
+      return this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+   if( XDiffOrder == 1 )
+      return 2.0 * M_PI / this->waveLength * this->amplitude * cos( 2.0 * M_PI * x / this->waveLength );
    return 0.0;
 }
 
@@ -57,7 +61,7 @@ template< typename Vertex, typename Device >
    const RealType& y = v.y();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->amplitude * sin( this->phase + sqrt( x * x + y * y ) / ( M_PI * this->waveLength) );
+      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    }
    return 0.0;
 }

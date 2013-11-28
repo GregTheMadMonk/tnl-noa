@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+FUNCTIONS="sin-wave"
+GRID_DIMS="16 32 64 128 256 512"
+for function in $FUNCTIONS;
+do
+   mkdir ${function}
+   cd ${function}
+   
+   for grid_dim in $GRID_DIMS;
+   do
+      mkdir ${grid_dim}
+      cd ${grid_dim}
+      
+      tnl-grid-setup --output-file mesh.tnl \
+                     --dimensions 1 \
+                     --size-x ${grid_dim}
+      
+      tnl-discrete --mesh mesh.tnl \
+                   --function ${function} \
+                   --wave-length 1 \
+                   --output-file u.tnl
+
+      tnl-discrete --mesh mesh.tnl \
+                   --function ${function} \
+                   --wave-length 1 \
+                   --x-derivative 1 \
+                   --output-file u-x-exact.tnl
+      
+      tnl-discrete --mesh mesh.tnl \
+                   --function ${function} \
+                   --wave-length 1 \
+                   --x-derivative 1 \
+                   --approximate-derivatives yes \
+                   --output-file u-x-approx.tnl
+                   
+      tnl-view --mesh mesh.tnl \
+               --check-output-file yes \
+               --input-files u*.tnl
+      cd ..
+   done
+
+   cd ..
+done

@@ -26,7 +26,7 @@ class tnlFiniteDifferences
 {
 };
 
-template< typename Real = double, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device, typename Index >
 class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >
 {
    public:
@@ -34,8 +34,8 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeo
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< 1, Index > CoordinatesType;
    typedef tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
 
    template< typename GridFunction,
              int XDifferenceOrder,
@@ -44,6 +44,76 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeo
              int XDifferenceDirection = 0,
              int YDifferenceDirection = 0,
              int ZDifferenceDirection = 0 >
+   static RealType getDifference( const GridType& grid,
+                                  const GridFunction& inFunction,
+                                  GridFunction& outFunction );
+
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection = 0,
+             int YDifferenceDirection = 0,
+             int ZDifferenceDirection = 0 >
+   static RealType getDifference( const GridType& grid,
+                                  const CoordinatesType& c,
+                                  const GridFunction& function );
+
+};
+
+template< typename Real, typename Device, typename Index >
+class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection = XDifferenceOrder%2,
+             int YDifferenceDirection = YDifferenceOrder%2,
+             int ZDifferenceDirection = ZDifferenceOrder%2 >
+   static RealType getDifference( const GridType& grid,
+                                  const GridFunction& inFunction,
+                                  GridFunction& outFunction );
+
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection = 0,
+             int YDifferenceDirection = 0,
+             int ZDifferenceDirection = 0 >
+   static RealType getDifference( const GridType& grid,
+                                  const CoordinatesType& c,
+                                  const GridFunction& function );
+
+};
+
+template< typename Real, typename Device, typename Index >
+class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection = XDifferenceOrder%2,
+             int YDifferenceDirection = YDifferenceOrder%2,
+             int ZDifferenceDirection = ZDifferenceOrder%2 >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );

@@ -2,7 +2,7 @@ group IO
 {
    string mesh( "mesh.tnl" )             [Mesh file. If none is given, a regular rectangular mesh is assumed.];
    string function(!)                    [Input files.];
-   string output-file                    [Output files.];
+   string output-file(!)                 [Output files.];
    bool check-output-file(false)         [If the output file already exists, do not recreate it.];
    string help                           [Write help.];   
 },[Arguments describing input and output data.];

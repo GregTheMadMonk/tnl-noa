@@ -20,92 +20,172 @@
 
 #include <schemes/tnlFiniteDifferences.h>
 
-
 template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstForwardDifferenceX( const GridType& grid,
-                                     const CoordinatesType& c,
-                                     const GridFunction& function )
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const GridFunction& inFunction,
+                                                                                                         GridFunction& outFunction )
 {
-   tnlAssert( c.x() < grid.getDimensions().x() - 1,
-             cerr << "c.x() = " << c.x() << " grid.getDimensions().x() - 1 = " << grid.getDimensions().x() - 1 );
-   Real hx = grid.getParametricStep().x();
-   Index i1 = grid.getElementIndex( c.x() );
-   Index i2 = grid.getElementIndex( c.x() + 1 );
-   return 1.0 / hx * ( function[ i2 ] - function[ i1 ] );
-}
+   IndexType iBegin, iEnd;
+   if( XDifferenceDirection == 0 || XDifferenceDirection == 1 )
+      iBegin = 0;
+   else
+      iBegin = 1;
+   if( XDifferenceDirection == 1 )
+      iEnd = grid.getDimensions().x() - 1;
+   else
+      iEnd = grid.getDimensions().x();
 
-template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      void tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstForwardDifferenceX( const GridType& grid,
-                                     const GridFunction& inFunction,
-                                     GridFunction& outFunction )
-{
-   for( Index i = 0; i < grid.getDimensions().x() - 1; i++ )
+   CoordinatesType c;
+   for( c.x() = iBegin; c.x() < iEnd; c.x()++ )
    {
-      CoordinatesType c;
-      c.x() = i;
-      Index k = grid.getElementIndex( c );
-      outFunction[ k ] = this->getFirstForwardDifferenceX( grid, c, inFunciton );
+      outFunction[ grid.getElementIndex( c.x() ) ] =
+               getDifference< GridFunction,
+                              XDifferenceOrder,
+                              YDifferenceOrder,
+                              ZDifferenceOrder,
+                              XDifferenceDirection,
+                              YDifferenceDirection,
+                              ZDifferenceDirection >( grid, c, inFunction );
    }
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstBackwardDifferenceX( const GridType& grid,
-                                      const CoordinatesType& c,
-                                      GridFunction& function )
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const CoordinatesType& c,
+                                                                                                         const GridFunction& function )
+{
+
+   if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
+      return 0.0;
+   const RealType hx = grid.getParametricStep().x();
+   if( XDifferenceOrder == 1 )
+   {
+      if( XDifferenceDirection == 0 )
+         return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
+                  function[ grid.getElementIndex( c.x() - 1 ) ] ) / ( 2.0 * hx );
+      else
+         return ( function[ grid.getElementIndex( c.x() + XDifferenceDirection ) ] -
+                  function[ grid.getElementIndex( c.x() ) ] ) / ( XDifferenceDirection * hx );
+   }
+   if( XDifferenceOrder == 2 )
+   {
+      return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
+               2.0 * function[ grid.getElementIndex( c.x() ) ] +
+               function[ grid.getElementIndex( c.x() - 1 ) ] ) / (  hx * hx );
+   }
+
+}
+
+/****
+ *  2D Grid
+ */
+
+template< typename Real, typename Device, typename Index >
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const GridFunction& inFunction,
+                                                                                                         GridFunction& outFunction )
 {
 
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstBackwardDifferenceX( const GridType& grid,
-                                      GridFunction& function )
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const CoordinatesType& c,
+                                                                                                         const GridFunction& function )
+{
+   if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
+      return 0.0;
+   const RealType hx = grid.getParametricSpaceStep();
+   if( XDifferenceOrder == 1 )
+   {
+      return ( function[ grid.getElementIndex( c.x() + XDifferenceDirection ) ] -
+               function[ grid.getElementIndex( c.x() ) ] ) / ( XDifferenceDirection * hx );
+   }
+   if( XDifferenceOrder == 2 )
+   {
+      return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
+               2.0 * function[ grid.getElementIndex( c.x() ) ] +
+               function[ grid.getElementIndex( c.x() - 1 ) ] ) / (  hx * hx );
+   }
+
+}
+
+/****
+ *  3D Grid
+ */
+
+template< typename Real, typename Device, typename Index >
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const GridFunction& inFunction,
+                                                                                                         GridFunction& outFunction )
 {
 
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstCentralDifferenceX( const GridType& grid,
-                                     const CoordinatesType& c,
-                                     GridFunction& function )
+   template< typename GridFunction,
+             int XDifferenceOrder,
+             int YDifferenceOrder,
+             int ZDifferenceOrder,
+             int XDifferenceDirection,
+             int YDifferenceDirection,
+             int ZDifferenceDirection >
+Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > >::getDifference( const GridType& grid,
+                                                                                                         const CoordinatesType& c,
+                                                                                                         const GridFunction& function )
 {
+   if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
+      return 0.0;
+   const RealType hx = grid.getParametricSpaceStep();
+   if( XDifferenceOrder == 1 )
+   {
+      return ( function[ grid.getElementIndex( c.x() + XDifferenceDirection ) ] -
+               function[ grid.getElementIndex( c.x() ) ] ) / ( XDifferenceDirection * hx );
+   }
+   if( XDifferenceOrder == 2 )
+   {
+      return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
+               2.0 * function[ grid.getElementIndex( c.x() ) ] +
+               function[ grid.getElementIndex( c.x() - 1 ) ] ) / (  hx * hx );
+   }
 
 }
 
-template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getFirstCentralDifferenceX( const GridType& grid,
-                                     GridFunction& function )
-{
-}
-
-template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getSecondCentralDifferenceX( const GridType& grid,
-                                      const CoordinatesType& c,
-                                      GridFunction& function )
-{
-
-}
-
-template< typename Real, typename Device, typename Index >
-   template< typename GridFunction >
-      Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >::
-         getSecondCentralDifferenceX( const GridType& grid,
-                                      GridFunction& function )
-{
-}
 
 #include <implementation/schemes/tnlFiniteDifferences_impl.h>
 

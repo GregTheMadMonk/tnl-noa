@@ -50,14 +50,17 @@ bool renderFunction( const tnlParameterContainer& parameters )
    bool approximateDerivatives = parameters.GetParameter< bool >( "approximate-derivatives" );
    if( approximateDerivatives )
    {
+      cout << "+ -> Computing the finite differences ... " << endl;
       DiscreteFunctionType auxDiscreteFunction;
       if( ! auxDiscreteFunction.setSize( mesh.getDofs() ) )
          return false;
       tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction );
-      tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, xDiff >( mesh, auxDiscreteFunction, discreteFunction );
+      tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff >( mesh, auxDiscreteFunction, discreteFunction );
    }
    else
-    tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction );
+   {
+      tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction );
+   }
 
    tnlString outputFile = parameters.GetParameter< tnlString >( "output-file" );
    cout << "+ -> Writing the function to " << outputFile << " ... " << endl;

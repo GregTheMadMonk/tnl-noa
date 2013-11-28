@@ -33,7 +33,7 @@ void tnlFunctionDiscretizer< Mesh, Function, DiscreteFunction >::discretize( con
       typename Mesh::CoordinatesType c;
       mesh.getElementCoordinates( i, c );
       mesh.getElementCenter( c, v );
-      discreteFunction[ i ] = function.template getF< XDiffOrder, YDiffOrder, XDiffOrder >( v );
+      discreteFunction[ i ] = function.template getF< XDiffOrder, YDiffOrder, ZDiffOrder >( v );
       i++;
    }
 }
