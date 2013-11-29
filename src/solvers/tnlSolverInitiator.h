@@ -21,7 +21,8 @@
 #include <core/tnlObject.h>
 #include <config/tnlParameterContainer.h>
 
-template< typename ProblemSetter >
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig >
 class tnlSolverInitiator : public tnlObject
 {
    public:

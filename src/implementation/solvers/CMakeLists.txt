@@ -5,6 +5,7 @@ ADD_SUBDIRECTORY( ode )
 
 SET( headers tnlIterativeSolver_impl.h
              tnlIterativeSolverMonitor_impl.h
+             tnlMeshTypeResolver_impl.h
              tnlSolver_impl.h
              tnlSolverStarter_impl.h
              tnlSolverInitiator_impl.h )

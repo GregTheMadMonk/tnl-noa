@@ -1,7 +1,7 @@
 /***************************************************************************
-                          simpleProblemSetter.h  -  description
+                          tnlDefaultSolverConrfig.h  -  description
                              -------------------
-    begin                : Feb 23, 2013
+    begin                : Nov 29, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,25 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEMTYPESSETTER_H_
-#define SIMPLEPROBLEMTYPESSETTER_H_
+#ifndef TNLDEFAULTSOLVERCONFIG_H_
+#define TNLDEFAULTSOLVERCONFIG_H_
 
-#include <config/tnlParameterContainer.h>
-#include <mesh/tnlGrid.h>
-#include "simpleProblemSolver.h"
-
-template< typename MeshType,
-          typename SolverStarter >
-class simpleProblemSetter
+template< bool resolveMesh = true >
+class tnlDefaultSolverConfig
 {
    public:
 
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   static bool run( const tnlParameterContainer& parameters );
+   enum { ResolveMesh = resolveMesh };
 };
 
-#include "simpleProblemSetter_impl.h"
 
-#endif /* SIMPLEPROBLEMSETTER_H_ */
+
+#endif /* TNLDEFAULTSOLVERCONFIG_H_ */

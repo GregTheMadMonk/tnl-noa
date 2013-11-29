@@ -18,7 +18,10 @@
 #ifndef TNLSOLVER_H_
 #define TNLSOLVER_H_
 
-template< template< typename SolverStarter> class ProblemSetter >
+#include <solvers/tnlDefaultSolverConfig.h>
+
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig = tnlDefaultSolverConfig<> >
 class tnlSolver
 {
    public:

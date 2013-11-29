@@ -21,18 +21,15 @@
 #include <solvers/tnlSolverInitiator.h>
 #include <solvers/tnlSolverStarter.h>
 
-template< template< typename SolverStarter> class ProblemSetter >
-bool tnlSolver< ProblemSetter > :: run( const char* configFileName, int argc, char* argv[] )
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig >
+bool tnlSolver< ProblemSetter, SolverConfig > :: run( const char* configFileName, int argc, char* argv[] )
 {
-   typedef tnlSolverStarter SolverStarter;
-   tnlSolverInitiator< ProblemSetter< SolverStarter > > solverInitiator;
+   tnlSolverInitiator< ProblemSetter, SolverConfig > solverInitiator;
    if( ! solverInitiator. run( configFileName, argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 
 };
-
-
-
 
 #endif /* TNLSOLVER_IMPL_H_ */

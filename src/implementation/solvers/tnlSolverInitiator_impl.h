@@ -16,9 +16,11 @@
  ***************************************************************************/
 
 #include <config/tnlParameterContainer.h>
+#include <solvers/tnlMeshTypeResolver.h>
 
-template< typename ProblemSetter >
-bool tnlSolverInitiator< ProblemSetter > :: run( const char* configFileName, int argc, char* argv[] )
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: run( const char* configFileName, int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
@@ -33,29 +35,33 @@ bool tnlSolverInitiator< ProblemSetter > :: run( const char* configFileName, int
    return setRealType( parameters );
 };
 
-template< typename ProblemSetter >
-bool tnlSolverInitiator< ProblemSetter > :: checkSupportedRealTypes( const tnlString& realType,
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedRealTypes( const tnlString& realType,
                                                                      const tnlParameterContainer& parameters ) const
 {
    return true;
 }
 
-template< typename ProblemSetter >
-bool tnlSolverInitiator< ProblemSetter > :: checkSupportedIndexTypes( const tnlString& indexType,
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig >
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedIndexTypes( const tnlString& indexType,
                                                                       const tnlParameterContainer& parameters ) const
 {
    return true;
 }
 
-template< typename ProblemSetter >
-bool tnlSolverInitiator< ProblemSetter > :: checkSupportedDevices( const tnlString& device,
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedDevices( const tnlString& device,
                                                                    const tnlParameterContainer& parameters ) const
 {
    return true;
 }
 
-template< typename ProblemSetter >
-bool tnlSolverInitiator< ProblemSetter > :: setRealType( const tnlParameterContainer& parameters ) const
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setRealType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& realType = parameters. GetParameter< tnlString >( "real-type" );
    if( ! this -> checkSupportedRealTypes( realType, parameters ) )
@@ -75,9 +81,10 @@ bool tnlSolverInitiator< ProblemSetter > :: setRealType( const tnlParameterConta
    return false;
 }
 
-template< typename ProblemSetter >
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
    template< typename RealType >
-bool tnlSolverInitiator< ProblemSetter > :: setIndexType( const tnlParameterContainer& parameters ) const
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setIndexType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
    if( ! this -> checkSupportedIndexTypes( indexType, parameters ) )
@@ -95,10 +102,11 @@ bool tnlSolverInitiator< ProblemSetter > :: setIndexType( const tnlParameterCont
    return false;
 }
 
-template< typename ProblemSetter >
+template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
+          typename SolverConfig  >
    template< typename RealType,
              typename IndexType >
-bool tnlSolverInitiator< ProblemSetter > :: setDeviceType( const tnlParameterContainer& parameters ) const
+bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setDeviceType( const tnlParameterContainer& parameters ) const
 {
    const tnlString& device = parameters. GetParameter< tnlString >( "device" );
    if( ! this -> checkSupportedDevices( device, parameters ) )
@@ -108,11 +116,11 @@ bool tnlSolverInitiator< ProblemSetter > :: setDeviceType( const tnlParameterCon
    }
    if( this -> verbose )
       cout << "Setting DeviceType to ... " << device << endl;
-   ProblemSetter problemSetter;
+
    if( device == "host" )
-      return problemSetter. template run< RealType, tnlHost, IndexType >( parameters );
+      return tnlMeshTypeResolver< SolverConfig::ResolveMesh, RealType, tnlHost, IndexType, ProblemSetter >::run( parameters );
    if( device == "cuda" )
-      return problemSetter. template run< RealType, tnlCuda, IndexType >( parameters );
+      return tnlMeshTypeResolver< SolverConfig::ResolveMesh, RealType, tnlCuda, IndexType, ProblemSetter >::run( parameters );
    cerr << "The device '" << device << "' is not defined. " << endl;
    return false;
 }

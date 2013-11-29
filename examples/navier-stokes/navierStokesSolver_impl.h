@@ -130,7 +130,13 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
    /****
     * Set-up the geometry
     */
-   tnlTuple< 2, RealType > proportions;
+   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   if( ! this->mesh.load( meshFile ) )
+   {
+      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+      return false;
+   }
+   /*tnlTuple< 2, RealType > proportions;
    proportions. x() = parameters. GetParameter< double >( "width" );
    proportions. y() = parameters. GetParameter< double >( "height" );
    if( proportions. x() <= 0 )
@@ -146,13 +152,11 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
    this -> mesh. setOrigin( tnlTuple< 2, RealType >( 0, 0 ) );
    this -> mesh. setProportions( proportions );
 
-   /****
-    * Set-up the space discretization
-    */
    if( ! this->initMesh( this->mesh, parameters ) )
       return false;
    mesh.refresh();
-   mesh.save( tnlString( "mesh.tnl" ) );
+   mesh.save( tnlString( "mesh.tnl" ) );*/
+
    nsSolver.setMesh( this->mesh );
 
    /****

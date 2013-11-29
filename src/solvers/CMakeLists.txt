@@ -5,6 +5,8 @@ ADD_SUBDIRECTORY( pde )
 ADD_SUBDIRECTORY( preconditioners )
 
 SET( headers tnlIterativeSolver.h
+             tnlDefaultSolverConfig.h
+             tnlMeshTypeResolver.h
              tnlSolver.h
              tnlSolverStarter.h
              tnlSolverInitiator.h

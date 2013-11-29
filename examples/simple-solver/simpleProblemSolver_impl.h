@@ -21,7 +21,7 @@
 #include <core/mfilename.h>
 
 template< typename Mesh >
-tnlString simpleProblemSolver< Mesh> :: getTypeStatic()
+tnlString simpleProblemSolver< Mesh>::getTypeStatic()
 {
    /****
     * Replace 'simpleProblemSolver' by the name of your solver.
@@ -30,17 +30,17 @@ tnlString simpleProblemSolver< Mesh> :: getTypeStatic()
 }
 
 template< typename Mesh >
-tnlString simpleProblemSolver< Mesh> :: getPrologHeader() const
+tnlString simpleProblemSolver< Mesh>::getPrologHeader() const
 {
    /****
-    * Replace 'Simple Problem' by the your desired title of the log table.
+    * Replace 'Simple Problem' by the your desired title in the log table.
     */
    return tnlString( "Simple Problem" );
 }
 
 template< typename Mesh >
-void simpleProblemSolver< Mesh> :: writeProlog( tnlLogger& logger,
-                                                const tnlParameterContainer& parameters ) const
+void simpleProblemSolver< Mesh>::writeProlog( tnlLogger& logger,
+                                              const tnlParameterContainer& parameters ) const
 {
    /****
     * In prolog, write all input parameters which define the numerical simulation.
@@ -60,77 +60,7 @@ void simpleProblemSolver< Mesh> :: writeProlog( tnlLogger& logger,
 }
 
 template< typename Mesh >
-   template< typename Real, typename Device, typename Index,
-             template< int, typename, typename, typename > class Geometry >
-bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
-                                            const tnlParameterContainer& parameters ) const
-{
-   tnlTuple< 1, IndexType > meshes;
-   meshes.x() = parameters.GetParameter< int >( "x-size" );
-   if( meshes.x() <= 0 )
-   {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
-      return false;
-   }
-   mesh.setDimensions( meshes. x() );
-   return true;
-}
-
-template< typename Mesh >
-   template< typename Real, typename Device, typename Index,
-             template< int, typename, typename, typename > class Geometry >
-bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
-                                            const tnlParameterContainer& parameters ) const
-{
-   tnlTuple< 2, IndexType > meshes;
-   meshes.x() = parameters.GetParameter< int >( "x-size" );
-   meshes.y() = parameters.GetParameter< int >( "y-size" );
-   if( meshes.x() <= 0 )
-   {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
-      return false;
-   }
-   if( meshes.y() <= 0 )
-   {
-      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
-      return false;
-   }
-   mesh.setDimensions( meshes. x(), meshes. y() );
-   return true;
-}
-
-template< typename Mesh >
-   template< typename Real, typename Device, typename Index,
-             template< int, typename, typename, typename > class Geometry >
-bool simpleProblemSolver< Mesh >::initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
-                                            const tnlParameterContainer& parameters ) const
-{
-   tnlTuple< 3, IndexType > meshes;
-   meshes.x() = parameters.GetParameter< int >( "x-size" );
-   meshes.y() = parameters.GetParameter< int >( "y-size" );
-   meshes.z() = parameters.GetParameter< int >( "z-size" );
-   if( meshes.x() <= 0 )
-   {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
-      return false;
-   }
-   if( meshes.y() <= 0 )
-   {
-      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
-      return false;
-   }
-   if( meshes.z() <= 0 )
-   {
-      cerr << "Error: z-size must be positive integer number! It is " << meshes. z() << " now." << endl;
-      return false;
-   }
-
-   mesh.setDimensions( meshes.x(), meshes.y(). meshses.z() );
-   return true;
-}
-
-template< typename Mesh >
-bool simpleProblemSolver< Mesh> :: init( const tnlParameterContainer& parameters )
+bool simpleProblemSolver< Mesh>::init( const tnlParameterContainer& parameters )
 {
    /****
     * Set-up your solver here. It means:
@@ -143,11 +73,10 @@ bool simpleProblemSolver< Mesh> :: init( const tnlParameterContainer& parameters
     * Implement additional template specializations of the method initMesh
     * if necessary.
     */
-   if( ! this->initMesh( this->mesh, parameters ) )
-      return false;
-   if( ! this->mesh.save( "mesh.tnl" ) )
+   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   if( ! this->mesh.load( meshFile ) )
    {
-      cerr << "I am not able to save the mesh into a file mesh.tnl." << endl;
+      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
       return false;
    }
 
@@ -171,17 +100,22 @@ bool simpleProblemSolver< Mesh> :: init( const tnlParameterContainer& parameters
 }
 
 template< typename Mesh >
-bool simpleProblemSolver< Mesh> :: setInitialCondition( const tnlParameterContainer& parameters )
+bool simpleProblemSolver< Mesh>::setInitialCondition( const tnlParameterContainer& parameters )
 {
    /****
     * Set the initial condition here. Manipulate only this -> dofVector.
     */
-
+   const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   if( ! this->u.load( initialConditionFile ) )
+   {
+      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      return false;
+   }
    return true;
 }
 
 template< typename Mesh >
-bool simpleProblemSolver< Mesh> :: makeSnapshot( const RealType& time, const IndexType& step )
+bool simpleProblemSolver< Mesh>::makeSnapshot( const RealType& time, const IndexType& step )
 {
    /****
     * Use this method to write state of the solver to file(s).
@@ -206,7 +140,7 @@ bool simpleProblemSolver< Mesh> :: makeSnapshot( const RealType& time, const Ind
 }
 
 template< typename Mesh >
-typename simpleProblemSolver< Mesh> :: DofVectorType& simpleProblemSolver< Mesh> :: getDofVector()
+typename simpleProblemSolver< Mesh>::DofVectorType& simpleProblemSolver< Mesh >::getDofVector()
 {
    /****
     * You do not need to change this usually.
@@ -215,10 +149,10 @@ typename simpleProblemSolver< Mesh> :: DofVectorType& simpleProblemSolver< Mesh>
 }
 
 template< typename Mesh >
-void simpleProblemSolver< Mesh> :: GetExplicitRHS( const RealType& time,
-                                                   const RealType& tau,
-                                                   DofVectorType& _u,
-                                                   DofVectorType& _fu )
+void simpleProblemSolver< Mesh>::GetExplicitRHS( const RealType& time,
+                                                 const RealType& tau,
+                                                 DofVectorType& _u,
+                                                 DofVectorType& _fu )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
@@ -248,7 +182,7 @@ void simpleProblemSolver< Mesh> :: GetExplicitRHS( const RealType& time,
 template< typename Mesh >
 tnlSolverMonitor< typename simpleProblemSolver< Mesh > :: RealType,
                   typename simpleProblemSolver< Mesh > :: IndexType >*
-   simpleProblemSolver< Mesh > ::  getSolverMonitor()
+   simpleProblemSolver< Mesh >::getSolverMonitor()
 {
    return 0;
 }

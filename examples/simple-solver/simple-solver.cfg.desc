@@ -7,6 +7,7 @@ group Problem
 
 group Discretisation
 {
+   strig mesh("mesh.tnl")            [A file containing the numerical mesh.];
    string time-discretisation(!)     [Time discretisation for the time dependent problems. Can be explicit, semi-implicit or fully-implicit.];
 },[The numerical scheme set-up.];
 

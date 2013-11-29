@@ -23,31 +23,29 @@
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>
 #include <schemes/gradient/tnlCentralFDMGradient.h>
 
-template< typename SolverStarter >
+template< typename MeshType, typename SolverStarter >
    template< typename RealType,
              typename DeviceType,
              typename IndexType >
-bool navierStokesSetter< SolverStarter > :: run( const tnlParameterContainer& parameters ) const
+bool navierStokesSetter< MeshType, SolverStarter > :: run( const tnlParameterContainer& parameters )
 {
-   int dimensions = parameters. GetParameter< int >( "dimensions" );
-   if( dimensions != 2 )
-   {
-      cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;
-      return false;
-   }
-   SolverStarter solverStarter;
-   const tnlString& schemeName = parameters. GetParameter< tnlString >( "scheme" );
-   if( dimensions == 2 )
-   {
-      //typedef tnlGrid< 2, RealType, DeviceType, IndexType, tnlLinearGridGeometry > MeshType;
-      typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
-      if( schemeName == "lax-fridrichs" )
-         return solverStarter. run< navierStokesSolver< MeshType,
-                                                        tnlLaxFridrichs< MeshType,
-                                                                        tnlCentralFDMGradient< MeshType > > > >
-                                                        ( parameters );
-   }
+   cerr << "The solver is not implemented for the mesh " << MeshType::getType() << "." << endl;
+   return false;
 }
 
+template< typename MeshReal, typename Device, typename MeshIndex, typename SolverStarter >
+template< typename RealType,
+          typename DeviceType,
+          typename IndexType >
+bool navierStokesSetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, SolverStarter >::run( const tnlParameterContainer& parameters )
+{
+   SolverStarter solverStarter;
+   const tnlString& schemeName = parameters. GetParameter< tnlString >( "scheme" );
+   if( schemeName == "lax-fridrichs" )
+      return solverStarter. run< navierStokesSolver< MeshType,
+                                                     tnlLaxFridrichs< MeshType,
+                                                                     tnlCentralFDMGradient< MeshType > > > >
+                                                     ( parameters );
+};
 
 #endif /* NAVIERSTOKESSETTER_IMPL_H_ */

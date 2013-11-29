@@ -21,15 +21,31 @@
 #include <config/tnlParameterContainer.h>
 #include "navierStokesSolver.h"
 
-template< typename SolverStarter >
+template< typename MeshType,
+          typename SolverStarter >
 class navierStokesSetter
 {
    public:
+
    template< typename RealType,
              typename DeviceType,
              typename IndexType >
-   bool run( const tnlParameterContainer& parameters ) const;
+   static bool run( const tnlParameterContainer& parameters );
 };
+
+template< typename MeshReal, typename Device, typename MeshIndex, typename SolverStarter >
+class navierStokesSetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, SolverStarter >
+{
+   public:
+
+   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+
+   template< typename RealType,
+             typename DeviceType,
+             typename IndexType >
+   static bool run( const tnlParameterContainer& parameters );
+};
+
 
 #include "navierStokesSetter_impl.h"
 
