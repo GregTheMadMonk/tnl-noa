@@ -18,7 +18,7 @@
 #ifndef TNLMATRIXTESTER_H_
 #define TNLMATRIXTESTER_H_
 
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 
 template< typename Real, typename Index = int >
 class tnlMatrixTester

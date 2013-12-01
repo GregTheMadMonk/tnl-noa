@@ -23,8 +23,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlEllpackMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
 
 template< class T > class tnlEllpackMatrixTester : public CppUnit :: TestCase
 {

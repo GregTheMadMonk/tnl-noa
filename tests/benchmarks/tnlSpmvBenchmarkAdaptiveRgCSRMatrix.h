@@ -19,7 +19,7 @@
 #define TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
-#include <matrix/tnlAdaptiveRgCSRMatrix.h>
+#include <matrices/tnlAdaptiveRgCSRMatrix.h>
 #include <core/tnlAssert.h>
 
 template< typename Real, typename Device, typename Index>

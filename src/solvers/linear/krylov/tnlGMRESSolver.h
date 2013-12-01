@@ -101,9 +101,9 @@ class tnlGMRESSolver : public tnlObject,
 
 #include <implementation/solvers/linear/krylov/tnlGMRESSolver_impl.h>
 
-#include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlEllpackMatrix.h>
-#include <matrix/tnlMultiDiagonalMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlMultiDiagonalMatrix.h>
 
 extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;

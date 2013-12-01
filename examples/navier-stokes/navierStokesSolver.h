@@ -22,7 +22,7 @@
 #include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
 #include <config/tnlParameterContainer.h>
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <schemes/euler/fvm/tnlLaxFridrichs.h>

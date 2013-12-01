@@ -1,0 +1,115 @@
+/***************************************************************************
+                          tnlTridiagonalMatrix.h  -  description
+                             -------------------
+    begin                : Nov 30, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNLTRIDIAGONALMATRIX_H_
+#define TNLTRIDIAGONALMATRIX_H_
+
+#include <core/tnlObject.h>
+#include <core/tnlHost.h>
+#include <core/vectors/tnlVector.h>
+
+template< typename Real = double,
+          typename Device = tnlHost,
+          typename Index = int >
+class tnlTridiagonalMatrix : public tnlObject
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   tnlTridiagonalMatrix();
+
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   bool setDimensions( const IndexType rows,
+                       const IndexType columns );
+
+   IndexType getRows() const;
+
+   IndexType getColumns() const;
+
+   template< typename Real2, typename Index2 >
+   bool operator == ( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix ) const;
+
+   template< typename Real2, typename Index2 >
+   bool operator != ( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix ) const;
+
+   void setElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value );
+
+   RealType getElement( const IndexType row,
+                        const IndexType column ) const;
+
+   RealType& operator()( const IndexType row,
+                         const IndexType column );
+
+   const RealType& operator()( const IndexType row,
+                               const IndexType column ) const;
+
+   bool addToElement( const IndexType row,
+                      const IndexType column,
+                      const RealType& value,
+                      const RealType& thisElementMultiplicator = 1.0 );
+
+   template< typename Vector >
+   void vectorProduct( const Vector& inVector,
+                       Vector& outVector ) const;
+
+   template< typename Matrix >
+   void addMatrix( const Matrix& matrix,
+                   const RealType& matrixMultiplicator = 1.0,
+                   const RealType& thisMatrixMultiplicator = 1.0 );
+
+   template< typename Matrix, int tileDim = 32 >
+   void getTransposition( const Matrix& matrix,
+                             const RealType& matrixMultiplicator = 1.0 );
+
+   template< typename Vector >
+   void performSORIteration( const Vector& b,
+                             const IndexType row,
+                             Vector& x,
+                             const RealType& omega = 1.0 ) const;
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
+   void printMatrix( ostream& str ) const;
+
+   protected:
+
+   IndexType getElementIndex( const IndexType row,
+                              const IndexType column ) const;
+
+   IndexType rows;
+
+   tnlVector< RealType, DeviceType, IndexType > values;
+};
+
+#include <implementation/matrices/tnlTridiagonalMatrix_impl.h>
+
+
+#endif /* TNLTRIDIAGONALMATRIX_H_ */

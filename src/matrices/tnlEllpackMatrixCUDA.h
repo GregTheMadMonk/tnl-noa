@@ -18,7 +18,7 @@
 #ifndef TNLELLPACKMATRIXCUDA_H_
 #define TNLELLPACKMATRIXCUDA_H_
 
-#include <matrix/tnlEllpackMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
 
 template< typename Real, typename Index >
 class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda, Index >

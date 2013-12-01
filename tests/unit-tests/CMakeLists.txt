@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY( core )
+ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( solver )
 
 set( headers tnlUnitTestStarter.h
@@ -14,11 +15,6 @@ set( headers tnlUnitTestStarter.h
              core/tnlTupleTester.h 
              diff/tnlMPIMeshTester.h 
              diff/tnlMersonSolverCUDATester.cu.h
-             matrix/tnlMatrixTester.h
-             matrix/tnlCSRMatrixTester.h
-             matrix/tnlEllpackMatrixTester.h
-             matrix/tnlRgCSRMatrixTester.h 
-             matrix/tnlAdaptiveRgCSRMatrixTester.h
              solver/tnlMersonSolverTester.h )
              
 if( BUILD_CUDA )
@@ -37,6 +33,8 @@ ADD_TEST( core/arrays/tnlArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OU
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt}${debugExt} )
+
+ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseVectorTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )

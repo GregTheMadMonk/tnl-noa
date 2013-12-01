@@ -20,9 +20,9 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
-#include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlRgCSRMatrix.h>
-#include <matrix/tnlAdaptiveRgCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlRgCSRMatrix.h>
+#include <matrices/tnlAdaptiveRgCSRMatrix.h>
 #include <legacy/mesh/tnlGridOld.h>
 #include <fstream>
 

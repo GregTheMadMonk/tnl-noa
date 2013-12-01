@@ -4,7 +4,7 @@ ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( debug )
 ADD_SUBDIRECTORY( diff )
-ADD_SUBDIRECTORY( matrix )
+ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( schemes )
 ADD_SUBDIRECTORY( solvers )
@@ -17,7 +17,7 @@ set( tnl_SOURCES ${tnl_generators_SOURCES}
                  ${tnl_implementation_SOURCES}
                  ${tnl_legacy_SOURCES}
                  ${tnl_debug_SOURCES}
-                 ${tnl_matrix_SOURCES} )
+                 ${tnl_matrices_SOURCES} )
 
 set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
                        ${tnl_config_CUDA__SOURCES}
@@ -25,7 +25,7 @@ set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
                        ${tnl_implementation_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
                        ${tnl_debug_CUDA__SOURCES}
-                       ${tnl_matrix_CUDA__SOURCES} )
+                       ${tnl_matrices_CUDA__SOURCES} )
                  
                  
 if( BUILD_CUDA )

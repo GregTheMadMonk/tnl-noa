@@ -18,7 +18,7 @@
 #include "quad-test-conf.h"
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 //#include "../../src/matrix/tnlCSRMatrix.h"
 #include "Quadcpp.h"
 

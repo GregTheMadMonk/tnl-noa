@@ -23,7 +23,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
-#include <matrix/tnlMatrix.h>
+#include <matrices/tnlMatrix.h>
 #include <debug/tnlDebug.h>
 
 //! Matrix storing the non-zero elements in the Row-Grouped CSR (Compressed Sparse Row) format

@@ -24,7 +24,7 @@ void tnlFunctionDiscretizer< Mesh, Function, DiscreteFunction >::discretize( con
                                                                              const Function& function,
                                                                              DiscreteFunction& discreteFunction )
 {
-   tnlAssert( Mesh::Dimensions == Function::Dimensions, );
+   //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
    typename Mesh::IndexType i = 0;
    discreteFunction.setSize( mesh.getDofs() );
    while( i < mesh.getDofs() )

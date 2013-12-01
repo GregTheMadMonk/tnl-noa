@@ -79,9 +79,9 @@ class tnlSORSolver : public tnlObject,
 
 #include <implementation/solvers/linear/stationary/tnlSORSolver_impl.h>
 
-#include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlEllpackMatrix.h>
-#include <matrix/tnlMultiDiagonalMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlMultiDiagonalMatrix.h>
 
 
 extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;

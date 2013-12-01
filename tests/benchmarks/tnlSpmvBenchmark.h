@@ -18,7 +18,7 @@
 #ifndef TNLSPMVBENCHMARK_H_
 #define TNLSPMVBENCHMARK_H_
 
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <core/tnlTimerRT.h>
 #include <core/mfuncs.h>
 

@@ -18,7 +18,7 @@
 #ifndef TNLMULTIDIAGONALMATRIX_H_
 #define TNLMULTIDIAGONALMATRIX_H_
 
-#include <matrix/tnlMatrix.h>
+#include <matrices/tnlMatrix.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMultiDiagonalMatrix : public tnlMatrix< Real, Device, Index >

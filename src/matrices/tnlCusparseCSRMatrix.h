@@ -25,7 +25,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <debug/tnlDebug.h>
 
 #ifdef HAVE_CUSPARSE

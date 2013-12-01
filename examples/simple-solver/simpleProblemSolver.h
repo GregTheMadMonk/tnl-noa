@@ -18,7 +18,7 @@
 #ifndef SIMPLEPROBLEMSOLVER_H_
 #define SIMPLEPROBLEMSOLVER_H_
 
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>

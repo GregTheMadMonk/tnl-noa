@@ -25,7 +25,7 @@
 struct Mat;
 #endif
 
-#include <matrix/tnlMatrix.h>
+#include <matrices/tnlMatrix.h>
 
 #ifdef UNDEF
 

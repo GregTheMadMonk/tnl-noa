@@ -19,7 +19,7 @@
 #define TNLSPMVBENCHMARKCSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 
 template< typename Real, typename Index>
 class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >

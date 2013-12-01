@@ -16,9 +16,9 @@
  ***************************************************************************/
 
 #include <solvers/linear/stationary/tnlSORSolver.h>
-#include <matrix/tnlCSRMatrix.h>
-#include <matrix/tnlEllpackMatrix.h>
-#include <matrix/tnlMultiDiagonalMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlMultiDiagonalMatrix.h>
 
 template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;

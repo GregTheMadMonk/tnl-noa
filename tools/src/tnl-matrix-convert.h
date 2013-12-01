@@ -21,7 +21,7 @@
 #include <fstream>
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
-#include <matrix/tnlCSRMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 
 using namespace std;
 
