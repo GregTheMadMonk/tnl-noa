@@ -48,7 +48,7 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
    bool addToElement( const IndexType row,
                       const IndexType column,
                       const RealType& value,
-                      const RealType thisElementMultiplicator = 1.0 );
+                      const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
    void vectorProduct( const Vector& inVector,
@@ -56,18 +56,18 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
 
    template< typename Matrix >
    void addMatrix( const Matrix& matrix,
-                   const RealType matrixMultiplicator = 1.0,
-                   const RealType thisMatrixMultiplicator = 1.0 );
+                   const RealType& matrixMultiplicator = 1.0,
+                   const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Matrix1, typename Matrix2, int tileDim = 32 >
    void getMatrixProduct( const Matrix1& matrix1,
                        const Matrix2& matrix2,
-                       const RealType matrix1Multiplicator = 1.0,
-                       const RealType matrix2Multiplicator = 1.0 );
+                       const RealType& matrix1Multiplicator = 1.0,
+                       const RealType& matrix2Multiplicator = 1.0 );
 
    template< typename Matrix, int tileDim = 32 >
    void getTransposition( const Matrix& matrix,
-                             const RealType matrixMultiplicator = 1.0 );
+                          const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
    void performSORIteration( const Vector& b,

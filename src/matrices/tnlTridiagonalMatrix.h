@@ -39,8 +39,10 @@ class tnlTridiagonalMatrix : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
-                       const IndexType columns );
+   bool setDimensions( const IndexType rows );
+
+   template< typename Real2, typename Device2, typename Index2 >
+   bool setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m );
 
    IndexType getRows() const;
 
@@ -51,6 +53,8 @@ class tnlTridiagonalMatrix : public tnlObject
 
    template< typename Real2, typename Index2 >
    bool operator != ( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix ) const;
+
+   void setValue( const RealType& v );
 
    void setElement( const IndexType row,
                     const IndexType column,
@@ -74,14 +78,14 @@ class tnlTridiagonalMatrix : public tnlObject
    void vectorProduct( const Vector& inVector,
                        Vector& outVector ) const;
 
-   template< typename Matrix >
-   void addMatrix( const Matrix& matrix,
+   template< typename Real2, typename Index2 >
+   void addMatrix( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-   template< typename Matrix, int tileDim = 32 >
-   void getTransposition( const Matrix& matrix,
-                             const RealType& matrixMultiplicator = 1.0 );
+   template< typename Real2, typename Index2, int tileDim = 32 >
+   void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
+                          const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
    void performSORIteration( const Vector& b,

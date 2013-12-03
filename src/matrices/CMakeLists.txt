@@ -8,7 +8,6 @@ SET( headers tnlDenseMatrix.h
 	         tnlEllpackMatrixCUDA.h 	        
 	         tnlFastCSRMatrix.h 
 	         tnlFastRgCSRMatrix.h
-	         tnlFullMatrix.h
 	         tnlMatrix.h
 	         tnlMultiDiagonalMatrix.h
 	         tnlPETSCMatrix.h

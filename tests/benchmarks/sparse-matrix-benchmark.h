@@ -23,7 +23,7 @@
 #include <iomanip>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <matrices/tnlFullMatrix.h>
+#include <legacy/matrices/tnlFullMatrix.h>
 #include <matrices/tnlFastCSRMatrix.h>
 #include <matrices/tnlFastRgCSRMatrix.h>
 #include <matrices/tnlFastRgCSRMatrixCUDA.h>

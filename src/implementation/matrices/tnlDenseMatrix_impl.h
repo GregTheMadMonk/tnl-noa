@@ -53,6 +53,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                            const IndexType columns )
 {
    return tnlMultiArray< 2, Real, Device, Index >::setDimensions( columns, rows );
+   tnlMultiArray< 2, Real, Device, Index >::setValue( 0.0 );
 }
 
 template< typename Real,
@@ -195,7 +196,7 @@ template< typename Real,
           typename Index >
    template< typename Matrix, int tileDim >
 void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matrix,
-                                                              const RealType matrixMultiplicator )
+                                                              const RealType& matrixMultiplicator )
 {
    tnlAssert( this->getColumns() == matrix.getRows() &&
               this->getRows() == matrix.getColumns(),
