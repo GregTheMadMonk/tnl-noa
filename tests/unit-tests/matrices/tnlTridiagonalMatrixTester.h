@@ -48,6 +48,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
@@ -63,6 +64,28 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10 );
       CPPUNIT_ASSERT( m.getRows() == 10 );
       CPPUNIT_ASSERT( m.getColumns() == 10 );
+   }
+
+   void setLikeTest()
+   {
+      MatrixType m1, m2;
+      m1.setDimensions( 10 );
+      m2.setLike( m1 );
+      CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
+   }
+
+   void setValueTest()
+   {
+      const int size( 10 );
+      MatrixType m;
+      m.setDimensions( size );
+      m.setValue( 1.0 );
+      for( int i = 0; i < size; i++ )
+         for( int j = 0; j < size; j++ )
+            if( abs( i - j ) <= 1 )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 1.0 );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0.0 );
    }
 
    void setElementTest()
@@ -88,14 +111,18 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            m.addToElement( i, j, 1 );
+            if( abs( i - j ) <= 1 )
+               m.addToElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
             else
-               CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+               if( abs( i - j ) == 1 )
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+               else
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
    void vectorProductTest()
@@ -124,7 +151,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10);
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            m( i, j ) = i*size + j;
+            if( abs( i - j ) <= 1 )
+               m( i, j ) = i*size + j;
 
       MatrixType m2;
       m2.setLike( m );
@@ -133,13 +161,19 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            CPPUNIT_ASSERT( m2( i, j ) == m( i, j ) + 3.0 );
+            if( abs( i - j ) <= 1 )
+               CPPUNIT_ASSERT( m2.getElement( i, j ) == m.getElement( i, j ) + 3.0 );
+            else
+               CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.0 );
 
       m2.addMatrix( m, 0.5, 0.0 );
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            CPPUNIT_ASSERT( m2( i, j ) == 0.5*m( i, j ) );
+            if( abs( i - j ) <= 1 )
+               CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.5*m.getElement( i, j ) );
+            else
+               CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.0 );
    }
 
    void matrixTranspositionTest()
@@ -149,7 +183,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            m( i, j ) = i*size + j;
+            if( abs( i - j ) <= 1 )
+               m.setElement( i, j, i*size + j );
 
       MatrixType mTransposed;
       mTransposed.setLike( m );
@@ -157,7 +192,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            CPPUNIT_ASSERT( m( i, j ) == mTransposed( j, i ) );
+            CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
    }
 };
 

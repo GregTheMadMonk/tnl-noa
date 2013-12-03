@@ -64,7 +64,7 @@ template< typename Real,
    template< typename Real2, typename Device2, typename Index2 >
 bool tnlTridiagonalMatrix< Real, Device, Index >::setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m )
 {
-
+   return this->setDimensions( m.getRows() );
 }
 
 template< typename Real,
@@ -106,7 +106,7 @@ template< typename Real,
           typename Index >
 void tnlTridiagonalMatrix< Real, Device, Index >::setValue( const RealType& v )
 {
-
+   this->values.setValue( v );
 }
 
 template< typename Real,
@@ -125,6 +125,8 @@ template< typename Real,
 Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                               const IndexType column ) const
 {
+   if( abs( column - row ) > 1 )
+      return 0.0;
    return this->values.getElement( this->getElementIndex( row, column ) );
 }
 
@@ -229,23 +231,18 @@ template< typename Real,
 void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
-   tnlAssert( this->getColumns() == matrix.getRows() &&
-              this->getRows() == matrix.getColumns(),
-               cerr << "This matrix columns: " << this->getColumns() << endl
-                    << "This matrix rows: " << this->getRows() << endl
-                    << "This matrix name: " << this->getName() << endl
-                    << "That matrix columns: " << matrix.getColumns() << endl
-                    << "That matrix rows: " << matrix.getRows() << endl
-                    << "That matrix name: " << matrix.getName() << endl );
+   tnlAssert( this->getRows() == matrix.getRows(),
+               cerr << "This matrix rows: " << this->getRows() << endl
+                    << "That matrix rows: " << matrix.getRows() << endl );
 
    const IndexType& rows = matrix.getRows();
-   const IndexType& columns = matrix.getColumns();
-   for( IndexType i = 0; i < rows; i += tileDim )
-      for( IndexType j = 0; j < columns; j += tileDim )
-         for( IndexType k = i; k < i + tileDim && k < rows; k++ )
-            for( IndexType l = j; l < j + tileDim && l < columns; l++ )
-               this->operator()( l, k ) = matrix( k, l );
-
+   for( IndexType i = 1; i < rows; i++ )
+   {
+      RealType aux = matrix. getElement( i, i - 1 );
+      this->setElement( i, i - 1, matrix.getElement( i - 1, i ) );
+      this->setElement( i, i, matrix.getElement( i, i ) );
+      this->setElement( i - 1, i, aux );
+   }
 }
 
 template< typename Real,
