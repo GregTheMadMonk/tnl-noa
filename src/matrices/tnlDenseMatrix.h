@@ -41,6 +41,8 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
+   IndexType getNumberOfAllocatedElements() const;
+
    IndexType getRows() const;
 
    IndexType getColumns() const;

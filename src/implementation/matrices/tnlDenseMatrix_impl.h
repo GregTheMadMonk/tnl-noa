@@ -59,6 +59,14 @@ bool tnlDenseMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlDenseMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
+{
+   return this->getRows() * this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index tnlDenseMatrix< Real, Device, Index >::getRows() const
 {
    return this->getDimensions().x();
@@ -71,7 +79,6 @@ Index tnlDenseMatrix< Real, Device, Index >::getColumns() const
 {
    return this->getDimensions().y();
 }
-
 
 template< typename Real,
           typename Device,

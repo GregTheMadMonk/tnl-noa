@@ -1,5 +1,6 @@
 SET( headers tnlDenseMatrix.h
              tnlTridiagonalMatrix.h
+             tnlMultidiagonalMatrix.h
 
              tnlAdaptiveRgCSRMatrix.h
              tnlCSRMatrix.h    
@@ -8,8 +9,7 @@ SET( headers tnlDenseMatrix.h
 	         tnlEllpackMatrixCUDA.h 	        
 	         tnlFastCSRMatrix.h 
 	         tnlFastRgCSRMatrix.h
-	         tnlMatrix.h
-	         tnlMultiDiagonalMatrix.h
+	         tnlMatrix.h	         
 	         tnlPETSCMatrix.h
 	         tnlRgCSRMatrix.h
 	)

@@ -25,6 +25,7 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlTridiagonalMatrix< Real, Device, Index >::tnlTridiagonalMatrix()
+: rows( 0 )
 {
 }
 
@@ -70,6 +71,23 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setLike( const tnlTridiagonalM
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlTridiagonalMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
+{
+   return 3 * rows - 2;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlTridiagonalMatrix< Real, Device, Index >::reset()
+{
+   this->rows = 0;
+   this->values.reset();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index tnlTridiagonalMatrix< Real, Device, Index >::getRows() const
 {
    return this->rows;
@@ -86,8 +104,8 @@ Index tnlTridiagonalMatrix< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Real2, typename Index2 >
-bool tnlTridiagonalMatrix< Real, Device, Index >::operator == ( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix ) const
+   template< typename Real2, typename Device2, typename Index2 >
+bool tnlTridiagonalMatrix< Real, Device, Index >::operator == ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
 {
    return this->values == matrix.values;
 }
@@ -95,8 +113,8 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::operator == ( const tnlTridiag
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Real2, typename Index2 >
-bool tnlTridiagonalMatrix< Real, Device, Index >::operator != ( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix ) const
+   template< typename Real2, typename Device2, typename Index2 >
+bool tnlTridiagonalMatrix< Real, Device, Index >::operator != ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
 {
    return this->values != matrix.values;
 }
@@ -265,7 +283,13 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
-
+   if( ! file.save( this->rows ) ||
+       ! this->values.save( file ) )
+   {
+      cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
+      return false;
+   }
+   return true;
 }
 
 template< typename Real,
@@ -273,7 +297,13 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 {
-
+   if( ! file.load( this->rows ) ||
+       ! this->values.load( file ) )
+   {
+      cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
+      return false;
+   }
+   return true;
 }
 
 template< typename Real,
@@ -281,7 +311,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
 {
-
+   return tnlObject::save( fileName );
 }
 
 template< typename Real,
@@ -289,7 +319,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::load( const tnlString& fileName )
 {
-
+   return tnlObject::load( fileName );
 }
 
 template< typename Real,

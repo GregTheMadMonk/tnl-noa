@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlTridiagonalMatrix.h  -  description
+                          tnlMultidiagonalMatrix.h  -  description
                              -------------------
-    begin                : Nov 30, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Oct 13, 2011
+    copyright            : (C) 2011 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,17 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLTRIDIAGONALMATRIX_H_
-#define TNLTRIDIAGONALMATRIX_H_
+#ifndef TNLMULTIDIAGONALMATRIX_H_
+#define TNLMULTIDIAGONALMATRIX_H_
 
-#include <core/tnlObject.h>
-#include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
 
-template< typename Real = double,
-          typename Device = tnlHost,
-          typename Index = int >
-class tnlTridiagonalMatrix : public tnlObject
+template< typename Real, typename Device = tnlHost, typename Index = int >
+class tnlMultidiagonalMatrix : public tnlObject
 {
    public:
 
@@ -33,16 +29,22 @@ class tnlTridiagonalMatrix : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   tnlTridiagonalMatrix();
+   //! Basic constructor
+   tnlMultiDiagonalMatrix( const tnlString& name );
 
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows );
+   bool setDimensions( const IndexType rows,
+                       const IndexType columns );
+
+   bool setDiagonals( const tnlVector< Index, Device, Index >& diagonals );
+
+   const tnlVector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m );
+   bool setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfAllocatedElements() const;
 
@@ -53,10 +55,10 @@ class tnlTridiagonalMatrix : public tnlObject
    IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    void setValue( const RealType& v );
 
@@ -66,12 +68,6 @@ class tnlTridiagonalMatrix : public tnlObject
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
-
-   RealType& operator()( const IndexType row,
-                         const IndexType column );
-
-   const RealType& operator()( const IndexType row,
-                               const IndexType column ) const;
 
    bool addToElement( const IndexType row,
                       const IndexType column,
@@ -83,12 +79,12 @@ class tnlTridiagonalMatrix : public tnlObject
                        Vector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2, int tileDim = 32 >
-   void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -107,17 +103,21 @@ class tnlTridiagonalMatrix : public tnlObject
 
    void printMatrix( ostream& str ) const;
 
+
    protected:
 
-   IndexType getElementIndex( const IndexType row,
-                              const IndexType column ) const;
+   bool getElementIndex( const IndexType row,
+                         const IndexType column,
+                         IndexType& index ) const;
 
-   IndexType rows;
+   IndexType rows, columns;
 
-   tnlVector< RealType, DeviceType, IndexType > values;
+   tnlVector< Real, Device, Index > values;
+
+   tnlVector< Index, Device, Index > diagonalsOffsets;
+
 };
 
-#include <implementation/matrices/tnlTridiagonalMatrix_impl.h>
+#include <implementation/matrices/tnlMultidiagonalMatrix_impl.h>
 
-
-#endif /* TNLTRIDIAGONALMATRIX_H_ */
+#endif /* TNLMULTIDIAGONALMATRIX_H_ */
