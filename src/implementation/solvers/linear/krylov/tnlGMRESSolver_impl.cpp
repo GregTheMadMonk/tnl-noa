@@ -18,7 +18,7 @@
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlMultiDiagonalMatrix.h>
+#include <matrices/tnlMultidiagonalMatrix.h>
 
 template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;

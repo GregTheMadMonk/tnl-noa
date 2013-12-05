@@ -18,7 +18,7 @@
 #include <solvers/linear/stationary/tnlSORSolver.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlMultiDiagonalMatrix.h>
+#include <matrices/tnlMultidiagonalMatrix.h>
 
 template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
@@ -30,10 +30,10 @@ template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, int > >;
 template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
 template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
 
-template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< float,  tnlHost, int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< double, tnlHost, int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< float,  tnlHost, long int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< double, tnlHost, long int > >;
 
 
 #ifdef HAVE_CUDA
@@ -47,10 +47,10 @@ template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
 template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
 template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
 
-template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlCuda, int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlCuda, int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlCuda, long int > >;
-template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlCuda, long int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< float,  tnlCuda, int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< double, tnlCuda, int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< float,  tnlCuda, long int > >;
+template class tnlSORSolver< tnlMultidiagonalMatrix< double, tnlCuda, long int > >;
 #endif
 
 

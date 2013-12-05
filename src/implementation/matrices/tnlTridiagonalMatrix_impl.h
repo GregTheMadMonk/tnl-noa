@@ -283,7 +283,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
-   if( ! file.save( this->rows ) ||
+   if( ! file.write( &this->rows ) ||
        ! this->values.save( file ) )
    {
       cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
@@ -297,7 +297,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 {
-   if( ! file.load( this->rows ) ||
+   if( ! file.read( &this->rows ) ||
        ! this->values.load( file ) )
    {
       cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
@@ -325,13 +325,14 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::load( const tnlString& fileNam
 template< typename Real,
           typename Device,
           typename Index >
-void tnlTridiagonalMatrix< Real, Device, Index >::printMatrix( ostream& str ) const
+void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-         str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
+      for( IndexType column = row - 1; column < row + 2; column++ )
+         if( column >=0 && columns < this-columns )
+            str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
       str << endl;
    }
 }

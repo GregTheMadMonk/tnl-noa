@@ -30,7 +30,7 @@ class tnlMultidiagonalMatrix : public tnlObject
    typedef Index IndexType;
 
    //! Basic constructor
-   tnlMultiDiagonalMatrix( const tnlString& name );
+   tnlMultidiagonalMatrix();
 
    static tnlString getType();
 
@@ -62,7 +62,7 @@ class tnlMultidiagonalMatrix : public tnlObject
 
    void setValue( const RealType& v );
 
-   void setElement( const IndexType row,
+   bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
 
@@ -83,12 +83,12 @@ class tnlMultidiagonalMatrix : public tnlObject
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-   template< typename Real2, typename Index2, int tileDim = 32 >
+   template< typename Real2, typename Index2 >
    void getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
-   void performSORIteration( const Vector& b,
+   bool performSORIteration( const Vector& b,
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
@@ -101,8 +101,7 @@ class tnlMultidiagonalMatrix : public tnlObject
 
    bool load( const tnlString& fileName );
 
-   void printMatrix( ostream& str ) const;
-
+   void print( ostream& str ) const;
 
    protected:
 

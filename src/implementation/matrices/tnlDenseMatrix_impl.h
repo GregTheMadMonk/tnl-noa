@@ -242,7 +242,7 @@ void tnlDenseMatrix< Real, Device, Index >::performSORIteration( const Vector& b
 template< typename Real,
           typename Device,
           typename Index >
-void tnlDenseMatrix< Real, Device, Index >::printMatrix( ostream& str ) const
+void tnlDenseMatrix< Real, Device, Index >::print( ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {

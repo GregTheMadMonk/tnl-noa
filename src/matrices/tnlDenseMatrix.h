@@ -77,7 +77,7 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   void printMatrix( ostream& str ) const;
+   void print( ostream& str ) const;
 };
 
 #include <implementation/matrices/tnlDenseMatrix_impl.h>

@@ -1,5 +1,6 @@
 set( headers tnlDenseMatrixTester.h
-             tnlTridiagonalMatrixTester.h )
+             tnlTridiagonalMatrixTester.h
+             tnlMultidiagonalMatrixTester.h )
 
 ADD_EXECUTABLE( tnlDenseMatrixTest${mpiExt}${debugExt} ${headers} tnlDenseMatrixTest.cpp )
 TARGET_LINK_LIBRARIES( tnlDenseMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
@@ -21,4 +22,13 @@ if( BUILD_CUDA )
                                                                       tnl${mpiExt}${debugExt}-0.1 )
 endif()                                                                      
                                                                           
+ADD_EXECUTABLE( tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${headers} tnlMultidiagonalMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlMultidiagonalMatrixTest.cu )
+   TARGET_LINK_LIBRARIES( tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()                                                                      
                                                                           

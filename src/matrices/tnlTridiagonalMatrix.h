@@ -105,14 +105,14 @@ class tnlTridiagonalMatrix : public tnlObject
 
    bool load( const tnlString& fileName );
 
-   void printMatrix( ostream& str ) const;
+   void print( ostream& str ) const;
 
    protected:
 
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
-   IndexType rows;
+   IndexType rows, columns;
 
    tnlVector< RealType, DeviceType, IndexType > values;
 };
