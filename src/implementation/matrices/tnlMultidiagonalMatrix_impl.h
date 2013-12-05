@@ -62,22 +62,32 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDimensions( const Index
                    << " columns = " << columns << endl );
    this->rows = rows;
    this->columns = columns;
-   if( this->diagonalsOffsets.getSize() != 0 )
-      return values.setSize( Min( this->rows, this->columns ) * this->diagonalsOffsets.getSize() );
+   if( this->diagonalsShift.getSize() != 0 )
+   {
+      if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
+         return false;
+      this->values.setValue( 0.0 );
+   }
    return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals( const tnlVector< Index, Device, Index >& diagonals )
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const IndexType diagonalsNumber,
+                                                                     const IndexType* diagonalsShift )
 {
-   tnlAssert( diagonals.getSize() > 0,
-            cerr << "New number of diagonals = " << diagonals.getSize() << endl );
-   this->diagonalsOffsets.setLike( diagonals );
-   this->diagonalsOffsets = diagonals;
+   tnlAssert( diagonalsNumber > 0,
+            cerr << "New number of diagonals = " << diagonalsNumber << endl );
+   this->diagonalsShift.setSize( diagonalsNumber );
+   for( IndexType i = 0; i < diagonalsNumber; i++ )
+      this->diagonalsShift.setElement( i, diagonalsShift[ i ] );
    if( this->rows != 0 && this->columns != 0 )
-      return values.setSize( Min( this->rows, this->columns ) * this->diagonalsOffsets.getSize() );
+   {
+      if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
+         return false;\
+      this->values.setValue( 0.0 );
+   }
    return true;
 }
 
@@ -86,7 +96,7 @@ template< typename Real,
           typename Index >
 const tnlVector< Index, Device, Index >& tnlMultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
 {
-   return this->diagonalsOffsets;
+   return this->diagonalsShift;
 }
 
 template< typename Real,
@@ -98,7 +108,8 @@ template< typename Real,
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix )
 {
    setDimensions( matrix.getRows(), matrix.getColumns() );
-   if( ! setDiagonals( matrix.getDiagonals() ) )
+   if( ! setDiagonals( matrix.getDiagonals().getSize(),
+                       matrix.getDiagonals().getData() ) )
       return false;
 }
 
@@ -212,7 +223,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addToElement( const IndexT
    Index index;
    if( ! this->getElementIndex( row, column, index  ) )
       return false;
-   this->values[ index ] = thisElementMultiplicator * this->values[ index ] * value;
+   this->values[ index ] = thisElementMultiplicator * this->values[ index ] + value;
    return true;
 }
 
@@ -229,12 +240,12 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector&
    {
       Real result = 0.0;
       for( Index i = 0;
-           i < this->diagonalsOffsets.getSize();
+           i < this->diagonalsShift.getSize();
            i ++ )
       {
-         const Index column = row + this->diagonalsOffsets.getElement( i );
+         const Index column = row + this->diagonalsShift.getElement( i );
          if( column >= 0 && column < this->getColumns() )
-            result += this->values.getElement( row * this->diagonalsOffsets.getSize() + i ) *
+            result += this->values.getElement( row * this->diagonalsShift.getSize() + i ) *
                       inVector.getElement( column );
       }
       outVector.setElement( row, result );
@@ -281,15 +292,15 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   for( IndexType i = 0; i < this->getDiagonalsOffsets.getSize(); i++ )
+   for( IndexType i = 0; i < this->getDiagonalsShift.getSize(); i++ )
    {
-      const IndexType column = i + this -> diagonalsOffsets. getElement( i );
+      const IndexType column = i + this -> diagonalsShift. getElement( i );
       if( column >= 0 && column < this->getColumns() )
       {
          if( column == row )
-            diagonalValue = this->values.getElement( row * this->diagonalsOffsets.getSize() + i );
+            diagonalValue = this->values.getElement( row * this->diagonalsShift.getSize() + i );
          else
-            sum += this->values.getElement( row * this->diagonalsOffsets.getSize() + i ) * x. getElement( column );
+            sum += this->values.getElement( row * this->diagonalsShift.getSize() + i ) * x. getElement( column );
       }
    }
    if( diagonalValue == ( Real ) 0.0 )
@@ -310,7 +321,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! file.write( &this->rows ) ) return false;
    if( ! file.write( &this->columns ) ) return false;
    if( ! this->values.save( file ) ) return false;
-   if( ! this->diagonalsOffsets.save( file ) ) return false;
+   if( ! this->diagonalsShift.save( file ) ) return false;
    return true;
 }
 
@@ -322,7 +333,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
    if( ! file.read( &this->rows ) ) return false;
    if( ! file.read( &this->columns ) ) return false;
    if( ! this->values.load( file ) ) return false;
-   if( ! this->diagonalsOffsets.load( file ) ) return false;
+   if( ! this->diagonalsShift.load( file ) ) return false;
    return true;
 }
 
@@ -350,9 +361,9 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
-      for( IndexType i = 0; i < this->diagonalsOffsets.getSize(); i++ )
+      for( IndexType i = 0; i < this->diagonalsShift.getSize(); i++ )
       {
-         const IndexType column = row + diagonalsOffsets[ i ];
+         const IndexType column = row + diagonalsShift[ i ];
          if( column >=0 && columns < this-columns )
             str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
       }
@@ -377,11 +388,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
                  << " this->getName() = " << this->getName() << endl );
 
    IndexType i( 0 );
-   while( i < this->diagonalsOffsets.getSize() )
+   while( i < this->diagonalsShift.getSize() )
    {
-      if( diagonalsOffsets[ i ] == column - row )
+      if( diagonalsShift[ i ] == column - row )
       {
-         index = row*this->diagonalsOffsets.getSize() + i;
+         index = row*this->diagonalsShift.getSize() + i;
          return true;
       }
       i++;

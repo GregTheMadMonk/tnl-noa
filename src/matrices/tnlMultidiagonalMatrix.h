@@ -39,7 +39,8 @@ class tnlMultidiagonalMatrix : public tnlObject
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setDiagonals( const tnlVector< Index, Device, Index >& diagonals );
+   bool setDiagonals( const IndexType diagonalsNumber,
+                      const IndexType* diagonalsShift );
 
    const tnlVector< Index, Device, Index >& getDiagonals() const;
 
@@ -113,7 +114,7 @@ class tnlMultidiagonalMatrix : public tnlObject
 
    tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > diagonalsOffsets;
+   tnlVector< Index, Device, Index > diagonalsShift;
 
 };
 

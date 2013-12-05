@@ -26,11 +26,17 @@
 #include <cppunit/Message.h>
 #include <core/vectors/tnlVector.h>
 #include <core/tnlFile.h>
+#include <core/mfuncs.h>
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlVectorTester : public CppUnit :: TestCase
 {
    public:
+
+   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef tnlVectorTester< RealType, Device, IndexType > TesterType;
+   typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
+
    tnlVectorTester(){};
 
    virtual
@@ -41,70 +47,22 @@ class tnlVectorTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testMax",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testMax )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testMin",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testMin )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testAbsMax",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testAbsMax )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testAbsMin",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testAbsMin )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testLpNorm",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testLpNorm )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testSum",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testSum )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceMax",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceMax )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceMin",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceMin )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceAbsMax",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMax )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceAbsMin",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMin )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceLpNorm",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceLpNorm )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testDifferenceSum",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testDifferenceSum )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testScalarMultiplication",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testScalarMultiplication )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testScalarProduct",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testScalarProduct )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testalphaXPlusY",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorTester< RealType, Device, IndexType > >(
-                                "testalphaXPlusY",
-                                & tnlVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
-                                );
+      suiteOfTests -> addTest( new TestCallerType( "testMax", &TesterType::testMax ) );
+      suiteOfTests -> addTest( new TestCallerType( "testMin", &TesterType::testMin ) );
+      suiteOfTests -> addTest( new TestCallerType( "testAbsMax", &TesterType::testAbsMax ) );
+      suiteOfTests -> addTest( new TestCallerType( "testAbsMin", &TesterType::testAbsMin ) );
+      suiteOfTests -> addTest( new TestCallerType( "testLpNorm", &TesterType::testLpNorm ) );
+      suiteOfTests -> addTest( new TestCallerType( "testSum", &TesterType::testSum ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceMax", &TesterType::testDifferenceMax ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceMin", &TesterType::testDifferenceMin ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceAbsMax", &TesterType::testDifferenceAbsMax ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceAbsMin", &TesterType::testDifferenceAbsMin ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceLpNorm", &TesterType::testDifferenceLpNorm ) );
+      suiteOfTests -> addTest( new TestCallerType( "testDifferenceSum", &TesterType::testDifferenceSum ) );
+      suiteOfTests -> addTest( new TestCallerType( "testScalarMultiplication", &TesterType::testScalarMultiplication ) );
+      suiteOfTests -> addTest( new TestCallerType( "testScalarProduct", &TesterType::testScalarProduct ) );
+      suiteOfTests -> addTest( new TestCallerType( "testalphaXPlusY", &TesterType::testalphaXPlusY ) );
+      suiteOfTests -> addTest( new TestCallerType( "testalphaXPlusY", &TesterType::testalphaXPlusY ) );
       return suiteOfTests;
    }
 
@@ -150,9 +108,9 @@ class tnlVectorTester : public CppUnit :: TestCase
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v[ i ] = -2;
-      CPPUNIT_ASSERT( v. lpNorm( 1 ) == 20.0 );
-      CPPUNIT_ASSERT( v. lpNorm( 2 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v. lpNorm( 3 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( isSmall( v.lpNorm( 1 ) - 20.0 ) );
+      CPPUNIT_ASSERT( isSmall( v.lpNorm( 2 ) - sqrt( 40.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v.lpNorm( 3 ) - pow( 80.0, 1.0/3.0 ) ) );
    };
 
    void testSum()
@@ -230,9 +188,9 @@ class tnlVectorTester : public CppUnit :: TestCase
          v1[ i ] = -1;
          v2[ i ] = 1;
       }
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 1.0 ) == 20.0 );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 2.0 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 3.0 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 1.0 ) - 20.0 ) );
+      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 2.0 ) - sqrt( 40.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 3.0 ) - pow( 80.0, 1.0/3.0 ) ) );
    };
 
    void testDifferenceSum()

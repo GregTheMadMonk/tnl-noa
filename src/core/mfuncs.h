@@ -68,6 +68,12 @@ inline double tnlAbs( const double& d )
    return fabs( d );
 };
 
+template< typename Real >
+bool isSmall( const Real& v,
+              const Real& tolerance = 1.0e-5 )
+{
+   return ( -tolerance <= v && v <= tolerance );
+}
 /*template< typename T >
 void swap( T& a, T& b)
 {

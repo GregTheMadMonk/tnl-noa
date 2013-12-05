@@ -34,7 +34,9 @@ ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}
 ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt}${debugExt} )
 
-ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseVectorTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )
