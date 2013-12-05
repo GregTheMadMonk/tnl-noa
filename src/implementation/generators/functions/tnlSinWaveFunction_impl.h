@@ -37,6 +37,41 @@ bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& paramete
    return true;
 }
 
+template< typename Real >
+void tnlSinWaveFunctionBase< Real >::setWaveLength( const Real& waveLength )
+{
+   this->waveLength = waveLength;
+}
+
+template< typename Real >
+Real tnlSinWaveFunctionBase< Real >::getWaveLength() const
+{
+   return this->waveLength;
+}
+
+template< typename Real >
+void tnlSinWaveFunctionBase< Real >::setAmplitude( const Real& amplitude )
+{
+   this->amplitude = amplitude;
+}
+
+template< typename Real >
+Real tnlSinWaveFunctionBase< Real >::getAmplitude() const
+{
+   return this->amplitude;
+}
+
+template< typename Real >
+void tnlSinWaveFunctionBase< Real >::setPhase( const Real& phase )
+{
+   this->phase = phase;
+}
+
+template< typename Real >
+Real tnlSinWaveFunctionBase< Real >::getPhase() const
+{
+   return this->phase;
+}
 
 template< typename Vertex, typename Device >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >

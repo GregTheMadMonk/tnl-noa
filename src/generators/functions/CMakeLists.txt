@@ -1,4 +1,6 @@
 SET( headers tnlFunctionDiscretizer.h
+             tnlExpBumpFunction.h
+             tnlSinBumpsFunction.h
              tnlSinWaveFunction.h )
                     
 SET( libtnlgeneratorsfunctionsincludedir ${TNL_INCLUDE_DIR}/generators/functions )

@@ -24,6 +24,8 @@
 #include <mesh/tnlIdenticalGridGeometry.h>
 #include <generators/functions/tnlFunctionDiscretizer.h>
 #include <generators/functions/tnlSinWaveFunction.h>
+#include <generators/functions/tnlSinBumpsFunction.h>
+#include <generators/functions/tnlExpBumpFunction.h>
 #include <schemes/tnlFiniteDifferences.h>
 
 template< typename MeshType,
@@ -166,6 +168,16 @@ bool resolveFunction( const tnlParameterContainer& parameters )
    if( functionName == "sin-wave" )
    {
       typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      return resolveDerivatives< MeshType, FunctionType >( parameters );
+   }
+   if( functionName == "sin-bumps" )
+   {
+      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      return resolveDerivatives< MeshType, FunctionType >( parameters );
+   }
+   if( functionName == "exp-bump" )
+   {
+      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    cerr << "Unknown function " << functionName << "." << endl;

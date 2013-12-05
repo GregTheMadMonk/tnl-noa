@@ -1,4 +1,6 @@
 SET( headers tnlFunctionDiscretizer_impl.h
+             tnlExpBumpFunction_impl.h
+             tnlSinBumpsFunction_impl.h
              tnlSinWaveFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/generators/functions )
