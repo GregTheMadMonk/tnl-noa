@@ -2,6 +2,7 @@ SET( headers tnlDenseMatrix.h
              tnlTridiagonalMatrix.h
              tnlMultidiagonalMatrix.h
              tnlEllpackMatrix.h
+             tnlSlicedEllpackMatrix.h
 
              tnlAdaptiveRgCSRMatrix.h
              tnlCSRMatrix.h    
