@@ -34,7 +34,8 @@ bool navierStokesBoundaryConditions< Mesh >::init( const tnlParameterContainer& 
    this -> maxInflowVelocity = parameters. GetParameter< double >( "max-inflow-velocity" );
    //this -> maxOutflowVelocity = parameters. GetParameter< double >( "max-outflow-velocity" );
    this -> startUp = parameters. GetParameter< double >( "start-up" );
-   //this -> T = parameters. GetParameter< double >( "T" );
+   this -> T = parameters. GetParameter< double >( "T" );
+   this -> R = parameters. GetParameter< double >( "R" );
    this->p0 = parameters. GetParameter< double >( "p0" );
    return true;
 }
@@ -48,6 +49,7 @@ void navierStokesBoundaryConditions< Mesh >::setMesh( const MeshType& mesh )
 template< typename Mesh >
    template< typename Vector >
 void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
+                                                    const RealType& tau,
                                                     Vector& rho,
                                                     Vector& u1,
                                                     Vector& u2,
@@ -92,11 +94,6 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
          energy[ c3 ] = energy[ c4 ];
           //rho[ c3 ] = this -> p_0 / ( this -> R * this -> T );
       }
-
-      /*rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
-      rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];
-      rho_u1[ c3 ] = rho[ c3 ] * this -> u1[ c3 ];
-      rho_u2[ c3 ] = rho[ c3 ] * this -> u2[ c3 ];*/
    }
    for( IndexType j = 0; j < ySize; j ++ )
    {
@@ -104,8 +101,10 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
       const IndexType c2 = this->mesh->getElementIndex( 1, j );
       const IndexType c3 = this->mesh->getElementIndex( xSize - 1, j );
       const IndexType c4 = this->mesh->getElementIndex( xSize - 2, j );
-
+      const IndexType c5 = this->mesh->getElementIndex( 2, j );
+      const IndexType c6 = this->mesh->getElementIndex( xSize - 3, j );
       RealType y = j * hy / this->mesh->getProportions().y();
+
 
       /****
        * Boundary conditions on the left and right
@@ -119,8 +118,8 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
 
          rho[ c1 ] = rho[ c2 ];
          rho[ c3 ] = rho[ c4 ];
-         energy[ c1 ] = energy[ c2 ];
-         energy[ c3 ] = energy[ c4 ];
+         energy[ c1 ] = energy[ c2 ];// - tau*( energy[ c2 ] - energy[ c1 ] ) / hx;
+         energy[ c3 ] = energy[ c4 ];// - tau*( energy[ c3 ] - energy[ c4 ] ) / hx;
       }
       /*rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
       rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];

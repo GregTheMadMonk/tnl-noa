@@ -1,12 +1,12 @@
 SET( headers tnlDenseMatrix.h
              tnlTridiagonalMatrix.h
              tnlMultidiagonalMatrix.h
+             tnlEllpackMatrix.h
 
              tnlAdaptiveRgCSRMatrix.h
              tnlCSRMatrix.h    
              tnlCusparseCSRMatrix.h     
-    	    	 tnlEllpackMatrix.h 
-	         tnlEllpackMatrixCUDA.h 	        
+    	    	   	        
 	         tnlFastCSRMatrix.h 
 	         tnlFastRgCSRMatrix.h
 	         tnlMatrix.h	         

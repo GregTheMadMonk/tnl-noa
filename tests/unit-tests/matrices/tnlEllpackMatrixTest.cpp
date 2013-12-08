@@ -1,7 +1,7 @@
 /***************************************************************************
-                          navierStokesSolverMonitor.h  -  description
+                          tnlEllpackTest.cpp  -  description
                              -------------------
-    begin                : Mar 13, 2013
+    begin                : Dec 8, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,24 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef NAVIERSTOKESSOLVERMONITOR_H_
-#define NAVIERSTOKESSOLVERMONITOR_H_
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
+#include <cstdlib>
 
-#include <solvers/ode/tnlODESolverMonitor.h>
+#include "tnlEllpackMatrixTester.h"
+#include "../tnlUnitTestStarter.h"
 
-template< typename Real, typename Index >
-class navierStokesSolverMonitor : public tnlODESolverMonitor< Real, Index >
+int main( int argc, char* argv[] )
 {
-   public:
-
-   navierStokesSolverMonitor();
-
-   void refresh();
-
-   Real uMax, uAvg, rhoMax, rhoAvg, rhoUMax, rhoUAvg, eMax, eAvg;
-
-};
-
-#include "navierStokesSolverMonitor_impl.h"
-
-#endif /* NAVIERSTOKESSOLVERMONITOR_H_ */
+#ifdef HAVE_CPPUNIT
+   if( ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< float, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< double, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< float, tnlHost, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< double, tnlHost, long int > >()
+       )
+     return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
+}

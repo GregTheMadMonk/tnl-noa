@@ -27,8 +27,8 @@
 #include <matrices/tnlFastCSRMatrix.h>
 #include <matrices/tnlFastRgCSRMatrix.h>
 #include <matrices/tnlFastRgCSRMatrixCUDA.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlEllpackMatrixCUDA.h>
+#include <legacy/matrices/tnlEllpackMatrix.h>
+#include <legacy/matrices/tnlEllpackMatrixCUDA.h>
 #include <core/mfuncs.h>
 #include "tnlSpmvBenchmarkCSRMatrix.h"
 #include "tnlSpmvBenchmarkCusparseCSRMatrix.h"

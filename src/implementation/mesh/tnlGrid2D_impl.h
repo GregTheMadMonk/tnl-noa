@@ -452,17 +452,41 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
-                                                                           const GridFunction& f2 ) const
+         tnlGrid< 2, Real, Device, Index, Geometry >::getAbsMax( const GridFunction& f ) const
 {
-   typename GridFunction::RealType maxDiff( -1.0 );
+   return f.absMax();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 2, Real, Device, Index, Geometry >::getLpNorm( const GridFunction& f1,
+                                                                 const typename GridFunction::RealType& p ) const
+{
+   typename GridFunction::RealType lpNorm( 0.0 );
    for( IndexType j = 0; j < getDimensions(). y(); j++ )
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         IndexType c = this -> getElementIndex( i, j );
-         maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
+         IndexType c = this->getElementIndex( i, j );
+         lpNorm += pow( tnlAbs( f1[ c ] ), p ) *
+            this->getElementMeasure( CoordinatesType( i, j ) );
       }
-   return maxDiff;
+   return pow( lpNorm, 1.0/p );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          template< int, typename, typename, typename > class Geometry >
+   template< typename GridFunction >
+      typename GridFunction::RealType
+         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
+                                                                           const GridFunction& f2 ) const
+{
+   return f1.differenceAbsMax( f2 );
 }
 
 template< typename Real,
@@ -480,10 +504,10 @@ template< typename Real,
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
          IndexType c = this->getElementIndex( i, j );
-         lpNorm += pow( p, tnlAbs( f1[ c ] - f2[ c ] ) ) *
+         lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p ) *
             this->getElementMeasure( CoordinatesType( i, j ) );
       }
-   return pow( 1.0 / p, lpNorm );
+   return pow( lpNorm, 1.0/p );
 }
 
 template< typename Real,

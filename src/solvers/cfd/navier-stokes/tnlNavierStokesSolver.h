@@ -84,6 +84,10 @@ class tnlNavierStokesSolver
 
    const VectorType& getU2() const;
 
+   VectorType& getU();
+
+   const VectorType& getU() const;
+
    VectorType& getPressure();
 
    const VectorType& getPressure() const;
@@ -136,7 +140,7 @@ class tnlNavierStokesSolver
 
    MeshType* mesh;
 
-   VectorType rho, u1, u2, p, energy;
+   VectorType rho, u1, u2, u, p, energy;
 
    RealType mu, gravity, R, T, gamma;
 

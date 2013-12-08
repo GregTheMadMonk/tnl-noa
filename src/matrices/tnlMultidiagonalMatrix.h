@@ -29,7 +29,6 @@ class tnlMultidiagonalMatrix : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   //! Basic constructor
    tnlMultidiagonalMatrix();
 
    static tnlString getType();
