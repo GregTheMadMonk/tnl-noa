@@ -267,6 +267,10 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
                                                                  DofVectorType& fu )
 {
    nsSolver.getExplicitRhs( time, tau, u, fu );
+   solverMonitor.uMax = this->mesh.getAbsMax( nsSolver.getU() );
+   solverMonitor.uAvg = this->mesh.getLpNorm( nsSolver.getU(), 1.0 );
+   solverMonitor.eMax = this->mesh.getAbsMax( nsSolver.getEnergy() );
+   solverMonitor.eAvg = this->mesh.getLpNorm( nsSolver.getEnergy(), 1.0 );
 }
 
 template< typename Mesh, typename EulerScheme >

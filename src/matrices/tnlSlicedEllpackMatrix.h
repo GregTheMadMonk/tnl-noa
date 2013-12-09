@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlMultidiagonalMatrix.h  -  description
+                          tnlSlicedSlicedEllpackMatrix.h  -  description
                              -------------------
-    begin                : Oct 13, 2011
-    copyright            : (C) 2011 by Tomas Oberhuber
+    begin                : Dec 8, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMULTIDIAGONALMATRIX_H_
-#define TNLMULTIDIAGONALMATRIX_H_
+#ifndef TNLSLICEDELLPACKMATRIX_H_
+#define TNLSLICEDELLPACKMATRIX_H_
 
 #include <core/vectors/tnlVector.h>
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlMultidiagonalMatrix : public tnlObject
+template< typename Real, typename Device = tnlHost, typename Index = int, int SliceSize = 32 >
+class tnlSlicedEllpackMatrix : public tnlObject
 {
    public:
 
@@ -29,7 +29,7 @@ class tnlMultidiagonalMatrix : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   tnlMultidiagonalMatrix();
+   tnlSlicedEllpackMatrix();
 
    static tnlString getType();
 
@@ -38,13 +38,11 @@ class tnlMultidiagonalMatrix : public tnlObject
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setDiagonals( const IndexType diagonalsNumber,
-                      const IndexType* diagonalsShift );
-
-   const tnlVector< Index, Device, Index >& getDiagonals() const;
+   template< typename Vector >
+   bool setRowLengths( const Vector& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfAllocatedElements() const;
 
@@ -55,16 +53,19 @@ class tnlMultidiagonalMatrix : public tnlObject
    IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
-
-   void setValue( const RealType& v );
+   bool operator != ( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
+
+   bool setRow( const IndexType row,
+                const IndexType* columnIndexes,
+                const RealType* values,
+                const IndexType elements );
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
@@ -79,12 +80,12 @@ class tnlMultidiagonalMatrix : public tnlObject
                        Vector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -105,18 +106,17 @@ class tnlMultidiagonalMatrix : public tnlObject
 
    protected:
 
-   bool getElementIndex( const IndexType row,
-                         const IndexType column,
-                         IndexType& index ) const;
+   bool allocateElements();
 
    IndexType rows, columns;
 
    tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > diagonalsShift;
+   tnlVector< Index, Device, Index > columnIndexes, slicePointers, sliceRowLentghs;
 
 };
 
-#include <implementation/matrices/tnlMultidiagonalMatrix_impl.h>
+#include <implementation/matrices/tnlSlicedEllpackMatrix_impl.h>
 
-#endif /* TNLMULTIDIAGONALMATRIX_H_ */
+
+#endif /* TNLSLICEDELLPACKMATRIX_H_ */

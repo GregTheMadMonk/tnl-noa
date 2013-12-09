@@ -1,6 +1,7 @@
 set( headers tnlDenseMatrixTester.h
              tnlTridiagonalMatrixTester.h
-             tnlMultidiagonalMatrixTester.h )
+             tnlMultidiagonalMatrixTester.h
+             tnlEllpackMatrixTester.h )
 
 ADD_EXECUTABLE( tnlDenseMatrixTest${mpiExt}${debugExt} ${headers} tnlDenseMatrixTest.cpp )
 TARGET_LINK_LIBRARIES( tnlDenseMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
@@ -30,5 +31,15 @@ if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlMultidiagonalMatrixTest.cu )
    TARGET_LINK_LIBRARIES( tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                       tnl${mpiExt}${debugExt}-0.1 )
-endif()                                                                      
+endif()
+
+ADD_EXECUTABLE( tnlEllpackMatrixTest${mpiExt}${debugExt} ${headers} tnlEllpackMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlEllpackMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlEllpackMatrixTest.cu )
+   TARGET_LINK_LIBRARIES( tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()                                                                        
                                                                           

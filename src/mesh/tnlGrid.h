@@ -217,6 +217,13 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
                    VertexType& vertex ) const;
 
    template< typename GridFunction >
+   typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getLpNorm( const GridFunction& f,
+                                              const typename GridFunction::RealType& p ) const;
+
+   template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const;
 

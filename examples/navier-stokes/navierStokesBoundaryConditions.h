@@ -38,6 +38,7 @@ class navierStokesBoundaryConditions
 
    template< typename Vector >
    void apply( const RealType& time,
+               const RealType& tau,
                Vector& rho,
                Vector& u1,
                Vector& u2,
@@ -47,7 +48,7 @@ class navierStokesBoundaryConditions
 
    const MeshType* mesh;
 
-   RealType maxInflowVelocity, startUp, T, p0;
+   RealType maxInflowVelocity, startUp, T, R, p0;
 };
 
 #include "navierStokesBoundaryConditions_impl.h"
