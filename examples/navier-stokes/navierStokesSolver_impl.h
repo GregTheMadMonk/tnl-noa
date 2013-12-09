@@ -197,6 +197,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
    this->u2Viscosity. bindMesh( this -> mesh );
    this->u2Viscosity. setFunction( this -> nsSolver.getU2() );
    this->eViscosity. bindMesh( this -> mesh );
+   this->eViscosity.setFunction( this -> nsSolver.getEnergy() );
    nsSolver.setAdvectionScheme( this->eulerScheme );
    nsSolver.setDiffusionScheme( this->u1Viscosity,
                                 this->u2Viscosity,

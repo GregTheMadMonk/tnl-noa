@@ -112,6 +112,11 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
                               const Vector& x,
                               const Real& beta,
                               const Vector& z );
+
+   void computePrefixSum();
+
+   void computeExclusivePrefixSum();
+
 };
 
 #include <implementation/core/vectors/tnlSharedVector_impl.h>

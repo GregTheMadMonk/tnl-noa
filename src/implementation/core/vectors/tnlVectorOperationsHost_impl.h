@@ -383,6 +383,30 @@ void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZPlusY( Vector1& y,
       y[ i ] += alpha * x[ i ] + beta *  z[ i ];
 }
 
+template< typename Vector >
+void tnlVectorOperations< tnlHost >::computePrefixSum( Vector& v )
+{
+   typedef typename Vector::IndexType Index;
+   for( Index i = 1; i < v.getSize(); i++ )
+      v[ i ] += v[ i - 1 ];
+}
+
+template< typename Vector >
+void tnlVectorOperations< tnlHost >::computeExclusivePrefixSum( Vector& v )
+{
+   typedef typename Vector::IndexType Index;
+   typedef typename Vector::RealType Real;
+   Real aux( v[ 0 ] );
+   v[ 0 ] = 0.0;
+   for( Index i = 1; i < v.getSize(); i++ )
+   {
+      Real x = v[ i ];
+      v[ i ] = aux;
+      aux += x;
+   }
+}
+
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <core/vectors/tnlVector.h>

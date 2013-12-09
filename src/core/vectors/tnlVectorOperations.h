@@ -107,6 +107,13 @@ class tnlVectorOperations< tnlHost >
                                      const typename Vector1::RealType& alpha,
                                      const Vector2& z,
                                      const typename Vector1::RealType& beta );
+
+   template< typename Vector >
+   static void computePrefixSum( Vector& v );
+
+   template< typename Vector >
+   static void computeExclusivePrefixSum( Vector& v );
+
 };
 
 template<>
@@ -189,6 +196,12 @@ class tnlVectorOperations< tnlCuda >
                                      const typename Vector1::RealType& alpha,
                                      const Vector2& z,
                                      const typename Vector1::RealType& beta );
+
+   template< typename Vector >
+   static void computePrefixSum( Vector& v );
+
+   template< typename Vector >
+   static void computeExclusivePrefixSum( Vector& v );
 };
 
 #include <implementation/core/vectors/tnlVectorOperationsHost_impl.h>

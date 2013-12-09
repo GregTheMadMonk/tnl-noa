@@ -541,6 +541,19 @@ void tnlVectorOperations< tnlCuda > :: alphaXPlusBetaZPlusY( Vector1& y,
    #endif
 }
 
+template< typename Vector >
+void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v )
+{
+   typedef typename Vector::IndexType Index;
+}
+
+template< typename Vector >
+void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v )
+{
+   typedef typename Vector::IndexType Index;
+   typedef typename Vector::RealType Real;
+}
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <core/vectors/tnlVector.h>

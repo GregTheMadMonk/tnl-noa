@@ -112,7 +112,7 @@ class tnlSlicedEllpackMatrix : public tnlObject
 
    tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > columnIndexes, slicePointers, sliceRowLentghs;
+   tnlVector< Index, Device, Index > columnIndexes, slicePointers, sliceRowLengths;
 
 };
 

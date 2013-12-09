@@ -75,7 +75,7 @@ bool isSmall( const Real& v,
    return ( -tolerance <= v && v <= tolerance );
 }
 
-int roundUpDivison( const int num, const int div )
+inline int roundUpDivision( const int num, const int div )
 {
    return num / div + ( num % div != 0 );
 }

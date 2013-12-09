@@ -506,13 +506,13 @@ void tnlNavierStokesSolver< AdvectionScheme,
 
         RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
         //cout << k << endl;
-        e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
+        e_t[ c ] += this->mu*( /*u1Viscosity->getDiffusion( c,
                                                           this->u1, this->u1, this->u2,
                                                           1.0, 1.0, 0.0 ) +
                                u2Viscosity->getDiffusion( c,
                                                           this->u2, this->u2, this->u1,
-                                                          1.0, 1.0, -0.0 )  +
-                               k * energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+                                                          1.0, 1.0, -0.0 ) );  +*/
+                               energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
 
 
         //e_t[ c ] = 0.0;

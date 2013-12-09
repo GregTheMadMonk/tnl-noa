@@ -287,4 +287,20 @@ void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real&
    tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSharedVector< Real, Device, Index > :: computePrefixSum()
+{
+   tnlVectorOperations< Device > :: computePrefixSum( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum()
+{
+   tnlVectorOperations< Device > :: computeExclusivePrefixSum( *this );
+}
+
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */

@@ -277,6 +277,21 @@ void tnlVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real& alpha
    tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index > :: computePrefixSum()
+{
+   tnlVectorOperations< Device > :: computePrefixSum( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum()
+{
+   tnlVectorOperations< Device > :: computeExclusivePrefixSum( *this );
+}
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

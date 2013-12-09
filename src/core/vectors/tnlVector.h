@@ -114,6 +114,10 @@ class tnlVector : public tnlArray< Real, Device, Index >
                               const Vector& x,
                               const Real& beta,
                               const Vector& z );
+
+   void computePrefixSum();
+
+   void computeExclusivePrefixSum();
 };
 
 #include <implementation/core/vectors/tnlVector_impl.h>
