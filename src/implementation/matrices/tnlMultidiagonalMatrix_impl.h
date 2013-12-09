@@ -85,7 +85,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Index
    if( this->rows != 0 && this->columns != 0 )
    {
       if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
-         return false;\
+         return false;
       this->values.setValue( 0.0 );
    }
    return true;
@@ -399,6 +399,5 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
    }
    return false;
 }
-
 
 #endif /* TNLMULTIDIAGONALMATRIX_IMPL_H_ */
