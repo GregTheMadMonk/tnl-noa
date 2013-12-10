@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSlicedSlicedEllpackMatrix_impl.h  -  description
+                          tnlCSRMatrix_impl.h  -  description
                              -------------------
-    begin                : Dec 8, 2013
+    begin                : Dec 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,18 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSLICEDELLPACKMATRIX_IMPL_H_
-#define TNLSLICEDELLPACKMATRIX_IMPL_H_
+#ifndef TNLCSRMATRIX_IMPL_H_
+#define TNLCSRMATRIX_IMPL_H_
 
-#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::tnlSlicedEllpackMatrix()
+          typename Index >
+tnlCSRMatrix< Real, Device, Index >::tnlCSRMatrix()
 : rows( 0 ),
   columns( 0 )
 {
@@ -34,11 +33,10 @@ tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::tnlSlicedEllpackMatrix
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
+          typename Index >
+tnlString tnlCSRMatrix< Real, Device, Index >::getType()
 {
-   return tnlString( "tnlSlicedEllpackMatrix< ") +
+   return tnlString( "tnlCSRMatrix< ") +
           tnlString( GetParameterType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
@@ -47,18 +45,16 @@ tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTypeVirtual() const
+          typename Index >
+tnlString tnlCSRMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                               const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
@@ -71,10 +67,9 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( co
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Vector >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( const Vector& rowLengths )
+bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
 {
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
    if( ! this->sliceRowLengths.setSize( slices ) ||
@@ -119,12 +114,11 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( co
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setLike( const tnlSlicedEllpackMatrix< Real2, Device2, Index2, SliceSize >& matrix )
+bool tnlCSRMatrix< Real, Device, Index >::setLike( const tnlCSRMatrix< Real2, Device2, Index2, SliceSize >& matrix )
 {
    if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) ||
        ! this->values.setLike( matrix.values ) ||
@@ -137,18 +131,16 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setLike( const tn
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getNumberOfAllocatedElements() const
+          typename Index >
+Index tnlCSRMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
 {
    return this->values.getSize();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::reset()
+          typename Index >
+void tnlCSRMatrix< Real, Device, Index >::reset()
 {
    this->columns = 0;
    this->rows = 0;
@@ -160,30 +152,27 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::reset()
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRows() const
+          typename Index >
+Index tnlCSRMatrix< Real, Device, Index >::getRows() const
 {
    return this->rows;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getColumns() const
+          typename Index >
+Index tnlCSRMatrix< Real, Device, Index >::getColumns() const
 {
    return this->columns;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool tnlCSRMatrix< Real, Device, Index >::operator == ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const
 {
    tnlAssert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
@@ -198,21 +187,19 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( con
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator != ( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool tnlCSRMatrix< Real, Device, Index >::operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const
 {
    return ! ( ( *this ) == matrix );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElement( const IndexType row,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                                            const IndexType column,
                                                                            const Real& value )
 {
@@ -221,9 +208,8 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElement( const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const IndexType row,
+          typename Index >
+Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                                            const IndexType column ) const
 {
    const IndexType sliceIdx = row / SliceSize;
@@ -240,9 +226,8 @@ Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addToElement( const IndexType row,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::addToElement( const IndexType row,
                                                                              const IndexType column,
                                                                              const RealType& value,
                                                                              const RealType& thisElementMultiplicator )
@@ -293,10 +278,9 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addToElement( con
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Vector >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( const Vector& inVector,
+void tnlCSRMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
                                                                               Vector& outVector ) const
 {
    for( Index row = 0; row < this->getRows(); row ++ )
@@ -318,11 +302,10 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( co
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Real2,
              typename Index2 >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addMatrix( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+void tnlCSRMatrix< Real, Device, Index >::addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
@@ -332,11 +315,10 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addMatrix( const 
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Real2,
              typename Index2 >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTransposition( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+void tnlCSRMatrix< Real, Device, Index >::getTransposition( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    tnlAssert( false, cerr << "TODO: implement" );
@@ -345,10 +327,9 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTransposition(
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
+          typename Index >
    template< typename Vector >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIteration( const Vector& b,
+bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                                     const IndexType row,
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
@@ -387,9 +368,8 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& file ) const
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
    if( ! file.write( &this->rows ) ) return false;
    if( ! file.write( &this->columns ) ) return false;
@@ -402,9 +382,8 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& fi
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& file )
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::load( tnlFile& file )
 {
    if( ! file.read( &this->rows ) ) return false;
    if( ! file.read( &this->columns ) ) return false;
@@ -417,27 +396,24 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& fi
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( const tnlString& fileName ) const
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
 {
    return tnlObject::save( fileName );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( const tnlString& fileName )
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::load( const tnlString& fileName )
 {
    return tnlObject::load( fileName );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          int SliceSize >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& str ) const
+          typename Index >
+void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -457,4 +433,4 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
    }
 }
 
-#endif /* TNLSLICEDELLPACKMATRIX_IMPL_H_ */
+#endif /* TNLCSRMATRIX_IMPL_H_ */

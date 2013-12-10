@@ -28,14 +28,14 @@
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
 
-template< typename RealType, typename Device, typename IndexType >
+template< typename RealType, typename Device, typename IndexType, int SliceSize >
 class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlSlicedEllpackMatrix< RealType, Device, IndexType > MatrixType;
+   typedef tnlSlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
    typedef tnlVector< RealType, Device, IndexType > VectorType;
    typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlSlicedEllpackMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef tnlSlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
    tnlSlicedEllpackMatrixTester(){};
@@ -53,6 +53,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
@@ -106,12 +107,17 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
+
       for( int i = 0; i < 10; i++ )
+      {
          for( int j = 0; j < 10; j++ )
+         {
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, j ) == i );
             else
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+         }
+      }
    }
 
    void setElement_DenseMatrixTest()
@@ -146,6 +152,42 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
             CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
+   }
+
+   void setElement_LowerTriangularMatrixTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      for( int i = 0; i < 10; i++ )
+         rowLengths.setElement( i, i+1 );
+      m.setRowLengths( rowLengths );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j <= i; j++ )
+            m.setElement( i, j, i + j );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( j <= i )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i + j );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+
+      m.reset();
+      m.setDimensions( 10, 10 );
+      m.setRowLengths( rowLengths );
+      for( int i = 9; i >= 0; i-- )
+         for( int j = i; j >= 0; j-- )
+            m.setElement( i, j, i + j );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( j <= i )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i + j );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
    void addToElementTest()

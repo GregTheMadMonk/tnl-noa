@@ -305,7 +305,6 @@ bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
    return true;
 };
 
-
 template< typename Element,
           typename Device,
           typename Index >
@@ -313,6 +312,49 @@ bool tnlSharedArray< Element, Device, Index > :: save( const tnlString& fileName
 {
    return tnlObject :: save( fileName );
 };
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlSharedArray< Element, Device, Index > :: load( tnlFile& file )
+{
+   if( ! tnlObject :: load( file ) )
+      return false;
+   Index _size;
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< Index, tnlHost >( &_size ) )
+      return false;
+#else
+   if( ! file. read( &_size, 1 ) )
+      return false;
+#endif
+   if( _size != this->size )
+   {
+      cerr << "Error: The size " << _size << " of the data to be load is different from the " <<
+               "allocated array. This is not possible in the shared array ( in " << this->getName() <<
+               " )." << endl;
+      return false;
+   }
+   if( _size )
+   {
+      if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+      {
+         cerr << "I was not able to READ tnlSharedArray " << this -> getName()
+              << " with size " << this -> getSize() << endl;
+         return false;
+      }
+   }
+   return true;
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool tnlSharedArray< Element, Device, Index > :: load( const tnlString& fileName )
+{
+   return tnlObject :: load( fileName );
+};
+
 
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v )

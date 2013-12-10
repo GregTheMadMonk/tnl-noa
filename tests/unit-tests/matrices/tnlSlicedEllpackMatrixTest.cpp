@@ -25,10 +25,14 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, int, 32 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, int, 32 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, long int, 32 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, long int, 32 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, int, 4 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, int, 4 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, long int, 4 > >() ||
+       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, long int, 4 > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

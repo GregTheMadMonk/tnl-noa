@@ -3,15 +3,10 @@ SET( headers tnlDenseMatrix.h
              tnlMultidiagonalMatrix.h
              tnlEllpackMatrix.h
              tnlSlicedEllpackMatrix.h
+             tnlCSRMatrix.h
 
              tnlAdaptiveRgCSRMatrix.h
-             tnlCSRMatrix.h    
-             tnlCusparseCSRMatrix.h     
-    	    	   	        
-	         tnlFastCSRMatrix.h 
-	         tnlFastRgCSRMatrix.h
-	         tnlMatrix.h	         
-	         tnlPETSCMatrix.h
+	         tnlMatrix.h
 	         tnlRgCSRMatrix.h
 	)
 	

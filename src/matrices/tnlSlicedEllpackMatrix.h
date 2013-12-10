@@ -42,7 +42,7 @@ class tnlSlicedEllpackMatrix : public tnlObject
    bool setRowLengths( const Vector& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const tnlSlicedEllpackMatrix< Real2, Device2, Index2, SliceSize >& matrix );
 
    IndexType getNumberOfAllocatedElements() const;
 
@@ -105,8 +105,6 @@ class tnlSlicedEllpackMatrix : public tnlObject
    void print( ostream& str ) const;
 
    protected:
-
-   bool allocateElements();
 
    IndexType rows, columns;
 

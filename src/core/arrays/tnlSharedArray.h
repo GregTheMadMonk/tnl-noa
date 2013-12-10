@@ -102,6 +102,10 @@ class tnlSharedArray : public tnlObject
 
    bool save( const tnlString& fileName ) const;
 
+   bool load( tnlFile& file );
+
+   bool load( const tnlString& fileName );
+
    protected:
 
    //!Number of allocated elements
