@@ -184,13 +184,13 @@ bool ProcessCSRMatrix( const tnlString& file_name,
                        const tnlString& output_file_name,
                        const tnlString& output_file_format )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
+   /*int verbose = parameters. GetParameter< int >( "verbose");
    const tnlString matrixFormat = parameters. GetParameter< tnlString >( "matrix-format" );
    const int groupSize = parameters. GetParameter< int >( "matrix-group-size" );
    const int desiredChunkSize = parameters. GetParameter< int >( "desired-matrix-chunk-size" );
    const int cudaBlockSize = parameters. GetParameter< int >( "cuda-block-size" );
    bool sortMatrix = parameters. GetParameter< bool >( "sort-matrix" );
-   tnlCSRMatrix< Real > matrix( "tnl-view:matrix" );
+   tnlCSRMatrix< Real > matrix;//( "tnl-view:matrix" );
    tnlCSRMatrix< Real >* inputMatrix( &matrix );
    tnlFile file;
    if( ! file. open( file_name, tnlReadMode ) )
@@ -202,7 +202,7 @@ bool ProcessCSRMatrix( const tnlString& file_name,
       return false;
    }
    file. close();
-   tnlCSRMatrix< Real > sortedMatrix( "tnl-view:sortedMatrix" );
+   tnlCSRMatrix< Real > sortedMatrix; //( "tnl-view:sortedMatrix" );
    if( sortMatrix )
    {
       if( verbose )
@@ -256,7 +256,7 @@ bool ProcessCSRMatrix( const tnlString& file_name,
             if( verbose )
                cout << " ... OK " << endl;
    }
-   outFile. close();
+   outFile. close();*/
    return true;
 }
 

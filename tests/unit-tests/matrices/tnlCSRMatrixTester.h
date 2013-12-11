@@ -18,15 +18,26 @@
 #ifndef TNLCSRMATRIXTESTER_H_
 #define TNLCSRMATRIXTESTER_H_
 
+#ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <core/tnlFile.h>
+#include <core/vectors/tnlVector.h>
 
-template< class T > class tnlCSRMatrixTester : public CppUnit :: TestCase
+template< typename RealType, typename Device, typename IndexType >
+class tnlCSRMatrixTester : public CppUnit :: TestCase
 {
    public:
+   typedef tnlCSRMatrix< RealType, Device, IndexType > MatrixType;
+   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef tnlVector< IndexType, Device, IndexType > IndexVector;
+   typedef tnlCSRMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
+
    tnlCSRMatrixTester(){};
 
    virtual
@@ -34,121 +45,209 @@ template< class T > class tnlCSRMatrixTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCSRMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCSRMatrixTester< T > >(
-                               "diagonalMatrixTest",
-                               & tnlCSRMatrixTester< T > :: diagonalMatrixTest )
-                             );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCSRMatrixTester< T > >(
-                               "triDiagonalMatrixTest",
-                               & tnlCSRMatrixTester< T > :: triDiagonalMatrixTest )
-                             );
 
-            return suiteOfTests;
+      suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
+      /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
+
+      return suiteOfTests;
    }
 
-   void diagonalMatrixTest()
+   void setDimensionsTest()
    {
-      tnlCSRMatrix< T > csr_matrix( "test-matrix:Diagonal" );
-      csr_matrix. setSize( 10 );
-      csr_matrix. setNonzeroElements( 10 );
-      for( int i = 0; i < 10; i ++ )
-         csr_matrix. setElement( i, i, T( i ) );
-      csr_matrix. printOut( cout );
-      bool error( false );
-      for( int i = 0; i < 10; i ++ )
-         if( csr_matrix. getElement( i, i ) != T( i ) )
-            error = true;
-      CPPUNIT_ASSERT( ! error );
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      CPPUNIT_ASSERT( m.getRows() == 10 );
+      CPPUNIT_ASSERT( m.getColumns() == 10 );
+   }
 
-      // Now try it again
-      for( int i = 0; i < 10; i ++ )
-         csr_matrix. setElement( i, i, T( i ) );
-      csr_matrix. printOut( cout );
-      error = false;
-      for( int i = 0; i < 10; i ++ )
-         if( csr_matrix. getElement( i, i ) != T( i ) )
-            error = true;
-      CPPUNIT_ASSERT( ! error );
-
-      // Now set zeros on the diagonal
-      for( int i = 0; i < 10; i ++ )
-         csr_matrix. setElement( i, i, T( 0.0 ) );
-      csr_matrix. printOut( cout );
-      error = false;
-      for( int i = 0; i < 10; i ++ )
-         if( csr_matrix. getElement( i, i ) != T( 0.0 ) )
-            error = true;
-      CPPUNIT_ASSERT( ! error );
-
-      // Now again but backward
-      for( int i = 9; i >= 0; i -- )
-         csr_matrix. setElement( i, i, T( i ) );
-      csr_matrix. printOut( cout );
-      error = false;
-      for( int i = 0; i < 10; i ++ )
-         if( csr_matrix. getElement( i, i ) != T( i ) )
-            error = true;
-      CPPUNIT_ASSERT( ! error );
-
-
-   };
-
-   void triDiagonalMatrixTest()
+   void setLikeTest()
    {
-      tnlCSRMatrix< T > csr_matrix( "test-matrix:Tridiagonal" );
-      csr_matrix. setSize( 10 );
-      csr_matrix. setNonzeroElements( 30 );
-      T data[] = { -1.0, 2.0, -1.0 };
-      int offsets[] = { -1, 0, 1 };
-      for( int i = 0; i < 10; i ++ )
-      {
-         csr_matrix. insertRow( i,      // row
-                                3,      // elements
-                                data,   // data
-                                i,      // first column
-                                offsets );
-      }
-      csr_matrix. printOut( cout );
-      bool error( false );
-      for( int i = 0; i < 10; i ++ )
-      {
-         if( csr_matrix. getElement( i, i ) != T( 2.0 ) )
-            error = true;
-         if( i > 0 && csr_matrix. getElement( i, i - 1 ) != T( -1.0 ) )
-            error = true;
-         if( i < 9 && csr_matrix. getElement( i, i + 1 ) != T( -1.0 ) )
-            error = true;
-      }
-      CPPUNIT_ASSERT( ! error );
+      MatrixType m1, m2;
+      m1.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m1.getRows() );
+      rowLengths.setValue( 5 );
+      m1.setRowLengths( rowLengths );
+      m2.setLike( m1 );
+      CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
+   }
 
-      // Backward
-      tnlCSRMatrix< T > csr_matrix2( "test-matrix:Tridiagonal" );
-      csr_matrix2. setSize( 10 );
-      csr_matrix2. setNonzeroElements( 30 );
-      for( int i = 9; i >= 0; i -- )
-      {
-         csr_matrix2. insertRow( i,      // row
-                                3,      // elements
-                                data,   // data
-                                i,      // first column
-                                offsets );
-      }
-      csr_matrix2. printOut( cout );
-      error = false;
-      for( int i = 0; i < 10; i ++ )
-      {
-         if( csr_matrix2. getElement( i, i ) != T( 2.0 ) )
-            error = true;
-         if( i > 0 && csr_matrix2. getElement( i, i - 1 ) != T( -1.0 ) )
-            error = true;
-         if( i < 9 && csr_matrix2. getElement( i, i + 1 ) != T( -1.0 ) )
-            error = true;
-      }
-      CPPUNIT_ASSERT( ! error );
+   void setElementTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 7 );
+      m.setRowLengths( rowLengths );
 
+      for( int i = 0; i < 7; i++ )
+         CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
+      CPPUNIT_ASSERT( m.setElement( 0, 8, 8 ) == false );
+   }
+
+   void setElement_DiagonalMatrixTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 7 );
+      m.setRowLengths( rowLengths );
+
+      for( int i = 0; i < 10; i++ )
+         m.setElement( i, i, i );
+
+      for( int i = 0; i < 10; i++ )
+      {
+         for( int j = 0; j < 10; j++ )
+         {
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+         }
+      }
+   }
+
+   void setElement_DenseMatrixTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 10 );
+      m.setRowLengths( rowLengths );
+
+      for( int i = 0; i < 10; i++ )
+         m.setElement( i, i, i );
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            m.addToElement( i, j, 1, 0.5 );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 1.0+0.5*i );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 1.0 );
+
+      m.reset();
+      m.setDimensions( 10, 10 );
+      m.setRowLengths( rowLengths );
+      for( int i = 9; i >= 0; i-- )
+         for( int j = 9; j >= 0; j-- )
+            m.setElement( i, j, i+j );
+
+      for( int i = 9; i >= 0; i-- )
+         for( int j = 9; j >= 0; j-- )
+            CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
+   }
+
+   void setElement_LowerTriangularMatrixTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      for( int i = 0; i < 10; i++ )
+         rowLengths.setElement( i, i+1 );
+      m.setRowLengths( rowLengths );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j <= i; j++ )
+            m.setElement( i, j, i + j );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( j <= i )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i + j );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+
+      m.reset();
+      m.setDimensions( 10, 10 );
+      m.setRowLengths( rowLengths );
+      for( int i = 9; i >= 0; i-- )
+         for( int j = i; j >= 0; j-- )
+            m.setElement( i, j, i + j );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( j <= i )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i + j );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+   }
+
+   void addToElementTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 7 );
+      m.setRowLengths( rowLengths );
+      for( int i = 0; i < 10; i++ )
+         m.setElement( i, i, i );
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( abs( i - j ) <= 1 )
+               m.addToElement( i, j, 1 );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
+            else
+               if( abs( i - j ) == 1 )
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+               else
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+   }
+
+   void vectorProductTest()
+   {
+      const int size = 10;
+      VectorType v, w;
+      v.setSize( size );
+      w.setSize( size );
+      MatrixType m;
+      m.setDimensions( size, size );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 7 );
+      m.setRowLengths( rowLengths );
+      for( int i = 0; i < size; i++ )
+      {
+         v.setElement( i, i );
+         m.setElement( i, i, i );
+      }
+      m.vectorProduct( v, w );
+
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( w[ i ] == i*i );
+   }
+
+   void addMatrixTest()
+   {
+   }
+
+   void matrixTranspositionTest()
+   {
    }
 };
+
+#endif
 
 #endif /* TNLCSRMATRIXTESTER_H_ */

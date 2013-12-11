@@ -52,7 +52,7 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
-   if( ! this -> setSize( matrix -> getSize() ) ) return false;
+   if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
    this -> setResidue( this -> getMaxResidue() + 1.0 );

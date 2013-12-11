@@ -18,6 +18,8 @@
 #ifndef tnlBICGStabSolver_implH
 #define tnlBICGStabSolver_implH
 
+#include <debug/tnlDebug.h>
+
 template< typename RealType,
           typename Vector >
 RealType computeBICGStabNewP( Vector& p,
@@ -61,7 +63,7 @@ template< typename Matrix,
 bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    dbgFunctionName( "tnlBICGStabSolver", "Solve" );
-   if( ! this -> setSize( matrix -> getSize() ) ) return false;
+   if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
    this -> setResidue( this -> getMaxResidue() + 1.0 );

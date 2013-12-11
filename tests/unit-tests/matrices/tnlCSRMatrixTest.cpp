@@ -18,7 +18,27 @@
 #ifndef TNLCSRMATRIXTEST_CPP_
 #define TNLCSRMATRIXTEST_CPP_
 
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
+#include <cstdlib>
 
+#include "tnlCSRMatrixTester.h"
+#include "../tnlUnitTestStarter.h"
+
+int main( int argc, char* argv[] )
+{
+#ifdef HAVE_CPPUNIT
+   if( ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, long int > >()
+       )
+     return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
+}
 
 
 #endif /* TNLCSRMATRIXTEST_CPP_ */

@@ -25,13 +25,13 @@ typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
                                                            const Vector& b,
                                                            RealType bNorm )
 {
-   const IndexType size = matrix. getSize();
+   const IndexType size = matrix. getRows();
    RealType res( 0.0 );
    if( bNorm == 0.0 )
       bNorm = b. lpNorm( 2.0 );
    for( IndexType i = 0; i < size; i ++ )
    {
-      RealType err = fabs( matrix. rowProduct( i, x ) - b[ i ] );
+      RealType err = fabs( matrix. rowVectorProduct( x, i ) - b[ i ] );
       res += err * err;
    }
    return sqrt( res ) / bNorm;

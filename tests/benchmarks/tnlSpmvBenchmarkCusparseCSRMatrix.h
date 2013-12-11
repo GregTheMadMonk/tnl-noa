@@ -20,7 +20,7 @@
 
 #include "tnlSpmvBenchmark.h"
 #include <tnlConfig.h>
-#include <matrices/tnlCusparseCSRMatrix.h>
+#include <legacy/matrices/tnlCusparseCSRMatrix.h>
 
 template< typename Real, typename Index>
 class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, tnlCuda, Index, tnlCusparseCSRMatrix >

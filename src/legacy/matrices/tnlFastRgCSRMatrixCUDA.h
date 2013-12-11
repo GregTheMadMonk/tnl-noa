@@ -24,7 +24,7 @@
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
 #include <matrices/tnlMatrix.h>
-#include <matrices/tnlFastRgCSRMatrix.h>
+#include <legacy/matrices/tnlFastRgCSRMatrix.h>
 #include <debug/tnlDebug.h>
 
 #ifdef HAVE_CUDA

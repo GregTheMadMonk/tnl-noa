@@ -62,7 +62,7 @@ template< typename Matrix,
 bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    dbgFunctionName( "tnlTFQMRSolver", "Solve" );
-   if( ! this -> setSize( matrix -> getSize() ) ) return false;
+   if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
    this -> setResidue( this -> getMaxResidue() + 1.0 );

@@ -24,9 +24,9 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <legacy/matrices/tnlFullMatrix.h>
-#include <matrices/tnlFastCSRMatrix.h>
-#include <matrices/tnlFastRgCSRMatrix.h>
-#include <matrices/tnlFastRgCSRMatrixCUDA.h>
+#include <legacy/matrices/tnlFastCSRMatrix.h>
+#include <legacy/matrices/tnlFastRgCSRMatrix.h>
+#include <legacy/matrices/tnlFastRgCSRMatrixCUDA.h>
 #include <legacy/matrices/tnlEllpackMatrix.h>
 #include <legacy/matrices/tnlEllpackMatrixCUDA.h>
 #include <core/mfuncs.h>
@@ -114,7 +114,8 @@ bool benchmarkMatrix( const tnlString& inputFile,
    /****
     * Read the CSR matrix ...
     */
-   tnlCSRMatrix< Real > csrMatrix( "csr-matrix" );
+   tnlCSRMatrix< Real > csrMatrix;
+   csrMatrix.setName( "csr-matrix" );
    tnlString inputMtxSortedFile( inputMtxFile );
    inputMtxSortedFile += tnlString( ".sort" );
    tnlFile binaryFile;

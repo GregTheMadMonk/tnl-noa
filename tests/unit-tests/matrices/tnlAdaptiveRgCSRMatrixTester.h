@@ -98,7 +98,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifEmptyMatrixIsStoredProperly()
    {
       const int size = 12;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
       this -> setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -114,7 +115,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifDiagonalMatrixIsStoredProperly()
    {
       const int size = 12;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
       this -> setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -129,7 +131,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
 
    void ifTriDiagonalMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Tridiagonal" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:Tridiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Tridiagonal" );
       int size = 12;
       this -> setTridiagonalMatrix( csrMatrix, size );
@@ -146,7 +149,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
 
    void ifUpperTriangularMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:upperTriangular" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:upperTriangular" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:upperTriangular" );
       const int size = 12;
       this -> setUpperTriangularMatrix( csrMatrix, size );
@@ -163,7 +167,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
 
    void ifFullMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
       const int size = 12;
       this -> setFullMatrix( csrMatrix, size );
@@ -180,7 +185,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
 
    void ifBcsstk20MatrixIsStoredProperly()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:bcsstk20" );
+      tnlCSRMatrix< Real > csrMatrix;
+      //( "test-matrix:bcsstk20" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:bcsstk20" );
       const int size = 12;
       this -> setBcsstk20Matrix( csrMatrix );
@@ -200,7 +206,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifSpmvWithEmptyMatrixWorks()
    {
       const int size = 35;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Empty" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
       this -> setEmptyMatrix( csrMatrix, size );
       if( Device :: getDevice() == tnlHostDevice )
@@ -230,7 +236,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifSpmvWithDiagonalMatrixWorks()
    {
       const int size = 35;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:Diagonal" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
       this -> setDiagonalMatrix( csrMatrix, size );
       if( Device :: getDevice() == tnlHostDevice )
@@ -259,7 +265,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifSpmvWithTriDiagonalMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setTridiagonalMatrix( csrMatrix, size );
       if( Device :: getDevice() == tnlHostDevice )
@@ -287,7 +293,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifSpmvWithUpperTriangularMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setUpperTriangularMatrix( csrMatrix, size );
       if( Device :: getDevice() == tnlHostDevice )
@@ -316,7 +322,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
    void ifSpmvWithFullMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:full" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
       this -> setFullMatrix( csrMatrix, size );
       if( Device :: getDevice() == tnlHostDevice )
@@ -344,7 +350,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
 
    void ifSpmvWithBcsstk20MatrixWorks()
    {
-      tnlCSRMatrix< Real > csrMatrix( "test-matrix:TriDiagonal" );
+      tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this -> setBcsstk20Matrix( csrMatrix );
       if( Device :: getDevice() == tnlHostDevice )
@@ -356,7 +362,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      const int size = csrMatrix. getSize();
+      const int size = csrMatrix. getRows();
       tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
       tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );

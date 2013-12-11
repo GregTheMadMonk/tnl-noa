@@ -64,7 +64,7 @@ template< typename Matrix, typename Preconditioner >
 bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                                       Vector& x )
 {
-   const IndexType size = matrix -> getSize();
+   const IndexType size = matrix -> getRows();
 
    this -> resetIterations();
    this -> setResidue( this -> getMaxResidue() + 1.0 );
@@ -74,11 +74,11 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
    while( this -> getIterations() < this -> getMaxIterations() &&
           this -> getResidue() > this -> getMaxResidue() )
    {
-      matrix -> performSORIteration( this -> getOmega(),
+      /*matrix -> performSORIteration( this -> getOmega(),
                                      b,
                                      x,
                                      0,
-                                     size );
+                                     size );*/
       if( this -> getIterations() % 10 == 0 )
          this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
       if( ! this -> nextIteration() )

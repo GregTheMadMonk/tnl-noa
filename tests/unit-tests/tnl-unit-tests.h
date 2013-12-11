@@ -37,7 +37,6 @@
 #include "core/tnlGridOldTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
-#include "matrices/tnlCSRMatrixTester.h"
 #include "matrices/tnlRgCSRMatrixTester.h"
 #include "matrices/tnlAdaptiveRgCSRMatrixTester.h"
 #include "matrices/tnlEllpackMatrixTester.h"
@@ -87,14 +86,11 @@ int main( int argc, char* argv[] )
    //runner. addTest( tnlMultiArrayTester< float, tnlHost, int > :: suite() );
    //runner. addTest( tnlMultiArrayTester< double, tnlHost, int > :: suite() );
 
-   runner. addTest( tnlCSRMatrixTester< float > :: suite() );
-   runner. addTest( tnlCSRMatrixTester< double > :: suite() );
+   //runner. addTest( tnlRgCSRMatrixTester< float > :: suite() );
+   //runner. addTest( tnlRgCSRMatrixTester< double > :: suite() );
 
-   runner. addTest( tnlRgCSRMatrixTester< float > :: suite() );
-   runner. addTest( tnlRgCSRMatrixTester< double > :: suite() );
-
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< float, tnlHost > :: suite() );
-   runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlHost > :: suite() );
+   //runner. addTest( tnlAdaptiveRgCSRMatrixTester< float, tnlHost > :: suite() );
+   //runner. addTest( tnlAdaptiveRgCSRMatrixTester< double, tnlHost > :: suite() );
 
    /*runner. addTest( tnlMPIMeshTester< float > :: suite() );
 

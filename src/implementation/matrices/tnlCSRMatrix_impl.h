@@ -62,6 +62,9 @@ bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                    << " columns = " << columns << endl );
    this->rows = rows;
    this->columns = columns;
+   if( ! this->rowPointers.setSize( this->rows + 1 ) )
+      return false;
+   this->rowPointers.setValue( 0 );
    return true;
 }
 
@@ -71,17 +74,22 @@ template< typename Real,
    template< typename Vector >
 bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
 {
-   IndexType row( 0 ), slice( 0 ), sliceRowLength( 0 );
-
    /****
-    * Compute the slice pointers using the exclusive prefix sum
+    * Compute the rows pointers. The last one is
+    * the end of the last row and so it says the
+    * necessary length of the vectors this->values
+    * and this->columnIndexes.
     */
+   for( IndexType i = 0; i < this->rows; i++ )
+      this->rowPointers[ i ] = rowLengths[ i ];
+   this->rowPointers[ this->rows ] = 0;
+   this->rowPointers.computeExclusivePrefixSum();
 
    /****
     * Allocate values and column indexes
     */
-   if( ! this->values.setSize( this->slicePointers[ slices ] ) ||
-       ! this->columnIndexes.setSize( this->slicePointers[ slices ] ) )
+   if( ! this->values.setSize( this->rowPointers[ this->rows ] ) ||
+       ! this->columnIndexes.setSize( this->rowPointers[ this->rows ] ) )
       return false;
    this->columnIndexes.setValue( this->columns );
    return true;
@@ -93,13 +101,12 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlCSRMatrix< Real, Device, Index >::setLike( const tnlCSRMatrix< Real2, Device2, Index2, SliceSize >& matrix )
+bool tnlCSRMatrix< Real, Device, Index >::setLike( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix )
 {
    if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) ||
        ! this->values.setLike( matrix.values ) ||
        ! this->columnIndexes.setLike( matrix.columnIndexes ) ||
-       ! this->slicePointers.setLike( matrix.slicePointers ) ||
-       ! this->sliceRowLengths.setLike( matrix.sliceRowLengths ) )
+       ! this->rowPointers.setLike( matrix.rowPointers ) )
       return false;
    return true;
 }
@@ -121,8 +128,7 @@ void tnlCSRMatrix< Real, Device, Index >::reset()
    this->rows = 0;
    this->values.reset();
    this->columnIndexes.reset();
-   this->slicePointers.reset();
-   this->sliceRowLengths.reset();
+   this->rowPointers.reset();
 }
 
 template< typename Real,
@@ -185,13 +191,10 @@ template< typename Real,
           typename Device,
           typename Index >
 Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                                           const IndexType column ) const
+                                                      const IndexType column ) const
 {
-   const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                          rowLength * ( row - sliceIdx * SliceSize );
-   const IndexType rowEnd = elementPtr + rowLength;
+   IndexType elementPtr = this->rowPointers[ row ];
+   const IndexType rowEnd = this->rowPointers[ row + 1 ];
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
       elementPtr++;
    if( this->columnIndexes[ elementPtr ] == column )
@@ -203,9 +206,9 @@ template< typename Real,
           typename Device,
           typename Index >
 bool tnlCSRMatrix< Real, Device, Index >::addToElement( const IndexType row,
-                                                                             const IndexType column,
-                                                                             const RealType& value,
-                                                                             const RealType& thisElementMultiplicator )
+                                                        const IndexType column,
+                                                        const RealType& value,
+                                                        const RealType& thisElementMultiplicator )
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
@@ -214,11 +217,8 @@ bool tnlCSRMatrix< Real, Device, Index >::addToElement( const IndexType row,
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );
 
-   const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                          rowLength * ( row - sliceIdx * SliceSize );
-   const IndexType rowEnd( elementPtr + rowLength );
+   IndexType elementPtr = this->rowPointers[ row ];
+   const IndexType rowEnd = this->rowPointers[ row + 1 ];
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
    if( elementPtr == rowEnd )
       return false;
@@ -250,29 +250,33 @@ bool tnlCSRMatrix< Real, Device, Index >::addToElement( const IndexType row,
    return false;
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlCSRMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                              Vector& outVector ) const
+typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const Vector& vector,
+                                                                                 const IndexType row ) const
+{
+   Real result = 0.0;
+   IndexType elementPtr = this->rowPointers[ row ];
+   const IndexType rowEnd = this->rowPointers[ row + 1 ];
+   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
+   {
+      const Index column = this->columnIndexes.getElement( elementPtr );
+      result += this->values.getElement( elementPtr++ ) * vector.getElement( column );
+   }
+   return result;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InVector, typename OutVector >
+void tnlCSRMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                         OutVector& outVector ) const
 {
    for( Index row = 0; row < this->getRows(); row ++ )
-   {
-      Real result = 0.0;
-      const IndexType sliceIdx = row / SliceSize;
-      const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-      IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                             rowLength * ( row - sliceIdx * SliceSize );
-      const IndexType rowEnd( elementPtr + rowLength );
-      while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
-      {
-         const Index column = this->columnIndexes.getElement( elementPtr );
-         result += this->values.getElement( elementPtr++ ) * inVector.getElement( column );
-      }
-      outVector.setElement( row, result );
-   }
+      outVector.setElement( row, rowVectorProduct( inVector, row ) );
 }
 
 template< typename Real,
@@ -317,11 +321,8 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                          rowLength * ( row - sliceIdx * SliceSize );
-   const IndexType rowEnd( elementPtr + rowLength );
+   IndexType elementPtr = this->rowPointers[ row ];
+   const IndexType rowEnd = this->rowPointers[ row + 1 ];
    IndexType column;
    while( elementPtr < rowEnd && ( column = this->columnIndexes[ elementPtr ] ) < this->columns )
    {
@@ -350,8 +351,7 @@ bool tnlCSRMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! file.write( &this->columns ) ) return false;
    if( ! this->values.save( file ) ) return false;
    if( ! this->columnIndexes.save( file ) ) return false;
-   if( ! this->slicePointers.save( file ) ) return false;
-   if( ! this->sliceRowLengths.save( file ) ) return false;
+   if( ! this->rowPointers.save( file ) ) return false;
    return true;
 }
 
@@ -364,8 +364,7 @@ bool tnlCSRMatrix< Real, Device, Index >::load( tnlFile& file )
    if( ! file.read( &this->columns ) ) return false;
    if( ! this->values.load( file ) ) return false;
    if( ! this->columnIndexes.load( file ) ) return false;
-   if( ! this->slicePointers.load( file ) ) return false;
-   if( ! this->sliceRowLengths.load( file ) ) return false;
+   if( ! this->rowPointers.load( file ) ) return false;
    return true;
 }
 
@@ -393,11 +392,8 @@ void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
-      const IndexType sliceIdx = row / SliceSize;
-      const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-      IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                             rowLength * ( row - sliceIdx * SliceSize );
-      const IndexType rowEnd( elementPtr + rowLength );
+      IndexType elementPtr = this->rowPointers[ row ];
+      const IndexType rowEnd = this->rowPointers[ row + 1 ];
       while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
       {
          const Index column = this->columnIndexes.getElement( elementPtr );

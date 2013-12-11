@@ -24,6 +24,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/tnlAssert.h>
 #include <core/mfuncs.h>
+#include <matrices/tnlMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <debug/tnlDebug.h>
 
@@ -355,7 +356,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
       return false;
    }
 
-	if( ! this -> setSize( csr_matrix. getSize() ) )
+	if( ! this -> setSize( csr_matrix. getRows() ) )
 		return false;
 	dbgExpr( csr_matrix. getSize() );
 
@@ -367,12 +368,12 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	{
 	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByAverageRowSize )
 	   {
-	      const Index averageRowSize = ceil( ( double ) csr_matrix. getNonzeroElements() / ( double ) csr_matrix. getSize() );
+	      const Index averageRowSize = ceil( ( double ) csr_matrix. getNumberOfAllocatedElements() / ( double ) csr_matrix. getRows() );
 	      maxNonzeroElementsInGroup = averageRowSize * groupSize;
 	   }
-	   if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByFirstGroup )
-	      for( Index row = 0; row < groupSize; row ++ )
-	         maxNonzeroElementsInGroup += csr_matrix. getNonzeroElementsInRow( row );
+	   //if( this -> adaptiveGroupSizeStrategy == tnlAdaptiveGroupSizeStrategyByFirstGroup )
+	   //   for( Index row = 0; row < groupSize; row ++ )
+	   //      maxNonzeroElementsInGroup += csr_matrix. getNonzeroElementsInRow( row );
 	}
 
 	/****

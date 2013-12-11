@@ -76,8 +76,12 @@ class tnlCSRMatrix : public tnlObject
                       const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   typename Vector::RealType rowVectorProduct( const Vector& vector,
+                                               const IndexType row ) const;
+
+   template< typename InVector, typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
@@ -110,7 +114,7 @@ class tnlCSRMatrix : public tnlObject
 
    tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > columnIndexes, slicePointers, sliceRowLengths;
+   tnlVector< Index, Device, Index > columnIndexes, rowPointers;
 
 };
 

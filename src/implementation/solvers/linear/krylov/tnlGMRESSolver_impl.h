@@ -81,7 +81,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
            << ". Please set some positive value using the SetRestarting method." << endl;
       return false;
    }
-   if( ! setSize( matrix -> getSize(), restarting ) ) return false;
+   if( ! setSize( matrix -> getRows(), restarting ) ) return false;
 
 
    IndexType i, j = 1, k, l;

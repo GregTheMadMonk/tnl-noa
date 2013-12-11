@@ -52,7 +52,7 @@ template< typename Real, typename Index >
 void tnlMatrixTester< Real, Index > :: setEmptyMatrix( tnlCSRMatrix< Real >& csrMatrix,
                                                        const Index size )
 {
-   csrMatrix. setSize( size );
+   csrMatrix. setDimensions( size, size );
 }
 
 template< typename Real, typename Index >

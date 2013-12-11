@@ -71,8 +71,8 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    typedef typename Matrix :: IndexType IndexType;
 
    const RealType& maxResidue = parameters. GetParameter< double >( "max-residue" );
-   const IndexType& size = matrix. getSize();
-   const IndexType nonZeros = matrix. getNonzeroElements();
+   const IndexType& size = matrix. getRows();
+   const IndexType nonZeros = matrix. getNumberOfAllocatedElements();
    //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
    const IndexType maxIterations = size;
    cout << "Setting max. number of iterations to " << maxIterations << endl;
@@ -255,7 +255,8 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
     */
    typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
    tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
-   csrMatrixType csrMatrix( "matrix-solvers-benchmark:csrMatrix" );
+   csrMatrixType csrMatrix;
+   csrMatrix.setName( "matrix-solvers-benchmark:csrMatrix" );
    if( ! csrMatrix. load( inputFile ) )
    {
       cerr << "Unable to load file " << inputFile << endl;
@@ -275,15 +276,15 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
          cerr << "Unable to open matrix statistics file " << matrixStatsFileName << endl;
          return false;
       }
-      matrixStatsFile << "             <td> " << csrMatrix. getSize() << " </td> " << endl
-                      << "             <td> " << csrMatrix. getNonzeroElements() << " </td> " << endl;
+      matrixStatsFile << "             <td> " << csrMatrix. getRows() << " </td> " << endl
+                      << "             <td> " << csrMatrix. getNumberOfAllocatedElements() << " </td> " << endl;
       matrixStatsFile. close();
    }
 
    /****
     * Setting up the linear problem
     */
-   const Index size = csrMatrix. getSize();
+   const Index size = csrMatrix. getRows();
    cout << "Matrix size is " << size << endl;
    tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
    tnlVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );

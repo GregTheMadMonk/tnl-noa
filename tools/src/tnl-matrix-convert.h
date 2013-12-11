@@ -21,6 +21,7 @@
 #include <fstream>
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
+#include <matrices/tnlMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
 
 using namespace std;
@@ -32,7 +33,7 @@ bool convertMatrix( const tnlString& input_file,
                     int verbose,
                     bool verify )
 {
-   tnlMatrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
+   /*tnlMatrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
    if( output_matrix_format == "csr" )
    {
       matrix = new tnlCSRMatrix< REAL, tnlHost >( input_file. getString() );
@@ -114,7 +115,7 @@ bool convertMatrix( const tnlString& input_file,
       if( verbose )
          cout << "OK." << endl;
       delete verify_matrix;
-   }
+   }*/
    /*if( verbose )
             cout << "Compressing output matrix ... ";
    if( ! CompressFile( output_file. getString(), "bz2" ) )
@@ -125,7 +126,7 @@ bool convertMatrix( const tnlString& input_file,
    }
    if( verbose )
       cout << "OK." << endl;*/
-   delete matrix;
+   //delete matrix;
    return true;
 }
 #endif /* TNLMATRIXCONVERT_H_ */
