@@ -83,7 +83,7 @@ template< typename Vertex, typename Device >
    if( XDiffOrder == 0 )
       return this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
    if( XDiffOrder == 1 )
-      return 2.0 * M_PI / this->waveLength * this->amplitude * cos( 2.0 * M_PI * x / this->waveLength );
+      return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase + 2.0 * M_PI * x / this->waveLength );
    return 0.0;
 }
 
@@ -110,7 +110,7 @@ template< typename Vertex, typename Device >
    const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->amplitude * sin( this->phase + sqrt( x * x + y * y + z * z ) / ( M_PI * this->waveLength) );
+      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
    }
    return 0.0;
 }

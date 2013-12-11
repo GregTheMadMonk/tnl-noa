@@ -87,7 +87,6 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeom
                2.0 * function[ grid.getElementIndex( c.x() ) ] +
                function[ grid.getElementIndex( c.x() - 1 ) ] ) / (  hx * hx );
    }
-
 }
 
 /****

@@ -71,36 +71,11 @@ template< typename Real,
    template< typename Vector >
 bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
 {
-   const IndexType slices = roundUpDivision( this->rows, SliceSize );
-   if( ! this->sliceRowLengths.setSize( slices ) ||
-       ! this->slicePointers.setSize( slices + 1 ) )
-      return false;
    IndexType row( 0 ), slice( 0 ), sliceRowLength( 0 );
-
-   /****
-    * Compute maximal row length in each slice
-    */
-   while( row < this->rows )
-   {
-      sliceRowLength = Max( rowLengths.getElement( row++ ), sliceRowLength );
-      if( row % SliceSize == 0 )
-      {
-         this->sliceRowLengths.setElement( slice, sliceRowLength );
-         this->slicePointers.setElement( slice++, sliceRowLength*SliceSize );
-         sliceRowLength = 0;
-      }
-   }
-   if( row % SliceSize != 0 )
-   {
-      this->sliceRowLengths.setElement( slice, sliceRowLength );
-      this->slicePointers.setElement( slice++, sliceRowLength*SliceSize );
-   }
 
    /****
     * Compute the slice pointers using the exclusive prefix sum
     */
-   this->slicePointers.setElement( slices, 0 );
-   this->slicePointers.computeExclusivePrefixSum();
 
    /****
     * Allocate values and column indexes
