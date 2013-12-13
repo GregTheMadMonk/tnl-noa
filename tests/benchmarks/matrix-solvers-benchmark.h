@@ -25,7 +25,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlRgCSRMatrix.h>
+#include <legacy/matrices/tnlRgCSRMatrix.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
 #include <solvers/linear/krylov/tnlCGSolver.h>

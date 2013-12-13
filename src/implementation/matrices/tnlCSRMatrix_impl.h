@@ -254,8 +254,8 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const Vector& vector,
-                                                                                 const IndexType row ) const
+typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+                                                                                 const Vector& vector ) const
 {
    Real result = 0.0;
    IndexType elementPtr = this->rowPointers[ row ];
@@ -276,7 +276,7 @@ void tnlCSRMatrix< Real, Device, Index >::vectorProduct( const InVector& inVecto
                                                          OutVector& outVector ) const
 {
    for( Index row = 0; row < this->getRows(); row ++ )
-      outVector.setElement( row, rowVectorProduct( inVector, row ) );
+      outVector.setElement( row, rowVectorProduct( row, inVector ) );
 }
 
 template< typename Real,

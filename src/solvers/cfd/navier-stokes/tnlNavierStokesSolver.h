@@ -119,10 +119,12 @@ class tnlNavierStokesSolver
                                 const IndexType step );
 
    bool writeConservativeVariables( const RealType& t,
-                                   const IndexType step );
+                                    const IndexType step );
 
+   template< typename DofVector >
    bool writeExplicitRhs( const RealType& t,
-                          const IndexType step );
+                          const IndexType step,
+                          DofVector& rhs );
 
    protected:
 
@@ -147,8 +149,6 @@ class tnlNavierStokesSolver
    DofVectorType dofVector;
 
    VectorType rhsDofVector;
-
-   IndexType rhsIndex;
 
 };
 

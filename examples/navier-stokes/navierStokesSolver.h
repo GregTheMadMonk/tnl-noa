@@ -124,6 +124,8 @@ class navierStokesSolver
    navierStokesBoundaryConditions< MeshType > boundaryConditions;
 
    navierStokesSolverMonitor< RealType, IndexType > solverMonitor;
+
+   IndexType rhsIndex;
 };
 
 #include "navierStokesSolver_impl.h"

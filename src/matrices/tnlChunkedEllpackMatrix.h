@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlCSRMatrix.h  -  description
+                          tnlChunkedEllpackMatrix.h  -  description
                              -------------------
-    begin                : Dec 10, 2013
+    begin                : Dec 12, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCSRMATRIX_H_
-#define TNLCSRMATRIX_H_
+#ifndef TNLCHUNKEDELLPACKMATRIX_H_
+#define TNLCHUNKEDELLPACKMATRIX_H_
 
 #include <core/vectors/tnlVector.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlCSRMatrix : public tnlObject
+class tnlChunkedEllpackMatrix : public tnlObject
 {
    public:
 
@@ -29,7 +29,7 @@ class tnlCSRMatrix : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   tnlCSRMatrix();
+   tnlChunkedEllpackMatrix();
 
    static tnlString getType();
 
@@ -42,7 +42,7 @@ class tnlCSRMatrix : public tnlObject
    bool setRowLengths( const Vector& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfAllocatedElements() const;
 
@@ -53,10 +53,10 @@ class tnlCSRMatrix : public tnlObject
    IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    bool setElement( const IndexType row,
                     const IndexType column,
@@ -66,6 +66,14 @@ class tnlCSRMatrix : public tnlObject
                 const IndexType* columnIndexes,
                 const RealType* values,
                 const IndexType elements );
+
+   void setNumberOfChunksInSlice( const IndexType chunksInSlice );
+
+   IndexType getNumberOfChunksInSlice() const;
+
+   void setDesiredChunkSize( const IndexType desiredChunkSize );
+
+   IndexType getDesiredChunkSize() const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
@@ -79,17 +87,17 @@ class tnlCSRMatrix : public tnlObject
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename InVector, typename OutVector >
-   void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
+   template< typename Vector >
+   void vectorProduct( const Vector& inVector,
+                       Vector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const tnlChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const tnlChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -110,15 +118,32 @@ class tnlCSRMatrix : public tnlObject
 
    protected:
 
+   struct tnlChunkedEllpackSliceInfo
+   {
+      IndexType size;
+      IndexType chunkSize;
+      IndexType firstRow;
+      IndexType pointer;
+
+      static inline tnlString getType()
+      { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
+   };
+
    IndexType rows, columns;
+
+   IndexType chunksInSlice, desiredChunkSize;
 
    tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > columnIndexes, rowPointers;
+   tnlVector< Index, Device, Index > columnIndexes, chunksToRowsMapping, slicesToRowsMapping, rowPointers;
+
+   tnlArray< tnlChunkedEllpackSliceInfo, Device, Index > slices;
+
+   //IndexType numberOfSlices;
 
 };
 
-#include <implementation/matrices/tnlCSRMatrix_impl.h>
+#include <implementation/matrices/tnlChunkedEllpackMatrix_impl.h>
 
 
-#endif /* TNLCSRMATRIX_H_ */
+#endif /* TNLCHUNKEDELLPACKMATRIX_H_ */

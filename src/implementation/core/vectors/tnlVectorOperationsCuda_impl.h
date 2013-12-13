@@ -542,16 +542,19 @@ void tnlVectorOperations< tnlCuda > :: alphaXPlusBetaZPlusY( Vector1& y,
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v )
+void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
+                                                       typename Vector::IndexType begin,
+                                                       typename Vector::IndexType end )
 {
    typedef typename Vector::IndexType Index;
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v )
+void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
+                                                                typename Vector::IndexType begin,
+                                                                typename Vector::IndexType end )
 {
-   typedef typename Vector::IndexType Index;
-   typedef typename Vector::RealType Real;
+
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

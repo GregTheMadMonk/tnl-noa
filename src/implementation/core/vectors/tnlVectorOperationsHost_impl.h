@@ -384,28 +384,31 @@ void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZPlusY( Vector1& y,
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlHost >::computePrefixSum( Vector& v )
+void tnlVectorOperations< tnlHost >::computePrefixSum( Vector& v,
+                                                       typename Vector::IndexType begin,
+                                                       typename Vector::IndexType end )
 {
    typedef typename Vector::IndexType Index;
-   for( Index i = 1; i < v.getSize(); i++ )
+   for( Index i = begin + 1; i < end; i++ )
       v[ i ] += v[ i - 1 ];
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlHost >::computeExclusivePrefixSum( Vector& v )
+void tnlVectorOperations< tnlHost >::computeExclusivePrefixSum( Vector& v,
+                                                                typename Vector::IndexType begin,
+                                                                typename Vector::IndexType end )
 {
    typedef typename Vector::IndexType Index;
    typedef typename Vector::RealType Real;
-   Real aux( v[ 0 ] );
-   v[ 0 ] = 0.0;
-   for( Index i = 1; i < v.getSize(); i++ )
+   Real aux( v[ begin ] );
+   v[ begin ] = 0.0;
+   for( Index i = begin + 1; i < end; i++ )
    {
       Real x = v[ i ];
       v[ i ] = aux;
       aux += x;
    }
 }
-
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

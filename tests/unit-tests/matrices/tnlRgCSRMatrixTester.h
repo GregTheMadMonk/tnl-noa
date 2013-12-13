@@ -24,7 +24,7 @@
 #include <cppunit/TestCase.h>
 #include <matrices/tnlCSRMatrix.h>
 #include "tnlMatrixTester.h"
-#include <matrices/tnlRgCSRMatrix.h>
+#include <legacy/matrices/tnlRgCSRMatrix.h>
 
 template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
                                                  public tnlMatrixTester< T >

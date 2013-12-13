@@ -282,7 +282,16 @@ template< typename Real,
           typename Index >
 void tnlVector< Real, Device, Index > :: computePrefixSum()
 {
-   tnlVectorOperations< Device > :: computePrefixSum( *this );
+   tnlVectorOperations< Device > :: computePrefixSum( *this, 0, this->getSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index > :: computePrefixSum( const IndexType begin,
+                                                           const IndexType end )
+{
+   tnlVectorOperations< Device > :: computePrefixSum( *this, begin, end );
 }
 
 template< typename Real,
@@ -290,8 +299,18 @@ template< typename Real,
           typename Index >
 void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum()
 {
-   tnlVectorOperations< Device > :: computeExclusivePrefixSum( *this );
+   tnlVectorOperations< Device > :: computeExclusivePrefixSum( *this, 0, this->getSize() );
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexType begin,
+                                                                    const IndexType end )
+{
+   tnlVectorOperations< Device > :: computeExclusivePrefixSum( *this, begin, end );
+}
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

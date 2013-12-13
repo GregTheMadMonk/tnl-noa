@@ -18,6 +18,7 @@
 #ifndef TNLGRID3D_IMPL_H_
 #define TNLGRID3D_IMPL_H_
 
+#include <iomanip>
 #include <core/tnlAssert.h>
 
 template< typename Real,
@@ -356,18 +357,21 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
-   const RealType hx = getParametricStep(). x();
-   const RealType hy = getParametricStep(). y();
+   file << setprecision( 12 );
    if( format == "gnuplot" )
    {
-      tnlAssert( false, cerr << "TODO");
-      for( IndexType j = 0; j < getDimensions(). y(); j++ )
+      for( IndexType k = 0; k < getDimensions(). z(); k++ )
       {
-         for( IndexType i = 0; i < getDimensions(). x(); i++ )
+         for( IndexType j = 0; j < getDimensions(). y(); j++ )
          {
-            const RealType x = this -> getOrigin(). x() + i * hx;
-            const RealType y = this -> getOrigin(). y() + j * hy;
-            //file << x << " " << " " << y << " " << function[ this -> getElementIndex( i, j ) ] << endl;
+            for( IndexType i = 0; i < getDimensions(). x(); i++ )
+            {
+               VertexType v;
+               this -> getElementCenter( CoordinatesType( i, j, k ), v );
+               tnlGnuplotWriter::write( file, v );
+               tnlGnuplotWriter::write( file, function[ this -> getElementIndex( i, j, k ) ] );
+               file << endl;
+            }
          }
          file << endl;
       }

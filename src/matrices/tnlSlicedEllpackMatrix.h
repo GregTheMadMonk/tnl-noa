@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSlicedSlicedEllpackMatrix.h  -  description
+                          tnlSlicedEllpackMatrix.h  -  description
                              -------------------
     begin                : Dec 8, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

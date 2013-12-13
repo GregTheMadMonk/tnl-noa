@@ -37,9 +37,9 @@ ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PAT
 ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} )
-ADD_TEST( matrices/tnlEllpackTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackMatrixTest${mpiExt}${debugExt} )
-ADD_TEST( matrices/tnlSlicedEllpackTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} )
-ADD_TEST( matrices/tnlCSRTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlEllpackMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackMatrixTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} )
+ADD_TEST( matrices/tnlCSRMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )

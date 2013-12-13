@@ -53,7 +53,17 @@ if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlSlicedEllpackMatrixTest.cu )
    TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                       tnl${mpiExt}${debugExt}-0.1 )
-endif()             
+endif()
+
+ADD_EXECUTABLE( tnlChunkedEllpackMatrixTest${mpiExt}${debugExt} ${headers} tnlChunkedEllpackMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlChunkedEllpackMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlChunkedEllpackMatrixTest.cu )
+   TARGET_LINK_LIBRARIES( tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()              
         
 ADD_EXECUTABLE( tnlCSRMatrixTest${mpiExt}${debugExt} ${headers} tnlCSRMatrixTest.cpp )
 TARGET_LINK_LIBRARIES( tnlCSRMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}

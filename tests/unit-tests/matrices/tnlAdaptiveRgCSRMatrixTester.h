@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlAdaptiveRgCSRMatrix.h>
+#include <legacy/matrices/tnlAdaptiveRgCSRMatrix.h>
 #include "tnlMatrixTester.h"
 
 template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestCase,

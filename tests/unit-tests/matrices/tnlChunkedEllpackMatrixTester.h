@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSlicedEllpackMatrixTester.h  -  description
+                          tnlChunkedEllpackMatrixTester.h  -  description
                              -------------------
-    begin                : Dec 9, 2013
+    begin                : Dec 13, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSLICEDELLPACKMATRIXTESTER_H_
-#define TNLSLICEDELLPACKMATRIXTESTER_H_
+#ifndef TNLCHUNKEDELLPACKMATRIXTESTER_H_
+#define TNLCHUNKEDELLPACKMATRIXTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -24,24 +24,24 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
 
-template< typename RealType, typename Device, typename IndexType, int SliceSize >
-class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
+template< typename RealType, typename Device, typename IndexType >
+class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlSlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
+   typedef tnlChunkedEllpackMatrix< RealType, Device, IndexType> MatrixType;
    typedef tnlVector< RealType, Device, IndexType > VectorType;
    typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlSlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
+   typedef tnlChunkedEllpackMatrixTester< RealType, Device, IndexType> TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlSlicedEllpackMatrixTester(){};
+   tnlChunkedEllpackMatrixTester(){};
 
    virtual
-   ~tnlSlicedEllpackMatrixTester(){};
+   ~tnlChunkedEllpackMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
@@ -250,4 +250,4 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLSLICEDELLPACKMATRIXTESTER_H_ */
+#endif /* TNLCHUNKEDELLPACKMATRIXTESTER_H_ */

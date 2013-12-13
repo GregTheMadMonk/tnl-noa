@@ -48,7 +48,8 @@ __device__ void computeVelocityFieldCuda( const Index size,
 template< typename Mesh, typename EulerScheme >
 navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
 : p_0( 0.0 ),
-  T( 0.0 )
+  T( 0.0 ),
+  rhsIndex( 0 )
 {
 
    this -> mesh. setName( "navier-stokes-mesh" );
@@ -272,6 +273,12 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
    solverMonitor.uAvg = this->mesh.getLpNorm( nsSolver.getU(), 1.0 );
    solverMonitor.eMax = this->mesh.getAbsMax( nsSolver.getEnergy() );
    solverMonitor.eAvg = this->mesh.getLpNorm( nsSolver.getEnergy(), 1.0 );
+
+   /*this->rhsIndex++;
+   nsSolver.writePhysicalVariables( time, this->rhsIndex );
+   nsSolver.writeConservativeVariables( time, this->rhsIndex );
+   nsSolver.writeExplicitRhs( time, this->rhsIndex, fu );
+   getchar();*/
 }
 
 template< typename Mesh, typename EulerScheme >

@@ -711,6 +711,7 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
+   file << setprecision( 12 );
    if( format == "gnuplot" )
       for( IndexType j = 0; j < getDimensions(). y(); j++ )
       {

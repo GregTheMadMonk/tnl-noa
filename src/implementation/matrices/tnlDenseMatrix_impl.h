@@ -99,6 +99,19 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
+typename Vector::RealType tnlDenseMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+                                                                                   const Vector& vector ) const
+{
+   RealType sum( 0.0 );
+   for( IndexType column = 0; column < this->getColumns(); column++ )
+      sum += this->getElement( row, column ) * vector.getElement( column );
+   return sum;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
 void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
                                                            Vector& outVector ) const
 {
@@ -114,12 +127,7 @@ void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const Vector& inVecto
                     << "Vector name: " << outVector.getName() << endl );
 
    for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      RealType sum( 0.0 );
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-         sum += this->getElement( row, column ) * inVector.getElement( column );
-      outVector[ row ] = sum;
-   }
+      outVector[ row ] = rowVectorProduct( row, inVector );
 }
 
 template< typename Real,

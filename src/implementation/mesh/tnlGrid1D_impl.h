@@ -19,6 +19,7 @@
 #define TNLGRID1D_IMPL_H_
 
 #include <fstream>
+#include <iomanip>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
 #include <mesh/tnlGnuplotWriter.h>
@@ -367,6 +368,7 @@ bool tnlGrid< 1, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
+   file << setprecision( 12 );
    const RealType hx = getParametricStep(). x();
    if( format == "gnuplot" )
    {

@@ -185,6 +185,25 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addToElement( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
+template< typename Vector >
+typename Vector::RealType tnlTridiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+                                                                                         const Vector& vector ) const
+{
+   if( row == 0 )
+      return vector[ 0 ] * this->values[ 0 ] +
+             vector[ 1 ] * this->values[ 1 ];
+   IndexType i = 3 * row - 1;
+   if( row == this->rows - 1 )
+      return vector[ row - 1 ] * this->values[ i++ ] +
+             vector[ row ] * this->values[ i ];
+   return vector[ row - 1 ] * this->values[ i++ ] +
+          vector[ row ] * this->values[ i++ ] +
+          vector[ row + 1 ] * this->values[ i ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Vector >
 void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
                                                                  Vector& outVector ) const
@@ -200,19 +219,8 @@ void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& i
                     << "Vector size: " << outVector.getSize() << endl
                     << "Vector name: " << outVector.getName() << endl );
 
-   IndexType i( 0 );
-   outVector[ 0 ] = inVector[ 0 ] * this->values[ i++ ] +
-                    inVector[ 1 ] * this->values[ i++ ];
-   IndexType row;
-   for( row = 1; row < this->getRows() - 1; row++ )
-   {
-
-      outVector[ row ] = inVector[ row - 1 ] * this->values[ i++ ] +
-                         inVector[ row ] * this->values[ i++ ] +
-                         inVector[ row + 1 ] * this->values[ i++ ];
-   }
-   outVector[ row ] = inVector[ row - 1 ] * this->values[ i++ ] +
-                      inVector[ row ] * this->values[ i ];
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      outVector[ row ] = this->rowVectorProduct( row, inVector );
 }
 
 template< typename Real,

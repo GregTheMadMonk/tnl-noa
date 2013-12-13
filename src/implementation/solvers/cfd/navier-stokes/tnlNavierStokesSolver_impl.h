@@ -31,8 +31,7 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
   mu( 0.0 ),
   gravity( 0.0 ),
   R( 0.0 ),
-  T( 0.0 ),
-  rhsIndex( 0 )
+  T( 0.0 )
 {
    this->rho.setName( "navier-stokes-rho" );
    this->u1.setName( "navier-stokes-u1");
@@ -506,24 +505,18 @@ void tnlNavierStokesSolver< AdvectionScheme,
 
         RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
         //cout << k << endl;
-        e_t[ c ] += this->mu*( /*u1Viscosity->getDiffusion( c,
+        /*e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
                                                           this->u1, this->u1, this->u2,
                                                           1.0, 1.0, 0.0 ) +
                                u2Viscosity->getDiffusion( c,
                                                           this->u2, this->u2, this->u1,
-                                                          1.0, 1.0, -0.0 ) );  +*/
-                               energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
+                                                          1.0, 1.0, -0.0 ) );*/
+                               //energyViscosity->getDiffusion( c, 1.0, 1.0, 0.0 ) );
 
 
         //e_t[ c ] = 0.0;
      }
 
-   /*this->rhsDofVector = fu;
-   this->rhsIndex++;
-   writePhysicalVariables( time, this->rhsIndex );
-   writeConservativeVariables( time, this->rhsIndex );
-   writeExplicitRhs( time, this->rhsIndex );
-   getchar();*/
 }
 
 template< typename AdvectionScheme,
@@ -622,18 +615,20 @@ typename tnlNavierStokesSolver< AdvectionScheme,
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
+   template< typename DofVector >
 bool tnlNavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions >::writeExplicitRhs( const RealType& t,
-                                                              const IndexType step )
+                                                              const IndexType step,
+                                                              DofVector& rhs )
 {
    tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
-   dofs_rho.    bind( & this->rhsDofVector.getData()[ 0        ], dofs );
-   dofs_rho_u1. bind( & this->rhsDofVector.getData()[     dofs ], dofs );
-   dofs_rho_u2. bind( & this->rhsDofVector.getData()[ 2 * dofs ], dofs );
-   dofs_e.      bind( & this->rhsDofVector.getData()[ 3 * dofs ], dofs );
+   dofs_rho.    bind( & rhs.getData()[ 0        ], dofs );
+   dofs_rho_u1. bind( & rhs.getData()[     dofs ], dofs );
+   dofs_rho_u2. bind( & rhs.getData()[ 2 * dofs ], dofs );
+   dofs_e.      bind( & rhs.getData()[ 3 * dofs ], dofs );
 
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
@@ -651,8 +646,6 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    FileNameBaseNumberEnding( "e-t-", step, 5, ".tnl", fileName );
    if( ! dofs_e. save( fileName ) )
       return false;
-
-
    return true;
 }
 

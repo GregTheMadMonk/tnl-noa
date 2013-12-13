@@ -115,7 +115,11 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    void computePrefixSum();
 
+   void computePrefixSum( const IndexType begin, const IndexType end );
+
    void computeExclusivePrefixSum();
+
+   void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 
 };
 

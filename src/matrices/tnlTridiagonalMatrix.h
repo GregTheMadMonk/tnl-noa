@@ -79,6 +79,10 @@ class tnlTridiagonalMatrix : public tnlObject
                       const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
+   typename Vector::RealType rowVectorProduct( const IndexType row,
+                                               const Vector& vector ) const;
+
+   template< typename Vector >
    void vectorProduct( const Vector& inVector,
                        Vector& outVector ) const;
 
