@@ -28,14 +28,18 @@
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
 
-template< typename RealType, typename Device, typename IndexType >
+template< typename RealType,
+          typename Device,
+          typename IndexType,
+          int SliceSize,
+          int ChunkSize >
 class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlChunkedEllpackMatrix< RealType, Device, IndexType> MatrixType;
+   typedef tnlChunkedEllpackMatrix< RealType, Device, IndexType > MatrixType;
    typedef tnlVector< RealType, Device, IndexType > VectorType;
    typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlChunkedEllpackMatrixTester< RealType, Device, IndexType> TesterType;
+   typedef tnlChunkedEllpackMatrixTester< RealType, Device, IndexType, SliceSize, ChunkSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
    tnlChunkedEllpackMatrixTester(){};
@@ -54,7 +58,7 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
@@ -66,6 +70,8 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       CPPUNIT_ASSERT( m.getRows() == 10 );
       CPPUNIT_ASSERT( m.getColumns() == 10 );
    }
@@ -74,6 +80,8 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m1, m2;
       m1.setDimensions( 10, 10 );
+      m1.setNumberOfChunksInSlice( SliceSize );
+      m1.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m1.getRows() );
       rowLengths.setValue( 5 );
@@ -86,6 +94,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
@@ -100,6 +111,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
@@ -124,6 +138,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
@@ -133,7 +150,7 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            m.addToElement( i, j, 1, 0.5 );
+            m.addElement( i, j, 1, 0.5 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
@@ -144,6 +161,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       m.setRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
@@ -158,6 +178,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
@@ -190,10 +213,13 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
-   void addToElementTest()
+   void addElementTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
@@ -203,7 +229,7 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
             if( abs( i - j ) <= 1 )
-               m.addToElement( i, j, 1 );
+               m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
@@ -224,6 +250,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
       w.setSize( size );
       MatrixType m;
       m.setDimensions( size, size );
+      m.setDimensions( 10, 10 );
+      m.setNumberOfChunksInSlice( SliceSize );
+      m.setDesiredChunkSize( ChunkSize );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );

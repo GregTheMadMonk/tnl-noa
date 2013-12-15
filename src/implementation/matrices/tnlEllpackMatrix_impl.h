@@ -185,7 +185,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setElement( const IndexType row,
                                                             const IndexType column,
                                                             const Real& value )
 {
-   return this->addToElement( row, column, value, 0.0 );
+   return this->addElement( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -205,10 +205,10 @@ Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index > :: addToElement( const IndexType row,
-                                                              const IndexType column,
-                                                              const RealType& value,
-                                                              const RealType& thisElementMultiplicator )
+bool tnlEllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
+                                                            const IndexType column,
+                                                            const RealType& value,
+                                                            const RealType& thisElementMultiplicator )
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,

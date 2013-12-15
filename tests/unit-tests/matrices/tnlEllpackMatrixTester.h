@@ -52,7 +52,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
@@ -114,7 +114,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            m.addToElement( i, j, 1, 0.5 );
+            m.addElement( i, j, 1, 0.5 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
@@ -135,7 +135,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
             CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
    }
 
-   void addToElementTest()
+   void addElementTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
@@ -145,7 +145,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
             if( abs( i - j ) <= 1 )
-               m.addToElement( i, j, 1 );
+               m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )

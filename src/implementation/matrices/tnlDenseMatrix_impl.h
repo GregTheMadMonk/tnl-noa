@@ -18,6 +18,7 @@
 #ifndef TNLDENSEMATRIX_IMPL_H_
 #define TNLDENSEMATRIX_IMPL_H_
 
+#include <core/tnlAssert.h>
 #include <matrices/tnlDenseMatrix.h>
 
 template< typename Real,
@@ -83,16 +84,52 @@ Index tnlDenseMatrix< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlDenseMatrix< Real, Device, Index >::addToElement( const IndexType row,
-                                                          const IndexType column,
-                                                          const RealType& value,
-                                                          const RealType& thisElementMultiplicator )
+bool tnlDenseMatrix< Real, Device, Index >::addElement( const IndexType row,
+                                                        const IndexType column,
+                                                        const RealType& value,
+                                                        const RealType& thisElementMultiplicator )
 {
    if( thisElementMultiplicator == 1.0 )
       this->operator()( row, column ) += value;
    else
       this->operator()( row, column ) =
          thisElementMultiplicator * this->operator()( row, column ) + value;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::setRow( const IndexType row,
+                                                    const IndexType* columns,
+                                                    const RealType* values,
+                                                    const IndexType elements )
+{
+   tnlAssert( elements <= this->getDimensions().y(),
+            cerr << " elements = " << elements
+                 << " this->columns = " << this->getDimensions().y()
+                 << " this->getName() = " << this->getName() );
+   for( IndexType i = 0; i < elements; i++ )
+      this->operator()( row, columns[ i ] ) = values[ i ];
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
+                                                    const IndexType* columns,
+                                                    const RealType* values,
+                                                    const IndexType elements,
+                                                    const RealType thisRowMultiplicator )
+{
+   tnlAssert( elements <= this->columns,
+            cerr << " elements = " << elements
+                 << " this->columns = " << this->columns
+                 << " this->getName() = " << this->getName() );
+   for( IndexType i = 0; i < elements; i++ )
+      this->operator[]( row, columns[ i ] ) =
+               thisRowMultiplicator * this->operator[]( row, columns[ i ] ) + values[ i ];
+   return true;
 }
 
 template< typename Real,

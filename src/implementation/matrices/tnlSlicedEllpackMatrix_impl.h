@@ -216,7 +216,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElement( const
                                                                            const IndexType column,
                                                                            const Real& value )
 {
-   return this->addToElement( row, column, value, 0.0 );
+   return this->addElement( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -242,10 +242,10 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addToElement( const IndexType row,
-                                                                             const IndexType column,
-                                                                             const RealType& value,
-                                                                             const RealType& thisElementMultiplicator )
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const IndexType row,
+                                                                           const IndexType column,
+                                                                           const RealType& value,
+                                                                           const RealType& thisElementMultiplicator )
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,

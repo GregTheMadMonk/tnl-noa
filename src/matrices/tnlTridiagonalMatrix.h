@@ -64,6 +64,17 @@ class tnlTridiagonalMatrix : public tnlObject
                     const IndexType column,
                     const RealType& value );
 
+   bool setRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements );
+
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements,
+                const RealType thisRowMultiplicator = 1.0 );
+
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
@@ -73,10 +84,10 @@ class tnlTridiagonalMatrix : public tnlObject
    const RealType& operator()( const IndexType row,
                                const IndexType column ) const;
 
-   bool addToElement( const IndexType row,
-                      const IndexType column,
-                      const RealType& value,
-                      const RealType& thisElementMultiplicator = 1.0 );
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,

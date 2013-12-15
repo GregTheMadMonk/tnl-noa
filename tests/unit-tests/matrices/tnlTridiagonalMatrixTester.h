@@ -50,7 +50,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addToElementTest", &TesterType::addToElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setRowTest", &TesterType::setRowTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );
@@ -103,7 +104,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( m( i, i ) == i );
    }
 
-   void addToElementTest()
+   void addElementTest()
    {
       MatrixType m;
       m.setDimensions( 10 );
@@ -112,7 +113,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
             if( abs( i - j ) <= 1 )
-               m.addToElement( i, j, 1 );
+               m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
@@ -123,6 +124,38 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+   }
+
+   void setRowTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10 );
+      m.setValue( 0.0 );
+      for( int i = 0; i < 10; i++ )
+         m.setElement( i, i, i );
+
+      tnlVector< IndexType, Device, IndexType > columns;
+      VectorType values;
+      columns.setSize( 3 );
+      values.setSize( 3 );
+      for( IndexType i = 4; i <= 6; i++ )
+      {
+         columns[ i - 4 ] = i;
+         values[ i - 4 ] = i;
+      }
+      m.setRow( 5, columns.getData(), values.getData(), 3 );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+         {
+            if( i == 5 && j >= 4 && j <= 6 )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == j );
+            else
+               if( i == j )
+                  CPPUNIT_ASSERT( m.getElement( i, i ) == i );
+               else
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+         }
    }
 
    void vectorProductTest()

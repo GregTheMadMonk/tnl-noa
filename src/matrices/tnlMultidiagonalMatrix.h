@@ -69,10 +69,10 @@ class tnlMultidiagonalMatrix : public tnlObject
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-   bool addToElement( const IndexType row,
-                      const IndexType column,
-                      const RealType& value,
-                      const RealType& thisElementMultiplicator = 1.0 );
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
    void vectorProduct( const Vector& inVector,

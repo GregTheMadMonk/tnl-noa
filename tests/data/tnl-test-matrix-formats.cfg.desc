@@ -1,0 +1,7 @@
+group Arguments
+{
+   string input-file            [Input file name.];
+   string matrix-format         [Matrix format. It can be: dense, ellpack, sliced-ellpack, chunked-ellpack and csr.];
+   bool verbose                 [Verbose mode.];
+},[Arguments of the matrix format test.];
+

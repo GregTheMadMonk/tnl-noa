@@ -4,7 +4,8 @@ SET( headers tnlDenseMatrix.h
              tnlEllpackMatrix.h
              tnlSlicedEllpackMatrix.h
              tnlChunkedEllpackMatrix.h
-             tnlCSRMatrix.h )
+             tnlCSRMatrix.h 
+             tnlMatrixReader.h )
 	
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/matrices )
 set( common_SOURCES ${CURRENT_DIR}/tnlMatrix.cpp )

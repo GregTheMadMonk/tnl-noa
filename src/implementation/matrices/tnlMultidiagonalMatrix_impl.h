@@ -215,10 +215,10 @@ Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: addToElement( const IndexType row,
-                                                                    const IndexType column,
-                                                                    const RealType& value,
-                                                                    const RealType& thisElementMultiplicator )
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
+                                                                  const IndexType column,
+                                                                  const RealType& value,
+                                                                  const RealType& thisElementMultiplicator )
 {
    Index index;
    if( ! this->getElementIndex( row, column, index  ) )

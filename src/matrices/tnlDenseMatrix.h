@@ -47,10 +47,21 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
 
    IndexType getColumns() const;
 
-   bool addToElement( const IndexType row,
-                      const IndexType column,
-                      const RealType& value,
-                      const RealType& thisElementMultiplicator = 1.0 );
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
+
+   bool setRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements );
+
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements,
+                const RealType thisRowMultiplicator = 1.0 );
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,

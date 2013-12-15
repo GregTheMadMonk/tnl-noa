@@ -25,10 +25,18 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 4, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 4, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 4, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 4, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 16, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 16, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 16, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 16, 2 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 2, 16 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 2, 16 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 2, 16 > >() ||
+       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 2, 16 > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
