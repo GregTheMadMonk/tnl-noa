@@ -29,7 +29,8 @@ class tnlMatrixReader
    template< typename Matrix >
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose = false );
+                            bool verbose = false,
+                            bool verify = false );
    protected:
 
    inline static bool checkMtxHeader( const tnlString& header,

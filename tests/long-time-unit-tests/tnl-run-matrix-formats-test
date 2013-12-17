@@ -4,6 +4,7 @@ VERBOSE="yes"
 
 PWD=`pwd`
 TNL_MATRIX_TEST="tnl-test-matrix-formats"
+TNL_MATRIX_TEST="tnl-test-matrix-formats-dbg"
 IWD="$PWD"
 
 #source ../tnl-env-variables
@@ -29,8 +30,10 @@ do
       echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."      
    else
       #if test -e $unzipped_matrix.double.bin.bz2;         
-      #then
-         test_matrix $unzipped_matrix        
+      #then     
+      gunzip -c $matrix > $unzipped_matrix
+      time test_matrix $unzipped_matrix
+      rm $unzipped_matrix
       #else         
       #   echo "Matrix $unzipped_matrix.double.bin.bz2 is missing - run the script convert-matrices first."         
       #fi           
@@ -56,7 +59,7 @@ do
       do
          #if test -e $file.double.bin.bz2;
          #then
-            test_matrix $file
+         time   test_matrix $file
          #else
          #   echo "Matrix $file.double.bin.bz2 is missing - run the script convert-matrices first."             
          #fi

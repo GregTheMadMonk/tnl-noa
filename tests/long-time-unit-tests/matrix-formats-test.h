@@ -49,7 +49,7 @@ bool testMatrix( const tnlParameterContainer& parameters )
       cerr << "Cannot open the file " << fileName << endl;
       return false;
    }
-   if( ! tnlMatrixReader::readMtxFile( file, matrix, verbose ) )
+   if( ! tnlMatrixReader::readMtxFile( file, matrix, verbose, true ) )
    {
       file.close();
       return false;
