@@ -19,6 +19,8 @@
 #define TNLMATRIXREADER_H_
 
 #include <istream>
+#include <core/tnlString.h>
+
 
 class tnlMatrixReader
 {
@@ -26,7 +28,12 @@ class tnlMatrixReader
 
    template< typename Matrix >
    static bool readMtxFile( std::istream& file,
-                            Matrix& matrix );
+                            Matrix& matrix,
+                            bool verbose = false );
+   protected:
+
+   inline static bool checkMtxHeader( const tnlString& header,
+                                      bool& symmetric );
 };
 
 

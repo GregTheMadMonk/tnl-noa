@@ -60,6 +60,15 @@ bool tnlDenseMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vector >
+bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
+{
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index tnlDenseMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
 {
    return this->getRows() * this->getColumns();

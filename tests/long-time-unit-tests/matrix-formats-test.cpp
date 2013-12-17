@@ -1,5 +1,5 @@
 /***************************************************************************
-                          matrix-formats-test.h  -  description
+                          matrix-formats-test.cpp  -  description
                              -------------------
     begin                : Dec 14, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,15 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MATRIX_FORMATS_TEST_H_
-#define MATRIX_FORMATS_TEST_H_
+#include "matrix-formats-test.h"
 
-#include <matrices/tnlMatrixReader.h>
 
-template< typename Matrix >
-bool testMatrix( const tnlString& fileName )
-{
-
-}
-
-#endif /* MATRIX_FORMATS_TEST_H_ */

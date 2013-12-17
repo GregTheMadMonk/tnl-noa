@@ -1,5 +1,5 @@
 /***************************************************************************
-                          matrix-formats-test.cpp  -  description
+                          matrix-formats-test.h  -  description
                              -------------------
     begin                : Dec 14, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,15 +15,48 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "matrix-formats-test.h"
+#ifndef MATRIX_FORMATS_TEST_H_
+#define MATRIX_FORMATS_TEST_H_
+
+#include <matrices/tnlMatrixReader.h>
+
 #include <cstdlib>
 #include <core/tnlFile.h>
 #include <debug/tnlDebug.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <matrices/tnlDenseMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-test-matrix-formats.cfg.desc";
+
+
+
+template< typename Matrix >
+bool testMatrix( const tnlParameterContainer& parameters )
+{
+   Matrix matrix;
+   const tnlString& fileName = parameters.GetParameter< tnlString >( "input-file" );
+   bool verbose = parameters.GetParameter< bool >( "verbose" );
+   fstream file;
+   file.open( fileName.getString(), ios::in );
+   if( ! file )
+   {
+      cerr << "Cannot open the file " << fileName << endl;
+      return false;
+   }
+   if( ! tnlMatrixReader::readMtxFile( file, matrix, verbose ) )
+   {
+      file.close();
+      return false;
+   }
+   file.close();
+   return true;
+}
 
 int main( int argc, char* argv[] )
 {
@@ -40,36 +73,36 @@ int main( int argc, char* argv[] )
    const tnlString& matrixFormat = parameters.GetParameter< tnlString >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< tnlDenseMatrix >() )
+       if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters ) )
           return EXIT_FAILURE;
-       return EXIT_SUCCESS:
+       return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
-       if( !testMatrix< tnlEllpackMatrix >() )
+       if( !testMatrix< tnlEllpackMatrix< double, tnlHost, int > >( parameters ) )
           return EXIT_FAILURE;
-       return EXIT_SUCCESS:
+       return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< tnlSlicedEllpackMatrix >() )
+       if( !testMatrix< tnlSlicedEllpackMatrix< double, tnlHost, int > >( parameters ) )
           return EXIT_FAILURE;
-       return EXIT_SUCCESS:
+       return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< tnlChunkedEllpackMatrix >() )
+       if( !testMatrix< tnlChunkedEllpackMatrix< double, tnlHost, int > >( parameters ) )
           return EXIT_FAILURE;
-       return EXIT_SUCCESS:
+       return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-       if( !testMatrix< tnlCSRMatrix >() )
+       if( !testMatrix< tnlCSRMatrix< double, tnlHost, int > >( parameters ) )
           return EXIT_FAILURE;
-       return EXIT_SUCCESS:
+       return EXIT_SUCCESS;
    }
    cerr << "Uknown matrix format " << matrixFormat << "." << endl;
    return EXIT_FAILURE;
 }
 
-
+#endif /* MATRIX_FORMATS_TEST_H_ */

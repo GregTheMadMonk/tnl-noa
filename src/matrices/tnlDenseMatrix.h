@@ -41,6 +41,12 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
+   /****
+    * This method is only for the compatibility with the sparse matrices.
+    */
+   template< typename Vector >
+   bool setRowLengths( const Vector& rowLengths );
+
    IndexType getNumberOfAllocatedElements() const;
 
    IndexType getRows() const;

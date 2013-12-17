@@ -18,26 +18,35 @@
 #ifndef TNLMATRIXREADER_IMPL_H_
 #define TNLMATRIXREADER_IMPL_H_
 
+#include <iomanip>
+#include <core/tnlString.h>
+#include <core/vectors/tnlVector.h>
+
+using namespace std;
+
 template< typename Matrix >
 bool tnlMatrixReader::readMtxFile( std::istream& file,
-                                   Matrix& matrix )
+                                   Matrix& matrix,
+                                   bool verbose )
 {
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
    tnlString line;
    bool dimensionsLine( false ), formatOk( false );
-   tnlList< tnlString > parsed_line;
-   Index numberOfElements( 0 );
-   Index size( 0 );
+   tnlList< tnlString > parsedLine;
+   IndexType numberOfElements( 0 );
+   IndexType size( 0 );
    bool symmetric( false );
    tnlVector< IndexType, tnlHost, IndexType > rowLengths;
+   if( verbose )
+      cout << "Counting the non-zero elements in rows..." << endl;
    while( line.getLine( file ) )
    {
       if( ! formatOk )
       {
-         format_ok = checkMtxHeader( line, symmetric );
-         if( format_ok && verbose )
+         formatOk = checkMtxHeader( line, symmetric );
+         if( formatOk && verbose )
          {
           if( symmetric )
              cout << "The matrix is SYMMETRIC." << endl;
@@ -45,7 +54,7 @@ bool tnlMatrixReader::readMtxFile( std::istream& file,
          continue;
       }
       if( line[ 0 ] == '%' ) continue;
-      if( ! format_ok )
+      if( ! formatOk )
       {
          cerr << "Uknown format of the file. We expect line like this:" << endl;
          cerr << "%%MatrixMarket matrix coordinate real general" << endl;
@@ -54,17 +63,18 @@ bool tnlMatrixReader::readMtxFile( std::istream& file,
 
       if( ! dimensionsLine )
       {
-         parsed_line. EraseAll();
-         line. parse( parsed_line );
-         if( parsed_line. getSize() != 3 )
+         parsedLine. EraseAll();
+         line. parse( parsedLine );
+         if( parsedLine. getSize() != 3 )
          {
            cerr << "Wrong number of parameters in the matrix header." << endl;
            return false;
          }
-         const IndexType rows = atoi( parsed_line[ 0 ]. getString() );
-         const IndexType columns = atoi( parsed_line[ 1 ]. getString() );
-         cout << "Matrix rows:       " << setw( 9 ) << right << M << endl;
-         cout << "Matrix columns:       " << setw( 9 ) << right << N << endl;
+         const IndexType rows = atoi( parsedLine[ 0 ]. getString() );
+         const IndexType columns = atoi( parsedLine[ 1 ]. getString() );
+         numberOfElements = atoi( parsedLine[ 1 ]. getString() );
+         cout << "Matrix rows:       " << setw( 9 ) << right << rows << endl;
+         cout << "Matrix columns:       " << setw( 9 ) << right << columns << endl;
 
          if( rows <= 0 || columns <= 0 )
          {
@@ -82,34 +92,39 @@ bool tnlMatrixReader::readMtxFile( std::istream& file,
          dimensionsLine = true;
          continue;
       }
-      if( parsed_line. getSize() != 3 )
+      if( parsedLine. getSize() != 3 )
       {
          cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
          return false;
       }
-      parsed_line. EraseAll();
-      line. parse( parsed_line );
-      const IndexType row = atoi( parsed_line[ 0 ]. getString() );
-      const IndexType column = atoi( parsed_line[ 1 ]. getString() );
+      parsedLine. EraseAll();
+      line. parse( parsedLine );
+      const IndexType row = atoi( parsedLine[ 0 ]. getString() );
+      const IndexType column = atoi( parsedLine[ 1 ]. getString() );
       numberOfElements ++;
       if( verbose )
-         cout << "Parsed elements:   " << setw( 9 ) << right << parsed_elements << "\r" << flush;
+         cout << "Parsed thousands of elements:   " << setw( 9 ) << right << numberOfElements / 1000 << "\r" << flush;
       rowLengths[ row ]++;
       if( symmetric && row != column )
-         rowLength[ column ]++;
+         rowLengths[ column ]++;
    }
-   if( ! matrix.setRowLentghs( rowLengths ) )
+   if( ! matrix.setRowLengths( rowLengths ) )
    {
       cerr << "Not enough memory to allocate the matrix." << endl;
       return false;
    }
+
    /****
     * Read the matrix elements
     */
+   if( verbose )
+      cout << endl;
    formatOk = false;
    dimensionsLine = false;
-   istream.seek( 0 );
+   file.seekg( 0 );
    IndexType parsedElements( 0 );
+   if( verbose )
+      cout << "Reading the matrix elements ..." << endl;
    while( line.getLine( file ) )
    {
       if( ! formatOk )
@@ -122,19 +137,58 @@ bool tnlMatrixReader::readMtxFile( std::istream& file,
          dimensionsLine = true;
          continue;
       }
-      parsed_line.EraseAll();
-      line.parse( parsed_line );
-      const IndexType row = atoi( parsed_line[ 0 ].getString() );
-      const IndexType column = atoi( parsed_line[ 1 ].getString() );
-      const RealType value = ( Real ) atof( parsed_line[ 2 ].getString() );
+      parsedLine.EraseAll();
+      line.parse( parsedLine );
+      const IndexType row = atoi( parsedLine[ 0 ].getString() );
+      const IndexType column = atoi( parsedLine[ 1 ].getString() );
+      const RealType value = ( RealType ) atof( parsedLine[ 2 ].getString() );
       matrix.setElement( row, column, value );
       if( symmetric && row != column )
          matrix.setElement( column, row, value );
       parsedElements++;
       if( verbose )
-         cout << parsedElements << " / " << totalElements << "                       \r " << flush;
+         cout << parsedElements << " / " << numberOfElements << "                       \r " << flush;
    }
    return true;
 }
+
+inline bool tnlMatrixReader::checkMtxHeader( const tnlString& header,
+                                             bool& symmetric )
+{
+   tnlList< tnlString > parsedLine;
+   header.parse( parsedLine );
+   if( parsedLine. getSize() < 5 )
+      return false;
+   if( parsedLine[ 0 ] != "%%MatrixMarket" )
+      return false;
+   if( parsedLine[ 1 ] != "matrix" )
+   {
+      cerr << "Error: 'matrix' expected in the header line (" << header << ")." << endl;
+      return false;
+   }
+   if( parsedLine[ 2 ] != "coordinates" &&
+       parsedLine[ 2 ] != "coordinate" )
+   {
+      cerr << "Error: Only 'coordinates' format is supported now, not " << parsedLine[ 2 ] << "." << endl;
+      return false;
+   }
+   if( parsedLine[ 3 ] != "real" )
+   {
+      cerr << "Error: Only 'real' matrices are supported, not " << parsedLine[ 3 ] << "." << endl;
+      return false;
+   }
+   if( parsedLine[ 4 ] != "general" )
+   {
+      if( parsedLine[ 4 ] == "symmetric" )
+         symmetric = true;
+      else
+      {
+         cerr << "Error: Only 'general' matrices are supported, not " << parsedLine[ 4 ] << "." << endl;
+         return false;
+      }
+   }
+   return true;
+}
+
 
 #endif /* TNLMATRIXREADER_IMPL_H_ */

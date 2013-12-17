@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+VERBOSE="yes"
+
+PWD=`pwd`
+TNL_MATRIX_TEST="tnl-test-matrix-formats"
+IWD="$PWD"
+
+#source ../tnl-env-variables
+#export TNL_SPARSE_MATRIX_CHECK_CFG_DESC_FILE="$TNL_SOURCE_DIR/tests/tnl-sparse-matrix-check.cfg.desc"
+
+source matrix-market
+source florida-matrix-market
+
+test_matrix()
+{
+   # $1 - matrix name
+   FILESIZE=$(stat -c%s "$1")
+   echo "Testing $1 ( `echo \"$FILESIZE / 1024 / 1024 \" | bc`  MB)."
+   $TNL_MATRIX_TEST --input-file $1 --matrix-format csr --verbose $VERBOSE   
+}
+
+for link in $MM_MATRICES;
+do
+   matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
+   unzipped_matrix=`echo $matrix | sed 's/.gz//'`
+   if test ! -e $matrix;
+   then
+      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."      
+   else
+      #if test -e $unzipped_matrix.double.bin.bz2;         
+      #then
+         test_matrix $unzipped_matrix        
+      #else         
+      #   echo "Matrix $unzipped_matrix.double.bin.bz2 is missing - run the script convert-matrices first."         
+      #fi           
+   fi
+done
+
+for link in $FLORIDA_MM_MATRICES;
+do
+   matrix=matrices`echo $link | sed 's/http:\/\/www.cise.ufl.edu\/research\/sparse//'`
+   if test ! -e $matrix;
+   then      
+      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
+   else
+      DIRNAME=`dirname $matrix`
+      FILENAME=`basename $matrix`
+      cd $DIRNAME
+      echo "Unpacking $FILENAME"
+      tar zxvf $FILENAME
+      cd $IWD
+      SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
+      rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usually in array format
+      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
+      do
+         #if test -e $file.double.bin.bz2;
+         #then
+            test_matrix $file
+         #else
+         #   echo "Matrix $file.double.bin.bz2 is missing - run the script convert-matrices first."             
+         #fi
+         
+      done
+   fi
+done
