@@ -20,21 +20,49 @@
 
 #include <istream>
 #include <core/tnlString.h>
+#include <core/vectors/tnlVector.h>
 
-
+template< typename Matrix >
 class tnlMatrixReader
 {
    public:
 
-   template< typename Matrix >
+   typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::RealType RealType;
+
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose = false,
-                            bool verify = false );
+                            bool verbose = false );
+
+   static bool verifyMtxFile( std::istream& file,
+                              const Matrix& matrix,
+                              bool verbose = false );
    protected:
 
-   inline static bool checkMtxHeader( const tnlString& header,
-                                      bool& symmetric );
+   static bool checkMtxHeader( const tnlString& header,
+                               bool& symmetric );
+
+   static bool readMtxHeader( std::istream& file,
+                              IndexType& rows,
+                              IndexType& columns,
+                              bool& symmetricMatrix,
+                              bool verbose );
+
+   static bool computeRowLengthsFromMtxFile( std::istream& file,
+                                             tnlVector< int, tnlHost, int >& rowLengths,
+                                             bool symmetricMatrix,
+                                             bool verbose );
+
+   static bool readMatrixElementsFromMtxFile( std::istream& file,
+                                              Matrix& matrix,
+                                              bool symmetricMatrix,
+                                              bool verbose );
+
+   static bool parseMtxLineWithElement( const tnlString& line,
+                                        IndexType& row,
+                                        IndexType& column,
+                                        RealType& value );
+
 };
 
 

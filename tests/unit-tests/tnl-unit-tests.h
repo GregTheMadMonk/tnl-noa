@@ -29,17 +29,8 @@
 #include "core/tnlObjectTester.h"
 #include "core/tnlRealTester.h"
 #include "core/tnlTupleTester.h"
-#include "core/vectors/tnlVectorTester.h"
-#include "core/arrays/tnlMultiArrayTester.h"
-#include "core/arrays/tnlArrayTester.h"
-#include "core/arrays/tnlSharedArrayTester.h"
-#include "core/vectors/tnlSharedVectorTester.h"
-#include "core/tnlGridOldTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
-#include "matrices/tnlRgCSRMatrixTester.h"
-#include "matrices/tnlAdaptiveRgCSRMatrixTester.h"
-#include "matrices/tnlEllpackMatrixTester.h"
 #include "solver/tnlMersonSolverTester.h"
 #include "diff/tnlMPIMeshTester.h"
 
@@ -75,12 +66,12 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlTupleTester< 4, double > :: suite() );
 
 
-   runner. addTest( tnlSharedArrayTester< int, tnlHost, int > :: suite() );
+   //runner. addTest( tnlSharedArrayTester< int, tnlHost, int > :: suite() );
 
-   runner. addTest( tnlSharedVectorTester< double, tnlHost, int > :: suite() );
+   //runner. addTest( tnlSharedVectorTester< double, tnlHost, int > :: suite() );
 
 
-   runner. addTest( tnlMultiArrayTester< 1, int, tnlHost, int > :: suite() );
+   //runner. addTest( tnlMultiArrayTester< 1, int, tnlHost, int > :: suite() );
 
    //runner. addTest( tnlMultiArrayTester< int, tnlHost, int > :: suite() );
    //runner. addTest( tnlMultiArrayTester< float, tnlHost, int > :: suite() );

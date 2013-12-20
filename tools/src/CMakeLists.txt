@@ -43,23 +43,23 @@ target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVe
 ADD_EXECUTABLE(tnl-err-norms${debugExt} ${tnlerrnormssources})
 target_link_libraries (tnl-err-norms${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-grid-view${debugExt} ${tnlgridviewsources})
-target_link_libraries (tnl-grid-view${debugExt} tnl${debugExt}-${tnlVersion} )
+#ADD_EXECUTABLE(tnl-grid-view${debugExt} ${tnlgridviewsources})
+#target_link_libraries (tnl-grid-view${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-curve2gnuplot${debugExt} ${tnlcurve2gnuplotsources})
 target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
-target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
+#ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
+#target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
 INSTALL( TARGETS tnl-err-norms${debugExt}
-                 tnl-grid-view${debugExt}
+#                 tnl-grid-view${debugExt}
                  tnl-discrete${debugExt}
                  tnl-view${debugExt}
                  tnl-diff${debugExt}
                  tnl-grid-setup${debugExt}
                  tnl-curve2gnuplot${debugExt}
-                 tnl-matrix-convert${debugExt}
+#                 tnl-matrix-convert${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
          

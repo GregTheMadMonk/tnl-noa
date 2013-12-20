@@ -21,112 +21,55 @@
 #include <iomanip>
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
+#include <core/tnlTimerRT.h>
 
 using namespace std;
 
 template< typename Matrix >
-bool tnlMatrixReader::readMtxFile( std::istream& file,
-                                   Matrix& matrix,
-                                   bool verbose,
-                                   bool verify )
+bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
+                                             Matrix& matrix,
+                                             bool verbose )
 {
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::RealType RealType;
+   IndexType rows, columns;
+   bool symmetricMatrix;
 
-   tnlString line;
-   bool dimensionsLine( false ), formatOk( false );
-   tnlList< tnlString > parsedLine;
-   IndexType numberOfElements( 0 );
-   IndexType size( 0 );
-   bool symmetric( false );
-   tnlVector< IndexType, tnlHost, IndexType > rowLengths;
-   rowLengths.setName( "tnlMatrixReader::rowLengths");
-   if( verbose )
-      cout << "Counting the non-zero elements in rows..." << endl;
-   while( line.getLine( file ) )
+   if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
+      return false;
+
+   tnlVector< int, tnlHost, int > rowLengths;
+   if( ! matrix.setDimensions( rows, columns ) ||
+       ! rowLengths.setSize( rows ) )
    {
-      if( ! formatOk )
-      {
-         formatOk = checkMtxHeader( line, symmetric );
-         if( formatOk && verbose )
-         {
-          if( symmetric )
-             cout << "The matrix is SYMMETRIC." << endl;
-         }
-         continue;
-      }
-      if( line[ 0 ] == '%' ) continue;
-      if( ! formatOk )
-      {
-         cerr << "Uknown format of the file. We expect line like this:" << endl;
-         cerr << "%%MatrixMarket matrix coordinate real general" << endl;
-         return false;
-      }
-
-      if( ! dimensionsLine )
-      {
-         parsedLine. EraseAll();
-         line. parse( parsedLine );
-         if( parsedLine. getSize() != 3 )
-         {
-           cerr << "Wrong number of parameters in the matrix header." << endl;
-           return false;
-         }
-         const IndexType rows = atoi( parsedLine[ 0 ]. getString() );
-         const IndexType columns = atoi( parsedLine[ 1 ]. getString() );
-         numberOfElements = atoi( parsedLine[ 1 ]. getString() );
-         cout << "Matrix rows:       " << setw( 9 ) << right << rows << endl;
-         cout << "Matrix columns:       " << setw( 9 ) << right << columns << endl;
-
-         if( rows <= 0 || columns <= 0 )
-         {
-           cerr << "Wrong parameters in the matrix header." << endl;
-           return false;
-         }
-         if( ! matrix.setDimensions( rows, columns ) ||
-             ! rowLengths.setSize( rows ) )
-         {
-            cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
-            return false;
-         }
-         rowLengths.setValue( 0 );
-
-         dimensionsLine = true;
-         continue;
-      }
-      if( parsedLine. getSize() != 3 )
-      {
-         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
-         return false;
-      }
-      parsedLine. EraseAll();
-      line. parse( parsedLine );
-      const IndexType row = atoi( parsedLine[ 0 ]. getString() );
-      const IndexType column = atoi( parsedLine[ 1 ]. getString() );
-      numberOfElements ++;
-      if( verbose )
-         cout << "Parsed thousands of elements:   " << setw( 9 ) << right << numberOfElements / 1000 << "\r" << flush;
-      rowLengths[ row - 1 ]++;
-      if( symmetric && row != column )
-         rowLengths[ column - 1 ]++;
-   }
-   if( ! matrix.setRowLengths( rowLengths ) )
-   {
-      cerr << "Not enough memory to allocate the matrix." << endl;
+      cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
       return false;
    }
 
-   /****
-    * Read the matrix elements
-    */
-   if( verbose )
-      cout << endl;
-   dimensionsLine = false;
+   if( ! computeRowLengthsFromMtxFile( file, rowLengths, symmetricMatrix, verbose ) )
+      return false;
+
+   if( ! matrix.setRowLengths( rowLengths ) )
+      return false;
+
+   if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
+      return false;
+   return true;
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
+                                               const Matrix& matrix,
+                                               bool verbose )
+{
+   bool symmetricMatrix( false );
+   IndexType rows, columns;
+   if( ! readMtxHeader( file, rows, columns, symmetricMatrix, false ) )
+      return false;
    file.clear();
-   file.seekg( 0,  ios::beg );
-   IndexType parsedElements( 0 );
-   if( verbose )
-      cout << "Reading the matrix elements ..." << endl;
+   file.seekg( 0, ios::beg );
+   tnlString line;
+   bool dimensionsLine( false );
+   IndexType processedElements( 0 );
+   tnlTimerRT timer;
    while( line.getLine( file ) )
    {
       if( line[ 0 ] == '%' ) continue;
@@ -135,60 +78,37 @@ bool tnlMatrixReader::readMtxFile( std::istream& file,
          dimensionsLine = true;
          continue;
       }
-      parsedLine.EraseAll();
-      line.parse( parsedLine );
-      const IndexType row = atoi( parsedLine[ 0 ].getString() );
-      const IndexType column = atoi( parsedLine[ 1 ].getString() );
-      const RealType value = ( RealType ) atof( parsedLine[ 2 ].getString() );
-      matrix.setElement( row - 1, column - 1, value );
-      if( symmetric && row != column )
-         matrix.setElement( column - 1, row - 1, value );
-      parsedElements++;
-      if( verbose )
-         cout << parsedElements << " / " << numberOfElements << "                       \r " << flush;
-   }
-   if( verbose )
-      cout << endl;
-   if( verify )
-   {
-      if( verbose )
-         cout << "Verifying the matrix elements ... " << endl;
-      dimensionsLine = false;
-      file.clear();
-      file.seekg( 0,  ios::beg );
-      IndexType parsedElements( 0 );
-      while( line.getLine( file ) )
+      IndexType row, column;
+      RealType value;
+      if( ! parseMtxLineWithElement( line, row, column, value ) )
+         return false;
+      if( value != matrix.getElement( row-1, column-1 ) ||
+          ( symmetricMatrix && value != matrix.getElement( column-1, row-1 ) ) )
       {
-         if( line[ 0 ] == '%' ) continue;
-         if( ! dimensionsLine )
-         {
-            dimensionsLine = true;
-            continue;
-         }
-         parsedLine.EraseAll();
-         line.parse( parsedLine );
-         const IndexType row = atoi( parsedLine[ 0 ].getString() );
-         const IndexType column = atoi( parsedLine[ 1 ].getString() );
-         const RealType value = ( RealType ) atof( parsedLine[ 2 ].getString() );
-         if( value != matrix.getElement( row-1, column-1 ) ||
-             ( symmetric && value != matrix.getElement( column-1, row-1 ) ) )
-         {
-            cerr << "The elements differ at " << row-1 << " row " << column-1 << " column." << endl
-                 << "The matrix value is " << matrix.getElement( row-1, column-1 )
-                 << " while the file value is " << value << "." << endl;
-            return false;
-         }
-         if( verbose )
-            cout << parsedElements << " / " << numberOfElements << "                       \r " << flush;
+         cerr << "*** !!! VERIFICATION ERROR !!! *** " << endl
+              << "The elements differ at " << row-1 << " row " << column-1 << " column." << endl
+              << "The matrix value is " << matrix.getElement( row-1, column-1 )
+              << " while the file value is " << value << "." << endl;
+         return false;
       }
+      processedElements++;
+      if( symmetricMatrix && row != column )
+         processedElements++;
       if( verbose )
-         cout << endl;
+         cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements() << "                       \r" << flush;
    }
+   file.clear();
+   long int fileSize = file.tellg();
+   if( verbose )
+      cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements()
+           << " -> " << timer.GetTime()
+           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
-inline bool tnlMatrixReader::checkMtxHeader( const tnlString& header,
-                                             bool& symmetric )
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::checkMtxHeader( const tnlString& header,
+                                                bool& symmetric )
 {
    tnlList< tnlString > parsedLine;
    header.parse( parsedLine );
@@ -222,6 +142,164 @@ inline bool tnlMatrixReader::checkMtxHeader( const tnlString& header,
          return false;
       }
    }
+   return true;
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
+                                               IndexType& rows,
+                                               IndexType& columns,
+                                               bool& symmetric,
+                                               bool verbose )
+{
+   file.clear();
+   file.seekg( 0, ios::beg );
+   tnlString line;
+   bool headerParsed( false );
+   tnlList< tnlString > parsedLine;
+   while( true )
+   {
+      line.getLine( file );
+      if( ! headerParsed )
+      {
+           headerParsed = checkMtxHeader( line, symmetric );
+           if( headerParsed && verbose )
+           {
+               if( symmetric )
+                  cout << "The matrix is SYMMETRIC ... ";
+           }
+           continue;
+      }
+      if( line[ 0 ] == '%' ) continue;
+      if( ! headerParsed )
+      {
+         cerr << "Uknown format of the file. We expect line like this:" << endl;
+         cerr << "%%MatrixMarket matrix coordinate real general" << endl;
+         return false;
+      }
+
+      parsedLine. EraseAll();
+      line. parse( parsedLine );
+      if( parsedLine. getSize() != 3 )
+      {
+         cerr << "Wrong number of parameters in the matrix header." << endl;
+         return false;
+      }
+      rows = atoi( parsedLine[ 0 ]. getString() );
+      columns = atoi( parsedLine[ 1 ]. getString() );
+      if( verbose )
+         cout << " The matrix has " << rows
+              << " rows and " << columns << " columns. " << endl;
+
+      if( rows <= 0 || columns <= 0 )
+      {
+         cerr << "Wrong parameters in the matrix header." << endl;
+         return false;
+      }
+      return true;
+   }
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file,
+                                                              tnlVector< int, tnlHost, int >& rowLengths,
+                                                              bool symmetricMatrix,
+                                                              bool verbose )
+{
+   file.clear();
+   file.seekg( 0,  ios::beg );
+   rowLengths.setValue( 0 );
+   tnlString line;
+   bool dimensionsLine( false );
+   IndexType numberOfElements( 0 );
+   tnlTimerRT timer;
+   while( line.getLine( file ) )
+   {
+      if( line[ 0 ] == '%' ) continue;
+      if( ! dimensionsLine )
+      {
+         dimensionsLine = true;
+         continue;
+      }
+      IndexType row, column;
+      RealType value;
+      if( ! parseMtxLineWithElement( line, row, column, value ) )
+         return false;
+      numberOfElements++;
+      if( verbose )
+         cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
+      rowLengths[ row - 1 ]++;
+      if( symmetricMatrix && row != column )
+         rowLengths[ column - 1 ]++;
+   }
+   file.clear();
+   long int fileSize = file.tellg();
+   if( verbose )
+      cout << " Counting the matrix elements ... " << numberOfElements / 1000
+           << " thousands  -> " << timer.GetTime()
+           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+   return true;
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
+                                                               Matrix& matrix,
+                                                               bool symmetricMatrix,
+                                                               bool verbose )
+{
+   file.clear();
+   file.seekg( 0,  ios::beg );
+   tnlString line;
+   bool dimensionsLine( false );
+   IndexType processedElements( 0 );
+   tnlTimerRT timer;
+   while( line.getLine( file ) )
+   {
+      if( line[ 0 ] == '%' ) continue;
+      if( ! dimensionsLine )
+      {
+         dimensionsLine = true;
+         continue;
+      }
+      IndexType row, column;
+      RealType value;
+      if( ! parseMtxLineWithElement( line, row, column, value ) )
+         return false;
+      matrix.setElement( row - 1, column - 1, value );
+      processedElements++;
+      if( symmetricMatrix && row != column )
+      {
+         matrix.setElement( column - 1, row - 1, value );
+         processedElements++;
+      }
+      if( verbose )
+         cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements() << "                       \r" << flush;
+   }
+   file.clear();
+   long int fileSize = file.tellg();
+   if( verbose )
+      cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements()
+              << " -> " << timer.GetTime()
+              << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+   return true;
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const tnlString& line,
+                                                         IndexType& row,
+                                                         IndexType& column,
+                                                         RealType& value )
+{
+   tnlList< tnlString > parsedLine;
+   line.parse( parsedLine );
+   if( parsedLine.getSize() != 3 )
+   {
+      cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+      return false;
+   }
+   row = atoi( parsedLine[ 0 ].getString() );
+   column = atoi( parsedLine[ 1 ].getString() );
+   value = ( RealType ) atof( parsedLine[ 2 ].getString() );
    return true;
 }
 

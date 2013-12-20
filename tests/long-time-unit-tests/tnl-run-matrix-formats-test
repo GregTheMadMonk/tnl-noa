@@ -18,7 +18,8 @@ test_matrix()
    # $1 - matrix name
    FILESIZE=$(stat -c%s "$1")
    echo "Testing $1 ( `echo \"$FILESIZE / 1024 / 1024 \" | bc`  MB)."
-   $TNL_MATRIX_TEST --input-file $1 --matrix-format csr --verbose $VERBOSE   
+   $TNL_MATRIX_TEST --input-file $1 --matrix-format csr --verbose $VERBOSE
+   echo "-------------------------------------------------------------------------------------"   
 }
 
 for link in $MM_MATRICES;
@@ -32,7 +33,7 @@ do
       #if test -e $unzipped_matrix.double.bin.bz2;         
       #then     
       gunzip -c $matrix > $unzipped_matrix
-      time test_matrix $unzipped_matrix
+      test_matrix $unzipped_matrix
       rm $unzipped_matrix
       #else         
       #   echo "Matrix $unzipped_matrix.double.bin.bz2 is missing - run the script convert-matrices first."         
@@ -59,7 +60,7 @@ do
       do
          #if test -e $file.double.bin.bz2;
          #then
-         time   test_matrix $file
+         test_matrix $file
          #else
          #   echo "Matrix $file.double.bin.bz2 is missing - run the script convert-matrices first."             
          #fi
