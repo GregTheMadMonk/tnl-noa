@@ -53,15 +53,28 @@ template< typename Real,
 bool tnlDenseMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                            const IndexType columns )
 {
-   return tnlMultiArray< 2, Real, Device, Index >::setDimensions( columns, rows );
+   if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) ||
+       ! tnlMultiArray< 2, Real, Device, Index >::setDimensions( rows, columns ) )
+     return false;
    tnlMultiArray< 2, Real, Device, Index >::setValue( 0.0 );
+   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
+   template< typename Real2,
+             typename Device2,
+             typename Index2 >
+bool tnlDenseMatrix< Real, Device, Index >::setLike( const tnlDenseMatrix< Real2, Device2, Index2 >& matrix )
+{
+   return this->setDimensions( matrix.getRows(), matrix.getColumns() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
 {
    return true;
 }
@@ -69,7 +82,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLeng
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlDenseMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
+Index tnlDenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -77,17 +90,30 @@ Index tnlDenseMatrix< Real, Device, Index >::getNumberOfAllocatedElements() cons
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlDenseMatrix< Real, Device, Index >::getRows() const
+void tnlDenseMatrix< Real, Device, Index >::reset()
 {
-   return this->getDimensions().x();
+   tnlMatrix< Real, Device, Index >::reset();
+   tnlMultiArray< 2, Real, Device, Index >::reset();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlDenseMatrix< Real, Device, Index >::getColumns() const
+bool tnlDenseMatrix< Real, Device, Index >::setElement( const IndexType row,
+                                                        const IndexType column,
+                                                        const RealType& value )
 {
-   return this->getDimensions().y();
+   tnlMultiArray< 2, Real, Device, Index >::setElement( row, column, value );
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlDenseMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                        const IndexType column ) const
+{
+   return tnlMultiArray< 2, Real, Device, Index >::getElement( row, column );
 }
 
 template< typename Real,
@@ -291,6 +317,44 @@ void tnlDenseMatrix< Real, Device, Index >::performSORIteration( const Vector& b
    for( IndexType i = 0; i < this->getColumns(); i++ )
       sum += this->operator()( row, i ) * x[ i ];
    x[ row ] += omega / this->operator()( row, row )( b[ row ] - sum );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+{
+   return tnlObject::save( fileName );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::load( const tnlString& fileName )
+{
+   return tnlObject::load( fileName );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::save( tnlFile& file ) const
+{
+   if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
+       ! tnlMultiArray< 2, Real, Device, Index >::save( file ) )
+      return false;
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::load( tnlFile& file )
+{
+   if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
+       ! tnlMultiArray< 2, Real, Device, Index >::load( file ) )
+      return false;
+   return true;
 }
 
 template< typename Real,

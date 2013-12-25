@@ -78,7 +78,7 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
          dimensionsLine = true;
          continue;
       }
-      IndexType row, column;
+      IndexType row( 1 ), column( 1 );
       RealType value;
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
@@ -95,15 +95,50 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
       if( symmetricMatrix && row != column )
          processedElements++;
       if( verbose )
-         cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements() << "                       \r" << flush;
+         cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << flush;
    }
    file.clear();
    long int fileSize = file.tellg();
    if( verbose )
-      cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements()
+      cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
            << " -> " << timer.GetTime()
            << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
+                                                   const IndexType& row,
+                                                   const IndexType& column,
+                                                   tnlString& line,
+                                                   IndexType& lineNumber )
+{
+   file.clear();
+   file.seekg( 0, ios::beg );
+   bool symmetricMatrix( false );
+   bool dimensionsLine( false );
+   lineNumber = 0;
+   tnlTimerRT timer;
+   IndexType currentRow, currentColumn;
+   RealType value;
+   while( line.getLine( file ) )
+   {
+      lineNumber++;
+      if( line[ 0 ] == '%' ) continue;
+      if( ! dimensionsLine )
+      {
+         dimensionsLine = true;
+         continue;
+      }
+      IndexType currentRow( 1 ), currentColumn( 1 );
+      RealType value;
+      if( ! parseMtxLineWithElement( line, currentRow, currentColumn, value ) )
+         return false;
+      if( ( currentRow == row + 1 && currentColumn == column + 1 ) ||
+          ( symmetricMatrix && currentRow == column + 1 && currentColumn == row + 1 ) )
+         return true;
+   }
+   return false;
 }
 
 template< typename Matrix >
@@ -221,7 +256,7 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
          dimensionsLine = true;
          continue;
       }
-      IndexType row, column;
+      IndexType row( 1 ), column( 1 );
       RealType value;
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
@@ -261,7 +296,7 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
          dimensionsLine = true;
          continue;
       }
-      IndexType row, column;
+      IndexType row( 1 ), column( 1 );
       RealType value;
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
@@ -273,12 +308,12 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
          processedElements++;
       }
       if( verbose )
-         cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements() << "                       \r" << flush;
+         cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << flush;
    }
    file.clear();
    long int fileSize = file.tellg();
    if( verbose )
-      cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfAllocatedElements()
+      cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
               << " -> " << timer.GetTime()
               << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;

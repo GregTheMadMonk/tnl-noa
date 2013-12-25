@@ -25,7 +25,6 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlTridiagonalMatrix< Real, Device, Index >::tnlTridiagonalMatrix()
-: rows( 0 )
 {
 }
 
@@ -51,13 +50,37 @@ tnlString tnlTridiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows )
+bool tnlTridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                                 const IndexType columns )
 {
-   if( ! values.setSize( 3*rows - 2 ) )
+   if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
       return false;
-   this->rows = rows;
-   this->columns = rows;
+   if( ! values.setSize( 3*Min( rows, columns ) ) )
+      return false;
    this->values.setValue( 0.0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlTridiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+{
+   if( rowLengths[ 0 ] > 2 )
+      return false;
+   const IndexType diagonalLength = Min( this->getRows(), this->getColumns() );
+   for( Index i = 1; i < diagonalLength-1; i++ )
+      if( rowLengths[ i ] > 3 )
+         return false;
+   if( this->getRows() > this->getColumns() )
+      if( rowLengths[ this->getRows()-1 ] > 1 )
+         return false;
+   if( this->getRows() == this->getColumns() )
+      if( rowLengths[ this->getRows()-1 ] > 2 )
+         return false;
+   if( this->getRows() < this->getColumns() )
+      if( rowLengths[ this->getRows()-1 ] > 3 )
+         return false;
+   return true;
 }
 
 template< typename Real,
@@ -66,15 +89,15 @@ template< typename Real,
    template< typename Real2, typename Device2, typename Index2 >
 bool tnlTridiagonalMatrix< Real, Device, Index >::setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m )
 {
-   return this->setDimensions( m.getRows() );
+   return this->setDimensions( m.getRows(), m.getColumns() );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlTridiagonalMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
+Index tnlTridiagonalMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
-   return 3 * rows - 2;
+   return 3 * Min( this->getRows(), this->getColumns() );
 }
 
 template< typename Real,
@@ -82,24 +105,8 @@ template< typename Real,
           typename Index >
 void tnlTridiagonalMatrix< Real, Device, Index >::reset()
 {
-   this->rows = 0;
+   tnlMatrix< Real, Device, Index >::reset();
    this->values.reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlTridiagonalMatrix< Real, Device, Index >::getRows() const
-{
-   return this->rows;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlTridiagonalMatrix< Real, Device, Index >::getColumns() const
-{
-   return this->rows;
 }
 
 template< typename Real,
@@ -131,11 +138,12 @@ void tnlTridiagonalMatrix< Real, Device, Index >::setValue( const RealType& v )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlTridiagonalMatrix< Real, Device, Index >::setElement( const IndexType row,
+bool tnlTridiagonalMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                               const IndexType column,
                                                               const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
+   return true;
 }
 
 template< typename Real,
@@ -332,7 +340,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
-   if( ! file.write( &this->rows ) ||
+   if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) )
    {
       cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
@@ -346,7 +354,7 @@ template< typename Real,
           typename Index >
 bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 {
-   if( ! file.read( &this->rows ) ||
+   if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) )
    {
       cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;

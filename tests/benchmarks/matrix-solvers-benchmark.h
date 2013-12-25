@@ -72,7 +72,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
 
    const RealType& maxResidue = parameters. GetParameter< double >( "max-residue" );
    const IndexType& size = matrix. getRows();
-   const IndexType nonZeros = matrix. getNumberOfAllocatedElements();
+   const IndexType nonZeros = matrix. getNumberOfMatrixElements();
    //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
    const IndexType maxIterations = size;
    cout << "Setting max. number of iterations to " << maxIterations << endl;
@@ -277,7 +277,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
          return false;
       }
       matrixStatsFile << "             <td> " << csrMatrix. getRows() << " </td> " << endl
-                      << "             <td> " << csrMatrix. getNumberOfAllocatedElements() << " </td> " << endl;
+                      << "             <td> " << csrMatrix. getNumberOfMatrixElements() << " </td> " << endl;
       matrixStatsFile. close();
    }
 

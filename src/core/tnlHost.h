@@ -18,6 +18,7 @@
 #ifndef TNLHOST_H_
 #define TNLHOST_H_
 
+#include <unistd.h>
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 
@@ -28,6 +29,8 @@ class tnlHost
    static tnlString getDeviceType();
 
    static tnlDeviceEnum getDevice();
+
+   static size_t getFreeMemory();
 };
 
 #endif /* TNLHOST_H_ */

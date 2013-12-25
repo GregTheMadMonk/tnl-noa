@@ -18,20 +18,20 @@
 #ifndef TNLTRIDIAGONALMATRIX_H_
 #define TNLTRIDIAGONALMATRIX_H_
 
-#include <core/tnlObject.h>
-#include <core/tnlHost.h>
+#include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlTridiagonalMatrix : public tnlObject
+class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
 
    tnlTridiagonalMatrix();
 
@@ -39,18 +39,17 @@ class tnlTridiagonalMatrix : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows );
+   bool setDimensions( const IndexType rows,
+                       const IndexType columns );
+
+   bool setRowLengths( const RowLengthsVector& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m );
 
-   IndexType getNumberOfAllocatedElements() const;
+   IndexType getNumberOfMatrixElements() const;
 
    void reset();
-
-   IndexType getRows() const;
-
-   IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
@@ -60,7 +59,7 @@ class tnlTridiagonalMatrix : public tnlObject
 
    void setValue( const RealType& v );
 
-   void setElement( const IndexType row,
+   bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
 
@@ -126,8 +125,6 @@ class tnlTridiagonalMatrix : public tnlObject
 
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
-
-   IndexType rows, columns;
 
    tnlVector< RealType, DeviceType, IndexType > values;
 };

@@ -26,8 +26,6 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlCSRMatrix< Real, Device, Index >::tnlCSRMatrix()
-: rows( 0 ),
-  columns( 0 )
 {
 };
 
@@ -55,14 +53,10 @@ template< typename Real,
           typename Device,
           typename Index >
 bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                              const IndexType columns )
+                                                         const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
-              cerr << "rows = " << rows
-                   << " columns = " << columns << endl );
-   this->rows = rows;
-   this->columns = columns;
-   if( ! this->rowPointers.setSize( this->rows + 1 ) )
+   if( ! tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns ) ||
+       ! this->rowPointers.setSize( this->rows + 1 ) )
       return false;
    this->rowPointers.setValue( 0 );
    return true;
@@ -71,8 +65,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const Vector& rowLengths )
+bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is
@@ -103,9 +96,7 @@ template< typename Real,
              typename Index2 >
 bool tnlCSRMatrix< Real, Device, Index >::setLike( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix )
 {
-   if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) ||
-       ! this->values.setLike( matrix.values ) ||
-       ! this->columnIndexes.setLike( matrix.columnIndexes ) ||
+   if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
        ! this->rowPointers.setLike( matrix.rowPointers ) )
       return false;
    return true;
@@ -114,37 +105,10 @@ bool tnlCSRMatrix< Real, Device, Index >::setLike( const tnlCSRMatrix< Real2, De
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlCSRMatrix< Real, Device, Index >::getNumberOfAllocatedElements() const
-{
-   return this->values.getSize();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void tnlCSRMatrix< Real, Device, Index >::reset()
 {
-   this->columns = 0;
-   this->rows = 0;
-   this->values.reset();
-   this->columnIndexes.reset();
+   tnlSparseMatrix< Real, Device, Index >::reset();
    this->rowPointers.reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlCSRMatrix< Real, Device, Index >::getRows() const
-{
-   return this->rows;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlCSRMatrix< Real, Device, Index >::getColumns() const
-{
-   return this->columns;
 }
 
 template< typename Real,
@@ -197,7 +161,7 @@ Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
       elementPtr++;
-   if( this->columnIndexes[ elementPtr ] == column )
+   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
       return this->values[ elementPtr ];
    return 0.0;
 }
@@ -347,11 +311,9 @@ template< typename Real,
           typename Index >
 bool tnlCSRMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
-   if( ! file.write( &this->rows ) ) return false;
-   if( ! file.write( &this->columns ) ) return false;
-   if( ! this->values.save( file ) ) return false;
-   if( ! this->columnIndexes.save( file ) ) return false;
-   if( ! this->rowPointers.save( file ) ) return false;
+   if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
+       ! this->rowPointers.save( file ) )
+      return false;
    return true;
 }
 
@@ -360,11 +322,9 @@ template< typename Real,
           typename Index >
 bool tnlCSRMatrix< Real, Device, Index >::load( tnlFile& file )
 {
-   if( ! file.read( &this->rows ) ) return false;
-   if( ! file.read( &this->columns ) ) return false;
-   if( ! this->values.load( file ) ) return false;
-   if( ! this->columnIndexes.load( file ) ) return false;
-   if( ! this->rowPointers.load( file ) ) return false;
+   if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
+       ! this->rowPointers.load( file ) )
+      return false;
    return true;
 }
 

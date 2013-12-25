@@ -26,8 +26,6 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlMultidiagonalMatrix< Real, Device, Index > :: tnlMultidiagonalMatrix()
-: rows( 0 ),
-  columns( 0 )
 {
 };
 
@@ -54,20 +52,31 @@ tnlString tnlMultidiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDimensions( const IndexType rows,
-                                                                     const IndexType columns )
+bool tnlMultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                                   const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
               cerr << "rows = " << rows
                    << " columns = " << columns << endl );
-   this->rows = rows;
-   this->columns = columns;
+   if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
+      return false;
    if( this->diagonalsShift.getSize() != 0 )
    {
       if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
          return false;
       this->values.setValue( 0.0 );
    }
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+{
+   /****
+    * TODO: implement some check here similar to the one in the tridiagonal matrix
+    */
    return true;
 }
 
@@ -116,7 +125,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setLike( const tnlMultidia
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlMultidiagonalMatrix< Real, Device, Index > :: getNumberOfAllocatedElements() const
+Index tnlMultidiagonalMatrix< Real, Device, Index > :: getNumberOfMatrixElements() const
 {
    return this->values.getSize();
 }
@@ -129,22 +138,6 @@ void tnlMultidiagonalMatrix< Real, Device, Index > :: reset()
    this->rows = 0;
    this->columns = 0;
    this->values.reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlMultidiagonalMatrix< Real, Device, Index >::getRows() const
-{
-   return this->rows;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Index tnlMultidiagonalMatrix< Real, Device, Index >::getColumns() const
-{
-   return this->columns;
 }
 
 template< typename Real,
@@ -318,8 +311,7 @@ template< typename Real,
           typename Index >
 bool tnlMultidiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
-   if( ! file.write( &this->rows ) ) return false;
-   if( ! file.write( &this->columns ) ) return false;
+   if( ! tnlMatrix< Real, Device, Index >::save( file ) ) return false;
    if( ! this->values.save( file ) ) return false;
    if( ! this->diagonalsShift.save( file ) ) return false;
    return true;
@@ -330,8 +322,7 @@ template< typename Real,
           typename Index >
 bool tnlMultidiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 {
-   if( ! file.read( &this->rows ) ) return false;
-   if( ! file.read( &this->columns ) ) return false;
+   if( ! tnlMatrix< Real, Device, Index >::load( file ) ) return false;
    if( ! this->values.load( file ) ) return false;
    if( ! this->diagonalsShift.load( file ) ) return false;
    return true;
@@ -364,7 +355,7 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
       for( IndexType i = 0; i < this->diagonalsShift.getSize(); i++ )
       {
          const IndexType column = row + diagonalsShift[ i ];
-         if( column >=0 && columns < this-columns )
+         if( column >=0 && column < this->columns )
             str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
       }
       str << endl;

@@ -20,14 +20,21 @@
 
 #include <core/tnlHost.h>
 
-tnlString tnlHost :: getDeviceType()
+tnlString tnlHost::getDeviceType()
 {
    return tnlString( "tnlHost" );
 };
 
-tnlDeviceEnum tnlHost :: getDevice()
+tnlDeviceEnum tnlHost::getDevice()
 {
    return tnlHostDevice;
+};
+
+size_t tnlHost::getFreeMemory()
+{
+   long pages = sysconf(_SC_PHYS_PAGES);
+   long page_size = sysconf(_SC_PAGE_SIZE);
+   return pages * page_size;
 };
 
 #endif /* TNLHOST_H_ */

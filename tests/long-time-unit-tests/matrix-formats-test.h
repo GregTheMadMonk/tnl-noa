@@ -40,6 +40,10 @@ template< typename Matrix >
 bool testMatrix( const tnlParameterContainer& parameters )
 {
    Matrix matrix;
+   typedef typename Matrix::RealType RealType;
+   typedef typename Matrix::DeviceType DeviceType;
+   typedef typename Matrix::IndexType IndexType;
+
    const tnlString& fileName = parameters.GetParameter< tnlString >( "input-file" );
    bool verbose = parameters.GetParameter< bool >( "verbose" );
    fstream file;
@@ -50,16 +54,65 @@ bool testMatrix( const tnlParameterContainer& parameters )
       return false;
    }
    if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
-   {
-      file.close();
       return false;
-   }
    if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
-   {
-      file.close();
       return false;
+   if( parameters.GetParameter< bool >( "hard-test" ) )
+   {
+      typedef tnlDenseMatrix< RealType, DeviceType, IndexType > DenseMatrix;
+      DenseMatrix denseMatrix;
+      if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( file, denseMatrix, verbose ) )
+         return false;
+      if( ! tnlMatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
+         return false;
+      //matrix.print( cout );
+      //denseMatrix.print( cout );
+      for( IndexType i = 0; i < matrix.getRows(); i++ )
+      {
+         for( IndexType j = 0; j < matrix.getColumns(); j++ )
+            if( matrix.getElement( i, j ) != denseMatrix.getElement( i, j ) )
+            {
+               cerr << "The matrices differ at position " << i << ", " << j << "." << endl
+                    << " The values are " << matrix.getElement( i, j ) << " (sparse) and "
+                    << denseMatrix.getElement( i, j ) << " (dense)." << endl;
+               tnlString line;
+               IndexType lineNumber;
+               if( tnlMatrixReader< Matrix >::findLineByElement( file, i, j, line, lineNumber ) )
+                  cerr << "The mtx file says ( line " << lineNumber << " ): " << line << endl;
+               else
+                  cerr << "The element is missing in the file. Should be zero therefore." << endl;
+               return false;
+            }
+         if( verbose )
+            cout << " Comparing the sparse matrix with the dense matrix ... " << i << " / " << matrix.getRows() << "             \r" << flush;
+      }
+      if( verbose )
+         cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << endl;
    }
-   file.close();
+   if( parameters.GetParameter< bool >( "multiplication-test" ) )
+   {
+      tnlVector< RealType, DeviceType, IndexType > x, b;
+      x.setSize( matrix.getColumns() );
+      b.setSize( matrix.getRows() );
+      for( IndexType i = 0; i < x.getSize(); i++ )
+      {
+         x.setValue( 0 );
+         x.setElement( i, 1.0 );
+         matrix.vectorProduct( x, b );
+         for( IndexType j = 0; j < b.getSize(); j++ )
+            if( b.getElement( j ) != matrix.getElement( j, i ) )
+            {
+               cerr << "The matrix-vector multiplication gives wrong result at positions "
+                    << j << ", " << i << ". The result is " << b.getElement( j ) << " and it should be "
+                    << matrix.getElement( j, i ) << "." << endl;
+               return false;
+            }
+         if( verbose )
+            cerr << " Testing the matrix-vector multiplication ... " << i << " / " << matrix.getRows() << "            \r" << flush;
+      }
+      if( verbose )
+         cerr << " Testing the matrix-vector multiplication ...  OK.                                       " << endl;
+   }
    return true;
 }
 

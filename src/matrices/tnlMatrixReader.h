@@ -37,6 +37,12 @@ class tnlMatrixReader
    static bool verifyMtxFile( std::istream& file,
                               const Matrix& matrix,
                               bool verbose = false );
+
+   static bool findLineByElement( std::istream& file,
+                                  const IndexType& row,
+                                  const IndexType& column,
+                                  tnlString& line,
+                                  IndexType& lineNumber );
    protected:
 
    static bool checkMtxHeader( const tnlString& header,

@@ -2,6 +2,7 @@ SET( headers tnlMatrix.h
              tnlDenseMatrix.h
              tnlTridiagonalMatrix.h
              tnlMultidiagonalMatrix.h
+             tnlSparseMatrix.h
              tnlEllpackMatrix.h
              tnlSlicedEllpackMatrix.h
              tnlChunkedEllpackMatrix.h

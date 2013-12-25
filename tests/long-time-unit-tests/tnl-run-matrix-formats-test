@@ -18,7 +18,7 @@ test_matrix()
    # $1 - matrix name
    FILESIZE=$(stat -c%s "$1")
    echo "Testing $1 ( `echo \"$FILESIZE / 1024 / 1024 \" | bc`  MB)."
-   $TNL_MATRIX_TEST --input-file $1 --matrix-format csr --verbose $VERBOSE
+   $TNL_MATRIX_TEST --input-file $1 --matrix-format chunked-ellpack --hard-test yes --verbose $VERBOSE
    echo "-------------------------------------------------------------------------------------"   
 }
 

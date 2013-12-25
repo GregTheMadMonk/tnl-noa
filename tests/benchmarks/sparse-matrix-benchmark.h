@@ -23,12 +23,11 @@
 #include <iomanip>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <legacy/matrices/tnlFullMatrix.h>
-#include <legacy/matrices/tnlFastCSRMatrix.h>
-#include <legacy/matrices/tnlFastRgCSRMatrix.h>
-#include <legacy/matrices/tnlFastRgCSRMatrixCUDA.h>
-#include <legacy/matrices/tnlEllpackMatrix.h>
-#include <legacy/matrices/tnlEllpackMatrixCUDA.h>
+#include <matrices/tnlDenseMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 #include <core/mfuncs.h>
 #include "tnlSpmvBenchmarkCSRMatrix.h"
 #include "tnlSpmvBenchmarkCusparseCSRMatrix.h"
@@ -102,38 +101,25 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
    }
 }
 
-template< class Real >
-bool benchmarkMatrix( const tnlString& inputFile,
-                      const tnlString& inputMtxFile,
-                      const tnlString& pdfFile,
-                      const tnlString& logFileName,
-                      bool formatTest,
-                      int maxIterations,
-                      int verbose )
+template< typename RealType >
+bool benchmarkMatrix( const tnlParameterContainer& parameters )
 {
    /****
     * Read the CSR matrix ...
     */
-   tnlCSRMatrix< Real > csrMatrix;
-   csrMatrix.setName( "csr-matrix" );
-   tnlString inputMtxSortedFile( inputMtxFile );
-   inputMtxSortedFile += tnlString( ".sort" );
-   tnlFile binaryFile;
-   if( ! binaryFile. open( inputFile, tnlReadMode ) )
+   typedef tnlCSRMatrix< RealType, tnlHost, int > CsrMatrix;
+   CsrMatrix csrMatrix;
+
+   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
+   fstream inputFile;
+   inputFile.open( inputFileName.getString(), ios::in );
+   if( ! inputFile )
    {
-      cerr << "I am not able to open the file " << inputFile << "." << endl;
-      return 1;
-   }
-   if( verbose )
-      cout << "Reading the CSR matrix ... " << flush;
-   if( ! csrMatrix. load( binaryFile ) )
-   {
-      cerr << "Unable to restore the CSR matrix." << endl;
+      cerr << "I am not able to open the file " << inputFileName << "." << endl;
       return false;
    }
-   if( verbose )
-      cout << " OK." << endl;
-   binaryFile. close();
+   if( ! tnlMatrixReader< CsrMatrix >::readMtxFile( inputFile, csrMatrix ) )
+      return false;
 
    /****
     * Check the number of the non-zero elements
@@ -436,57 +422,14 @@ int main( int argc, char* argv[] )
       conf_desc. PrintUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
-   tnlString inputMtxFile = parameters. GetParameter< tnlString >( "input-mtx-file" );
-   tnlString pdfFile = parameters. GetParameter< tnlString >( "pdf-file" );
-   tnlString logFileName = parameters. GetParameter< tnlString >( "log-file" );
-   double stop_time = parameters. GetParameter< double >( "stop-time" );
-   bool formatTest = parameters. GetParameter< bool >( "format-test" );
-   int maxIterations = parameters. GetParameter< int >( "max-iterations" );
-   int verbose = parameters. GetParameter< int >( "verbose");
-
-
-   tnlFile binaryFile;
-   if( ! binaryFile. open( inputFile, tnlReadMode ) )
-   {
-      cerr << "I am not able to open the file " << inputFile << "." << endl;
-      return 1;
-   }
-   tnlString object_type;
-   if( ! getObjectType( binaryFile, object_type ) )
-   {
-      cerr << "Unknown object ... SKIPPING!" << endl;
-      return EXIT_FAILURE;
-   }
-   if( verbose )
-      cout << object_type << " detected ... " << endl;
-   binaryFile. close();
-
-   if( object_type == "tnlCSRMatrix< float, tnlHost >")
-      benchmarkMatrix< float >( inputFile,
-                                inputMtxFile,
-                                pdfFile,
-                                logFileName,
-                                formatTest,
-                                maxIterations,
-                                verbose );
-
-   if( object_type == "tnlCSRMatrix< double, tnlHost >" )
-   {
-      benchmarkMatrix< double >( inputFile,
-                                 inputMtxFile,
-                                 pdfFile,
-                                 logFileName,
-                                 formatTest,
-                                 maxIterations,
-                                 verbose );
-   }
-   //binaryFile. close();
-
-
-
+   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   if( precision == "float" )
+      if( ! benchmarkMatrix< float >( parameters ) )
+         return EXIT_FAILURE;
+   if( precision == "double" )
+      if( ! benchmarkMatrix< double >( parameters ) )
+         return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
 
 #endif /* SPARSEMATRIXBENCHMARK_H_ */

@@ -18,16 +18,18 @@
 #ifndef TNLCHUNKEDELLPACKMATRIX_H_
 #define TNLCHUNKEDELLPACKMATRIX_H_
 
+#include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlChunkedEllpackMatrix : public tnlObject
+class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
 
    tnlChunkedEllpackMatrix();
 
@@ -38,19 +40,12 @@ class tnlChunkedEllpackMatrix : public tnlObject
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   template< typename Vector >
-   bool setRowLengths( const Vector& rowLengths );
+   bool setRowLengths( const RowLengthsVector& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
-   IndexType getNumberOfAllocatedElements() const;
-
    void reset();
-
-   IndexType getRows() const;
-
-   IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
@@ -129,13 +124,9 @@ class tnlChunkedEllpackMatrix : public tnlObject
       { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
    };
 
-   IndexType rows, columns;
-
    IndexType chunksInSlice, desiredChunkSize;
 
-   tnlVector< Real, Device, Index > values;
-
-   tnlVector< Index, Device, Index > columnIndexes, chunksToRowsMapping, slicesToRowsMapping, rowPointers;
+   tnlVector< Index, Device, Index > chunksToRowsMapping, slicesToRowsMapping, rowPointers;
 
    tnlArray< tnlChunkedEllpackSliceInfo, Device, Index > slices;
 

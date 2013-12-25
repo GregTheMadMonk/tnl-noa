@@ -30,7 +30,7 @@ class tnlSharedArray;
 template< typename Element,
           typename Device = tnlHost,
           typename Index = int >
-class tnlArray : public tnlObject
+class tnlArray : public virtual tnlObject
 {
    public:
 

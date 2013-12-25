@@ -19,6 +19,7 @@
 #define TNLCUDA_H_
 
 #include <iostream>
+#include <unistd.h>
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
@@ -42,6 +43,8 @@ class tnlCuda
    static int getGPUTransferBufferSize();
 
    static bool checkDevice( const char* file_name, int line );
+
+   static size_t getFreeMemory();
 
    protected:
 

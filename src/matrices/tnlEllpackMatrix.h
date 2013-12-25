@@ -18,16 +18,18 @@
 #ifndef TNLELLPACKMATRIX_H_
 #define TNLELLPACKMATRIX_H_
 
+#include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlEllpackMatrix : public tnlObject
+class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
 
    tnlEllpackMatrix();
 
@@ -38,21 +40,14 @@ class tnlEllpackMatrix : public tnlObject
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   template< typename Vector >
-   bool setRowLengths( const Vector& rowLengths );
+   bool setRowLengths( const RowLengthsVector& rowLengths );
 
    bool setConstantRowLengths( const IndexType& rowLengths );
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
-   IndexType getNumberOfAllocatedElements() const;
-
    void reset();
-
-   IndexType getRows() const;
-
-   IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
@@ -110,12 +105,7 @@ class tnlEllpackMatrix : public tnlObject
 
    bool allocateElements();
 
-   IndexType rows, columns, rowLengths;
-
-   tnlVector< Real, Device, Index > values;
-
-   tnlVector< Index, Device, Index > columnIndexes;
-
+   IndexType rowLengths;
 };
 
 #include <implementation/matrices/tnlEllpackMatrix_impl.h>

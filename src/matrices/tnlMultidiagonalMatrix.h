@@ -18,16 +18,18 @@
 #ifndef TNLMULTIDIAGONALMATRIX_H_
 #define TNLMULTIDIAGONALMATRIX_H_
 
+#include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlMultidiagonalMatrix : public tnlObject
+class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
 
    tnlMultidiagonalMatrix();
 
@@ -38,6 +40,8 @@ class tnlMultidiagonalMatrix : public tnlObject
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
+   bool setRowLengths( const RowLengthsVector& rowLengths );
+
    bool setDiagonals( const IndexType diagonalsNumber,
                       const IndexType* diagonalsShift );
 
@@ -46,13 +50,9 @@ class tnlMultidiagonalMatrix : public tnlObject
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix );
 
-   IndexType getNumberOfAllocatedElements() const;
+   IndexType getNumberOfMatrixElements() const;
 
    void reset();
-
-   IndexType getRows() const;
-
-   IndexType getColumns() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
@@ -108,8 +108,6 @@ class tnlMultidiagonalMatrix : public tnlObject
    bool getElementIndex( const IndexType row,
                          const IndexType column,
                          IndexType& index ) const;
-
-   IndexType rows, columns;
 
    tnlVector< Real, Device, Index > values;
 

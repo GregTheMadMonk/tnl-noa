@@ -19,18 +19,21 @@
 #define TNLDENSEMATRIX_H_
 
 #include <core/tnlHost.h>
+#include <matrices/tnlMatrix.h>
 #include <core/arrays/tnlMultiArray.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
+class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
+                       public tnlMultiArray< 2, Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
 
    tnlDenseMatrix();
 
@@ -41,17 +44,24 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
+   template< typename Real2, typename Device2, typename Index2 >
+   bool setLike( const tnlDenseMatrix< Real2, Device2, Index2 >& matrix );
+
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   template< typename Vector >
-   bool setRowLengths( const Vector& rowLengths );
+   bool setRowLengths( const RowLengthsVector& rowLengths );
 
-   IndexType getNumberOfAllocatedElements() const;
+   IndexType getNumberOfMatrixElements() const;
 
-   IndexType getRows() const;
+   void reset();
 
-   IndexType getColumns() const;
+   bool setElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value );
+
+   Real getElement( const IndexType row,
+                    const IndexType column ) const;
 
    bool addElement( const IndexType row,
                     const IndexType column,
@@ -97,6 +107,14 @@ class tnlDenseMatrix : public tnlMultiArray< 2, Real, Device, Index >
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
+
+   bool save( const tnlString& fileName ) const;
+
+   bool load( const tnlString& fileName );
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );
 
    void print( ostream& str ) const;
 };

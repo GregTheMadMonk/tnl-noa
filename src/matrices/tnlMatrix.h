@@ -20,20 +20,33 @@
 
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
+#include <core/vectors/tnlVector.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlMatrix : public tnlObject
+class tnlMatrix : public virtual tnlObject
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlVector< IndexType, DeviceType, IndexType > RowLengthsVector;
+
+   tnlMatrix();
 
    virtual bool setDimensions( const IndexType rows,
                                const IndexType columns );
+
+   virtual bool setRowLengths( const RowLengthsVector& rowLengths ) = 0;
+
+   template< typename Real2, typename Device2, typename Index2 >
+   bool setLike( const tnlMatrix< Real2, Device2, Index2 >& matrix );
+
+   virtual IndexType getNumberOfMatrixElements() const = 0;
+
+   void reset();
 
    IndexType getRows() const;
 
@@ -41,21 +54,19 @@ class tnlMatrix : public tnlObject
 
    virtual bool setElement( const IndexType row,
                             const IndexType column,
-                            const RealType& value );
+                            const RealType& value ) = 0;
 
    virtual bool addElement( const IndexType row,
                             const IndexType column,
                             const RealType& value,
-                            const RealType& thisElementMultiplicator = 1.0 );
+                            const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
+   virtual Real getElement( const IndexType row,
+                            const IndexType column ) const = 0;
 
    virtual bool save( tnlFile& file ) const;
 
    virtual bool load( tnlFile& file );
-
-   virtual bool save( const tnlString& fileName ) const;
-
-   virtual bool load( const tnlString& fileName );
 
    protected:
 
@@ -63,6 +74,6 @@ class tnlMatrix : public tnlObject
 
 };
 
-#include <implementation/matrices/tnlMatrix.h>
+#include <implementation/matrices/tnlMatrix_impl.h>
 
 #endif /* TNLMATRIX_H_ */

@@ -27,8 +27,6 @@ template< typename Real,
           typename Index,
           int SliceSize >
 tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::tnlSlicedEllpackMatrix()
-: rows( 0 ),
-  columns( 0 )
 {
 };
 
@@ -64,17 +62,14 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( co
    tnlAssert( rows > 0 && columns > 0,
               cerr << "rows = " << rows
                    << " columns = " << columns << endl );
-   this->rows = rows;
-   this->columns = columns;
-   return true;
+   return tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-   template< typename Vector >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( const Vector& rowLengths )
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( const RowLengthsVector& rowLengths )
 {
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
    if( ! this->sliceRowLengths.setSize( slices ) ||
@@ -107,14 +102,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( co
    this->slicePointers.setElement( slices, 0 );
    this->slicePointers.computeExclusivePrefixSum();
 
-   /****
-    * Allocate values and column indexes
-    */
-   if( ! this->values.setSize( this->slicePointers[ slices ] ) ||
-       ! this->columnIndexes.setSize( this->slicePointers[ slices ] ) )
-      return false;
-   this->columnIndexes.setValue( this->columns );
-   return true;
+   return this->allocateMatrixElements( this->slicePointers[ slices ] );
 }
 
 template< typename Real,
@@ -126,9 +114,7 @@ template< typename Real,
              typename Index2 >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setLike( const tnlSlicedEllpackMatrix< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) ||
-       ! this->values.setLike( matrix.values ) ||
-       ! this->columnIndexes.setLike( matrix.columnIndexes ) ||
+   if( !tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
        ! this->slicePointers.setLike( matrix.slicePointers ) ||
        ! this->sliceRowLengths.setLike( matrix.sliceRowLengths ) )
       return false;
@@ -139,41 +125,11 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getNumberOfAllocatedElements() const
-{
-   return this->values.getSize();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::reset()
 {
-   this->columns = 0;
-   this->rows = 0;
-   this->values.reset();
-   this->columnIndexes.reset();
+   tnlSparseMatrix< Real, Device, Index >::reset();
    this->slicePointers.reset();
    this->sliceRowLengths.reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRows() const
-{
-   return this->rows;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getColumns() const
-{
-   return this->columns;
 }
 
 template< typename Real,
@@ -233,7 +189,7 @@ Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const
    const IndexType rowEnd = elementPtr + rowLength;
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
       elementPtr++;
-   if( this->columnIndexes[ elementPtr ] == column )
+   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
       return this->values[ elementPtr ];
    return 0.0;
 }
@@ -391,12 +347,9 @@ template< typename Real,
           int SliceSize >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& file ) const
 {
-   if( ! file.write( &this->rows ) ) return false;
-   if( ! file.write( &this->columns ) ) return false;
-   if( ! this->values.save( file ) ) return false;
-   if( ! this->columnIndexes.save( file ) ) return false;
-   if( ! this->slicePointers.save( file ) ) return false;
-   if( ! this->sliceRowLengths.save( file ) ) return false;
+   if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
+       ! this->slicePointers.save( file ) ||
+       ! this->sliceRowLengths.save( file ) )
    return true;
 }
 
@@ -406,12 +359,9 @@ template< typename Real,
           int SliceSize >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& file )
 {
-   if( ! file.read( &this->rows ) ) return false;
-   if( ! file.read( &this->columns ) ) return false;
-   if( ! this->values.load( file ) ) return false;
-   if( ! this->columnIndexes.load( file ) ) return false;
-   if( ! this->slicePointers.load( file ) ) return false;
-   if( ! this->sliceRowLengths.load( file ) ) return false;
+   if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
+       ! this->slicePointers.load( file ) ||
+       ! this->sliceRowLengths.load( file ) )
    return true;
 }
 

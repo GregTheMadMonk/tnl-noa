@@ -62,7 +62,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    void setDimensionsTest()
    {
       MatrixType m;
-      m.setDimensions( 10 );
+      m.setDimensions( 10, 10 );
       CPPUNIT_ASSERT( m.getRows() == 10 );
       CPPUNIT_ASSERT( m.getColumns() == 10 );
    }
@@ -70,7 +70,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    void setLikeTest()
    {
       MatrixType m1, m2;
-      m1.setDimensions( 10 );
+      m1.setDimensions( 10, 10 );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -79,7 +79,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    {
       const int size( 10 );
       MatrixType m;
-      m.setDimensions( size );
+      m.setDimensions( size, size );
       m.setValue( 1.0 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
@@ -92,7 +92,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    void setElementTest()
    {
       MatrixType m;
-      m.setDimensions( 10 );
+      m.setDimensions( 10, 10 );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -107,7 +107,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    void addElementTest()
    {
       MatrixType m;
-      m.setDimensions( 10 );
+      m.setDimensions( 10, 10 );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -129,7 +129,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    void setRowTest()
    {
       MatrixType m;
-      m.setDimensions( 10 );
+      m.setDimensions( 10, 10 );
       m.setValue( 0.0 );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -165,7 +165,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       v.setSize( size );
       w.setSize( size );
       MatrixType m;
-      m.setDimensions( size );
+      m.setDimensions( size, size );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );
@@ -181,7 +181,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    {
       const int size = 10;
       MatrixType m;
-      m.setDimensions( 10);
+      m.setDimensions( 10, 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
             if( abs( i - j ) <= 1 )
@@ -213,7 +213,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    {
       const int size = 10;
       MatrixType m;
-      m.setDimensions( 10 );
+      m.setDimensions( 10, 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
             if( abs( i - j ) <= 1 )

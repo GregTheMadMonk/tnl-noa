@@ -421,3 +421,8 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
 #endif
 }
 
+size_t tnlCuda::getFreeMemory()
+{
+
+}
+
