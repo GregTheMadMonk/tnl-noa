@@ -50,6 +50,19 @@ Index tnlSparseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlSparseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+{
+   IndexType nonzeroElements( 0 );
+   for( IndexType i = 0; i < this->values.getSize(); i++ )
+      if( this->columnIndexes.getElement( i ) != this-> columns &&
+          this->values.getElement( i ) != 0.0 )
+         nonzeroElements++;
+   return nonzeroElements;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlSparseMatrix< Real, Device, Index >::reset()
 {
    tnlMatrix< Real, Device, Index >::reset();

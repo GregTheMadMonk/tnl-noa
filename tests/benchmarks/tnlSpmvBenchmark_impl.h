@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSpmvBenchmark.h  -  description
+                          tnlSpmvBenchmark_impl.h  -  description
                              -------------------
     begin                : Dec 29, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,34 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSPMVBENCHMARK_H_
-#define TNLSPMVBENCHMARK_H_
+#ifndef TNLSPMVBENCHMARK_IMPL_H_
+#define TNLSPMVBENCHMARK_IMPL_H_
 
-#include "tnlSpmvBenchmarkBase.h"
-#include <matrices/tnlCSRMatrix.h>
-
-
-template< typename Matrix >
-class tnlSpmvBenchmark
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::setup( const tnlCSRMatrix< RealType, tnlHost, IndexType >& matrix )
 {
-};
+   this->matrix = matrix;
+}
 
-template< typename Real, typename Device, typename Index >
-class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBenchmarkBase< tnlCSRMatrix< Real, Device, Index > >
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::tearDown()
 {
-   public:
+   this->matrix.reset();
+}
 
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeProgress() const
+{
+}
 
-   bool setup( const tnlCSRMatrix< RealType, tnlHost, IndexType >& matrix );
-
-   void tearDown();
-
-   void writeProgress() const;
-};
-
-#include "tnlSpmvBenchmark_impl.h"
-
-#endif /* TNLSPMVBENCHMARK_H_ */
+#endif /* TNLSPMVBENCHMARK_IMPL_H_ */

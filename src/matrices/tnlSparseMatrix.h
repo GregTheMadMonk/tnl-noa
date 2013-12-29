@@ -39,6 +39,8 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfMatrixElements() const;
 
+   IndexType getNumberOfNonzeroMatrixElements() const;
+
    void reset();
 
    bool save( tnlFile& file ) const;

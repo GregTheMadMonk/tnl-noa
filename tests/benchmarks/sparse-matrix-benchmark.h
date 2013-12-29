@@ -28,12 +28,13 @@
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlMatrixReader.h>
 #include <core/mfuncs.h>
-#include "tnlSpmvBenchmarkCSRMatrix.h"
-#include "tnlSpmvBenchmarkCusparseCSRMatrix.h"
+#include "tnlSpmvBenchmark.h"
+/*#include "tnlSpmvBenchmarkCusparseCSRMatrix.h"
 #include "tnlSpmvBenchmarkHybridMatrix.h"
 #include "tnlSpmvBenchmarkRgCSRMatrix.h"
-#include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"
+#include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"*/
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.desc";
@@ -41,6 +42,7 @@ const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.
 
 using namespace std;
 
+/*
 double bestCudaRgCSRGflops( 0 );
 
 template< typename Real >
@@ -100,6 +102,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
       cudaRgCsrMatrixBenchmark. tearDown();
    }
 }
+*/
 
 template< typename RealType >
 bool benchmarkMatrix( const tnlParameterContainer& parameters )
@@ -111,6 +114,13 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    CsrMatrix csrMatrix;
 
    const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
+   const tnlString& inputMtxFileName = parameters.GetParameter< tnlString >( "input-mtx-file" );
+   const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
+   const tnlString& pdfFileName = parameters.GetParameter< tnlString >( "pdf-file" );
+   bool verbose = parameters.GetParameter< bool >( "verbose" );
+   const int maxIterations = parameters.GetParameter< tnlString >( "max-iterations" );
+
+
    fstream inputFile;
    inputFile.open( inputFileName.getString(), ios::in );
    if( ! inputFile )
@@ -124,18 +134,18 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    /****
     * Check the number of the non-zero elements
     */
-   const long int nonzeroElements = csrMatrix. checkNonzeroElements();
-   if( nonzeroElements != csrMatrix. getNonzeroElements() )
-      cerr << "WARNING: The matrix reports " << csrMatrix. getNonzeroElements() << " but actually there are " << nonzeroElements << " non-zero elements." << endl;
+   const long int nonzeroElements = csrMatrix. getNumberOfNonzeroMatrixElements();
    if( verbose )
-      cout << "Matrix size: " << csrMatrix. getSize()
+      cout << "Matrix rows: " << csrMatrix.getRows() 
+           << " Matrix columns: " << csrMatrix.getColumns()
            << " Non-zero elements: " << nonzeroElements << endl;
 
-   const long int size = csrMatrix. getSize();
-   tnlVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size);
-   tnlVector< Real, tnlCuda > cudaX( "cudaX", size );
+   const long int rows = csrMatrix.getRows();
+   const long int columns = csrMatrix.getColumns();
+   tnlVector< RealType, tnlHost > refX( "ref-x", columns ), refB( "ref-b", rows );
+   tnlVector< RealType, tnlCuda > cudaX( "cudaX", columns );
    refX. setValue( 0.0 );
-   for( int i = 0; i < size; i ++ )
+   for( int i = 0; i < columns; i ++ )
       refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
    cudaX = refX;
    csrMatrix. vectorProduct( refX, refB );
@@ -143,7 +153,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    /****
     * CSR format benchmark
     */
-   tnlSpmvBenchmarkCSRMatrix< Real, int > csrMatrixBenchmark;
+   tnlSpmvBenchmark< tnlCSRMatrix< RealType, tnlHost, int > > csrMatrixBenchmark;
 
    /****
     * Use the first instance of tnlSpmvBenchmark which we have
@@ -153,19 +163,6 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
       csrMatrixBenchmark. writeProgressTableHeader();
 
    csrMatrixBenchmark. setup( csrMatrix );
-   if( formatTest )
-   {
-      if( verbose )
-            cout << "Reading the FULL matrix ... " << endl;
-      tnlFullMatrix< Real, tnlHost, int > fullMatrix( "full-matrix" );
-      fstream mtxFile;
-      mtxFile. open( inputMtxFile. getString(), ios :: in );
-      if( ! fullMatrix. read( mtxFile, verbose ) )
-         cerr << "Unable to get the FULL matrix." << endl;
-      else
-         csrMatrixBenchmark. testMatrix( fullMatrix, verbose );
-      mtxFile. close();
-   }
    csrMatrixBenchmark. setMaxIterations( maxIterations );
    csrMatrixBenchmark. runBenchmark( refX, refB, verbose );
    csrMatrixBenchmark. tearDown();
@@ -187,17 +184,18 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
        */
       long int allElements = csrMatrix. getSize() * csrMatrix. getSize();
       logFile << "          <tr>" << endl;
-      logFile << "             <td> <a href=\"" << pdfFile << "\">" << inputFile << "</a> </td>" << endl;
+      logFile << "             <td> <a href=\"" << pdfFileName << "\">" << inputFile << "</a> </td>" << endl;
       logFile << "             <td> " << csrMatrix. getSize() << "</td>" << endl;
       logFile << "             <td> " << nonzeroElements << "</td>" << endl;
       logFile << "             <td> " << ( double ) nonzeroElements / allElements * 100.0 << "</td>" << endl;
       csrMatrixBenchmark. writeToLogTable( logFile,
                                            csrMatrixBenchmark. getGflops(),
-                                           inputMtxFile,
+                                           inputMtxFileName,
                                            csrMatrix,
                                            false );
    }
 
+#ifdef UNDEF
    /****
     * Cusparse CSR format benchmark
     */
@@ -396,6 +394,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
       cudaRgCsrMatrixBenchmark. tearDown();
    }
 
+#endif
 
 
    if( logFileName )
@@ -409,9 +408,6 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   dbgFunctionName( "", "main" );
-   dbgInit( "" );
-
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
