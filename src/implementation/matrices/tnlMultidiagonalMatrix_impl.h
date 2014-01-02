@@ -83,6 +83,22 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLeng
 template< typename Real,
           typename Device,
           typename Index >
+IndexType tnlMultidiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   IndexType rowLength( 0 );
+   for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
+   {
+      const IndexType column = row + diagonalsShift.getElement( i );
+      if( column >= 0 && column < this->getColumns() )
+         rowLength++;
+   }
+   return rowLength;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const IndexType diagonalsNumber,
                                                                      const IndexType* diagonalsShift )
 {
@@ -196,6 +212,44 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
+                                                                  const IndexType column,
+                                                                  const RealType& value,
+                                                                  const RealType& thisElementMultiplicator )
+{
+   Index index;
+   if( ! this->getElementIndex( row, column, index  ) )
+      return false;
+   this->values.addElement( index, value, thisElementMultiplicator );
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType row,
+                                                              const IndexType* columns,
+                                                              const RealType* values,
+                                                              const IndexType numberOfElements )
+{
+   // TODO: implement
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
+                                                              const IndexType* columns,
+                                                              const RealType* values,
+                                                              const IndexType numberOfElements,
+                                                              const RealType& thisElementMultiplicator )
+{
+   // TODO: implement
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                                 const IndexType column ) const
 {
@@ -208,18 +262,22 @@ Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
-                                                                  const IndexType column,
-                                                                  const RealType& value,
-                                                                  const RealType& thisElementMultiplicator )
+void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                            IndexType* columns,
+                                                            RealType* values ) const
 {
-   Index index;
-   if( ! this->getElementIndex( row, column, index  ) )
-      return false;
-   this->values[ index ] = thisElementMultiplicator * this->values[ index ] + value;
-   return true;
+   IndexType pointer( 0 );
+   for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
+   {
+      const IndexType column = row + diagonalsShift.getElement( i );
+      if( column >= 0 && column < this->getColumns() )
+      {
+         columns[ pointer ] = column;
+         values[ pointer ] = this->getElement( row, column );
+         pointer++;
+      }
+   }
 }
-
 
 template< typename Real,
           typename Device,

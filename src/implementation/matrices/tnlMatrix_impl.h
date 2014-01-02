@@ -45,6 +45,16 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
+void tnlMatrix< Real, Device, Index >::getRowLentghs( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
+{
+   rowLengths.setSize( this->getRows() );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      rowLengths.setElement( row, this->getRowLengths( row ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >

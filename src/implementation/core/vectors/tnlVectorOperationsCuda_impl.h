@@ -19,6 +19,23 @@
 #define TNLVECTOROPERATIONSCUDA_IMPL_H_
 
 template< typename Vector >
+void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
+                                                 const typename Vector::IndexType i,
+                                                 const typename Vector::RealType& value )
+{
+   v[ i ] += value;
+}
+
+template< typename Vector >
+void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
+                                                 const typename Vector::IndexType i,
+                                                 const typename Vector::RealType& value,
+                                                 const typename Vector::RealType& thisElementMultiplicator )
+{
+   v[ i ] = thisElementMultiplicator * v[ i ] + value;
+}
+
+template< typename Vector >
 typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( const Vector& v )
 {
    typedef typename Vector :: RealType Real;

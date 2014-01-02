@@ -65,6 +65,24 @@ tnlString tnlVector< Real, Device, Index > :: getTypeVirtual() const
    return this->getType();
 };
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index >::addElement( const IndexType i,
+                                                   const RealType& value )
+{
+   tnlVectorOperations< Device >::addElement( *this, i, value );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlVector< Real, Device, Index >::addElement( const IndexType i,
+                                                   const RealType& value,
+                                                   const RealType& thisElementMultiplicator )
+{
+   tnlVectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+}
 
 template< typename Real,
            typename Device,

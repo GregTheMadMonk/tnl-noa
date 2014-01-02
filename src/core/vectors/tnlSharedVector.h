@@ -37,6 +37,13 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    tnlString getTypeVirtual() const;
 
+   void addElement( const IndexType i,
+                    const RealType& value );
+
+   void addElement( const IndexType i,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator );
+
    tnlSharedVector< Real, Device, Index >& operator = ( const tnlSharedVector< Real, Device, Index >& array );
 
    template< typename Vector >

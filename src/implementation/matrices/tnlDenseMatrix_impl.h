@@ -82,6 +82,14 @@ bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVecto
 template< typename Real,
           typename Device,
           typename Index >
+IndexType tnlDenseMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index tnlDenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return this->getRows() * this->getColumns();
@@ -105,15 +113,6 @@ bool tnlDenseMatrix< Real, Device, Index >::setElement( const IndexType row,
 {
    tnlMultiArray< 2, Real, Device, Index >::setElement( row, column, value );
    return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real tnlDenseMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                        const IndexType column ) const
-{
-   return tnlMultiArray< 2, Real, Device, Index >::getElement( row, column );
 }
 
 template< typename Real,
@@ -165,6 +164,29 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
       this->operator[]( row, columns[ i ] ) =
                thisRowMultiplicator * this->operator[]( row, columns[ i ] ) + values[ i ];
    return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlDenseMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                        const IndexType column ) const
+{
+   return tnlMultiArray< 2, Real, Device, Index >::getElement( row, column );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlDenseMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                    IndexType* columns,
+                                                    RealType* values ) const
+{
+   for( IndexType i = 0; i < this->getColumns(); i++ )
+   {
+      columns[ i ] = i;
+      values[ i ] = this->getElement( row, i );
+   }
 }
 
 template< typename Real,

@@ -43,6 +43,13 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    tnlString getTypeVirtual() const;
 
+   void addElement( const IndexType i,
+                    const RealType& value );
+
+   void addElement( const IndexType i,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator );
+
    tnlVector< Real, Device, Index >& operator = ( const tnlVector< Real, Device, Index >& array );
 
    template< typename Vector >

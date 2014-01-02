@@ -45,6 +45,25 @@ tnlString tnlSharedVector< Real, Device, Index > :: getTypeVirtual() const
 };
 
 template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
+                                                         const RealType& value )
+{
+   tnlVectorOperations< Device >::addElement( *this, i, value );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
+                                                         const RealType& value,
+                                                         const RealType& thisElementMultiplicator )
+{
+   tnlVectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+}
+
+template< typename Real,
            typename Device,
            typename Index >
 tnlSharedVector< Real, Device, Index >&

@@ -44,6 +44,8 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   IndexType getRowLength( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m );
 
@@ -58,6 +60,11 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    bool operator != ( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    void setValue( const RealType& v );
+
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
 
    bool setElement( const IndexType row,
                     const IndexType column,
@@ -76,6 +83,10 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
+
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    RealType& operator()( const IndexType row,
                          const IndexType column );

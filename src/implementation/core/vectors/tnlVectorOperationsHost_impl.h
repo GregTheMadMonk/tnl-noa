@@ -18,8 +18,26 @@
 #ifndef TNLVECTOROPERATIONSHOST_IMPL_H_
 #define TNLVECTOROPERATIONSHOST_IMPL_H_
 
+
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorMax( const Vector& v )
+void tnlVectorOperations< tnlHost >::addElement( Vector& v,
+                                                 const typename Vector::IndexType i,
+                                                 const typename Vector::RealType& value )
+{
+   v[ i ] += value;
+}
+
+template< typename Vector >
+void tnlVectorOperations< tnlHost >::addElement( Vector& v,
+                                                 const typename Vector::IndexType i,
+                                                 const typename Vector::RealType& value,
+                                                 const typename Vector::RealType& thisElementMultiplicator )
+{
+   v[ i ] = thisElementMultiplicator * v[ i ] + value;
+}
+
+template< typename Vector >
+typename Vector::RealType tnlVectorOperations< tnlHost >::getVectorMax( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;

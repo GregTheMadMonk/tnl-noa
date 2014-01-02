@@ -86,6 +86,23 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLength
 template< typename Real,
           typename Device,
           typename Index >
+IndexType tnlTridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   const IndexType diagonalLength = Min( this->getRows(), this->getColumns() );
+   if( row == 0 )
+      return 2;
+   if( row > 0 && row < diagonalLength - 1 )
+      return 3;
+   if( this->getRows() > this->getColumns() )
+      return 1;
+   if( this->getRows() == this->getColumns() )
+      return 2;
+   return 3;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2, typename Device2, typename Index2 >
 bool tnlTridiagonalMatrix< Real, Device, Index >::setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m )
 {
@@ -149,12 +166,12 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setElement( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                              const IndexType column ) const
+bool tnlTridiagonalMatrix< Real, Device, Index >::addElement( const IndexType row,
+                                                              const IndexType column,
+                                                              const RealType& value,
+                                                              const RealType& thisElementMultiplicator )
 {
-   if( abs( column - row ) > 1 )
-      return 0.0;
-   return this->values.getElement( this->getElementIndex( row, column ) );
+   this->values.addElement( this->getElementIndex( row, column ), value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -195,6 +212,17 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
       addElement( row, column, values[ i ], thisRowMultiplicator );
    }
    return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                              const IndexType column ) const
+{
+   if( abs( column - row ) > 1 )
+      return 0.0;
+   return this->values.getElement( this->getElementIndex( row, column ) );
 }
 
 template< typename Real,

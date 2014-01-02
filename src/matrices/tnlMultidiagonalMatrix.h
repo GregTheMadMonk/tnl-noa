@@ -42,6 +42,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   IndexType getRowLength( const IndexType row ) const;
+
    bool setDiagonals( const IndexType diagonalsNumber,
                       const IndexType* diagonalsShift );
 
@@ -66,13 +68,28 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-   RealType getElement( const IndexType row,
-                        const IndexType column ) const;
-
    bool addElement( const IndexType row,
                     const IndexType column,
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
+
+   bool setRow( const IndexType row,
+                           const IndexType* columns,
+                           const RealType* values,
+                           const IndexType numberOfElements );
+
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType numberOfElements,
+                const RealType& thisElementMultiplicator = 1.0 );
+
+   RealType getElement( const IndexType row,
+                        const IndexType column ) const;
+
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    template< typename Vector >
    void vectorProduct( const Vector& inVector,

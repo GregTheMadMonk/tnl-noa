@@ -33,6 +33,17 @@ class tnlVectorOperations< tnlHost >
    public:
 
    template< typename Vector >
+   static void addElement( Vector& v,
+                           const typename Vector::IndexType i,
+                           const typename Vector::RealType& value );
+
+   template< typename Vector >
+   static void addElement( Vector& v,
+                           const typename Vector::IndexType i,
+                           const typename Vector::RealType& value,
+                           const typename Vector::RealType& thisElementMultiplicator );
+
+   template< typename Vector >
    static typename Vector::RealType getVectorMax( const Vector& v );
 
    template< typename Vector >
@@ -46,7 +57,7 @@ class tnlVectorOperations< tnlHost >
 
    template< typename Vector >
    static typename Vector::RealType getVectorLpNorm( const Vector& v,
-                                                       const typename Vector::RealType& p );
+                                                     const typename Vector::RealType& p );
 
    template< typename Vector >
    static typename Vector::RealType getVectorSum( const Vector& v );
@@ -124,6 +135,17 @@ template<>
 class tnlVectorOperations< tnlCuda >
 {
    public:
+
+   template< typename Vector >
+   static void addElement( Vector& v,
+                           const typename Vector::IndexType i,
+                           const typename Vector::RealType& value );
+
+   template< typename Vector >
+   static void addElement( Vector& v,
+                           const typename Vector::IndexType i,
+                           const typename Vector::RealType& value,
+                           const typename Vector::RealType& thisElementMultiplicator );
 
    template< typename Vector >
    static typename Vector::RealType getVectorMax( const Vector& v );

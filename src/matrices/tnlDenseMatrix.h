@@ -52,6 +52,8 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
     */
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   IndexType getRowLength( const IndexType row ) const;
+
    IndexType getNumberOfMatrixElements() const;
 
    void reset();
@@ -59,9 +61,6 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
-
-   Real getElement( const IndexType row,
-                    const IndexType column ) const;
 
    bool addElement( const IndexType row,
                     const IndexType column,
@@ -78,6 +77,13 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
                 const RealType* values,
                 const IndexType elements,
                 const RealType thisRowMultiplicator = 1.0 );
+
+   Real getElement( const IndexType row,
+                    const IndexType column ) const;
+
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,
