@@ -83,7 +83,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLeng
 template< typename Real,
           typename Device,
           typename Index >
-IndexType tnlMultidiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index tnlMultidiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    IndexType rowLength( 0 );
    for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )

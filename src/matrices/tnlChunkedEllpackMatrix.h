@@ -42,6 +42,8 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   IndexType getRowLength( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
@@ -53,15 +55,6 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
-   bool setElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value );
-
-   bool setRow( const IndexType row,
-                const IndexType* columnIndexes,
-                const RealType* values,
-                const IndexType elements );
-
    void setNumberOfChunksInSlice( const IndexType chunksInSlice );
 
    IndexType getNumberOfChunksInSlice() const;
@@ -70,13 +63,32 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    IndexType getDesiredChunkSize() const;
 
-   RealType getElement( const IndexType row,
-                        const IndexType column ) const;
+   bool setElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value );
 
    bool addElement( const IndexType row,
                     const IndexType column,
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
+
+   bool setRow( const IndexType row,
+                const IndexType* columnIndexes,
+                const RealType* values,
+                const IndexType elements );
+
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType numberOfElements,
+                const RealType& thisElementMultiplicator = 1.0 );
+
+   RealType getElement( const IndexType row,
+                        const IndexType column ) const;
+
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,

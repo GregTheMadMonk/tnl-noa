@@ -42,6 +42,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   IndexType getRowLength( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix );
 
@@ -57,18 +59,28 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
+
    bool setRow( const IndexType row,
                 const IndexType* columnIndexes,
                 const RealType* values,
                 const IndexType elements );
 
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType numberOfElements,
+                const RealType& thisElementMultiplicator = 1.0 );
+
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-   bool addElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value,
-                    const RealType& thisElementMultiplicator = 1.0 );
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,

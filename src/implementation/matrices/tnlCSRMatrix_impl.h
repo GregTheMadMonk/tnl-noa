@@ -91,6 +91,14 @@ bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector&
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlCSRMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
@@ -154,21 +162,6 @@ bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                      const IndexType column ) const
-{
-   IndexType elementPtr = this->rowPointers[ row ];
-   const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
-      elementPtr++;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
-      return this->values[ elementPtr ];
-   return 0.0;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
                                                       const IndexType column,
                                                       const RealType& value,
@@ -212,6 +205,75 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
          return true;
       }
    return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
+                                                    const IndexType* columnIndexes,
+                                                    const RealType* values,
+                                                    const IndexType elements )
+{
+   IndexType elementPointer = this->rowPointers[ row ];
+   const IndexType rowLength = this->rowPointers[ row + 1 ] - elementPointer;
+   if( elements > rowLength )
+      return false;
+
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
+      this->values[ elementPointer ] = values[ i ];
+      elementPointer++;
+   }
+   for( IndexType i = elements; i < rowLength; i++ )
+      this->columnIndexes[ elementPointer++ ] = this->getColumns();
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
+                                                    const IndexType* columns,
+                                                    const RealType* values,
+                                                    const IndexType numberOfElements,
+                                                    const RealType& thisElementMultiplicator )
+{
+   // TODO: implement
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                      const IndexType column ) const
+{
+   IndexType elementPtr = this->rowPointers[ row ];
+   const IndexType rowEnd = this->rowPointers[ row + 1 ];
+   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
+      elementPtr++;
+   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
+      return this->values[ elementPtr ];
+   return 0.0;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlCSRMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                  IndexType* columns,
+                                                  RealType* values ) const
+{
+   IndexType elementPointer = this->rowPointers[ row ];
+   const IndexType rowLength = this->rowPointers[ row + 1 ] - elementPointer;
+   for( IndexType i = 0; i < rowLength; i++ )
+   {
+      columns[ i ] = this->columnIndexes[ elementPointer ];
+      values[ i ] = this->values[ elementPointer ];
+      elementPointer++;
+   }
 }
 
 template< typename Real,

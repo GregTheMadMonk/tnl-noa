@@ -82,7 +82,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVecto
 template< typename Real,
           typename Device,
           typename Index >
-IndexType tnlDenseMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index tnlDenseMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->getColumns();
 }

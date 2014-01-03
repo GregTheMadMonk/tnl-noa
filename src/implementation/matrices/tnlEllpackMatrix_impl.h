@@ -97,6 +97,14 @@ bool tnlEllpackMatrix< Real, Device, Index >::setConstantRowLengths( const Index
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlEllpackMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->rowLengths;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
@@ -160,20 +168,6 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                          const IndexType column ) const
-{
-   IndexType elementPtr( row * this->rowLengths );
-   const IndexType rowEnd( elementPtr + this->rowLengths );
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
-      return this->values.getElement( elementPtr );
-   return 0.0;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 bool tnlEllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value,
@@ -218,6 +212,70 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
    return false;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
+                                                        const IndexType* columnIndexes,
+                                                        const RealType* values,
+                                                        const IndexType elements )
+{
+   if( elements > this->rowLengths )
+      return false;
+   IndexType elementPointer( row * this->rowLengths );
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
+      this->values[ elementPointer ] = values[ i ];
+      elementPointer++;
+   }
+   for( IndexType i = elements; i < this->rowLengths; i++ )
+      this->columnIndexes[ elementPointer++ ] = this->getColumns();
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlEllpackMatrix< Real, Device, Index > :: addRow( const IndexType row,
+                                                        const IndexType* columns,
+                                                        const RealType* values,
+                                                        const IndexType numberOfElements,
+                                                        const RealType& thisElementMultiplicator )
+{
+   // TODO: implement
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                          const IndexType column ) const
+{
+   IndexType elementPtr( row * this->rowLengths );
+   const IndexType rowEnd( elementPtr + this->rowLengths );
+   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
+   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
+      return this->values.getElement( elementPtr );
+   return 0.0;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                      IndexType* columns,
+                                                      RealType* values ) const
+{
+   IndexType elementPtr( row * this->rowLengths );
+   for( IndexType i = 0; i < this->rowLengths; i++ )
+   {
+      columns[ i ] = this->columnIndexes[ elementPtr ];
+      values[ i ] = this->values[ elementPtr ];
+      elementPtr++;
+   }
+}
 
 template< typename Real,
           typename Device,

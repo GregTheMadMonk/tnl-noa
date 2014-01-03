@@ -109,6 +109,16 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
+Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
+{
+   const IndexType slice = roundUpDivision( this->row, SliceSize );
+   return this->sliceRowLengths[ slice ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
    template< typename Real2,
              typename Device2,
              typename Index2 >
@@ -179,25 +189,6 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const IndexType row,
-                                                                           const IndexType column ) const
-{
-   const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
-   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
-                          rowLength * ( row - sliceIdx * SliceSize );
-   const IndexType rowEnd = elementPtr + rowLength;
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
-      elementPtr++;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
-      return this->values[ elementPtr ];
-   return 0.0;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const IndexType row,
                                                                            const IndexType column,
                                                                            const RealType& value,
@@ -246,6 +237,86 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const
    return false;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRow( const IndexType row,
+                                                                         const IndexType* columnIndexes,
+                                                                         const RealType* values,
+                                                                         const IndexType elements )
+{
+   const IndexType sliceIdx = row / SliceSize;
+   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
+   if( elements > rowLength )
+      return false;
+
+   IndexType elementPointer = this->slicePointers[ sliceIdx ] +
+                              rowLength * ( row - sliceIdx * SliceSize );
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
+      this->values[ elementPointer ] = values[ i ];
+      elementPointer++;
+   }
+   for( IndexType i = elements; i < this->rowLengths; i++ )
+      this->columnIndexes[ elementPointer++ ] = this->getColumns();
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: addRow( const IndexType row,
+                                                                         const IndexType* columns,
+                                                                         const RealType* values,
+                                                                         const IndexType numberOfElements,
+                                                                         const RealType& thisElementMultiplicator )
+{
+   // TODO: implement
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const IndexType row,
+                                                                           const IndexType column ) const
+{
+   const IndexType sliceIdx = row / SliceSize;
+   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
+   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
+                          rowLength * ( row - sliceIdx * SliceSize );
+   const IndexType rowEnd = elementPtr + rowLength;
+   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
+      elementPtr++;
+   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
+      return this->values[ elementPtr ];
+   return 0.0;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRow( const IndexType row,
+                                                                       IndexType* columns,
+                                                                       RealType* values ) const
+{
+   const IndexType sliceIdx = row / SliceSize;
+   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
+   IndexType elementPtr = this->slicePointers[ sliceIdx ] +
+                          rowLength * ( row - sliceIdx * SliceSize );
+   for( IndexType i = 0; i < rowLength; i++ )
+   {
+      columns[ i ] = this->columnIndexes[ elementPtr ];
+      values[ i ] = this->values[ elementPtr ];
+      elementPtr++;
+   }
+}
 
 template< typename Real,
           typename Device,
