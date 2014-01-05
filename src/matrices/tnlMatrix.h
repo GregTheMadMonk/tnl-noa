@@ -43,7 +43,7 @@ class tnlMatrix : public virtual tnlObject
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getRowLentghs( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMatrix< Real2, Device2, Index2 >& matrix );
@@ -83,7 +83,9 @@ class tnlMatrix : public virtual tnlObject
 
    virtual void getRow( const IndexType row,
                         IndexType* columns,
-                        RealType* values ) const;
+                        RealType* values ) const = 0;
+
+   tnlMatrix< RealType, DeviceType, IndexType >& operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& );
 
    virtual bool save( tnlFile& file ) const;
 

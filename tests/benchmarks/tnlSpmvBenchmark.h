@@ -41,6 +41,12 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
    void tearDown();
 
    void writeProgress() const;
+
+   void writeToLogTable( ostream& logFile,
+                                    const double& csrGflops,
+                                    const tnlString& inputMtxFile,
+                                    const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
+                                    bool writeMatrixInfo  ) const;
 };
 
 #include "tnlSpmvBenchmark_impl.h"

@@ -45,11 +45,11 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMatrix< Real, Device, Index >::getRowLentghs( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void tnlMatrix< Real, Device, Index >::getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
-      rowLengths.setElement( row, this->getRowLengths( row ) );
+      rowLengths.setElement( row, this->getRowLength( row ) );
 }
 
 template< typename Real,
@@ -86,6 +86,34 @@ void tnlMatrix< Real, Device, Index >::reset()
 {
    this->rows = 0;
    this->columns = 0;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& m )
+{
+   this->setLike( m );
+
+   tnlVector< IndexType, DeviceType, IndexType > rowLengths;
+   m.getRowLengths( rowLengths );
+   this->setRowLengths( rowLengths );
+
+   tnlVector< RealType, DeviceType, IndexType > rowValues;
+   tnlVector< IndexType, DeviceType, IndexType > rowColumns;
+   const IndexType maxRowLength = rowLengths.max();
+   rowValues.setSize( maxRowLength );
+   rowColumns.setSize( maxRowLength );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+   {
+      m.getRow( row,
+                rowColumns.getData(),
+                rowValues.getData() );
+      this->setRow( row,
+                    rowColumns.getData(),
+                    rowValues.getData(),
+                    rowLengths.getElement( row ) );
+   }
 }
 
 template< typename Real,

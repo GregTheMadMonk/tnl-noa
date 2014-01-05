@@ -31,10 +31,6 @@
 #include <matrices/tnlMatrixReader.h>
 #include <core/mfuncs.h>
 #include "tnlSpmvBenchmark.h"
-/*#include "tnlSpmvBenchmarkCusparseCSRMatrix.h"
-#include "tnlSpmvBenchmarkHybridMatrix.h"
-#include "tnlSpmvBenchmarkRgCSRMatrix.h"
-#include "tnlSpmvBenchmarkAdaptiveRgCSRMatrix.h"*/
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.desc";
@@ -118,14 +114,13 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
    const tnlString& pdfFileName = parameters.GetParameter< tnlString >( "pdf-file" );
    bool verbose = parameters.GetParameter< bool >( "verbose" );
-   const int maxIterations = parameters.GetParameter< tnlString >( "max-iterations" );
-
+   const int maxIterations = parameters.GetParameter< int >( "max-iterations" );
 
    fstream inputFile;
-   inputFile.open( inputFileName.getString(), ios::in );
+   inputFile.open( inputMtxFileName.getString(), ios::in );
    if( ! inputFile )
    {
-      cerr << "I am not able to open the file " << inputFileName << "." << endl;
+      cerr << "I am not able to open the file " << inputMtxFileName << "." << endl;
       return false;
    }
    if( ! tnlMatrixReader< CsrMatrix >::readMtxFile( inputFile, csrMatrix ) )
@@ -182,10 +177,10 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
       /****
        * Open new line of the table and write basic matrix information
        */
-      long int allElements = csrMatrix. getSize() * csrMatrix. getSize();
+      long int allElements = csrMatrix. getRows() * csrMatrix. getColumns();
       logFile << "          <tr>" << endl;
       logFile << "             <td> <a href=\"" << pdfFileName << "\">" << inputFile << "</a> </td>" << endl;
-      logFile << "             <td> " << csrMatrix. getSize() << "</td>" << endl;
+      logFile << "             <td> " << csrMatrix. getRows() << "</td>" << endl;
       logFile << "             <td> " << nonzeroElements << "</td>" << endl;
       logFile << "             <td> " << ( double ) nonzeroElements / allElements * 100.0 << "</td>" << endl;
       csrMatrixBenchmark. writeToLogTable( logFile,

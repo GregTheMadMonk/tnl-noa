@@ -54,6 +54,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfMatrixElements() const;
 
+   IndexType getNumberOfNonzeroMatrixElements() const;
+
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >

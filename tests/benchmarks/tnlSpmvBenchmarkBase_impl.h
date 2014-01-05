@@ -144,9 +144,9 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
    }
    //cout << "First error was on " << firstErrorOccurence << endl;
 
-   double flops = 2.0 * iterations * matrix. getNonzeroElements();
+   double flops = 2.0 * iterations * matrix.getNumberOfNonzeroMatrixElements();
    this -> gflops = flops / time * 1.0e-9;
-   artificialZeros = matrix. getArtificialZeroElements();
+   artificialZeros = matrix.getNumberOfMatrixElements() - matrix.getNumberOfNonzeroMatrixElements();
 
    if( verbose )
       writeProgress();

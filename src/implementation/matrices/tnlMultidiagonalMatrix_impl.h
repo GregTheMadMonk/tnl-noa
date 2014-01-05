@@ -149,6 +149,18 @@ Index tnlMultidiagonalMatrix< Real, Device, Index > :: getNumberOfMatrixElements
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlMultidiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
+{
+   IndexType nonzeroElements;
+   for( IndexType i = 0; i < this->values.getSize(); i++ )
+      if( this->values.getElement( i ) != 0 )
+         nonzeroElements++;
+   return nonzeroElements;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlMultidiagonalMatrix< Real, Device, Index > :: reset()
 {
    this->rows = 0;

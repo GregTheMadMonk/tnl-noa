@@ -376,7 +376,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType r
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPointer = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
-   if( elements > rowEnd - elementPointer )
+   const IndexType rowLength = rowEnd - elementPointer;
+   if( elements >  rowLength )
       return false;
 
    for( IndexType i = 0; i < elements; i++ )
@@ -385,7 +386,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType r
       this->values[ elementPointer ] = values[ i ];
       elementPointer++;
    }
-   for( IndexType i = elements; i < this->rowLengths; i++ )
+   for( IndexType i = elements; i < rowLength; i++ )
       this->columnIndexes[ elementPointer++ ] = this->getColumns();
    return true;
 }

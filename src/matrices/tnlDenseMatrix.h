@@ -52,9 +52,15 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
     */
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
+   /****
+    * Returns maximal number of the nonzero matrix elements that can be stored
+    * in a given row.
+    */
    IndexType getRowLength( const IndexType row ) const;
 
    IndexType getNumberOfMatrixElements() const;
+
+   IndexType getNumberOfNonzeroMatrixElements() const;
 
    void reset();
 
@@ -76,7 +82,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
                 const IndexType* columns,
                 const RealType* values,
                 const IndexType elements,
-                const RealType thisRowMultiplicator = 1.0 );
+                const RealType& thisRowMultiplicator = 1.0 );
 
    Real getElement( const IndexType row,
                     const IndexType column ) const;

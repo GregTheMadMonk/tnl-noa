@@ -111,7 +111,7 @@ template< typename Real,
           int SliceSize >
 Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
 {
-   const IndexType slice = roundUpDivision( this->row, SliceSize );
+   const IndexType slice = roundUpDivision( row, SliceSize );
    return this->sliceRowLengths[ slice ];
 }
 
@@ -259,7 +259,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRow( const I
       this->values[ elementPointer ] = values[ i ];
       elementPointer++;
    }
-   for( IndexType i = elements; i < this->rowLengths; i++ )
+   for( IndexType i = elements; i < rowLength; i++ )
       this->columnIndexes[ elementPointer++ ] = this->getColumns();
    return true;
 }

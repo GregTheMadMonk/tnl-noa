@@ -86,7 +86,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLength
 template< typename Real,
           typename Device,
           typename Index >
-IndexType tnlTridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index tnlTridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    const IndexType diagonalLength = Min( this->getRows(), this->getColumns() );
    if( row == 0 )
@@ -115,6 +115,18 @@ template< typename Real,
 Index tnlTridiagonalMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return 3 * Min( this->getRows(), this->getColumns() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Index tnlTridiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
+{
+   IndexType nonzeroElements;
+   for( IndexType i = 0; i < this->values.getSize(); i++ )
+      if( this->values.getElement( i ) != 0 )
+         nonzeroElements++;
+   return nonzeroElements;
 }
 
 template< typename Real,
@@ -196,7 +208,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
                                                           const IndexType* columns,
                                                           const RealType* values,
                                                           const IndexType elements,
-                                                          const RealType thisRowMultiplicator )
+                                                          const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
@@ -228,6 +240,26 @@ Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
+void tnlTridiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                          IndexType* columns,
+                                                          RealType* values ) const
+{
+   IndexType elementPointer( 0 );
+   for( IndexType i = -1; i <= 1; i++ )
+   {
+      const IndexType column = row + 1;
+      if( column >= 0 && column < this->getColumns() )
+      {
+         columns[ elementPointer ] = column;
+         values[ elementPointer ] = this->values[ this->getElementIndex( row, column ) ];
+         elementPointer++;
+      }
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real& tnlTridiagonalMatrix< Real, Device, Index >::operator()( const IndexType row,
                                                                const IndexType column )
 {
@@ -241,22 +273,6 @@ const Real& tnlTridiagonalMatrix< Real, Device, Index >::operator()( const Index
                                                                      const IndexType column ) const
 {
    return this->values[ this->getElementIndex( row, column ) ];
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::addElement( const IndexType row,
-                                                              const IndexType column,
-                                                              const RealType& value,
-                                                              const RealType& thisElementMultiplicator )
-{
-   const IndexType elementIndex = this->getElementIndex( row, column );
-   if( thisElementMultiplicator == 1.0 )
-      this->values[ elementIndex ] += value;
-   else
-      this->values[ elementIndex ] =
-         thisElementMultiplicator * this->values[ elementIndex ] + value;
 }
 
 template< typename Real,

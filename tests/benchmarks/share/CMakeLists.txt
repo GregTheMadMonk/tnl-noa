@@ -6,11 +6,12 @@ INSTALL( FILES matrix-market
                get-matrices
                convert-matrices
                draw-matrices
-               run-sparse-matrix-benchmark
                run-matrix-solvers-benchmark
                cuda-profiler.conf
                process-cuda-profile.pl 
                DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
 
-
+INSTALL( FILES tnl-run-spmv-benchmark
+         DESTINATION bin
+         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
                                                                    

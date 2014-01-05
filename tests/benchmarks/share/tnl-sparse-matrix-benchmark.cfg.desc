@@ -1,9 +1,10 @@
 group IO
 {
-   string input-file(!)         [Input binary file name.];
-   string input-mtx-file("")    [Input mtx file name.];
+   string input-mtx-file(!)     [Input mtx file name.];
+   string input-file("")        [Input binary file name.];
    string pdf-file("")          [PDF file with matrix pattern.];
    string log-file("")          [Log file name.];
+   string precision("double")   [Precision of the arithmetics.];
    real stop-time(3.0)          [How many seconds shell we iterate SpMV.];
    integer max-iterations(100)  [Maximum number of SpMV repetitions.];
    bool format-test( no )       [Turn on/off test of matrix formats.]; 

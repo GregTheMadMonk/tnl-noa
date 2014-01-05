@@ -457,59 +457,16 @@ do
       echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
       #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log            
    else
-      if test ! -e $unzipped_matrix.float.bin.bz2;
+      gunzip -c ${matrix} > ${unzipped_matrix}      
+      echo "Checking with the matrix $unzipped_matrix in single precision ..."
+      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
+      if test x$DEBUG = xyes;
       then
-         echo "Missing $unzipped_matrix.float.bin.bz2 !!! Run the script 'convert-matrices'."
-         #echo "Missing $unzipped_matrix.float.bin.bz2 !!! Run the script 'convert-matrices'."  >> sparse-matrix-benchmark.log
+         gdb --args ${SPARSE_MATRIX_BENCHMARK_DBG} --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --verbose 1
       else
-         gunzip -f $matrix
-         echo "Checking with the matrix $unzipped_matrix in single precision ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-         if test x$DEBUG = xyes;
-         then
-             rm -f .gdbinit
-             echo "file $SPARSE_MATRIX_BENCHMARK_DBG" > .gdbinit
-             echo "" >> .gdbinit
-             echo -n "run --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --verbose 1" >> .gdbinit
-             gdb
-         else
-            $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.float.bin.bz2 --input-mtx-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1
-         fi
-         perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
-         gzip $unzipped_matrix
+         $SPARSE_MATRIX_BENCHMARK --input-mtx-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1
       fi
-      if test ! -e $unzipped_matrix.double.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.double.bin.bz2 !!! Run the script 'convert-matrices'."
-         #echo "Missing $unzipped_matrix.double.bin.bz2 !!! Run the script 'convert-matrices'."  >> sparse-matrix-benchmark.log
-      else
-         gunzip -f $matrix
-         echo "Checking with the matrix $unzipped_matrix in double precison ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.double.bin.bz2 --input-mtx-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1
-         gzip $unzipped_matrix
-      fi
-
-      ######
-      # AMD ordering
-      ##  
-      if test ! -e $unzipped_matrix.amd.float.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.amd.float.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.amd in single precision ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.amd.float.log
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.float.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1
-      fi
-      if test ! -e $unzipped_matrix.amd.double.bin.bz2;
-      then
-         echo "Missing $unzipped_matrix.amd.double.bin.bz2 !!! Run the script 'convert-matrices'."
-      else
-         echo "Checking with the matrix $unzipped_matrix.amd in double precison ..."
-         export CUDA_PROFILE_LOG=$unzipped_matrix.amd.double.log 
-         $SPARSE_MATRIX_BENCHMARK --input-file $unzipped_matrix.amd.double.bin.bz2 --input-mtx-file $unzipped_matrix.amd --pdf-file $unzipped_matrix.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1
-      fi
-          
+      #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log          
    fi
 done
 
@@ -531,40 +488,9 @@ do
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
      do
          echo "###############################################################################################"
-         if test ! -e $file.float.bin.bz2;
-         then
-            echo "Missing $file.float.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1                        
-         fi
-         if test ! -e $file.double.bin.bz2;
-         then
-            echo "Missing $file.double.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.double.bin.bz2 --input-mtx-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark-double.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1                        
-         fi                           
-         
-         #######
-         ## AMD ordering
-         ###  
-         if test ! -e $file.amd.float.bin.bz2;
-         then
-            echo "Missing $file.amd.float.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file.amd ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.float.bin.bz2 --input-mtx-file $file.amd --pdf-file $file.amd.pdf --log-file sparse-matrix-benchmark-amd-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1                        
-         fi
-         if test ! -e $file.amd.double.bin.bz2;
-         then
-            echo "Missing $file.amd.double.bin.bz2 !!! Run the script 'convert-matrices'."
-         else   
-            echo "Checking with the matrix $file ..."
-            $SPARSE_MATRIX_BENCHMARK --input-file $file.amd.double.bin.bz2 --input-mtx-file $file.amd --pdf-file $file.amd.pdf --log-file sparse-matrix-benchmark-amd-double.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1                        
-         fi                           
-         rm $file         
-      done
+         echo "Checking with the matrix $file ..."
+         $SPARSE_MATRIX_BENCHMARK --input-file $file.float.bin.bz2 --input-mtx-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark-float.log.html --stop-time $STOP_TIME --max-iterations $MAX_ITERATIONS --format-test $FORMAT_TEST --verbose 1                        
+     done
    fi
 done
 

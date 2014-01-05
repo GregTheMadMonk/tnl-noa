@@ -98,6 +98,19 @@ Index tnlDenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlDenseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+{
+   IndexType nonzeroElements( 0 );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      for( IndexType column = 0; column < this->getColumns(); column++ )
+         if( this->getElement( row, column ) != 0 )
+            nonzeroElements++;
+   return nonzeroElements;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlDenseMatrix< Real, Device, Index >::reset()
 {
    tnlMatrix< Real, Device, Index >::reset();
@@ -154,15 +167,15 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
                                                     const IndexType* columns,
                                                     const RealType* values,
                                                     const IndexType elements,
-                                                    const RealType thisRowMultiplicator )
+                                                    const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
                  << " this->columns = " << this->columns
                  << " this->getName() = " << this->getName() );
    for( IndexType i = 0; i < elements; i++ )
-      this->operator[]( row, columns[ i ] ) =
-               thisRowMultiplicator * this->operator[]( row, columns[ i ] ) + values[ i ];
+      this->setElement( row, columns[ i ],
+                       thisRowMultiplicator * this->getElement( row, columns[ i ] ) + values[ i ] );
    return true;
 }
 

@@ -51,6 +51,8 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfMatrixElements() const;
 
+   IndexType getNumberOfNonzeroMatrixElements() const;
+
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
@@ -79,7 +81,7 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                 const IndexType* columns,
                 const RealType* values,
                 const IndexType elements,
-                const RealType thisRowMultiplicator = 1.0 );
+                const RealType& thisRowMultiplicator = 1.0 );
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
@@ -93,11 +95,6 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    const RealType& operator()( const IndexType row,
                                const IndexType column ) const;
-
-   bool addElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value,
-                    const RealType& thisElementMultiplicator = 1.0 );
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,
