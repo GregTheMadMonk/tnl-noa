@@ -18,7 +18,6 @@
 #ifndef SPARSEMATRIXBENCHMARK_H_
 #define SPARSEMATRIXBENCHMARK_H_
 
-
 #include <fstream>
 #include <iomanip>
 #include <config/tnlConfigDescription.h>

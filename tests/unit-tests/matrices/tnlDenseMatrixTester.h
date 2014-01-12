@@ -192,7 +192,7 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
             m1( i, j ) = i*size + j;
             m2( i, j ) = ( i == j );
          }
-      m3.getMatrixProduct( m1, m2 );
+      m3. template getMatrixProduct< MatrixType, MatrixType, 32 >( m1, m2 );
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
@@ -211,7 +211,7 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 
       MatrixType mTransposed;
       mTransposed.setLike( m );
-      mTransposed.getTransposition( m );
+      mTransposed. template getTransposition< MatrixType, 32 >( m );
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )

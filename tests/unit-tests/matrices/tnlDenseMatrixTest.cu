@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlCSRMatrixTest.cpp  -  description
+                          tnlDenseMatrixTest.cu  -  description
                              -------------------
-    begin                : Dec 10, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jan 10, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -19,16 +19,16 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
-#include "tnlCSRMatrixTester.h"
+#include "tnlDenseMatrixTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlHost, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlHost, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
@@ -36,3 +36,4 @@ int main( int argc, char* argv[] )
    return EXIT_FAILURE;
 #endif
 }
+

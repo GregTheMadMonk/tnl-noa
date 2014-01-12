@@ -22,6 +22,8 @@
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
+using namespace std;
+
 /****
  * In this code we do not use constants and references as we would like to.
  * OpenMP would complain that
@@ -209,7 +211,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          return true;
        }
       if( iteration == this -> getMaxIterationsNumber() ||
-          std::isnan( residue ) )
+          isnan( residue ) )
          return false;
    }
 };

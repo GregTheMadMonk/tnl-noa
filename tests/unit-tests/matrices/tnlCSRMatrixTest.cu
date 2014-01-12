@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlCSRMatrixTest.cpp  -  description
+                          tnlCSRMatrixTest.cu  -  description
                              -------------------
-    begin                : Dec 10, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jan 10, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -36,3 +36,4 @@ int main( int argc, char* argv[] )
    return EXIT_FAILURE;
 #endif
 }
+

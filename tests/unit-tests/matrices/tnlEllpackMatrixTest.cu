@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlCSRMatrixTest.cpp  -  description
+                          tnlEllpackTest.cu  -  description
                              -------------------
-    begin                : Dec 10, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jan 10, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -19,16 +19,16 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
-#include "tnlCSRMatrixTester.h"
+#include "tnlEllpackMatrixTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< float, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< double, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< float, tnlHost, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlEllpackMatrixTester< double, tnlHost, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

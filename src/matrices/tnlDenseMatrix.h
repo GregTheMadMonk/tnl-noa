@@ -104,15 +104,29 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Matrix1, typename Matrix2, int tileDim >
+   void getMatrixProduct( const Matrix1& matrix1,
+                       const Matrix2& matrix2,
+                       const RealType& matrix1Multiplicator = 1.0,
+                       const RealType& matrix2Multiplicator = 1.0 );
+#else
    template< typename Matrix1, typename Matrix2, int tileDim = 32 >
    void getMatrixProduct( const Matrix1& matrix1,
                        const Matrix2& matrix2,
                        const RealType& matrix1Multiplicator = 1.0,
                        const RealType& matrix2Multiplicator = 1.0 );
+#endif   
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Matrix, int tileDim >
+   void getTransposition( const Matrix& matrix,
+                          const RealType& matrixMultiplicator = 1.0 );
+#else
    template< typename Matrix, int tileDim = 32 >
    void getTransposition( const Matrix& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
+#endif
 
    template< typename Vector >
    void performSORIteration( const Vector& b,
