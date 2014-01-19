@@ -73,7 +73,7 @@ bool tnlArray< Element, Device, Index > :: setSize( const Index size )
               cerr << "You try to set size of tnlArray to negative value."
                    << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
-   if( this -> size && this -> size == size ) return true;
+   if( this -> size == size ) return true;
    if( this -> data )
    {
       tnlArrayOperations< Device > :: freeMemory( this -> data );
@@ -340,7 +340,7 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
    if( ! file. read< Index, tnlHost >( &_size ) )
       return false;
 #else   
-   if( ! file. read( &_size, 1 ) )
+   if( ! file. read( &_size ) )
       return false;
 #endif      
    if( _size < 0 )

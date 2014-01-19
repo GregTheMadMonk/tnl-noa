@@ -21,6 +21,8 @@
 #include <iostream>
 #include <tnlConfig.h>
 #include <core/mfuncs.h>
+#include <core/cuda/cuda-reduction.h>
+#include <core/cuda/reduction-operations.h>
 
 
 template< typename Element, typename Index >
@@ -33,7 +35,7 @@ bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
       data = 0;
    return checkCudaDevice;
 #else
-   tnlCudaSupportMissingMessage;;
+   tnlCudaSupportMissingMessage;
    return false;
 #endif
 }
@@ -68,15 +70,15 @@ Element tnlArrayOperations< tnlCuda >::getMemoryElement( const Element* data )
 template< typename Element, typename Index >
 Element& tnlArrayOperations< tnlCuda >::getArrayElementReference( Element* data, const Index i )
 {
-   tnlAssert( false, );
-   abort();
+   // TODO: implement this
+   tnlAssert( false, cerr << "Implement this" << endl );
 }
 
 template< typename Element, typename Index >
 const Element& tnlArrayOperations< tnlCuda >::getArrayElementReference(const Element* data, const Index i )
 {
-   tnlAssert( false, );
-   abort();
+   // TODO: implement this
+   tnlAssert( false, cerr << "Implement this" << endl );
 }
 
 
@@ -170,7 +172,11 @@ bool tnlArrayOperations< tnlCuda >::compareMemory( const Element1* destination,
                                                    const Element2* source,
                                                    const Index size )
 {
-   tnlAssert( false, cerr << "TODO: THe parallel reduction on the CUDA device with different element types is needed." );
+   //TODO: The parallel reduction on the CUDA device with different element types is needed.
+   bool result;
+   tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
+   reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
+   return result;
 }
 
 /****
@@ -260,14 +266,6 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
          delete[] host_buffer;
          return false;
       }
-      /*Index bufferIndex( 0 );
-      while( bufferIndex < transfer &&
-             host_buffer[ bufferIndex ] == destination[ compared ] )
-      {
-         bufferIndex ++;
-         compared ++;
-      }
-      if( bufferIndex < transfer )*/
       if( ! tnlArrayOperations< tnlHost >::compareMemory( host_buffer, destination, transfer ) )
       {
          delete[] host_buffer;

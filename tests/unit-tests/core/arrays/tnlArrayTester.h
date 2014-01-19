@@ -47,6 +47,10 @@ template< typename ElementType, typename Device, typename IndexType >
 class tnlArrayTester : public CppUnit :: TestCase
 {
    public:
+
+   typedef tnlArrayTester< ElementType, Device, IndexType > ArrayTester;
+   typedef CppUnit :: TestCaller< ArrayTester > TestCaller;
+
    tnlArrayTester(){};
 
    virtual
@@ -56,10 +60,7 @@ class tnlArrayTester : public CppUnit :: TestCase
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testConstructorDestructor",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testConstructorDestructor )
-                              );
+      suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &ArrayTester::testConstructorDestructor ) );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
                                "testSetSize",
                                & tnlArrayTester< ElementType, Device, IndexType > :: testSetSize )

@@ -57,7 +57,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       if( ! auxDiscreteFunction.setSize( mesh.getDofs() ) )
          return false;
       tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction );
-      tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff >( mesh, auxDiscreteFunction, discreteFunction );
+      tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
    }
    else
    {

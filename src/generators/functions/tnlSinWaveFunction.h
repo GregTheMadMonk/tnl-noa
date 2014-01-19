@@ -61,10 +61,17 @@ class tnlSinWaveFunction< 1, Vertex, Device > : public tnlSinWaveFunctionBase< t
    typedef Vertex VertexType;
    typedef typename VertexType::RealType RealType;
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 
 };
 
@@ -77,10 +84,17 @@ class tnlSinWaveFunction< 2, Vertex, Device > : public tnlSinWaveFunctionBase< t
    typedef Vertex VertexType;
    typedef typename VertexType::RealType RealType;
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 };
 
 template< typename Vertex, typename Device >
@@ -92,10 +106,17 @@ class tnlSinWaveFunction< 3, Vertex, Device > : public tnlSinWaveFunctionBase< t
    typedef Vertex VertexType;
    typedef typename VertexType::RealType RealType;
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 };
 
 #include <implementation/generators/functions/tnlSinWaveFunction_impl.h>

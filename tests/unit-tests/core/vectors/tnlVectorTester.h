@@ -98,7 +98,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = -i;
+         v.setElement( i,  -i );
       CPPUNIT_ASSERT( v. absMin() == 0 );
    };
 
@@ -107,7 +107,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = -2;
+         v.setElement(  i, -2 );
       CPPUNIT_ASSERT( isSmall( v.lpNorm( 1 ) - 20.0 ) );
       CPPUNIT_ASSERT( isSmall( v.lpNorm( 2 ) - sqrt( 40.0 ) ) );
       CPPUNIT_ASSERT( isSmall( v.lpNorm( 3 ) - pow( 80.0, 1.0/3.0 ) ) );
@@ -118,10 +118,10 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = -2;
+         v.setElement( i, -2 );
       CPPUNIT_ASSERT( v. sum() == -20.0 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = 2;
+         v.setElement( i,  2 );
       CPPUNIT_ASSERT( v. sum() == 20.0 );
 
    };
@@ -133,8 +133,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = i;
-         v2[ i ] = -i;
+         v1.setElement( i,  i );
+         v2.setElement( i, -i );
       }
       CPPUNIT_ASSERT( v1. differenceMax( v2 ) == 18.0 );
    };
@@ -146,8 +146,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = i;
-         v2[ i ] = -i;
+         v1.setElement( i, i );
+         v2.setElement( i, -i );
       }
       CPPUNIT_ASSERT( v1. differenceMin( v2 ) == 0.0 );
    };
@@ -159,8 +159,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = -i;
-         v2[ i ] = i;
+         v1.setElement( i, -i );
+         v2.setElement( i, i );
       }
       CPPUNIT_ASSERT( v1. differenceAbsMax( v2 ) == 18.0 );
    };
@@ -172,8 +172,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = -i;
-         v2[ i ] = i;
+         v1.setElement( i, -i );
+         v2.setElement( i, i );
       }
       CPPUNIT_ASSERT( v1. differenceAbsMin( v2 ) == 0.0 );
    };
@@ -185,8 +185,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = -1;
-         v2[ i ] = 1;
+         v1.setElement( i, -1 );
+         v2.setElement( i, 1 );
       }
       CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 1.0 ) - 20.0 ) );
       CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 2.0 ) - sqrt( 40.0 ) ) );
@@ -200,8 +200,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = -1;
-         v2[ i ] = 1;
+         v1.setElement( i, -1 );
+         v2.setElement( i, 1 );
       }
       CPPUNIT_ASSERT( v1. differenceSum( v2 ) == -20.0 );
    };
@@ -211,7 +211,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
-         v[ i ] = i;
+         v.setElement( i, i );
       v. scalarMultiplication( 5.0 );
 
       for( int i = 0; i < 10; i ++ )
@@ -223,12 +223,12 @@ class tnlVectorTester : public CppUnit :: TestCase
       tnlVector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
-      v1[ 0 ] = -1;
-      v2[ 0 ] = 1;
+      v1.setElement( 0, -1 );
+      v2.setElement( 0, 1 );
       for( int i = 1; i < 10; i ++ )
       {
-         v1[ i ] = v1[ i - 1 ] * -1;
-         v2[ i ] = v2[ i - 1 ];
+         v1.setElement( i, v1.getElement( i - 1 ) * -1 );
+         v2.setElement( i, v2.getElement( i - 1 ) );
       }
       CPPUNIT_ASSERT( v1. scalarProduct( v2 ) == 0.0 );
    };
@@ -240,8 +240,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = i;
-         v2[ i ] = 2.0 * i;
+         v1.setElement( i, i );
+         v2.setElement( i, 2.0 * i );
       }
       v1. alphaXPlusY( 2.0, v2 );
       for( int i = 0; i < 10; i ++ )
@@ -255,8 +255,8 @@ class tnlVectorTester : public CppUnit :: TestCase
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
       {
-         v1[ i ] = i;
-         v2[ i ] = 2.0 * i;
+         v1.setElement( i, i );
+         v2.setElement( i, 2.0 * i );
       }
       v1. saxmy( 2.0, v2 );
       for( int i = 0; i < 10; i ++ )

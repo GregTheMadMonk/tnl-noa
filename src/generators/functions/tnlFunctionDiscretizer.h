@@ -23,12 +23,22 @@ class tnlFunctionDiscretizer
 {
    public:
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   static void discretize( const Mesh& mesh,
+                           const Function& function,
+                           DiscreteFunction& discreteFunction );
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    static void discretize( const Mesh& mesh,
                            const Function& function,
                            DiscreteFunction& discreteFunction );
+#endif   
+   
 };
 
 #include <implementation/generators/functions/tnlFunctionDiscretizer_impl.h>

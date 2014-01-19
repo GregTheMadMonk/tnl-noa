@@ -66,10 +66,17 @@ class tnlSinBumpsFunction< 1, Vertex, Device > : public tnlSinBumpsFunctionBase<
 
    bool init( const tnlParameterContainer& parameters );
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 };
 
 template< typename Vertex, typename Device >
@@ -85,10 +92,17 @@ class tnlSinBumpsFunction< 2, Vertex, Device > : public tnlSinBumpsFunctionBase<
 
    bool init( const tnlParameterContainer& parameters );
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 };
 
 template< typename Vertex, typename Device >
@@ -104,10 +118,17 @@ class tnlSinBumpsFunction< 3, Vertex, Device > : public tnlSinBumpsFunctionBase<
 
    bool init( const tnlParameterContainer& parameters );
 
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder >
+   RealType getF( const VertexType& v ) const;
+#else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    RealType getF( const VertexType& v ) const;
+#endif   
 };
 
 #include <implementation/generators/functions/tnlSinBumpsFunction_impl.h>

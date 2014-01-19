@@ -221,7 +221,9 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
       MatrixType mTransposed;
       mTransposed.setLike( m );
-      mTransposed.getTransposition( m );
+      mTransposed.template getTransposition< typename MatrixType::RealType,
+                                             typename MatrixType::IndexType,
+                                             32 >( m );
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )

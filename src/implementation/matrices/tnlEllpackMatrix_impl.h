@@ -367,7 +367,11 @@ template< typename Real,
 bool tnlEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file) ) return false;
+#ifdef HAVE_NOT_CXX11
+   if( ! file.write< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+#else      
    if( ! file.write( &this->rowLengths ) ) return false;
+#endif   
    return true;
 }
 
@@ -377,7 +381,11 @@ template< typename Real,
 bool tnlEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file) ) return false;
+#ifdef HAVE_NOT_CXX11
+   if( ! file.read< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+#else   
    if( ! file.read( &this->rowLengths ) ) return false;
+#endif   
    return true;
 }
 

@@ -109,9 +109,15 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Real2, typename Index2, int tileDim >
+   void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
+                          const RealType& matrixMultiplicator = 1.0 );
+#else
    template< typename Real2, typename Index2, int tileDim = 32 >
    void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
+#endif   
 
    template< typename Vector >
    void performSORIteration( const Vector& b,

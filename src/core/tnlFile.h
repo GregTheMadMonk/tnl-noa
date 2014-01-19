@@ -166,7 +166,11 @@ bool tnlFile :: read( Type* buffer,
              sizeof( Type ),
              elements,
              file ) != elements )
+      {
+         cerr << "I am not able to read the data from the file " << fileName << "." << endl;
+         perror( "Fread ended with the error code" );
          return false;
+      }
       this->readElements = elements;
       return true;
    }
@@ -194,15 +198,18 @@ bool tnlFile :: read( Type* buffer,
       while( readElements < elements )
       {
          int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
-         if( fread( host_buffer,
-                    sizeof( Type ),
-                    transfer,
-                    file ) != transfer * sizeof( Type ) )
+         size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
+         if( transfered != transfer )
+         {
+            cerr << "I am not able to read the data from the file " << fileName << "." << endl;
+            cerr << transfered << " bytes were transfered. " << endl;
+            perror( "Fread ended with the error code" );
             return false;
+         }
 
          if( cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
                          host_buffer,
-                         bytesRead,
+                         transfer * sizeof( Type ),
                          cudaMemcpyHostToDevice ) != cudaSuccess )
          {
             cerr << "Transfer of data from the CUDA device to the file " << this -> fileName
@@ -211,7 +218,7 @@ bool tnlFile :: read( Type* buffer,
             free( host_buffer );
             return false;
          }
-         readElements += bytesRead / sizeof( Type );
+         readElements += transfer;
       }
       free( host_buffer );
       return true;
@@ -250,7 +257,8 @@ bool tnlFile ::  write( const Type* buffer,
                   elements,
                   this->file ) != elements )
       {
-         cerr << "Writing to the file " << this->fileName << " failed." << endl;
+         cerr << "I am not able to write the data to the file " << fileName << "." << endl;
+         perror( "Fwrite ended with the error code" );
          return false;
       }
       this->writtenElements = elements;
@@ -275,11 +283,11 @@ bool tnlFile ::  write( const Type* buffer,
             return false;
          }
 
-         while( writtenElements < elements )
+         while( this->writtenElements < elements )
          {
-            Index transfer = :: Min( elements - writtenElements, host_buffer_size );
+            Index transfer = :: Min( elements - this->writtenElements, host_buffer_size );
             if( cudaMemcpy( host_buffer,
-                            ( void* ) & ( buffer[ writtenElements ] ),
+                            ( void* ) & ( buffer[ this->writtenElements ] ),
                             transfer * sizeof( Type ),
                             cudaMemcpyDeviceToHost ) != cudaSuccess )
             {
@@ -291,9 +299,13 @@ bool tnlFile ::  write( const Type* buffer,
             if( fwrite( host_buffer,
                         sizeof( Type ),
                         transfer,
-                        this->file ) != transfer*sizeof( Type ) )
+                        this->file ) != transfer )
+            {
+               cerr << "I am not able to write the data to the file " << fileName << "." << endl;
+               perror( "Fwrite ended with the error code" );
                return false;
-            writtenElements += transfer;
+            }
+            this->writtenElements += transfer;
          }
          free( host_buffer );
          return true;
