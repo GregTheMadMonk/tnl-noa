@@ -18,7 +18,17 @@
 #ifndef CUDA_PREFIX_SUM_H_
 #define CUDA_PREFIX_SUM_H_
 
+enum enumPrefixSumType { exclusivePrefixSum = 0,
+                         inclusivePrefixSum };
 
+template< typename DataType,
+          template< typename T > class Operation,
+          typename Index >
+bool cudaPrefixSum( const Index size,
+                    const Index blockSize,
+                    const DataType *deviceInput,
+                    DataType* deviceOutput,
+                    const enumPrefixSumType prefixSumType = inclusivePrefixSum );
 
 
 #endif /* CUDA_PREFIX_SUM_H_ */

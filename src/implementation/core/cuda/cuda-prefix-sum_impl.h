@@ -287,11 +287,11 @@ bool cudaGridPrefixSum( enumPrefixSumType prefixSumType,
 template< typename DataType,
           template< typename T > class Operation,
           typename Index >
-bool cudaPrefixSum( const enumPrefixSumType prefixSumType,
-                    const Index size,
+bool cudaPrefixSum( const Index size,
                     const Index blockSize,
                     const DataType *deviceInput,
-                    DataType* deviceOutput )
+                    DataType* deviceOutput,
+                    const enumPrefixSumType prefixSumType )
 {
    /****
     * Compute the number of grids

@@ -34,6 +34,9 @@ template< typename Real, typename Device >
 class tnlVectorOperationsTester : public CppUnit :: TestCase
 {
    public:
+
+   typedef CppUnit::TestCaller< tnlVectorOperationsTester< Real, Device > > TestCallerType;
+
    tnlVectorOperationsTester(){};
 
    virtual
@@ -44,78 +47,26 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorOperationsTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorMaxTest",
-                                &tnlVectorOperationsTester :: getVectorMaxTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorMinTest",
-                                &tnlVectorOperationsTester :: getVectorMinTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorAbsMaxTest",
-                                &tnlVectorOperationsTester :: getVectorAbsMaxTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorAbsMinTest",
-                                &tnlVectorOperationsTester :: getVectorAbsMinTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorLpNormTest",
-                                &tnlVectorOperationsTester :: getVectorLpNormTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorSumTest",
-                                &tnlVectorOperationsTester :: getVectorSumTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceMaxTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceMaxTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceMinTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceMinTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceAbsMaxTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceAbsMaxTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceAbsMinTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceAbsMinTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceLpNormTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceLpNormTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getVectorDifferenceSumTest",
-                                &tnlVectorOperationsTester :: getVectorDifferenceSumTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "vectorScalarMultiplicationTest",
-                                &tnlVectorOperationsTester :: vectorScalarMultiplicationTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "getSclaraProductTest",
-                                &tnlVectorOperationsTester :: getVectorScalarProductTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "alphaXPlusYTest",
-                                &tnlVectorOperationsTester :: alphaXPlusYTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "alphaXPlusBetaYTest",
-                                &tnlVectorOperationsTester :: alphaXPlusBetaYTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "alphaXPlusBetaZTest",
-                                &tnlVectorOperationsTester :: alphaXPlusBetaZTest )
-                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorOperationsTester >(
-                                "alphaXPlusBetaZPlusYTest",
-                                &tnlVectorOperationsTester :: alphaXPlusBetaZPlusYTest )
-                               );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorMaxTest", &tnlVectorOperationsTester::getVectorMaxTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorMinTest", &tnlVectorOperationsTester::getVectorMinTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorAbsMaxTest", &tnlVectorOperationsTester::getVectorAbsMaxTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorAbsMinTest", &tnlVectorOperationsTester::getVectorAbsMinTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorLpNormTest", &tnlVectorOperationsTester::getVectorLpNormTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorSumTest", &tnlVectorOperationsTester::getVectorSumTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceMaxTest", &tnlVectorOperationsTester::getVectorDifferenceMaxTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceMinTest", &tnlVectorOperationsTester::getVectorDifferenceMinTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceAbsMaxTest", &tnlVectorOperationsTester::getVectorDifferenceAbsMaxTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceAbsMinTest", &tnlVectorOperationsTester::getVectorDifferenceAbsMinTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceLpNormTest", &tnlVectorOperationsTester::getVectorDifferenceLpNormTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceSumTest", &tnlVectorOperationsTester::getVectorDifferenceSumTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "vectorScalarMultiplicationTest", &tnlVectorOperationsTester::vectorScalarMultiplicationTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "getSclaraProductTest", &tnlVectorOperationsTester::getVectorScalarProductTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusYTest", &tnlVectorOperationsTester::alphaXPlusYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaYTest", &tnlVectorOperationsTester::alphaXPlusBetaYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZTest", &tnlVectorOperationsTester::alphaXPlusBetaZTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZPlusYTest", &tnlVectorOperationsTester::alphaXPlusBetaZPlusYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "prefixSumTest", &tnlVectorOperationsTester::prefixSumTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "exclusivePrefixSumTest", &tnlVectorOperationsTester::exclusivePrefixSumTest ) );
       return suiteOfTests;
    };
 
@@ -417,6 +368,28 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == -1.0 + 3.0 * i );
+   };
+
+   void prefixSumTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > v;
+
+      setOnesSequence( v );
+      v.computePrefixSum();
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) == i );
+   };
+
+   void exclusivePrefixSumTest()
+   {
+      const int size( 65536 );
+      tnlVector< Real, Device > v;
+
+      setOnesSequence( v );
+      v.computePrefixSum();
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) == i-1 );
    };
 };
 

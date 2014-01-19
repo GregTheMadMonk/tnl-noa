@@ -18,6 +18,8 @@
 #ifndef TNLVECTOROPERATIONSCUDA_IMPL_H_
 #define TNLVECTOROPERATIONSCUDA_IMPL_H_
 
+#include <core/cuda/cuda-prefix-sum.h>
+
 template< typename Vector >
 void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
                                                  const typename Vector::IndexType i,
@@ -563,7 +565,11 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
-   typedef typename Vector::IndexType Index;
+   cudaPrefixSum( end - begin,
+                  256,
+                  v.getData()[ begin ],
+                  v.getData()[ begin ],
+                  inclusivePrefixSum );
 }
 
 template< typename Vector >
@@ -571,7 +577,11 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
-
+   cudaPrefixSum( end - begin,
+                  256,
+                  v.getData()[ begin ],
+                  v.getData()[ begin ],
+                  exclusivePrefixSum );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
