@@ -21,7 +21,7 @@
 enum enumPrefixSumType { exclusivePrefixSum = 0,
                          inclusivePrefixSum };
 
-template< typename DataType >
+/*template< typename DataType >
 class operationSum
 {
    public:
@@ -58,16 +58,17 @@ class operationSum
    };
 #endif   
 
-};
+};*/
 
 
 template< typename DataType,
-          template< typename T > class Operation,
+          typename Operation,
           typename Index >
 bool cudaPrefixSum( const Index size,
                     const Index blockSize,
                     const DataType *deviceInput,
                     DataType* deviceOutput,
+                    const Operation& operation,
                     const enumPrefixSumType prefixSumType = inclusivePrefixSum );
 
 

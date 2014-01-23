@@ -176,6 +176,25 @@ class tnlParallelReductionSum
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+
+   __device__ ResultType commonReductionOnDevice( const ResultType& a,
+                                                  const ResultType& b ) const
+   {
+      return a + b;
+   };
+
+
+   __device__ RealType identity() const
+   {
+      return 0;
+   };
+
+   __device__ void performInPlace( ResultType& a,
+                                   const ResultType& b )
+   {
+      a += b;
+   }
+
 #endif
 };
 

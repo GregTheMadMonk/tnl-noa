@@ -565,12 +565,17 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
+   typedef tnlParallelReductionSum< typename Vector::IndexType,
+                                    typename Vector::RealType > OperationType;
+
+   OperationType operation;
    cudaPrefixSum< typename Vector::RealType,
-                  operationSum,
+                  OperationType,
                   typename Vector::IndexType >( end - begin,
                                                 256,
                                                 &v.getData()[ begin ],
                                                 &v.getData()[ begin ],
+                                                operation,
                                                 inclusivePrefixSum );
 }
 
@@ -579,13 +584,19 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
+   typedef tnlParallelReductionSum< typename Vector::IndexType,
+                                    typename Vector::RealType > OperationType;
+
+   OperationType operation;
+
    cudaPrefixSum< typename Vector::RealType,
-                  operationSum,
+                  OperationType,
                   typename Vector::IndexType >( end - begin,
-                                  256,
-                                  &v.getData()[ begin ],
-                                  &v.getData()[ begin ],
-                                  exclusivePrefixSum );
+                                                256,
+                                                &v.getData()[ begin ],
+                                                &v.getData()[ begin ],
+                                                operation,
+                                                exclusivePrefixSum );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
