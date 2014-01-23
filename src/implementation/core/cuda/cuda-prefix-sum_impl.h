@@ -18,6 +18,8 @@
 #ifndef CUDA_PREFIX_SUM_IMPL_H_
 #define CUDA_PREFIX_SUM_IMPL_H_
 
+#ifdef HAVE_CUDA
+
 template< typename DataType,
           template< typename T > class Operation,
           typename Index >
@@ -28,8 +30,8 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
                                               DataType* output,
                                               DataType* auxArray )
 {
-   DataType* sharedData = sharedMemory< DataType >();
-   DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / shmBanks + 2 ];
+   DataType* sharedData = getSharedMemory< DataType >();
+   DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / tnlCuda::getNumberOfSharedMemoryBanks() + 2 ];
    DataType* warpSums = &auxData[ blockDim. x ];
    Operation< DataType > operation;
 
@@ -45,17 +47,17 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( prefixSumType == exclusivePrefixSum )
    {
       if( idx == 0 )
-         sharedData[ interleave< shmBanks >( 0 ) ] = operation. cudaIdentity();
+         sharedData[ 0 ] = operation. cudaIdentity();
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
-         sharedData[ interleave< shmBanks >( idx + 1 ) ] = input[ blockOffset + idx ];
+         sharedData[ tnlCuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
          idx += blockDim. x;
       }
    }
    else
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
-         sharedData[ interleave< shmBanks >( idx ) ] = input[ blockOffset + idx ];
+         sharedData[ tnlCuda::getInterleaving( idx ) ] = input[ blockOffset + idx ];
          idx += blockDim. x;
       }
 
@@ -71,30 +73,30 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( chunkOffset < lastElementInBlock )
    {
       auxData[ threadIdx. x ] =
-         sharedData[ interleave< shmBanks >( chunkOffset ) ];
+         sharedData[ tnlCuda::getInterleaving( chunkOffset ) ];
    }
 
    Index chunkPointer( 1 );
    while( chunkPointer < chunkSize &&
           chunkOffset + chunkPointer < lastElementInBlock )
    {
-      operation. cudaPerformInPlace( sharedData[ interleave< shmBanks >( chunkOffset + chunkPointer ) ],
-                                 sharedData[ interleave< shmBanks >( chunkOffset + chunkPointer - 1 ) ] );
+      operation. cudaPerformInPlace( sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer ) ],
+                                 sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
       auxData[ threadIdx. x ] =
-         sharedData[ interleave< shmBanks >( chunkOffset + chunkPointer  ) ];
+         sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer  ) ];
       chunkPointer ++;
    }
 
    /***
     *  Perform the parallel prefix-sum inside warps.
     */
-   const int threadInWarpIdx = threadIdx. x % warpSize;
-   const int warpIdx = threadIdx. x / warpSize;
-   for( int stride = 1; stride < warpSize; stride *= 2 )
+   const int threadInWarpIdx = threadIdx. x % tnlCuda::getWarpSize();
+   const int warpIdx = threadIdx. x / tnlCuda::getWarpSize();
+   for( int stride = 1; stride < tnlCuda::getWarpSize(); stride *= 2 )
       if( threadInWarpIdx >= stride && threadIdx. x < numberOfChunks )
          operation. cudaPerformInPlace( auxData[ threadIdx. x ], auxData[ threadIdx. x - stride ] );
 
-   if( threadInWarpIdx == warpSize - 1 )
+   if( threadInWarpIdx == tnlCuda::getWarpSize() - 1 )
       warpSums[ warpIdx ] = auxData[ threadIdx. x ];
    __syncthreads();
 
@@ -102,7 +104,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
     * Compute prefix-sum of warp sums using one warp
     */
    if( warpIdx == 0 )
-      for( int stride = 1; stride < warpSize; stride *= 2 )
+      for( int stride = 1; stride < tnlCuda::getWarpSize(); stride *= 2 )
          if( threadInWarpIdx >= stride )
             operation. cudaPerformInPlace( warpSums[ threadInWarpIdx ], warpSums[ threadInWarpIdx - stride ] );
    __syncthreads();
@@ -124,8 +126,8 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
       Index chunkShift( operation. cudaIdentity() );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
-      operation. cudaPerformInPlace( sharedData[ interleave< shmBanks >( idx ) ], chunkShift );
-      output[ blockOffset + idx ] = sharedData[ interleave< shmBanks >( idx ) ];
+      operation. cudaPerformInPlace( sharedData[ tnlCuda::getInterleaving( idx ) ], chunkShift );
+      output[ blockOffset + idx ] = sharedData[ tnlCuda::getInterleaving( idx ) ];
       idx += blockDim. x;
    }
    __syncthreads();
@@ -134,10 +136,10 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    {
       if( prefixSumType == exclusivePrefixSum )
          auxArray[ blockIdx. x ] =
-            operation. cudaPerform( sharedData[ interleave< shmBanks >( lastElementInBlock - 1 ) ],
-                                    sharedData[ interleave< shmBanks >( lastElementInBlock ) ] );
+            operation. cudaPerform( sharedData[ tnlCuda::getInterleaving( lastElementInBlock - 1 ) ],
+                                    sharedData[ tnlCuda::getInterleaving( lastElementInBlock ) ] );
       else
-         auxArray[ blockIdx. x ] = sharedData[ interleave< shmBanks >( lastElementInBlock - 1 ) ];
+         auxArray[ blockIdx. x ] = sharedData[ tnlCuda::getInterleaving( lastElementInBlock - 1 ) ];
    }
 
 }
@@ -202,8 +204,9 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
    /****
     * Run the kernel.
     */
-   size_t sharedDataSize = elementsInBlock + elementsInBlock / shmBanks + 2;
-   size_t sharedMemory = ( sharedDataSize + blockSize + warpSize  ) * sizeof( DataType );
+   size_t sharedDataSize = elementsInBlock + 
+                           elementsInBlock / tnlCuda::getNumberOfSharedMemoryBanks() + 2;
+   size_t sharedMemory = ( sharedDataSize + blockSize + tnlCuda::getWarpSize()  ) * sizeof( DataType );
    cudaFirstPhaseBlockPrefixSum< DataType, Operation, Index >
                                 <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                 (  prefixSumType,
@@ -331,5 +334,7 @@ bool cudaPrefixSum( const Index size,
    }
    return true;
 }
+
+#endif
 
 #endif /* CUDA_PREFIX_SUM_IMPL_H_ */

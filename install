@@ -11,6 +11,7 @@ TEMPLATE_EXPLICIT_INSTANTIATION=yes
 CMAKE="cmake"
 CPUS=`grep -c processor /proc/cpuinfo`
 
+CPUS="1"
 echo "Building $TARGET using $CPUS processors."
 
 if [ ! -d Debug ];

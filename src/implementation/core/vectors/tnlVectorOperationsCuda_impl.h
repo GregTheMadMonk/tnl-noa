@@ -565,11 +565,13 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
-   cudaPrefixSum( end - begin,
-                  256,
-                  v.getData()[ begin ],
-                  v.getData()[ begin ],
-                  inclusivePrefixSum );
+   cudaPrefixSum< typename Vector::RealType,
+                  operationSum,
+                  typename Vector::IndexType >( end - begin,
+                                                256,
+                                                &v.getData()[ begin ],
+                                                &v.getData()[ begin ],
+                                                inclusivePrefixSum );
 }
 
 template< typename Vector >
@@ -577,11 +579,13 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
-   cudaPrefixSum( end - begin,
-                  256,
-                  v.getData()[ begin ],
-                  v.getData()[ begin ],
-                  exclusivePrefixSum );
+   cudaPrefixSum< typename Vector::RealType,
+                  operationSum,
+                  typename Vector::IndexType >( end - begin,
+                                  256,
+                                  &v.getData()[ begin ],
+                                  &v.getData()[ begin ],
+                                  exclusivePrefixSum );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

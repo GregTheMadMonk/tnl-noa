@@ -374,22 +374,26 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
    {
       const int size( 65536 );
       tnlVector< Real, Device > v;
+      v.setSize( size );
+      v.setName( "prefixSumTest::v" );
 
       setOnesSequence( v );
       v.computePrefixSum();
       for( int i = 0; i < size; i++ )
-         CPPUNIT_ASSERT( v.getElement( i ) == i );
+         CPPUNIT_ASSERT( v.getElement( i ) == i + 1 );
    };
 
    void exclusivePrefixSumTest()
    {
       const int size( 65536 );
       tnlVector< Real, Device > v;
+      v.setSize( size );
+      v.setName( "exclusivePrefixSumTest::v" );
 
       setOnesSequence( v );
-      v.computePrefixSum();
+      v.computeExclusivePrefixSum();
       for( int i = 0; i < size; i++ )
-         CPPUNIT_ASSERT( v.getElement( i ) == i-1 );
+         CPPUNIT_ASSERT( v.getElement( i ) == i );
    };
 };
 

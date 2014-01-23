@@ -42,9 +42,19 @@ class tnlCuda
 
    static int getGPUTransferBufferSize();
 
-   static bool checkDevice( const char* file_name, int line );
-
    static size_t getFreeMemory();
+
+#ifdef HAVE_CUDA
+   static inline __host__ __device__ int getNumberOfSharedMemoryBanks();
+
+   static inline __host__ __device__ int getWarpSize();
+
+   template< typename Index >
+   static __device__ Index getInterleaving( const Index index );
+#endif
+
+
+   static bool checkDevice( const char* file_name, int line );
 
    protected:
 
@@ -55,5 +65,30 @@ class tnlCuda
 
 #define tnlCudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
+
+
+// TODO: This would be nice in tnlCuda but C++ standard does not allow it.
+#ifdef HAVE_CUDA
+   template< typename Element >
+   struct getSharedMemory
+   {
+       __device__ operator Element*();
+   };
+
+   template<>
+   struct getSharedMemory< double >
+   {
+       inline __device__ operator double*();
+   };
+
+   template<>
+   struct getSharedMemory< long int >
+   {
+       inline __device__ operator long int*();
+   };
+
+#endif
+
+#include <implementation/core/tnlCuda_impl.h>
 
 #endif /* TNLCUDA_H_ */

@@ -154,8 +154,6 @@ bool tnlFile :: read( Type* buffer,
       cerr << "File " << fileName << " was not opened for reading. " << endl;
       return false;
    }
-
-   int bytesRead( 0 );
    this->readElements = 0;
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
