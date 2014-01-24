@@ -58,7 +58,10 @@ if( BUILD_CUDA )
    SET_TESTS_PROPERTIES ( core/vectors/tnlVectorOperationsTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlArrayTest-cuda${mpiExt}${debugExt} )
    
    ADD_TEST( core/vectors/tnlVectorTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest-cuda${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( core/vectors/tnlVectorTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorOperationsTest-cuda${mpiExt}${debugExt} )         
+   SET_TESTS_PROPERTIES ( core/vectors/tnlVectorTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorOperationsTest-cuda${mpiExt}${debugExt} )
+   
+   ADD_TEST( matrices/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorTest-cuda${mpiExt}${debugExt} )         
             
 endif()
 

@@ -20,10 +20,17 @@
 
 #ifdef HAVE_CUDA
 
+#include <iostream>
+#include <core/tnlCuda.h>
+#include <core/cuda/reduction-operations.h>
+
+using namespace std;
+
 template< typename DataType,
-          template< typename T > class Operation,
+          typename Operation,
           typename Index >
 __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumType,
+                                              const Operation operation,
                                               const Index size,
                                               const Index elementsInBlock,
                                               const DataType* input,
@@ -33,7 +40,6 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    DataType* sharedData = getSharedMemory< DataType >();
    DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / tnlCuda::getNumberOfSharedMemoryBanks() + 2 ];
    DataType* warpSums = &auxData[ blockDim. x ];
-   Operation< DataType > operation;
 
    const Index lastElementIdx = size - blockIdx. x * elementsInBlock;
    Index lastElementInBlock = ( lastElementIdx < elementsInBlock ?
@@ -123,7 +129,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    while( idx < elementsInBlock && blockOffset + idx < size )
    {
       const Index chunkIdx = idx / chunkSize;
-      Index chunkShift( operation. cudaIdentity() );
+      DataType chunkShift( operation.identity() );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
       operation.performInPlace( sharedData[ tnlCuda::getInterleaving( idx ) ], chunkShift );
@@ -146,24 +152,24 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
 }
 
 template< typename DataType,
-          template< typename T > class Operation,
+          typename Operation,
           typename Index >
-__global__ void cudaSecondPhaseBlockPrefixSum( const Index size,
+__global__ void cudaSecondPhaseBlockPrefixSum( const Operation operation,
+                                               const Index size,
                                                const Index elementsInBlock,
                                                const Index gridShift,
                                                const DataType* auxArray,
                                                DataType* data )
 {
-   Operation< DataType > operation;
    if( blockIdx. x > 0 )
    {
-      const Index shift = operation.commonReductionOnDevice( gridShift, auxArray[ blockIdx. x - 1 ] );
+      const DataType shift = operation.commonReductionOnDevice( gridShift, auxArray[ blockIdx. x - 1 ] );
 
       const Index readOffset = blockIdx. x * elementsInBlock;
       Index readIdx = threadIdx. x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
       {
-         operation. cudaPerformInPlace( data[ readIdx + readOffset ], shift );
+         operation.performInPlace( data[ readIdx + readOffset ], shift );
          readIdx += blockDim. x;
       }
    }
@@ -171,9 +177,10 @@ __global__ void cudaSecondPhaseBlockPrefixSum( const Index size,
 
 
 template< typename DataType,
-          template< typename T > class Operation,
+          typename Operation,
           typename Index >
 bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
+                             const Operation& operation,
                              const Index size,
                              const Index blockSize,
                              const Index elementsInBlock,
@@ -211,6 +218,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
    cudaFirstPhaseBlockPrefixSum< DataType, Operation, Index >
                                 <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                 (  prefixSumType,
+                                   operation,
                                    size,
                                    elementsInBlock,
                                    input,
@@ -232,6 +240,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
    if( numberOfBlocks > 1 &&
        ! cudaRecursivePrefixSum< DataType, Operation, Index >
                                ( inclusivePrefixSum,
+                                 operation,
                                  numberOfBlocks,
                                  blockSize,
                                  elementsInBlock,
@@ -241,7 +250,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
       return false;
    cudaSecondPhaseBlockPrefixSum< DataType, Operation, Index >
                                 <<< cudaGridSize, cudaBlockSize >>>
-                                 ( size, elementsInBlock, gridShift, auxArray2, output );
+                                 ( operation, size, elementsInBlock, gridShift, auxArray2, output );
    error = cudaGetLastError();
    if( error != cudaSuccess )
    {
@@ -257,9 +266,10 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
 
 
 template< typename DataType,
-          template< typename T > class Operation,
+          typename Operation,
           typename Index >
 bool cudaGridPrefixSum( enumPrefixSumType prefixSumType,
+                        const Operation& operation,
                         const Index size,
                         const Index blockSize,
                         const Index elementsInBlock,
@@ -270,6 +280,7 @@ bool cudaGridPrefixSum( enumPrefixSumType prefixSumType,
 
    if( ! cudaRecursivePrefixSum< DataType, Operation, Index >
                                ( prefixSumType,
+                                 operation,
                                  size,
                                  blockSize,
                                  elementsInBlock,
@@ -326,6 +337,7 @@ bool cudaPrefixSum( const Index size,
       Index gridOffset = gridIdx * maxGridSize * elementsInBlock;
       if( ! cudaGridPrefixSum< DataType, Operation, Index >
                              ( prefixSumType,
+                               operation,
                                currentSize,
                                blockSize,
                                elementsInBlock,
@@ -336,6 +348,67 @@ bool cudaPrefixSum( const Index size,
    }
    return true;
 }
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+extern template bool cudaPrefixSum( const int size,
+                                    const int blockSize,
+                                    const int *deviceInput,
+                                    int* deviceOutput,
+                                    const tnlParallelReductionSum< int, int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+
+extern template bool cudaPrefixSum( const int size,
+                                    const int blockSize,
+                                    const float *deviceInput,
+                                    float* deviceOutput,
+                                    const tnlParallelReductionSum< float, int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+extern template bool cudaPrefixSum( const int size,
+                                    const int blockSize,
+                                    const double *deviceInput,
+                                    double* deviceOutput,
+                                    const tnlParallelReductionSum< double, int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+extern template bool cudaPrefixSum( const int size,
+                                    const int blockSize,
+                                    const long double *deviceInput,
+                                    long double* deviceOutput,
+                                    const tnlParallelReductionSum< long double, int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+extern template bool cudaPrefixSum( const long int size,
+                                    const long int blockSize,
+                                    const int *deviceInput,
+                                    int* deviceOutput,
+                                    const tnlParallelReductionSum< int, long int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+
+extern template bool cudaPrefixSum( const long int size,
+                                    const long int blockSize,
+                                    const float *deviceInput,
+                                    float* deviceOutput,
+                                    const tnlParallelReductionSum< float, long int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+extern template bool cudaPrefixSum( const long int size,
+                                    const long int blockSize,
+                                    const double *deviceInput,
+                                    double* deviceOutput,
+                                    const tnlParallelReductionSum< double, long int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+
+extern template bool cudaPrefixSum( const long int size,
+                                    const long int blockSize,
+                                    const long double *deviceInput,
+                                    long double* deviceOutput,
+                                    const tnlParallelReductionSum< long double, long int >& operation,
+                                    const enumPrefixSumType prefixSumType );
+#endif
+
 
 #endif
 

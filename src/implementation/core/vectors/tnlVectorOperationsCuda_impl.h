@@ -565,8 +565,8 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
-   typedef tnlParallelReductionSum< typename Vector::IndexType,
-                                    typename Vector::RealType > OperationType;
+   typedef tnlParallelReductionSum< typename Vector::RealType,
+                                    typename Vector::IndexType > OperationType;
 
    OperationType operation;
    cudaPrefixSum< typename Vector::RealType,
@@ -584,8 +584,8 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
-   typedef tnlParallelReductionSum< typename Vector::IndexType,
-                                    typename Vector::RealType > OperationType;
+   typedef tnlParallelReductionSum< typename Vector::RealType,
+                                    typename Vector::IndexType > OperationType;
 
    OperationType operation;
 

@@ -190,7 +190,7 @@ class tnlParallelReductionSum
    };
 
    __device__ void performInPlace( ResultType& a,
-                                   const ResultType& b )
+                                   const ResultType& b ) const
    {
       a += b;
    }

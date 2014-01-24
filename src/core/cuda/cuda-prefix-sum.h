@@ -21,46 +21,6 @@
 enum enumPrefixSumType { exclusivePrefixSum = 0,
                          inclusivePrefixSum };
 
-/*template< typename DataType >
-class operationSum
-{
-   public:
-
-   DataType identity() const
-   {
-      return ( DataType ) 0.0;
-   };
-
-   void performInPlace( DataType& a, const DataType& b ) const
-   {
-      a += b;
-   };
-
-   DataType perform( const DataType& a, const DataType& b )
-   {
-      return a + b;
-   };
-
-#ifdef HAVE_CUDA
-   __device__ DataType cudaIdentity() const
-   {
-      return ( DataType ) 0.0;
-   };
-
-   __device__ void cudaPerformInPlace( DataType& a, const DataType& b ) const
-   {
-      a += b;
-   };
-
-   __device__ DataType cudaPerform( const DataType& a, const DataType& b )
-   {
-      return a + b;
-   };
-#endif   
-
-};*/
-
-
 template< typename DataType,
           typename Operation,
           typename Index >

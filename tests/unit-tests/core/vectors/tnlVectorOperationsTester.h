@@ -381,6 +381,17 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v.computePrefixSum();
       for( int i = 0; i < size; i++ )
          CPPUNIT_ASSERT( v.getElement( i ) == i + 1 );
+
+      v.setValue( 0 );
+      v.computePrefixSum();
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) == 0 );
+
+      setLinearSequence( v );
+      v.computePrefixSum();
+      for( int i = 1; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) - v.getElement( i - 1 ) == i );
+
    };
 
    void exclusivePrefixSumTest()
@@ -394,6 +405,17 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v.computeExclusivePrefixSum();
       for( int i = 0; i < size; i++ )
          CPPUNIT_ASSERT( v.getElement( i ) == i );
+
+      v.setValue( 0 );
+      v.computeExclusivePrefixSum();
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) == 0 );
+
+      setLinearSequence( v );
+      v.computeExclusivePrefixSum();
+      for( int i = 1; i < size; i++ )
+         CPPUNIT_ASSERT( v.getElement( i ) - v.getElement( i - 1 ) == i - 1 );
+
    };
 };
 

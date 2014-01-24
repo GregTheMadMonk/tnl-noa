@@ -25,10 +25,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, tnlCuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
