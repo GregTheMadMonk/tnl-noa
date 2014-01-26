@@ -29,8 +29,8 @@ set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
                  
                  
 if( BUILD_CUDA )
-   CUDA_ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
-                     ${tnl_CUDA__SOURCES} )
+   CUDA_ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES}
+                                                  OPTIONS -arch sm_20 )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
@@ -46,8 +46,8 @@ INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 IF( BUILD_MPI )
    
    if( BUILD_CUDA )
-      CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
-                        ${tnl_CUDA__SOURCES} )
+      CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
+                                                         OPTIONS -arch sm_20 )
    else( BUILD_CUDA )
          ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
                       ${tnl_SOURCES} )  

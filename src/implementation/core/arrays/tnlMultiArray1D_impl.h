@@ -71,18 +71,27 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const MultiArray& mu
 }
 
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
    xSize = this -> dimensions[ 0 ];
 }
 
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 const tnlTuple< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
@@ -103,14 +112,19 @@ void tnlMultiArray< 1, Element, Device, Index > :: setElement( const Index i, El
    tnlArray< Element, Device, Index > :: setElement( getElementIndex( i ), value );
 }
 
-
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element )
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 const Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );

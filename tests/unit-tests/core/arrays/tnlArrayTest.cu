@@ -25,7 +25,7 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlCuda, int > >() ||
+   if( //! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlCuda, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlCuda, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlCuda, int > >() ||
        ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlCuda, int > >() ||

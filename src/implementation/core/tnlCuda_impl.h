@@ -20,6 +20,35 @@
 
 #ifdef HAVE_CUDA
 
+template< typename ObjectType >
+ObjectType* tnlCuda::passToDevice( const ObjectType& object )
+{
+   ObjectType* deviceObject;
+   if( cudaMalloc( ( void** ) &deviceObject,
+                   ( size_t ) sizeof( ObjectType ) ) != cudaSuccess )
+   {
+      checkCudaDevice;
+      return 0;
+   }
+   if( cudaMemcpy( ( void* ) deviceObject,
+                   ( void* ) &object,
+                   sizeof( ObjectType ),
+                   cudaMemcpyHostToDevice ) != cudaSuccess )
+   {
+      checkCudaDevice;
+      cudaFree( deviceObject );
+      return 0;
+   }
+   return deviceObject;
+}
+
+template< typename ObjectType >
+void tnlCuda::freeFromDevice( ObjectType* deviceObject )
+{
+   cudaFree( deviceObject );
+   checkCudaDevice;
+}
+
 inline __host__ __device__ int tnlCuda::getNumberOfSharedMemoryBanks()
 {
    return 32;

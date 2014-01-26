@@ -54,8 +54,14 @@ class tnlMatrix : public virtual tnlObject
 
    void reset();
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    IndexType getRows() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    IndexType getColumns() const;
 
    virtual bool setElement( const IndexType row,

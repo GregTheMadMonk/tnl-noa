@@ -29,6 +29,18 @@
 
 using namespace std;
 
+#ifdef HAVE_CUDA
+#define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                       \
+   if( ! ( ___tnl__assert_condition ) )                                                     \
+   {                                                                                        \
+   cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << endl  \
+             << "File: " << __FILE__ << endl                                                \
+             << "Line: " << __LINE__ << endl                                                \
+             << "Diagnostics: ";                                                            \
+        ___tnl__assert_command;                                                             \
+        abort();                                                                            \
+   }
+#else
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                       \
 	if( ! ( ___tnl__assert_condition ) )                                                     \
 	{                                                                                        \
@@ -40,6 +52,7 @@ using namespace std;
         ___tnl__assert_command;                                                             \
         throw EXIT_FAILURE;                                                                 \
 	}
+#endif /* HAVE_CUDA */
 #else /* #ifndef NDEBUG */
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )
 #endif /* #ifndef NDEBUG */

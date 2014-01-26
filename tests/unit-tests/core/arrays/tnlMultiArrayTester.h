@@ -31,6 +31,10 @@ template< int Dimension, typename ElementType, typename Device, typename IndexTy
 class tnlMultiArrayTester : public CppUnit :: TestCase
 {
    public:
+
+   typedef tnlMultiArrayTester< Dimensions, ElementType, Device, IndexType > MultiArrayTester;
+   typedef CppUnit :: TestCaller< MultiArrayTester > TestCaller;
+
    tnlMultiArrayTester(){};
 
    virtual
@@ -40,43 +44,15 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMultiArrayTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testConstructorDestructor",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testConstructorDestructor )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testSetSize",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testSetSize )
-                              );
-
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testSetGetElement",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testSetGetElement )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testComparisonOperator",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testComparisonOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testEquivalenceOperator",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testEquivalenceOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testGetSize",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testGetSize )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testReset",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testReset )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testSetSizeAndDestructor",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testSetSizeAndDestructor )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > >(
-                               "testSaveAndLoad",
-                               & tnlMultiArrayTester< Dimension, ElementType, Device, IndexType > :: testSaveAndLoad )
-                              );
+      suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &MultiArrayTester::testConstructorDestructor ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetSize", &MultiArrayTester::testSetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetGetElement", &MultiArrayTester::testSetGetElement ) );
+      suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &MultiArrayTester::testComparisonOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testEquivalenceOperator", &MultiArrayTester::testEquivalenceOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testGetSize", &MultiArrayTester::testGetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testReset", &MultiArrayTester::testReset ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetSizeAndDestructor", &MultiArrayTester::testSetSizeAndDestructor ) );
+      suiteOfTests -> addTest( new TestCaller( "testSaveAndLoad", &MultiArrayTester::testSaveAndLoad ) );
       return suiteOfTests;
    }
 

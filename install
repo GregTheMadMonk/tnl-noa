@@ -6,12 +6,11 @@ WITH_CUDA=yes
 WITH_CUSPARSE=no
 CUDA_ARCHITECTURE=2.0
 TEMPLATE_EXPLICIT_INSTANTIATION=yes
-#VERBOSE="VERBOSE=1"
+VERBOSE="VERBOSE=1"
 
 CMAKE="cmake"
 CPUS=`grep -c processor /proc/cpuinfo`
 
-CPUS="1"
 echo "Building $TARGET using $CPUS processors."
 
 if [ ! -d Debug ];

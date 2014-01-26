@@ -70,15 +70,13 @@ Element tnlArrayOperations< tnlCuda >::getMemoryElement( const Element* data )
 template< typename Element, typename Index >
 Element& tnlArrayOperations< tnlCuda >::getArrayElementReference( Element* data, const Index i )
 {
-   // TODO: implement this
-   tnlAssert( false, cerr << "Implement this" << endl );
+   return data[ i ];
 }
 
 template< typename Element, typename Index >
-const Element& tnlArrayOperations< tnlCuda >::getArrayElementReference(const Element* data, const Index i )
+const Element& tnlArrayOperations< tnlCuda >::getArrayElementReference( const Element* data, const Index i )
 {
-   // TODO: implement this
-   tnlAssert( false, cerr << "Implement this" << endl );
+   return data[ i ];
 }
 
 

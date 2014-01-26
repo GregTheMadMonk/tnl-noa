@@ -44,6 +44,12 @@ class tnlCuda
 
    static size_t getFreeMemory();
 
+   template< typename ObjectType >
+   static ObjectType* passToDevice( const ObjectType& object );
+
+   template< typename ObjectType >
+   static void freeFromDevice( ObjectType* object );
+
 #ifdef HAVE_CUDA
    static inline __host__ __device__ int getNumberOfSharedMemoryBanks();
 

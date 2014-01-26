@@ -52,14 +52,23 @@ class tnlSharedArray : public tnlObject
 
    void reset();
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getSize() const;
 
    void setElement( const Index i, const Element& x );
 
    Element getElement( Index i ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Element& operator[] ( Index i );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const Element& operator[] ( Index i ) const;
 
    tnlSharedArray< Element, Device, Index >& operator = ( const tnlSharedArray< Element, Device, Index >& array );
@@ -75,8 +84,14 @@ class tnlSharedArray : public tnlObject
 
    void setValue( const Element& e );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const Element* getData() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Element* getData();
 
    /*!

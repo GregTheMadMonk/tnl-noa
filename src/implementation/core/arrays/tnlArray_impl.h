@@ -128,6 +128,9 @@ void tnlArray< Element, Device, Index > :: reset()
 template< typename Element,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlArray< Element, Device, Index > :: getSize() const
 {
    return this -> size;
@@ -162,6 +165,9 @@ Element tnlArray< Element, Device, Index > :: getElement( Index i ) const
 template< typename Element,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
@@ -169,13 +175,16 @@ Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
+   return this->data[ i ];
+   //return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,
            typename Device,
            typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
@@ -183,8 +192,8 @@ const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) cons
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
+   return this->data[ i ];
+   //return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,
@@ -272,6 +281,9 @@ void tnlArray< Element, Device, Index > :: setValue( const Element& e )
 template< typename Element,
            typename Device,
            typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 const Element* tnlArray< Element, Device, Index > :: getData() const
 {
    return this -> data;
@@ -280,6 +292,9 @@ const Element* tnlArray< Element, Device, Index > :: getData() const
 template< typename Element,
            typename Device,
            typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Element* tnlArray< Element, Device, Index > :: getData()
 {
    return this -> data;

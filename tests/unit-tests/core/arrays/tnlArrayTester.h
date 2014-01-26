@@ -27,6 +27,10 @@
 #include <core/arrays/tnlArray.h>
 #include <core/tnlFile.h>
 
+#ifdef HAVE_CUDA
+template< typename ElementType, typename IndexType >
+__global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u );
+#endif
 
 class testingClassForArrayManagerTester
 {
@@ -61,43 +65,15 @@ class tnlArrayTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &ArrayTester::testConstructorDestructor ) );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSetSize",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSize )
-                              );
-
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSetGetElement",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetGetElement )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testComparisonOperator",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testComparisonOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testEquivalenceOperator",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testEquivalenceOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testGetSize",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testGetSize )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testReset",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testReset )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSetSizeAndDestructor",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSetSizeAndDestructor )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testSaveAndLoad",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testSaveAndLoad )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayTester< ElementType, Device, IndexType > >(
-                               "testUnusualStructures",
-                               & tnlArrayTester< ElementType, Device, IndexType > :: testUnusualStructures )
-                              );
+      suiteOfTests -> addTest( new TestCaller( "testSetSize", &ArrayTester::testSetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetGetElement", &ArrayTester::testSetGetElement ) );
+      suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &ArrayTester::testComparisonOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testEquivalenceOperator", &ArrayTester::testEquivalenceOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testGetSize", &ArrayTester::testGetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testReset", &ArrayTester::testReset ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetSizeAndDestructor", &ArrayTester::testSetSizeAndDestructor ) );
+      suiteOfTests -> addTest( new TestCaller( "testSaveAndLoad", &ArrayTester::testSaveAndLoad ) );
+      suiteOfTests -> addTest( new TestCaller( "testUnusualStructures",  &ArrayTester::testUnusualStructures ) );
       return suiteOfTests;
    }
 
@@ -121,6 +97,25 @@ class tnlArrayTester : public CppUnit :: TestCase
          u. setElement( i, i );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u. getElement( i ) == i );
+
+      u.setValue( 0 );
+      if( Device::getDevice() == tnlHostDevice )
+      {
+         for( int i = 0; i < 10; i ++ )
+            u[ i ] =  i;
+      }
+      if( Device::getDevice() == tnlCudaDevice )
+      {
+#ifdef HAVE_CUDA
+         tnlArray< ElementType, Device, IndexType >* kernel_u =
+                  tnlCuda::passToDevice( u );
+         testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
+         tnlCuda::freeFromDevice( kernel_u );
+         CPPUNIT_ASSERT( checkCudaDevice );
+#endif
+      }
+      for( int i = 0; i < 10; i++ )
+         CPPUNIT_ASSERT( u.getElement( i ) == i );
    };
 
    void testComparisonOperator()
@@ -214,6 +209,16 @@ class tnlArrayTester : public CppUnit :: TestCase
    };
 
 };
+
+#ifdef HAVE_CUDA
+template< typename ElementType, typename IndexType >
+__global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u )
+{
+   if( threadIdx.x < 10 )
+      ( *u )[ threadIdx.x ] = threadIdx.x;
+}
+#endif /* HAVE_CUDA */
+
 #else /* HAVE_CPPUNIT */
 template< typename ElementType, typename Device, typename IndexType >
 class tnlArrayTester{};
