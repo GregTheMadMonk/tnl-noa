@@ -93,5 +93,5 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< long double, l
                                      const typename tnlParallelReductionDiffSum< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionDiffSum< long double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffSum< long double, long int> :: ResultType& result );
-                                     
+                                    
 #endif                                     

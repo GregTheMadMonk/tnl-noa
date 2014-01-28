@@ -93,5 +93,5 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMin< long double, lo
                                      const typename tnlParallelReductionAbsMin< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionAbsMin< long double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMin< long double, long int> :: ResultType& result );
-                                     
+                                    
 #endif                                     
