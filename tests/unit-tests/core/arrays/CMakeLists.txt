@@ -13,11 +13,13 @@ TARGET_LINK_LIBRARIES( tnlArrayTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                            
              
 if( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnlArrayOperationsTest-cuda${mpiExt}${debugExt} ${headers} tnlArrayOperationsTest.cu )
+    CUDA_ADD_EXECUTABLE( tnlArrayOperationsTest-cuda${mpiExt}${debugExt} ${headers} tnlArrayOperationsTest.cu 
+                         OPTIONS -arch sm_20 -shared )
     TARGET_LINK_LIBRARIES( tnlArrayOperationsTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
                                                               
-    CUDA_ADD_EXECUTABLE( tnlArrayTest-cuda${mpiExt}${debugExt} ${headers} tnlArrayTest.cu )
+    CUDA_ADD_EXECUTABLE( tnlArrayTest-cuda${mpiExt}${debugExt} ${headers} tnlArrayTest.cu
+                         OPTIONS -arch sm_20 -shared )
     TARGET_LINK_LIBRARIES( tnlArrayTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )                                                                
                                                                                                                               
