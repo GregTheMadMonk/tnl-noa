@@ -29,7 +29,6 @@
 
 #include <core/mfuncs.h>
 #include <core/tnlAssert.h>
-#include <legacy/core/tnlCudaSupport.h>
 #include <core/tnlString.h>
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
@@ -212,7 +211,7 @@ bool tnlFile :: read( Type* buffer,
          {
             cerr << "Transfer of data from the CUDA device to the file " << this -> fileName
                  << " failed." << endl;
-            checkCUDAError( __FILE__, __LINE__ );
+            checkCudaDevice;
             free( host_buffer );
             return false;
          }
@@ -289,7 +288,7 @@ bool tnlFile ::  write( const Type* buffer,
                             transfer * sizeof( Type ),
                             cudaMemcpyDeviceToHost ) != cudaSuccess )
             {
-               checkCUDAError( __FILE__, __LINE__ );
+               checkCudaDevice;
                cerr << "CUDA error." << endl;
                free( host_buffer );
                return false;

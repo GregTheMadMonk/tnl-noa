@@ -30,7 +30,7 @@ set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
                  
 if( BUILD_CUDA )
    CUDA_ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES}
-                                                  OPTIONS -arch sm_20 )
+                                                  OPTIONS -arch sm_20 -shared )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
@@ -39,15 +39,14 @@ endif( BUILD_CUDA )
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 
                           SOVERSION 0 
                           VERSION ${tnlVersion} )
-TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion}  
-                          ${BZIP2_LIBRARIES} )
+
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 
 IF( BUILD_MPI )
    
    if( BUILD_CUDA )
       CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
-                                                         OPTIONS -arch sm_20 )
+                                                         OPTIONS -arch sm_20 -shared )
    else( BUILD_CUDA )
          ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
                       ${tnl_SOURCES} )  
