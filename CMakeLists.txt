@@ -33,11 +33,7 @@ if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
 endif()   
 
 if( WITH_CUDA STREQUAL "yes" )
-<<<<<<< HEAD
    AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
-=======
-   AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 -shared" )
->>>>>>> 5f49d192b9684738aef0eb832461b54b25cadda3
 else()
    AddCompilerFlag( "-std=gnu++0x" )
 endif()      
@@ -53,14 +49,8 @@ if( NOT WITH_CUDA STREQUAL "no" )
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         
-<<<<<<< HEAD
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
         if( CUDA_ARCHITECTURE STREQUAL "2.0" )
-=======
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA;--compiler-options '-fPIC','-shared')
-        if( CUDA_ARCHITECTURE STREQUAL "2.0" )
-            #set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch sm_20;-DCUDA_ARCH=20)
->>>>>>> 5f49d192b9684738aef0eb832461b54b25cadda3
             set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DCUDA_ARCH=20)            
         endif()    
         if( CUDA_ARCHITECTURE STREQUAL "2.1" )
