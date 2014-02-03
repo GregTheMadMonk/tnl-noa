@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iomanip>
 #include <core/tnlLogger.h>
+#include <tnlConfig.h>
 
 void tnlLogger :: WriteHeader( const tnlString& title )
 {

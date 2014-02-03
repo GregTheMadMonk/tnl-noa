@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLARRAYMANAGERTESTER_H_
-#define TNLARRAYMANAGERTESTER_H_
+#ifndef TNLARRAYTESTER_H_
+#define TNLARRAYTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -214,7 +214,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 template< typename ElementType, typename IndexType >
 __global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u )
 {
-   if( threadIdx.x < 10 )
+   if( threadIdx.x < ( *u ).getSize() )
       ( *u )[ threadIdx.x ] = threadIdx.x;
 }
 #endif /* HAVE_CUDA */
@@ -224,4 +224,4 @@ template< typename ElementType, typename Device, typename IndexType >
 class tnlArrayTester{};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLARRAYMANAGERTESTER_H_ */
+#endif /* TNLARRAYTESTER_H_ */

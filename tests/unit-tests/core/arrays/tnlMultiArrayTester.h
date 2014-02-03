@@ -26,6 +26,11 @@
 #include <core/arrays/tnlMultiArray.h>
 #include <core/tnlFile.h>
 
+#ifdef HAVE_CUDA
+template< int Dimensions, typename ElementType, typename IndexType >
+__global__ void testSetGetElementKernel( tnlMultiArray< Dimensions, ElementType, tnlCuda, IndexType >* u );
+#endif
+
 
 template< int Dimension, typename ElementType, typename Device, typename IndexType >
 class tnlMultiArrayTester : public CppUnit :: TestCase
@@ -72,8 +77,21 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       tnlMultiArray< Dimension, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: u" );
       u. setSize( 10 );
-      for( int i = 0; i < 10; i ++ )
-         u. setElement( i, i );
+      if( Device::getDevice() == tnlDeviceHost )
+      {
+         for( int i = 0; i < 10; i ++ )
+            u. setElement( i, i );
+      }
+      if( Device::getDevice() == tnlDeviceCuda )
+      {
+#ifdef HAVE_CUDA
+         tnlArray< ElementType, Device, IndexType >* kernel_u =
+                  tnlCuda::passToDevice( u );
+         testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
+         tnlCuda::freeFromDevice( kernel_u );
+         CPPUNIT_ASSERT( checkCudaDevice );
+#endif
+      }
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( u. getElement( i ) == i );
    };
@@ -163,6 +181,36 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( u == v );
    }
 };
+
+#ifdef HAVE_CUDA
+template< typename ElementType, typename IndexType >
+__global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, tnlCuda, IndexType >* u )
+{
+   if( threadIdx.x < ( *u ).getDimensions().x() )
+      ( *u )( threadIdx.x ) = threadIdx.x;
+}
+
+__global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, tnlCuda, IndexType >* u )
+{
+   if( threadIdx.x < ( *u ).getDimensions().x() &&
+       threadIdx.x < ( *u ).getDimensions().y() )
+      ( *u )( threadIdx.x, threadIdx.x ) = threadIdx.x;
+}
+
+__global__ void testSetGetElementKernel( tnlMultiArray< 3, ElementType, tnlCuda, IndexType >* u )
+{
+   if( threadIdx.x < ( *u ).getDimensions().x() &&
+       threadIdx.x < ( *u ).getDimensions().y() &&
+       threadIdx.x < ( *u ).getDimensions().z() )
+      ( *u )( threadIdx.x, threadIdx.x, threadIdx.x ) = threadIdx.x;
+}
+
+#endif /* HAVE_CUDA */
+
+#else /* HAVE_CPPUNIT */
+template< int, Dimensions, typename ElementType, typename Device, typename IndexType >
+class tnlMultiArrayTester{};
+#endif /* HAVE_CPPUNIT */
 
 
 #endif /* TNLMULTIARRAYTESTER_H_ */
