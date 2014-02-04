@@ -73,7 +73,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const MultiArray& mu
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
@@ -91,7 +91,7 @@ const tnlTuple< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDim
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {

@@ -20,8 +20,7 @@
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
-// TODO: There are problems with nvlink - it maght be better in later versions
-/*template class tnlMultiArray< 1, float,  tnlCuda, int >;
+template class tnlMultiArray< 1, float,  tnlCuda, int >;
 template class tnlMultiArray< 1, double, tnlCuda, int >;
 template class tnlMultiArray< 1, float,  tnlCuda, long int >;
 template class tnlMultiArray< 1, double, tnlCuda, long int >;
@@ -36,7 +35,7 @@ template class tnlMultiArray< 3, double, tnlCuda, long int >;
 template class tnlMultiArray< 4, float,  tnlCuda, int >;
 template class tnlMultiArray< 4, double, tnlCuda, int >;
 template class tnlMultiArray< 4, float,  tnlCuda, long int >;
-template class tnlMultiArray< 4, double, tnlCuda, long int >;*/
+template class tnlMultiArray< 4, double, tnlCuda, long int >;
 
 #endif
 

@@ -89,7 +89,7 @@ bool tnlMultiArray< 3, Element, Device, Index > :: setLike( const MultiArray& mu
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 void tnlMultiArray< 3, Element, Device, Index > :: getDimensions( Index& kSize,
                                                                   Index& jSize,
@@ -102,7 +102,7 @@ void tnlMultiArray< 3, Element, Device, Index > :: getDimensions( Index& kSize,
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 const tnlTuple< 3, Index >& tnlMultiArray< 3, Element, Device, Index > :: getDimensions() const
 {
@@ -111,7 +111,7 @@ const tnlTuple< 3, Index >& tnlMultiArray< 3, Element, Device, Index > :: getDim
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 Index tnlMultiArray< 3, Element, Device, Index > :: getElementIndex( const Index k,
                                                                      const Index j,
@@ -146,7 +146,7 @@ void tnlMultiArray< 3, Element, Device, Index > :: setElement( const Index k,
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k,
                                                                         const Index j,
@@ -157,7 +157,7 @@ Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   //__device__ __host__
+   __device__ __host__
 #endif
 const Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k,
                                                                                const Index j,
