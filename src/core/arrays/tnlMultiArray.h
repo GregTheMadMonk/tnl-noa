@@ -38,6 +38,9 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Device DeviceType;
    typedef Index IndexType;
 
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
@@ -49,7 +52,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    bool setDimensions( const tnlTuple< 1, Index >& dimensions );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    void getDimensions( Index& iSize ) const;
 
@@ -63,7 +66,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    bool setLike( const MultiArray& v );
    
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Index getElementIndex( const Index i ) const;
 
@@ -123,6 +126,9 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Device DeviceType;
    typedef Index IndexType;
 
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
@@ -134,12 +140,12 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    bool setDimensions( const tnlTuple< 2, Index >& dimensions );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    void getDimensions( Index& jSize, Index& iSize ) const;
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const tnlTuple< 2, Index >& getDimensions() const;
 
@@ -148,7 +154,7 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    bool setLike( const MultiArray& v );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Index getElementIndex( const Index j, const Index i ) const;
 
@@ -167,12 +173,12 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
     *  (GPU device usually).
     */
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Element& operator()( const Index j, const Index i );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const Element& operator()( const Index j, const Index i ) const;
 
@@ -212,6 +218,9 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Device DeviceType;
    typedef Index IndexType;
 
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
@@ -223,12 +232,12 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    bool setDimensions( const tnlTuple< 3, Index >& dimensions );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const tnlTuple< 3, Index >& getDimensions() const;
 
@@ -237,7 +246,7 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    bool setLike( const MultiArray& v );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
@@ -256,12 +265,12 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
     *  (GPU device usualy).
     */
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Element& operator()( const Index k, const Index j, const Index i );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const Element& operator()( const Index k, const Index j, const Index i ) const;
 
@@ -301,6 +310,9 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Device DeviceType;
    typedef Index IndexType;
 
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
@@ -312,12 +324,12 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    bool setDimensions( const tnlTuple< 4, Index >& dimensions );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const tnlTuple< 4, Index >& getDimensions() const;
 
@@ -326,7 +338,7 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    bool setLike( const MultiArray& v );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+  // __device__ __host__
 #endif
    Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
@@ -345,12 +357,12 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
     *  (GPU device usualy).
     */
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    Element& operator()( const Index l, const Index k, const Index j, const Index i );
 
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
    const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
 
@@ -417,10 +429,8 @@ extern template class tnlMultiArray< 4, double, tnlHost, int >;
 extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 4, double, tnlHost, long int >;
 
-#ifdef HAVE_CUDA
-#endif
-
-extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
+// TODO: There are problems with nvlink - it maght be better in later versions
+/*extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
 extern template class tnlMultiArray< 1, double, tnlCuda, int >;
 extern template class tnlMultiArray< 1, float,  tnlCuda, long int >;
 extern template class tnlMultiArray< 1, double, tnlCuda, long int >;
@@ -435,7 +445,7 @@ extern template class tnlMultiArray< 3, double, tnlCuda, long int >;
 extern template class tnlMultiArray< 4, float,  tnlCuda, int >;
 extern template class tnlMultiArray< 4, double, tnlCuda, int >;
 extern template class tnlMultiArray< 4, float,  tnlCuda, long int >;
-extern template class tnlMultiArray< 4, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 4, double, tnlCuda, long int >;*/
 
 #endif
 

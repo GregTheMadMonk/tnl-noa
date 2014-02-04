@@ -21,6 +21,9 @@
 
 
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
 tnlMultiArray< 4, Element, Device, Index > :: tnlMultiArray()
 {
 }
@@ -91,7 +94,7 @@ bool tnlMultiArray< 4, Element, Device, Index > :: setLike( const MultiArray& mu
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 void tnlMultiArray< 4, Element, Device, Index > :: getDimensions( Index& lSize,
                                                                        Index& kSize,
@@ -106,7 +109,7 @@ void tnlMultiArray< 4, Element, Device, Index > :: getDimensions( Index& lSize,
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 const tnlTuple< 4, Index >& tnlMultiArray< 4, Element, Device, Index > :: getDimensions() const
 {
@@ -115,7 +118,7 @@ const tnlTuple< 4, Index >& tnlMultiArray< 4, Element, Device, Index > :: getDim
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 Index tnlMultiArray< 4, Element, Device, Index > :: getElementIndex( const Index l,
                                                                      const Index k,
@@ -155,7 +158,7 @@ void tnlMultiArray< 4, Element, Device, Index > :: setElement( const Index l,
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 Element& tnlMultiArray< 4, Element, Device, Index > :: operator()( const Index l,
                                                                         const Index k,
@@ -167,7 +170,7 @@ Element& tnlMultiArray< 4, Element, Device, Index > :: operator()( const Index l
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 const Element& tnlMultiArray< 4, Element, Device, Index > :: operator()( const Index l,
                                                                                const Index k,

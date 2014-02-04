@@ -19,6 +19,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cu
         ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/tnlArray_impl.cu
+        ${CURRENT_DIR}/tnlMultiArray_impl.cu
         PARENT_SCOPE )
 ELSE()
    set( common_SOURCES

@@ -18,9 +18,10 @@
 #ifndef TNLMULTIARRAY1D_IMPL_H_
 #define TNLMULTIARRAY1D_IMPL_H_
 
-
-
 template< typename Element, typename Device, typename Index >
+#ifdef HAVE_CUDA
+   //__device__ __host__
+#endif
 tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
 {
 }
@@ -72,7 +73,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const MultiArray& mu
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
@@ -90,13 +91,12 @@ const tnlTuple< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDim
 
 template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
-   __device__ __host__
+   //__device__ __host__
 #endif
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
-              cerr << "i = " << i
-                   << "this -> dimensions[ 0 ] " << this -> dimensions[ 0 ] );
+              printf( "i = %d this -> dimensions[ 0 ] = %d \n", i, this -> dimensions[ 0 ] ) );
    return i;
 }
 

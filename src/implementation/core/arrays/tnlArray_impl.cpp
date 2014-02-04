@@ -24,4 +24,11 @@ template class tnlArray< double, tnlHost, int >;
 template class tnlArray< float, tnlHost, long int >;
 template class tnlArray< double, tnlHost, long int >;
 
+#ifndef HAVE_CUDA
+template class tnlArray< float, tnlCuda, int >;
+template class tnlArray< double, tnlCuda, int >;
+template class tnlArray< float, tnlCuda, long int >;
+template class tnlArray< double, tnlCuda, long int >;
+#endif
+
 #endif

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlMultiArray_impl.cpp  -  description
+                          tnlMultiArray_impl.cu  -  description
                              -------------------
-    begin                : Jan 20, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Feb 4, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -19,26 +19,9 @@
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-template class tnlMultiArray< 1, float,  tnlHost, int >;
-template class tnlMultiArray< 1, double, tnlHost, int >;
-template class tnlMultiArray< 1, float,  tnlHost, long int >;
-template class tnlMultiArray< 1, double, tnlHost, long int >;
-template class tnlMultiArray< 2, float,  tnlHost, int >;
-template class tnlMultiArray< 2, double, tnlHost, int >;
-template class tnlMultiArray< 2, float,  tnlHost, long int >;
-template class tnlMultiArray< 2, double, tnlHost, long int >;
-template class tnlMultiArray< 3, float,  tnlHost, int >;
-template class tnlMultiArray< 3, double, tnlHost, int >;
-template class tnlMultiArray< 3, float,  tnlHost, long int >;
-template class tnlMultiArray< 3, double, tnlHost, long int >;
-template class tnlMultiArray< 4, float,  tnlHost, int >;
-template class tnlMultiArray< 4, double, tnlHost, int >;
-template class tnlMultiArray< 4, float,  tnlHost, long int >;
-template class tnlMultiArray< 4, double, tnlHost, long int >;
-
-#ifndef HAVE_CUDA
-
-template class tnlMultiArray< 1, float,  tnlCuda, int >;
+#ifdef HAVE_CUDA
+// TODO: There are problems with nvlink - it maght be better in later versions
+/*template class tnlMultiArray< 1, float,  tnlCuda, int >;
 template class tnlMultiArray< 1, double, tnlCuda, int >;
 template class tnlMultiArray< 1, float,  tnlCuda, long int >;
 template class tnlMultiArray< 1, double, tnlCuda, long int >;
@@ -53,12 +36,8 @@ template class tnlMultiArray< 3, double, tnlCuda, long int >;
 template class tnlMultiArray< 4, float,  tnlCuda, int >;
 template class tnlMultiArray< 4, double, tnlCuda, int >;
 template class tnlMultiArray< 4, float,  tnlCuda, long int >;
-template class tnlMultiArray< 4, double, tnlCuda, long int >;
+template class tnlMultiArray< 4, double, tnlCuda, long int >;*/
 
 #endif
 
-
 #endif
-
-
-

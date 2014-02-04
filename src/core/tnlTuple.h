@@ -33,87 +33,171 @@ class tnlTuple
    public:
    typedef Real RealType;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple();
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple( const Real v[ Size ] );
 
    //! This sets all vector components to v
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple( const Real& v );
 
    //! Copy constructor
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple( const tnlTuple< Size, Real >& v );
 
    //! This is constructore of vector with Size = 2.
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple( const Real& v1,
               const Real& v2 );
 
-   //! This is constructore of vector with Size = 3.
+   //! This is constructore of vector with Size = 3
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple( const Real& v1,
              const Real& v2,
              const Real& v3 );
 
    static tnlString getType();
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Real& operator[]( int i ) const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    Real& operator[]( int i );
    
    //! Returns the first coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    Real& x();
 
    //! Returns the first coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Real& x() const;
 
    //! Returns the second coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    Real& y();
 
    //! Returns the second coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Real& y() const;
 
    //! Returns the third coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    Real& z();
 
    //! Returns the third coordinate
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Real& z() const;
 
    //! Adding operator
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple& operator += ( const tnlTuple& v );
 
    //! Subtracting operator
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple& operator -= ( const tnlTuple& v );
 
    //! Multiplication with number
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple& operator *= ( const Real& c );
 
    //! Adding operator
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple operator + ( const tnlTuple& u ) const;
 
    //! Subtracting operator
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple operator - ( const tnlTuple& u ) const;
 
    //! Multiplication with number
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple operator * ( const Real& c ) const;
 
    //! 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    tnlTuple& operator = ( const tnlTuple& v );
 
    //! Scalar product
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    Real operator * ( const tnlTuple& u ) const;
 
    //! Comparison operator
    template< typename Real2 >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator == ( const tnlTuple< Size, Real2 >& v ) const;
 
    //! Comparison operator
    template< typename Real2 >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator != ( const tnlTuple< Size, Real2 >& v ) const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator < ( const tnlTuple& v ) const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator <= ( const tnlTuple& v ) const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator > ( const tnlTuple& v ) const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    bool operator >= ( const tnlTuple& v ) const;
 
    bool save( tnlFile& file ) const;
@@ -132,12 +216,18 @@ template< int Size, typename Real >
 ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v );
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple()
 {
    bzero( data, Size * sizeof( Real ) );
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple( const Real v[ Size ] )
 {
    if( Size == 1 )
@@ -161,6 +251,9 @@ tnlTuple< Size, Real > :: tnlTuple( const Real v[ Size ] )
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple( const Real& v )
 {
    if( Size == 1 )
@@ -181,6 +274,9 @@ tnlTuple< Size, Real > :: tnlTuple( const Real& v )
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple( const tnlTuple< Size, Real >& v )
 {
    if( Size == 1 )
@@ -205,28 +301,37 @@ tnlTuple< Size, Real > :: tnlTuple( const tnlTuple< Size, Real >& v )
 
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
                                     const Real& v2 )
 {
    tnlAssert( Size == 2,
-              cerr << "Using this constructor does not makes sense for Size different then 2.")
+              printf( "Using this constructor does not makes sense for Size different then 2.\n") );
    data[ 0 ] = v1;
    data[ 1 ] = v2;
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
                                       const Real& v2,
                                       const Real& v3 )
 {
    tnlAssert( Size == 3,
-              cerr << "Using this constructor does not makes sense for Size different then 3.")
+              printf( "Using this constructor does not makes sense for Size different then 3.\n") );
    data[ 0 ] = v1;
    data[ 1 ] = v2;
    data[ 2 ] = v3;
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlString tnlTuple< Size, Real > :: getType()
 {
    return tnlString( "tnlTuple< " ) +
@@ -237,6 +342,9 @@ tnlString tnlTuple< Size, Real > :: getType()
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 const Real& tnlTuple< Size, Real > :: operator[]( int i ) const
 {
    assert( i >= 0 && i < Size );
@@ -244,6 +352,9 @@ const Real& tnlTuple< Size, Real > :: operator[]( int i ) const
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 Real& tnlTuple< Size, Real > :: operator[]( int i )
 {
    assert( i < Size );
@@ -251,48 +362,60 @@ Real& tnlTuple< Size, Real > :: operator[]( int i )
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 Real& tnlTuple< Size, Real > :: x()
 {
    tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
    if( Size < 1 )
    {
-      cerr << "The size of the tnlTuple is too small to get x coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 const Real& tnlTuple< Size, Real > :: x() const
 {
    tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
    if( Size < 1 )
    {
-      cerr << "The size of the tnlTuple is too small to get x coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 Real& tnlTuple< Size, Real > :: y()
 {
    tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
    if( Size < 2 )
    {
-      cerr << "The size of the tnlTuple is too small to get y coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 const Real& tnlTuple< Size, Real > :: y() const
 {
    tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
    if( Size < 2 )
    {
-      cerr << "The size of the tnlTuple is too small to get y coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
@@ -300,30 +423,39 @@ const Real& tnlTuple< Size, Real > :: y() const
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 Real& tnlTuple< Size, Real > :: z()
 {
    tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
    if( Size < 3 )
    {
-      cerr << "The size of the tnlTuple is too small to get z coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 const Real& tnlTuple< Size, Real > :: z() const
 {
    tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
    if( Size < 3 )
    {
-      cerr << "The size of the tnlTuple is too small to get z coordinate." << endl;
+      printf( "The size of the tnlTuple is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator += ( const tnlTuple& v )
 {
    if( Size == 1 )
@@ -348,6 +480,9 @@ tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator += ( const tnlTuple& 
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator -= ( const tnlTuple& v )
 {
    if( Size == 1 )
@@ -372,6 +507,9 @@ tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator -= ( const tnlTuple& 
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator *= ( const Real& c )
 {
    if( Size == 1 )
@@ -396,6 +534,9 @@ tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator *= ( const Real& c )
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator + ( const tnlTuple& u ) const
 {
    // TODO: Leads to sigsegv
@@ -403,6 +544,9 @@ tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator + ( const tnlTuple& u 
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator - ( const tnlTuple& u ) const
 {
    // TODO: Leads to sigsegv
@@ -410,12 +554,18 @@ tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator - ( const tnlTuple& u 
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator * ( const Real& c ) const
 {
    return tnlTuple( * this ) *= c;
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator = ( const tnlTuple& v )
 {
    memcpy( &data[ 0 ], &v. data[ 0 ], Size * sizeof( Real ) );
@@ -426,6 +576,9 @@ tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator = ( const tnlTuple& v
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 Real tnlTuple< Size, Real > :: operator * ( const tnlTuple& u ) const
 {
    if( Size == 1 )
@@ -448,6 +601,9 @@ Real tnlTuple< Size, Real > :: operator * ( const tnlTuple& u ) const
 
 template< int Size, typename Real >
 template< typename Real2 >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator == ( const tnlTuple< Size, Real2 >& u ) const
 {
    if( Size == 1 )
@@ -468,6 +624,9 @@ bool tnlTuple< Size, Real > :: operator == ( const tnlTuple< Size, Real2 >& u ) 
 
 template< int Size, typename Real >
 template< typename Real2 >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator != ( const tnlTuple< Size, Real2 >& u ) const
 {
    if( Size == 1 )
@@ -486,6 +645,9 @@ bool tnlTuple< Size, Real > :: operator != ( const tnlTuple< Size, Real2 >& u ) 
 };
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator < ( const tnlTuple& u ) const
 {
    if( Size == 1 )
@@ -507,6 +669,9 @@ bool tnlTuple< Size, Real > :: operator < ( const tnlTuple& u ) const
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator <= ( const tnlTuple& u ) const
 {
    if( Size == 1 )
@@ -525,6 +690,9 @@ bool tnlTuple< Size, Real > :: operator <= ( const tnlTuple& u ) const
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator > ( const tnlTuple& u ) const
 {
    if( Size == 1 )
@@ -543,6 +711,9 @@ bool tnlTuple< Size, Real > :: operator > ( const tnlTuple& u ) const
 }
 
 template< int Size, typename Real >
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
 bool tnlTuple< Size, Real > :: operator >= ( const tnlTuple& u ) const
 {
    if( Size == 1 )
