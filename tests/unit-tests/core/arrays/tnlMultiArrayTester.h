@@ -148,7 +148,6 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
       if( Device::getDevice() == tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         cerr << u.getDimensions() << endl;
          tnlMultiArray< Dimensions, ElementType, Device, IndexType >* kernel_u =
                   tnlCuda::passToDevice( u );
          testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
@@ -165,9 +164,12 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: u" );
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "tnlMultiArrayTester :: v" );
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > w( "tnlMultiArrayTester :: w" );
-      u. setDimensions( 10 );
-      v. setDimensions( 10 );
-      w. setDimensions( 10 );
+      u.setDimensions( 10 );
+      v.setDimensions( 10 );
+      w.setDimensions( 10 );
+      u.setValue( 0 );
+      v.setValue( 0 );
+      w.setValue( 0 );
       for( int i = 0; i < 10; i ++ )
       {
          setDiagonalElement( u, i, i );
@@ -208,14 +210,14 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    void testReset()
    {
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: testReset - u" );
-      u. setDimensions( 100 );
-      CPPUNIT_ASSERT( u. getSize() == 100 );
-      u. reset();
-      CPPUNIT_ASSERT( u. getSize() == 0 );
-      u. setDimensions( 100 );
-      CPPUNIT_ASSERT( u. getSize() == 100 );
-      u. reset();
-      CPPUNIT_ASSERT( u. getSize() == 0 );
+      u.setDimensions( 100 );
+      CPPUNIT_ASSERT( u. getDimensions().x() == 100 );
+      u.reset();
+      CPPUNIT_ASSERT( u. getDimensions().x() == 0 );
+      u.setDimensions( 100 );
+      CPPUNIT_ASSERT( u. getDimensions().x() == 100 );
+      u.reset();
+      CPPUNIT_ASSERT( u. getDimensions().x() == 0 );
 
    };
 
@@ -230,15 +232,16 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "test-array-v" );
-      v. setDimensions( 100 );
-      for( int i = 0; i < 100; i ++ )
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "test-multi-array-v" );
+      const int size( 10 );
+      v. setDimensions( size );
+      for( int i = 0; i < size; i ++ )
          setDiagonalElement( v, i, 3.14147 );
       tnlFile file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "test-array-u" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "test-multi-array-u" );
       file. open( "test-file.tnl", tnlReadMode );
       u. load( file );
       file. close();

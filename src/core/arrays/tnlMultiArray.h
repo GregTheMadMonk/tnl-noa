@@ -65,6 +65,8 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    template< typename MultiArray >
    bool setLike( const MultiArray& v );
    
+   void reset();
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -152,6 +154,8 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
    bool setLike( const MultiArray& v );
+
+   void reset();
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -245,6 +249,8 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    template< typename MultiArray >
    bool setLike( const MultiArray& v );
 
+   void reset();
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -336,6 +342,8 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
    bool setLike( const MultiArray& v );
+
+   void reset();
 
 #ifdef HAVE_CUDA
    __device__ __host__

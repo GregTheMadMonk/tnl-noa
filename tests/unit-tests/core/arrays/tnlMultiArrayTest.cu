@@ -45,15 +45,15 @@ int main( int argc, char* argv[] )
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, tnlCuda, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, tnlCuda, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, tnlCuda, int > >() || 
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, tnlCuda, int > >() || 
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, tnlCuda, int > >() || 
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, tnlCuda, int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, tnlCuda, int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, tnlCuda, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, tnlCuda, long int > >() ||
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, tnlCuda, long int > >() || 
        ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, tnlCuda, long int > >()
        )
      return EXIT_FAILURE;

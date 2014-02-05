@@ -52,8 +52,6 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
    tnlVector< Index, Device, Index > columnIndexes;
-
-   tnlVector< Real, Device, Index > values;
 };
 
 #include <implementation/matrices/tnlSparseMatrix_impl.h>

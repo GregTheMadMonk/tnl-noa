@@ -31,6 +31,8 @@
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
 __global__ void setElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix );
+template< typename RealType, typename IndexType >
+__global__ void addtElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix );
 #endif
 
 
@@ -105,21 +107,29 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       m.setValue( 0.0 );
-      if( Device::getDevice() == tnlCudaDevice )
+      if( Device::getDevice() == tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
             m.setElement( i, i, i );
          for( int i = 0; i < 10; i++ )
             for( int j = 0; j < 10; j++ )
                m.addElement( i, j, 1 );
-
-         for( int i = 0; i < 10; i++ )
-            for( int j = 0; j < 10; j++ )
-               if( i == j )
-                  CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
-               else
-                  CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
       }
+      if( Device::getDevice() == tnlCudaDevice )
+      {
+#ifdef HAVE_CUDA
+         MatrixType* kernel_m = tnlCuda::passToDevice( m );
+         addElementTestKernel<<< 1, 128 >>>( kernel_m );
+         tnlCuda::freeFromDevice( kernel_m );
+#endif
+      }
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+
    }
 
    void setRowTest()
@@ -247,6 +257,15 @@ __global__ void setElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexTy
    if( threadIdx.x < matrix->getRows() )
       ( *matrix )( threadIdx.x, threadIdx.x ) = threadIdx.x;
 }
+template< typename RealType, typename IndexType >
+__global__ void addElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix )
+{
+
+   const IndexType column = threadIdx.x
+   if( threadIdx.x < matrix->getRows() )
+      ( *matrix )( threadIdx.x, threadIdx.x ) = threadIdx.x;
+}
+
 
 #endif /* HAVE_CUDA */
 

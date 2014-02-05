@@ -101,6 +101,7 @@ class tnlMatrix : public virtual tnlObject
 
    IndexType rows, columns;
 
+   tnlVector< Real, Device, Index > values;
 };
 
 #include <implementation/matrices/tnlMatrix_impl.h>

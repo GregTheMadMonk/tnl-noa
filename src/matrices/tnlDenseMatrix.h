@@ -20,13 +20,12 @@
 
 #include <core/tnlHost.h>
 #include <matrices/tnlMatrix.h>
-#include <core/arrays/tnlMultiArray.h>
+#include <core/arrays/tnlArray.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
-                       public tnlMultiArray< 2, Real, Device, Index >
+class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
 
@@ -143,7 +142,17 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >,
    bool load( tnlFile& file );
 
    void print( ostream& str ) const;
+
+   protected:
+
+   IndexType getElementIndex( const IndexType row,
+                              const IndexType column ) const;
+
+
 };
+
+
+
 
 #include <implementation/matrices/tnlDenseMatrix_impl.h>
 
