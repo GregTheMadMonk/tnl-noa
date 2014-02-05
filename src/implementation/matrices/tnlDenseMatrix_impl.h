@@ -120,12 +120,40 @@ void tnlDenseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+                                                            const IndexType column,
+                                                            const RealType& value )
+{
+   this->values.operator[]( this->getElementIndex( row, column ) ) = value;
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool tnlDenseMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                         const IndexType column,
                                                         const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
    return true;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+                                                            const IndexType column,
+                                                            const RealType& value,
+                                                            const RealType& thisElementMultiplicator )
+{
+   const IndexType elementIndex = this->getElementIndex( row, column );
+   if( thisElementMultiplicator == 1.0 )
+      this->values.operator[]( elementIndex ) += value;
+   else
+      this->values.operator[]( elementIndex ) =
+         thisElementMultiplicator * this->values.operator[]( elementIndex ) + value;
 }
 
 template< typename Real,
@@ -138,10 +166,29 @@ bool tnlDenseMatrix< Real, Device, Index >::addElement( const IndexType row,
 {
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
-      values->operator[]( elementIndex ) += value;
+      this->values.setElement( elementIndex,
+                               this->values.getElement( elementIndex ) + value );
    else
-      values->operator[]( elementIndex ) =
-         thisElementMultiplicator * values->operator[]( elementIndex ) + value;
+      this->values.setElement( elementIndex,
+                               thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
+                                                        const IndexType* columns,
+                                                        const RealType* values,
+                                                        const IndexType elements )
+{
+   tnlAssert( elements <= this->getColumns(),
+            cerr << " elements = " << elements
+                 << " this->columns = " << this->getColumns()
+                 << " this->getName() = " << this->getName() );
+   for( IndexType i = 0; i < elements; i++ )
+      this->setElementFast( row, columns[ i ], values[ i ] );
+   return true;
 }
 
 template< typename Real,
@@ -152,12 +199,31 @@ bool tnlDenseMatrix< Real, Device, Index >::setRow( const IndexType row,
                                                     const RealType* values,
                                                     const IndexType elements )
 {
-   tnlAssert( elements <= this->getDimensions().y(),
+   tnlAssert( elements <= this->getColumns(),
             cerr << " elements = " << elements
-                 << " this->columns = " << this->getDimensions().y()
+                 << " this->columns = " << this->getColumns()
                  << " this->getName() = " << this->getName() );
    for( IndexType i = 0; i < elements; i++ )
-      this->operator()( row, columns[ i ] ) = values[ i ];
+      this->setElement( row, columns[ i ], values[ i ] );
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlDenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
+                                                        const IndexType* columns,
+                                                        const RealType* values,
+                                                        const IndexType elements,
+                                                        const RealType& thisRowMultiplicator )
+{
+   tnlAssert( elements <= this->columns,
+            cerr << " elements = " << elements
+                 << " this->columns = " << this->columns
+                 << " this->getName() = " << this->getName() );
+   for( IndexType i = 0; i < elements; i++ )
+      this->setElementFast( row, columns[ i ],
+                            thisRowMultiplicator * this->getElementFast( row, columns[ i ] ) + values[ i ] );
    return true;
 }
 
@@ -176,8 +242,18 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
                  << " this->getName() = " << this->getName() );
    for( IndexType i = 0; i < elements; i++ )
       this->setElement( row, columns[ i ],
-                       thisRowMultiplicator * this->getElement( row, columns[ i ] ) + values[ i ] );
+                        thisRowMultiplicator * this->getElement( row, columns[ i ] ) + values[ i ] );
    return true;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+                                                            const IndexType column ) const
+{
+   return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
 template< typename Real,
@@ -187,6 +263,20 @@ Real tnlDenseMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                         const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlDenseMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+                                                        IndexType* columns,
+                                                        RealType* values ) const
+{
+   for( IndexType i = 0; i < this->getColumns(); i++ )
+   {
+      columns[ i ] = i;
+      values[ i ] = this->getElementFast( row, i );
+   }
 }
 
 template< typename Real,
@@ -202,6 +292,7 @@ void tnlDenseMatrix< Real, Device, Index >::getRow( const IndexType row,
       values[ i ] = this->getElement( row, i );
    }
 }
+
 
 template< typename Real,
           typename Device,

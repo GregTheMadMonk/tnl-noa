@@ -112,13 +112,13 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
    rowColumns.setSize( maxRowLength );
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
-      m.getRow( row,
-                rowColumns.getData(),
-                rowValues.getData() );
-      this->setRow( row,
+      m.getRowFast( row,
                     rowColumns.getData(),
-                    rowValues.getData(),
-                    rowLengths.getElement( row ) );
+                    rowValues.getData() );
+      this->setRowFast( row,
+                        rowColumns.getData(),
+                        rowValues.getData(),
+                        rowLengths.getElement( row ) );
    }
 }
 

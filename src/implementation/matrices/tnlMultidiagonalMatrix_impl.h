@@ -210,9 +210,9 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::setValue( const RealType& v 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexType row,
-                                                                  const IndexType column,
-                                                                  const Real& value )
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
+                                                                      const IndexType column,
+                                                                      const Real& value )
 {
    IndexType index;
    if( ! this->getElementIndex( row, column, index  ) )
@@ -224,10 +224,21 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexType row,
                                                                   const IndexType column,
-                                                                  const RealType& value,
-                                                                  const RealType& thisElementMultiplicator )
+                                                                  const Real& value )
+{
+   return this->setElementFast( row, column, value );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
+                                                                      const IndexType column,
+                                                                      const RealType& value,
+                                                                      const RealType& thisElementMultiplicator )
 {
    Index index;
    if( ! this->getElementIndex( row, column, index  ) )
@@ -239,10 +250,10 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType row,
-                                                              const IndexType* columns,
-                                                              const RealType* values,
-                                                              const IndexType numberOfElements )
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+                                                                  const IndexType* columns,
+                                                                  const RealType* values,
+                                                                  const IndexType numberOfElements )
 {
    // TODO: implement
 }
@@ -250,11 +261,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
-                                                              const IndexType* columns,
-                                                              const RealType* values,
-                                                              const IndexType numberOfElements,
-                                                              const RealType& thisElementMultiplicator )
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+                                                                  const IndexType* columns,
+                                                                  const RealType* values,
+                                                                  const IndexType numberOfElements,
+                                                                  const RealType& thisElementMultiplicator )
 {
    // TODO: implement
 }
@@ -262,8 +273,8 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                                const IndexType column ) const
+Real tnlMultidiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+                                                                    const IndexType column ) const
 {
    Index index;
    if( ! this->getElementIndex( row, column, index  ) )
@@ -274,9 +285,19 @@ Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                            IndexType* columns,
-                                                            RealType* values ) const
+Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                                const IndexType column ) const
+{
+   return this->getElementFast();
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+                                                                IndexType* columns,
+                                                                RealType* values ) const
 {
    IndexType pointer( 0 );
    for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )

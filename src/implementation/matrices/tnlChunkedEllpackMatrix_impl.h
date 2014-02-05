@@ -299,9 +299,9 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator != ( const tnlChun
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType row,
-                                                                           const IndexType column,
-                                                                           const Real& value )
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+                                                                     const IndexType column,
+                                                                     const Real& value )
 {
    return this->addElement( row, column, value, 0.0 );
 }
@@ -309,10 +309,21 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType row,
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                                  const IndexType column,
-                                                                 const RealType& value,
-                                                                 const RealType& thisElementMultiplicator )
+                                                                 const Real& value )
+{
+   return this->addElement( row, column, value, 0.0 );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+                                                                     const IndexType column,
+                                                                     const RealType& value,
+                                                                     const RealType& thisElementMultiplicator )
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
@@ -366,10 +377,10 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
-                                                               const IndexType* columnIndexes,
-                                                               const RealType* values,
-                                                               const IndexType elements )
+bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+                                                                   const IndexType* columnIndexes,
+                                                                   const RealType* values,
+                                                                   const IndexType elements )
 {
    const IndexType& sliceIndex = slicesToRowsMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
@@ -394,11 +405,11 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRow( const IndexType row,
-                                                               const IndexType* columns,
-                                                               const RealType* values,
-                                                               const IndexType numberOfElements,
-                                                               const RealType& thisElementMultiplicator )
+bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+                                                                   const IndexType* columns,
+                                                                   const RealType* values,
+                                                                   const IndexType numberOfElements,
+                                                                   const RealType& thisElementMultiplicator )
 {
    // TODO: implement
    return false;
@@ -407,8 +418,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRow( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                                 const IndexType column ) const
+Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+                                                                     const IndexType column ) const
 {
    const IndexType& sliceIndex = slicesToRowsMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
@@ -427,9 +438,18 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                             IndexType* columns,
-                                                             RealType* values ) const
+Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                                 const IndexType column ) const
+{
+   return this->getElementFast( row, column );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+                                                                 IndexType* columns,
+                                                                 RealType* values ) const
 {
    const IndexType& sliceIndex = slicesToRowsMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );

@@ -234,16 +234,16 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "test-multi-array-v" );
       const int size( 10 );
-      v. setDimensions( size );
+      CPPUNIT_ASSERT( v. setDimensions( size ) );
       for( int i = 0; i < size; i ++ )
          setDiagonalElement( v, i, 3.14147 );
       tnlFile file;
       file. open( "test-file.tnl", tnlWriteMode );
-      v. save( file );
+      CPPUNIT_ASSERT( v. save( file ) );
       file. close();
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "test-multi-array-u" );
       file. open( "test-file.tnl", tnlReadMode );
-      u. load( file );
+      CPPUNIT_ASSERT( u. load( file ) );
       file. close();
       CPPUNIT_ASSERT( u == v );
    }

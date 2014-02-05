@@ -55,19 +55,52 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool setElementFast( const IndexType row,
+                        const IndexType column,
+                        const RealType& value );
+
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool addElementFast( const IndexType row,
+                        const IndexType column,
+                        const RealType& value,
+                        const RealType& thisElementMultiplicator = 1.0 );
 
    bool addElement( const IndexType row,
                     const IndexType column,
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool setRowFast( const IndexType row,
+                    const IndexType* columnIndexes,
+                    const RealType* values,
+                    const IndexType elements );
+
    bool setRow( const IndexType row,
                 const IndexType* columnIndexes,
                 const RealType* values,
                 const IndexType elements );
+
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool addRowFast( const IndexType row,
+                    const IndexType* columns,
+                    const RealType* values,
+                    const IndexType numberOfElements,
+                    const RealType& thisElementMultiplicator = 1.0 );
 
    bool addRow( const IndexType row,
                 const IndexType* columns,
@@ -75,12 +108,27 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   RealType getElementFast( const IndexType row,
+                            const IndexType column ) const;
+
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void getRowFast( const IndexType row,
+                    IndexType* columns,
+                    RealType* values ) const;
 
    void getRow( const IndexType row,
                 IndexType* columns,
                 RealType* values ) const;
+
 
    template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,

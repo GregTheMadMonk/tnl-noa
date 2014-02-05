@@ -418,10 +418,12 @@ ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-extern template class tnlArray< float, tnlHost, int >;
+// TODO: this does not work with CUDA 5.5 - fix it later
+
+/*extern template class tnlArray< float, tnlHost, int >;
 extern template class tnlArray< double, tnlHost, int >;
 extern template class tnlArray< float, tnlHost, long int >;
-extern template class tnlArray< double, tnlHost, long int >;
+extern template class tnlArray< double, tnlHost, long int >;*/
 
 #ifdef HAVE_CUDA
 /*extern template class tnlArray< float, tnlCuda, int >;

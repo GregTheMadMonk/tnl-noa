@@ -152,20 +152,31 @@ bool tnlCSRMatrix< Real, Device, Index >::operator != ( const tnlCSRMatrix< Real
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
-                                                                           const IndexType column,
-                                                                           const Real& value )
+bool tnlCSRMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+                                                          const IndexType column,
+                                                          const Real& value )
 {
-   return this->addElement( row, column, value, 0.0 );
+   return this->addElementFast( row, column, value, 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
+bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                       const IndexType column,
-                                                      const RealType& value,
-                                                      const RealType& thisElementMultiplicator )
+                                                      const Real& value )
+{
+   return this->addElementFast( row, column, value, 0.0 );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+                                                          const IndexType column,
+                                                          const RealType& value,
+                                                          const RealType& thisElementMultiplicator )
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
@@ -210,10 +221,10 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
-                                                    const IndexType* columnIndexes,
-                                                    const RealType* values,
-                                                    const IndexType elements )
+bool tnlCSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+                                                        const IndexType* columnIndexes,
+                                                        const RealType* values,
+                                                        const IndexType elements )
 {
    IndexType elementPointer = this->rowPointers[ row ];
    const IndexType rowLength = this->rowPointers[ row + 1 ] - elementPointer;
@@ -234,11 +245,11 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
-                                                    const IndexType* columns,
-                                                    const RealType* values,
-                                                    const IndexType numberOfElements,
-                                                    const RealType& thisElementMultiplicator )
+bool tnlCSRMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+                                                        const IndexType* columns,
+                                                        const RealType* values,
+                                                        const IndexType numberOfElements,
+                                                        const RealType& thisElementMultiplicator )
 {
    // TODO: implement
    return false;
@@ -247,8 +258,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
-                                                      const IndexType column ) const
+Real tnlCSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+                                                          const IndexType column ) const
 {
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
@@ -262,9 +273,18 @@ Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlCSRMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                  IndexType* columns,
-                                                  RealType* values ) const
+Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
+                                                      const IndexType column ) const
+{
+   return this->getElementFast( row, column );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+                                                      IndexType* columns,
+                                                      RealType* values ) const
 {
    IndexType elementPointer = this->rowPointers[ row ];
    const IndexType rowLength = this->rowPointers[ row + 1 ] - elementPointer;
