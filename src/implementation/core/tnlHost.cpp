@@ -25,11 +25,6 @@ tnlString tnlHost::getDeviceType()
    return tnlString( "tnlHost" );
 };
 
-tnlDeviceEnum tnlHost::getDevice()
-{
-   return tnlHostDevice;
-};
-
 size_t tnlHost::getFreeMemory()
 {
    long pages = sysconf(_SC_PHYS_PAGES);

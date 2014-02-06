@@ -210,6 +210,9 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::setValue( const RealType& v 
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                       const IndexType column,
                                                                       const Real& value )
@@ -235,6 +238,9 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                       const IndexType column,
                                                                       const RealType& value,
@@ -250,6 +256,20 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElementFast( const Inde
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
+                                                                  const IndexType column,
+                                                                  const RealType& value,
+                                                                  const RealType& thisElementMultiplicator )
+{
+   return this->addElementFast( row, column, value, thisElementMultiplicator );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                                   const IndexType* columns,
                                                                   const RealType* values,
@@ -261,6 +281,21 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType row,
+                                                              const IndexType* columns,
+                                                              const RealType* values,
+                                                              const IndexType numberOfElements )
+{
+   // TODO: implement
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                   const IndexType* columns,
                                                                   const RealType* values,
@@ -273,6 +308,21 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
+                                                              const IndexType* columns,
+                                                              const RealType* values,
+                                                              const IndexType numberOfElements,
+                                                              const RealType& thisElementMultiplicator )
+{
+   // TODO: implement
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real tnlMultidiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                     const IndexType column ) const
 {
@@ -288,13 +338,16 @@ template< typename Real,
 Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                                 const IndexType column ) const
 {
-   return this->getElementFast();
+   return this->getElementFast( row, column );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                                 IndexType* columns,
                                                                 RealType* values ) const
@@ -310,6 +363,16 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType 
          pointer++;
       }
    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                            IndexType* columns,
+                                                            RealType* values ) const
+{
+   return this->getRowFast( row, columns, values );
 }
 
 template< typename Real,

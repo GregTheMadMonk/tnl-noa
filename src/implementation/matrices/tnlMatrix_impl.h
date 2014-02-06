@@ -112,13 +112,13 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
    rowColumns.setSize( maxRowLength );
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
-      m.getRowFast( row,
+      m.getRow( row,
                     rowColumns.getData(),
                     rowValues.getData() );
-      this->setRowFast( row,
-                        rowColumns.getData(),
-                        rowValues.getData(),
-                        rowLengths.getElement( row ) );
+      this->setRow( row,
+                    rowColumns.getData(),
+                    rowValues.getData(),
+                    rowLengths.getElement( row ) );
    }
 }
 
@@ -162,6 +162,13 @@ bool tnlMatrix< Real, Device, Index >::load( tnlFile& file )
       return false;
 #endif      
    return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
+{
 }
 
 #endif /* TNLMATRIX_IMPL_H_ */

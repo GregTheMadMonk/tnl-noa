@@ -120,6 +120,9 @@ void tnlDenseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlDenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
@@ -143,6 +146,9 @@ bool tnlDenseMatrix< Real, Device, Index >::setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlDenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value,
@@ -177,6 +183,9 @@ bool tnlDenseMatrix< Real, Device, Index >::addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlDenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
@@ -211,6 +220,9 @@ bool tnlDenseMatrix< Real, Device, Index >::setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlDenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
@@ -250,6 +262,9 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                             const IndexType column ) const
 {
@@ -268,6 +283,9 @@ Real tnlDenseMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlDenseMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                         IndexType* columns,
                                                         RealType* values ) const
@@ -491,7 +509,7 @@ void tnlDenseMatrix< Real, Device, Index >::print( ostream& str ) const
    {
       str <<"Row: " << row << " -> ";
       for( IndexType column = 0; column < this->getColumns(); column++ )
-         str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
+         str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
       str << endl;
    }
 }
@@ -499,6 +517,9 @@ void tnlDenseMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlDenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {

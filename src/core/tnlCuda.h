@@ -30,7 +30,10 @@ class tnlCuda
 
    static tnlString getDeviceType();
 
-   static tnlDeviceEnum getDevice();
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   static inline tnlDeviceEnum getDevice() { return tnlCudaDevice; };
 
    static int getMaxGridSize();
 

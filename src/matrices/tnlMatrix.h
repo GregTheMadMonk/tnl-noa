@@ -64,52 +64,25 @@ class tnlMatrix : public virtual tnlObject
 #endif
    IndexType getColumns() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual bool setElementFast( const IndexType row,
-                                const IndexType column,
-                                const RealType& value ) = 0;
+   /****
+    * TODO: The fast variants of the following methods cannot be virtual.
+    * If they were, they could not be used in the CUDA kernels. If CUDA allows it
+    * in the future and it does not slow down, declare them as virtual here.
+    */
 
    virtual bool setElement( const IndexType row,
                             const IndexType column,
                             const RealType& value ) = 0;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual bool addElementFast( const IndexType row,
-                                const IndexType column,
-                                const RealType& value,
-                                const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
    virtual bool addElement( const IndexType row,
                             const IndexType column,
                             const RealType& value,
                             const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual bool setRowFast( const IndexType row,
-                            const IndexType* columns,
-                            const RealType* values,
-                            const IndexType numberOfElements ) = 0;
-
    virtual bool setRow( const IndexType row,
                         const IndexType* columns,
                         const RealType* values,
                         const IndexType numberOfElements ) = 0;
-
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual bool addRowFast( const IndexType row,
-                            const IndexType* columns,
-                            const RealType* values,
-                            const IndexType numberOfElements,
-                            const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
    virtual bool addRow( const IndexType row,
                         const IndexType* columns,
@@ -117,22 +90,8 @@ class tnlMatrix : public virtual tnlObject
                         const IndexType numberOfElements,
                         const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual Real getElementFast( const IndexType row,
-                                const IndexType column ) const = 0;
-
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
-
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   virtual void getRowFast( const IndexType row,
-                            IndexType* columns,
-                            RealType* values ) const = 0;
 
    virtual void getRow( const IndexType row,
                         IndexType* columns,
@@ -144,12 +103,21 @@ class tnlMatrix : public virtual tnlObject
 
    virtual bool load( tnlFile& file );
 
+   virtual void print( ostream& str ) const;
+
    protected:
 
    IndexType rows, columns;
 
    tnlVector< Real, Device, Index > values;
 };
+
+template< typename Real, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMatrix< Real, Device, Index >& m )
+{
+   m.print( str );
+   return str;
+}
 
 #include <implementation/matrices/tnlMatrix_impl.h>
 

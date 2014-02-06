@@ -57,8 +57,8 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
-      /*suiteOfTests -> addTest( new TestCallerType( "setRowTest", &TesterType::setRowTest ) );
+      /*suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setRowTest", &TesterType::setRowTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );
@@ -93,8 +93,11 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_m = tnlCuda::passToDevice( m );
+         CPPUNIT_ASSERT( checkCudaDevice );
          setElementTestKernel<<< 1, 16 >>>( kernel_m );
+         CPPUNIT_ASSERT( checkCudaDevice );
          tnlCuda::freeFromDevice( kernel_m );
+         CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
       for( int i = 0; i < 10; i++ )
@@ -252,16 +255,16 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 template< typename RealType, typename IndexType >
 __global__ void setElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix )
 {
-   //if( threadIdx.x < matrix->getRows() )
-   //   ( *matrix )( threadIdx.x, threadIdx.x ) = threadIdx.x;
+   if( threadIdx.x < matrix->getRows() )
+      matrix->setElementFast( threadIdx.x, threadIdx.x, threadIdx.x );
 }
 template< typename RealType, typename IndexType >
 __global__ void addElementTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix )
 {
 
    const IndexType column = threadIdx.x;
-   //if( threadIdx.x < matrix->getRows() )
-   //   ( *matrix )( threadIdx.x, threadIdx.x ) = threadIdx.x;
+   if( threadIdx.x < matrix->getRows() )
+      matrix->addElementFast( threadIdx.x, threadIdx.x, threadIdx.x );
 }
 
 

@@ -299,11 +299,14 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator != ( const tnlChun
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const Real& value )
 {
-   return this->addElement( row, column, value, 0.0 );
+   return this->addElementFast( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -320,6 +323,9 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const RealType& value,
@@ -377,6 +383,21 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
 template< typename Real,
           typename Device,
           typename Index >
+
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType row,
+                                                                 const IndexType column,
+                                                                 const RealType& value,
+                                                                 const RealType& thisElementMultiplicator )
+{
+   return this->addElementFast( row, column, value, thisElementMultiplicator );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                                    const IndexType* columnIndexes,
                                                                    const RealType* values,
@@ -405,6 +426,20 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
+                                                               const IndexType* columnIndexes,
+                                                               const RealType* values,
+                                                               const IndexType elements )
+{
+   return this->setRowFast( row, columnIndexes, values, elements );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                    const IndexType* columns,
                                                                    const RealType* values,
@@ -418,6 +453,21 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
+bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRow( const IndexType row,
+                                                               const IndexType* columns,
+                                                               const RealType* values,
+                                                               const IndexType numberOfElements,
+                                                               const RealType& thisElementMultiplicator )
+{
+   return this->addRowFast( row, columns, values, numberOfElements, thisElementMultiplicator );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                      const IndexType column ) const
 {
@@ -447,6 +497,9 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                                  IndexType* columns,
                                                                  RealType* values ) const
@@ -463,6 +516,16 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
       values[ i ] = this->values[ elementPointer ];
       elementPointer++;
    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                             IndexType* columns,
+                                                             RealType* values ) const
+{
+   return this->getRowFast( row, columns, values );
 }
 
 template< typename Real,

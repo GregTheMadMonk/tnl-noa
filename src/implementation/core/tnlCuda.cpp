@@ -27,11 +27,6 @@ tnlString tnlCuda :: getDeviceType()
    return tnlString( "tnlCuda" );
 }
 
-tnlDeviceEnum tnlCuda :: getDevice()
-{
-   return tnlCudaDevice;
-};
-
 int tnlCuda :: getMaxGridSize()
 {
    return maxGridSize;

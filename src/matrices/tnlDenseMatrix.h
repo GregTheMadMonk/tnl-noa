@@ -192,14 +192,14 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    protected:
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
 
 };
-
-
-
 
 #include <implementation/matrices/tnlDenseMatrix_impl.h>
 
