@@ -120,6 +120,15 @@ void tnlDenseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+void tnlDenseMatrix< Real, Device, Index >::setValue( const Real& value )
+{
+   this->values.setValue( value );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -160,6 +169,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
    else
       this->values.operator[]( elementIndex ) =
          thisElementMultiplicator * this->values.operator[]( elementIndex ) + value;
+   return true;
 }
 
 template< typename Real,
@@ -177,6 +187,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addElement( const IndexType row,
    else
       this->values.setElement( elementIndex,
                                thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
+   return true;
 }
 
 
@@ -316,14 +327,32 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 typename Vector::RealType tnlDenseMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                    const Vector& vector ) const
 {
    RealType sum( 0.0 );
    for( IndexType column = 0; column < this->getColumns(); column++ )
-      sum += this->getElement( row, column ) * vector.getElement( column );
+      sum += this->getElementFast( row, column ) * vector[ column ];
    return sum;
 }
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          typename Vector >
+__global__ void tnlDenseMatrixVectorProductCudaKernel( tnlDenseMatrix< Real, tnlCuda, Index >* matrix,
+                                                       const Vector* inVector,
+                                                       Vector* outVector,
+                                                       const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx < matrix->getRows() )
+      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
+}
+#endif
 
 template< typename Real,
           typename Device,
@@ -343,8 +372,31 @@ void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const Vector& inVecto
                     << "Vector size: " << outVector.getSize() << endl
                     << "Vector name: " << outVector.getName() << endl );
 
-   for( IndexType row = 0; row < this->getRows(); row++ )
-      outVector[ row ] = rowVectorProduct( row, inVector );
+   if( Device::getDevice() == tnlHostDevice )
+      for( IndexType row = 0; row < this->getRows(); row++ )
+         outVector[ row ] = rowVectorProduct( row, inVector );
+   if( Device::getDevice() == tnlCudaDevice )
+   {
+#ifdef HAVE_CUDA
+      ThisType* kernel_this = tnlCuda::passToDevice( *this );
+      Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
+      Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
+      dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+      const IndexType cudaBlocks = roundUpDivision( this->getRows(), cudaBlockSize.x );
+      const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+      {
+         if( gridIdx == cudaGrids - 1 )
+            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+         tnlDenseMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                                 ( kernel_this, kernel_inVector, kernel_outVector, gridIdx );
+      }
+      tnlCuda::freeFromDevice( kernel_this );
+      tnlCuda::freeFromDevice( kernel_inVector );
+      tnlCuda::freeFromDevice( kernel_outVector );
+      checkCudaDevice;
+#endif
+   }
 }
 
 template< typename Real,
@@ -365,20 +417,29 @@ void tnlDenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
                  << "That matrix name: " << matrix.getName() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-   {
-      for( IndexType row = 0; row < this->getRows(); row++ )
-         for( IndexType column = 0; column < this->getColumns(); column++ )
-            this->operator()( row, column ) += matrixMultiplicator*matrix( row, column );
-   }
+      this->values.alphaXPlusY( matrixMultiplicator, matrix.values );
    else
-   {
-      for( IndexType row = 0; row < this->getRows(); row++ )
-         for( IndexType column = 0; column < this->getColumns(); column++ )
-            this->operator()( row, column ) =
-                thisMatrixMultiplicator * this->operator()( row, column) +
-                   matrixMultiplicator * matrix( row, column );
-   }
+      this->values.alphaXPlusBetaY( matrixMultiplicator, matrix.values, thisMatrixMultiplicator );
 }
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          typename Matrix1,
+          typename Matrix2,
+          int tileDim,
+          int tileRowBlockSize >
+__global__ void tnlDenseMatrixMatrixProductKernel( tnlDenseMatrix< Real, tnlCuda, Index >* reusltMatrix,
+                                                   const Matrix1* matrix1,
+                                                   const Matrix2* matrix2,
+                                                   const Real matrix1Multiplicator,
+                                                   const Real matrix2Multiplicator,
+                                                   const Index gridIdx_x,
+                                                   const Index gridIdx_y )
+{
+
+}
+#endif
 
 template< typename Real,
           typename Device,
@@ -402,25 +463,70 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
                  << "Matrix2 rows: " << matrix2.getRows() << endl
                  << "Matrix2 name: " << matrix2.getName() << endl );
 
-   for( IndexType i = 0; i < this->getRows(); i += tileDim )
-      for( IndexType j = 0; j < this->getColumns(); j += tileDim )
-      {
-         const IndexType tileRows = Min( tileDim, this->getRows() - i );
-         const IndexType tileColumns = Min( tileDim, this->getColumns() - j );
-         for( IndexType i1 = i; i1 < i + tileRows; i1++ )
-            for( IndexType j1 = j; j1 < j + tileColumns; j1++ )
-               this->operator()( i1, j1 ) = 0.0;
-
-         for( IndexType k = 0; k < matrix1.getColumns(); k += tileDim )
+   if( Device::getDevice() == tnlHostDevice )
+      for( IndexType i = 0; i < this->getRows(); i += tileDim )
+         for( IndexType j = 0; j < this->getColumns(); j += tileDim )
          {
-            const IndexType lastK = Min( k + tileDim, matrix1.getColumns() );
-            for( IndexType i1 = 0; i1 < tileRows; i1++ )
-               for( IndexType j1 = 0; j1 < tileColumns; j1++ )
-                  for( IndexType k1 = k; k1 < lastK; k1++ )
-                     this->operator()( i + i1, j + j1 ) +=
-                        matrix1( i + i1, k1 ) * matrix2( k1, j + j1 );
+            const IndexType tileRows = Min( tileDim, this->getRows() - i );
+            const IndexType tileColumns = Min( tileDim, this->getColumns() - j );
+            for( IndexType i1 = i; i1 < i + tileRows; i1++ )
+               for( IndexType j1 = j; j1 < j + tileColumns; j1++ )
+                  this->setElementFast( i1, j1, 0.0 );
+
+            for( IndexType k = 0; k < matrix1.getColumns(); k += tileDim )
+            {
+               const IndexType lastK = Min( k + tileDim, matrix1.getColumns() );
+               for( IndexType i1 = 0; i1 < tileRows; i1++ )
+                  for( IndexType j1 = 0; j1 < tileColumns; j1++ )
+                     for( IndexType k1 = k; k1 < lastK; k1++ )
+                        this->addElementFast( i + i1, j + j1,
+                            matrix1.getElementFast( i + i1, k1 ) * matrix2.getElementFast( k1, j + j1 ) );
+            }
          }
-      }
+   if( Device::getDevice() == tnlCudaDevice )
+   {
+#ifdef HAVE_CUDA
+      dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
+      const IndexType rowTiles = roundUpDivision( this->getRows(), tileDim );
+      const IndexType columnTiles = roundUpDivision( this->getColumns(), tileDim );
+      cudaBlockSize.x = blockXSize;
+      cudaBlockSize.y = blockYSize;
+      const IndexType rowGrids = roundUpDivision( rowTiles, tnlCuda::getMaxGridSize() );
+      const IndexType columnGrids = roundUpDivision( columnTiles, tnlCuda::getMaxGridSize() );
+
+      for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
+         for( IndexType gridIdx_y = 0; gridIdx_y < rowGrids; gridIdx_y++ )
+         {
+            cudaGridSize.x = cudaGridSize.y = tnlCuda::getMaxGridSize();
+            if( gridIdx_x == columnGrids - 1 )
+               cudaGridSize.x = columnTiles % tnlCuda::getMaxGridSize();
+            if( gridIdx_y == rowGrids - 1 )
+               cudaGridSize.y = rowTiles % tnlCuda::getMaxGridSize();
+            ThisType* this_kernel = tnlCuda::passToDevice( *this );
+            Matrix1* matrix1_kernel = tnlCuda::passToDevice( matrix1 );
+            Matrix2* matrix2_kernel = tnlCuda::passToDevice( matrix2 );
+            tnlDenseMatrixMatrixProductKernel< Real,
+                                               Index,
+                                               Matrix1,
+                                               Matrix2,
+                                               tileDim,
+                                               tileRowBlockSize >
+                                           <<< cudaGridSize,
+                                               cudaBlockSize,
+                                               3*tileDim*tileDim >>>
+                                             ( this_kernel,
+                                               matrix1_kernel,
+                                               matrix2_kernel,
+                                               matrix1Multiplicator,
+                                               matrix2Multiplicator,
+                                               gridIdx_x,
+                                               gridIdx_y );
+            tnlCuda::freeFromDevice( this_kernel );
+            tnlCuda::freeFromDevice( matrix1_kernel );
+            tnlCuda::freeFromDevice( matrix2_kernel );
+         }
+#endif
+   }
 }
 
 template< typename Real,

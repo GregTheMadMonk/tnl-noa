@@ -20,6 +20,33 @@
 
 #ifdef HAVE_CUDA
 
+#ifdef HAVE_CUDA
+__host__ __device__
+#endif
+inline tnlDeviceEnum tnlCuda::getDevice()
+{
+   return tnlCudaDevice;
+};
+
+#ifdef HAVE_CUDA
+__host__ __device__
+#endif
+inline int tnlCuda::getMaxGridSize()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 65536;
+};
+
+#ifdef HAVE_CUDA
+__host__ __device__
+#endif
+inline int tnlCuda::getMaxBlockSize()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 1024;
+};
+
+
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 {

@@ -33,15 +33,17 @@ class tnlCuda
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   static inline tnlDeviceEnum getDevice() { return tnlCudaDevice; };
+   static inline tnlDeviceEnum getDevice();
 
-   static int getMaxGridSize();
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   static inline int getMaxGridSize();
 
-   static void setMaxGridSize( int newMaxGridSize );
-
-   static int getMaxBlockSize();
-
-   static void setMaxBlockSize( int newMaxBlockSize );
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   static inline int getMaxBlockSize();
 
    static int getGPUTransferBufferSize();
 
@@ -64,10 +66,6 @@ class tnlCuda
 
 
    static bool checkDevice( const char* file_name, int line );
-
-   protected:
-
-   static int maxGridSize, maxBlockSize;
 };
 
 #define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )

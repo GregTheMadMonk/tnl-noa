@@ -18,33 +18,9 @@
 #include <core/tnlCuda.h>
 #include <tnlConfig.h>
  
-int tnlCuda :: maxGridSize = maxCudaGridSize;
- 
-int tnlCuda :: maxBlockSize = maxCudaBlockSize;
-
 tnlString tnlCuda :: getDeviceType()
 {
    return tnlString( "tnlCuda" );
-}
-
-int tnlCuda :: getMaxGridSize()
-{
-   return maxGridSize;
-}
-
-void tnlCuda :: setMaxGridSize( int newMaxGridSize )
-{
-   maxGridSize = newMaxGridSize;
-}
-
-int tnlCuda :: getMaxBlockSize()
-{
-   return maxBlockSize;
-}
-
-void tnlCuda :: setMaxBlockSize( int newMaxBlockSize )
-{
-   maxBlockSize = newMaxBlockSize;
 }
 
 int tnlCuda::getGPUTransferBufferSize()

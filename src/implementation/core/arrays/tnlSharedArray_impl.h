@@ -376,6 +376,7 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
          str << ", " << v. getElement( i );
    }
    str << " ]";
+   return str;
 }
 
 //}; // namespace implementation

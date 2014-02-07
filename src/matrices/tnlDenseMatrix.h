@@ -33,6 +33,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef tnlDenseMatrix< Real, Device, Index > ThisType;
 
    tnlDenseMatrix();
 
@@ -138,6 +139,9 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 RealType* values ) const;
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
