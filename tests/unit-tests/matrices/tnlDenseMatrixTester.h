@@ -70,7 +70,7 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "matrixProductTest", &TesterType::matrixProductTest ) );
-      /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );*/
+      suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
 
       return suiteOfTests;
    }
@@ -319,15 +319,28 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            m( i, j ) = i*size + j;
+            m.setElement( i, j, i*size + j );
 
       MatrixType mTransposed;
       mTransposed.setLike( m );
-      mTransposed. template getTransposition< MatrixType, 32 >( m );
+      mTransposed. template getTransposition< MatrixType, 4 >( m );
+
+      //cout << m << endl;
+      //cout << mTransposed << endl;
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
             CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
+
+      mTransposed. template getTransposition< MatrixType, 5 >( m );
+
+      //cout << m << endl;
+      //cout << mTransposed << endl;
+
+      for( int i = 0; i < size; i++ )
+         for( int j = 0; j < size; j++ )
+            CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
+
    }
 
 

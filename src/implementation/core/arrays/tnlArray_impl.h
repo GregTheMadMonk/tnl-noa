@@ -176,7 +176,6 @@ Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
-   //return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,
@@ -193,7 +192,6 @@ const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) cons
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
-   //return tnlArrayOperations< Device > :: getArrayElementReference( this -> data, i );
 };
 
 template< typename Element,

@@ -24,6 +24,7 @@
 
 /***
  * This function returns minimum of two numbers stored on the device.
+ * TODO: Make it tnlMin, tnlMax etc.
  */
 template< class T > __device__ T tnlCudaMin( const T& a,
                                              const T& b )

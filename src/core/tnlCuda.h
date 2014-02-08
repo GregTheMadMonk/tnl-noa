@@ -45,6 +45,17 @@ class tnlCuda
 #endif
    static inline int getMaxBlockSize();
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+static inline int getWarpSize();
+
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   static inline int getNumberOfSharedMemoryBanks();
+
    static int getGPUTransferBufferSize();
 
    static size_t getFreeMemory();
@@ -56,10 +67,6 @@ class tnlCuda
    static void freeFromDevice( ObjectType* object );
 
 #ifdef HAVE_CUDA
-   static inline __host__ __device__ int getNumberOfSharedMemoryBanks();
-
-   static inline __host__ __device__ int getWarpSize();
-
    template< typename Index >
    static __device__ Index getInterleaving( const Index index );
 #endif

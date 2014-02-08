@@ -46,6 +46,24 @@ inline int tnlCuda::getMaxBlockSize()
    return 1024;
 };
 
+#ifdef HAVE_CUDA
+__host__ __device__
+#endif
+inline int tnlCuda::getWarpSize()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 32;
+}
+
+#ifdef HAVE_CUDA
+__host__ __device__
+#endif
+inline int tnlCuda::getNumberOfSharedMemoryBanks()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 32;
+}
+
 
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
@@ -74,16 +92,6 @@ void tnlCuda::freeFromDevice( ObjectType* deviceObject )
 {
    cudaFree( deviceObject );
    checkCudaDevice;
-}
-
-inline __host__ __device__ int tnlCuda::getNumberOfSharedMemoryBanks()
-{
-   return 32;
-}
-
-inline __host__ __device__ int tnlCuda::getWarpSize()
-{
-   return 32;
 }
 
 template< typename Index >

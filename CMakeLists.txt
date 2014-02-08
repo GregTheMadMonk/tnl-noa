@@ -49,7 +49,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA;-keep)
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
         if( CUDA_ARCHITECTURE STREQUAL "2.0" )
             set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DCUDA_ARCH=20)            
         endif()    
