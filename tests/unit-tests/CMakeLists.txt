@@ -23,8 +23,7 @@ if( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
 else()
-    ADD_EXECUTABLE( tnl-unit-tests${mpiExt}${debugExt} ${headers} tnl-unit-tests.cpp 
-                    OPTIONS -arch sm_20 -shared )
+    ADD_EXECUTABLE( tnl-unit-tests${mpiExt}${debugExt} ${headers} tnl-unit-tests.cpp )
     TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
 endif()

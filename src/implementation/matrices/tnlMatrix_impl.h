@@ -137,7 +137,7 @@ bool tnlMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! tnlObject::save( file ) ||
        ! file.write( &this->rows ) ||
        ! file.write( &this->columns ) ||
-       ! this->values.save>( file ) )
+       ! this->values.save( file ) )
       return false;
 #endif      
    return true;
