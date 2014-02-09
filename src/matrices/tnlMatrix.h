@@ -109,6 +109,8 @@ class tnlMatrix : public virtual tnlObject
 
    IndexType rows, columns;
 
+   public: // TODO: remove this
+
    tnlVector< Real, Device, Index > values;
 };
 

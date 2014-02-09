@@ -314,38 +314,34 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 
    void matrixTranspositionTest()
    {
-      const int size = 10;
+      const int alignedSize = 64;
       MatrixType m;
-      m.setDimensions( 10, 10 );
-      for( int i = 0; i < size; i++ )
-         for( int j = 0; j < size; j++ )
-            m.setElement( i, j, i*size + j );
+      m.setDimensions( alignedSize, alignedSize );
+      for( int i = 0; i < alignedSize; i++ )
+         for( int j = 0; j < alignedSize; j++ )
+            m.setElement( i, j, i*alignedSize + j );
 
       MatrixType mTransposed;
       mTransposed.setLike( m );
-      mTransposed. template getTransposition< MatrixType, 4 >( m );
+      mTransposed. template getTransposition< MatrixType, 32 >( m );
 
-      //cout << m << endl;
-      //cout << mTransposed << endl;
-
-      for( int i = 0; i < size; i++ )
-         for( int j = 0; j < size; j++ )
+      for( int i = 0; i < alignedSize; i++ )
+         for( int j = 0; j < alignedSize; j++ )
             CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
 
-      mTransposed. template getTransposition< MatrixType, 5 >( m );
+      const int nonAlignedSize = 50;
+      m.setDimensions( nonAlignedSize, nonAlignedSize );
+      for( int i = 0; i < nonAlignedSize; i++ )
+         for( int j = 0; j < nonAlignedSize; j++ )
+            m.setElement( i, j, i*nonAlignedSize + j );
 
-      //cout << m << endl;
-      //cout << mTransposed << endl;
+      mTransposed.setLike( m );
+      mTransposed. template getTransposition< MatrixType, 32 >( m );
 
-      for( int i = 0; i < size; i++ )
-         for( int j = 0; j < size; j++ )
+      for( int i = 0; i < nonAlignedSize; i++ )
+         for( int j = 0; j < nonAlignedSize; j++ )
             CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
-
    }
-
-
-
-
 };
 
 #ifdef HAVE_CUDA

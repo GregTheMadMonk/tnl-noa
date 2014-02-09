@@ -140,6 +140,9 @@ bool tnlDenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
 {
+   tnlAssert( row >= 0 && row < this->getRows() &&
+              column >= 0 && column < this->getColumns(),
+              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
    this->values.operator[]( this->getElementIndex( row, column ) ) = value;
    return true;
 }
@@ -167,6 +170,9 @@ bool tnlDenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                             const RealType& value,
                                                             const RealType& thisElementMultiplicator )
 {
+   tnlAssert( row >= 0 && row < this->getRows() &&
+              column >= 0 && column < this->getColumns(),
+              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
       this->values.operator[]( elementIndex ) += value;
@@ -283,6 +289,9 @@ template< typename Real,
 Real tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                             const IndexType column ) const
 {
+   tnlAssert( row >= 0 && row < this->getRows() &&
+              column >= 0 && column < this->getColumns(),
+              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -624,16 +633,21 @@ template< typename Real,
           int tileRowBlockSize >
 __global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, tnlCuda, Index >* resultMatrix,
                                                           const Matrix* inputMatrix,
+                                                          const Real matrixMultiplicator,
                                                           const Index gridIdx_x,
                                                           const Index gridIdx_y )
 {
    __shared__ Real tile[ tileDim*tileDim ];
 
+   const Index columns = inputMatrix->getColumns();
+   const Index rows = inputMatrix->getRows();
+
+
    /****
     * Diagonal mapping of the CUDA blocks
     */
    Index blockIdx_x, blockIdx_y;
-   if( inputMatrix->getColumns() == inputMatrix->getRows() )
+   if( columns == rows )
    {
       blockIdx_y = blockIdx.x;
       blockIdx_x = (blockIdx.x+blockIdx.y)%gridDim.x;
@@ -652,13 +666,13 @@ __global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, 
       ( gridIdx_y*gridDim.y + blockIdx_y )*tileDim + threadIdx.y;
    const Index readColumnPosition =
       ( gridIdx_x*gridDim.x + blockIdx_x )*tileDim + threadIdx.x;
-   //const Index readOffset = readRowPosition * columns + readColumnPosition;
    for( Index rowBlock = 0;
         rowBlock < tileDim;
         rowBlock += tileRowBlockSize )
    {
       tile[ tnlCuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
-         inputMatrix->getElementFast( readRowPosition + rowBlock, readColumnPosition );
+               inputMatrix->getElementFast( readColumnPosition,
+                                            readRowPosition + rowBlock );
    }
    __syncthreads();
 
@@ -669,15 +683,14 @@ __global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, 
       ( gridIdx_x*gridDim.x + blockIdx_x )*tileDim + threadIdx.y;
    const Index writeColumnPosition =
       ( gridIdx_y*gridDim.y + blockIdx_y )*tileDim + threadIdx.x;
-   //const Index writeOffset = writeRowPosition * inputMatrixrows + writeColumnPosition;
    for( Index rowBlock = 0;
         rowBlock < tileDim;
         rowBlock += tileRowBlockSize )
    {
       resultMatrix->setElementFast( writeColumnPosition,
                                     writeRowPosition + rowBlock,
-                                    tile[ tnlCuda::getInterleaving(
-                                       ( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ) ] );
+                                    matrixMultiplicator * tile[ tnlCuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
+
    }
 
 }
@@ -689,16 +702,20 @@ template< typename Real,
           int tileRowBlockSize >
 __global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Real, tnlCuda, Index >* resultMatrix,
                                                              const Matrix* inputMatrix,
+                                                             const Real matrixMultiplicator,
                                                              const Index gridIdx_x,
                                                              const Index gridIdx_y )
 {
    __shared__ Real tile[ tileDim*tileDim ];
 
+   const Index columns = inputMatrix->getColumns();
+   const Index rows = inputMatrix->getRows();
+
    /****
     * Diagonal mapping of the CUDA blocks
     */
    Index blockIdx_x, blockIdx_y;
-   if( inputMatrix->getColumns() == inputMatrix->getRows() )
+   if( columns == rows )
    {
       blockIdx_y = blockIdx.x;
       blockIdx_x = (blockIdx.x+blockIdx.y)%gridDim.x;
@@ -717,18 +734,17 @@ __global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Rea
       ( gridIdx_y*gridDim.y + blockIdx_y )*tileDim + threadIdx.y;
    const Index readColumnPosition =
       ( gridIdx_x*gridDim.x + blockIdx_x )*tileDim + threadIdx.x;
-   if( readColumnPosition < inputMatrix->getColumns() )
+   if( readColumnPosition < columns )
    {
-      //const Index readOffset = readRowPosition * columns + readColumnPosition;
+      const Index readOffset = readRowPosition * columns + readColumnPosition;
       for( Index rowBlock = 0;
            rowBlock < tileDim;
            rowBlock += tileRowBlockSize )
       {
-         if( readRowPosition + rowBlock < inputMatrix->getRows() )
-            tile[ tnlCuda::getInterleaving(
-                  ( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ) ] =
-               inputMatrix->getElementFast( readRowPosition + rowBlock, readColumnPosition );
-
+         if( readRowPosition + rowBlock < rows )
+            tile[ tnlCuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
+               inputMatrix->getElementFast( readColumnPosition,
+                                            readRowPosition + rowBlock );
       }
    }
    __syncthreads();
@@ -740,20 +756,20 @@ __global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Rea
       ( gridIdx_x*gridDim.x + blockIdx_x )*tileDim + threadIdx.y;
    const Index writeColumnPosition =
       ( gridIdx_y*gridDim.y + blockIdx_y )*tileDim + threadIdx.x;
-   if( writeColumnPosition < inputMatrix->getRows() )
+   if( writeColumnPosition < rows )
    {
-      //const Index writeOffset = writeRowPosition * rows + writeColumnPosition;
+      const Index writeOffset = writeRowPosition * rows + writeColumnPosition;
       for( Index rowBlock = 0;
            rowBlock < tileDim;
            rowBlock += tileRowBlockSize )
       {
-         if( writeRowPosition + rowBlock < inputMatrix->getColumns() )
-            resultMatrix->setElementFast( writeRowPosition + rowBlock,
-                                          writeColumnPosition,
-                                          tile[ tnlCuda::getInterleaving(
-                                             ( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ) ] );
+         if( writeRowPosition + rowBlock < columns )
+            resultMatrix->setElementFast( writeColumnPosition,
+                                          writeRowPosition + rowBlock,
+                                          matrixMultiplicator * tile[ tnlCuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
       }
    }
+
 }
 
 
@@ -783,7 +799,7 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
          for( IndexType j = 0; j < columns; j += tileDim )
             for( IndexType k = i; k < i + tileDim && k < rows; k++ )
                for( IndexType l = j; l < j + tileDim && l < columns; l++ )
-                  this->setElement( l, k, matrix. getElement( k, l ) );
+                  this->setElement( l, k, matrixMultiplicator * matrix. getElement( k, l ) );
    }
    if( Device::getDevice() == tnlCudaDevice )
    {
@@ -814,7 +830,6 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
             if( ( gridIdx_x < columnGrids - 1 || matrix.getColumns() % tileDim == 0 ) &&
                 ( gridIdx_y < rowGrids - 1 || matrix.getRows() % tileDim == 0 ) )
             {
-               cerr << "Aligned" << endl;
                tnlDenseMatrixTranspositionAlignedKernel< Real,
                                                          Index,
                                                          Matrix,
@@ -825,6 +840,7 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
                                                          sharedMemorySize  >>>
                                                        ( this_device,
                                                          matrix_device,
+                                                         matrixMultiplicator,
                                                          gridIdx_x,
                                                          gridIdx_y );
             }
@@ -840,9 +856,11 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
                                                          sharedMemorySize  >>>
                                                        ( this_device,
                                                          matrix_device,
+                                                         matrixMultiplicator,
                                                          gridIdx_x,
                                                          gridIdx_y );
             }
+            checkCudaDevice;
          }
       tnlCuda::freeFromDevice( this_device );
       tnlCuda::freeFromDevice( matrix_device );
