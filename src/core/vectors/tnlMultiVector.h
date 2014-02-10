@@ -19,7 +19,7 @@
 #define TNLMULTIVECTOR_H_
 
 #include <core/vectors/tnlVector.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 #include <core/tnlAssert.h>
 
 
@@ -47,11 +47,11 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
 
    bool setDimensions( const Index iSize );
 
-   bool setDimensions( const tnlTuple< 1, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 1, Index >& dimensions );
 
    void getDimensions( Index& iSize ) const;
 
-   const tnlTuple< 1, Index >& getDimensions() const;
+   const tnlStaticVector< 1, Index >& getDimensions() const;
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
@@ -100,7 +100,7 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
 
    protected:
 
-   tnlTuple< 1, Index > dimensions;
+   tnlStaticVector< 1, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -122,11 +122,11 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
 
    bool setDimensions( const Index jSize, const Index iSize );
 
-   bool setDimensions( const tnlTuple< 2, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 2, Index >& dimensions );
 
    void getDimensions( Index& jSize, Index& iSize ) const;
 
-   const tnlTuple< 2, Index >& getDimensions() const;
+   const tnlStaticVector< 2, Index >& getDimensions() const;
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
@@ -175,7 +175,7 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
 
    protected:
 
-   tnlTuple< 2, Index > dimensions;
+   tnlStaticVector< 2, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -198,11 +198,11 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
 
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const tnlTuple< 3, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 3, Index >& dimensions );
 
    void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
-   const tnlTuple< 3, Index >& getDimensions() const;
+   const tnlStaticVector< 3, Index >& getDimensions() const;
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
@@ -251,7 +251,7 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
 
    protected:
 
-   tnlTuple< 3, Index > dimensions;
+   tnlStaticVector< 3, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -274,11 +274,11 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const tnlTuple< 4, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 4, Index >& dimensions );
 
    void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
-   const tnlTuple< 4, Index >& getDimensions() const;
+   const tnlStaticVector< 4, Index >& getDimensions() const;
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
@@ -327,7 +327,7 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
 
    protected:
 
-   tnlTuple< 4, Index > dimensions;
+   tnlStaticVector< 4, Index > dimensions;
 };
 
 template< typename Element, typename device, typename Index >

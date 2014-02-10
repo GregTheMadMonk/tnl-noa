@@ -32,19 +32,19 @@ template< typename ElementType, typename IndexType >
 __global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u );
 #endif
 
-class testingClassForArrayManagerTester
+class testingClassForArrayTester
 {
    public:
 
       static tnlString getType()
       {
-         return tnlString( "testingClassForArrayManagerTester" );
+         return tnlString( "testingClassForArrayTester" );
       };
 };
 
-tnlString GetParameterType( const testingClassForArrayManagerTester& c )
+tnlString GetParameterType( const testingClassForArrayTester& c )
 {
-   return tnlString( "testingClassForArrayManagerTester" );
+   return tnlString( "testingClassForArrayTester" );
 };
 
 template< typename ElementType, typename Device, typename IndexType >
@@ -205,7 +205,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testUnusualStructures()
    {
-      tnlArray< testingClassForArrayManagerTester >u ( "test-vector" );
+      tnlArray< testingClassForArrayTester >u ( "test-array" );
    };
 
 };

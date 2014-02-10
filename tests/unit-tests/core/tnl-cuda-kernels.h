@@ -62,7 +62,7 @@ using namespace std;
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlTupleOperation operation >
+template < class T, tnlStaticVectorOperation operation >
 __global__ void tnlCUDASimpleReductionKernel5( const int size,
                                                const T* deviceInput,
                                                T* deviceOutput,
@@ -177,7 +177,7 @@ __global__ void tnlCUDASimpleReductionKernel5( const int size,
  *        The size of this array should be size / 128 * sizeof( T ).
  * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
  */
-template< class T, tnlTupleOperation operation >
+template< class T, tnlStaticVectorOperation operation >
 bool tnlCUDASimpleReduction5( const int size,
                               const T* deviceInput,
                               T& result,
@@ -282,7 +282,7 @@ bool tnlCUDASimpleReduction5( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlTupleOperation operation >
+template < class T, tnlStaticVectorOperation operation >
 __global__ void tnlCUDASimpleReductionKernel4( const int size,
                                                const T* deviceInput,
 	                                       T* deviceOutput,
@@ -406,7 +406,7 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
  *        The size of this array should be size / 128 * sizeof( T ).
  * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
  */
-template< class T, tnlTupleOperation operation >
+template< class T, tnlStaticVectorOperation operation >
 bool tnlCUDASimpleReduction4( const int size,
 	                          const T* deviceInput,
 	                          T& result,
@@ -517,7 +517,7 @@ bool tnlCUDASimpleReduction4( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlTupleOperation operation >
+template < class T, tnlStaticVectorOperation operation >
 __global__ void tnlCUDASimpleReductionKernel3( const int size,
                                                const T* deviceInput,
 		                               T* deviceOutput )
@@ -620,7 +620,7 @@ __global__ void tnlCUDASimpleReductionKernel3( const int size,
  *        The size of this array should be size / 128 * sizeof( T ).
  * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
  */
-template< class T, tnlTupleOperation operation >
+template< class T, tnlStaticVectorOperation operation >
 bool tnlCUDASimpleReduction3( const int size,
 	                      const T* deviceInput,
 	                      T& result,
@@ -710,7 +710,7 @@ bool tnlCUDASimpleReduction3( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlTupleOperation operation >
+template < class T, tnlStaticVectorOperation operation >
 __global__ void tnlCUDASimpleReductionKernel2( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
@@ -797,7 +797,7 @@ __global__ void tnlCUDASimpleReductionKernel2( const int size,
  *        The size of this array should be size / 128 * sizeof( T ).
  * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
  */
-template< class T, tnlTupleOperation operation >
+template< class T, tnlStaticVectorOperation operation >
 bool tnlCUDASimpleReduction2( const int size,
 	                      const T* deviceInput,
 	                      T& result,
@@ -889,7 +889,7 @@ bool tnlCUDASimpleReduction2( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlTupleOperation operation >
+template < class T, tnlStaticVectorOperation operation >
 __global__ void tnlCUDASimpleReductionKernel1( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
@@ -957,7 +957,7 @@ __global__ void tnlCUDASimpleReductionKernel1( const int size,
  *        The size of this array should be size / 128 * sizeof( T ).
  * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
  */
-template< class T, tnlTupleOperation operation >
+template< class T, tnlStaticVectorOperation operation >
 bool tnlCUDASimpleReduction1( const int size,
 	                      const T* deviceInput,
 	                      T& result,

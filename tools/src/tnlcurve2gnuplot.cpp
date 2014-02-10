@@ -17,7 +17,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    int i;
-   tnlCurve< tnlTuple< 2, double > > crv( "tnlcurve2gnuplot:curve" );
+   tnlCurve< tnlStaticVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. getString();
@@ -69,13 +69,13 @@ int main( int argc, char* argv[] )
       }
       file. close();
 
-      tnlCurve< tnlTuple< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
+      tnlCurve< tnlStaticVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
       const int size = crv. getSize();
       int i;
       for( i = 0; i < size; i += output_step )
       {
          out_crv. Append( crv[ i ]. position, crv[ i ]. separator );
-         //tnlTuple< 2, double > v = crv[ i ]. position;
+         //tnlStaticVector< 2, double > v = crv[ i ]. position;
          //v[ 0 ] = u( i );
          //v[ 1 ] = u( i + 1 );
          //out_crv. Append( v );

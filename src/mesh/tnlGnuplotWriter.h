@@ -19,7 +19,7 @@
 #define TNLGNUPLOTWRITER_H_
 
 #include <ostream>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
 class tnlGnuplotWriter
 {
@@ -34,21 +34,21 @@ class tnlGnuplotWriter
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const tnlTuple< 1, Real >& d )
+                         const tnlStaticVector< 1, Real >& d )
       {
          str << d.x() << " ";
       };
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const tnlTuple< 2, Real >& d )
+                         const tnlStaticVector< 2, Real >& d )
       {
          str << d.x() << " " << d.y() << " ";
       };
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const tnlTuple< 3, Real >& d )
+                         const tnlStaticVector< 3, Real >& d )
       {
          str << d.x() << " " << d.y() << " " << d. z() << " ";
       };

@@ -19,8 +19,7 @@ set (headers tnlAssert.h
    		    tnlString.h 
    		    tnlReal.h
    		    tnlTimerCPU.h  
-   		    tnlTimerRT.h  
-   		    tnlTuple.h  
+   		    tnlTimerRT.h    
    		    mfilename.h 
    		    mfuncs.h 
    		    mpi-supp.h 

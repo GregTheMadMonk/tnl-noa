@@ -40,8 +40,8 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< Dimensions, Index > CoordinatesType;
-   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlStaticVector< Dimensions, Index > CoordinatesType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
 
    static tnlString getType();
 
@@ -104,8 +104,8 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< Dimensions, Index > CoordinatesType;
-   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlStaticVector< Dimensions, Index > CoordinatesType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
    typedef tnlFeature< false > ElementsMeasureStorage;
    typedef tnlFeature< false > DualElementsMeasureStorage;
    typedef tnlFeature< false > EdgeNormalsStorage;
@@ -165,8 +165,8 @@ class tnlIdenticalGridGeometry< 3, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< Dimensions, Index > CoordinatesType;
-   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlStaticVector< Dimensions, Index > CoordinatesType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
    typedef tnlFeature< false > ElementsMeasureStorage;
    typedef tnlFeature< false > DualElementsMeasureStorage;
    typedef tnlFeature< false > EdgeNormalsStorage;

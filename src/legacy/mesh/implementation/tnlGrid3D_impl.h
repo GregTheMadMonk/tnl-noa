@@ -77,13 +77,13 @@ tnlGridOld< 3,Real, Device, Index > :: tnlGridOld( const tnlString& name,
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Index >& tnlGridOld< 3,Real, Device, Index > :: getDimensions() const
+const tnlStaticVector< 3,Index >& tnlGridOld< 3,Real, Device, Index > :: getDimensions() const
 {
    return tnlMultiVector< 3,Real, Device, Index > :: getDimensions();
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGridOld< 3,Real, Device, Index > :: setDimensions( const tnlTuple< 3,Index >& dimensions )
+bool tnlGridOld< 3,Real, Device, Index > :: setDimensions( const tnlStaticVector< 3,Index >& dimensions )
 {
    if( ! tnlMultiVector< 3,Real, Device, Index > :: setDimensions( dimensions ) )
       return false;
@@ -94,8 +94,8 @@ bool tnlGridOld< 3,Real, Device, Index > :: setDimensions( const tnlTuple< 3,Ind
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlGridOld< 3,Real, Device, Index > :: setDomain( const tnlTuple< 3,Real >& origin,
-                                                     const tnlTuple< 3,Real >& proportions )
+bool tnlGridOld< 3,Real, Device, Index > :: setDomain( const tnlStaticVector< 3,Real >& origin,
+                                                     const tnlStaticVector< 3,Real >& proportions )
 {
    if( origin >= proportions )
    {
@@ -120,19 +120,19 @@ bool tnlGridOld< 3,Real, Device, Index > :: setLike( const Grid& v )
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainLowerCorner() const
+const tnlStaticVector< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainLowerCorner() const
 {
    return this -> domainLowerCorner;
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainUpperCorner() const
+const tnlStaticVector< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getDomainUpperCorner() const
 {
    return this -> domainUpperCorner;
 }
 
 template< typename Real, typename Device, typename Index >
-const tnlTuple< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getSpaceSteps() const
+const tnlStaticVector< 3,Real >& tnlGridOld< 3,Real, Device, Index > :: getSpaceSteps() const
 {
    return spaceSteps;
 }
@@ -189,7 +189,7 @@ tnlGridOld< 3,Real, Device, Index >
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlGridOld< 3,Real, Device, Index > :: getValue( const tnlTuple< 3,Real >& point ) const
+Real tnlGridOld< 3,Real, Device, Index > :: getValue( const tnlStaticVector< 3,Real >& point ) const
 {
    tnlAssert( 0, cerr << "Interpolation is not implemented yet.");
 }
@@ -199,7 +199,7 @@ Real tnlGridOld< 3,Real, Device, Index > :: getValue( const Real& x,
                                                              const Real& y,
                                                              const Real& z ) const
 {
-   return this -> getValue( tnlTuple< 3, Real >( x, y, z ) );
+   return this -> getValue( tnlStaticVector< 3, Real >( x, y, z ) );
 }
 
 
@@ -472,8 +472,8 @@ Real tnlGridOld< 3,Real, Device, Index > :: Partial_zz( const Index i1,
 
 template< typename Real, typename Device, typename Index >
 void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const tnlGridOld< 3,Real, Device, Index >&bc,
-                                                         const tnlTuple< 3,bool >& lowerBC,
-                                                         const tnlTuple< 3,bool >& upperBC )
+                                                         const tnlStaticVector< 3,bool >& lowerBC,
+                                                         const tnlStaticVector< 3,bool >& upperBC )
 {
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -533,8 +533,8 @@ void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const tnlGridOld< 3,
 
 template< typename Real, typename Device, typename Index >
 void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const Real& bcValue,
-                                                         const tnlTuple< 3,bool >& lowerBC,
-                                                         const tnlTuple< 3,bool >& upperBC )
+                                                         const tnlStaticVector< 3,bool >& lowerBC,
+                                                         const tnlStaticVector< 3,bool >& upperBC )
 {
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -592,8 +592,8 @@ void tnlGridOld< 3,Real, Device, Index > :: setDirichletBC( const Real& bcValue,
 
 template< typename Real, typename Device, typename Index >
 void tnlGridOld< 3,Real, Device, Index > :: setNeumannBC( const tnlGridOld< 3,Real, Device, Index >&bc,
-                                                       const tnlTuple< 3,bool >& lowerBC,
-                                                       const tnlTuple< 3,bool >& upperBC )
+                                                       const tnlStaticVector< 3,bool >& lowerBC,
+                                                       const tnlStaticVector< 3,bool >& upperBC )
 {
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -658,8 +658,8 @@ void tnlGridOld< 3,Real, Device, Index > :: setNeumannBC( const tnlGridOld< 3,Re
 
 template< typename Real, typename Device, typename Index >
 void tnlGridOld< 3,Real, Device, Index > :: setNeumannBC( const Real& bcValue,
-                                                       const tnlTuple< 3,bool >& lowerBC,
-                                                       const tnlTuple< 3,bool >& upperBC )
+                                                       const tnlStaticVector< 3,bool >& lowerBC,
+                                                       const tnlStaticVector< 3,bool >& upperBC )
 {
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -963,9 +963,9 @@ bool tnlGridOld< 3,Real, Device, Index > :: load( const tnlString& fileName )
 template< typename Real, typename Device, typename Index >
 bool tnlGridOld< 3,Real, Device, Index > :: draw( const tnlString& fileName,
                                                          const tnlString& format,
-                                                         const tnlTuple< 3,Index > steps ) const
+                                                         const tnlStaticVector< 3,Index > steps ) const
 {
-   tnlAssert( steps > ( tnlTuple< 3,Index >( 0 ) ),
+   tnlAssert( steps > ( tnlStaticVector< 3,Index >( 0 ) ),
               cerr << "Wrong steps of increment ( " << steps << " )"
                    << " for drawing the tnlGridOld " << this -> getName() << "." << endl; );
    if( format == "tnl" )

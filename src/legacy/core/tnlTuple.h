@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTuple.h  -  description
+                          tnlStaticVector.h  -  description
                              -------------------
     begin                : 2006/03/04
     copyright            : (C) 2006 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlTupleH
-#define tnlTupleH
+#ifndef tnlStaticVectorH
+#define tnlStaticVectorH
 
 #include <core/tnlAssert.h>
 #include <string.h>
@@ -28,7 +28,7 @@
 enum { tnlX = 0, tnlY, tnlZ };
 
 template< int Size, typename Real = double >
-class tnlTuple
+class tnlStaticVector
 {
    public:
    typedef Real RealType;
@@ -36,37 +36,37 @@ class tnlTuple
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple();
+   tnlStaticVector();
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple( const Real v[ Size ] );
+   tnlStaticVector( const Real v[ Size ] );
 
    //! This sets all vector components to v
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple( const Real& v );
+   tnlStaticVector( const Real& v );
 
    //! Copy constructor
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple( const tnlTuple< Size, Real >& v );
+   tnlStaticVector( const tnlStaticVector< Size, Real >& v );
 
    //! This is constructore of vector with Size = 2.
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple( const Real& v1,
+   tnlStaticVector( const Real& v1,
               const Real& v2 );
 
    //! This is constructore of vector with Size = 3
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple( const Real& v1,
+   tnlStaticVector( const Real& v1,
              const Real& v2,
              const Real& v3 );
 
@@ -122,83 +122,83 @@ class tnlTuple
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple& operator += ( const tnlTuple& v );
+   tnlStaticVector& operator += ( const tnlStaticVector& v );
 
    //! Subtracting operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple& operator -= ( const tnlTuple& v );
+   tnlStaticVector& operator -= ( const tnlStaticVector& v );
 
    //! Multiplication with number
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple& operator *= ( const Real& c );
+   tnlStaticVector& operator *= ( const Real& c );
 
    //! Adding operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple operator + ( const tnlTuple& u ) const;
+   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
 
    //! Subtracting operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple operator - ( const tnlTuple& u ) const;
+   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
 
    //! Multiplication with number
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple operator * ( const Real& c ) const;
+   tnlStaticVector operator * ( const Real& c ) const;
 
    //! 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlTuple& operator = ( const tnlTuple& v );
+   tnlStaticVector& operator = ( const tnlStaticVector& v );
 
    //! Scalar product
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   Real operator * ( const tnlTuple& u ) const;
+   Real operator * ( const tnlStaticVector& u ) const;
 
    //! Comparison operator
    template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator == ( const tnlTuple< Size, Real2 >& v ) const;
+   bool operator == ( const tnlStaticVector< Size, Real2 >& v ) const;
 
    //! Comparison operator
    template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator != ( const tnlTuple< Size, Real2 >& v ) const;
+   bool operator != ( const tnlStaticVector< Size, Real2 >& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator < ( const tnlTuple& v ) const;
+   bool operator < ( const tnlStaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator <= ( const tnlTuple& v ) const;
+   bool operator <= ( const tnlStaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator > ( const tnlTuple& v ) const;
+   bool operator > ( const tnlStaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator >= ( const tnlTuple& v ) const;
+   bool operator >= ( const tnlStaticVector& v ) const;
 
    bool save( tnlFile& file ) const;
 
@@ -210,16 +210,16 @@ class tnlTuple
 };
 
 template< int Size, typename Real >
-tnlTuple< Size, Real > operator * ( const Real& c, const tnlTuple< Size, Real >& u );
+tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
-ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v );
+ostream& operator << ( ostream& str, const tnlStaticVector< Size, Real >& v );
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple()
+tnlStaticVector< Size, Real > :: tnlStaticVector()
 {
    bzero( data, Size * sizeof( Real ) );
 };
@@ -228,7 +228,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple( const Real v[ Size ] )
+tnlStaticVector< Size, Real > :: tnlStaticVector( const Real v[ Size ] )
 {
    if( Size == 1 )
       data[ 0 ] = v[ 0 ];
@@ -254,7 +254,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple( const Real& v )
+tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v )
 {
    if( Size == 1 )
       data[ 0 ] = v;
@@ -277,7 +277,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple( const tnlTuple< Size, Real >& v )
+tnlStaticVector< Size, Real > :: tnlStaticVector( const tnlStaticVector< Size, Real >& v )
 {
    if( Size == 1 )
       data[ 0 ] = v[ 0 ];
@@ -304,7 +304,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
+tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
                                     const Real& v2 )
 {
    tnlAssert( Size == 2,
@@ -317,7 +317,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > :: tnlTuple( const Real& v1,
+tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
                                       const Real& v2,
                                       const Real& v3 )
 {
@@ -332,9 +332,9 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlString tnlTuple< Size, Real > :: getType()
+tnlString tnlStaticVector< Size, Real > :: getType()
 {
-   return tnlString( "tnlTuple< " ) +
+   return tnlString( "tnlStaticVector< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
           getParameterType< Real >() +
@@ -345,7 +345,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlTuple< Size, Real > :: operator[]( int i ) const
+const Real& tnlStaticVector< Size, Real > :: operator[]( int i ) const
 {
    assert( i >= 0 && i < Size );
    return data[ i ];
@@ -355,7 +355,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlTuple< Size, Real > :: operator[]( int i )
+Real& tnlStaticVector< Size, Real > :: operator[]( int i )
 {
    assert( i < Size );
    return data[ i ];
@@ -365,12 +365,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlTuple< Size, Real > :: x()
+Real& tnlStaticVector< Size, Real > :: x()
 {
    tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
    if( Size < 1 )
    {
-      printf( "The size of the tnlTuple is too small to get x coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
@@ -380,12 +380,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlTuple< Size, Real > :: x() const
+const Real& tnlStaticVector< Size, Real > :: x() const
 {
    tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
    if( Size < 1 )
    {
-      printf( "The size of the tnlTuple is too small to get x coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
@@ -395,12 +395,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlTuple< Size, Real > :: y()
+Real& tnlStaticVector< Size, Real > :: y()
 {
    tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
    if( Size < 2 )
    {
-      printf( "The size of the tnlTuple is too small to get y coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
@@ -410,12 +410,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlTuple< Size, Real > :: y() const
+const Real& tnlStaticVector< Size, Real > :: y() const
 {
    tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
    if( Size < 2 )
    {
-      printf( "The size of the tnlTuple is too small to get y coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
@@ -426,12 +426,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlTuple< Size, Real > :: z()
+Real& tnlStaticVector< Size, Real > :: z()
 {
    tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
    if( Size < 3 )
    {
-      printf( "The size of the tnlTuple is too small to get z coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
@@ -441,12 +441,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlTuple< Size, Real > :: z() const
+const Real& tnlStaticVector< Size, Real > :: z() const
 {
    tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
    if( Size < 3 )
    {
-      printf( "The size of the tnlTuple is too small to get z coordinate.\n" );
+      printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
@@ -456,7 +456,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator += ( const tnlTuple& v )
+tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator += ( const tnlStaticVector& v )
 {
    if( Size == 1 )
       data[ 0 ] += v. data[ 0 ];
@@ -483,7 +483,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator -= ( const tnlTuple& v )
+tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator -= ( const tnlStaticVector& v )
 {
    if( Size == 1 )
       data[ 0 ] -= v. data[ 0 ];
@@ -510,7 +510,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator *= ( const Real& c )
+tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator *= ( const Real& c )
 {
    if( Size == 1 )
       data[ 0 ] *= c;
@@ -537,36 +537,36 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator + ( const tnlTuple& u ) const
+tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator + ( const tnlStaticVector& u ) const
 {
    // TODO: Leads to sigsegv
-   return tnlTuple( * this ) += u;
+   return tnlStaticVector( * this ) += u;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator - ( const tnlTuple& u ) const
+tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator - ( const tnlStaticVector& u ) const
 {
    // TODO: Leads to sigsegv
-   return tnlTuple( * this ) -= u;
+   return tnlStaticVector( * this ) -= u;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real > tnlTuple< Size, Real > :: operator * ( const Real& c ) const
+tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator * ( const Real& c ) const
 {
-   return tnlTuple( * this ) *= c;
+   return tnlStaticVector( * this ) *= c;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlTuple< Size, Real >& tnlTuple< Size, Real > :: operator = ( const tnlTuple& v )
+tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator = ( const tnlStaticVector& v )
 {
    memcpy( &data[ 0 ], &v. data[ 0 ], Size * sizeof( Real ) );
    /*int i;
@@ -579,7 +579,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real tnlTuple< Size, Real > :: operator * ( const tnlTuple& u ) const
+Real tnlStaticVector< Size, Real > :: operator * ( const tnlStaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] * u[ 0 ];
@@ -604,7 +604,7 @@ template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator == ( const tnlTuple< Size, Real2 >& u ) const
+bool tnlStaticVector< Size, Real > :: operator == ( const tnlStaticVector< Size, Real2 >& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] == u[ 0 ];
@@ -627,7 +627,7 @@ template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator != ( const tnlTuple< Size, Real2 >& u ) const
+bool tnlStaticVector< Size, Real > :: operator != ( const tnlStaticVector< Size, Real2 >& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] != u[ 0 ];
@@ -648,7 +648,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator < ( const tnlTuple& u ) const
+bool tnlStaticVector< Size, Real > :: operator < ( const tnlStaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] < u[ 0 ];
@@ -672,7 +672,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator <= ( const tnlTuple& u ) const
+bool tnlStaticVector< Size, Real > :: operator <= ( const tnlStaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] <= u[ 0 ];
@@ -693,7 +693,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator > ( const tnlTuple& u ) const
+bool tnlStaticVector< Size, Real > :: operator > ( const tnlStaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] > u[ 0 ];
@@ -714,7 +714,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlTuple< Size, Real > :: operator >= ( const tnlTuple& u ) const
+bool tnlStaticVector< Size, Real > :: operator >= ( const tnlStaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] >= u[ 0 ];
@@ -732,23 +732,23 @@ bool tnlTuple< Size, Real > :: operator >= ( const tnlTuple& u ) const
 }
 
 template< int Size, typename Real >
-bool tnlTuple< Size, Real > :: save( tnlFile& file ) const
+bool tnlStaticVector< Size, Real > :: save( tnlFile& file ) const
 {
    int size = Size;
 #ifdef HAVE_NOT_CXX11   
    if( ! file. write< int, tnlHost >( &size ) ||
        ! file. write< Real, tnlHost, int >( data, size ) )
-      cerr << "Unable to write tnlTuple." << endl;
+      cerr << "Unable to write tnlStaticVector." << endl;
 #else   
    if( ! file. write( &size ) ||
        ! file. write( data, size ) )
-      cerr << "Unable to write tnlTuple." << endl;
+      cerr << "Unable to write tnlStaticVector." << endl;
 #endif
    return true;
 };
 
 template< int Size, typename Real >
-bool tnlTuple< Size, Real > :: load( tnlFile& file)
+bool tnlStaticVector< Size, Real > :: load( tnlFile& file)
 {
    int size;
 #ifdef HAVE_NOT_CXX11   
@@ -757,12 +757,12 @@ bool tnlTuple< Size, Real > :: load( tnlFile& file)
    if( ! file. read( &size ) )
 #endif      
    {
-      cerr << "Unable to read tnlTuple." << endl;
+      cerr << "Unable to read tnlStaticVector." << endl;
       return false;
    }   
    if( size != Size )
    {
-      cerr << "You try to read tnlTuple with wrong size " << size
+      cerr << "You try to read tnlStaticVector with wrong size " << size
            << ". It should be " << Size << endl;
       return false;
    }
@@ -772,14 +772,14 @@ bool tnlTuple< Size, Real > :: load( tnlFile& file)
    if( ! file. read( data, size ) )
 #endif      
    {
-      cerr << "Unable to read tnlTuple." << endl;
+      cerr << "Unable to read tnlStaticVector." << endl;
       return false;
    }
    return true;
 }
 
 template< int Size, typename Real >
-tnlTuple< Size, Real > operator * ( const Real& c, const tnlTuple< Size, Real >& u )
+tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u )
 {
    return u * c;
 }
@@ -787,7 +787,7 @@ tnlTuple< Size, Real > operator * ( const Real& c, const tnlTuple< Size, Real >&
 
 
 // TODO: remove
-template< int Size, typename Real > bool Save( ostream& file, const tnlTuple< Size, Real >& vec )
+template< int Size, typename Real > bool Save( ostream& file, const tnlStaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. write( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -796,7 +796,7 @@ template< int Size, typename Real > bool Save( ostream& file, const tnlTuple< Si
 };
 
 // TODO: remove
-template< int Size, typename Real > bool Load( istream& file, tnlTuple< Size, Real >& vec )
+template< int Size, typename Real > bool Load( istream& file, tnlStaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. read( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -805,7 +805,7 @@ template< int Size, typename Real > bool Load( istream& file, tnlTuple< Size, Re
 };
 
 template< int Size, typename Real >
-ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v )
+ostream& operator << ( ostream& str, const tnlStaticVector< Size, Real >& v )
 {
    for( int i = 0; i < Size - 1; i ++ )
       str << v[ i ] << ", ";
@@ -814,10 +814,10 @@ ostream& operator << ( ostream& str, const tnlTuple< Size, Real >& v )
 };
 
 template< typename Real >
-tnlTuple< 3, Real > tnlVectorProduct( const tnlTuple< 3, Real >& u,
-                                      const tnlTuple< 3, Real >& v )
+tnlStaticVector< 3, Real > tnlVectorProduct( const tnlStaticVector< 3, Real >& u,
+                                      const tnlStaticVector< 3, Real >& v )
 {
-   tnlTuple< 3, Real > p;
+   tnlStaticVector< 3, Real > p;
    p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
@@ -825,25 +825,25 @@ tnlTuple< 3, Real > tnlVectorProduct( const tnlTuple< 3, Real >& u,
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlTuple< 2, Real >& u,
-                       const tnlTuple< 2, Real >& v )
+Real tnlScalarProduct( const tnlStaticVector< 2, Real >& u,
+                       const tnlStaticVector< 2, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlTuple< 3, Real >& u,
-                       const tnlTuple< 3, Real >& v )
+Real tnlScalarProduct( const tnlStaticVector< 3, Real >& u,
+                       const tnlStaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 };
 
 template< typename Real >
-Real tnlTriangleArea( const tnlTuple< 2, Real >& a,
-                      const tnlTuple< 2, Real >& b,
-                      const tnlTuple< 2, Real >& c )
+Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
+                      const tnlStaticVector< 2, Real >& b,
+                      const tnlStaticVector< 2, Real >& c )
 {
-   tnlTuple< 3, Real > u1, u2;
+   tnlStaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
    u1. y() = b. y() - a. y();
    u1. z() = 0.0;
@@ -851,7 +851,7 @@ Real tnlTriangleArea( const tnlTuple< 2, Real >& a,
    u2. y() = c. y() - a. y();
    u2. z() = 0;
 
-   const tnlTuple< 3, Real > v = tnlVectorProduct( u1, u2 );
+   const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
    return 0.5 * sqrt( tnlScalarProduct( v, v ) );
 };
 

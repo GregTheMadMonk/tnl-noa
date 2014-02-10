@@ -88,7 +88,7 @@ template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
                                                         const tnlParameterContainer& parameters ) const
 {
-   tnlTuple< 2, IndexType > meshes;
+   tnlStaticVector< 2, IndexType > meshes;
    meshes.x() = parameters.GetParameter< int >( "x-size" );
    meshes.y() = parameters.GetParameter< int >( "y-size" );
    if( meshes.x() <= 0 )
@@ -137,7 +137,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
       cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
       return false;
    }
-   /*tnlTuple< 2, RealType > proportions;
+   /*tnlStaticVector< 2, RealType > proportions;
    proportions. x() = parameters. GetParameter< double >( "width" );
    proportions. y() = parameters. GetParameter< double >( "height" );
    if( proportions. x() <= 0 )
@@ -150,7 +150,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
       cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << endl;
       return false;
    }
-   this -> mesh. setOrigin( tnlTuple< 2, RealType >( 0, 0 ) );
+   this -> mesh. setOrigin( tnlStaticVector< 2, RealType >( 0, 0 ) );
    this -> mesh. setProportions( proportions );
 
    if( ! this->initMesh( this->mesh, parameters ) )

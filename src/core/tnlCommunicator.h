@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <debug/tnlDebug.h>
 #include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlStaticVector.h>
 #include <core/tnlCriticalSection.h>
 #include <core/tnlSharedMemory.h>
 
@@ -72,11 +73,11 @@ class tnlCommunicator
 
    int getCommunicationGroupSize() const;
 
-   bool setDimensions( const tnlTuple< Dimensions, int >& dimensions );
+   bool setDimensions( const tnlStaticVector< Dimensions, int >& dimensions );
 
-   const tnlTuple< Dimensions, int >& getDimensions() const;
+   const tnlStaticVector< Dimensions, int >& getDimensions() const;
 
-   const tnlTuple< Dimensions, int >& getNodeCoordinates() const;
+   const tnlStaticVector< Dimensions, int >& getNodeCoordinates() const;
 
    int getDeviceId() const;
 
@@ -134,9 +135,9 @@ class tnlCommunicator
 
    int communicationGroupSize;
 
-   tnlTuple< Dimensions, int > dimensions;
+   tnlStaticVector< Dimensions, int > dimensions;
 
-   tnlTuple< Dimensions, int > nodeCoordinates;
+   tnlStaticVector< Dimensions, int > nodeCoordinates;
 
    int deviceID;
 
@@ -158,20 +159,20 @@ int tnlCommunicator< Dimensions, Device > :: getCommunicationGroupSize() const
 }
 
 template< int Dimensions, typename Device >
-bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlTuple< Dimensions, int >& dimensions )
+bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlStaticVector< Dimensions, int >& dimensions )
 {
    this -> dimensions = dimensions;
    // TODO: add automatic dimensions setting from the group size
 }
 
 template< int Dimensions, typename Device >
-const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
+const tnlStaticVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< int Dimensions, typename Device >
-const tnlTuple< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
+const tnlStaticVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
 {
    return this -> nodeCoordinates;
 }
@@ -200,9 +201,9 @@ bool tnlCommunicator< Dimensions, Device > :: start()
       cerr << "Sorry, but I have wrong size ( " << this -> getCommunicationGroupSize() << " of the communication group. I cannot create a communicator." << endl;
       return false;
    }
-   if( this -> getDimensions() == tnlTuple< Dimensions, int >( 0 ) )
-      this -> setDimensions( tnlTuple< Dimensions, int >( 0 ) );
-   if( this -> getDimensions() == tnlTuple< Dimensions, int >( -1 ) )
+   if( this -> getDimensions() == tnlStaticVector< Dimensions, int >( 0 ) )
+      this -> setDimensions( tnlStaticVector< Dimensions, int >( 0 ) );
+   if( this -> getDimensions() == tnlStaticVector< Dimensions, int >( -1 ) )
    {
       cerr << "Sorry, but I have wrong dimensions ( " << this -> getDimensions() << " of the communication group. I cannot create a communicator." << endl;
       return false;

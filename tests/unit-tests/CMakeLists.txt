@@ -32,9 +32,11 @@ ADD_TEST( core/tnlStringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSt
 ADD_TEST( core/tnlObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlObjectTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )
+ADD_TEST( core/arrays/tnlStaticArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticArrayTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlMultiArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultiArrayTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt}${debugExt} )
+ADD_TEST( core/vectors/tnlStaticVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticVectorTest${mpiExt}${debugExt} )
 
 ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest${mpiExt}${debugExt} )

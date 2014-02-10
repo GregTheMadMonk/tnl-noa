@@ -437,11 +437,11 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
 template< typename Real, typename Device, typename Index  >
 bool tnlMPIMesh< 2, Real, Device, Index > :: SetGlobalDomain( tnlGridOld< 2, Real, Device, Index >& global_u )
 {
-   if( ! global_u. setDimensions( tnlTuple< 2, int >( domain_x_size, domain_y_size ) ) )
+   if( ! global_u. setDimensions( tnlStaticVector< 2, int >( domain_x_size, domain_y_size ) ) )
       return false;
    
-   global_u. setDomain( tnlTuple< 2, Real >( Ax, Ay ),
-                        tnlTuple< 2, Real >( Bx, By ) );
+   global_u. setDomain( tnlStaticVector< 2, Real >( Ax, Ay ),
+                        tnlStaticVector< 2, Real >( Bx, By ) );
    return true;
 }
    

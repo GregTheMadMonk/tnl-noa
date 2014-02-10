@@ -28,7 +28,6 @@
 #include "core/tnlFileTester.h"
 #include "core/tnlObjectTester.h"
 #include "core/tnlRealTester.h"
-#include "core/tnlTupleTester.h"
 #include "core/tnlSharedMemoryTester.h"
 #include "core/tnlCommunicatorTester.h"
 #include "solver/tnlMersonSolverTester.h"
@@ -52,18 +51,18 @@ int main( int argc, char* argv[] )
    runner. addTest( tnlRealTester< float > :: suite() );
    runner. addTest( tnlRealTester< double > :: suite() );
 
-   runner. addTest( tnlTupleTester< 1, int > :: suite() );
-   runner. addTest( tnlTupleTester< 2, int > :: suite() );
-   runner. addTest( tnlTupleTester< 3, int > :: suite() );
-   runner. addTest( tnlTupleTester< 4, int > :: suite() );
-   runner. addTest( tnlTupleTester< 1, float > :: suite() );
-   runner. addTest( tnlTupleTester< 2, float > :: suite() );
-   runner. addTest( tnlTupleTester< 3, float > :: suite() );
-   runner. addTest( tnlTupleTester< 4, float > :: suite() );
-   runner. addTest( tnlTupleTester< 1, double > :: suite() );
-   runner. addTest( tnlTupleTester< 2, double > :: suite() );
-   runner. addTest( tnlTupleTester< 3, double > :: suite() );
-   runner. addTest( tnlTupleTester< 4, double > :: suite() );
+   /*runner. addTest( tnlStaticVectorTester< 1, int > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 2, int > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 3, int > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 4, int > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 1, float > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 2, float > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 3, float > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 4, float > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 1, double > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 2, double > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 3, double > :: suite() );
+   runner. addTest( tnlStaticVectorTester< 4, double > :: suite() );*/
 
 
    //runner. addTest( tnlSharedArrayTester< int, tnlHost, int > :: suite() );

@@ -20,10 +20,11 @@
 
 #include <iomanip>
 #include <fstream>
+#include <cstring>
 #include <core/tnlList.h>
 #include <core/tnlObject.h>
 #include <core/mfuncs.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 #include <core/param-types.h>
 
 //! Basic structure for curves
@@ -235,7 +236,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< tnlTuple< 2, double > >;
+template class tnlCurve< tnlStaticVector< 2, double > >;
 
 
 

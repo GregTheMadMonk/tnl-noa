@@ -40,8 +40,8 @@ class tnlLinearGridGeometry< 1, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< 1, Index > CoordinatesType;
-   typedef tnlTuple< 1, Real > VertexType;
+   typedef tnlStaticVector< 1, Index > CoordinatesType;
+   typedef tnlStaticVector< 1, Real > VertexType;
 
    static tnlString getType();
 
@@ -102,8 +102,8 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< Dimensions, Index > CoordinatesType;
-   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlStaticVector< Dimensions, Index > CoordinatesType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
    typedef tnlFeature< true > ElementsMeasureStorage;
    typedef tnlFeature< true > DualElementsMeasureStorage;
    typedef tnlFeature< true > EdgeNormalsStorage;
@@ -122,10 +122,10 @@ class tnlLinearGridGeometry< 2, Real, Device, Index >
    const VertexType& getProportions() const;
 
    void getElementCenter( const VertexType& origin,
-                          const tnlTuple< Dimensions, Index >& coordinates,
+                          const tnlStaticVector< Dimensions, Index >& coordinates,
                           VertexType& center ) const;
 
-   Real getElementMeasure( const tnlTuple< Dimensions, Index >& coordinates ) const;
+   Real getElementMeasure( const tnlStaticVector< Dimensions, Index >& coordinates ) const;
 
    template< int dx, int dy >
    Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
@@ -172,8 +172,8 @@ class tnlLinearGridGeometry< 3, Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlTuple< Dimensions, Index > CoordinatesType;
-   typedef tnlTuple< Dimensions, Real > VertexType;
+   typedef tnlStaticVector< Dimensions, Index > CoordinatesType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
    typedef tnlFeature< true > ElementsMeasureStorage;
    typedef tnlFeature< true > DualElementsMeasureStorage;
    typedef tnlFeature< true > EdgeNormalsStorage;
@@ -192,10 +192,10 @@ class tnlLinearGridGeometry< 3, Real, Device, Index >
    const VertexType& getProportions() const;
 
    void getElementCenter( const VertexType& origin,
-                          const tnlTuple< Dimensions, Index >& coordinates,
+                          const tnlStaticVector< Dimensions, Index >& coordinates,
                           VertexType& center ) const;
 
-   Real getElementMeasure( const tnlTuple< Dimensions, Index >& coordinates ) const;
+   Real getElementMeasure( const tnlStaticVector< Dimensions, Index >& coordinates ) const;
 
    template< int dx, int dy >
    Real getDualElementMeasure( const CoordinatesType& coordinates ) const;

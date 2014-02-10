@@ -19,7 +19,7 @@
 #define TNLEXPBUMPFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
 template< typename Real >
 class tnlExpBumpFunctionBase
@@ -44,7 +44,7 @@ class tnlExpBumpFunctionBase
    RealType amplitude, sigma;
 };
 
-template< int Dimensions, typename Vertex = tnlTuple< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
 class tnlExpBumpFunction
 {
 };

@@ -81,10 +81,10 @@ bool convertObject( const Mesh& mesh,
          return false;
       tnlGrid< Dimensions, Real, tnlHost, Index > grid;
       grid. setDimensions( multiVector. getDimensions() );
-      grid. setOrigin( tnlTuple< Dimensions, Real >( 0.0 ) );
-      grid. setProportions( tnlTuple< Dimensions, Real >( 1.0 ) );
+      grid. setOrigin( tnlStaticVector< Dimensions, Real >( 0.0 ) );
+      grid. setProportions( tnlStaticVector< Dimensions, Real >( 1.0 ) );
       const Real spaceStep = grid. getParametricStep(). x();
-      grid. setParametricStep( tnlTuple< Dimensions, Real >( spaceStep ) );
+      grid. setParametricStep( tnlStaticVector< Dimensions, Real >( spaceStep ) );
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
@@ -154,39 +154,39 @@ bool setTupleType( const Mesh& mesh,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlTuple< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlTuple< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlTuple< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlTuple< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlTuple< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlTuple< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlTuple< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlTuple< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlTuple< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, tnlStaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
@@ -219,7 +219,7 @@ bool setElementType( const Mesh& mesh,
       cerr << "Unable to parse object type " << elementType << "." << endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "tnlTuple" )
+   if( parsedElementType[ 0 ] == "tnlStaticVector" )
       return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    cerr << "Unknown element type " << elementType << "." << endl;

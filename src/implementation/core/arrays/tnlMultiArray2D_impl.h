@@ -63,7 +63,7 @@ bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const Index jS
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const tnlTuple< 2, Index >& dimensions )
+bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const tnlStaticVector< 2, Index >& dimensions )
 {
    tnlAssert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0,
               cerr << "dimensions = " << dimensions );
@@ -85,7 +85,7 @@ bool tnlMultiArray< 2, Element, Device, Index > :: setLike( const MultiArray& mu
 template< typename Element, typename Device, typename Index >
 void tnlMultiArray< 2, Element, Device, Index >::reset()
 {
-   this->dimensions = tnlTuple< 2, Index >( ( Index ) 0 );
+   this->dimensions = tnlStaticVector< 2, Index >( ( Index ) 0 );
    tnlArray< Element, Device, Index >::reset();
 }
 
@@ -103,7 +103,7 @@ template< typename Element, typename Device, typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-const tnlTuple< 2, Index >& tnlMultiArray< 2, Element, Device, Index > :: getDimensions() const
+const tnlStaticVector< 2, Index >& tnlMultiArray< 2, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }

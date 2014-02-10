@@ -63,7 +63,7 @@ bool tnlMultiVector< 1, Element, Device, Index > :: setDimensions( const Index i
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 1, Element, Device, Index > :: setDimensions( const tnlTuple< 1, Index >& dimensions )
+bool tnlMultiVector< 1, Element, Device, Index > :: setDimensions( const tnlStaticVector< 1, Index >& dimensions )
 {
    tnlAssert( dimensions[ 0 ] > 0,
               cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
@@ -85,7 +85,7 @@ void tnlMultiVector< 1, Element, Device, Index > :: getDimensions( Index& xSize 
 }
 
 template< typename Element, typename Device, typename Index >
-const tnlTuple< 1, Index >& tnlMultiVector< 1, Element, Device, Index > :: getDimensions() const
+const tnlStaticVector< 1, Index >& tnlMultiVector< 1, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }

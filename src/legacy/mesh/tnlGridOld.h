@@ -49,14 +49,14 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
    tnlGridOld( const tnlString& name,
             const tnlGridOld< 1, Real, tnlCuda, Index >& grid );
 
-   const tnlTuple< 1, Index >& getDimensions() const;
+   const tnlStaticVector< 1, Index >& getDimensions() const;
 
    //! Sets the dimensions
    /***
     * This method also must recompute space steps. It is save to call setDimensions and
     * setDomain in any order. Both recompute the space steps.
     */
-   bool setDimensions( const tnlTuple< 1, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 1, Index >& dimensions );
 
    //! Sets the computation domain in form of "rectangle".
    /***
@@ -64,17 +64,17 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
     * setDomain in any order. Both recompute the space steps.
     */
 
-   bool setDomain( const tnlTuple< 1, Real >& lowerCorner,
-                   const tnlTuple< 1, Real >& upperCorner );
+   bool setDomain( const tnlStaticVector< 1, Real >& lowerCorner,
+                   const tnlStaticVector< 1, Real >& upperCorner );
 
    template< typename Grid >
    bool setLike( const Grid& v );
 
-   const tnlTuple< 1, Real >& getDomainLowerCorner() const;
+   const tnlStaticVector< 1, Real >& getDomainLowerCorner() const;
 
-   const tnlTuple< 1, Real >& getDomainUpperCorner() const;
+   const tnlStaticVector< 1, Real >& getDomainUpperCorner() const;
 
-   const tnlTuple< 1, Real >& getSpaceSteps() const;
+   const tnlStaticVector< 1, Real >& getSpaceSteps() const;
 
    tnlString getType() const;
 
@@ -86,7 +86,7 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
    tnlGridOld< 1, Real, Device, Index >& operator = ( const tnlGridOld< 1, Real2, Device2, Index2 >& array );
 
    //! This method interpolates value at given point.
-   Real getValue( const tnlTuple< 1, Real >& point ) const;
+   Real getValue( const tnlStaticVector< 1, Real >& point ) const;
 
    //! Interpolation for 1D grid.
    Real getValue( const Real& x ) const;
@@ -105,23 +105,23 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
 
    //! Set space dependent Dirichlet boundary conditions
    void setDirichletBC( const tnlGridOld< 1, Real, Device, Index >&bc,
-                        const tnlTuple< 1, bool >& lowerBC,
-                        const tnlTuple< 1, bool >& upperBC );
+                        const tnlStaticVector< 1, bool >& lowerBC,
+                        const tnlStaticVector< 1, bool >& upperBC );
 
    //! Set constant Dirichlet boundary conditions
    void setDirichletBC( const Real& bc,
-                        const tnlTuple< 1, bool >& lowerBC,
-                        const tnlTuple< 1, bool >& upperBC );
+                        const tnlStaticVector< 1, bool >& lowerBC,
+                        const tnlStaticVector< 1, bool >& upperBC );
 
    //! Set space dependent Neumann boundary conditions
    void setNeumannBC( const tnlGridOld< 1, Real, Device, Index >&bc,
-                      const tnlTuple< 1, bool >& lowerBC,
-                      const tnlTuple< 1, bool >& upperBC );
+                      const tnlStaticVector< 1, bool >& lowerBC,
+                      const tnlStaticVector< 1, bool >& upperBC );
 
    //! Set constant Neumann boundary conditions
    void setNeumannBC( const Real& bc,
-                      const tnlTuple< 1, bool >& lowerBC,
-                      const tnlTuple< 1, bool >& upperBC );
+                      const tnlStaticVector< 1, bool >& lowerBC,
+                      const tnlStaticVector< 1, bool >& upperBC );
 
    Real getLpNorm( const Real& p ) const;
 
@@ -145,10 +145,10 @@ class tnlGridOld< 1, Real, Device, Index > : public tnlMultiVector< 1, Real, Dev
     */
    bool draw( const tnlString& fileName,
               const tnlString& format,
-              const tnlTuple< 1, Index > steps = ( tnlTuple< 1, Index > ) 1 ) const;
+              const tnlStaticVector< 1, Index > steps = ( tnlStaticVector< 1, Index > ) 1 ) const;
 
    protected:
-   tnlTuple< 1, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
+   tnlStaticVector< 1, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -169,14 +169,14 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
    tnlGridOld( const tnlString& name,
             const tnlGridOld< 2, Real, tnlCuda, Index >& grid );
 
-   const tnlTuple< 2, Index >& getDimensions() const;
+   const tnlStaticVector< 2, Index >& getDimensions() const;
 
    //! Sets the dimensions
    /***
     * This method also must recompute space steps. It is save to call setDimensions and
     * setDomain in any order. Both recompute the space steps.
     */
-   bool setDimensions( const tnlTuple< 2, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 2, Index >& dimensions );
 
    //! Sets the computation domain in form of "rectangle".
    /***
@@ -184,17 +184,17 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
     * setDomain in any order. Both recompute the space steps.
     */
 
-   bool setDomain( const tnlTuple< 2, Real >& lowerCorner,
-                   const tnlTuple< 2, Real >& upperCorner );
+   bool setDomain( const tnlStaticVector< 2, Real >& lowerCorner,
+                   const tnlStaticVector< 2, Real >& upperCorner );
 
    template< typename Grid >
    bool setLike( const Grid& v );
 
-   const tnlTuple< 2, Real >& getDomainLowerCorner() const;
+   const tnlStaticVector< 2, Real >& getDomainLowerCorner() const;
 
-   const tnlTuple< 2, Real >& getDomainUpperCorner() const;
+   const tnlStaticVector< 2, Real >& getDomainUpperCorner() const;
 
-   const tnlTuple< 2, Real >& getSpaceSteps() const;
+   const tnlStaticVector< 2, Real >& getSpaceSteps() const;
 
    tnlString getType() const;
 
@@ -206,7 +206,7 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
    tnlGridOld< 2, Real, Device, Index >& operator = ( const tnlGridOld< 2, Real2, Device2, Index2 >& array );
 
    //! This method interpolates value at given point.
-   Real getValue( const tnlTuple< 2, Real >& point ) const;
+   Real getValue( const tnlStaticVector< 2, Real >& point ) const;
 
    //! Interpolation for 2D grid.
    Real getValue( const Real& x,
@@ -246,23 +246,23 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
 
    //! Set space dependent Dirichlet boundary conditions
    void setDirichletBC( const tnlGridOld< 2, Real, Device, Index >&bc,
-                        const tnlTuple< 2, bool >& lowerBC,
-                        const tnlTuple< 2, bool >& upperBC );
+                        const tnlStaticVector< 2, bool >& lowerBC,
+                        const tnlStaticVector< 2, bool >& upperBC );
 
    //! Set constant Dirichlet boundary conditions
    void setDirichletBC( const Real& bc,
-                        const tnlTuple< 2, bool >& lowerBC,
-                        const tnlTuple< 2, bool >& upperBC );
+                        const tnlStaticVector< 2, bool >& lowerBC,
+                        const tnlStaticVector< 2, bool >& upperBC );
 
    //! Set space dependent Neumann boundary conditions
    void setNeumannBC( const tnlGridOld< 2, Real, Device, Index >&bc,
-                      const tnlTuple< 2, bool >& lowerBC,
-                      const tnlTuple< 2, bool >& upperBC );
+                      const tnlStaticVector< 2, bool >& lowerBC,
+                      const tnlStaticVector< 2, bool >& upperBC );
 
    //! Set constant Neumann boundary conditions
    void setNeumannBC( const Real& bc,
-                      const tnlTuple< 2, bool >& lowerBC,
-                      const tnlTuple< 2, bool >& upperBC );
+                      const tnlStaticVector< 2, bool >& lowerBC,
+                      const tnlStaticVector< 2, bool >& upperBC );
 
    Real getLpNorm( const Real& p ) const;
 
@@ -286,10 +286,10 @@ class tnlGridOld< 2, Real, Device, Index > : public tnlMultiVector< 2, Real, Dev
     */
    bool draw( const tnlString& fileName,
               const tnlString& format,
-              const tnlTuple< 2, Index > steps = ( tnlTuple< 2, Index > ) 1 ) const;
+              const tnlStaticVector< 2, Index > steps = ( tnlStaticVector< 2, Index > ) 1 ) const;
 
    protected:
-   tnlTuple< 2, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
+   tnlStaticVector< 2, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -310,14 +310,14 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
    tnlGridOld( const tnlString& name,
             const tnlGridOld< 3, Real, tnlCuda, Index >& grid );
 
-   const tnlTuple< 3, Index >& getDimensions() const;
+   const tnlStaticVector< 3, Index >& getDimensions() const;
 
    //! Sets the dimensions
    /***
     * This method also must recompute space steps. It is save to call setDimensions and
     * setDomain in any order. Both recompute the space steps.
     */
-   bool setDimensions( const tnlTuple< 3, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< 3, Index >& dimensions );
 
    //! Sets the computation domain in form of "rectangle".
    /***
@@ -325,17 +325,17 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
     * setDomain in any order. Both recompute the space steps.
     */
 
-   bool setDomain( const tnlTuple< 3, Real >& lowerCorner,
-                   const tnlTuple< 3, Real >& upperCorner );
+   bool setDomain( const tnlStaticVector< 3, Real >& lowerCorner,
+                   const tnlStaticVector< 3, Real >& upperCorner );
 
    template< typename Grid >
    bool setLike( const Grid& v );
 
-   const tnlTuple< 3, Real >& getDomainLowerCorner() const;
+   const tnlStaticVector< 3, Real >& getDomainLowerCorner() const;
 
-   const tnlTuple< 3, Real >& getDomainUpperCorner() const;
+   const tnlStaticVector< 3, Real >& getDomainUpperCorner() const;
 
-   const tnlTuple< 3, Real >& getSpaceSteps() const;
+   const tnlStaticVector< 3, Real >& getSpaceSteps() const;
 
    tnlString getType() const;
 
@@ -347,7 +347,7 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
    tnlGridOld< 3, Real, Device, Index >& operator = ( const tnlGridOld< 3, Real2, Device2, Index2 >& array );
 
    //! This method interpolates value at given point.
-   Real getValue( const tnlTuple< 3, Real >& point ) const;
+   Real getValue( const tnlStaticVector< 3, Real >& point ) const;
 
    //! Interpolation for 3D grid.
    Real getValue( const Real& x,
@@ -416,23 +416,23 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
 
    //! Set space dependent Dirichlet boundary conditions
    void setDirichletBC( const tnlGridOld< 3, Real, Device, Index >&bc,
-                        const tnlTuple< 3, bool >& lowerBC,
-                        const tnlTuple< 3, bool >& upperBC );
+                        const tnlStaticVector< 3, bool >& lowerBC,
+                        const tnlStaticVector< 3, bool >& upperBC );
 
    //! Set constant Dirichlet boundary conditions
    void setDirichletBC( const Real& bc,
-                        const tnlTuple< 3, bool >& lowerBC,
-                        const tnlTuple< 3, bool >& upperBC );
+                        const tnlStaticVector< 3, bool >& lowerBC,
+                        const tnlStaticVector< 3, bool >& upperBC );
 
    //! Set space dependent Neumann boundary conditions
    void setNeumannBC( const tnlGridOld< 3, Real, Device, Index >&bc,
-                      const tnlTuple< 3, bool >& lowerBC,
-                      const tnlTuple< 3, bool >& upperBC );
+                      const tnlStaticVector< 3, bool >& lowerBC,
+                      const tnlStaticVector< 3, bool >& upperBC );
 
    //! Set constant Neumann boundary conditions
    void setNeumannBC( const Real& bc,
-                      const tnlTuple< 3, bool >& lowerBC,
-                      const tnlTuple< 3, bool >& upperBC );
+                      const tnlStaticVector< 3, bool >& lowerBC,
+                      const tnlStaticVector< 3, bool >& upperBC );
 
    Real getLpNorm( const Real& p ) const;
 
@@ -456,10 +456,10 @@ class tnlGridOld< 3, Real, Device, Index > : public tnlMultiVector< 3, Real, Dev
     */
    bool draw( const tnlString& fileName,
               const tnlString& format,
-              const tnlTuple< 3, Index > steps = ( tnlTuple< 3, Index > ) 1 ) const;
+              const tnlStaticVector< 3, Index > steps = ( tnlStaticVector< 3, Index > ) 1 ) const;
 
    protected:
-   tnlTuple< 3, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
+   tnlStaticVector< 3, Real > domainLowerCorner, domainUpperCorner, spaceSteps;
 };
 
 #include <legacy/mesh/implementation/tnlGrid1D_impl.h>

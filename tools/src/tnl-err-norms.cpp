@@ -408,7 +408,7 @@ int main( int argc, char* argv[] )
          //cout << setw( 85 ) << " ";
          const char* first_file = first_files[ i ]. getString();
          cout << "Processing file " << first_file << " ...          \r" << flush << endl;
-         tnlCurve< tnlTuple< 2, double > > curve( "tnl-err-norms:curve" );
+         tnlCurve< tnlStaticVector< 2, double > > curve( "tnl-err-norms:curve" );
          tnlFile file;
          if( ! file. open( first_files[ i ], tnlReadMode ) ||
              ! curve. load( file ) )
@@ -448,19 +448,19 @@ int main( int argc, char* argv[] )
          }
 
          tnlGridOld< 1, double > difference( "difference" );
-         difference. setDimensions( tnlTuple< 1, int >( curve. getSize() ) );
-         difference. setDomain( tnlTuple< 1, double >( 0.0 ), 
-                                tnlTuple< 1, double >( 1.0 ) );
+         difference. setDimensions( tnlStaticVector< 1, int >( curve. getSize() ) );
+         difference. setDomain( tnlStaticVector< 1, double >( 0.0 ), 
+                                tnlStaticVector< 1, double >( 1.0 ) );
          for( j = 0; j < curve. getSize() - 1; j ++ )
          {
             if( curve[ j ]. separator ) continue;
-            tnlTuple< 2, double > v1 = curve[ j ]. position;
-            tnlTuple< 2, double > v2 = curve[ j + 1 ]. position;
+            tnlStaticVector< 2, double > v1 = curve[ j ]. position;
+            tnlStaticVector< 2, double > v2 = curve[ j + 1 ]. position;
             double approx_r = sqrt( v1[ 0 ] * v1[ 0 ] + v1[ 1 ] * v1[ 1 ] );
             double err = fabs( approx_r - exact_r );
             difference. setElement( j, err );
             //cout << err << endl;
-            tnlTuple< 2, double > dv;
+            tnlStaticVector< 2, double > dv;
             dv[ 0 ] = v1[ 0 ] - v2[ 0 ];
             dv[ 1 ] = v1[ 1 ] - v2[ 1 ];
             double h = sqrt( dv[ 0 ] * dv[ 0 ] + dv[ 1 ] * dv[ 1 ] );

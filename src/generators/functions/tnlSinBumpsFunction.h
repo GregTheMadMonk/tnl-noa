@@ -19,9 +19,9 @@
 #define TNLSINBUMPSFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
-template< int Dimensions, typename Vertex = tnlTuple< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
 class tnlSinBumpsFunctionBase
 {
    public:
@@ -48,7 +48,7 @@ class tnlSinBumpsFunctionBase
    VertexType waveLength, phase;
 };
 
-template< int Dimensions, typename Vertex = tnlTuple< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
 class tnlSinBumpsFunction
 {
 };

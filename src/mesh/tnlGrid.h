@@ -20,7 +20,7 @@
 
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 
@@ -45,8 +45,8 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Geometry< 1, Real, Device, Index > GeometryType;
-   typedef tnlTuple< 1, Real > VertexType;
-   typedef tnlTuple< 1, Index > CoordinatesType;
+   typedef tnlStaticVector< 1, Real > VertexType;
+   typedef tnlStaticVector< 1, Index > CoordinatesType;
 
    enum { Dimensions = 1};
 
@@ -119,9 +119,9 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    protected:
 
-   tnlTuple< 1, IndexType > dimensions;
+   tnlStaticVector< 1, IndexType > dimensions;
 
-   tnlTuple< 1, RealType > origin;
+   tnlStaticVector< 1, RealType > origin;
 
    IndexType dofs;
 
@@ -141,8 +141,8 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Geometry< 2, Real, Device, Index > GeometryType;
-   typedef tnlTuple< 2, Real > VertexType;
-   typedef tnlTuple< 2, Index > CoordinatesType;
+   typedef tnlStaticVector< 2, Real > VertexType;
+   typedef tnlStaticVector< 2, Index > CoordinatesType;
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -277,8 +277,8 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Geometry< 2, Real, Device, Index > GeometryType;
-   typedef tnlTuple< 3, Real > VertexType;
-   typedef tnlTuple< 3, Index > CoordinatesType;
+   typedef tnlStaticVector< 3, Real > VertexType;
+   typedef tnlStaticVector< 3, Index > CoordinatesType;
    enum { Dimensions = 3};
 
    tnlGrid();
@@ -349,9 +349,9 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    protected:
 
-   tnlTuple< 3, IndexType > dimensions;
+   tnlStaticVector< 3, IndexType > dimensions;
 
-   tnlTuple< 3, RealType > origin, proportions;
+   tnlStaticVector< 3, RealType > origin, proportions;
 
    IndexType dofs;
 

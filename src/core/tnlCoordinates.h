@@ -18,19 +18,19 @@
 #ifndef TNLCOORDINATES_H_
 #define TNLCOORDINATES_H_
 
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
 /*!***
  * tnlCoordinates are used mainly by the tnlCommunicator.
  * It is usually meant as coordinate of a node in a finite grid.
  */
 template< int Dimensions, typename Index >
-class tnlCoordinates : public tnlTuple< Dimensions, Index >
+class tnlCoordinates : public tnlStaticVector< Dimensions, Index >
 {
 };
 
 template< typname Index >
-class tnlCoordinates< 1, Index > : public tnlTuple< 1, Index >
+class tnlCoordinates< 1, Index > : public tnlStaticVector< 1, Index >
 {
    Index getGridSize() const;
 
@@ -38,7 +38,7 @@ class tnlCoordinates< 1, Index > : public tnlTuple< 1, Index >
 };
 
 template< typname Index >
-class tnlCoordinates< 2, Index > : public tnlTuple< 1, Index >
+class tnlCoordinates< 2, Index > : public tnlStaticVector< 1, Index >
 {
    Index getGridSize() const;
 
@@ -46,7 +46,7 @@ class tnlCoordinates< 2, Index > : public tnlTuple< 1, Index >
 };
 
 template< typname Index >
-class tnlCoordinates< 3, Index > : public tnlTuple< 1, Index >
+class tnlCoordinates< 3, Index > : public tnlStaticVector< 1, Index >
 {
    Index getGridSize() const;
 

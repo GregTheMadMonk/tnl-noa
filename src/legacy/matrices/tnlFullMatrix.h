@@ -116,7 +116,7 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
       return false;
    }
    tnlMatrix< Real, Device, Index > :: size = 0;
-   if( ! tnlMultiArray< 2, Real, Device, Index > :: setDimensions( tnlTuple< 2, Index >( new_size, new_size ) ) )
+   if( ! tnlMultiArray< 2, Real, Device, Index > :: setDimensions( tnlStaticVector< 2, Index >( new_size, new_size ) ) )
       return false;
    tnlMatrix< Real, Device, Index > :: size = new_size;
    tnlMultiArray< 2, Real, Device, Index > :: setValue( 0.0 );

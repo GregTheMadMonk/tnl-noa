@@ -19,7 +19,7 @@
 #define TNLSINWAVEFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
-#include <core/tnlTuple.h>
+#include <core/vectors/tnlStaticVector.h>
 
 template< typename Real = double >
 class tnlSinWaveFunctionBase
@@ -47,7 +47,7 @@ class tnlSinWaveFunctionBase
    Real waveLength, amplitude, phase;
 };
 
-template< int Dimensions, typename Vertex = tnlTuple< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
 class tnlSinWaveFunction
 {
 };

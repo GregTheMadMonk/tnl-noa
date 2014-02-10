@@ -38,9 +38,9 @@ bool setupGrid( const tnlParameterContainer& parameters )
 
       tnlGrid< 1, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlTuple< 1, RealType >( originX ) );
-      grid.setProportions( tnlTuple< 1, RealType >( proportionsX ) );
-      grid.setDimensions( tnlTuple< 1, IndexType >( sizeX ) );
+      grid.setOrigin( tnlStaticVector< 1, RealType >( originX ) );
+      grid.setProportions( tnlStaticVector< 1, RealType >( proportionsX ) );
+      grid.setDimensions( tnlStaticVector< 1, IndexType >( sizeX ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -58,9 +58,9 @@ bool setupGrid( const tnlParameterContainer& parameters )
 
       tnlGrid< 2, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlTuple< 2, RealType >( originX, originY ) );
-      grid.setProportions( tnlTuple< 2, RealType >( proportionsX, proportionsY ) );
-      grid.setDimensions( tnlTuple< 2, IndexType >( sizeX, sizeY ) );
+      grid.setOrigin( tnlStaticVector< 2, RealType >( originX, originY ) );
+      grid.setProportions( tnlStaticVector< 2, RealType >( proportionsX, proportionsY ) );
+      grid.setDimensions( tnlStaticVector< 2, IndexType >( sizeX, sizeY ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -81,9 +81,9 @@ bool setupGrid( const tnlParameterContainer& parameters )
 
       tnlGrid< 3, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlTuple< 3, RealType >( originX, originY, originZ ) );
-      grid.setProportions( tnlTuple< 3, RealType >( proportionsX, proportionsY, proportionsZ ) );
-      grid.setDimensions( tnlTuple< 3, IndexType >( sizeX, sizeY, sizeZ ) );
+      grid.setOrigin( tnlStaticVector< 3, RealType >( originX, originY, originZ ) );
+      grid.setProportions( tnlStaticVector< 3, RealType >( proportionsX, proportionsY, proportionsZ ) );
+      grid.setDimensions( tnlStaticVector< 3, IndexType >( sizeX, sizeY, sizeZ ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;

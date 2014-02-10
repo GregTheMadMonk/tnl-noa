@@ -535,12 +535,12 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    dofs_e.      bind( & dofVector.getData()[ 3 * dofs ], dofs );
 
    this->updatePhysicalQuantities( dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e );
-   tnlVector< tnlTuple< 2, RealType >, DeviceType, IndexType > u;
+   tnlVector< tnlStaticVector< 2, RealType >, DeviceType, IndexType > u;
    u. setLike( u1 );
    tnlString fileName;
 
    for( IndexType i = 0; i < this->u1. getSize(); i ++ )
-      u[ i ] = tnlTuple< 2, RealType >( this->u1[ i ], this->u2[ i ] );
+      u[ i ] = tnlStaticVector< 2, RealType >( this->u1[ i ], this->u2[ i ] );
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! u.save( fileName ) )
       return false;
