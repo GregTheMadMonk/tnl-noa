@@ -5,6 +5,5 @@ ADD_SUBDIRECTORY( benchmarks )
 ADD_SUBDIRECTORY( approximation-tests )
 ADD_SUBDIRECTORY( unit-tests )
 ADD_SUBDIRECTORY( long-time-unit-tests )
-ADD_SUBDIRECTORY( mesh )
 
 unset( ENABLE_CODECOVERAGE )

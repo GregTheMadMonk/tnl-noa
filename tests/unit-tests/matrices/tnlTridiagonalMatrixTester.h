@@ -231,6 +231,6 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
    }
 };
 
-#endif
+#endif /* HAVE_CPPUNIT */
 
 #endif /* TNLTRIDIAGONALMATRIXTESTER_H_ */

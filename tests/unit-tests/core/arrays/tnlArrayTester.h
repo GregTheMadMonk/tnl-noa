@@ -219,9 +219,6 @@ __global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexTy
 }
 #endif /* HAVE_CUDA */
 
-#else /* HAVE_CPPUNIT */
-template< typename ElementType, typename Device, typename IndexType >
-class tnlArrayTester{};
 #endif /* HAVE_CPPUNIT */
 
 #endif /* TNLARRAYTESTER_H_ */

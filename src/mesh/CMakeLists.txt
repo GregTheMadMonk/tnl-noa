@@ -1,23 +1,13 @@
-#INCLUDE_DIRECTORIES( common config detail global io topology )
-
-ADD_SUBDIRECTORY( common )
 ADD_SUBDIRECTORY( config )
-ADD_SUBDIRECTORY( detail )
-ADD_SUBDIRECTORY( global )
-ADD_SUBDIRECTORY( io )
-ADD_SUBDIRECTORY( topology )
+ADD_SUBDIRECTORY( layers )
+ADD_SUBDIRECTORY( traits )
+ADD_SUBDIRECTORY( topologies )
 
 SET( headers tnlGrid.h
              tnlIdenticalGridGeometry.h
              tnlLinearGridGeometry.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h
-             config.h 
-             information.h 
-             mesh.h 
-             traversal.h  )
-
-#SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/mesh )
-#SET( libtnlmeshinclude_HEADERS ${headers} )
+             tnlMeshStorageLayer.h  )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

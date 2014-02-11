@@ -247,7 +247,9 @@ class tnlCSRMatrixTester : public CppUnit :: TestCase
    {
    }
 };
-
+#else /* HAVE_CPPUNIT */
+template< typename ElementType, typename Device, typename IndexType >
+class tnlCSRMatrixTester{};
 #endif
 
 #endif /* TNLCSRMATRIXTESTER_H_ */

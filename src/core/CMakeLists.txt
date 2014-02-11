@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY( arrays )
+ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
@@ -30,16 +31,5 @@ SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 SET( libtnlcoreinclude_HEADERS ${headers} )
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core )
 
-#ADD_LIBRARY( tnlcore${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-#TARGET_LINK_LIBRARIES( tnlcore${debugExt}-${tnlVersion} ${BZIP2_LIBRARIES} )
-#INSTALL( TARGETS tnlcore${debugExt}-${tnlVersion} DESTINATION lib )
-
-#IF( BUILD_MPI )
-#    ADD_LIBRARY( tnlcore-mpi${debugExt}-${tnlVersion} SHARED ${sources} ${headers} )
-#    TARGET_LINK_LIBRARIES( tnlcore-mpi${debugExt}-${tnlVersion} ${MPI_LIBRARIES}
-#                                                                ${BZIP2_LIBRARIES}  )
-#    SET_TARGET_PROPERTIES( tnlcore-mpi${debugExt}-${tnlVersion} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
-#    INSTALL( TARGETS tnlcore-mpi${debugExt}-${tnlVersion} DESTINATION lib )
-#ENDIF()
 
 

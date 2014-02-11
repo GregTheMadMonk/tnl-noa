@@ -276,7 +276,9 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
    {
    }
 };
-
+#else /* HAVE_CPPUNIT */
+template< typename ElementType, typename Device, typename IndexType >
+class tnlChunkedEllpackMatrixTester{};
 #endif /* HAVE_CPPUNIT */
 
 #endif /* TNLCHUNKEDELLPACKMATRIXTESTER_H_ */

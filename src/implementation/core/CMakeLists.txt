@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY( arrays )
+ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
@@ -22,6 +23,7 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_implementation_core_CUDA__SOURCES
         ${tnl_implementation_core_arrays_CUDA__SOURCES}
+        ${tnl_implementation_core_containers_CUDA__SOURCES}
         ${tnl_implementation_core_cuda_CUDA__SOURCES}
         ${tnl_implementation_core_vectors_CUDA__SOURCES}
         ${common_SOURCES} 
@@ -30,6 +32,7 @@ ENDIF()
 
 set( tnl_implementation_core_SOURCES     
      ${tnl_implementation_core_arrays_SOURCES}
+     ${tnl_implementation_core_containers_SOURCES}
      ${tnl_implementation_core_cuda_SOURCES}
      ${tnl_implementation_core_vectors_SOURCES}
      ${common_SOURCES}
