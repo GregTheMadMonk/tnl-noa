@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStorageTrait.h  -  description
+                          tnlDimensionsTraits.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,16 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSTORAGETRAIT_H_
-#define TNLSTORAGETRAIT_H_
+#ifndef TNLDIMENSIONSTRAITS_H_
+#define TNLDIMENSIONSTRAITS_H_
 
-template< bool storageEnabled >
-class tnlStorageTrait
+template< int Dimensions >
+class tnlDimensionsTraits
 {
    public:
 
-   enum { enabled = storageEnabled };
+   enum { value = Dimensions };
+
+   typedef tnlDimensionsTraits< Dimensions - 1 > Previous;
 };
 
 
-#endif /* TNLSTORAGETRAIT_H_ */
+#endif /* TNLDIMENSIONSTRAITS_H_ */

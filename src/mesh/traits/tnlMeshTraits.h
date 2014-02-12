@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDimensionsTrait.h  -  description
+                          tnlMeshTraits.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,18 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDIMENSIONSTRAIT_H_
-#define TNLDIMENSIONSTRAIT_H_
+#ifndef TNLMESHTRAITS_H_
+#define TNLMESHTRAITS_H_
 
-template< int Dimensions >
-class tnlDimensionsTrait
+#include <core/vectors/tnlStaticVector.h>
+#include <mesh/traits/tnlDimensionsTraits.h>
+
+template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshEntity;
+
+template< typename ConfigTag >
+class tnlMeshTraits
 {
    public:
 
-   enum { dimensions = Dimensions };
+   enum { meshDimensions = ConfigTag::CellTag::dimensions };
 
-   typedef tnlDimensionsTrait< Dimensions - 1 > Previous;
+   enum { worldDimensions = ConfigTag::worldDimensions };
+
+   typedef tnlDimensionsTraits< meshDimensions >                            DimensionsTraits;
+   typedef tnlStaticVector< worldDimensions, typename ConfigTag::RealType > PointType;
+   typedef tnlMeshEntity< ConfigTag, typename ConfigTag::CellTag >          CellType;
 };
 
 
-#endif /* TNLDIMENSIONSTRAIT_H_ */
+#endif /* TNLMESHTRAITS_H_ */

@@ -22,7 +22,7 @@
 
 struct tnlMeshHexahedronTag
 {
-   enum { dimension = 3 };
+   enum { dimensions = 3 };
 };
 
 template<>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshTrait.h  -  description
+                          tnlStorageTraits.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,26 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHTRAIT_H_
-#define TNLMESHTRAIT_H_
+#ifndef TNLSTORAGETRAITS_H_
+#define TNLSTORAGETRAITS_H_
 
-#include <core/vectors/tnlStaticVector.h>
-#include <mesh/traits/tnlDimensionsTrait.h>
-#include <mesh/tnlMeshEntity.h>
-
-template< typename ConfigTag >
-class tnlMeshTrait
+template< bool storageEnabled >
+class tnlStorageTraits
 {
    public:
 
-   enum { meshDimensions = ConfigTag::CellTag::dimension };
-
-   enum { worldDimensions = ConfigTag::dimWorld };
-
-   typedef tnlDimensionsTrait< meshDimensions >                         DimensionsTrait;
-   typedef tnlStaticVector< worldDimensions, typename ConfigTag::Real > PointType;
-   typedef tnlMeshEntity< ConfigTag, typename ConfigTag::CellTag >      CellType;
+   enum { enabled = storageEnabled };
 };
 
 
-#endif /* TNLMESHTRAIT_H_ */
+#endif /* TNLSTORAGETRAITS_H_ */

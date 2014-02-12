@@ -18,16 +18,15 @@
 #ifndef TNLMESHTETRAHEDRONTAG_H_
 #define TNLMESHTETRAHEDRONTAG_H_
 
-#include <mesh/topology/tnlMeshTriangleTag.h>
+#include <mesh/topologies/tnlMeshTriangleTag.h>
 
 struct tnlMeshTetrahedronTag
 {
-   enum { dimension = 3 };
+   enum { dimensions = 3 };
 };
 
-
 template<>
-struct tnlSubentities< tnlMeshTetrahedronTag, 0>
+struct tnlSubentities< tnlMeshTetrahedronTag, 0 >
 {
    typedef tnlMeshVertexTag Tag;
 
@@ -35,7 +34,7 @@ struct tnlSubentities< tnlMeshTetrahedronTag, 0>
 };
 
 template<>
-struct tnlSubentities< tnlMeshTetrahedronTag, 1>
+struct tnlSubentities< tnlMeshTetrahedronTag, 1 >
 {
    typedef tnlMeshEdgeTag Tag;
 
@@ -43,7 +42,7 @@ struct tnlSubentities< tnlMeshTetrahedronTag, 1>
 };
 
 template<>
-struct tnlSubentities< tnlMeshTetrahedronTag, 2>
+struct tnlSubentities< tnlMeshTetrahedronTag, 2 >
 {
    typedef tnlMeshTriangleTag Tag;
 

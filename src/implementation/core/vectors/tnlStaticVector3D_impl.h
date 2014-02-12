@@ -63,6 +63,16 @@ tnlStaticVector< 3, Real >::tnlStaticVector( const tnlStaticVector< 3, Real >& v
 }
 
 template< typename Real >
+tnlString tnlStaticVector< 3, Real >::getType()
+{
+   return tnlString( "tnlStaticVector< " ) +
+          tnlString( 3 ) +
+          tnlString( ", " ) +
+          getParameterType< Real >() +
+          tnlString( " >" );
+}
+
+template< typename Real >
 #ifdef HAVE_CUDA
 __host__ __device__
 #endif

@@ -18,8 +18,8 @@
 #ifndef TNLMESHEDGETAG_H_
 #define TNLMESHEDGETAG_H_
 
-#include <mesh/topology/tnlMeshEntityTopology.h>
-#include <mesh/topology/tnlMeshVertexTag.h>
+#include <mesh/topologies/tnlMeshEntityTopology.h>
+#include <mesh/topologies/tnlMeshVertexTag.h>
 
 struct tnlMeshEdgeTag
 {

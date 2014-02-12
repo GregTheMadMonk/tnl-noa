@@ -24,7 +24,8 @@
  * It means that each mesh entity stores its index in its
  * mesh storage layer.
  */
-template< typename Real = double,
+template< int WorldDimensions,
+          typename Real = double,
           typename GlobalIndex = int,
           typename LocalIndex = GlobalIndex,
           typename Id = void >
@@ -33,7 +34,46 @@ struct tnlMeshConfigBase
    typedef Real        RealType;
    typedef GlobalIndex GlobalIndexType;
    typedef LocalIndex  LocalIndexType;
-   typedef Id          IdType; //
+   typedef Id          IdType;
+
+   enum { worldDimensions = WorldDimensions };
+};
+
+/****
+ * Explicit storage of all mesh entities by default.
+ * To disable it, write your own specialization with given
+ * dimensions and config tag.
+ */
+template< typename ConfigTag,
+          int Dimensions >
+struct tnlMeshEntityStorage
+{
+   enum { enabled = true };
+};
+
+/****
+ * By default, ALL SUBENTITIES of a mesh entity ARE STORED
+ * provided that they are stored in the mesh.
+ * Write your own specialization if you do not want so.
+ */
+template< typename ConfigTag,
+          typename EntityTag,
+          int Dimensions >
+struct tnlMeshSubentityStorage
+{
+   enum { enabled = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
+};
+
+/***
+ * By default, NO SUPERENTITIES of any mesh entity ARE STORED.
+ * Write your own specialization if you need to stored them.
+ */
+template< typename ConfigTag,
+          typename EntityTag,
+          int Dimensions >
+struct tnlMeshSuperentityStorage
+{
+   enum { enabled = false };
 };
 
 #endif /* TNLMESHCONFIGBASE_H_ */

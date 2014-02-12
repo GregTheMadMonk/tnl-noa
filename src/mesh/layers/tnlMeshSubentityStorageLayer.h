@@ -18,15 +18,17 @@
 #ifndef TNLMESHSUBENTITYSTORAGELAYER_H_
 #define TNLMESHSUBENTITYSTORAGELAYER_H_
 
-#include <mesh/traits/tnlDimensionsTag.h>
-#include <mesh/traits/tnlStorageTag.h>
+#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/traits/tnlStorageTraits.h>
+#include <mesh/traits/tnlMeshSubentitiesTraits.h>
 
 template< typename ConfigTag,
           typename EntityTag,
           typename DimensionTag,
-          typename SubentityStorageTag = typename SubentitiesTag< ConfigTag,
-                                                                  EntityTag,
-                                                                  DimensionTag >::SubentityStorageTag >
+          typename SubentityStorageTag =
+                   typename tnlMeshSubentitiesTraits< ConfigTag,
+                                                      EntityTag,
+                                                      DimensionTag >::SubentityStorageTag >
 class tnlMeshSubentityStorageLayer;
 
 
@@ -35,73 +37,96 @@ template< typename ConfigTag,
 class tnlMeshSubentityStorageLayers
    : public tnlMeshSubentityStorageLayer< ConfigTag,
                                           EntityTag,
-                                          tnlDimensionsTag< EntityTag::dimension - 1 > >
+                                          tnlDimensionsTraits< EntityTag::dimensions - 1 > >
 {
 };
 
 
 template< typename ConfigTag,
           typename EntityTag,
-          typename DimensionTag >
+          typename DimensionsTraits >
 class tnlMeshSubentityStorageLayer< ConfigTag,
                                     EntityTag,
-                                    DimensionTag,
-                                    tnlStorageTag< true > >
+                                    DimensionsTraits,
+                                    tnlStorageTraits< true > >
    : public tnlMeshSubentityStorageLayer< ConfigTag,
                                           EntityTag,
-                                          typename DimensionTag::Previous >
+                                          typename DimensionsTraits::Previous >
 {
    typedef tnlMeshSubentityStorageLayer< ConfigTag,
                                          EntityTag,
-                                         typename DimensionTag::Previous > BaseType;
+                                         typename DimensionsTraits::Previous > BaseType;
 
-   typedef tnlMeshSubentitiesTag< ConfigTag,
-                                  EntityTag,
-                                  DimensionTag> SubentityTag;
+   typedef tnlMeshSubentitiesTraits< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTraits > SubentityTraits;
 
    protected:
 
-   typedef typename tnlMeshSubentityTag::ContainerType    ContainerType;
-   typedef typename tnlMeshSubentityTag::SharedArrayType  SharedArrayType;
+   typedef typename SubentityTraits::ContainerType    ContainerType;
+   typedef typename SubentityTraits::SharedArrayType  SharedArrayType;
 
-   using BaseType::subentityIndices;
-   SharedArrayType subentityIndices(DimensionTag) const   { return SharedArrayType(m_subentityEntities); }
+   using BaseType::getSubentityIndices;
 
-   using BaseType::subentityIndicesContainer;
-   ContainerType &subentityIndicesContainer(DimensionTag) { return m_subentityEntities; }
+   SharedArrayType getSubentityIndices( DimensionsTraits ) const
+      { return SharedArrayType( subentityEntities); }
+
+   //using BaseType::getSubentityIndicesContainer;
+   ContainerType& getSubentityIndices( DimensionsTraits )
+      { return this->subentityEntities; }
 
 private:
-   ContainerType m_subentityEntities;
+   ContainerType subentityEntities;
 };
 
 
-template<typename ConfigTag, typename EntityTag, typename DimensionTag>
-class SubentityStorageLayer<ConfigTag, EntityTag, DimensionTag, StorageTag<false> >
-        : public SubentityStorageLayer<ConfigTag, EntityTag, typename DimensionTag::Previous>
+template< typename ConfigTag,
+          typename EntityTag,
+          typename DimensionsTraits >
+class tnlMeshSubentityStorageLayer< ConfigTag,
+                                    EntityTag,
+                                    DimensionsTraits,
+                                    tnlStorageTraits< false > >
+   : public tnlMeshSubentityStorageLayer< ConfigTag,
+                                          EntityTag,
+                                          typename DimensionsTraits::Previous >
 {
 };
 
 
-template<typename ConfigTag, typename EntityTag>
-class SubentityStorageLayer<ConfigTag, EntityTag, DimTag<0>, StorageTag<true> >
+template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshSubentityStorageLayer< ConfigTag,
+                                    EntityTag,
+                                    tnlDimensionsTraits< 0 >,
+                                    tnlStorageTraits< true > >
 {
-   typedef DimTag<0>                                          DimensionTag;
+   typedef tnlDimensionsTraits< 0 >                           DimensionsTraits;
 
-   typedef SubentitiesTag<ConfigTag, EntityTag, DimensionTag> SubentityTag;
+   typedef tnlMeshSubentitiesTraits< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTraits > SubentityTraits;
 
 protected:
-   typedef typename SubentityTag::ContainerType               ContainerType;
-   typedef typename SubentityTag::SharedArrayType             SharedArrayType;
+   typedef typename SubentityTraits::ContainerType               ContainerType;
+   typedef typename SubentityTraits::SharedArrayType             SharedArrayType;
 
-   SharedArrayType subentityIndices(DimensionTag) const   { return SharedArrayType(m_subentityVertices); }
+   SharedArrayType getSubentityIndices( DimensionsTraits ) const   { return SharedArrayType( this->subentityVertices); }
 
-   ContainerType &subentityIndicesContainer(DimensionTag) { return m_subentityVertices; }
+   ContainerType&  getSubentityIndices( DimensionsTraits ) { return this->subentityVertices; }
 
 private:
-   ContainerType m_subentityVertices;
+   ContainerType subentityVertices;
 };
 
-
+template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshSubentityStorageLayer< ConfigTag,
+                                    EntityTag,
+                                    tnlDimensionsTraits< 0 >,
+                                    tnlStorageTraits< false > >
+{
+};
 
 
 #endif /* TNLMESHSUBENTITYSTORAGELAYER_H_ */

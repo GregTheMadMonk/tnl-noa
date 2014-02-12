@@ -18,11 +18,11 @@
 #ifndef TNLMESHTRIANGLETAG_H_
 #define TNLMESHTRIANGLETAG_H_
 
-#include <mesh/topology/tnlMeshEdgeTag.h>
+#include <mesh/topologies/tnlMeshEdgeTag.h>
 
 struct tnlMeshTriangleTag
 {
-   enum { dimension = 2 };
+   enum { dimensions = 2 };
 };
 
 

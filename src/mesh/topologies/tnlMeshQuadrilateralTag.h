@@ -22,7 +22,7 @@
 
 struct tnlMeshQuadrilateralTag
 {
-   enum { dimension = 2 };
+   enum { dimensions = 2 };
 };
 
 

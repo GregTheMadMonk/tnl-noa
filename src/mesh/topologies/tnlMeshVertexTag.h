@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #ifndef TNLMESHVERTEXTAG_H_
-#define TNLMESHVERTEX_H_
+#define TNLMESHVERTEXTAG_H_
 
 struct tnlMeshVertexTag
 {

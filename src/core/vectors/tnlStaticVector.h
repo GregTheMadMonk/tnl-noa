@@ -49,6 +49,8 @@ class tnlStaticVector : public tnlStaticArray< Size, Real >
 #endif
    tnlStaticVector( const tnlStaticVector< Size, Real >& v );
 
+   static tnlString getType();
+
    //! Adding operator
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -135,6 +137,8 @@ class tnlStaticVector< 1, Real > : public tnlStaticArray< 1, Real >
    __host__ __device__
 #endif
    tnlStaticVector( const tnlStaticVector< 1, Real >& v );
+
+   static tnlString getType();
 
    //! Adding operator
 #ifdef HAVE_CUDA
@@ -233,6 +237,8 @@ class tnlStaticVector< 2, Real > : public tnlStaticArray< 2, Real >
 #endif
    tnlStaticVector( const tnlStaticVector< 2, Real >& v );
 
+   static tnlString getType();
+
    //! Adding operator
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -329,6 +335,8 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
    __host__ __device__
 #endif
    tnlStaticVector( const tnlStaticVector< 3, Real >& v );
+
+   static tnlString getType();
 
    //! Adding operator
 #ifdef HAVE_CUDA
