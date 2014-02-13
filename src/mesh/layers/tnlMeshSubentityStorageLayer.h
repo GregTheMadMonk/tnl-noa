@@ -64,18 +64,32 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    protected:
 
    typedef typename SubentityTraits::ContainerType    ContainerType;
-   typedef typename SubentityTraits::SharedArrayType  SharedArrayType;
+   typedef typename ContainerType::ElementType        GlobalIndexType;
+   typedef int                                        LocalIndexType;
 
-   using BaseType::getSubentityIndices;
+   /****
+    * Make visible setters and getters of the lower subentities
+    */
+   using BaseType::getSubentityIndex;
+   using BaseType::setSubentityIndex;
 
-   SharedArrayType getSubentityIndices( DimensionsTraits ) const
-      { return SharedArrayType( subentityEntities); }
+   /****
+    * Define setter/getter for the current level of the subentities
+    */
+   void setSubentityIndex( DimensionsTraits,
+                          const LocalIndexType localIndex,
+                          const GlobalIndexType globalIndex )
+   {
+      this->subentityEntities[ localIndex ] = globalIndex;
+   }
 
-   //using BaseType::getSubentityIndicesContainer;
-   ContainerType& getSubentityIndices( DimensionsTraits )
-      { return this->subentityEntities; }
+   GlobalIndexType getSubentityIndex( DimensionsTraits,
+                                      const LocalIndexType localIndex ) const
+   {
+      return this->subentityEntities[ localIndex ];
+   }
 
-private:
+   private:
    ContainerType subentityEntities;
 };
 
@@ -107,15 +121,25 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTraits > SubentityTraits;
 
-protected:
-   typedef typename SubentityTraits::ContainerType               ContainerType;
-   typedef typename SubentityTraits::SharedArrayType             SharedArrayType;
+   protected:
 
-   SharedArrayType getSubentityIndices( DimensionsTraits ) const   { return SharedArrayType( this->subentityVertices); }
+   typedef typename SubentityTraits::ContainerType             ContainerType;
+   typedef typename ContainerType::ElementType                 GlobalIndexType;
+   typedef int                                                 LocalIndexType;
 
-   ContainerType&  getSubentityIndices( DimensionsTraits ) { return this->subentityVertices; }
+   GlobalIndexType getSubentityIndex( DimensionsTraits,
+                                      const LocalIndexType localIndex ) const
+   {
+      return this->subentityVertices[ localIndex ];
+   }
+   void setSubentityIndex( DimensionsTraits,
+                           const LocalIndexType localIndex,
+                           const GlobalIndexType globalIndex )
+   {
+      this->subentityVertices[ localIndex ] = globalIndex;
+   }
 
-private:
+   private:
    ContainerType subentityVertices;
 };
 

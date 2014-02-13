@@ -182,14 +182,14 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
       TriangleMeshEntityType triangleEntity;
 
-      triangleEntity.template getSubentityIndices< 0 >()[ 0 ] = 0;
-      triangleEntity.template getSubentityIndices< 0 >()[ 1 ] = 1;
-      triangleEntity.template getSubentityIndices< 0 >()[ 2 ] = 2;
+      triangleEntity.template setSubentityIndex< 0 >( 0 , 0 );
+      triangleEntity.template setSubentityIndex< 0 >( 1 , 1 );
+      triangleEntity.template setSubentityIndex< 0 >( 2 , 2 );
 
 
-      triangleEntity.template getSubentityIndices< 1 >()[ 0 ] = 0;
-      triangleEntity.template getSubentityIndices< 1 >()[ 1 ] = 1;
-      triangleEntity.template getSubentityIndices< 1 >()[ 2 ] = 2;
+      triangleEntity.template setSubentityIndex< 1 >( 0 , 0 );
+      triangleEntity.template setSubentityIndex< 1 >( 1 , 1 );
+      triangleEntity.template setSubentityIndex< 1 >( 2 , 2 );
 
       //CPPUNIT_ASSERT(  );
    };
@@ -273,15 +273,17 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       tetrahedronEntity.setVertexIndex( 2, 2 );
       tetrahedronEntity.setVertexIndex( 3, 3 );
 
-      tetrahedronEntity.template getSubentityIndices< 2 >()[ 0 ] = 0;
-      tetrahedronEntity.template getSubentityIndices< 2 >()[ 1 ] = 1;
-      tetrahedronEntity.template getSubentityIndices< 2 >()[ 2 ] = 2;
-      tetrahedronEntity.template getSubentityIndices< 2 >()[ 3 ] = 3;
+      tetrahedronEntity.template setSubentityIndex< 2 >( 0, 0 );
+      tetrahedronEntity.template setSubentityIndex< 2 >( 1, 1 );
+      tetrahedronEntity.template setSubentityIndex< 2 >( 2, 2 );
+      tetrahedronEntity.template setSubentityIndex< 2 >( 3, 3 );
 
-      tetrahedronEntity.template getSubentityIndices< 1 >()[ 0 ] = 0;
-      tetrahedronEntity.template getSubentityIndices< 1 >()[ 1 ] = 1;
-      tetrahedronEntity.template getSubentityIndices< 1 >()[ 2 ] = 2;
-      tetrahedronEntity.template getSubentityIndices< 1 >()[ 3 ] = 3;
+      tetrahedronEntity.template setSubentityIndex< 1 >( 0, 0 );
+      tetrahedronEntity.template setSubentityIndex< 1 >( 1, 1 );
+      tetrahedronEntity.template setSubentityIndex< 1 >( 2, 2 );
+      tetrahedronEntity.template setSubentityIndex< 1 >( 3, 3 );
+      tetrahedronEntity.template setSubentityIndex< 1 >( 4, 4 );
+      tetrahedronEntity.template setSubentityIndex< 1 >( 5, 5 );
 
 
 
