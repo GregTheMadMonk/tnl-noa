@@ -24,11 +24,11 @@
 
 template< typename ConfigTag,
           typename EntityTag,
-          typename DimensionTag,
+          typename DimensionTraits,
           typename SubentityStorageTag =
                    typename tnlMeshSubentitiesTraits< ConfigTag,
                                                       EntityTag,
-                                                      DimensionTag >::SubentityStorageTag >
+                                                      DimensionTraits >::SubentityStorageTag >
 class tnlMeshSubentityStorageLayer;
 
 
@@ -77,20 +77,20 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
     * Define setter/getter for the current level of the subentities
     */
    void setSubentityIndex( DimensionsTraits,
-                          const LocalIndexType localIndex,
-                          const GlobalIndexType globalIndex )
+                           const LocalIndexType localIndex,
+                           const GlobalIndexType globalIndex )
    {
-      this->subentityEntities[ localIndex ] = globalIndex;
+      this->subentitiesIndecis[ localIndex ] = globalIndex;
    }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const
    {
-      return this->subentityEntities[ localIndex ];
+      return this->subentitiesIndecis[ localIndex ];
    }
 
    private:
-   ContainerType subentityEntities;
+   ContainerType subentitiesIndecis;
 };
 
 

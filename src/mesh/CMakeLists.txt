@@ -8,6 +8,7 @@ SET( headers tnlGrid.h
              tnlLinearGridGeometry.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h
-             tnlMeshStorageLayer.h  )
+             tnlMeshEntity.h
+             tnlMeshEntityKey.h  )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

@@ -27,9 +27,6 @@
 
 using namespace std;
 
-//namespace implementation
-//{
-
 template< typename Element,
           typename Device,
           typename Index >

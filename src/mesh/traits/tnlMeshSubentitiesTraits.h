@@ -47,7 +47,7 @@ public:
    enum { count = Tag::count };
 
    typedef tnlStaticArray< count, GlobalIndexType >              ContainerType;
-   typedef tnlSharedArray< GlobalIndexType, LocalIndexType >     SharedArrayType;
+   //typedef tnlSharedArray< GlobalIndexType, LocalIndexType >   SharedArrayType;
    typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
 
    template< LocalIndexType subentityIndex,

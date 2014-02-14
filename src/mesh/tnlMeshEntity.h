@@ -22,125 +22,123 @@
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/topologies/tnlMeshVertexTag.h>
 #include <mesh/layers/tnlMeshSubentityStorageLayer.h>
+#include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
 
 template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshEntity
-   : public tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >
+   : public tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >,
+     public tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >
 {
    public:
 
    /****
-    * The entity typedefs
+    * Entity typedefs
     */
-   typedef ConfigTag                                        MeshConfigTag;
-   typedef EntityTag                                        Tag;
+   typedef ConfigTag                                            MeshConfigTag;
+   typedef EntityTag                                            Tag;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
-
-   // TODO: Global index type should be unique as well to make this simpler
-   typedef  int                                                   LocalIndexType;
-
-   /****
-    * Vertices
-    */
-   typedef tnlMeshSubentityStorageLayer< ConfigTag,
-                                         EntityTag,
-                                         tnlDimensionsTraits< 0 > > VertexBaseType;
-   typedef tnlMeshSubentitiesTraits< ConfigTag, 
-                                     EntityTag,
-                                     tnlDimensionsTraits< 0 > >  SubvertexTraits;
-   typedef typename SubvertexTraits::ContainerType::ElementType  GlobalIndexType;
-   //typedef typename SubvertexTraits::ContainerType::IndexType   LocalIndexType;
-   // TODO: the above requires IndexType in tnlStaticArray - think about it
-
-
-   enum { subverticesCount = SubvertexTraits::count };
-
-   void setVertexIndex( const LocalIndexType localIndex,
-                        const GlobalIndexType globalIndex )
-   {
-      tnlAssert( 0 <= localIndex && localIndex < subverticesCount,
-                cerr << "localIndex = " << localIndex
-                     << " subverticesCount = " << subverticesCount );
-
-      VertexBaseType::setSubentityIndex( tnlDimensionsTraits< 0 >(),
-                                         localIndex,
-                                         globalIndex );
-   }
-
-   GlobalIndexType getVertexIndex( const LocalIndexType localIndex )
-   {
-      tnlAssert( 0 <= localIndex && localIndex < subverticesCount,
-                 cerr << "localIndex = " << localIndex
-                      << " subverticesCount = " << subverticesCount );
-      return VertexBaseType::getSubentityIndex( tnlDimensionsTraits< 0 >(),
-                                                localIndex );
-   }
 
    /****
     * Subentities
     */
    template< int Dimensions >
-   struct SubentityContainer
+   struct SubentitiesTraits
    {
-      typedef tnlDimensionsTraits< Dimensions >  DimensionsTraits;
+      typedef tnlDimensionsTraits< Dimensions >                 DimensionsTraits;
       typedef tnlMeshSubentitiesTraits< ConfigTag,
                                         EntityTag,
-                                        DimensionsTraits > SubentityTraits;
-      typedef typename SubentityTraits::ContainerType              Type;
-      typedef typename Type::ElementType                           GlobalIndexType;
+                                        DimensionsTraits >      SubentityTraits;
+      typedef typename SubentityTraits::ContainerType           ContainerType;
+      typedef typename ContainerType::ElementType               GlobalIndexType;
+      typedef int                                               LocalIndexType;
+      // TODO: make this as:
+      // typedef typename Type::IndexType   LocalIndexType
+      enum { available = tnlMeshSubentityStorage< ConfigTag,
+                                                  EntityTag,
+                                                  Dimensions >::enabled };
+      enum { subentitiesCount = SubentityTraits::count };
    };
 
    template< int Dimensions >
-   struct SubentitiesAvailable
+   bool subentitiesAvailable() const
    {
-      enum { value = tnlMeshSubentityStorage< ConfigTag,
-                                              EntityTag,
-                                              Dimensions >::enabled };
+      return SubentitiesTraits< Dimensions >::available;
    };
 
-   typedef tnlMeshSubentityStorageLayers< ConfigTag,
-                                          EntityTag >            SubentityBaseType;
+   template< int Dimensions >
+   int getNumberOfSubentities() const
+   {
+      return SubentitiesTraits< Dimensions >::subentitiesCount;
+   };
 
    template< int Dimensions >
-   void setSubentityIndex( const LocalIndexType localIndex,
-                           typename SubentityContainer< Dimensions >::GlobalIndexType globalIndex )
+   void setSubentityIndex( const typename SubentitiesTraits< Dimensions >::LocalIndexType localIndex,
+                           const typename SubentitiesTraits< Dimensions >::GlobalIndexType globalIndex )
    {
+      tnlAssert( 0 <= localIndex &&
+                 localIndex < SubentitiesTraits< Dimensions >::subentitiesCount,
+                 cerr << "localIndex = " << localIndex
+                      << " subentitiesCount = "
+                      << SubentitiesTraits< Dimensions >::subentitiesCount );
+      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
       SubentityBaseType::setSubentityIndex( tnlDimensionsTraits< Dimensions >(),
                                             localIndex,
                                             globalIndex );
    }
 
    template< int Dimensions >
-   typename SubentityContainer< Dimensions >::GlobalIndexType
-      getSubentityIndex( const LocalIndexType localIndex) const
+   typename SubentitiesTraits< Dimensions >::GlobalIndexType
+      getSubentityIndex( const typename SubentitiesTraits< Dimensions >::LocalIndexType localIndex) const
       {
+         tnlAssert( 0 <= localIndex &&
+                    localIndex < SubentitiesTraits< Dimensions >::subentitiesCount,
+                    cerr << "localIndex = " << localIndex
+                         << " subentitiesCount = "
+                         << SubentitiesTraits< Dimensions >::subentitiesCount );
+         typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
          return SubentityBaseType::getSubentityIndex( tnlDimensionsTraits< Dimensions >(),
                                                       localIndex );
       }
 
    /****
-    * Superentities containers
+    * Superentities
     */
-   //typedef typename SuperentityBaseType::SharedArrayType    SuperentityIndicesArrayType;
-
    template< int Dimensions >
-   struct SuperentitiesAvailable
+   struct SuperentitiesTraits
    {
-      /*enum { value = tnlSuperentityStorage< ConfigTag,
-                                            EntityTag,
-                                            Dimensions >::enabled };*/
+      typedef tnlDimensionsTraits< Dimensions >                 DimensionsTraits;
+      typedef tnlMeshSuperentitiesTraits< ConfigTag,
+                                          EntityTag,
+                                          DimensionsTraits >    SuperentityTraits;
+      typedef typename SuperentityTraits::ContainerType         ContainerType;
+      typedef typename ContainerType::ElementType               GlobalIndexType;
+      typedef int                                               LocalIndexType;
+      // TODO: make this as:
+      // typedef typename Type::IndexType   LocalIndexType
+      enum { available = tnlMeshSuperentityStorage< ConfigTag,
+                                                    EntityTag,
+                                                    Dimensions >::enabled };
+      enum { superentitiesCount = SuperentityTraits::count };
    };
 
+   /****
+    * Vertices
+    */
+   enum { verticesCount = SubentitiesTraits< 0 >::subentitiesCount };
+   typedef typename SubentitiesTraits< 0 >::GlobalIndexType  VerticesGlobalIndexType;
+   typedef typename SubentitiesTraits< 0 >::LocalIndexType   VerticesLocalIndexType;
+   void setVertexIndex( const VerticesLocalIndexType localIndex,
+                        const VerticesGlobalIndexType globalIndex )
+   {
+      this->setSubentityIndex< 0 >( localIndex, globalIndex  );
+   }
 
-
-   /*using SuperentityBaseType::superentityIndices;
-   template<DimensionType dim>
-   SuperentityIndicesArrayType superentityIndices() const { return this->superentityIndices(DimTag<dim>()); }
-   */
-
-
+   VerticesGlobalIndexType getVertexIndex( const VerticesLocalIndexType localIndex )
+   {
+      return this->getSubentityIndex< 0 >( localIndex  );
+   }
 };
 
 template< typename ConfigTag >
