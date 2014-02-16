@@ -12,8 +12,7 @@ set( headers tnlUnitTestStarter.h
              core/tnlObjectTester.h   
              core/tnlRealTester.h 
              core/tnlSharedMemoryTester.h
-             core/tnlStringTester.h 
-             core/tnlTupleTester.h 
+             core/tnlStringTester.h  
              diff/tnlMPIMeshTester.h 
              diff/tnlMersonSolverCUDATester.cu.h
              solver/tnlMersonSolverTester.h )
@@ -30,6 +29,7 @@ else()
 endif()
 
 ADD_TEST( core/tnlStringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStringTest${mpiExt}${debugExt} )
+ADD_TEST( core/tnlListTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlListTest${mpiExt}${debugExt} )
 ADD_TEST( core/tnlObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlObjectTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )

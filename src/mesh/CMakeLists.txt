@@ -8,6 +8,7 @@ SET( headers tnlGrid.h
              tnlLinearGridGeometry.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h
+             tnlMesh.h
              tnlMeshEntity.h
              tnlMeshEntityKey.h  )
 

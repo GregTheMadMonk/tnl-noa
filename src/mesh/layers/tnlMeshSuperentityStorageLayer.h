@@ -69,23 +69,36 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    /****
      * Make visible setters and getters of the lower superentities
      */
+    using BaseType::setNumberOfSuperentities;
+    using BaseType::getNumberOfSuperentities;
     using BaseType::getSuperentityIndex;
     using BaseType::setSuperentityIndex;
 
     /****
      * Define setter/getter for the current level of the superentities
      */
+    bool setNumberOfSuperentities( DimensionsTraits,
+                                   const LocalIndexType size )
+    {
+       return this->superentitiesIndices.setSize( size );
+    }
+
+    LocalIndexType getNumberOfSuperentities( DimensionsTraits ) const
+    {
+       return this->superentitiesIndices.getSize();
+    }
+
     void setSuperentityIndex( DimensionsTraits,
                               const LocalIndexType localIndex,
                               const GlobalIndexType globalIndex )
     {
-       this->superentitiesIndecis[ localIndex ] = globalIndex;
+       this->superentitiesIndices[ localIndex ] = globalIndex;
     }
 
     GlobalIndexType getSuperentityIndex( DimensionsTraits,
                                          const LocalIndexType localIndex ) const
     {
-       return this->superentitiesIndecis[ localIndex ];
+       return this->superentitiesIndices[ localIndex ];
     }
 
     private:
@@ -127,6 +140,9 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
+   bool setNumberOfSuperentities( DimensionsTraits,
+                                   const LocalIndexType size );
+   LocalIndexType getNumberOfSuperentities( DimensionsTraits ) const;
    GlobalIndexType getSuperentityIndex( DimensionsTraits,
                                         const LocalIndexType localIndex ){}
    void setSuperentityIndex( DimensionsTraits,
@@ -138,9 +154,41 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSuperentityStorageLayer< ConfigTag,
                                       EntityTag,
+                                      tnlDimensionsTraits< EntityTag::dimensions >,
+                                      tnlStorageTraits< true > >
+{
+   typedef tnlDimensionsTraits< EntityTag::dimensions >        DimensionsTraits;
+
+   typedef tnlMeshSuperentitiesTraits< ConfigTag,
+                                       EntityTag,
+                                       DimensionsTraits >      SuperentityTag;
+
+   protected:
+
+   typedef typename SuperentityTag::ContainerType              ContainerType;
+   typedef typename ContainerType::ElementType                 GlobalIndexType;
+   typedef int                                                 LocalIndexType;
+
+   /****
+    * These methods are due to 'using BaseType::...;' in the derived classes.
+    */
+   bool setNumberOfSuperentities( DimensionsTraits,
+                                   const LocalIndexType size );
+   LocalIndexType getNumberOfSuperentities( DimensionsTraits ) const;
+   GlobalIndexType getSuperentityIndex( DimensionsTraits,
+                                        const LocalIndexType localIndex ){}
+   void setSuperentityIndex( DimensionsTraits,
+                             const LocalIndexType localIndex,
+                             const GlobalIndexType globalIndex ) {}
+};
+
+/*template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshSuperentityStorageLayer< ConfigTag,
+                                      EntityTag,
                                       tnlDimensionsTraits< 0 >,
                                       tnlStorageTraits< false > >
 {
-};
+};*/
 
 #endif /* TNLMESHSUPERENTITYSTORAGELAYER_H_ */

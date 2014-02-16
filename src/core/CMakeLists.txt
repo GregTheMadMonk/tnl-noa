@@ -12,6 +12,7 @@ set (headers tnlAssert.h
   		       tnlFile.h 
   		       tnlFlopsCounter.h
    		    tnlHost.h 
+   		    tnlIndexedSet.h
    		    tnlList.h
    		    tnlLogger.h 
    		    tnlObject.h 

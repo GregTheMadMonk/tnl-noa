@@ -19,6 +19,8 @@
 #define TNLMESHSUPERENTITIESTRAITS_H_
 
 #include <core/arrays/tnlArray.h>
+#include <core/arrays/tnlConstSharedArray.h>
+#include <core/tnlList.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
@@ -33,24 +35,24 @@ class tnlMeshSuperentitiesTraits
                                                       EntityTag,
                                                       DimensionsTraits::value >::enabled };
 
-   typedef typename ConfigTag::GlobalIndexType                  GlobalIndexType;
-   typedef typename ConfigTag::LocalIndexType                   LocalIndexType;
+   typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
+   typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
 
    public:
 
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                EntityType;
+   typedef tnlMeshEntity< ConfigTag, EntityTag >                   EntityType;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Tag            SuperentityTag;
+                             DimensionsTraits >::Tag               SuperentityTag;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Type           SuperentityType;
+                             DimensionsTraits >::Type              SuperentityType;
 
-   typedef tnlStorageTraits< storageEnabled >                   SuperentityStorageTag;
+   typedef tnlStorageTraits< storageEnabled >                      SuperentityStorageTag;
 
-   typedef tnlArray<GlobalIndexType, LocalIndexType>            ContainerType;
-   //typedef GrowableArray<GlobalIndexType>                       GrowableContainerType;
-   //typedef ArraySharedConst<GlobalIndexType, LocalIndexType>  SharedArrayType;
+   typedef tnlArray<GlobalIndexType, tnlHost, LocalIndexType>               ContainerType;
+   typedef tnlList<GlobalIndexType>                                GrowableContainerType;
+   typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  SharedArrayType;
 };
 
 

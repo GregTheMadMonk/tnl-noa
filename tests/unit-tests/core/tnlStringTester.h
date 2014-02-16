@@ -32,6 +32,10 @@
 class tnlStringTester : public CppUnit :: TestCase
 {
    public:
+
+   typedef tnlStringTester StringTester;
+   typedef CppUnit :: TestCaller< StringTester > TestCaller;
+
    tnlStringTester(){};
 
    virtual
@@ -41,42 +45,15 @@ class tnlStringTester : public CppUnit :: TestCase
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlStringTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testBasicConstructor",
-                               & tnlStringTester :: testBasicConstructor )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testConstructorWithChar",
-                               & tnlStringTester :: testConstructorWithChar )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testCopyConstructor",
-                               & tnlStringTester :: testCopyConstructor )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testConstructorWithNumber",
-                               & tnlStringTester :: testConstructorWithNumber )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testSetString",
-                               & tnlStringTester :: testSetString )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testIndexingOperator",
-                               & tnlStringTester :: testIndexingOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testAssignmentOperator",
-                               & tnlStringTester :: testAssignmentOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testAdditionAssignmentOperator",
-                               & tnlStringTester :: testAdditionAssignmentOperator )
-                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlStringTester >(
-                               "testSave",
-                               & tnlStringTester :: testSave )
-                              );
+      suiteOfTests -> addTest( new TestCaller( "testBasicConstructor", &tnlStringTester :: testBasicConstructor ) );
+      suiteOfTests -> addTest( new TestCaller( "testConstructorWithChar", &tnlStringTester :: testConstructorWithChar ) );
+      suiteOfTests -> addTest( new TestCaller( "testCopyConstructor", &tnlStringTester :: testCopyConstructor ) );
+      suiteOfTests -> addTest( new TestCaller( "testConstructorWithNumber", &tnlStringTester :: testConstructorWithNumber ) );
+      suiteOfTests -> addTest( new TestCaller( "testSetString", &tnlStringTester :: testSetString ) );
+      suiteOfTests -> addTest( new TestCaller( "testIndexingOperator", &tnlStringTester :: testIndexingOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &tnlStringTester :: testAssignmentOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testAdditionAssignmentOperator", &tnlStringTester :: testAdditionAssignmentOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testSave", &tnlStringTester :: testSave ) );
        return suiteOfTests;
    }
 
@@ -179,8 +156,6 @@ class tnlStringTester : public CppUnit :: TestCase
 
 };
 
-#else /* HAVE_CPPUNIT */
-class tnlStringTester {};
 #endif /* HAVE_CPPUNIT */
 
 #endif /* TNLSTRINGTESTER_H_ */
