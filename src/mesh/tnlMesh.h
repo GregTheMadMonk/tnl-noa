@@ -24,23 +24,23 @@
 template< typename ConfigTag >
 class tnlMesh : public tnlMeshStorageLayers< ConfigTag >
 {
-   template<typename, typename, typename> friend class InitializerLayer;
-   friend class IOReader<ConfigTag>;
+   //template<typename, typename, typename> friend class InitializerLayer;
+   //friend class IOReader<ConfigTag>;
 
    typedef tnlMeshStorageLayers<ConfigTag>        BaseType;
 
    public:
    typedef ConfigTag                              Config;
-   typedef typename MeshTag<ConfigTag>::PointType PointType;
-   enum { dimension = MeshTag<ConfigTag>::dimension };
+   typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
+   enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
    template< int Dimensions >
    struct EntitiesTraits
    {
       typedef tnlDimensionsTraits< Dimensions >                       DimensionsTraits;
-      typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >    MeshEntitiesTraits
+      typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >    MeshEntitiesTraits;
       typedef typename MeshEntitiesTraits::Type                       Type;
-      typedef typename MeshEntitiesTraits::ConatinerType              ContainerType;
+      typedef typename MeshEntitiesTraits::ContainerType              ContainerType;
       typedef typename ContainerType::IndexType                       GlobalIndexType;
       typedef typename ContainerType::ElementType                     EntityType;
       //typedef typename MeshEntitiesTraits::SharedArrayType          SharedArrayType;
@@ -86,21 +86,30 @@ class tnlMesh : public tnlMeshStorageLayers< ConfigTag >
       BaseType::setEntity( tnlDimensionsTraits< Dimensions >(), entityIndex, entity );
    }
 
+   using BaseType::setNumberOfVertices;
+   using BaseType::getNumberOfVertices;
+   using BaseType::setVertex;
+   using BaseType::getVertex;
+   using BaseType::setPoint;
+   using BaseType::getPoint;
+
+
    void load(const char *filename);
    void write(const char *filename) const;
 
-   void load(IOReader<ConfigTag> &reader);
-   void write(IOWriter<ConfigTag> &writer) const;
+   //void load(IOReader<ConfigTag> &reader);
+   //void write(IOWriter<ConfigTag> &writer) const;
 
-   using BaseType::entities;
-   template<DimensionType dim>
-   typename EntitiesArray<dim>::Type entities() const { return this->entities(DimTag<dim>()); }
+   //using BaseType::entities;
+   //template< int Dimensions >
+   //typename EntitiesArray<dim>::Type entities() const { return this->entities(DimTag<dim>()); }
 
 private:
    void init();
 
-   STATIC_ASSERT(EntitiesAvailable<0>::value, "Vertices must always be stored");
-   STATIC_ASSERT(EntitiesAvailable<dimension>::value, "Cells must always be stored");
+   tnlStaticAssert( dimensions > 0, "The mesh dimesnions must be greater than 0." );
+   tnlStaticAssert( EntitiesTraits< 0 >::available, "Vertices must always be stored" );
+   tnlStaticAssert( EntitiesTraits< dimensions >::available, "Cells must always be stored" );
 };
 
 

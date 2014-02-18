@@ -32,6 +32,19 @@ class tnlMeshEntity
 {
    public:
 
+   static tnlString getType()
+   {
+      return tnlString( "tnlMesh< " ) +
+                        //ConfigTag::getType() + ", " +
+                        //EntityTag::getType() + ", " +
+                        " >";
+   }
+
+   tnlString getTypeVirtual() const
+   {
+      return this->getType();
+   }
+
    /****
     * Entity typedefs
     */
@@ -193,6 +206,19 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    : public tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >
 {
    public:
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlMesh< " ) +
+                        //ConfigTag::getType() + ", " +
+                        //EntityTag::getType() + ", " +
+                        " >";
+   }
+
+   tnlString getTypeVirtual() const
+   {
+      return this->getType();
+   }
 
    /****
     * The entity typedefs

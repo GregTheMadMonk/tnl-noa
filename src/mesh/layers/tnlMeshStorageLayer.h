@@ -39,7 +39,7 @@ class tnlMeshStorageLayer;
 template< typename ConfigTag >
 class tnlMeshStorageLayers
    : public tnlMeshStorageLayer< ConfigTag,
-                                 typename tnlMeshTraits< ConfigTag >::DimensionTag >
+                                 typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
 {};
 
 
@@ -116,10 +116,12 @@ class tnlMeshStorageLayer< ConfigTag,
 {
    typedef tnlDimensionsTraits< 0 >                        DimensionsTraits;
 
-   typedef tnlMeshEntitiesTraits<ConfigTag, DimensionTag>  Tag;
+   typedef tnlMeshEntitiesTraits< ConfigTag,
+                                  DimensionsTraits >       Tag;
    typedef typename Tag::ContainerType                     ContainerType;
    typedef typename ContainerType::IndexType               GlobalIndexType;
    typedef typename ContainerType::ElementType             VertexType;
+   typedef typename VertexType::PointType                  PointType;
    //typedef typename Tag::SharedArrayType                 SharedArrayType;
 
    protected:
@@ -145,9 +147,52 @@ class tnlMeshStorageLayer< ConfigTag,
       return this->vertices.getElement( vertexIndex );
    }
 
-   const VertexType& getEntity( const GlobalIndexType vertexIndex ) const
+   const VertexType& getVertex( const GlobalIndexType vertexIndex ) const
    {
       return this->vertices.getElement( vertexIndex );
+   }
+
+
+   void setPoint( const GlobalIndexType vertexIndex,
+                  const PointType& point ) const
+   {
+      this->vertices.getElement( vertexIndex ).setPoint( point );
+   }
+
+   PointType& getPoint( const GlobalIndexType vertexIndex )
+   {
+      return this->vertices.getElement( vertexIndex ).getPoint();
+   }
+
+   const PointType& getPoint( const GlobalIndexType vertexIndex ) const
+   {
+      return this->vertices.getElement( vertexIndex ).getPoint();
+   }
+
+
+   /****
+    * This is only for the completeness and compatibility
+    * with higher dimensions entities storage layers.
+    */
+   bool setNumberOfEntities( const GlobalIndexType size )
+   {
+      return this->vertices.setSize( size );
+   }
+
+   GlobalIndexType getNumberOfEntities() const
+   {
+      return this->vertices.getSize();
+   }
+
+   void setEntity( const GlobalIndexType entityIndex,
+                   const VertexType& entity ) const
+   {
+      this->vertices.setElement( entityIndex, entity );
+   }
+
+   const VertexType& getEntity( const GlobalIndexType entityIndex ) const
+   {
+      return this->vertices.getElement( entityIndex );
    }
 
    private:
@@ -161,13 +206,12 @@ class tnlMeshStorageLayer< ConfigTag,
 template< typename ConfigTag >
 class tnlMeshStorageLayer< ConfigTag,
                            tnlDimensionsTraits< 0 >,
-                           tnlStorageTag< false > >
+                           tnlStorageTraits< false > >
 {
    protected:
+
+   void setNumberOfEntities();
 };
-
-
-
 
 
 #endif /* TNLMESHSTORAGELAYER_H_ */
