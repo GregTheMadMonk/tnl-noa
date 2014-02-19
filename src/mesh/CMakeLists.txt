@@ -10,6 +10,7 @@ SET( headers tnlGrid.h
              tnlGnuplotWriter.h
              tnlMesh.h
              tnlMeshEntity.h
-             tnlMeshEntityKey.h  )
+             tnlMeshEntityKey.h
+             tnlMeshReaderNetgen.h )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

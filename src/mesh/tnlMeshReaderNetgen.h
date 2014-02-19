@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mfilename.h  -  description
+                          tnlMeshReaderNetgen.h  -  description
                              -------------------
-    begin                : 2007/06/18
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Feb 19, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,19 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mfilenameH
-#define mfilenameH
+#ifndef TNLMESHREADERNETGEN_H_
+#define TNLMESHREADERNETGEN_H_
 
-class tnlString;
+#include <fstream>
+#include <istream>
+#include <sstream>
 
-void FileNameBaseNumberEnding( const char* base_name,
-                               int number,
-                               int index_size,
-                               const char* ending,
-                               tnlString& file_name );
+class tnlMeshReaderNetgen
+{
+   public:
 
-tnlString getFileExtension( const tnlString fileName );
+   static int detectDimensions( const tnlString& fileName )
+   {
+      fstream inputFile( fileName.getString() );
+      if( ! inputFile )
+      {
+         cerr << "I am not able to open the file " << fileName << "." << endl;
+         return false;
+      }
+      
+      std::string line;
+      int count;
+      std::istringstream iss;
 
-void RemoveFileExtension( tnlString& file_name );
+   }
 
-#endif
+   static bool readMesh( const tnlString& fileName )
+   {
+   }
+
+   protected:
+
+
+};
+
+
+#endif /* TNLMESHREADERNETGEN_H_ */

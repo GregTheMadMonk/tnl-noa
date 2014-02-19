@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mfilename.h  -  description
+                          tnl-mesh-convert.cpp  -  description
                              -------------------
-    begin                : 2007/06/18
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Feb 19, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,19 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mfilenameH
-#define mfilenameH
+#include "tnl-mesh-convert.h"
+#include "tnlConfig.h"
+#include <config/tnlParameterContainer.h>
 
-class tnlString;
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-mesh-convert.cfg.desc";
 
-void FileNameBaseNumberEnding( const char* base_name,
-                               int number,
-                               int index_size,
-                               const char* ending,
-                               tnlString& file_name );
+int main( int argc, char* argv[] )
+{
+   tnlParameterContainer parameters;
+   tnlConfigDescription conf_desc;
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+      return EXIT_FAILURE;
+   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   {
+      conf_desc. PrintUsage( argv[ 0 ] );
+      return EXIT_FAILURE;
+   }
+   if( ! readMesh( parameters ) )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
 
-tnlString getFileExtension( const tnlString fileName );
 
-void RemoveFileExtension( tnlString& file_name );
-
-#endif

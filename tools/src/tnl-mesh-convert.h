@@ -1,8 +1,8 @@
 /***************************************************************************
-                          mfilename.h  -  description
+                          tnl-mesh-convert.h  -  description
                              -------------------
-    begin                : 2007/06/18
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Feb 19, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,19 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef mfilenameH
-#define mfilenameH
+#ifndef TNL_MESH_CONVERT_H_
+#define TNL_MESH_CONVERT_H_
 
-class tnlString;
+#include <config/tnlParameterContainer.h>
+#include <mesh/tnlMeshReaderNetgen.h>
+#include <core/mfilename.h>
 
-void FileNameBaseNumberEnding( const char* base_name,
-                               int number,
-                               int index_size,
-                               const char* ending,
-                               tnlString& file_name );
+bool readMesh( const tnlParameterContainer& parameters )
+{
+   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
+   const tnlString fileExt = getFileExtension( inputFileName );
+   if( fileExt == "ng" )
+   {
+      int dimensions;
+      if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName ) )
+         return false;
+      cout << "dimensions = " << dimensions << endl;
+      if( ! tnlMeshReaderNetgen::readMesh( inputFileName ) )
+         return false;
+   }
+   return true;
+}
 
-tnlString getFileExtension( const tnlString fileName );
-
-void RemoveFileExtension( tnlString& file_name );
-
-#endif
+#endif /* TNL_MESH_CONVERT_H_ */

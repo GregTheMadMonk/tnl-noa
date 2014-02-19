@@ -16,6 +16,10 @@ SET( tnlmatrixconvertsources tnl-matrix-convert.cpp
 set( tnl_grid_setup_SOURCES tnl-grid-setup.cpp
                             tnl-grid-setup.h )
                             
+set( tnl_mesh_convert_SOURCES tnl-mesh-convert.cpp
+                            tnl-mesh-convert.h )
+                            
+                            
 set( tnl_discrete_SOURCES tnl-discrete.cpp
                           tnl-discrete.h )
 
@@ -27,6 +31,9 @@ set( tnl_diff_SOURCES tnl-diff.cpp
 
 ADD_EXECUTABLE(tnl-grid-setup${debugExt} ${tnl_grid_setup_SOURCES})
 target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
+
+ADD_EXECUTABLE(tnl-mesh-convert${debugExt} ${tnl_mesh_convert_SOURCES})
+target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-discrete${debugExt} ${tnl_discrete_SOURCES})
 target_link_libraries (tnl-discrete${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -58,6 +65,7 @@ INSTALL( TARGETS tnl-err-norms${debugExt}
                  tnl-view${debugExt}
                  tnl-diff${debugExt}
                  tnl-grid-setup${debugExt}
+                 tnl-mesh-convert${debugExt}
                  tnl-curve2gnuplot${debugExt}
 #                 tnl-matrix-convert${debugExt}
          RUNTIME DESTINATION bin
