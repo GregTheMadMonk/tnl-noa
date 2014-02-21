@@ -102,10 +102,10 @@ class tnlMeshTester : public CppUnit :: TestCase
 
        tnlMesh< TestTriangleMeshConfig > mesh;
        mesh.setNumberOfVertices( 4 );
-       mesh.setPoint( 0, PointType( 0.0, 0.0 ) );
-       mesh.setPoint( 1, PointType( 1.0, 0.0 ) );
-       mesh.setPoint( 2, PointType( 0.0, 1.0 ) );
-       mesh.setPoint( 3, PointType( 1.0, 1.0 ) );
+       mesh.setVertex( 0, PointType( 0.0, 0.0 ) );
+       mesh.setVertex( 1, PointType( 1.0, 0.0 ) );
+       mesh.setVertex( 2, PointType( 0.0, 1.0 ) );
+       mesh.setVertex( 3, PointType( 1.0, 1.0 ) );
 
 /*       tnlStaticArray< 4, VertexMeshEntityType > vertexEntities;
        vertexEntities[ 0 ].setPoint( point0 );

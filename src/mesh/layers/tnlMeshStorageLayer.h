@@ -66,12 +66,12 @@ class tnlMeshStorageLayer< ConfigTag,
    using BaseType::setEntity;
    using BaseType::getEntity;
 
-   bool setNumberOfEntities( const GlobalIndexType size )
+   bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
       return this->entities.setSize( size );
    }
 
-   GlobalIndexType getNumberOfEntities() const
+   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
    {
       return this->entities.getSize();
    }
@@ -86,13 +86,13 @@ class tnlMeshStorageLayer< ConfigTag,
    EntityType& getEntity( DimensionsTraits,
                           const GlobalIndexType entityIndex )
    {
-      return this->entities.getElement( entityIndex );
+      return this->entities[ entityIndex ];
    }
 
    const EntityType& getEntity( DimensionsTraits,
                                 const GlobalIndexType entityIndex ) const
    {
-      return this->entities.getElement( entityIndex );
+      return this->entities[ entityIndex ];
    }
 
    private:
@@ -153,44 +153,36 @@ class tnlMeshStorageLayer< ConfigTag,
    }
 
 
-   void setPoint( const GlobalIndexType vertexIndex,
-                  const PointType& point ) const
+   void setVertex( const GlobalIndexType vertexIndex,
+                   const PointType& point ) const
    {
       this->vertices.getElement( vertexIndex ).setPoint( point );
    }
-
-   PointType& getPoint( const GlobalIndexType vertexIndex )
-   {
-      return this->vertices.getElement( vertexIndex ).getPoint();
-   }
-
-   const PointType& getPoint( const GlobalIndexType vertexIndex ) const
-   {
-      return this->vertices.getElement( vertexIndex ).getPoint();
-   }
-
 
    /****
     * This is only for the completeness and compatibility
     * with higher dimensions entities storage layers.
     */
-   bool setNumberOfEntities( const GlobalIndexType size )
+   bool setNumberOfEntities( DimensionsTraits,
+                             const GlobalIndexType size )
    {
       return this->vertices.setSize( size );
    }
 
-   GlobalIndexType getNumberOfEntities() const
+   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
    {
       return this->vertices.getSize();
    }
 
-   void setEntity( const GlobalIndexType entityIndex,
+   void setEntity( DimensionsTraits,
+                   const GlobalIndexType entityIndex,
                    const VertexType& entity ) const
    {
       this->vertices.setElement( entityIndex, entity );
    }
 
-   const VertexType& getEntity( const GlobalIndexType entityIndex ) const
+   const VertexType& getEntity( DimensionsTraits,
+                                const GlobalIndexType entityIndex ) const
    {
       return this->vertices.getElement( entityIndex );
    }

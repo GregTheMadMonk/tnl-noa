@@ -22,11 +22,14 @@
 #include <istream>
 #include <sstream>
 
+using namespace std;
+
 class tnlMeshReaderNetgen
 {
    public:
 
-   static int detectDimensions( const tnlString& fileName )
+   static bool detectDimensions( const tnlString& fileName,
+                                 int& dimensions )
    {
       fstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -34,15 +37,125 @@ class tnlMeshReaderNetgen
          cerr << "I am not able to open the file " << fileName << "." << endl;
          return false;
       }
-      
-      std::string line;
-      int count;
-      std::istringstream iss;
 
+      string line;
+      istringstream iss;
+
+      /****
+       * Skip whitespaces
+       */
+      inputFile >> ws;
+      
+      /****
+       * Skip number of vertices
+       */
+      if( ! inputFile )
+         return false;
+      getline( inputFile, line );
+
+      /****
+       * Read the first vertex and compute number of components
+       */
+      if( ! inputFile )
+         return false;
+      getline( inputFile, line );
+      iss.str( line );
+      dimensions = -1;
+      while( iss )
+      {
+         double aux;
+         iss >> aux;
+         dimensions++;
+      }
+      return true;
    }
 
-   static bool readMesh( const tnlString& fileName )
+   template< typename MeshType >
+   static bool readMesh( const tnlString& fileName,
+                         MeshType& mesh,
+                         bool verbose )
    {
+      typedef typename MeshType::PointType PointType;
+      const int dimensions = PointType::size;
+
+      fstream inputFile( fileName.getString() );
+      if( ! inputFile )
+      {
+         cerr << "I am not able to open the file " << fileName << "." << endl;
+         return false;
+      }
+
+      string line;
+      istringstream iss;
+
+      /****
+       * Skip white spaces
+       */
+      inputFile >> ws;
+
+      /****
+       * Read the number of vertices
+       */
+      if( ! inputFile )
+         return false;
+      getline( inputFile, line );
+      iss.str( line );
+      typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
+      VertexIndexType numberOfVertices;
+      iss >> numberOfVertices;
+      if( verbose )
+         cout << numberOfVertices << " vertices expected ... " << endl;
+      if( ! mesh.setNumberOfVertices( numberOfVertices ) )
+      {
+         cerr << "I am not able to allocate enough memory for " << numberOfVertices << " vertices." << endl;
+         return false;
+      }
+
+      for( VertexIndexType i = 0; i < numberOfVertices; i++ )
+      {
+         getline( inputFile, line );
+         iss.clear();
+         iss.str( line );
+         PointType p;
+         for( int d = 0; d < dimensions; d++ )
+            iss >> p[ d ];
+         mesh.setVertex( i, p );
+      }
+
+      /****
+        * Skip white spaces
+        */
+       inputFile >> ws;
+
+      /****
+       * Read number of cells
+       */
+       typedef typename MeshType::template EntitiesTraits< dimensions >::GlobalIndexType CellIndexType;
+       if( ! inputFile )
+          return false;
+       getline( inputFile, line );
+       iss.str( line );
+       CellIndexType numberOfCells;
+       iss >> numberOfCells;
+       if( verbose )
+          cout << numberOfCells << " cells expected ... " << endl;
+       if( ! mesh.template setNumberOfEntities< dimensions >( numberOfCells ) )
+       {
+          cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << endl;
+          return false;
+       }
+       for( CellIndexType i = 0; i < numberOfCells; i++ )
+       {
+          getline( inputFile, line );
+          iss.clear();
+          iss.str( line );
+          for( int cellVertex = 0; cellVertex < dimensions + 1; cellVertex++ )
+          {
+             VertexIndexType vertexIdx;
+             iss >> vertexIdx;
+             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx );
+          }
+       }
    }
 
    protected:

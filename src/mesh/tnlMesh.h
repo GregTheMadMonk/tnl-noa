@@ -90,8 +90,6 @@ class tnlMesh : public tnlMeshStorageLayers< ConfigTag >
    using BaseType::getNumberOfVertices;
    using BaseType::setVertex;
    using BaseType::getVertex;
-   using BaseType::setPoint;
-   using BaseType::getPoint;
 
 
    void load(const char *filename);
