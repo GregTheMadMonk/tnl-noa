@@ -103,8 +103,6 @@ class tnlMeshReaderNetgen
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
       VertexIndexType numberOfVertices;
       iss >> numberOfVertices;
-      if( verbose )
-         cout << numberOfVertices << " vertices expected ... " << endl;
       if( ! mesh.setNumberOfVertices( numberOfVertices ) )
       {
          cerr << "I am not able to allocate enough memory for " << numberOfVertices << " vertices." << endl;
@@ -120,7 +118,12 @@ class tnlMeshReaderNetgen
          for( int d = 0; d < dimensions; d++ )
             iss >> p[ d ];
          mesh.setVertex( i, p );
+         if( verbose )
+            cout << numberOfVertices << " vertices expected ... " << i+1 << "/" << numberOfVertices << "        \r" << flush;
+         const PointType& point = mesh.getVertex( i ).getPoint();
       }
+      if( verbose )
+         cout << endl;
 
       /****
         * Skip white spaces
@@ -137,8 +140,6 @@ class tnlMeshReaderNetgen
        iss.str( line );
        CellIndexType numberOfCells;
        iss >> numberOfCells;
-       if( verbose )
-          cout << numberOfCells << " cells expected ... " << endl;
        if( ! mesh.template setNumberOfEntities< dimensions >( numberOfCells ) )
        {
           cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << endl;
@@ -149,13 +150,21 @@ class tnlMeshReaderNetgen
           getline( inputFile, line );
           iss.clear();
           iss.str( line );
+          int subdomainIndex;
+          iss >> subdomainIndex;
           for( int cellVertex = 0; cellVertex < dimensions + 1; cellVertex++ )
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
              mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx );
           }
+          cout << endl;
+          if( verbose )
+             cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << flush;
        }
+       if( verbose )
+          cout << endl;
+       return true;
    }
 
    protected:

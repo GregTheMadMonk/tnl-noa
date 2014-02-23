@@ -18,6 +18,7 @@
 #ifndef TNLMESHSTORAGELAYER_H_
 #define TNLMESHSTORAGELAYER_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
@@ -95,6 +96,22 @@ class tnlMeshStorageLayer< ConfigTag,
       return this->entities[ entityIndex ];
    }
 
+   bool save( tnlFile& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! entities.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! entities.load( file ) )
+         return false;
+      return true;
+   }
+
    private:
    ContainerType entities;
 };
@@ -144,19 +161,19 @@ class tnlMeshStorageLayer< ConfigTag,
 
    VertexType& getVertex( const GlobalIndexType vertexIndex )
    {
-      return this->vertices.getElement( vertexIndex );
+      return this->vertices[ vertexIndex ];
    }
 
    const VertexType& getVertex( const GlobalIndexType vertexIndex ) const
    {
-      return this->vertices.getElement( vertexIndex );
+      return this->vertices[ vertexIndex ];
    }
 
 
    void setVertex( const GlobalIndexType vertexIndex,
-                   const PointType& point ) const
+                   const PointType& point )
    {
-      this->vertices.getElement( vertexIndex ).setPoint( point );
+      this->vertices[ vertexIndex ].setPoint( point );
    }
 
    /****
@@ -185,6 +202,20 @@ class tnlMeshStorageLayer< ConfigTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->vertices.getElement( entityIndex );
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! vertices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! vertices.load( file ) )
+         return false;
+      return true;
    }
 
    private:

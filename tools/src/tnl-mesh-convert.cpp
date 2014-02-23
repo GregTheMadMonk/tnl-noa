@@ -32,7 +32,7 @@ int main( int argc, char* argv[] )
       conf_desc. PrintUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
-   if( ! readMesh( parameters ) )
+   if( ! convertMesh( parameters ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

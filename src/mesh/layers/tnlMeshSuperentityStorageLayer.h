@@ -18,6 +18,7 @@
 #ifndef TNLMESHSUPERENTITYSTORAGELAYER_H_
 #define TNLMESHSUPERENTITYSTORAGELAYER_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
@@ -65,6 +66,22 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    typedef typename SuperentityTag::ContainerType     ContainerType;
    typedef typename ContainerType::ElementType        GlobalIndexType;
    typedef int                                        LocalIndexType;
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! this->superentitiesIndices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! this->superentitiesIndices.load( file ) )
+         return false;
+      return true;
+   }
 
    /****
      * Make visible setters and getters of the lower superentities

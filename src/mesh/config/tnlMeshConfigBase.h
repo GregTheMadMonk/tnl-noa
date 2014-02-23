@@ -37,6 +37,12 @@ struct tnlMeshConfigBase
    typedef Id          IdType;
 
    enum { worldDimensions = WorldDimensions };
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlMeshConfigBase< >");
+   };
+
 };
 
 /****

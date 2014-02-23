@@ -28,7 +28,7 @@
 template< int Dimensions >
 bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
+   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-mesh-file" );
    const tnlString fileExt = getFileExtension( inputFileName );
 
    if( Dimensions == 2 )
@@ -41,25 +41,40 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
+      if( ! tnlMeshInitializer< MeshConfig >::initMesh( mesh ) )
+         return false;
+      tnlString outputFile;
+      if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
+      {
+         cout << "Writing the mesh to the file " << outputFile << "." << endl;
+         if( ! mesh.save( outputFile ) )
+         {
+            cerr << "I am not able to safe the mesh into the file " << outputFile << "." << endl;
+            return false;
+         }
+      }
    }
    return true;
 }
 
-bool readMesh( const tnlParameterContainer& parameters )
+bool convertMesh( const tnlParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
-   const tnlString fileExt = getFileExtension( inputFileName );
-   if( fileExt == "ng" )
+   tnlString inputFileName;
+   if( parameters.GetParameter( "input-mesh-file", inputFileName ) )
    {
-      int dimensions;
-      if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName, dimensions ) )
-         return false;
-      if( dimensions == 2 &&
-          ! readMeshWithDimensions< 2 >( parameters ) )
-         return false;
-      if( dimensions == 3 &&
-          ! readMeshWithDimensions< 3 >( parameters ) )
-         return false;
+      const tnlString fileExt = getFileExtension( inputFileName );
+      if( fileExt == "ng" )
+      {
+         int dimensions;
+         if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName, dimensions ) )
+            return false;
+         if( dimensions == 2 &&
+             ! readMeshWithDimensions< 2 >( parameters ) )
+            return false;
+         if( dimensions == 3 &&
+             ! readMeshWithDimensions< 3 >( parameters ) )
+            return false;
+      }
    }
    return true;
 }

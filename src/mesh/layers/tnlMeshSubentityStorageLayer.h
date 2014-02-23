@@ -18,6 +18,7 @@
 #ifndef TNLMESHSUBENTITYSTORAGELAYER_H_
 #define TNLMESHSUBENTITYSTORAGELAYER_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshSubentitiesTraits.h>
@@ -66,6 +67,22 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    typedef typename SubentityTraits::ContainerType    ContainerType;
    typedef typename ContainerType::ElementType        GlobalIndexType;
    typedef int                                        LocalIndexType;
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! subentitiesIndecis.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! subentitiesIndecis.load( file ) )
+         return false;
+      return true;
+   }
 
    /****
     * Make visible setters and getters of the lower subentities
@@ -126,6 +143,21 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    typedef typename SubentityTraits::ContainerType             ContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! this->subentitiesVertices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! this->subentitiesVertices.load( file ) )
+         return false;
+      return true;
+   }
+
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const

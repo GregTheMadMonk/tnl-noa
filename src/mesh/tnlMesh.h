@@ -18,11 +18,13 @@
 #ifndef TNLMESH_H_
 #define TNLMESH_H_
 
+#include <core/tnlObject.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/layers/tnlMeshStorageLayer.h>
 
 template< typename ConfigTag >
-class tnlMesh : public tnlMeshStorageLayers< ConfigTag >
+class tnlMesh : public tnlObject,
+                public tnlMeshStorageLayers< ConfigTag >
 {
    //template<typename, typename, typename> friend class InitializerLayer;
    //friend class IOReader<ConfigTag>;
@@ -33,6 +35,35 @@ class tnlMesh : public tnlMeshStorageLayers< ConfigTag >
    typedef ConfigTag                              Config;
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlMesh< ") + ConfigTag::getType() + " >";
+   }
+
+   virtual tnlString getTypeVirtual() const
+   {
+      return this->getType();
+   }
+
+   using tnlObject::save;
+   using tnlObject::load;
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! tnlObject::save( file ) ||
+          ! BaseType::save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! tnlObject::load( file ) ||
+          ! BaseType::load( file ) )
+         return false;
+      return true;
+   }
 
    template< int Dimensions >
    struct EntitiesTraits

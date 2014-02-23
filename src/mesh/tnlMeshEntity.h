@@ -18,6 +18,7 @@
 #ifndef TNLMESHENTITY_H_
 #define TNLMESHENTITY_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/topologies/tnlMeshVertexTag.h>
@@ -43,6 +44,22 @@ class tnlMeshEntity
    tnlString getTypeVirtual() const
    {
       return this->getType();
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::save( file ) ||
+          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file ) const
+   {
+      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
+          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
+         return false;
+      return true;
    }
 
    /****
@@ -195,7 +212,7 @@ class tnlMeshEntity
       this->setSubentityIndex< 0 >( localIndex, globalIndex  );
    }
 
-   VerticesGlobalIndexType getVertexIndex( const VerticesLocalIndexType localIndex )
+   VerticesGlobalIndexType getVertexIndex( const VerticesLocalIndexType localIndex ) const
    {
       return this->getSubentityIndex< 0 >( localIndex  );
    }
@@ -228,6 +245,22 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::save( file ) ||
+          ! point.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file ) const
+   {
+      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+          ! point.load( file ) )
+         return false;
+      return true;
+   }
 
    /****
     * Superentities
