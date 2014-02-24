@@ -1,5 +1,6 @@
 set( headers tnlMeshEntityTester.h
-             tnlMeshTester.h )
+             tnlMeshTester.h
+             tnlMeshInitializerTester.h )
 
 ADD_EXECUTABLE( tnlMeshEntityTest${mpiExt}${debugExt} ${headers} tnlMeshEntityTest.cpp )
 TARGET_LINK_LIBRARIES( tnlMeshEntityTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
@@ -8,3 +9,8 @@ TARGET_LINK_LIBRARIES( tnlMeshEntityTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES
 ADD_EXECUTABLE( tnlMeshTest${mpiExt}${debugExt} ${headers} tnlMeshTest.cpp )
 TARGET_LINK_LIBRARIES( tnlMeshTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
+
+ADD_EXECUTABLE( tnlMeshInitializerTest${mpiExt}${debugExt} ${headers} tnlMeshInitializerTest.cpp )
+TARGET_LINK_LIBRARIES( tnlMeshInitializerTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+                                                              
