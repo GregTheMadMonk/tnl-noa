@@ -17,7 +17,11 @@ group Functions
    real wave-length(1.0)                 [Wave length.];
    real wave-length-x(1.0)               [Wave length.];
    real wave-length-y(1.0)               [Wave length.];
-   real wave-length-z(1.0)               [Wave length.];  
+   real wave-length-z(1.0)               [Wave length.]; 
+   real waves-number                     [Number of waves.];
+   real waves-number-x                   [Number of waves along the x-axis.];
+   real waves-number-y                   [Number of waves along the y-axis.];
+   real waves-number-z                   [Number of waves along the z-axis.]; 
    real phase(0.0)                       [Phase.];
    real phase-x(0.0)                     [Phase.];
    real phase-y(0.0)                     [Phase.];

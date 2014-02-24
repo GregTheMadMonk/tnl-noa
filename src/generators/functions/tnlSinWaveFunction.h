@@ -44,7 +44,7 @@ class tnlSinWaveFunctionBase
 
    protected:
 
-   Real waveLength, amplitude, phase;
+   Real waveLength, amplitude, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >

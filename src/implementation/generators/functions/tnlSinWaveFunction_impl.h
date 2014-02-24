@@ -24,7 +24,8 @@ template< typename Real >
 tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
 : waveLength( 0 ),
   amplitude( 0 ),
-  phase( 0 )
+  phase( 0 ),
+  wavesNumber( 0 )
 {
 }
 
@@ -34,6 +35,7 @@ bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& paramete
    this->waveLength = parameters.GetParameter< double >( "wave-length" );
    this->amplitude = parameters.GetParameter< double >( "amplitude" );
    this->phase = parameters.GetParameter< double >( "phase" );
+   parameters.GetParameter< double >( "waves-number" );
    return true;
 }
 
@@ -81,7 +83,15 @@ template< typename Vertex, typename Device >
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+   {
+      RealType arg = 2.0 * M_PI * x  / this->waveLength;
+      if( this->wavesNumber )
+      {
+         if( tnlAbs( arg ) > this->wavesNumber )
+            arg = Sign( x ) * this->wavesNumber;
+      }
+      return this->amplitude * sin( this->phase + arg );
+   }
    if( XDiffOrder == 1 )
       return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase + 2.0 * M_PI * x / this->waveLength );
    return 0.0;
