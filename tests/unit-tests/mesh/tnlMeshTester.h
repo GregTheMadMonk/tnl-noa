@@ -31,6 +31,7 @@
 #include <mesh/topologies/tnlMeshEdgeTag.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/tnlMeshInitializer.h>
 
  typedef tnlMeshConfigBase< 2, double, int, int, void > MeshConfigBaseType;
  struct TestTriangleMeshConfig : public MeshConfigBaseType
@@ -106,6 +107,18 @@ class tnlMeshTester : public CppUnit :: TestCase
        mesh.setVertex( 1, PointType( 1.0, 0.0 ) );
        mesh.setVertex( 2, PointType( 0.0, 1.0 ) );
        mesh.setVertex( 3, PointType( 1.0, 1.0 ) );
+
+       mesh.setNumberOfEntities< 2 >( 2 );
+       mesh.getEntity< 2 >( 0 ).setVertexIndex( 0, 0 );
+       mesh.getEntity< 2 >( 0 ).setVertexIndex( 1, 1 );
+       mesh.getEntity< 2 >( 0 ).setVertexIndex( 2, 2 );
+       mesh.getEntity< 2 >( 1 ).setVertexIndex( 0, 1 );
+       mesh.getEntity< 2 >( 1 ).setVertexIndex( 1, 2 );
+       mesh.getEntity< 2 >( 1 ).setVertexIndex( 2, 3 );
+
+       tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
+       cout << tnlMeshTraits< TestTriangleMeshConfig >::meshDimensions << endl;
+       //meshInitializer.initMesh( mesh );
 
 /*       tnlStaticArray< 4, VertexMeshEntityType > vertexEntities;
        vertexEntities[ 0 ].setPoint( point0 );

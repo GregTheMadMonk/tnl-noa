@@ -18,6 +18,11 @@
 #ifndef TNLMESHENTITYINITIALIZER_H_
 #define TNLMESHENTITYINITIALIZER_H_
 
+#include <core/tnlStaticFor.h>
+
+template< typename ConfigTag >
+class tnlMeshInitializer;
+
 template<typename ConfigTag,
          typename EntityTag,
          typename DimensionsTraits,
@@ -28,7 +33,7 @@ template<typename ConfigTag,
                                                                                typename tnlMeshSubentitiesTraits< ConfigTag,
                                                                                                                   EntityTag,
                                                                                                                   DimensionsTraits >::SubentityTag,
-                                                                               tnlDimensionsTraits< tnlMeshEntityTraits::dimensions > >::SuperentityStorageTag >
+                                                                               tnlDimensionsTraits< EntityTag::dimensions > >::SuperentityStorageTag >
 class tnlMeshEntityInitializerLayer;
 
 template< typename ConfigTag,
@@ -108,13 +113,13 @@ class tnlMeshEntityInitializer
    }
 
    template< typename SubentityDimensionTag >
-   typename SubentitiesTag< ConfigTag, EntityTag, SubentityDimensionTag >::ContainerType& subentityContainer( SubentityDimensionTag )
+   typename tnlMeshSubentitiesTraits< ConfigTag, EntityTag, SubentityDimensionTag >::ContainerType& subentityContainer( SubentityDimensionTag )
    {
       return this->entity->subentityIndicesContainer(SubentityDimensionTag());
    }
 
    template< typename SuperentityDimensionTag >
-   typename SuperentitiesTag< ConfigTag, EntityTag, SuperentityDimensionTag >::ContainerType& superentityContainer( SuperentityDimensionTag )
+   typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::ContainerType& superentityContainer( SuperentityDimensionTag )
    {
       return this->entity->superentityIndicesContainer( SuperentityDimensionTag() );
    }
@@ -143,20 +148,21 @@ class tnlMeshEntityInitializer
    template< typename SubentityDimensionTag >
    class SubentitiesCreator
    {
-      typedef SubentitiesTag< ConfigTag, EntityTag, SubentityDimensionTag >             Tag;
+      typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, SubentityDimensionTag >   Tag;
       typedef typename Tag::SubentityTag                                                SubentityTag;
       typedef typename Tag::SubentityType                                               SubentityType;
       typedef typename Tag::ContainerType::IndexType                                    LocalIndexType;
 
       typedef typename EntityType::SubentityIndicesArrayType                            SubentityIndicesArrayType;
-      typedef typename SubentitiesTag< ConfigTag,
-                                       EntityTag,
-                                       SubentityDimensionTag>::SubentityContainerType   SubentityContainerType;
+      typedef typename tnlMeshSubentitiesTraits< ConfigTag,
+                                                 EntityTag,
+                                                 SubentityDimensionTag>::SubentityContainerType
+                                                                                        SubentityContainerType;
 
       enum { subentitiesCount       = Tag::count };
-      enum { subentityVerticesCount = SubentitiesTag< ConfigTag,
-                                                      SubentityTag,
-                                                      tnlDimensionsTraits< 0 > >::count };
+      enum { subentityVerticesCount = tnlMeshSubentitiesTraits< ConfigTag,
+                                                                SubentityTag,
+                                                                tnlDimensionsTraits< 0 > >::count };
 
       public:
       static void createSubentities( SubentityContainerType& subentities,
@@ -174,7 +180,7 @@ class tnlMeshEntityInitializer
          static void exec(SubentityContainerType &subentities, SubentityIndicesArrayType subvertexIndices)
          {
             SubentityType &subentity = subentities[subentityIndex];
-            FOR<LocalIndexType, 0, subentityVerticesCount, SetSubentityVertex>::EXEC(subentity, subvertexIndices);
+            tnlStaticFor<LocalIndexType, 0, subentityVerticesCount, SetSubentityVertex>::Exec(subentity, subvertexIndices);
          }
 
       private:
@@ -184,8 +190,8 @@ class tnlMeshEntityInitializer
          public:
             static void exec(SubentityType &subentity, SubentityIndicesArrayType subvertexIndices)
             {
-               LocalIndexType vertexIndex = Tag::template Vertex<subentityIndex, subentityVertexIndex>::index;
-               EntityInitializer<ConfigTag, SubentityTag>::setEntityVertex(subentity, subentityVertexIndex, subvertexIndices[vertexIndex]);
+               LocalIndexType vertexIndex = Tag::template Vertex< subentityIndex, subentityVertexIndex >::index;
+               tnlMeshEntityInitializer< ConfigTag, SubentityTag >::setEntityVertex( subentity, subentityVertexIndex, subvertexIndices[vertexIndex] );
             }
          };
       };

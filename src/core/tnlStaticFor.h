@@ -24,7 +24,7 @@ class tnlStaticForIndexTag
 public:
    static const IndexType value = val;
 
-   typedef IndexTag<IndexType, val - 1> Decrement;
+   typedef tnlStaticForIndexTag<IndexType, val - 1> Decrement;
 };
 
 

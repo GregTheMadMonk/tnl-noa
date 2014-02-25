@@ -23,6 +23,7 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/tnlMesh.h>
+#include <mesh/tnlMeshInitializer.h>
 #include <core/mfilename.h>
 
 template< int Dimensions >
@@ -41,8 +42,8 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
-      if( ! tnlMeshInitializer< MeshConfig >::initMesh( mesh ) )
-         return false;
+      //if( ! tnlMeshInitializer< MeshConfig >::initMesh( mesh ) )
+      //   return false;
       tnlString outputFile;
       if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
       {
