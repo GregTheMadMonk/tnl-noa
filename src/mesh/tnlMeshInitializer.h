@@ -24,6 +24,7 @@
 #include <mesh/traits/tnlMeshSuperentitiesTraits.h>
 #include <mesh/tnlMeshEntityInitializer.h>
 #include <mesh/tnlMesh.h>
+#include <mesh/tnlMeshPointerProvider.h>
 #include <mesh/traits/tnlStorageTraits.h>
 
 template< typename ConfigTag,
@@ -66,7 +67,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef tnlMeshInitializerLayer< ConfigTag,
                                     typename DimensionsTraits::Previous >  BaseType;
 
-   typedef tnlMeshEntitiesTag< ConfigTag, DimensionsTraits >               Tag;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >            Tag;
    typedef typename Tag::Tag                                               EntityTag;
    typedef typename Tag::Type                                              EntityType;
    typedef typename Tag::ContainerType                                     ContainerType;
@@ -164,7 +165,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef typename tnlMeshTraits< ConfigTag >::DimensionsTraits        DimensionsTraits;
 
    typedef tnlMeshInitializerLayer< ConfigTag,
-                                    typename DimensionTag::Previous >   BaseType;
+                                    typename DimensionsTraits::Previous >   BaseType;
 
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
    typedef typename Tag::Tag                                            EntityTag;
@@ -185,7 +186,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    protected:
    void createEntitiesFromCells()
    {
-      ContainerType& cellContainer = this->getMesh().entityContainer(DimensionTag());
+      ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
 
       cellInitializerContainer.create(cellContainer.getSize());
       for (GlobalIndexType i = 0; i < cellContainer.getSize(); i++)
@@ -216,53 +217,56 @@ class tnlMeshInitializerLayer< ConfigTag,
 template< typename ConfigTag >
 class tnlMeshInitializerLayer< ConfigTag,
                                tnlDimensionsTraits< 0 >,
-                               tnlStorageTag< true > >
-   : public MeshPointerProvider< ConfigTag >
+                               tnlStorageTraits< true > >
+   : public tnlMeshPointerProvider< ConfigTag >
 {
-   typedef DimTag<0>                                                 DimensionTag;
+   typedef tnlDimensionsTraits< 0 >                                    DimensionsTraits;
 
-   typedef EntitiesTag<ConfigTag, DimensionTag>                      Tag;
-   typedef typename Tag::Tag                                         EntityTag;
-   typedef typename Tag::ContainerType                               ContainerType;
-   typedef typename ContainerType::IndexType                         GlobalIndexType;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >        Tag;
+   typedef typename Tag::Tag                                           EntityTag;
+   typedef typename Tag::ContainerType                                 ContainerType;
+   typedef typename ContainerType::IndexType                           GlobalIndexType;
 
-   typedef typename MeshTag<ConfigTag>::CellType                     CellType;
+   typedef typename tnlMeshTraits< ConfigTag >::CellType               CellType;
 
-   typedef Initializer<ConfigTag>                                    InitializerType;
-   typedef EntityInitializer<ConfigTag, typename ConfigTag::CellTag> CellInitializerType;
-   typedef EntityInitializer<ConfigTag, EntityTag>                   VertexInitializerType;
-   typedef Array<VertexInitializerType, GlobalIndexType>             VertexInitializerContainerType;
+   typedef tnlMeshInitializer< ConfigTag >                             InitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, 
+                                     typename ConfigTag::CellTag >     CellInitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >            VertexInitializerType;
+   typedef tnlArray<VertexInitializerType, tnlHost, GlobalIndexType>   VertexInitializerContainerType;
 
-public:
-   VertexInitializerType &getEntityInitializer(DimensionTag, GlobalIndexType index)
+   public:
+   VertexInitializerType& getEntityInitializer( DimensionsTraits, GlobalIndexType index )
    {
-      return m_vertexInitializerContainer[index];
+      return vertexInitializerContainer[ index ];
    }
 
-protected:
-   void findEntityIndex() const                              {} // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
-   void createEntitiesFromCells(const CellInitializerType &) {}
+   protected:
+   void findEntityIndex() const                               {} // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
+   void createEntitiesFromCells( const CellInitializerType& ) {}
 
    void createEntityInitializers()
    {
-      m_vertexInitializerContainer.create(this->getMesh().template entities<DimensionTag::value>().getSize());
+      vertexInitializerContainer.create( this->getMesh().template entities< DimensionsTraits::value >().getSize() );
    }
 
-   void initEntities(InitializerType &meshInitializer)
+   void initEntities( InitializerType& meshInitializer )
    {
-      ContainerType &vertexContainer = this->getMesh().entityContainer(DimensionTag());
-      for (GlobalIndexType i = 0; i < vertexContainer.getSize(); i++)
+      ContainerType& vertexContainer = this->getMesh().entityContainer( DimensionsTraits() );
+      for( GlobalIndexType i = 0;
+           i < vertexContainer.getSize();
+           i++ )
       {
-         VertexInitializerType &vertexInitializer = m_vertexInitializerContainer[i];
-         vertexInitializer.init(vertexContainer[i], i);
-         vertexInitializer.initEntity(meshInitializer);
+         VertexInitializerType& vertexInitializer = vertexInitializerContainer[ i ];
+         vertexInitializer.init( vertexContainer[ i ], i );
+         vertexInitializer.initEntity( meshInitializer );
       }
 
-      m_vertexInitializerContainer.free();
+      vertexInitializerContainer.free();
    }
 
-private:
-   VertexInitializerContainerType m_vertexInitializerContainer;
+   private:
+   VertexInitializerContainerType vertexInitializerContainer;
 };
 
 

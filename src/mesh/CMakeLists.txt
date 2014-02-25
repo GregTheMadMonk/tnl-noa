@@ -14,6 +14,7 @@ SET( headers tnlGrid.h
              tnlMeshReaderNetgen.h
              tnlMeshWriterNetgen.h
              tnlMeshInitializer.h
-             tnlMeshEntityInitializer.h )
+             tnlMeshEntityInitializer.h
+             tnlMeshPointerProvider.h )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

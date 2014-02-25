@@ -21,7 +21,7 @@
 template< typename Element,
           typename Index,
           typename Key >
-void tnlIndexedSet< Element, Index, Key >::void reset()
+void tnlIndexedSet< Element, Index, Key >::reset()
 {
    map.clear();
 }
