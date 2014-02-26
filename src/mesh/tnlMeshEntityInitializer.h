@@ -203,13 +203,13 @@ template< typename ConfigTag >
 class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
    : public tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                 tnlMeshVertexTag,
-                                                typename tnlMeshTag< ConfigTag >::DimensionsTraits >
+                                                typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
 {
    typedef tnlDimensionsTraits< 0 >                                                                     DimensionsTraits;
 
    typedef tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                tnlMeshVertexTag,
-                                               typename tnlMeshTag< ConfigTag >::DimensionsTraits >     SuperentityBaseType;
+                                               typename tnlMeshTraits< ConfigTag >::DimensionsTraits >     SuperentityBaseType;
 
    typedef typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >::Type                          EntityType;
    typedef typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >::ContainerType::IndexType      GlobalIndexType;
