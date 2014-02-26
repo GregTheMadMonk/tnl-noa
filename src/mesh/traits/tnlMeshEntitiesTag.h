@@ -22,13 +22,13 @@
 #include <mesh/traits/tnlMeshTraits.h>
 
 template< typename ConfigTag,
-          typename DimensionTag >
+          typename DimensionsTraits >
 class tnlMeshEntitiesTag
 {
    public:
 
    typedef typename tnlSubentities< typename ConfigTag::CellTag,
-                                    DimensionTag::value >::Tag Tag;
+                                    DimensionsTraits::value >::Tag Tag;
 };
 
 template< typename ConfigTag >

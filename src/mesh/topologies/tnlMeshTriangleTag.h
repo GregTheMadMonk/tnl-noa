@@ -35,7 +35,7 @@ struct tnlSubentities< tnlMeshTriangleTag, 0 >
 };
 
 template<>
-struct tnlSubentities< tnlMeshTriangleTag, 1>
+struct tnlSubentities< tnlMeshTriangleTag, 1 >
 {
    typedef tnlMeshEdgeTag Tag;
 

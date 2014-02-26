@@ -24,7 +24,6 @@
 #include <mesh/traits/tnlMeshSuperentitiesTraits.h>
 #include <mesh/tnlMeshEntityInitializer.h>
 #include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshPointerProvider.h>
 #include <mesh/traits/tnlStorageTraits.h>
 
 template< typename ConfigTag,
@@ -218,8 +217,8 @@ template< typename ConfigTag >
 class tnlMeshInitializerLayer< ConfigTag,
                                tnlDimensionsTraits< 0 >,
                                tnlStorageTraits< true > >
-   : public tnlMeshPointerProvider< ConfigTag >
 {
+   typedef tnlMesh< ConfigTag >                                        MeshType;
    typedef tnlDimensionsTraits< 0 >                                    DimensionsTraits;
 
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >        Tag;
@@ -233,9 +232,21 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef tnlMeshEntityInitializer< ConfigTag, 
                                      typename ConfigTag::CellTag >     CellInitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >            VertexInitializerType;
-   typedef tnlArray<VertexInitializerType, tnlHost, GlobalIndexType>   VertexInitializerContainerType;
+   typedef tnlArray< VertexInitializerType, tnlHost, GlobalIndexType > VertexInitializerContainerType;
 
    public:
+
+   void setMesh( MeshType& mesh )
+   {
+      mesh = &mesh;
+   }
+
+   MeshType& getMesh()
+   {
+      tnlAssert( this->mesh, );
+      return *( this->mesh );
+   }
+
    VertexInitializerType& getEntityInitializer( DimensionsTraits, GlobalIndexType index )
    {
       return vertexInitializerContainer[ index ];
@@ -267,6 +278,8 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    private:
    VertexInitializerContainerType vertexInitializerContainer;
+
+   MeshType* mesh;
 };
 
 
