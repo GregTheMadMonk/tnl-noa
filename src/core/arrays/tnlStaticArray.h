@@ -30,6 +30,7 @@ class tnlStaticArray
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = Size };
 
 #ifdef HAVE_CUDA
@@ -91,6 +92,7 @@ class tnlStaticArray< 1, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 1 };
 
 #ifdef HAVE_CUDA
@@ -162,6 +164,7 @@ class tnlStaticArray< 2, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 2 };
 
 #ifdef HAVE_CUDA
@@ -251,6 +254,7 @@ class tnlStaticArray< 3, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 3 };
 
 #ifdef HAVE_CUDA

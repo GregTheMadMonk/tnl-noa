@@ -66,6 +66,8 @@ template< class T > class tnlList
    mutable int index;
 
    public:
+   typedef T ElementType;
+
    //! Basic constructor
    tnlList() 
       : first( 0 ),
