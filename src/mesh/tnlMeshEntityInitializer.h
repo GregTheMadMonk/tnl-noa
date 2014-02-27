@@ -257,8 +257,8 @@ template< typename ConfigTag,
 class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag,
-                                     tnlStorageTag< true >,
-                                     tnlStorageTag< true > >
+                                     tnlStorageTraits< true >,
+                                     tnlStorageTraits< true > >
    : public tnlMeshEntityInitializerLayer< ConfigTag,
                                            EntityTag,
                                            typename DimensionsTag::Previous >
