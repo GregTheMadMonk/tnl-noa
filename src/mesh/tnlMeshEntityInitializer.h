@@ -73,19 +73,21 @@ class tnlMeshEntityInitializer
 
    public:
 
+   static tnlString getType() {};
+
    tnlMeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
 
    void init( EntityType& entity, GlobalIndexType entityIndex )
    {
-      entity = &entity;
-      entityIndex = entityIndex;
+      this->entity = &entity;
+      this->entityIndex = entityIndex;
    }
 
    void initEntity( InitializerType &meshInitializer )
    {
-      tnlAssert( entity, );
+      tnlAssert( this->entity, );
 
-      entity->setID( entityIndex );
+      this->entity->setID( entityIndex );
 
       initSuperentities();
       initSubentities( meshInitializer );
@@ -210,7 +212,10 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
    typedef tnlMeshInitializer< ConfigTag >                                                              InitializerType;
 
    public:
+
    tnlMeshEntityInitializer() : entity(0), entityIndex(-1) {}
+
+   static tnlString getType() {};
 
    void init( EntityType& entity, GlobalIndexType entityIndex )
    {

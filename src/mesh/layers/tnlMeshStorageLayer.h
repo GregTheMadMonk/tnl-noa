@@ -112,7 +112,7 @@ class tnlMeshStorageLayer< ConfigTag,
       return true;
    }
 
-   private:
+   protected:
    ContainerType entities;
 };
 

@@ -19,6 +19,7 @@
 #define TNLMESHENTITY_H_
 
 #include <core/tnlFile.h>
+#include <mesh/tnlMeshEntityId.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/topologies/tnlMeshVertexTag.h>
@@ -29,7 +30,9 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshEntity
    : public tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >,
-     public tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >
+     public tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >,
+     public tnlMeshEntityId< typename ConfigTag::IdType,
+                             typename ConfigTag::GlobalIndexType >
 {
    public:
 

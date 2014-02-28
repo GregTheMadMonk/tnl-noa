@@ -95,6 +95,11 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           tnlDimensionsTraits< 0 >,
                                           tnlStorageTraits< true > >
 {
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   
+   protected:
+   void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
+   void initSuperentities( EntityInitializerType& ) {}
 };
 
 template< typename ConfigTag,

@@ -103,7 +103,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
       SubentitiesContainerType subentities;
-      cellInitializer.template createSubentities< DimensionsTraits>( subentities );
+      cellInitializer.template createSubentities< DimensionsTraits >( subentities );
 
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
@@ -115,28 +115,35 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void createEntityInitializers()
    {
-      entityInitializerContainer.create( uniqueContainer.getSize() );
+      entityInitializerContainer.setSize( uniqueContainer.getSize() );
 
       BaseType::createEntityInitializers();
    }
 
    void initEntities(InitializerType &meshInitializer)
    {
-      this->getMesh().entityContainer( DimensionsTraits() ).create( uniqueContainer.getSize() );
-      uniqueContainer.toArray(this->getMesh().entityContainer( DimensionsTraits()) );
-      uniqueContainer.free();
+      const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
+      this->getMesh().template setNumberOfEntities< DimensionsTraits::value >( numberOfEntities );
+      for( GlobalIndexType i = 0;
+           i < numberOfEntities;
+           i++ )
+         this->getMesh(). template setEntity< DimensionsTraits::value >( i, uniqueContainer[ i ] );
+      //uniqueContainer.toArray(this->getMesh().entityContainer( DimensionsTraits()) );
+      uniqueContainer.reset();
 
-      ContainerType &entityContainer = this->getMesh().entityContainer(DimensionsTraits());
-      for (GlobalIndexType i = 0; i < entityContainer.getSize(); i++)
+      ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
+      for( GlobalIndexType i = 0;
+           i < numberOfEntities;
+           i++)
       {
-         EntityInitializerType &entityInitializer = entityInitializerContainer[i];
-         entityInitializer.init(entityContainer[i], i);
-         entityInitializer.initEntity(meshInitializer);
+         EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
+         entityInitializer.init( this->getMesh().template getEnity< DimensionsTraits::value >( i ), i);
+         entityInitializer.initEntity( meshInitializer );
       }
 
-      entityInitializerContainer.free();
+      entityInitializerContainer.reset();
 
-      BaseType::initEntities(meshInitializer);
+      BaseType::initEntities( meshInitializer );
    }
 
    private:
@@ -185,13 +192,16 @@ class tnlMeshInitializerLayer< ConfigTag,
    protected:
    void createEntitiesFromCells()
    {
-      ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
+      //ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
 
-      cellInitializerContainer.create(cellContainer.getSize());
-      for (GlobalIndexType i = 0; i < cellContainer.getSize(); i++)
+      //cellInitializerContainer.create( cellContainer.getSize());      
+      cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
+      for( GlobalIndexType i = 0;
+           i < this->getMesh().getNumberOfCells();
+           i++ )
       {
-         CellInitializerType &cellInitializer = cellInitializerContainer[i];
-         cellInitializer.init( cellContainer[i], i );
+         CellInitializerType& cellInitializer = cellInitializerContainer[ i ];
+         cellInitializer.init( this->getMesh().getCell( i ), i );
 
          BaseType::createEntitiesFromCells( cellInitializer );
       }
@@ -238,7 +248,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void setMesh( MeshType& mesh )
    {
-      mesh = &mesh;
+      this->mesh = &mesh;
    }
 
    MeshType& getMesh()
@@ -258,7 +268,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void createEntityInitializers()
    {
-      vertexInitializerContainer.create( this->getMesh().template entities< DimensionsTraits::value >().getSize() );
+      vertexInitializerContainer.setSize( this->getMesh().template getNumberOfEntities< DimensionsTraits::value >() );
    }
 
    void initEntities( InitializerType& meshInitializer )

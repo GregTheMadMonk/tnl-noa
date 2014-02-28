@@ -96,6 +96,16 @@ class tnlMesh : public tnlObject,
       return BaseType::getNumberOfEntities( tnlDimensionsTraits< Dimensions >() );
    }
 
+   bool setNumberOfCells( typename EntitiesTraits< dimensions >::GlobalIndexType size )
+   {
+      return BaseType::setNumberOfEntities( tnlDimensionsTraits< dimensions >(), size );
+   }
+
+   typename EntitiesTraits< dimensions >::GlobalIndexType getNumberOfCells() const
+   {
+      return BaseType::getNumberOfEntities( tnlDimensionsTraits< dimensions >() );
+   }
+
    template< int Dimensions >
       typename EntitiesTraits< Dimensions >::EntityType&
          getEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex )
@@ -111,10 +121,28 @@ class tnlMesh : public tnlObject,
    }
 
    template< int Dimensions >
-      void getEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex,
+      void setEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex,
                       const typename EntitiesTraits< Dimensions >::EntityType& entity )
    {
       BaseType::setEntity( tnlDimensionsTraits< Dimensions >(), entityIndex, entity );
+   }
+
+   typename EntitiesTraits< dimensions >::EntityType&
+      getCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex )
+   {
+      return BaseType::getEntity( tnlDimensionsTraits< dimensions >(), entityIndex );
+   }
+
+   const typename EntitiesTraits< dimensions >::EntityType&
+      getCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex ) const
+   {
+      return BaseType::getEntity( tnlDimensionsTraits< dimensions >(), entityIndex );
+   }
+
+   void setCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex,
+                 const typename EntitiesTraits< dimensions >::EntityType& entity )
+   {
+      BaseType::setEntity( tnlDimensionsTraits< dimensions >(), entityIndex, entity );
    }
 
    using BaseType::setNumberOfVertices;

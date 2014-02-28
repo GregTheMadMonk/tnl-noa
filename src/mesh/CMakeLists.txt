@@ -10,6 +10,7 @@ SET( headers tnlGrid.h
              tnlGnuplotWriter.h
              tnlMesh.h
              tnlMeshEntity.h
+             tnlMeshEntityId.h
              tnlMeshEntityKey.h
              tnlMeshReaderNetgen.h
              tnlMeshWriterNetgen.h

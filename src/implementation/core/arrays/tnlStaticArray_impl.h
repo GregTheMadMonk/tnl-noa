@@ -68,6 +68,15 @@ tnlString tnlStaticArray< Size, Element >::getType()
           tnlString( " >" );
 }
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+int tnlStaticArray< Size, Element >::getSize() const
+{
+   return size;
+}
+
 template< int Size, typename Element >
 #ifdef HAVE_CUDA
 __host__ __device__
