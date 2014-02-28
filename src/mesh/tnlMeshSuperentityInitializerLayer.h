@@ -92,7 +92,7 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           EntityTag,
-                                          tnlDimensionsTraits< 0 >,
+                                          tnlDimensionsTraits< EntityTag::dimensions >,
                                           tnlStorageTraits< true > >
 {
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
