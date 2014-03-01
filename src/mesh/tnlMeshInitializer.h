@@ -50,8 +50,8 @@ class tnlMeshInitializer
    {
       this->setMesh( mesh );
       this->createEntitiesFromCells();
-      this->createEntityInitializers();
-      this->initEntities( *this );
+      /*this->createEntityInitializers();
+      this->initEntities( *this );*/
    }
 };
 
@@ -103,7 +103,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
       SubentitiesContainerType subentities;
-      cellInitializer.template createSubentities< DimensionsTraits >( subentities );
+      cellInitializer.template createSubentities< DimensionsTraits::Previous::value >( subentities );
 
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
@@ -127,17 +127,17 @@ class tnlMeshInitializerLayer< ConfigTag,
       for( GlobalIndexType i = 0;
            i < numberOfEntities;
            i++ )
-         this->getMesh(). template setEntity< DimensionsTraits::value >( i, uniqueContainer[ i ] );
+         this->getMesh(). template setEntity< DimensionsTraits::value >( i, uniqueContainer.getElement( i ) );
       //uniqueContainer.toArray(this->getMesh().entityContainer( DimensionsTraits()) );
       uniqueContainer.reset();
 
-      ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
+      //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
       for( GlobalIndexType i = 0;
            i < numberOfEntities;
            i++)
       {
          EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
-         entityInitializer.init( this->getMesh().template getEnity< DimensionsTraits::value >( i ), i);
+         entityInitializer.init( this->getMesh().template getEntity< DimensionsTraits::value >( i ), i );
          entityInitializer.initEntity( meshInitializer );
       }
 

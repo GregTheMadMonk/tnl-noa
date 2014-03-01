@@ -72,6 +72,20 @@ void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType &array ) const
       array[ iter->second.index ] = iter->second.data;
 }
 
+template< typename Element,
+          typename Index,
+          typename Key >
+const Element& tnlIndexedSet< Element, Index, Key >::getElement( IndexType idx ) const
+{
+   return map[ idx ];
+}
 
+template< typename Element,
+          typename Index,
+          typename Key >
+Element& tnlIndexedSet< Element, Index, Key >::getElement( IndexType idx )
+{
+   return map[ idx ];
+}
 
 #endif /* TNLINDEXEDSET_IMPL_H_ */

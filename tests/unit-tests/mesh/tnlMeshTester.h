@@ -119,6 +119,8 @@ class tnlMeshTester : public CppUnit :: TestCase
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
        cout << tnlMeshTraits< TestTriangleMeshConfig >::meshDimensions << endl;
        meshInitializer.initMesh( mesh );
+       //mesh.save( "mesh.tnl" );
+       mesh.print( cout );
 
 /*       tnlStaticArray< 4, VertexMeshEntityType > vertexEntities;
        vertexEntities[ 0 ].setPoint( point0 );

@@ -145,6 +145,11 @@ class tnlMesh : public tnlObject,
       BaseType::setEntity( tnlDimensionsTraits< dimensions >(), entityIndex, entity );
    }
 
+   void print( ostream& str ) const
+   {
+      BaseType::print( str );
+   }
+
    using BaseType::setNumberOfVertices;
    using BaseType::getNumberOfVertices;
    using BaseType::setVertex;

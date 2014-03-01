@@ -84,6 +84,13 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return true;
    }
 
+   void print( ostream& str ) const
+   {
+      BaseType::print( str );
+      str << endl;
+      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << subentitiesIndecis << ".";
+   }
+
    /****
     * Make visible setters and getters of the lower subentities
     */
@@ -158,6 +165,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return true;
    }
 
+   void print( ostream& str ) const
+   {
+      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->subentityVertices << ".";
+   }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const

@@ -144,16 +144,17 @@ class tnlMeshEntityInitializer
    template< typename SubentityDimensionTag >
    class SubentitiesCreator
    {
-      typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, SubentityDimensionTag >   Tag;
-      typedef typename Tag::SubentityTag                                                SubentityTag;
-      typedef typename Tag::SubentityType                                               SubentityType;
-      typedef typename Tag::ContainerType::IndexType                                    LocalIndexType;
+      typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, SubentityDimensionTag >     Tag;
+      typedef typename Tag::SubentityTag                                                  SubentityTag;
+      typedef typename Tag::SubentityType                                                 SubentityType;
+      typedef typename Tag::ContainerType::IndexType                                      LocalIndexType;
 
-      typedef typename EntityType::SubentityIndicesArrayType                            SubentityIndicesArrayType;
+      typedef typename
+         EntityType::template SubentitiesTraits< DimensionsTraits::value >::ContainerType SubentityIndicesArrayType;
       typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                                  EntityTag,
                                                  SubentityDimensionTag>::SubentityContainerType
-                                                                                        SubentityContainerType;
+                                                                                           SubentityContainerType;
 
       enum { subentitiesCount       = Tag::count };
       enum { subentityVerticesCount = tnlMeshSubentitiesTraits< ConfigTag,

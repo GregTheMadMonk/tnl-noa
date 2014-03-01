@@ -48,7 +48,7 @@ class tnlMeshEntitiesTraits
    typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
    typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
 
-   typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >           SharedArrayType;
+   typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
 };
 
 

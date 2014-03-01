@@ -44,6 +44,10 @@ class tnlIndexedSet
    template< typename ArrayType >
    void toArray( ArrayType& array ) const;
 
+   const Element& getElement( IndexType idx ) const;
+
+   Element& getElement( IndexType idx );
+
    protected:
 
    struct DataWithIndex

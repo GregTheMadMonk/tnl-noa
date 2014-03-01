@@ -83,6 +83,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
       return true;
    }
 
+   void print( ostream& str ) const
+   {
+   }
+
    /****
      * Make visible setters and getters of the lower superentities
      */
@@ -133,6 +137,8 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
                                             EntityTag,
                                             typename DimensionsTraits::Previous >
 {
+   public:
+
 };
 
 template< typename ConfigTag,
@@ -165,6 +171,9 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    void setSuperentityIndex( DimensionsTraits,
                              const LocalIndexType localIndex,
                              const GlobalIndexType globalIndex ) {}
+   void print( ostream& str ) const
+   {};
+
 };
 
 template< typename ConfigTag,
@@ -197,6 +206,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    void setSuperentityIndex( DimensionsTraits,
                              const LocalIndexType localIndex,
                              const GlobalIndexType globalIndex ) {}
+
+   void print( ostream& str ) const
+   {};
+
 };
 
 /*template< typename ConfigTag,

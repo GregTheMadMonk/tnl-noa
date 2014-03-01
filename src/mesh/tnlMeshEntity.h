@@ -65,6 +65,13 @@ class tnlMeshEntity
       return true;
    }
 
+   void print( ostream& str ) const
+   {
+      tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::print( str );
+      str << endl;
+      tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::print( str );
+   }
+
    /****
     * Entity typedefs
     */
@@ -263,6 +270,12 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
           ! point.load( file ) )
          return false;
       return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      str << point;
+      tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::print( str );
    }
 
    /****

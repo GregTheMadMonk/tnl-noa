@@ -112,6 +112,18 @@ class tnlMeshStorageLayer< ConfigTag,
       return true;
    }
 
+   void print( ostream& str ) const
+   {
+      BaseType::print( str );
+      str << "The entities with " << DimensionsTraits::value << " dimensions are: " << endl;
+      for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
+      {
+         str << i << " ";
+         entities[ i ].print( str );
+         str << endl;
+      }
+   }
+
    protected:
    ContainerType entities;
 };
@@ -216,6 +228,17 @@ class tnlMeshStorageLayer< ConfigTag,
       if( ! vertices.load( file ) )
          return false;
       return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      str << "The mesh vertices are: " << endl;
+      for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
+      {
+         str << i << " \t ( ";
+         vertices[ i ].print( str );
+         str << " ) " << endl;
+      }
    }
 
    private:
