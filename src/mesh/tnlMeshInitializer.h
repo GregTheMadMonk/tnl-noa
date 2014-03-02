@@ -55,6 +55,69 @@ class tnlMeshInitializer
    }
 };
 
+template< typename ConfigTag >
+class tnlMeshInitializerLayer< ConfigTag,
+                               typename tnlMeshTraits< ConfigTag >::DimensionsTraits,
+                               tnlStorageTraits< true > >
+   : public tnlMeshInitializerLayer< ConfigTag,
+                                     typename tnlMeshTraits< ConfigTag >::DimensionsTraits::Previous >
+{
+   typedef typename tnlMeshTraits< ConfigTag >::DimensionsTraits        DimensionsTraits;
+
+   typedef tnlMeshInitializerLayer< ConfigTag,
+                                    typename DimensionsTraits::Previous >   BaseType;
+
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
+   typedef typename Tag::Tag                                            EntityTag;
+   typedef typename Tag::ContainerType                                  ContainerType;
+   typedef typename ContainerType::IndexType                            GlobalIndexType;
+
+   typedef tnlMeshInitializer< ConfigTag >                              InitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >             CellInitializerType;
+   typedef tnlArray< CellInitializerType, tnlHost, GlobalIndexType >    CellInitializerContainerType;
+
+   public:
+   using BaseType::getEntityInitializer;
+   CellInitializerType& getEntityInitializer( DimensionsTraits, GlobalIndexType index )
+   {
+      return cellInitializerContainer[ index ];
+   }
+
+   protected:
+   void createEntitiesFromCells()
+   {
+      //ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
+
+      //cellInitializerContainer.create( cellContainer.getSize());
+      cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
+      for( GlobalIndexType i = 0;
+           i < this->getMesh().getNumberOfCells();
+           i++ )
+      {
+         CellInitializerType& cellInitializer = cellInitializerContainer[ i ];
+         cellInitializer.init( this->getMesh().getCell( i ), i );
+
+         BaseType::createEntitiesFromCells( cellInitializer );
+      }
+   }
+
+   void initEntities( InitializerType& meshInitializer )
+   {
+      for( typename CellInitializerContainerType::IndexType i = 0;
+           i < cellInitializerContainer.getSize();
+           i++ )
+         cellInitializerContainer[ i ].initEntity( meshInitializer );
+
+      cellInitializerContainer.reset();
+
+      BaseType::initEntities( meshInitializer );
+   }
+
+   private:
+   CellInitializerContainerType cellInitializerContainer;
+};
+
+
 template< typename ConfigTag,
           typename DimensionsTraits >
 class tnlMeshInitializerLayer< ConfigTag,
@@ -103,7 +166,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
       SubentitiesContainerType subentities;
-      cellInitializer.template createSubentities< DimensionsTraits::Previous::value >( subentities );
+      //cellInitializer.template createSubentities< DimensionsTraits::value >( subentities );
 
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
@@ -160,68 +223,6 @@ class tnlMeshInitializerLayer< ConfigTag,
                                      typename DimensionsTraits::Previous >
 {};
 
-
-template< typename ConfigTag >
-class tnlMeshInitializerLayer< ConfigTag,
-                               typename tnlMeshTraits< ConfigTag >::DimensionsTraits,
-                               tnlStorageTraits< true > >
-   : public tnlMeshInitializerLayer< ConfigTag,
-                                     typename tnlMeshTraits< ConfigTag >::DimensionsTraits::Previous >
-{
-   typedef typename tnlMeshTraits< ConfigTag >::DimensionsTraits        DimensionsTraits;
-
-   typedef tnlMeshInitializerLayer< ConfigTag,
-                                    typename DimensionsTraits::Previous >   BaseType;
-
-   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
-   typedef typename Tag::Tag                                            EntityTag;
-   typedef typename Tag::ContainerType                                  ContainerType;
-   typedef typename ContainerType::IndexType                            GlobalIndexType;
-
-   typedef tnlMeshInitializer< ConfigTag >                              InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >             CellInitializerType;
-   typedef tnlArray< CellInitializerType, tnlHost, GlobalIndexType >    CellInitializerContainerType;
-
-   public:
-   using BaseType::getEntityInitializer;
-   CellInitializerType& getEntityInitializer( DimensionsTraits, GlobalIndexType index )
-   {
-      return cellInitializerContainer[ index ];
-   }
-
-   protected:
-   void createEntitiesFromCells()
-   {
-      //ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
-
-      //cellInitializerContainer.create( cellContainer.getSize());      
-      cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
-      for( GlobalIndexType i = 0;
-           i < this->getMesh().getNumberOfCells();
-           i++ )
-      {
-         CellInitializerType& cellInitializer = cellInitializerContainer[ i ];
-         cellInitializer.init( this->getMesh().getCell( i ), i );
-
-         BaseType::createEntitiesFromCells( cellInitializer );
-      }
-   }
-
-   void initEntities( InitializerType& meshInitializer )
-   {
-      for( typename CellInitializerContainerType::IndexType i = 0;
-           i < cellInitializerContainer.getSize();
-           i++ )
-         cellInitializerContainer[ i ].initEntity( meshInitializer );
-
-      cellInitializerContainer.reset();
-
-      BaseType::initEntities( meshInitializer );
-   }
-
-   private:
-   CellInitializerContainerType cellInitializerContainer;
-};
 
 template< typename ConfigTag >
 class tnlMeshInitializerLayer< ConfigTag,

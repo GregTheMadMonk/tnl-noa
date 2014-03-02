@@ -96,9 +96,9 @@ class tnlMeshEntityInitializer
    template< typename SubentityDimensionsTag >
    void createSubentities( typename tnlMeshSubentitiesTraits< ConfigTag,
                                                               EntityTag,
-                                                              SubentityDimensionsTag>::SubentityContainerType& subentities) const
+                                                              SubentityDimensionsTag >::SubentityContainerType& subentities ) const
    {
-      SubentitiesCreator< SubentityDimensionsTag >::createSubentities( subentities, *entity);
+      SubentitiesCreator< SubentityDimensionsTag >::createSubentities( subentities, *entity );
    }
 
    GlobalIndexType getEntityIndex() const
