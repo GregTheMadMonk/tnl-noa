@@ -249,10 +249,6 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    }
 };
 
-
-#else /* HAVE_CPPUNIT */
-template< int, Dimensions, typename ElementType, typename Device, typename IndexType >
-class tnlMultiArrayTester{};
 #endif /* HAVE_CPPUNIT */
 
 

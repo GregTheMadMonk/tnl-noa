@@ -171,11 +171,6 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    }
 };
 
-
-
-#else /* HAVE_CPPUNIT */
-template< int Size, typename ElementType >
-class tnlStaticArrayTester{};
 #endif /* HAVE_CPPUNIT */
 
 
