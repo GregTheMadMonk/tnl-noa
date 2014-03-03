@@ -87,7 +87,7 @@ void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( con
                                                                              const CoordinatesType& coordinates,
                                                                              VertexType& center ) const
 {
-   center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
+   center. x() = origin.x() + ( coordinates. x() + 0.5 ) * parametricStep. x();
 }
 
 template< typename Real,
@@ -226,8 +226,8 @@ void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( con
                                                                              const CoordinatesType& coordinates,
                                                                              VertexType& center ) const
 {
-   center. x() = ( coordinates. x() + 0.5 ) * parametricStep. x();
-   center. y() = ( coordinates. y() + 0.5 ) * parametricStep. y();
+   center. x() = origin.x() + ( coordinates. x() + 0.5 ) * parametricStep. x();
+   center. y() = origin.y() + ( coordinates. y() + 0.5 ) * parametricStep. y();
 }
 
 template< typename Real,
@@ -363,9 +363,9 @@ void tnlIdenticalGridGeometry< 3, Real, Device, Index > :: getElementCenter( con
                                                                              const CoordinatesType& coordinates,
                                                                              VertexType& center ) const
 {
-   center.x() = ( coordinates.x() + 0.5 ) * parametricStep.x();
-   center.y() = ( coordinates.y() + 0.5 ) * parametricStep.y();
-   center.z() = ( coordinates.z() + 0.5 ) * parametricStep.z();
+   center.x() = origin.x() + ( coordinates.x() + 0.5 ) * parametricStep.x();
+   center.y() = origin.y() + ( coordinates.y() + 0.5 ) * parametricStep.y();
+   center.z() = origin.z() + ( coordinates.z() + 0.5 ) * parametricStep.z();
 }
 
 template< typename Real,
