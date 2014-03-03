@@ -57,7 +57,7 @@ class tnlMeshEntityInitializer
       tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           EntityTag,
                                           typename
-                                             tnlMeshTraits< ConfigTag >::DimensionsTraits > SuperentityBaseType;
+                                          tnlMeshTraits< ConfigTag >::DimensionsTraits > SuperentityBaseType;
 
    typedef typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >::Type               EntityType;
    typedef typename tnlMeshEntitiesTraits< ConfigTag,

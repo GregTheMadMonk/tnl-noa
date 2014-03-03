@@ -166,7 +166,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
       SubentitiesContainerType subentities;
-      //cellInitializer.template createSubentities< DimensionsTraits::value >( subentities );
+      cellInitializer.template createSubentities< DimensionsTraits::value >( subentities );
 
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
