@@ -87,6 +87,8 @@ class tnlStaticArray
 
    bool load( tnlFile& file);
 
+   void sort();
+
    protected:
    Element data[ Size ];
 
@@ -165,6 +167,8 @@ class tnlStaticArray< 1, Element >
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file);
+
+   void sort();
 
    protected:
    Element data[ size ];
@@ -260,6 +264,8 @@ class tnlStaticArray< 2, Element >
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file);
+
+   void sort();
 
    protected:
    Element data[ size ];
@@ -367,6 +373,8 @@ class tnlStaticArray< 3, Element >
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file);
+
+   void sort();
 
    protected:
    Element data[ size ];

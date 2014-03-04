@@ -162,6 +162,20 @@ bool tnlStaticArray< Size, Element >::load( tnlFile& file)
 }
 
 template< int Size, typename Element >
+void tnlStaticArray< Size, Element >::sort()
+{
+   /****
+    * We assume that the array data is small and so
+    * may sort it with the bubble sort.
+    */
+   for( int k = Size - 1; k > 0; k--)
+      for( int i = 0; i < k; i++ )
+         if( data[ i ] > data[ i+1 ] )
+            Swap( data[ i ], data[ i+1 ] );
+}
+
+
+template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 {
    for( int i = 0; i < Size - 1; i ++ )

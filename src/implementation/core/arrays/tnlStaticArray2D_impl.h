@@ -204,6 +204,13 @@ bool tnlStaticArray< 2, Element >::load( tnlFile& file)
    return true;
 }
 
+template< typename Element >
+void tnlStaticArray< 2, Element >::sort()
+{
+   if( data[ 0 ] > data[ 1 ] )
+      Swap( data[ 0 ], data[ 1 ] );
+}
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 extern template class tnlStaticArray< 2, char >;

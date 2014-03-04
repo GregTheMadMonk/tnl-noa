@@ -228,6 +228,20 @@ bool tnlStaticArray< 3, Element >::load( tnlFile& file)
    return true;
 }
 
+template< typename Element >
+void tnlStaticArray< 3, Element >::sort()
+{
+   /****
+    * Bubble sort on three elements
+    */
+   if( data[ 0 ] > data[ 1 ] )
+      Swap( data[ 0 ], data[ 1 ] );
+   if( data[ 1 ] > data[ 2 ] )
+      Swap( data[ 1 ], data[2  ] );
+   if( data[ 0 ] > data[ 1 ] )
+      Swap( data[ 0 ], data[ 1 ] );
+}
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 extern template class tnlStaticArray< 3, char >;

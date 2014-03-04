@@ -45,7 +45,7 @@ class tnlMeshEntityKey
       for( typename ContainerType::IndexType i = 0; 
            i < ContainerType::size;
            i++ )
-         vertexIDs[ i ] = entity.template getSubentitiesIndices<0>( i );
+         vertexIDs[ i ] = entity.template getSubentityIndex<0>( i );
       vertexIDs.sort( );
    }
 

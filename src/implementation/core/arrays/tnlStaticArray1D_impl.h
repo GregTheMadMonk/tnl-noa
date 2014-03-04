@@ -169,6 +169,11 @@ bool tnlStaticArray< 1, Element >::load( tnlFile& file)
    return true;
 }
 
+template< typename Element >
+void tnlStaticArray< 1, Element >::sort()
+{
+}
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 extern template class tnlStaticArray< 1, char >;
