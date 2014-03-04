@@ -64,6 +64,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &StaticArrayTester::testComparisonOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &StaticArrayTester::testAssignmentOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testLoadAndSave", &StaticArrayTester::testLoadAndSave ) );
+      suiteOfTests -> addTest( new TestCaller( "testSort", &StaticArrayTester::testSort ) );
       return suiteOfTests;
    }
 
@@ -168,6 +169,17 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       file.close();
 
       CPPUNIT_ASSERT( u1 == u2 );
+   }
+
+   void testSort()
+   {
+      tnlStaticArray< Size, ElementType > u;
+      for( int i = 0; i < Size; i++ )
+         u[ i ] = Size - i - 1;
+      u.sort();
+
+      for( int i = 0; i < Size; i++ )
+         CPPUNIT_ASSERT( u[ i ] == i );
    }
 };
 
