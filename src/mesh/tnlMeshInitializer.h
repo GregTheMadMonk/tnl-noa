@@ -50,8 +50,8 @@ class tnlMeshInitializer
    {
       this->setMesh( mesh );
       this->createEntitiesFromCells();
-      /*this->createEntityInitializers();
-      this->initEntities( *this );*/
+      this->createEntityInitializers();
+      this->initEntities( *this );
    }
 };
 
@@ -86,19 +86,21 @@ class tnlMeshInitializerLayer< ConfigTag,
    protected:
    void createEntitiesFromCells()
    {
+      cout << "Creating entities with dimensions " << DimensionsTraits::value << endl;
       //ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
 
       //cellInitializerContainer.create( cellContainer.getSize());
       cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
-      for( GlobalIndexType i = 0;
-           i < this->getMesh().getNumberOfCells();
-           i++ )
+      for( GlobalIndexType cell = 0;
+           cell < this->getMesh().getNumberOfCells();
+           cell++ )
       {
-         CellInitializerType& cellInitializer = cellInitializerContainer[ i ];
-         cellInitializer.init( this->getMesh().getCell( i ), i );
-
+         cout << "Setting the cell number " << cell << endl;
+         CellInitializerType& cellInitializer = cellInitializerContainer[ cell ];
+         cellInitializer.init( this->getMesh().getCell( cell ), cell );
          BaseType::createEntitiesFromCells( cellInitializer );
       }
+
    }
 
    void initEntities( InitializerType& meshInitializer )
@@ -166,24 +168,13 @@ class tnlMeshInitializerLayer< ConfigTag,
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
       SubentitiesContainerType subentities;
-
-      typedef tnlMeshSubentitiesTraits< ConfigTag,
-                                        typename ConfigTag::CellTag,
-                                        DimensionsTraits > MeshSubentTraits;
-      typedef typename MeshSubentTraits::SubentityContainerType type;
-
-      cellInitializer.template createSubentities< DimensionsTraits::value >( subentities );
-
-      cout << "CellInitializerType dim = " << CellInitializerType::DimensionsTraits::value << endl;
-
-      cout << "createEntitiesFromCells dim = " << DimensionsTraits::value << endl;
-
+      cellInitializer.template createSubentities< DimensionsTraits >( subentities );
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
            i++ )
          uniqueContainer.insert( subentities[ i ] );
 
-      BaseType::createEntitiesFromCells(cellInitializer);
+      BaseType::createEntitiesFromCells( cellInitializer );
    }
 
    void createEntityInitializers()
@@ -197,11 +188,8 @@ class tnlMeshInitializerLayer< ConfigTag,
    {
       const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
       this->getMesh().template setNumberOfEntities< DimensionsTraits::value >( numberOfEntities );
-      for( GlobalIndexType i = 0;
-           i < numberOfEntities;
-           i++ )
-         this->getMesh(). template setEntity< DimensionsTraits::value >( i, uniqueContainer.getElement( i ) );
-      //uniqueContainer.toArray(this->getMesh().entityContainer( DimensionsTraits()) );
+      cout << " DimensionsTraits::value = " << DimensionsTraits::value << endl;
+      //uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTraits::value >() );
       uniqueContainer.reset();
 
       //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
@@ -284,7 +272,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType& meshInitializer )
    {
-      ContainerType& vertexContainer = this->getMesh().entityContainer( DimensionsTraits() );
+      ContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTraits::value >();
       for( GlobalIndexType i = 0;
            i < vertexContainer.getSize();
            i++ )
@@ -294,7 +282,7 @@ class tnlMeshInitializerLayer< ConfigTag,
          vertexInitializer.initEntity( meshInitializer );
       }
 
-      vertexInitializerContainer.free();
+      vertexInitializerContainer.reset();
    }
 
    private:

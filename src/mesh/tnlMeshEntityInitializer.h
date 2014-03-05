@@ -89,7 +89,7 @@ class tnlMeshEntityInitializer
    {
       tnlAssert( this->entity, );
 
-      this->entity->setID( entityIndex );
+      this->entity->setId( entityIndex );
 
       initSuperentities();
       initSubentities( meshInitializer );
@@ -126,7 +126,7 @@ class tnlMeshEntityInitializer
                                 VertexLocalIndexType localIndex,
                                 VertexGlobalIndexType globalIndex )
    {
-      entity.setVertex( localIndex, globalIndex );
+      entity.setVertexIndex( localIndex, globalIndex );
    }
 
    private:
@@ -152,7 +152,10 @@ class tnlMeshEntityInitializer
       typedef typename Tag::ContainerType::IndexType                                      LocalIndexType;
 
       typedef typename
-         EntityType::template SubentitiesTraits< DimensionsTraits::value >::ContainerType SubentityIndicesArrayType;
+         tnlMeshSubentitiesTraits< ConfigTag,
+                                   EntityTag,
+                                   SubentityDimensionTag >::ContainerType                 SubentitiesIndecisContainerType;
+
       typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                                  EntityTag,
                                                  SubentityDimensionTag>::SubentityContainerType
@@ -167,30 +170,31 @@ class tnlMeshEntityInitializer
       static void createSubentities( SubentityContainerType& subentities,
                                      const EntityType &entity )
       {
-         SubentityIndicesArrayType subvertexIndices = entity.template subentityIndices< 0 >();
-         tnlStaticFor< LocalIndexType, 0, subentitiesCount, CreateSubentities>::Exec( subentities, subvertexIndices );
+         const SubentitiesIndecisContainerType& subvertexIndices = entity.template getSubentitiesIndecis< 0 >();
+         tnlStaticFor< LocalIndexType, 0, subentitiesCount, CreateSubentities >::exec( subentities, subvertexIndices );
       }
 
-   private:
-      template<LocalIndexType subentityIndex>
+      private:
+      template< LocalIndexType subentityIndex >
       class CreateSubentities
       {
-      public:
-         static void exec(SubentityContainerType &subentities, SubentityIndicesArrayType subvertexIndices)
+         public:
+         static void exec( SubentityContainerType &subentities, const SubentitiesIndecisContainerType& subvertexIndices )
          {
-            SubentityType &subentity = subentities[subentityIndex];
-            tnlStaticFor<LocalIndexType, 0, subentityVerticesCount, SetSubentityVertex>::Exec(subentity, subvertexIndices);
+            SubentityType &subentity = subentities[ subentityIndex ];
+            tnlStaticFor< LocalIndexType, 0, subentityVerticesCount, SetSubentityVertex >::exec( subentity, subvertexIndices );
          }
 
-      private:
-         template<LocalIndexType subentityVertexIndex>
+         private:
+         template< LocalIndexType subentityVertexIndex >
          class SetSubentityVertex
          {
-         public:
-            static void exec(SubentityType &subentity, SubentityIndicesArrayType subvertexIndices)
+            public:
+            static void exec( SubentityType &subentity, const SubentitiesIndecisContainerType& subvertexIndices )
             {
                LocalIndexType vertexIndex = Tag::template Vertex< subentityIndex, subentityVertexIndex >::index;
-               tnlMeshEntityInitializer< ConfigTag, SubentityTag >::setEntityVertex( subentity, subentityVertexIndex, subvertexIndices[vertexIndex] );
+               cout << "  Setting subentity " << subentityIndex << " vertex " << subentityVertexIndex << " to " << subvertexIndices[ vertexIndex ] << endl;
+               tnlMeshEntityInitializer< ConfigTag, SubentityTag >::setEntityVertex( subentity, subentityVertexIndex, subvertexIndices[ vertexIndex ] );
             }
          };
       };
@@ -228,7 +232,7 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
 
    void initEntity(InitializerType &meshInitializer)
    {
-      this->entity->setID( this->entityIndex );
+      this->entity->setId( this->entityIndex );
       initSuperentities();
    }
 

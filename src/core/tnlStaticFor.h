@@ -116,7 +116,7 @@ class tnlStaticFor
 {
    public:
 
-   static void Exec()
+   static void exec()
    {
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
@@ -125,7 +125,7 @@ class tnlStaticFor
    }
 
    template< typename T >
-   static void Exec( T &p )
+   static void exec( T &p )
    {
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
@@ -135,7 +135,7 @@ class tnlStaticFor
 
    template< typename T0,
              typename T1 >
-   static void Exec( T0& p0, T1& p1 )
+   static void exec( T0& p0, T1& p1 )
    {
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
@@ -146,7 +146,7 @@ class tnlStaticFor
    template< typename T0,
              typename T1,
              typename T2 >
-   static void Exec( T0& p0, T1& p1, T2& p2 )
+   static void exec( T0& p0, T1& p1, T2& p2 )
    {
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
@@ -158,7 +158,7 @@ class tnlStaticFor
              typename T1,
              typename T2,
              typename T3 >
-   static void Exec( T0& p0, T1& p1, T2& p2, T3& p3 )
+   static void exec( T0& p0, T1& p1, T2& p2, T3& p3 )
    {
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,

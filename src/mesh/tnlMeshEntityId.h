@@ -47,7 +47,7 @@ template< typename GlobalIndexType >
 class tnlMeshEntityId< void, GlobalIndexType >
 {
    public:
-   void setID( GlobalIndexType )
+   void setId( GlobalIndexType )
    {}
 };
 

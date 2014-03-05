@@ -127,6 +127,18 @@ class tnlMesh : public tnlObject,
       BaseType::setEntity( tnlDimensionsTraits< Dimensions >(), entityIndex, entity );
    }
 
+   template< int Dimensions >
+   typename EntitiesTraits< Dimensions >::ContainerType& getEntities()
+   {
+      return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
+   }
+
+   template< int Dimensions >
+   const typename EntitiesTraits< Dimensions >::ContainerType& getEntities() const
+   {
+      return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
+   }
+
    typename EntitiesTraits< dimensions >::EntityType&
       getCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex )
    {

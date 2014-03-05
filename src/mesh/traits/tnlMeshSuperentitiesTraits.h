@@ -52,7 +52,7 @@ class tnlMeshSuperentitiesTraits
 
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             ContainerType;
    typedef tnlList< GlobalIndexType >                                       GrowableContainerType;
-   typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  SharedArrayType;
+   //typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  SharedArrayType;
 };
 
 

@@ -64,9 +64,9 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    protected:
 
-   typedef typename SubentityTraits::ContainerType    ContainerType;
-   typedef typename ContainerType::ElementType        GlobalIndexType;
-   typedef int                                        LocalIndexType;
+   typedef typename SubentityTraits::ContainerType        ContainerType;
+   typedef typename ContainerType::ElementType            GlobalIndexType;
+   typedef int                                            LocalIndexType;
 
    bool save( tnlFile& file ) const
    {
@@ -96,6 +96,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
     */
    using BaseType::getSubentityIndex;
    using BaseType::setSubentityIndex;
+   using BaseType::getSubentitiesIndecis;
 
    /****
     * Define setter/getter for the current level of the subentities
@@ -113,8 +114,19 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return this->subentitiesIndecis[ localIndex ];
    }
 
+   ContainerType& getSubentitiesIndecis( DimensionsTraits )
+   {
+      return this->subentitiesIndecis;
+   }
+
+   const ContainerType& getSubentitiesIndecis( DimensionsTraits ) const
+   {
+      return this->subentitiesIndecis;
+   }
+
    private:
    ContainerType subentitiesIndecis;
+
 };
 
 
@@ -167,23 +179,33 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    void print( ostream& str ) const
    {
-      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->subentityVertices << ".";
+      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->verticesIndecis << ".";
    }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const
    {
-      return this->subentityVertices[ localIndex ];
+      return this->verticesIndecis[ localIndex ];
    }
    void setSubentityIndex( DimensionsTraits,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
-      this->subentityVertices[ localIndex ] = globalIndex;
+      this->verticesIndecis[ localIndex ] = globalIndex;
+   }
+
+   ContainerType& getSubentitiesIndecis( DimensionsTraits )
+   {
+      return this->verticesIndecis;
+   }
+
+   const ContainerType& getSubentitiesIndecis( DimensionsTraits ) const
+   {
+      return this->verticesIndecis;
    }
 
    private:
-   ContainerType subentityVertices;
+   ContainerType verticesIndecis;
 };
 
 template< typename ConfigTag,

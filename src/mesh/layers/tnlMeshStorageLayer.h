@@ -66,6 +66,7 @@ class tnlMeshStorageLayer< ConfigTag,
    using BaseType::getNumberOfEntities;
    using BaseType::setEntity;
    using BaseType::getEntity;
+   using BaseType::getEntities;
 
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
@@ -94,6 +95,16 @@ class tnlMeshStorageLayer< ConfigTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->entities[ entityIndex ];
+   }
+
+   ContainerType& getEntities( DimensionsTraits )
+   {
+      return this->entities;
+   }
+
+   const ContainerType& getEntities( DimensionsTraits ) const
+   {
+      return this->entities;
    }
 
    bool save( tnlFile& file ) const
@@ -214,6 +225,16 @@ class tnlMeshStorageLayer< ConfigTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->vertices.getElement( entityIndex );
+   }
+
+   ContainerType& getEntities( DimensionsTraits )
+   {
+      return this->vertices;
+   }
+
+   const ContainerType& getEntities( DimensionsTraits ) const
+   {
+      return this->vertices;
    }
 
    bool save( tnlFile& file ) const
