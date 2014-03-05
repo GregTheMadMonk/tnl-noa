@@ -47,7 +47,9 @@ class tnlMeshEntityInitializer
                                                 EntityTag,
                                                 typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
 {
+   public: // TODO remove
    typedef tnlDimensionsTraits< EntityTag::dimensions >                                 DimensionsTraits;
+   private:
 
    typedef
       tnlMeshEntityInitializerLayer< ConfigTag,
