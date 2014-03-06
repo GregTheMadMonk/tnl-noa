@@ -63,9 +63,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
    protected:
 
-   typedef typename SuperentityTag::ContainerType     ContainerType;
-   typedef typename ContainerType::ElementType        GlobalIndexType;
-   typedef int                                        LocalIndexType;
+   typedef typename SuperentityTag::ContainerType       ContainerType;
+   typedef typename SuperentityTag::SharedContainerType SharedContainerType;
+   typedef typename ContainerType::ElementType          GlobalIndexType;
+   typedef int                                          LocalIndexType;
 
    bool save( tnlFile& file ) const
    {
@@ -103,7 +104,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     bool setNumberOfSuperentities( DimensionsTraits,
                                    const LocalIndexType size )
     {
-       return this->superentitiesIndices.setSize( size );
+       if( ! this->superentitiesIndices.setSize( size ) )
+          return false;
+       this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
+       return true;
     }
 
     LocalIndexType getNumberOfSuperentities( DimensionsTraits ) const
@@ -124,18 +128,21 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        return this->superentitiesIndices[ localIndex ];
     }
 
-    ContainerType& getSuperentitiesIndecis()
+    SharedContainerType& getSuperentitiesIndecis()
     {
-       return this->superentitiesIndecis;
+       return this->sharedSuperentitiesIndecis;
     }
 
-    const ContainerType& getSuperentitiesIndecis() const
+    const SharedContainerType& getSuperentitiesIndecis() const
     {
-       return this->superentitiesIndecis;
+       return this->sharedSuperentitiesIndecis;
     }
 
     private:
+
     ContainerType superentitiesIndices;
+
+    SharedContainerType sharedSuperentitiesIndices;
 };
 
 template< typename ConfigTag,

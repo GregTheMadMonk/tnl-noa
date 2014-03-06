@@ -72,9 +72,9 @@ class tnlMesh : public tnlObject,
       typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >    MeshEntitiesTraits;
       typedef typename MeshEntitiesTraits::Type                       Type;
       typedef typename MeshEntitiesTraits::ContainerType              ContainerType;
+      typedef typename MeshEntitiesTraits::SharedContainerType        SharedContainerType;
       typedef typename ContainerType::IndexType                       GlobalIndexType;
       typedef typename ContainerType::ElementType                     EntityType;
-      //typedef typename MeshEntitiesTraits::SharedArrayType          SharedArrayType;
       enum { available = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
    };
 
@@ -128,13 +128,13 @@ class tnlMesh : public tnlObject,
    }
 
    template< int Dimensions >
-   typename EntitiesTraits< Dimensions >::ContainerType& getEntities()
+   typename EntitiesTraits< Dimensions >::SharedContainerType& getEntities()
    {
       return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
    }
 
    template< int Dimensions >
-   const typename EntitiesTraits< Dimensions >::ContainerType& getEntities() const
+   const typename EntitiesTraits< Dimensions >::SharedContainerType& getEntities() const
    {
       return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
    }

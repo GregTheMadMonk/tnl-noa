@@ -58,15 +58,15 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
    using BaseType::addSuperentity;
    void addSuperentity( DimensionsTag, GlobalIndexType entityIndex )
    {
-      superentityContainer.insert( entityIndex );
+      superentityContainer.Append( entityIndex );
    }
 
    protected:
    void initSuperentities( EntityInitializerType& entityInitializer )
    {
-      entityInitializer.superentityContainer( DimensionsTag() ).create( superentityContainer.getSize() );
+      entityInitializer.superentityContainer( DimensionsTag() ).setSize( superentityContainer.getSize() );
       superentityContainer.toArray( entityInitializer.superentityContainer( DimensionsTag()) );
-      superentityContainer.free();
+      superentityContainer.reset();
 
       BaseType::initSuperentities( entityInitializer );
    }

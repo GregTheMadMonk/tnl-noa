@@ -154,7 +154,9 @@ class tnlMeshInitializerLayer< ConfigTag,
    using BaseType::findEntityIndex;
    GlobalIndexType findEntityIndex( EntityType &entity ) const
    {
-      return uniqueContainer.find( entity );
+      GlobalIndexType idx;
+      uniqueContainer.find( entity, idx );
+      return idx;
    }
 
    using BaseType::getEntityInitializer;
@@ -233,6 +235,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >        Tag;
    typedef typename Tag::Tag                                           EntityTag;
    typedef typename Tag::ContainerType                                 ContainerType;
+   typedef typename Tag::SharedContainerType                           SharedContainerType;
    typedef typename ContainerType::IndexType                           GlobalIndexType;
 
    typedef typename tnlMeshTraits< ConfigTag >::CellType               CellType;
@@ -272,7 +275,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType& meshInitializer )
    {
-      ContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTraits::value >();
+      SharedContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTraits::value >();
       for( GlobalIndexType i = 0;
            i < vertexContainer.getSize();
            i++ )

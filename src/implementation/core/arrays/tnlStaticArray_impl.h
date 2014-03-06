@@ -77,6 +77,24 @@ int tnlStaticArray< Size, Element >::getSize() const
    return size;
 }
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+Element* tnlStaticArray< Size, Element >::getData()
+{
+   return data;
+}
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+const Element* tnlStaticArray< Size, Element >::getData() const
+{
+   return data;
+}
+
 template< int Size, typename Element >
 #ifdef HAVE_CUDA
 __host__ __device__

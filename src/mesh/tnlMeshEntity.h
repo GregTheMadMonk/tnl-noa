@@ -91,6 +91,7 @@ class tnlMeshEntity
                                         EntityTag,
                                         DimensionsTraits >      SubentityTraits;
       typedef typename SubentityTraits::ContainerType           ContainerType;
+      typedef typename SubentityTraits::SharedContainerType     SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
 
@@ -144,7 +145,7 @@ class tnlMeshEntity
       }
 
    template< int Dimensions >
-      typename SubentitiesTraits< Dimensions >::ContainerType&
+      typename SubentitiesTraits< Dimensions >::SharedContainerType&
          getSubentitiesIndecis()
    {
       typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
@@ -152,7 +153,7 @@ class tnlMeshEntity
    }
 
    template< int Dimensions >
-      const typename SubentitiesTraits< Dimensions >::ContainerType&
+      const typename SubentitiesTraits< Dimensions >::SharedContainerType&
          getSubentitiesIndecis() const
    {
       typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
@@ -170,6 +171,7 @@ class tnlMeshEntity
                                           EntityTag,
                                           DimensionsTraits >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
+      typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
       // TODO: make this as:
@@ -241,32 +243,33 @@ class tnlMeshEntity
     * Vertices
     */
    enum { verticesCount = SubentitiesTraits< 0 >::subentitiesCount };
-   typedef typename SubentitiesTraits< 0 >::ContainerType    VerticesContainerType;
-   typedef typename SubentitiesTraits< 0 >::GlobalIndexType  VerticesGlobalIndexType;
-   typedef typename SubentitiesTraits< 0 >::LocalIndexType   VerticesLocalIndexType;
+   typedef typename SubentitiesTraits< 0 >::ContainerType        ContainerType;
+   typedef typename SubentitiesTraits< 0 >::SharedContainerType  SharedContainerType;
+   typedef typename SubentitiesTraits< 0 >::GlobalIndexType      GlobalIndexType;
+   typedef typename SubentitiesTraits< 0 >::LocalIndexType       LocalIndexType;
 
-   VerticesLocalIndexType getNumberOfVertices() const
+   LocalIndexType getNumberOfVertices() const
    {
       return verticesCount;
    }
 
-   void setVertexIndex( const VerticesLocalIndexType localIndex,
-                        const VerticesGlobalIndexType globalIndex )
+   void setVertexIndex( const LocalIndexType localIndex,
+                        const GlobalIndexType globalIndex )
    {
       this->setSubentityIndex< 0 >( localIndex, globalIndex  );
    }
 
-   VerticesGlobalIndexType getVertexIndex( const VerticesLocalIndexType localIndex ) const
+   GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const
    {
       return this->getSubentityIndex< 0 >( localIndex  );
    }
 
-   VerticesContainerType& getVerticesIndecis()
+   SharedContainerType& getVerticesIndecis()
    {
       return this->getSubentitiesIndecis< 0 >();
    }
 
-   const VerticesContainerType& getVerticesIndecis() const
+   const SharedContainerType& getVerticesIndecis() const
    {
       return this->getSubentitiesIndecis< 0 >();
    }

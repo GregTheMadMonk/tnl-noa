@@ -50,9 +50,23 @@ class tnlMeshSuperentitiesTraits
 
    typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
 
+   /****
+    * Type of container for storing of the superentities indecis.
+    */
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             ContainerType;
+
+   /****
+    * Type for passing the superentities indecis by the getSuperentitiesIndecis()
+    * method. We introduce it because of the compatibility with the subentities
+    * which are usually stored in static array.
+    */
+   typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       SharedContainerType;
+
+   /****
+    * This is used by the mesh initializer.
+    */
    typedef tnlList< GlobalIndexType >                                       GrowableContainerType;
-   //typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  SharedArrayType;
+
 };
 
 

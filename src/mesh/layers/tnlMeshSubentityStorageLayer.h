@@ -65,13 +65,19 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    protected:
 
    typedef typename SubentityTraits::ContainerType        ContainerType;
+   typedef typename SubentityTraits::SharedContainerType  SharedContainerType;
    typedef typename ContainerType::ElementType            GlobalIndexType;
    typedef int                                            LocalIndexType;
+
+   tnlMeshSubentityStorageLayer()
+   {
+      this->sharedSubentitiesIndecis.bind( this->subentitiesIndecis );
+   }
 
    bool save( tnlFile& file ) const
    {
       if( ! BaseType::save( file ) ||
-          ! subentitiesIndecis.save( file ) )
+          ! this->subentitiesIndecis.save( file ) )
          return false;
       return true;
    }
@@ -79,8 +85,9 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    bool load( tnlFile& file )
    {
       if( ! BaseType::load( file ) ||
-          ! subentitiesIndecis.load( file ) )
+          ! this->subentitiesIndecis.load( file ) )
          return false;
+      this->sharedSubentitiesIndecis.bind( this->subentitiesIndecis );
       return true;
    }
 
@@ -114,18 +121,20 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return this->subentitiesIndecis[ localIndex ];
    }
 
-   ContainerType& getSubentitiesIndecis( DimensionsTraits )
+   SharedContainerType& getSubentitiesIndecis( DimensionsTraits )
    {
-      return this->subentitiesIndecis;
+      return this->sharedSubentitiesIndecis;
    }
 
-   const ContainerType& getSubentitiesIndecis( DimensionsTraits ) const
+   const SharedContainerType& getSubentitiesIndecis( DimensionsTraits ) const
    {
-      return this->subentitiesIndecis;
+      return this->sharedSubentitiesIndecis;
    }
 
    private:
    ContainerType subentitiesIndecis;
+
+   SharedContainerType sharedSubentitiesIndecis;
 
 };
 
@@ -160,8 +169,14 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    protected:
 
    typedef typename SubentityTraits::ContainerType             ContainerType;
+   typedef typename SubentityTraits::SharedContainerType       SharedContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
+
+   tnlMeshSubentityStorageLayer()
+   {
+      this->sharedVerticesIndecis.bind( this->verticesIndecis );
+   }
 
    bool save( tnlFile& file ) const
    {
@@ -174,6 +189,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! this->subentitiesVertices.load( file ) )
          return false;
+      this->sharedVerticesIndecis.bind( this->verticesIndecis );
       return true;
    }
 
@@ -194,18 +210,21 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       this->verticesIndecis[ localIndex ] = globalIndex;
    }
 
-   ContainerType& getSubentitiesIndecis( DimensionsTraits )
+   SharedContainerType& getSubentitiesIndecis( DimensionsTraits )
    {
-      return this->verticesIndecis;
+      return this->sharedVerticesIndecis;
    }
 
-   const ContainerType& getSubentitiesIndecis( DimensionsTraits ) const
+   const SharedContainerType& getSubentitiesIndecis( DimensionsTraits ) const
    {
-      return this->verticesIndecis;
+      return this->sharedVerticesIndecis;
    }
 
    private:
+
    ContainerType verticesIndecis;
+
+   SharedContainerType sharedVerticesIndecis;
 };
 
 template< typename ConfigTag,

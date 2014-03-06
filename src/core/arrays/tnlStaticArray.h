@@ -65,6 +65,16 @@ class tnlStaticArray
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Element& operator[]( int i ) const;
 
 #ifdef HAVE_CUDA
@@ -130,6 +140,15 @@ class tnlStaticArray< 1, Element >
 #endif
    int getSize() const;
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -215,6 +234,16 @@ class tnlStaticArray< 2, Element >
    __host__ __device__
 #endif
    int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -312,6 +341,16 @@ class tnlStaticArray< 3, Element >
    __host__ __device__
 #endif
    int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__

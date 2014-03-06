@@ -26,6 +26,9 @@ class tnlHost;
 template< typename Element, typename Device, typename Index >
 class tnlArray;
 
+template< int Size, typename Element >
+class tnlStaticArray;
+
 template< typename Element,
           typename Device = tnlHost,
           typename Index = int >
@@ -45,6 +48,9 @@ class tnlSharedArray : public tnlObject
               const Index _size );
 
    void bind( tnlArray< Element, Device, Index >& array );
+
+   template< int Size >
+   void bind( tnlStaticArray< Size, Element >& array );
 
    void bind( tnlSharedArray< Element, Device, Index >& array );
 

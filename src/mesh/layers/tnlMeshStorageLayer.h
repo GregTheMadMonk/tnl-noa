@@ -56,7 +56,7 @@ class tnlMeshStorageLayer< ConfigTag,
 
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
    typedef typename Tag::ContainerType                                  ContainerType;
-   //typedef typename Tag::SharedArrayType                              SharedArrayType;
+   typedef typename Tag::SharedContainerType                            SharedContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
    typedef typename ContainerType::ElementType                          EntityType;
 
@@ -70,7 +70,10 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
-      return this->entities.setSize( size );
+      if( ! this->entities.setSize( size ) )
+         return false;
+      this->sharedEntities.bind( this->entities );
+      return true;
    }
 
    GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
@@ -97,20 +100,20 @@ class tnlMeshStorageLayer< ConfigTag,
       return this->entities[ entityIndex ];
    }
 
-   ContainerType& getEntities( DimensionsTraits )
+   SharedContainerType& getEntities( DimensionsTraits )
    {
-      return this->entities;
+      return this->sharedEntities;
    }
 
-   const ContainerType& getEntities( DimensionsTraits ) const
+   const SharedContainerType& getEntities( DimensionsTraits ) const
    {
-      return this->entities;
+      return this->sharedEntities;
    }
 
    bool save( tnlFile& file ) const
    {
       if( ! BaseType::save( file ) ||
-          ! entities.save( file ) )
+          ! this->entities.save( file ) )
          return false;
       return true;
    }
@@ -118,8 +121,9 @@ class tnlMeshStorageLayer< ConfigTag,
    bool load( tnlFile& file )
    {
       if( ! BaseType::load( file ) ||
-          ! entities.load( file ) )
+          ! this->entities.load( file ) )
          return false;
+      this->sharedEntities.bind( this->entities );
       return true;
    }
 
@@ -137,6 +141,8 @@ class tnlMeshStorageLayer< ConfigTag,
 
    protected:
    ContainerType entities;
+
+   SharedContainerType sharedEntities;
 };
 
 template< typename ConfigTag,
@@ -159,16 +165,19 @@ class tnlMeshStorageLayer< ConfigTag,
    typedef tnlMeshEntitiesTraits< ConfigTag,
                                   DimensionsTraits >       Tag;
    typedef typename Tag::ContainerType                     ContainerType;
+   typedef typename Tag::SharedContainerType               SharedContainerType;
    typedef typename ContainerType::IndexType               GlobalIndexType;
    typedef typename ContainerType::ElementType             VertexType;
    typedef typename VertexType::PointType                  PointType;
-   //typedef typename Tag::SharedArrayType                 SharedArrayType;
 
    protected:
 
    bool setNumberOfVertices( const GlobalIndexType size )
    {
-      return this->vertices.setSize( size );
+      if( ! this->vertices.setSize( size ) )
+         return false;
+      this->sharedVertices.bind( this->vertices );
+      return true;
    }
 
    GlobalIndexType getNumberOfVertices() const
@@ -227,27 +236,28 @@ class tnlMeshStorageLayer< ConfigTag,
       return this->vertices.getElement( entityIndex );
    }
 
-   ContainerType& getEntities( DimensionsTraits )
+   SharedContainerType& getEntities( DimensionsTraits )
    {
-      return this->vertices;
+      return this->sharedVertices;
    }
 
-   const ContainerType& getEntities( DimensionsTraits ) const
+   const SharedContainerType& getEntities( DimensionsTraits ) const
    {
-      return this->vertices;
+      return this->sharedVertices;
    }
 
    bool save( tnlFile& file ) const
    {
-      if( ! vertices.save( file ) )
+      if( ! this->vertices.save( file ) )
          return false;
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! vertices.load( file ) )
+      if( ! this->vertices.load( file ) )
          return false;
+      this->sharedVertices.bind( this->vertices );
       return true;
    }
 
@@ -265,6 +275,8 @@ class tnlMeshStorageLayer< ConfigTag,
    private:
 
    ContainerType vertices;
+
+   SharedContainerType sharedVertices;
 };
 
 /****
