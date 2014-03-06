@@ -75,6 +75,8 @@ class tnlMeshEntityInitializer
 
    public:
 
+   //using SuperentityBaseType::setNumberOfSuperentities;
+
    static tnlString getType() {};
 
    tnlMeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
@@ -115,9 +117,22 @@ class tnlMeshEntityInitializer
    {
       return this->entity->template getSubentitiesIndecis< SubentityDimensionTag::value >();
    }
+   
+   template< typename SuperentityDimensionTag >
+   bool setNumberOfSuperentities( SuperentityDimensionTag, typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::ContainerType::IndexType size )
+   {
+      return this->entity->template setNumberOfSuperentities< SuperentityDimensionTag::value >( size );
+   }
+
+   // TODO: check if we need the following two methods
+   /*template< typename SuperentityDimensionTag >
+   bool getSuperentityContainer( SuperentityDimensionTag, typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::ContainerType::IndexType size )
+   {
+      return this->entity->template setNumberOfSuperentities< SuperentityDimensionTag::value >( size );
+   }*/
 
    template< typename SuperentityDimensionTag >
-   typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::SharedContainerType& superentityContainer( SuperentityDimensionTag )
+   typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
    {
       return this->entity->template getSuperentitiesIndices< SuperentityDimensionTag::value >();
    }
@@ -237,12 +252,19 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
    }
 
    template< typename SuperentityDimensionsTag >
+   bool setNumberOfSuperentities( SuperentityDimensionsTag,
+                                  const typename EntityType::template SuperentitiesTraits< SuperentityDimensionsTag::value >::ContainerType::IndexType size )
+   {
+      return this->entity->template setNumberOfSuperentities< SuperentityDimensionsTag::value >( size );
+   }
+
+   template< typename SuperentityDimensionsTag >
    typename tnlMeshSuperentitiesTraits< ConfigTag,
                                         tnlMeshVertexTag,
                                         SuperentityDimensionsTag >::SharedContainerType&
       getSuperentityContainer( SuperentityDimensionsTag )
    {
-      return this->entity->getSuperentitiesIndices( SuperentityDimensionsTag() );
+      return this->entity->template getSuperentitiesIndecis< SuperentityDimensionsTag::value >();
    }
 
    private:

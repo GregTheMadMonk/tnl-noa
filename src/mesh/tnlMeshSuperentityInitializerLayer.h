@@ -64,8 +64,9 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
    protected:
    void initSuperentities( EntityInitializerType& entityInitializer )
    {
-      entityInitializer.superentityContainer( DimensionsTag() ).setSize( superentityContainer.getSize() );
-      superentityContainer.toArray( entityInitializer.superentityContainer( DimensionsTag()) );
+      entityInitializer.setNumberOfSuperentities( DimensionsTag(), 
+                                                  superentityContainer.getSize() );
+      superentityContainer.toArray( entityInitializer.getSuperentityContainer( DimensionsTag()) );
       superentityContainer.reset();
 
       BaseType::initSuperentities( entityInitializer );

@@ -95,7 +95,7 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     using BaseType::getNumberOfSuperentities;
     using BaseType::getSuperentityIndex;
     using BaseType::setSuperentityIndex;
-    using BaseType::getSuperentitiesIndecis;
+    using BaseType::getSuperentitiesIndices;
 
 
     /****
@@ -128,14 +128,14 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        return this->superentitiesIndices[ localIndex ];
     }
 
-    SharedContainerType& getSuperentitiesIndecis()
+    SharedContainerType& getSuperentitiesIndices( DimensionsTraits )
     {
-       return this->sharedSuperentitiesIndecis;
+       return this->sharedSuperentitiesIndices;
     }
 
-    const SharedContainerType& getSuperentitiesIndecis() const
+    const SharedContainerType& getSuperentitiesIndices( DimensionsTraits ) const
     {
-       return this->sharedSuperentitiesIndecis;
+       return this->sharedSuperentitiesIndices;
     }
 
     private:
@@ -193,9 +193,9 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
    void print( ostream& str ) const{}
 
-   ContainerType& getSuperentitiesIndecis(){}
+   ContainerType& getSuperentitiesIndices(){}
 
-   const ContainerType& getSuperentitiesIndecis() const{}
+   const ContainerType& getSuperentitiesIndices() const{}
 };
 
 template< typename ConfigTag,
@@ -231,9 +231,9 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
    void print( ostream& str ) const{}
 
-   ContainerType& getSuperentitiesIndecis(){}
+   ContainerType& getSuperentitiesIndices(){}
 
-   const ContainerType& getSuperentitiesIndecis() const{}
+   const ContainerType& getSuperentitiesIndices() const{}
 
 
 };

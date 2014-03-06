@@ -60,7 +60,7 @@ class tnlMeshWriterNetgen
 
       typedef typename MeshType::template EntitiesTraits< meshDimensions >::GlobalIndexType CellIndexType;
       typedef typename MeshType::template EntitiesTraits< meshDimensions >::Type            CellType;
-      typedef typename CellType::VerticesLocalIndexType                                     VerticesLocalIndexType;
+      typedef typename CellType::LocalIndexType                                             LocalIndexType;
 
       const CellIndexType numberOfCells = mesh.template getNumberOfEntities< meshDimensions >();
       outputFile << numberOfCells << endl;
@@ -68,7 +68,7 @@ class tnlMeshWriterNetgen
       {
          const CellType& cell = mesh.template getEntity< meshDimensions >( cellIdx );
          outputFile << "   1";
-         for( VerticesLocalIndexType cellVertexIdx = 0;
+         for( LocalIndexType cellVertexIdx = 0;
               cellVertexIdx < meshDimensions + 1;
               cellVertexIdx++ )
             outputFile << " " << cell.getVertexIndex( cellVertexIdx );
