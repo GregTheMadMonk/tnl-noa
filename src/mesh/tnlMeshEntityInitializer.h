@@ -47,14 +47,13 @@ class tnlMeshEntityInitializer
                                                 EntityTag,
                                                 typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
 {
-   public: // TODO remove
    typedef tnlDimensionsTraits< EntityTag::dimensions >                                 DimensionsTraits;
    private:
 
    typedef
       tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
-                                     tnlDimensionsTraits< EntityTag::dimensions - 1> >   SubentityBaseType;
+                                     tnlDimensionsTraits< EntityTag::dimensions - 1 > >   SubentityBaseType;
    typedef
       tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           EntityTag,
@@ -155,6 +154,7 @@ class tnlMeshEntityInitializer
 
    void initSuperentities()
    {
+      cout << "Initiating superentities..." << endl;
       SuperentityBaseType::initSuperentities( *this) ;
    }
 

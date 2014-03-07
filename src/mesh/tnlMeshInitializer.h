@@ -108,7 +108,10 @@ class tnlMeshInitializerLayer< ConfigTag,
       for( typename CellInitializerContainerType::IndexType i = 0;
            i < cellInitializerContainer.getSize();
            i++ )
+      {
+         cout << "Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
          cellInitializerContainer[ i ].initEntity( meshInitializer );
+      }
 
       cellInitializerContainer.reset();
 
@@ -199,6 +202,7 @@ class tnlMeshInitializerLayer< ConfigTag,
            i < numberOfEntities;
            i++)
       {
+         cout << "Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
          EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
          entityInitializer.init( this->getMesh().template getEntity< DimensionsTraits::value >( i ), i );
          entityInitializer.initEntity( meshInitializer );
@@ -280,11 +284,11 @@ class tnlMeshInitializerLayer< ConfigTag,
            i < vertexContainer.getSize();
            i++ )
       {
+         cout << "Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
          VertexInitializerType& vertexInitializer = vertexInitializerContainer[ i ];
          vertexInitializer.init( vertexContainer[ i ], i );
          vertexInitializer.initEntity( meshInitializer );
       }
-
       vertexInitializerContainer.reset();
    }
 
