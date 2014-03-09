@@ -19,12 +19,15 @@
 #define TNLSTATICARRAYTESTER_H_
 
 #ifdef HAVE_CPPUNIT
+#include <sstream>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <core/arrays/tnlStaticArray.h>
+#include <core/arrays/tnlSharedArray.h>
+#include <core/arrays/tnlConstSharedArray.h>
 
 
 class testingClassForStaticArrayTester
@@ -64,6 +67,9 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &StaticArrayTester::testComparisonOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &StaticArrayTester::testAssignmentOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testLoadAndSave", &StaticArrayTester::testLoadAndSave ) );
+      suiteOfTests -> addTest( new TestCaller( "testSort", &StaticArrayTester::testSort ) );
+      suiteOfTests -> addTest( new TestCaller( "testStreamOperator", &StaticArrayTester::testStreamOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testBindToSharedArray", &StaticArrayTester::testBindToSharedArray ) );
       return suiteOfTests;
    }
 
@@ -168,6 +174,42 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       file.close();
 
       CPPUNIT_ASSERT( u1 == u2 );
+   }
+
+   void testSort()
+   {
+      tnlStaticArray< Size, ElementType > u;
+      for( int i = 0; i < Size; i++ )
+         u[ i ] = Size - i - 1;
+      u.sort();
+
+      for( int i = 0; i < Size; i++ )
+         CPPUNIT_ASSERT( u[ i ] == i );
+   }
+
+   void testStreamOperator()
+   {
+      tnlStaticArray< Size, ElementType > u;
+      stringstream testStream;
+      testStream << u;
+   }
+
+   void testBindToSharedArray()
+   {
+      tnlStaticArray< Size, ElementType > a;
+      for( int i = 0; i < Size; i++ )
+         a[ i ] = i+1;
+
+      tnlSharedArray< ElementType, tnlHost > sharedArray;
+      sharedArray.bind( a );
+      for( int i = 0; i < Size; i++ )
+         CPPUNIT_ASSERT( a[ i ] == sharedArray[ i ] );
+
+      tnlConstSharedArray< ElementType, tnlHost > constSharedArray;
+      constSharedArray.bind( a );
+      for( int i = 0; i < Size; i++ )
+         CPPUNIT_ASSERT( a[ i ] == constSharedArray[ i ] );
+
    }
 };
 

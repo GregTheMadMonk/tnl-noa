@@ -21,6 +21,7 @@
 #include <iostream>
 #include <core/tnlFile.h>
 #include <core/arrays/tnlArray.h>
+#include <core/arrays/tnlStaticArray.h>
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
@@ -69,9 +70,19 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: bind( tnlArray< Element, Device, Index >& array )
 {
-   this -> size = array. getSize();
-   this -> data = array. getData();
+   this->size = array. getSize();
+   this->data = array. getData();
 };
+
+template< typename Element,
+          typename Device,
+          typename Index >
+   template< int Size >
+void tnlSharedArray< Element, Device, Index >::bind( tnlStaticArray< Size, Element >& array )
+{
+   this->size = Size;
+   this->data = array.getData();
+}
 
 template< typename Element,
           typename Device,

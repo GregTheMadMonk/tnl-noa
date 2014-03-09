@@ -17,6 +17,7 @@
 
 #include <cstring>
 #include <string.h>
+#include <assert.h>
 #include <core/tnlString.h>
 #include <debug/tnlDebug.h>
 #include <core/tnlAssert.h>
@@ -389,7 +390,7 @@ bool tnlString :: getLine( istream& stream )
 int tnlString :: parse( tnlList< tnlString >& list, const char separator ) const
 {
    dbgFunctionName( "tnlString", "parse" );
-   list. EraseAll();
+   list.reset();
    tnlString copy( *this );
    int len = copy. getLength();
    for( int i = 0; i < len; i ++ )

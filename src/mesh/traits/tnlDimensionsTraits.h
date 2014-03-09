@@ -18,6 +18,8 @@
 #ifndef TNLDIMENSIONSTRAITS_H_
 #define TNLDIMENSIONSTRAITS_H_
 
+#include <core/tnlAssert.h>
+
 template< int Dimensions >
 class tnlDimensionsTraits
 {
@@ -26,7 +28,15 @@ class tnlDimensionsTraits
    enum { value = Dimensions };
 
    typedef tnlDimensionsTraits< Dimensions - 1 > Previous;
+
+   tnlStaticAssert( value >= 0, "The value of the dimensions cannot be negative." );
 };
 
+template<>
+class tnlDimensionsTraits< 0 >
+{
+   public:
+   enum { value = 0 };
+};
 
 #endif /* TNLDIMENSIONSTRAITS_H_ */

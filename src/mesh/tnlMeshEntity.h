@@ -18,6 +18,8 @@
 #ifndef TNLMESHENTITY_H_
 #define TNLMESHENTITY_H_
 
+#include <core/tnlFile.h>
+#include <mesh/tnlMeshEntityId.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/topologies/tnlMeshVertexTag.h>
@@ -28,9 +30,47 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshEntity
    : public tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >,
-     public tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >
+     public tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >,
+     public tnlMeshEntityId< typename ConfigTag::IdType,
+                             typename ConfigTag::GlobalIndexType >
 {
    public:
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlMesh< " ) +
+                        //ConfigTag::getType() + ", " +
+                        //EntityTag::getType() + ", " +
+                        " >";
+   }
+
+   tnlString getTypeVirtual() const
+   {
+      return this->getType();
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::save( file ) ||
+          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file ) const
+   {
+      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
+          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
+         return false;
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::print( str );
+      str << endl;
+      tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::print( str );
+   }
 
    /****
     * Entity typedefs
@@ -51,8 +91,10 @@ class tnlMeshEntity
                                         EntityTag,
                                         DimensionsTraits >      SubentityTraits;
       typedef typename SubentityTraits::ContainerType           ContainerType;
+      typedef typename SubentityTraits::SharedContainerType     SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
+
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
       enum { available = tnlMeshSubentityStorage< ConfigTag,
@@ -102,6 +144,22 @@ class tnlMeshEntity
                                                       localIndex );
       }
 
+   template< int Dimensions >
+      typename SubentitiesTraits< Dimensions >::SharedContainerType&
+         getSubentitiesIndices()
+   {
+      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+   }
+
+   template< int Dimensions >
+      const typename SubentitiesTraits< Dimensions >::SharedContainerType&
+         getSubentitiesIndices() const
+   {
+      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+   }
+
    /****
     * Superentities
     */
@@ -113,6 +171,7 @@ class tnlMeshEntity
                                           EntityTag,
                                           DimensionsTraits >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
+      typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
       // TODO: make this as:
@@ -164,35 +223,76 @@ class tnlMeshEntity
                                                        localIndex );
    }
 
+   template< int Dimensions >
+      typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
+   {
+      typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
+      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+   }
+
+   template< int Dimensions >
+      const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices() const
+   {
+      typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
+      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+   }
+
    /****
     * Vertices
     */
    enum { verticesCount = SubentitiesTraits< 0 >::subentitiesCount };
-   typedef typename SubentitiesTraits< 0 >::GlobalIndexType  VerticesGlobalIndexType;
-   typedef typename SubentitiesTraits< 0 >::LocalIndexType   VerticesLocalIndexType;
+   typedef typename SubentitiesTraits< 0 >::ContainerType        ContainerType;
+   typedef typename SubentitiesTraits< 0 >::SharedContainerType  SharedContainerType;
+   typedef typename SubentitiesTraits< 0 >::GlobalIndexType      GlobalIndexType;
+   typedef typename SubentitiesTraits< 0 >::LocalIndexType       LocalIndexType;
 
-   VerticesLocalIndexType getNumberOfVertices() const
+   LocalIndexType getNumberOfVertices() const
    {
       return verticesCount;
    }
 
-   void setVertexIndex( const VerticesLocalIndexType localIndex,
-                        const VerticesGlobalIndexType globalIndex )
+   void setVertexIndex( const LocalIndexType localIndex,
+                        const GlobalIndexType globalIndex )
    {
       this->setSubentityIndex< 0 >( localIndex, globalIndex  );
    }
 
-   VerticesGlobalIndexType getVertexIndex( const VerticesLocalIndexType localIndex )
+   GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const
    {
       return this->getSubentityIndex< 0 >( localIndex  );
+   }
+
+   SharedContainerType& getVerticesIndices()
+   {
+      return this->getSubentitiesIndices< 0 >();
+   }
+
+   const SharedContainerType& getVerticesIndices() const
+   {
+      return this->getSubentitiesIndices< 0 >();
    }
 };
 
 template< typename ConfigTag >
 class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
-   : public tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >
+   : public tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >,
+     public tnlMeshEntityId< typename ConfigTag::IdType,
+                             typename ConfigTag::GlobalIndexType >
 {
    public:
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlMesh< " ) +
+                        //ConfigTag::getType() + ", " +
+                        //EntityTag::getType() + ", " +
+                        " >";
+   }
+
+   tnlString getTypeVirtual() const
+   {
+      return this->getType();
+   }
 
    /****
     * The entity typedefs
@@ -202,6 +302,28 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::save( file ) ||
+          ! point.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file ) const
+   {
+      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+          ! point.load( file ) )
+         return false;
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      str << point;
+      tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::print( str );
+   }
 
    /****
     * Superentities
@@ -214,6 +336,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
                                           tnlMeshVertexTag,
                                           DimensionsTraits >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
+      typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
       // TODO: make this as:
@@ -237,6 +360,20 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    {
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
       return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTraits< Dimensions >() );
+   }
+
+   template< int Dimensions >
+      typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
+   {
+      typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+   }
+
+   template< int Dimensions >
+      const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndeces() const
+   {
+      typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
    }
 
    template< int Dimensions >
@@ -275,6 +412,14 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
    PointType point;
 };
+
+template< typename ConfigTag,
+          typename EntityTag >
+ostream& operator <<( ostream& str, const tnlMeshEntity< ConfigTag, EntityTag >& entity )
+{
+   entity.print( str );
+   return str;
+}
 
 
 #endif /* TNLMESHENTITY_H_ */

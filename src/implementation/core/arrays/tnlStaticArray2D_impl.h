@@ -78,6 +78,33 @@ tnlString tnlStaticArray< 2, Element >::getType()
           tnlString( " >" );
 }
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< typename Element >
+int tnlStaticArray< 2, Element >::getSize() const
+{
+   return size;
+}
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< typename Element >
+Element* tnlStaticArray< 2, Element >::getData()
+{
+   return data;
+}
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< typename Element >
+const Element* tnlStaticArray< 2, Element >::getData() const
+{
+   return data;
+}
+
 template< typename Element >
 #ifdef HAVE_CUDA
 __host__ __device__
@@ -193,6 +220,13 @@ bool tnlStaticArray< 2, Element >::load( tnlFile& file)
       return false;
    }
    return true;
+}
+
+template< typename Element >
+void tnlStaticArray< 2, Element >::sort()
+{
+   if( data[ 0 ] > data[ 1 ] )
+      Swap( data[ 0 ], data[ 1 ] );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

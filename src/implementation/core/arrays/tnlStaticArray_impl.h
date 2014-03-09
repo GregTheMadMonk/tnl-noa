@@ -68,6 +68,33 @@ tnlString tnlStaticArray< Size, Element >::getType()
           tnlString( " >" );
 }
 
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+int tnlStaticArray< Size, Element >::getSize() const
+{
+   return size;
+}
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+Element* tnlStaticArray< Size, Element >::getData()
+{
+   return data;
+}
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+template< int Size, typename Element >
+const Element* tnlStaticArray< Size, Element >::getData() const
+{
+   return data;
+}
+
 template< int Size, typename Element >
 #ifdef HAVE_CUDA
 __host__ __device__
@@ -153,10 +180,26 @@ bool tnlStaticArray< Size, Element >::load( tnlFile& file)
 }
 
 template< int Size, typename Element >
+void tnlStaticArray< Size, Element >::sort()
+{
+   /****
+    * We assume that the array data is small and so
+    * may sort it with the bubble sort.
+    */
+   for( int k = Size - 1; k > 0; k--)
+      for( int i = 0; i < k; i++ )
+         if( data[ i ] > data[ i+1 ] )
+            Swap( data[ i ], data[ i+1 ] );
+}
+
+
+template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 {
    for( int i = 0; i < Size - 1; i ++ )
+   {
       str << a[ i ] << ", ";
+   }
    str << a[ Size - 1 ];
    return str;
 };

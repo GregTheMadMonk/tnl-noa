@@ -35,24 +35,38 @@ class tnlMeshSuperentitiesTraits
                                                       EntityTag,
                                                       DimensionsTraits::value >::enabled };
 
-   typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
-   typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
+   typedef typename ConfigTag::GlobalIndexType                              GlobalIndexType;
+   typedef typename ConfigTag::LocalIndexType                               LocalIndexType;
 
    public:
 
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                   EntityType;
+   typedef tnlMeshEntity< ConfigTag, EntityTag >                            EntityType;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Tag               SuperentityTag;
+                             DimensionsTraits >::Tag                        SuperentityTag;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Type              SuperentityType;
+                             DimensionsTraits >::Type                       SuperentityType;
 
-   typedef tnlStorageTraits< storageEnabled >                      SuperentityStorageTag;
+   typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
 
-   typedef tnlArray<GlobalIndexType, tnlHost, LocalIndexType>               ContainerType;
-   typedef tnlList<GlobalIndexType>                                GrowableContainerType;
-   typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  SharedArrayType;
+   /****
+    * Type of container for storing of the superentities indecis.
+    */
+   typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             ContainerType;
+
+   /****
+    * Type for passing the superentities indecis by the getSuperentitiesIndices()
+    * method. We introduce it because of the compatibility with the subentities
+    * which are usually stored in static array.
+    */
+   typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       SharedContainerType;
+
+   /****
+    * This is used by the mesh initializer.
+    */
+   typedef tnlList< GlobalIndexType >                                       GrowableContainerType;
+
 };
 
 

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlMeshEntitiesTag.h  -  description
+                          tnlMeshTest.cpp  -  description
                              -------------------
-    begin                : Feb 13, 2014
+    begin                : Feb 18, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,30 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHENTITIESTAG_H_
-#define TNLMESHENTITIESTAG_H_
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
+#include <cstdlib>
 
-#include <mesh/topologies/tnlMeshEntityTopology.h>
-#include <mesh/traits/tnlMeshTraits.h>
+#include "tnlMeshTester.h"
+#include "../tnlUnitTestStarter.h"
 
-template< typename ConfigTag,
-          typename DimensionsTraits >
-class tnlMeshEntitiesTag
+int main( int argc, char* argv[] )
 {
-   public:
-
-   typedef typename tnlSubentities< typename ConfigTag::CellTag,
-                                    DimensionsTraits::value >::Tag Tag;
-};
-
-template< typename ConfigTag >
-class tnlMeshEntitiesTag< ConfigTag,
-                          typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
-{
-   public:
-
-   typedef typename ConfigTag::CellTag Tag;
-};
+#ifdef HAVE_CPPUNIT
+   //tnlMeshTester< double, tnlHost, long int > t;
+   //t.twoTrianglesTest();
+   if( ! tnlUnitTestStarter :: run< tnlMeshTester< double, tnlHost, long int > >()
+       )
+     return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
+}
 
 
-#endif /* TNLMESHENTITIESTAG_H_ */

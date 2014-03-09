@@ -155,6 +155,9 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       edgeEntities[ 1 ].setVertexIndex( 1, 2 );
       edgeEntities[ 2 ].setVertexIndex( 0, 2 );
       edgeEntities[ 2 ].setVertexIndex( 1, 0 );
+      edgeEntities[ 0 ].setId( 0 );
+      edgeEntities[ 1 ].setId( 1 );
+      edgeEntities[ 2 ].setId( 2 );
 
       CPPUNIT_ASSERT( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 0 ) ].getPoint() == point0 );
       CPPUNIT_ASSERT( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 1 ) ].getPoint() == point1 );

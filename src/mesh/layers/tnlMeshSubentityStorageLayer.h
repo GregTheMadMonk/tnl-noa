@@ -18,6 +18,7 @@
 #ifndef TNLMESHSUBENTITYSTORAGELAYER_H_
 #define TNLMESHSUBENTITYSTORAGELAYER_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshSubentitiesTraits.h>
@@ -63,15 +64,52 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    protected:
 
-   typedef typename SubentityTraits::ContainerType    ContainerType;
-   typedef typename ContainerType::ElementType        GlobalIndexType;
-   typedef int                                        LocalIndexType;
+   typedef typename SubentityTraits::ContainerType        ContainerType;
+   typedef typename SubentityTraits::SharedContainerType  SharedContainerType;
+   typedef typename ContainerType::ElementType            GlobalIndexType;
+   typedef int                                            LocalIndexType;
+
+   tnlMeshSubentityStorageLayer()
+   {
+      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
+   }
+
+   tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
+   {
+      this->subentitiesIndices = layer.subentitiesIndices;
+      return *this;
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! this->subentitiesIndices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! this->subentitiesIndices.load( file ) )
+         return false;
+      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      BaseType::print( str );
+      str << endl;
+      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << subentitiesIndices << ".";
+   }
 
    /****
     * Make visible setters and getters of the lower subentities
     */
    using BaseType::getSubentityIndex;
    using BaseType::setSubentityIndex;
+   using BaseType::getSubentitiesIndices;
 
    /****
     * Define setter/getter for the current level of the subentities
@@ -80,17 +118,32 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
-      this->subentitiesIndecis[ localIndex ] = globalIndex;
+      this->subentitiesIndices[ localIndex ] = globalIndex;
    }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const
    {
-      return this->subentitiesIndecis[ localIndex ];
+      return this->subentitiesIndices[ localIndex ];
+   }
+
+   SharedContainerType& getSubentitiesIndices( DimensionsTraits )
+   {
+      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
+      return this->sharedSubentitiesIndices;
+   }
+
+   const SharedContainerType& getSubentitiesIndices( DimensionsTraits ) const
+   {
+      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
+      return this->sharedSubentitiesIndices;
    }
 
    private:
-   ContainerType subentitiesIndecis;
+   ContainerType subentitiesIndices;
+
+   SharedContainerType sharedSubentitiesIndices;
+
 };
 
 
@@ -124,23 +177,70 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    protected:
 
    typedef typename SubentityTraits::ContainerType             ContainerType;
+   typedef typename SubentityTraits::SharedContainerType       SharedContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
+
+   tnlMeshSubentityStorageLayer()
+   {
+      this->sharedVerticesIndices.bind( this->verticesIndices );
+   }
+
+   tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
+   {
+      this->verticesIndices = layer.verticesIndices;
+      return *this;
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! this->subentitiesVertices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! this->subentitiesVertices.load( file ) )
+         return false;
+      this->sharedVerticesIndices.bind( this->verticesIndices );
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->verticesIndices << ".";
+   }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
                                       const LocalIndexType localIndex ) const
    {
-      return this->subentityVertices[ localIndex ];
+      return this->verticesIndices[ localIndex ];
    }
    void setSubentityIndex( DimensionsTraits,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
-      this->subentityVertices[ localIndex ] = globalIndex;
+      this->verticesIndices[ localIndex ] = globalIndex;
+   }
+
+   SharedContainerType& getSubentitiesIndices( DimensionsTraits )
+   {
+      tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
+      return this->sharedVerticesIndices;
+   }
+
+   const SharedContainerType& getSubentitiesIndices( DimensionsTraits ) const
+   {
+      tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
+      return this->sharedVerticesIndices;
    }
 
    private:
-   ContainerType subentityVertices;
+
+   ContainerType verticesIndices;
+
+   SharedContainerType sharedVerticesIndices;
 };
 
 template< typename ConfigTag,

@@ -104,7 +104,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    //! Erase the curve
    void Erase()
    {
-      tnlList< tnlCurveElement< T > > :: EraseAll();
+      tnlList< tnlCurveElement< T > >::reset();
    };
    
    //! Method for saving the object to a file as a binary data

@@ -165,7 +165,7 @@ bool getObjectType( const tnlString& fileName, tnlString& type )
 bool parseObjectType( const tnlString& objectType,
                       tnlList< tnlString >& parsedObjectType )
 {
-   parsedObjectType. EraseAll();
+   parsedObjectType.reset();
    int objectTypeLength = objectType. getLength();
    int i = 0;
    /****

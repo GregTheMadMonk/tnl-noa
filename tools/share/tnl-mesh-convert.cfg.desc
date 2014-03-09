@@ -1,0 +1,11 @@
+group IO
+{
+   string output-file( "mesh.tnl" ) [Output binary file in TNL format.];
+   integer verbose(1)               [Set the verbosity of the program.];
+},[Arguments describing input and output data.];
+
+group Mesh
+{
+   string input-mesh-file           [Input file with the mesh.];
+   string mesh-name( "tnl-mesh" )   [The mesh name.]; 
+},[The mesh description.];

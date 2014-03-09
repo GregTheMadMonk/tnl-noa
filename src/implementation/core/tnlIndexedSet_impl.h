@@ -21,7 +21,7 @@
 template< typename Element,
           typename Index,
           typename Key >
-void tnlIndexedSet< Element, Index, Key >::void reset()
+void tnlIndexedSet< Element, Index, Key >::reset()
 {
    map.clear();
 }
@@ -60,7 +60,7 @@ template< typename Element,
           typename Index,
           typename Key >
    template<typename ArrayType>
-void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType &array ) const
+void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
 {
    tnlAssert( array.getSize() == getSize(),
               cerr << "array.getSize() = " << array.getSize()
@@ -72,6 +72,44 @@ void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType &array ) const
       array[ iter->second.index ] = iter->second.data;
 }
 
+template< typename Element,
+          typename Index,
+          typename Key >
+const Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key ) const
+{
+   return map[ key ];
+}
 
+template< typename Element,
+          typename Index,
+          typename Key >
+Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key )
+{
+   return map[ key ];
+}
+
+template< typename Element,
+          typename Index,
+          typename Key >
+void tnlIndexedSet< Element, Index, Key >::print( ostream& str ) const
+{
+   STDMapIteratorType iter = map.begin();
+   str << iter->second.data;
+   iter++;
+   while( iter != map.end() )
+   {
+      str << ", " << iter->second.data;
+      iter++;
+   }
+}
+
+template< typename Element,
+          typename Index,
+          typename Key >
+ostream& operator<<( ostream& str, tnlIndexedSet< Element, Index, Key >& set )
+{
+   set.print( str );
+   return str;
+}
 
 #endif /* TNLINDEXEDSET_IMPL_H_ */

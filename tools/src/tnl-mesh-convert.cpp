@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlMeshEntitiesTag.h  -  description
+                          tnl-mesh-convert.cpp  -  description
                              -------------------
-    begin                : Feb 13, 2014
+    begin                : Feb 19, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,30 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHENTITIESTAG_H_
-#define TNLMESHENTITIESTAG_H_
+#include "tnl-mesh-convert.h"
+#include "tnlConfig.h"
+#include <config/tnlParameterContainer.h>
 
-#include <mesh/topologies/tnlMeshEntityTopology.h>
-#include <mesh/traits/tnlMeshTraits.h>
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-mesh-convert.cfg.desc";
 
-template< typename ConfigTag,
-          typename DimensionsTraits >
-class tnlMeshEntitiesTag
+int main( int argc, char* argv[] )
 {
-   public:
+   tnlParameterContainer parameters;
+   tnlConfigDescription conf_desc;
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+      return EXIT_FAILURE;
+   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   {
+      conf_desc. PrintUsage( argv[ 0 ] );
+      return EXIT_FAILURE;
+   }
+   if( ! convertMesh( parameters ) )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
 
-   typedef typename tnlSubentities< typename ConfigTag::CellTag,
-                                    DimensionsTraits::value >::Tag Tag;
-};
 
-template< typename ConfigTag >
-class tnlMeshEntitiesTag< ConfigTag,
-                          typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
-{
-   public:
-
-   typedef typename ConfigTag::CellTag Tag;
-};
-
-
-#endif /* TNLMESHENTITIESTAG_H_ */

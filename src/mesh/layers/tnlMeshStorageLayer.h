@@ -18,6 +18,7 @@
 #ifndef TNLMESHSTORAGELAYER_H_
 #define TNLMESHSTORAGELAYER_H_
 
+#include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
@@ -39,7 +40,7 @@ class tnlMeshStorageLayer;
 template< typename ConfigTag >
 class tnlMeshStorageLayers
    : public tnlMeshStorageLayer< ConfigTag,
-                                 typename tnlMeshTraits< ConfigTag >::DimensionTag >
+                                 typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
 {};
 
 
@@ -55,7 +56,7 @@ class tnlMeshStorageLayer< ConfigTag,
 
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
    typedef typename Tag::ContainerType                                  ContainerType;
-   //typedef typename Tag::SharedArrayType                              SharedArrayType;
+   typedef typename Tag::SharedContainerType                            SharedContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
    typedef typename ContainerType::ElementType                          EntityType;
 
@@ -65,13 +66,23 @@ class tnlMeshStorageLayer< ConfigTag,
    using BaseType::getNumberOfEntities;
    using BaseType::setEntity;
    using BaseType::getEntity;
+   using BaseType::getEntities;
 
-   bool setNumberOfEntities( const GlobalIndexType size )
+   tnlMeshStorageLayer()
    {
-      return this->entities.setSize( size );
+      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::entities" );
+      this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
    }
 
-   GlobalIndexType getNumberOfEntities() const
+   bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
+   {
+      if( ! this->entities.setSize( size ) )
+         return false;
+      this->sharedEntities.bind( this->entities );
+      return true;
+   }
+
+   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
    {
       return this->entities.getSize();
    }
@@ -86,17 +97,58 @@ class tnlMeshStorageLayer< ConfigTag,
    EntityType& getEntity( DimensionsTraits,
                           const GlobalIndexType entityIndex )
    {
-      return this->entities.getElement( entityIndex );
+      return this->entities[ entityIndex ];
    }
 
    const EntityType& getEntity( DimensionsTraits,
                                 const GlobalIndexType entityIndex ) const
    {
-      return this->entities.getElement( entityIndex );
+      return this->entities[ entityIndex ];
    }
 
-   private:
+   SharedContainerType& getEntities( DimensionsTraits )
+   {
+      return this->sharedEntities;
+   }
+
+   const SharedContainerType& getEntities( DimensionsTraits ) const
+   {
+      return this->sharedEntities;
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! this->entities.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! this->entities.load( file ) )
+         return false;
+      this->sharedEntities.bind( this->entities );
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      BaseType::print( str );
+      str << "The entities with " << DimensionsTraits::value << " dimensions are: " << endl;
+      for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
+      {
+         str << i << " ";
+         entities[ i ].print( str );
+         str << endl;
+      }
+   }
+
+   protected:
    ContainerType entities;
+
+   SharedContainerType sharedEntities;
 };
 
 template< typename ConfigTag,
@@ -116,17 +168,29 @@ class tnlMeshStorageLayer< ConfigTag,
 {
    typedef tnlDimensionsTraits< 0 >                        DimensionsTraits;
 
-   typedef tnlMeshEntitiesTraits<ConfigTag, DimensionTag>  Tag;
+   typedef tnlMeshEntitiesTraits< ConfigTag,
+                                  DimensionsTraits >       Tag;
    typedef typename Tag::ContainerType                     ContainerType;
+   typedef typename Tag::SharedContainerType               SharedContainerType;
    typedef typename ContainerType::IndexType               GlobalIndexType;
    typedef typename ContainerType::ElementType             VertexType;
-   //typedef typename Tag::SharedArrayType                 SharedArrayType;
+   typedef typename VertexType::PointType                  PointType;
 
    protected:
 
+   tnlMeshStorageLayer()
+   {
+      this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
+      this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
+   }
+
+
    bool setNumberOfVertices( const GlobalIndexType size )
    {
-      return this->vertices.setSize( size );
+      if( ! this->vertices.setSize( size ) )
+         return false;
+      this->sharedVertices.bind( this->vertices );
+      return true;
    }
 
    GlobalIndexType getNumberOfVertices() const
@@ -142,17 +206,90 @@ class tnlMeshStorageLayer< ConfigTag,
 
    VertexType& getVertex( const GlobalIndexType vertexIndex )
    {
-      return this->vertices.getElement( vertexIndex );
+      return this->vertices[ vertexIndex ];
    }
 
-   const VertexType& getEntity( const GlobalIndexType vertexIndex ) const
+   const VertexType& getVertex( const GlobalIndexType vertexIndex ) const
    {
-      return this->vertices.getElement( vertexIndex );
+      return this->vertices[ vertexIndex ];
+   }
+
+
+   void setVertex( const GlobalIndexType vertexIndex,
+                   const PointType& point )
+   {
+      this->vertices[ vertexIndex ].setPoint( point );
+   }
+
+   /****
+    * This is only for the completeness and compatibility
+    * with higher dimensions entities storage layers.
+    */
+   bool setNumberOfEntities( DimensionsTraits,
+                             const GlobalIndexType size )
+   {
+      return this->vertices.setSize( size );
+   }
+
+   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
+   {
+      return this->vertices.getSize();
+   }
+
+   void setEntity( DimensionsTraits,
+                   const GlobalIndexType entityIndex,
+                   const VertexType& entity ) const
+   {
+      this->vertices.setElement( entityIndex, entity );
+   }
+
+   const VertexType& getEntity( DimensionsTraits,
+                                const GlobalIndexType entityIndex ) const
+   {
+      return this->vertices.getElement( entityIndex );
+   }
+
+   SharedContainerType& getEntities( DimensionsTraits )
+   {
+      return this->sharedVertices;
+   }
+
+   const SharedContainerType& getEntities( DimensionsTraits ) const
+   {
+      return this->sharedVertices;
+   }
+
+   bool save( tnlFile& file ) const
+   {
+      if( ! this->vertices.save( file ) )
+         return false;
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      if( ! this->vertices.load( file ) )
+         return false;
+      this->sharedVertices.bind( this->vertices );
+      return true;
+   }
+
+   void print( ostream& str ) const
+   {
+      str << "The mesh vertices are: " << endl;
+      for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
+      {
+         str << i << " \t ( ";
+         vertices[ i ].print( str );
+         str << " ) " << endl;
+      }
    }
 
    private:
 
    ContainerType vertices;
+
+   SharedContainerType sharedVertices;
 };
 
 /****
@@ -161,13 +298,12 @@ class tnlMeshStorageLayer< ConfigTag,
 template< typename ConfigTag >
 class tnlMeshStorageLayer< ConfigTag,
                            tnlDimensionsTraits< 0 >,
-                           tnlStorageTag< false > >
+                           tnlStorageTraits< false > >
 {
    protected:
+
+   void setNumberOfEntities();
 };
-
-
-
 
 
 #endif /* TNLMESHSTORAGELAYER_H_ */

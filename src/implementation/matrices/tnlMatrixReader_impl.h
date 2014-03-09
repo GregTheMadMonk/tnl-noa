@@ -213,7 +213,7 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
          return false;
       }
 
-      parsedLine. EraseAll();
+      parsedLine.reset();
       line. parse( parsedLine );
       if( parsedLine. getSize() != 3 )
       {

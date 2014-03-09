@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlMeshEntitiesTag.h  -  description
+                          tnlMeshEntityId.h  -  description
                              -------------------
-    begin                : Feb 13, 2014
+    begin                : Feb 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,30 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHENTITIESTAG_H_
-#define TNLMESHENTITIESTAG_H_
+#ifndef TNLMESHENTITYID_H_
+#define TNLMESHENTITYID_H_
 
-#include <mesh/topologies/tnlMeshEntityTopology.h>
-#include <mesh/traits/tnlMeshTraits.h>
-
-template< typename ConfigTag,
-          typename DimensionsTraits >
-class tnlMeshEntitiesTag
+template< typename IDType,
+          typename GlobalIndexType >
+class tnlMeshEntityId
 {
    public:
 
-   typedef typename tnlSubentities< typename ConfigTag::CellTag,
-                                    DimensionsTraits::value >::Tag Tag;
+   tnlMeshEntityId()
+      : id( -1 )
+   {}
+
+   const IDType &getId() const
+   {
+      tnlAssert( this->id >= 0, );
+      return this->id;
+   }
+
+   void setId( GlobalIndexType id )
+   {
+      this->id = id;
+   }
+
+   protected:
+   IDType id;
 };
 
-template< typename ConfigTag >
-class tnlMeshEntitiesTag< ConfigTag,
-                          typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
+template< typename GlobalIndexType >
+class tnlMeshEntityId< void, GlobalIndexType >
 {
    public:
-
-   typedef typename ConfigTag::CellTag Tag;
+   void setId( GlobalIndexType )
+   {}
 };
 
 
-#endif /* TNLMESHENTITIESTAG_H_ */
+#endif /* TNLMESHENTITYID_H_ */

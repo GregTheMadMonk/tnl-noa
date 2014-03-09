@@ -21,7 +21,6 @@
 #include <core/tnlString.h>
 #include <core/mfuncs.h>
 
-//--------------------------------------------------------------------------
 void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
@@ -42,11 +41,21 @@ void FileNameBaseNumberEnding( const char* base_name,
    file_name += snumber;
    file_name += ending;
 }
-//--------------------------------------------------------------------------
-void RemoveFileExtension( tnlString& file_name )
+
+tnlString getFileExtension( const tnlString fileName )
 {
-   int size = file_name. getLength();
+   int size = fileName. getLength();
    int i = 1;
-   while( file_name. getString()[ size - i ] != '.' && size > i  ) i ++ ;
-   file_name. setString( file_name. getString(), 0, i );
+   while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
+   tnlString result;
+   result.setString( fileName. getString(), size - i + 1 );
+   return result;
+}
+
+void RemoveFileExtension( tnlString& fileName )
+{
+   int size = fileName. getLength();
+   int i = 1;
+   while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
+   fileName. setString( fileName. getString(), 0, i );
 }

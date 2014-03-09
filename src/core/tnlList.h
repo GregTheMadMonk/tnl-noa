@@ -18,7 +18,7 @@
 #ifndef mListH
 #define mListH
 
-#include <assert.h>
+#include <core/tnlAssert.h>
 #include <stdlib.h>
 #include <iostream>
 #include <core/tnlDataElement.h>
@@ -66,6 +66,8 @@ template< class T > class tnlList
    mutable int index;
 
    public:
+   typedef T ElementType;
+
    //! Basic constructor
    tnlList() 
       : first( 0 ),
@@ -86,7 +88,7 @@ template< class T > class tnlList
    };
 
    //! Destructor
-   ~tnlList() { EraseAll(); };
+   ~tnlList() { reset(); };
 
    //! If the list is empty return 'true'
    bool isEmpty() const { return ! size; };
@@ -97,7 +99,7 @@ template< class T > class tnlList
    //! Indexing operator
    T& operator[] ( int ind )
    {
-      assert( ind < size );
+      tnlAssert( ind < size, );
       //if( ! size ) return NULL;
       // find fastest way to element with index i
       // we can use iterator as it is set now or
@@ -140,7 +142,7 @@ template< class T > class tnlList
             iterator = iterator -> Next();
             index ++;
          }
-         assert( iterator );
+         tnlAssert( iterator, );
       }
       return iterator -> Data();
    };
@@ -162,7 +164,7 @@ template< class T > class tnlList
    {
       if( ! first )
       {
-         assert( ! last );
+         tnlAssert( ! last, );
          first = last = new tnlDataElement< T >( data );
          if( ! first ) return false;
       }
@@ -170,7 +172,7 @@ template< class T > class tnlList
       {
          tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, last, 0 );
          if( ! new_element ) return false;
-         assert( last );
+         tnlAssert( last, );
          last = last -> Next() = new_element;
       }
       size ++;
@@ -182,7 +184,7 @@ template< class T > class tnlList
    {
       if( ! first )
       {
-         assert( ! last );
+         tnlAssert( ! last, );
          first = last = new tnlDataElement< T >( data );
          if( ! first ) return false;
       }
@@ -200,7 +202,7 @@ template< class T > class tnlList
    //! Insert new data element at given position
    bool Insert( const T& data, int ind )
    {
-      assert( ind <= size || ! size );
+      tnlAssert( ind <= size || ! size, );
       if( ind == 0 ) return Prepend( data );
       if( ind == size ) return Append( data );
       operator[]( ind );
@@ -237,6 +239,16 @@ template< class T > class tnlList
       return true;
    };
 
+   template< typename Array >
+   void toArray( Array& array )
+   {
+      tnlAssert( this->getSize() <= array.getSize(),
+                 cerr << "this->getSize() = " << this->getSize()
+                      << " array.getSize() = " << array.getSize() << endl; );
+      for( int i = 0; i < this->getSize(); i++ )
+         array[ i ] = ( *this )[ i ];
+   }
+
    //! Erase data element at given position
    void Erase( int ind )
    {
@@ -267,13 +279,13 @@ template< class T > class tnlList
    };
 
    //! Erase all data elements
-   void EraseAll()
+   void reset()
    {
       iterator = first;
       tnlDataElement< T >* tmp_it;
       while( iterator )
       {
-    	   assert( iterator );
+    	   tnlAssert( iterator, );
          tmp_it = iterator;
          iterator = iterator -> Next();
          delete tmp_it;
@@ -354,7 +366,7 @@ template< class T > class tnlList
       }
       return true;
 #else
-      EraseAll();
+      reset();
       int _size;
       file. read( &_size, 1 );
       if( _size < 0 )
@@ -393,7 +405,7 @@ template< class T > class tnlList
       }
       return true;
 #else
-      EraseAll();
+      reset();
       int _size;
       file. read( &_size );
       if( _size < 0 )

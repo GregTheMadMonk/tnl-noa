@@ -42,14 +42,17 @@ class tnlMeshEntityKey
 
    explicit tnlMeshEntityKey( const EntityType& entity )
    {
-      vertexIDs.copy( entity.template subentityIndices<0>() );
+      for( typename ContainerType::IndexType i = 0; 
+           i < ContainerType::size;
+           i++ )
+         vertexIDs[ i ] = entity.template getSubentityIndex<0>( i );
       vertexIDs.sort( );
    }
 
    bool operator<( const tnlMeshEntityKey& other ) const
    {
       for( typename ContainerType::IndexType i = 0;
-           i < vertexIDs.getSize();
+           i < ContainerType::size;
            i++)
       {
          if( vertexIDs[ i ] < other.vertexIDs[ i ] )

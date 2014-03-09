@@ -26,6 +26,8 @@ void FileNameBaseNumberEnding( const char* base_name,
                                const char* ending,
                                tnlString& file_name );
 
+tnlString getFileExtension( const tnlString fileName );
+
 void RemoveFileExtension( tnlString& file_name );
 
 #endif

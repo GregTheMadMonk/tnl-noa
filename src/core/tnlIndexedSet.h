@@ -37,33 +37,44 @@ class tnlIndexedSet
 
    IndexType getSize() const;
 
-   IndexType insert( const DataType &data );
+   IndexType insert( const ElementType &data );
 
-   IndexType find( const DataType &data ) const;
+   bool find( const ElementType &data, IndexType& index ) const;
 
-   template<typename ArrayType>
-   void toArray(ArrayType &array) const;
+   template< typename ArrayType >
+   void toArray( ArrayType& array ) const;
+
+   const Element& getElement( KeyType key ) const;
+
+   Element& getElement( KeyType key );
+
+   void print( ostream& str ) const;
 
    protected:
 
    struct DataWithIndex
    {
-      explicit DataWithIndex( const Element data) : m_data(data) {}
+      explicit DataWithIndex( const Element data) : data( data ) {}
 
       DataWithIndex( const Element data,
-                     const Index index) : m_data(data), m_index(index) {}
+                     const Index index) : data(data), index(index) {}
 
       Element data;
       Index index;
    };
 
-   typedef std::map<Key, DataWithIndex>        STDMapType;
+   typedef std::map< Key, DataWithIndex >      STDMapType;
    typedef typename STDMapType::value_type     STDMapValueType;
    typedef typename STDMapType::const_iterator STDMapIteratorType;
 
    STDMapType map;
 
 };
+
+template< typename Element,
+          typename Index,
+          typename Key >
+ostream& operator <<( ostream& str, tnlIndexedSet< Element, Index, Key >& set );
 
 #include <implementation/core/tnlIndexedSet_impl.h>
 

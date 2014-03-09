@@ -17,6 +17,7 @@ set (headers tnlAssert.h
    		    tnlLogger.h 
    		    tnlObject.h 
    		    tnlStack.h
+   		    tnlStaticFor.h
    		    tnlStatistics.h 
    		    tnlString.h 
    		    tnlReal.h

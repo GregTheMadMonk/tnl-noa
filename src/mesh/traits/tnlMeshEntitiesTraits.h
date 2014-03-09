@@ -20,6 +20,7 @@
 
 #include <core/arrays/tnlArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
+#include <core/tnlIndexedSet.h>
 #include <mesh/traits/tnlMeshEntitiesTag.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/tnlMeshEntityKey.h>
@@ -44,10 +45,11 @@ class tnlMeshEntitiesTraits
 
    typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
 
-   typedef tnlArray< Type, GlobalIndexType >                      ContainerType;
-   //typedef IndexedSet< Type, GlobalIndexType, Key >             UniqueContainerType;
+   typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
+   typedef tnlSharedArray< Type, tnlHost, GlobalIndexType >       SharedContainerType;
+   typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
 
-   typedef tnlConstSharedArray< Type, GlobalIndexType >           SharedArrayType;
+   typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
 };
 
 

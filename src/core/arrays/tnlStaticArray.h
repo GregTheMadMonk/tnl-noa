@@ -30,6 +30,7 @@ class tnlStaticArray
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = Size };
 
 #ifdef HAVE_CUDA
@@ -59,6 +60,21 @@ class tnlStaticArray
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
+   int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
    const Element& operator[]( int i ) const;
 
 #ifdef HAVE_CUDA
@@ -81,6 +97,8 @@ class tnlStaticArray
 
    bool load( tnlFile& file);
 
+   void sort();
+
    protected:
    Element data[ Size ];
 
@@ -91,6 +109,7 @@ class tnlStaticArray< 1, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 1 };
 
 #ifdef HAVE_CUDA
@@ -115,6 +134,21 @@ class tnlStaticArray< 1, Element >
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -153,6 +187,8 @@ class tnlStaticArray< 1, Element >
 
    bool load( tnlFile& file);
 
+   void sort();
+
    protected:
    Element data[ size ];
 };
@@ -162,6 +198,7 @@ class tnlStaticArray< 2, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 2 };
 
 #ifdef HAVE_CUDA
@@ -192,6 +229,21 @@ class tnlStaticArray< 2, Element >
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -242,6 +294,8 @@ class tnlStaticArray< 2, Element >
 
    bool load( tnlFile& file);
 
+   void sort();
+
    protected:
    Element data[ size ];
 };
@@ -251,6 +305,7 @@ class tnlStaticArray< 3, Element >
 {
    public:
    typedef Element ElementType;
+   typedef int     IndexType;
    enum { size = 3 };
 
 #ifdef HAVE_CUDA
@@ -281,6 +336,21 @@ class tnlStaticArray< 3, Element >
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   int getSize() const;
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   Element* getData();
+
+#ifdef HAVE_CUDA
+   __host__ __device__
+#endif
+   const Element* getData() const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -342,6 +412,8 @@ class tnlStaticArray< 3, Element >
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file);
+
+   void sort();
 
    protected:
    Element data[ size ];
