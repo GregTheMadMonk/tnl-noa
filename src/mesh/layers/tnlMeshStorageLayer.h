@@ -68,6 +68,12 @@ class tnlMeshStorageLayer< ConfigTag,
    using BaseType::getEntity;
    using BaseType::getEntities;
 
+   tnlMeshStorageLayer()
+   {
+      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::entities" );
+      this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
+   }
+
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
       if( ! this->entities.setSize( size ) )
@@ -171,6 +177,13 @@ class tnlMeshStorageLayer< ConfigTag,
    typedef typename VertexType::PointType                  PointType;
 
    protected:
+
+   tnlMeshStorageLayer()
+   {
+      this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
+      this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
+   }
+
 
    bool setNumberOfVertices( const GlobalIndexType size )
    {

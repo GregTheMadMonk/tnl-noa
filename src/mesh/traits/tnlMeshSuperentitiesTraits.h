@@ -56,7 +56,7 @@ class tnlMeshSuperentitiesTraits
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             ContainerType;
 
    /****
-    * Type for passing the superentities indecis by the getSuperentitiesIndecis()
+    * Type for passing the superentities indecis by the getSuperentitiesIndices()
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */

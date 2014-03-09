@@ -68,26 +68,6 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    typedef typename ContainerType::ElementType          GlobalIndexType;
    typedef int                                          LocalIndexType;
 
-   bool save( tnlFile& file ) const
-   {
-      if( ! BaseType::save( file ) ||
-          ! this->superentitiesIndices.save( file ) )
-         return false;
-      return true;
-   }
-
-   bool load( tnlFile& file )
-   {
-      if( ! BaseType::load( file ) ||
-          ! this->superentitiesIndices.load( file ) )
-         return false;
-      return true;
-   }
-
-   void print( ostream& str ) const
-   {
-   }
-
    /****
      * Make visible setters and getters of the lower superentities
      */
@@ -97,6 +77,17 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     using BaseType::setSuperentityIndex;
     using BaseType::getSuperentitiesIndices;
 
+    tnlMeshSuperentityStorageLayer()
+    {
+       this->superentitiesIndices.setName( tnlString( "tnlMeshSuperentityStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::superentitiesIndices" );
+       this->sharedSuperentitiesIndices.setName( tnlString( "tnlMeshSuperentityStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedSuperentitiesIndices" );
+    }
+
+    tnlMeshSuperentityStorageLayer& operator = ( const tnlMeshSuperentityStorageLayer& layer )
+    {
+       this->superentitiesIndices = layer.superentitiesIndices;
+       return *this;
+    }
 
     /****
      * Define setter/getter for the current level of the superentities
@@ -136,6 +127,26 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     const SharedContainerType& getSuperentitiesIndices( DimensionsTraits ) const
     {
        return this->sharedSuperentitiesIndices;
+    }
+
+    bool save( tnlFile& file ) const
+    {
+       if( ! BaseType::save( file ) ||
+           ! this->superentitiesIndices.save( file ) )
+          return false;
+       return true;
+    }
+
+    bool load( tnlFile& file )
+    {
+       if( ! BaseType::load( file ) ||
+           ! this->superentitiesIndices.load( file ) )
+          return false;
+       return true;
+    }
+
+    void print( ostream& str ) const
+    {
     }
 
     private:

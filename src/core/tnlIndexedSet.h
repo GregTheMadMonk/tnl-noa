@@ -44,9 +44,11 @@ class tnlIndexedSet
    template< typename ArrayType >
    void toArray( ArrayType& array ) const;
 
-   const Element& getElement( IndexType idx ) const;
+   const Element& getElement( KeyType key ) const;
 
-   Element& getElement( IndexType idx );
+   Element& getElement( KeyType key );
+
+   void print( ostream& str ) const;
 
    protected:
 
@@ -61,13 +63,18 @@ class tnlIndexedSet
       Index index;
    };
 
-   typedef std::map<Key, DataWithIndex>        STDMapType;
+   typedef std::map< Key, DataWithIndex >      STDMapType;
    typedef typename STDMapType::value_type     STDMapValueType;
    typedef typename STDMapType::const_iterator STDMapIteratorType;
 
    STDMapType map;
 
 };
+
+template< typename Element,
+          typename Index,
+          typename Key >
+ostream& operator <<( ostream& str, tnlIndexedSet< Element, Index, Key >& set );
 
 #include <implementation/core/tnlIndexedSet_impl.h>
 

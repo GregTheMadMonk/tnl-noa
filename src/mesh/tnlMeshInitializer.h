@@ -51,7 +51,9 @@ class tnlMeshInitializer
       this->setMesh( mesh );
       this->createEntitiesFromCells();
       this->createEntityInitializers();
+      mesh.print( cout );
       this->initEntities( *this );
+      cout << "Mesh initiation done..." << endl;
    }
 };
 
@@ -158,7 +160,8 @@ class tnlMeshInitializerLayer< ConfigTag,
    GlobalIndexType findEntityIndex( EntityType &entity ) const
    {
       GlobalIndexType idx;
-      uniqueContainer.find( entity, idx );
+      bool entityFound = uniqueContainer.find( entity, idx );
+      tnlAssert( entityFound, );
       return idx;
    }
 
@@ -194,7 +197,9 @@ class tnlMeshInitializerLayer< ConfigTag,
       const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
       this->getMesh().template setNumberOfEntities< DimensionsTraits::value >( numberOfEntities );
       cout << " DimensionsTraits::value = " << DimensionsTraits::value << endl;
-      //uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTraits::value >() );
+      uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTraits::value >() );
+      cout << "uniqueContainer = " << uniqueContainer << endl;
+      cout << "this->getMesh().template getEntities< DimensionsTraits::value >() = " << this->getMesh().template getEntities< DimensionsTraits::value >() << endl;
       uniqueContainer.reset();
 
       //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
@@ -204,6 +209,7 @@ class tnlMeshInitializerLayer< ConfigTag,
       {
          cout << "Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
          EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
+         cout << "Initiating with entity " << this->getMesh().template getEntity< DimensionsTraits::value >( i ) << endl;
          entityInitializer.init( this->getMesh().template getEntity< DimensionsTraits::value >( i ), i );
          entityInitializer.initEntity( meshInitializer );
       }
@@ -265,6 +271,9 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    VertexInitializerType& getEntityInitializer( DimensionsTraits, GlobalIndexType index )
    {
+      tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
+               cerr << " index = " << index
+                    << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << endl; );
       return vertexInitializerContainer[ index ];
    }
 

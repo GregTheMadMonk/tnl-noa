@@ -197,7 +197,9 @@ template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 {
    for( int i = 0; i < Size - 1; i ++ )
+   {
       str << a[ i ] << ", ";
+   }
    str << a[ Size - 1 ];
    return str;
 };

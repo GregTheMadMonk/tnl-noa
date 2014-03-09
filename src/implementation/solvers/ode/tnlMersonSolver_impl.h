@@ -211,7 +211,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
          return true;
        }
       if( iteration == this -> getMaxIterationsNumber() ||
-          isnan( residue ) )
+          std::isnan( residue ) )
          return false;
    }
 };
