@@ -261,7 +261,7 @@ template< typename Real,
       lpNorm += pow( p, tnlAbs( f1[ c ] - f2[ c ] ) ) *
          this->getElementMeasure( CoordinatesType( i ) );
    }
-   return pow( 1.0 / p, lpNorm );
+   return pow( lpNorm, 1.0 / p );
 }
 
 
