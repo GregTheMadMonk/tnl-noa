@@ -78,6 +78,11 @@ class tnlMesh : public tnlObject,
       enum { available = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
    };
 
+   using BaseType::setNumberOfVertices;
+   using BaseType::getNumberOfVertices;
+   using BaseType::setVertex;
+   using BaseType::getVertex;
+
    template< int Dimensions >
    bool entitiesAvalable() const
    {
@@ -162,23 +167,13 @@ class tnlMesh : public tnlObject,
       BaseType::print( str );
    }
 
-   using BaseType::setNumberOfVertices;
-   using BaseType::getNumberOfVertices;
-   using BaseType::setVertex;
-   using BaseType::getVertex;
+   bool operator==( const tnlMesh& mesh ) const
+   {
+      return BaseType::operator==( mesh );
+   }
 
+   private:
 
-   void load(const char *filename);
-   void write(const char *filename) const;
-
-   //void load(IOReader<ConfigTag> &reader);
-   //void write(IOWriter<ConfigTag> &writer) const;
-
-   //using BaseType::entities;
-   //template< int Dimensions >
-   //typename EntitiesArray<dim>::Type entities() const { return this->entities(DimTag<dim>()); }
-
-private:
    void init();
 
    tnlStaticAssert( dimensions > 0, "The mesh dimesnions must be greater than 0." );

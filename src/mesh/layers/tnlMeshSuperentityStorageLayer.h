@@ -147,6 +147,14 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
     void print( ostream& str ) const
     {
+       BaseType::print( str );
+       str << endl << "\t Superentities with " << DimensionsTraits::value << " dimensions are: " << this->superentitiesIndices << ".";
+    }
+
+    bool operator==( const tnlMeshSuperentityStorageLayer& layer  ) const
+    {
+       return ( BaseType::operator==( layer ) &&
+                superentitiesIndices == layer.superentitiesIndices );
     }
 
     private:
@@ -184,6 +192,11 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
                                        EntityTag,
                                        DimensionsTraits >      SuperentityTag;
 
+   typedef tnlMeshSuperentityStorageLayer< ConfigTag,
+                                           EntityTag,
+                                           DimensionsTraits,
+                                           tnlStorageTraits< false > > ThisType;
+
    protected:
 
    typedef typename SuperentityTag::ContainerType              ContainerType;
@@ -203,6 +216,11 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
                              const GlobalIndexType globalIndex ) {}
 
    void print( ostream& str ) const{}
+
+   bool operator==( const ThisType& layer  ) const
+   {
+      return true;
+   }
 
    ContainerType& getSuperentitiesIndices(){}
 
@@ -221,6 +239,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    typedef tnlMeshSuperentitiesTraits< ConfigTag,
                                        EntityTag,
                                        DimensionsTraits >      SuperentityTag;
+   typedef tnlMeshSuperentityStorageLayer< ConfigTag,
+                                           EntityTag,
+                                           DimensionsTraits,
+                                           tnlStorageTraits< true > > ThisType;
 
    protected:
 
@@ -241,6 +263,11 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
                              const GlobalIndexType globalIndex ) {}
 
    void print( ostream& str ) const{}
+
+   bool operator==( const ThisType& layer  ) const
+   {
+      return true;
+   }
 
    ContainerType& getSuperentitiesIndices(){}
 

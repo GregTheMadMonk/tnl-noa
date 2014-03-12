@@ -145,6 +145,12 @@ class tnlMeshStorageLayer< ConfigTag,
       }
    }
 
+   bool operator==( const tnlMeshStorageLayer& meshLayer ) const
+   {
+      return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
+   }
+
+
    protected:
    ContainerType entities;
 
@@ -279,10 +285,13 @@ class tnlMeshStorageLayer< ConfigTag,
       str << "The mesh vertices are: " << endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
       {
-         str << i << " \t ( ";
-         vertices[ i ].print( str );
-         str << " ) " << endl;
+         str << i << vertices[ i ] << endl;
       }
+   }
+
+   bool operator==( const tnlMeshStorageLayer& meshLayer ) const
+   {
+      return ( vertices == meshLayer.vertices );
    }
 
    private:

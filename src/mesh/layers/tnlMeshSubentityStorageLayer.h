@@ -104,6 +104,12 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << subentitiesIndices << ".";
    }
 
+   bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
+   {
+      return ( BaseType::operator==( layer ) &&
+               subentitiesIndices == layer.subentitiesIndices );
+   }
+
    /****
     * Make visible setters and getters of the lower subentities
     */
@@ -210,6 +216,11 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    void print( ostream& str ) const
    {
       str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->verticesIndices << ".";
+   }
+
+   bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
+   {
+      return ( verticesIndices == layer.verticesIndices );
    }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,

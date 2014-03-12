@@ -18,7 +18,7 @@
 #ifndef TNLMESHQUADRILATERALTAG_H_
 #define TNLMESHQUADRILATERALTAG_H_
 
-#include <mesh/topology/tnlMeshEdgeTag.h>
+#include <mesh/topologies/tnlMeshEdgeTag.h>
 
 struct tnlMeshQuadrilateralTag
 {

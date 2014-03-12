@@ -72,6 +72,15 @@ class tnlMeshEntity
       tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::print( str );
    }
 
+   bool operator==( const tnlMeshEntity& entity ) const
+   {
+      return ( tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::operator==( entity ) &&
+               tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::operator==( entity ) &&
+               tnlMeshEntityId< typename ConfigTag::IdType,
+                                typename ConfigTag::GlobalIndexType >::operator==( entity ) );
+   }
+
+
    /****
     * Entity typedefs
     */
@@ -321,8 +330,17 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
    void print( ostream& str ) const
    {
-      str << point;
+      str << "\t Coordinates = ( " << point << " )";
       tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::print( str );
+   }
+
+   bool operator==( const tnlMeshEntity& entity ) const
+   {
+      return ( tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
+               tnlMeshEntityId< typename ConfigTag::IdType,
+                                typename ConfigTag::GlobalIndexType >::operator==( entity ) &&
+               point == entity.point );
+
    }
 
    /****

@@ -31,10 +31,11 @@
 #include <mesh/topologies/tnlMeshEdgeTag.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
 #include <mesh/tnlMeshInitializer.h>
 
- typedef tnlMeshConfigBase< 2, double, int, int, void > MeshConfigBaseType;
- struct TestTriangleMeshConfig : public MeshConfigBaseType
+ typedef tnlMeshConfigBase< 2, double, int, int, void > Mesh2dConfigBaseType;
+ struct TestTriangleMeshConfig : public Mesh2dConfigBaseType
  {
      typedef tnlMeshTriangleTag CellTag;
  };
@@ -50,6 +51,31 @@
  {
     enum { enabled = true };
  };
+
+ typedef tnlMeshConfigBase< 3, double, int, int, void > Mesh3dConfigBaseType;
+ struct TestQuadrilateralMeshConfig : public Mesh3dConfigBaseType
+ {
+     typedef tnlMeshQuadrilateralTag CellTag;
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
+ {
+    enum { enabled = true };
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
+ {
+    enum { enabled = true };
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshTriangleTag, Dimensions >
+ {
+     enum { enabled = true };
+ };
+
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlMeshTester : public CppUnit :: TestCase
@@ -69,6 +95,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
+      //suiteOfTests -> addTest( new TestCallerType( "quadrilateralsTest", &TesterType::quadrilateralsTest ) );
 
       return suiteOfTests;
    }
@@ -119,105 +146,66 @@ class tnlMeshTester : public CppUnit :: TestCase
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
        cout << tnlMeshTraits< TestTriangleMeshConfig >::meshDimensions << endl;
        meshInitializer.initMesh( mesh );
-       //mesh.save( "mesh.tnl" );
        mesh.print( cout );
+       CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
+       CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
+       CPPUNIT_ASSERT( mesh.getNumberOfEntities< 0 >() == 4 );
 
-/*       tnlStaticArray< 4, VertexMeshEntityType > vertexEntities;
-       vertexEntities[ 0 ].setPoint( point0 );
-       vertexEntities[ 1 ].setPoint( point1 );
-       vertexEntities[ 2 ].setPoint( point2 );
-       vertexEntities[ 3 ].setPoint( point3 );
+       mesh.save( "mesh.tnl" );
+       tnlMesh< TestTriangleMeshConfig > mesh2;
+       mesh2.load( "mesh.tnl" );
+       cout << "===================== Mesh2 =========================" << endl;
+       mesh2.print( cout );
+       cout << "=====================================================" << endl;
+       //CPPUNIT_ASSERT( mesh == mesh2 );
 
-       CPPUNIT_ASSERT( vertexEntities[ 0 ].getPoint() == point0 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].getPoint() == point1 );
-       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
-       CPPUNIT_ASSERT( vertexEntities[ 3 ].getPoint() == point3 );
-
-       tnlStaticArray< 5, EdgeMeshEntityType > edgeEntities;
-       edgeEntities[ 0 ].setVertexIndex( 0, 1 );
-       edgeEntities[ 0 ].setVertexIndex( 1, 2 );
-       edgeEntities[ 1 ].setVertexIndex( 0, 2 );
-       edgeEntities[ 1 ].setVertexIndex( 1, 0 );
-       edgeEntities[ 2 ].setVertexIndex( 0, 0 );
-       edgeEntities[ 2 ].setVertexIndex( 1, 1 );
-       edgeEntities[ 3 ].setVertexIndex( 0, 2 );
-       edgeEntities[ 3 ].setVertexIndex( 1, 3 );
-       edgeEntities[ 4 ].setVertexIndex( 0, 3 );
-       edgeEntities[ 4 ].setVertexIndex( 1, 1 );
-
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 0 ) == 1 );
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 1 ) == 2 );
-       CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 0 ) == 2 );
-       CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 1 ) == 0 );
-       CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 0 ) == 0 );
-       CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 1 ) == 1 );
-       CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 0 ) == 2 );
-       CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 1 ) == 3 );
-       CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 0 ) == 3 );
-       CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 1 ) == 1 );
-
-       tnlStaticArray< 2, TriangleMeshEntityType > triangleEntities;
-
-       triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0 , 0 );
-       triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1 , 1 );
-       triangleEntities[ 0 ].template setSubentityIndex< 0 >( 2 , 2 );
-       triangleEntities[ 0 ].template setSubentityIndex< 1 >( 0 , 0 );
-       triangleEntities[ 0 ].template setSubentityIndex< 1 >( 1 , 1 );
-       triangleEntities[ 0 ].template setSubentityIndex< 1 >( 2 , 2 );
-       triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0 , 0 );
-       triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1 , 2 );
-       triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2 , 3 );
-       triangleEntities[ 1 ].template setSubentityIndex< 1 >( 0 , 0 );
-       triangleEntities[ 1 ].template setSubentityIndex< 1 >( 1 , 3 );
-       triangleEntities[ 1 ].template setSubentityIndex< 1 >( 2 , 4 );
-
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 1 ) == 1 );
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 2 ) == 2 );
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 1 ) == 1 );
-       CPPUNIT_ASSERT( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 2 ) == 2 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 1 ) == 2 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 2 ) == 3 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
-       CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
-
-       vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
-       vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
-       vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
-
-       vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
-
-       vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
-
-       CPPUNIT_ASSERT( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >() == 2 );
-       CPPUNIT_ASSERT( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ) == 2 );
-       CPPUNIT_ASSERT( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ) == 1 );
-
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getNumberOfSuperentities< 1 >() == 3 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ) == 2 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ) == 4 );
-
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getNumberOfSuperentities< 2 >() == 2 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
-       CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ) == 1 );
-
-       edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
-       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
-       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
-
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
-       */
     };
+
+   void quadrilateralsTest()
+   {
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef typename VertexMeshEntityType::PointType PointType;
+      tnlMesh< TestQuadrilateralMeshConfig > mesh;
+      mesh.setNumberOfVertices( 13 );
+      mesh.setVertex(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
+      mesh.setVertex(  1, PointType(  0.000000, 0.000000, 8.000000 ) );
+      mesh.setVertex(  2, PointType(  0.000000, 8.000000, 0.000000 ) );
+      mesh.setVertex(  3, PointType( 15.000000, 0.000000, 0.000000 ) );
+      mesh.setVertex(  4, PointType(  0.000000, 8.000000, 8.000000 ) );
+      mesh.setVertex(  5, PointType( 15.000000, 0.000000, 8.000000 ) );
+      mesh.setVertex(  6, PointType( 15.000000, 8.000000, 0.000000 ) );
+      mesh.setVertex(  7, PointType( 15.000000, 8.000000, 8.000000 ) );
+      mesh.setVertex(  8, PointType(  7.470740, 8.000000, 8.000000 ) );
+      mesh.setVertex(  9, PointType(  7.470740, 0.000000, 8.000000 ) );
+      mesh.setVertex( 10, PointType(  7.504125, 8.000000, 0.000000 ) );
+      mesh.setVertex( 11, PointType(  7.212720, 0.000000, 0.000000 ) );
+      mesh.setVertex( 12, PointType( 11.184629, 3.987667, 3.985835 ) );
+
+      //mesh.setNumberOfEntities< 3 >( 18 );
+      //mesh.getEntities< 3 >[ 0 ].getVertices()[ 0 ] = 13;
+      /*9        8        6
+                 13        8        9       11
+                 13       12        9       10
+                 11       12        3        9
+                 13        8        7        6
+                 10       13        6        9
+                 13       12       10        4
+                 10        5       12        9
+                 13       10        6        4
+                  2        3        1       12
+                  9       12        3        5
+                  2        3       12        5
+                 10        5        2       12
+                 11       12        9       13
+                 13        7        8       11
+                11       12       13        4
+                 13        7        4        6
+                13        4        7       11*/
+
+
+   }
 
 };
 
