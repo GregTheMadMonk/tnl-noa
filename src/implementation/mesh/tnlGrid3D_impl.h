@@ -258,7 +258,7 @@ template< typename Real,
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
             IndexType c = this->getElementIndex( i, j, k );
-            lpNorm += pow( p, tnlAbs( f1[ c ] - f2[ c ] ) ) *
+            lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p ) *
                this->getElementMeasure( CoordinatesType( i, j, k ) );
          }
    return pow( lpNorm, 1.0 / p );
