@@ -64,9 +64,9 @@ class tnlMeshEntity
 
    bool load( tnlFile& file ) const
    {
-      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
-          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
-         return false;
+      //if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
+      //    ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
+      //   return false;
       return true;
    }
 
@@ -332,9 +332,9 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
    bool load( tnlFile& file ) const
    {
-      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
-          ! point.load( file ) )
-         return false;
+      //if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+      //    ! point.load( file ) )
+      //   return false;
       return true;
    }
 

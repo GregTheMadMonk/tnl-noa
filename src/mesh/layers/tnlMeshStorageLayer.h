@@ -124,7 +124,7 @@ class tnlMeshStorageLayer< ConfigTag,
    bool save( tnlFile& file ) const
    {
       if( ! BaseType::save( file ) ||
-          ! this->entities.save( file ) )
+          ! this->entities.saveRecursively( file ) )
          return false;
       return true;
    }
@@ -133,7 +133,7 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
       if( ! BaseType::load( file ) ||
-          ! this->entities.load( file ) )
+          ! this->entities.loadRecursively( file ) )
          return false;
       this->sharedEntities.bind( this->entities );
       return true;
@@ -278,14 +278,14 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool save( tnlFile& file ) const
    {
-      if( ! this->vertices.save( file ) )
+      if( ! this->vertices.saveRecursively( file ) )
          return false;
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! this->vertices.load( file ) )
+      if( ! this->vertices.loadRecursively( file ) )
          return false;
       this->sharedVertices.bind( this->vertices );
       return true;

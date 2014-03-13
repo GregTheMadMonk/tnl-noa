@@ -85,7 +85,9 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
     ~tnlMeshSuperentityStorageLayer()
     {
-       cout << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTraits::value << " dimensions." << endl;
+       cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTraits::value << " dimensions." << endl;
+       cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << endl;
+       cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << endl;
     }
 
     tnlMeshSuperentityStorageLayer& operator = ( const tnlMeshSuperentityStorageLayer& layer )
@@ -146,9 +148,10 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
     bool load( tnlFile& file )
     {
-       if( ! BaseType::load( file ) ||
-           ! this->superentitiesIndices.load( file ) )
+       if( ! BaseType::load( file ) ) //||
+           //! this->superentitiesIndices.load( file ) )
           return false;
+       cerr << "Loaded superentities " << this->superentitiesIndices.getName() << endl;
        return true;
     }
 

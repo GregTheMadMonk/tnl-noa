@@ -24,6 +24,7 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 #include <core/arrays/tnlArrayOperations.h>
+#include <implementation/core/arrays/tnlArrayIO.h>
 
 using namespace std;
 
@@ -332,7 +333,7 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( ! file. write( &this -> size ) )
       return false;
 #endif      
-   if( this -> size != 0 && ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   if( this -> size != 0 && ! tnlArrayIO< Element, Device, Index >::save( file, this -> data, this -> size ) )
    {
       cerr << "I was not able to save " << this->getType()
            << " " << this -> getName()
@@ -365,7 +366,7 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
    if( _size )
    {
       setSize( _size );
-      if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+      if( ! tnlArrayIO< Element, Device, Index >::load( file, this -> data, this -> size ) )
       {
          cerr << "I was not able to load " << this->getType()
                     << " " << this -> getName()
@@ -391,7 +392,6 @@ bool tnlArray< Element, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
-
 
 template< typename Element,
           typename Device,

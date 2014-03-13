@@ -69,6 +69,7 @@ class tnlArrayOperations< tnlHost >
    static bool compareMemory( const Element1* destination,
                               const Element2* source,
                               const Index size );
+
 };
 
 template<>

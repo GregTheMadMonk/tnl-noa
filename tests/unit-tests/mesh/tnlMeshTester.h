@@ -128,7 +128,7 @@ class tnlMeshTester : public CppUnit :: TestCase
                 point0   edge2        point1
         */
 
-       tnlMesh< TestTriangleMeshConfig > mesh2, mesh;
+       tnlMesh< TestTriangleMeshConfig > mesh, mesh2;
        mesh.setName( "mesh" );
        mesh.setNumberOfVertices( 4 );
        mesh.setVertex( 0, PointType( 0.0, 0.0 ) );
@@ -156,6 +156,7 @@ class tnlMeshTester : public CppUnit :: TestCase
 
        CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
        mesh2.setName( "mesh2" );
+       mesh2.print( cout );
        //cout << "===================== Mesh2 =========================" << endl;
        //mesh2.print( cout );
        //cout << "=====================================================" << endl;

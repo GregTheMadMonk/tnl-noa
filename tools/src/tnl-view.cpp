@@ -27,10 +27,10 @@
 #include <mesh/tnlLinearGridGeometry.h>
 
 // TODO: Remove
-#include <mesh/tnlMesh.h>
+/*#include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshWriterNetgen.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>
+#include <mesh/topologies/tnlMeshTriangleTag.h>*/
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-view.cfg.desc";
@@ -125,7 +125,7 @@ int main( int argc, char* argv[] )
    }
    if( parsedMeshType[ 0 ] == "tnlMesh" )
    {
-      tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+      /*tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
          typedef tnlMeshTriangleTag CellTag;
@@ -134,7 +134,7 @@ int main( int argc, char* argv[] )
       if( ! mesh.load( meshFile ) )
          return EXIT_FAILURE;
       if( ! tnlMeshWriterNetgen::writeMesh( "tnl-mesh.ng", mesh, true ) )
-         return EXIT_FAILURE;
+         return EXIT_FAILURE;*/
    }
    return EXIT_FAILURE;
 }
