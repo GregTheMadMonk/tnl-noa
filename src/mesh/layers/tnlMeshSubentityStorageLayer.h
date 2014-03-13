@@ -72,6 +72,13 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    tnlMeshSubentityStorageLayer()
    {
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
+      this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
+      //this->subentitiesIndices.setName( "subentitiesIndices" );
+   }
+
+   ~tnlMeshSubentityStorageLayer()
+   {
+      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
    }
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -191,6 +198,12 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       this->sharedVerticesIndices.bind( this->verticesIndices );
    }
+
+   ~tnlMeshSubentityStorageLayer()
+   {
+      cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
+   }
+
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {

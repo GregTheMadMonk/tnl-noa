@@ -83,9 +83,16 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        this->sharedSuperentitiesIndices.setName( tnlString( "tnlMeshSuperentityStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedSuperentitiesIndices" );
     }
 
+    ~tnlMeshSuperentityStorageLayer()
+    {
+       cout << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTraits::value << " dimensions." << endl;
+    }
+
     tnlMeshSuperentityStorageLayer& operator = ( const tnlMeshSuperentityStorageLayer& layer )
     {
+       this->superentitiesIndices.setSize( layer.superentitiesIndices.getSize() );
        this->superentitiesIndices = layer.superentitiesIndices;
+       this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
        return *this;
     }
 

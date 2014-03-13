@@ -49,6 +49,11 @@ class tnlMeshEntity
       return this->getType();
    }
 
+   ~tnlMeshEntity()
+   {
+      cerr << "   Destroying entity with " << EntityTag::dimensions << " dimensions..." << endl;
+   }
+
    bool save( tnlFile& file ) const
    {
       if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::save( file ) ||
@@ -311,6 +316,11 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+
+   ~tnlMeshEntity()
+   {
+      cerr << "   Destroying entity with " << tnlMeshVertexTag::dimensions << " dimensions..." << endl;
+   }
 
    bool save( tnlFile& file ) const
    {

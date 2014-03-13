@@ -51,7 +51,6 @@ class tnlMeshInitializer
       this->setMesh( mesh );
       this->createEntitiesFromCells();
       this->createEntityInitializers();
-      mesh.print( cout );
       this->initEntities( *this );
       cout << "Mesh initiation done..." << endl;
    }

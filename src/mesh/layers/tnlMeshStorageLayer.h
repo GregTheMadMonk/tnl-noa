@@ -74,6 +74,11 @@ class tnlMeshStorageLayer< ConfigTag,
       this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
    }
 
+   ~tnlMeshStorageLayer()
+   {
+      cout << "Destroying mesh storage layer with " << DimensionsTraits::value << " dimensions and " << this->entities.getSize() << " entities." << endl;
+   }
+
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
       if( ! this->entities.setSize( size ) )
@@ -126,6 +131,7 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool load( tnlFile& file )
    {
+      cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
       if( ! BaseType::load( file ) ||
           ! this->entities.load( file ) )
          return false;
@@ -188,6 +194,11 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
       this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
+   }
+
+   ~tnlMeshStorageLayer()
+   {
+        cout << "mesh storage layer: dimensions = " << DimensionsTraits::value << " entities = " << this->vertices.getSize() << endl;
    }
 
 

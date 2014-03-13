@@ -128,7 +128,8 @@ class tnlMeshTester : public CppUnit :: TestCase
                 point0   edge2        point1
         */
 
-       tnlMesh< TestTriangleMeshConfig > mesh;
+       tnlMesh< TestTriangleMeshConfig > mesh2, mesh;
+       mesh.setName( "mesh" );
        mesh.setNumberOfVertices( 4 );
        mesh.setVertex( 0, PointType( 0.0, 0.0 ) );
        mesh.setVertex( 1, PointType( 1.0, 0.0 ) );
@@ -146,17 +147,18 @@ class tnlMeshTester : public CppUnit :: TestCase
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
        cout << tnlMeshTraits< TestTriangleMeshConfig >::meshDimensions << endl;
        meshInitializer.initMesh( mesh );
-       mesh.print( cout );
+       //mesh.print( cout );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 0 >() == 4 );
 
-       mesh.save( "mesh.tnl" );
-       tnlMesh< TestTriangleMeshConfig > mesh2;
-       mesh2.load( "mesh.tnl" );
-       cout << "===================== Mesh2 =========================" << endl;
-       mesh2.print( cout );
-       cout << "=====================================================" << endl;
+       CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
+
+       CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
+       mesh2.setName( "mesh2" );
+       //cout << "===================== Mesh2 =========================" << endl;
+       //mesh2.print( cout );
+       //cout << "=====================================================" << endl;
        //CPPUNIT_ASSERT( mesh == mesh2 );
 
     };
