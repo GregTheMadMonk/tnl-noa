@@ -19,6 +19,7 @@
 #define TNLMESHENTITY_H_
 
 #include <core/tnlFile.h>
+#include <core/tnlDynamicTypeTag.h>
 #include <mesh/tnlMeshEntityId.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlDimensionsTraits.h>
@@ -49,10 +50,10 @@ class tnlMeshEntity
       return this->getType();
    }
 
-   ~tnlMeshEntity()
+   /*~tnlMeshEntity()
    {
       cerr << "   Destroying entity with " << EntityTag::dimensions << " dimensions..." << endl;
-   }
+   }*/
 
    bool save( tnlFile& file ) const
    {
@@ -62,18 +63,18 @@ class tnlMeshEntity
       return true;
    }
 
-   bool load( tnlFile& file ) const
+   bool load( tnlFile& file )
    {
-      //if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
-      //    ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
-      //   return false;
+      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) ||
+          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) )
+         return false;
       return true;
    }
 
    void print( ostream& str ) const
    {
+      str << "\t Mesh entity dimensions: " << EntityTag::dimensions << endl;
       tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::print( str );
-      str << endl;
       tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::print( str );
    }
 
@@ -317,10 +318,10 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
-   ~tnlMeshEntity()
+   /*~tnlMeshEntity()
    {
       cerr << "   Destroying entity with " << tnlMeshVertexTag::dimensions << " dimensions..." << endl;
-   }
+   }*/
 
    bool save( tnlFile& file ) const
    {
@@ -330,16 +331,17 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       return true;
    }
 
-   bool load( tnlFile& file ) const
+   bool load( tnlFile& file )
    {
-      //if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
-      //    ! point.load( file ) )
-      //   return false;
+      if( ! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+          ! point.load( file ) )
+         return false;
       return true;
    }
 
    void print( ostream& str ) const
    {
+      str << "\t Mesh entity dimensions: " << tnlMeshVertexTag::dimensions << endl;
       str << "\t Coordinates = ( " << point << " )";
       tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::print( str );
    }
@@ -448,6 +450,17 @@ ostream& operator <<( ostream& str, const tnlMeshEntity< ConfigTag, EntityTag >&
    entity.print( str );
    return str;
 }
+
+/****
+ * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.
+ * It is necessary for the loading and the saving of the mesh enities arrays.
+ */
+template< typename ConfigTag,
+          typename EntityTag >
+struct tnlDynamicTypeTag< tnlMeshEntity< ConfigTag, EntityTag > >
+{
+   enum { value = true };
+};
 
 
 #endif /* TNLMESHENTITY_H_ */

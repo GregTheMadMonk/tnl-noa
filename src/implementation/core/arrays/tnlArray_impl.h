@@ -51,8 +51,8 @@ template< typename Element,
 tnlString tnlArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlArray< " ) +
-                     getParameterType< Element >() +
-                     Device :: getDeviceType() +
+                     getParameterType< Element >() + ", " +
+                     Device :: getDeviceType() + ", " +
                      getParameterType< Index >() +
                      " >";
 };

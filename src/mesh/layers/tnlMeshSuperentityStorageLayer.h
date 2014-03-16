@@ -83,12 +83,12 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        this->sharedSuperentitiesIndices.setName( tnlString( "tnlMeshSuperentityStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedSuperentitiesIndices" );
     }
 
-    ~tnlMeshSuperentityStorageLayer()
+    /*~tnlMeshSuperentityStorageLayer()
     {
        cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTraits::value << " dimensions." << endl;
        cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << endl;
        cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << endl;
-    }
+    }*/
 
     tnlMeshSuperentityStorageLayer& operator = ( const tnlMeshSuperentityStorageLayer& layer )
     {
@@ -142,16 +142,21 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     {
        if( ! BaseType::save( file ) ||
            ! this->superentitiesIndices.save( file ) )
+       {
+          cerr << "Saving of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
           return false;
+       }
        return true;
     }
 
     bool load( tnlFile& file )
     {
-       if( ! BaseType::load( file ) ) //||
-           //! this->superentitiesIndices.load( file ) )
+       if( ! BaseType::load( file ) ||
+           ! this->superentitiesIndices.load( file ) )
+       {
+          cerr << "Loading of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
           return false;
-       cerr << "Loaded superentities " << this->superentitiesIndices.getName() << endl;
+       }
        return true;
     }
 
@@ -235,6 +240,17 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    ContainerType& getSuperentitiesIndices(){}
 
    const ContainerType& getSuperentitiesIndices() const{}
+
+   bool save( tnlFile& file ) const
+   {
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      return true;
+   }
+
 };
 
 template< typename ConfigTag,
@@ -283,7 +299,15 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
    const ContainerType& getSuperentitiesIndices() const{}
 
+   bool save( tnlFile& file ) const
+   {
+      return true;
+   }
 
+   bool load( tnlFile& file )
+   {
+      return true;
+   }
 };
 
 /*template< typename ConfigTag,

@@ -41,7 +41,10 @@ class tnlArrayIO< Element, Device, Index, true >
    {
       for( Index i = 0; i < elements; i++ )
          if( ! data[ i ].save( file ) )
+         {
+            cerr << "I was not able to save " << i << "-th of " << elements << " elements." << endl;
             return false;
+         }
       return true;
    }
 
@@ -51,12 +54,15 @@ class tnlArrayIO< Element, Device, Index, true >
    {
       for( Index i = 0; i < elements; i++ )
          if( ! data[ i ].load( file ) )
+         {
+            cerr << "I was not able to load " << i << "-th of " << elements << " elements." << endl;
             return false;
+         }
       return true;
    }
 };
 
-template< typename Element
+template< typename Element,
           typename Device,
           typename Index >
 class tnlArrayIO< Element, Device, Index, false >

@@ -223,11 +223,13 @@ bool tnlStaticArray< 3, Element >::save( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< Element, tnlHost, int >( data, size ) )
-      cerr << "Unable to write " << getType() << "." << endl;
 #else
    if( ! file. write( data, size ) )
-      cerr << "Unable to write " << getType() << "." << endl;
 #endif
+   {
+      cerr << "Unable to write " << getType() << "." << endl;
+      return false;
+   }
    return true;
 }
 

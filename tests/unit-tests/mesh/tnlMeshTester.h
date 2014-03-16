@@ -31,7 +31,6 @@
 #include <mesh/topologies/tnlMeshEdgeTag.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
-#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
 #include <mesh/tnlMeshInitializer.h>
 
  typedef tnlMeshConfigBase< 2, double, int, int, void > Mesh2dConfigBaseType;
@@ -53,25 +52,25 @@
  };
 
  typedef tnlMeshConfigBase< 3, double, int, int, void > Mesh3dConfigBaseType;
- struct TestQuadrilateralMeshConfig : public Mesh3dConfigBaseType
+ struct TestTetrahedronMeshConfig : public Mesh3dConfigBaseType
  {
-     typedef tnlMeshQuadrilateralTag CellTag;
+     typedef tnlMeshTetrahedronTag CellTag;
  };
 
  template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
+ struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshVertexTag, Dimensions >
  {
     enum { enabled = true };
  };
 
  template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshTriangleTag, Dimensions >
+ struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
+ {
+    enum { enabled = true };
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
  {
      enum { enabled = true };
  };
@@ -95,7 +94,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
-      //suiteOfTests -> addTest( new TestCallerType( "quadrilateralsTest", &TesterType::quadrilateralsTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
 
       return suiteOfTests;
    }
@@ -145,32 +144,30 @@ class tnlMeshTester : public CppUnit :: TestCase
        mesh.getEntity< 2 >( 1 ).setVertexIndex( 2, 3 );
 
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
-       cout << tnlMeshTraits< TestTriangleMeshConfig >::meshDimensions << endl;
        meshInitializer.initMesh( mesh );
-       //mesh.print( cout );
+
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 0 >() == 4 );
 
        CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
-
        CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
-       mesh2.setName( "mesh2" );
-       mesh2.print( cout );
-       //cout << "===================== Mesh2 =========================" << endl;
+       CPPUNIT_ASSERT( mesh == mesh2 );
+
+       //mesh2.setName( "mesh2" );
+       //mesh.print( cout );
        //mesh2.print( cout );
-       //cout << "=====================================================" << endl;
-       //CPPUNIT_ASSERT( mesh == mesh2 );
+
 
     };
 
-   void quadrilateralsTest()
+   void tetrahedronsTest()
    {
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
-      tnlMesh< TestQuadrilateralMeshConfig > mesh;
+      tnlMesh< TestTetrahedronMeshConfig > mesh;
       mesh.setNumberOfVertices( 13 );
       mesh.setVertex(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
       mesh.setVertex(  1, PointType(  0.000000, 0.000000, 8.000000 ) );
@@ -186,27 +183,145 @@ class tnlMeshTester : public CppUnit :: TestCase
       mesh.setVertex( 11, PointType(  7.212720, 0.000000, 0.000000 ) );
       mesh.setVertex( 12, PointType( 11.184629, 3.987667, 3.985835 ) );
 
-      //mesh.setNumberOfEntities< 3 >( 18 );
-      //mesh.getEntities< 3 >[ 0 ].getVertices()[ 0 ] = 13;
-      /*9        8        6
-                 13        8        9       11
-                 13       12        9       10
-                 11       12        3        9
-                 13        8        7        6
-                 10       13        6        9
-                 13       12       10        4
-                 10        5       12        9
-                 13       10        6        4
-                  2        3        1       12
-                  9       12        3        5
-                  2        3       12        5
-                 10        5        2       12
-                 11       12        9       13
-                 13        7        8       11
-                11       12       13        4
-                 13        7        4        6
-                13        4        7       11*/
+      /****
+       * Setup the following tetrahedrons:
+       * ( Generated by Netgen )
+       *
+       *  12        8        7        5
+       *  12        7        8       10
+       *  12       11        8        9
+       *  10       11        2        8
+       *  12        7        6        5
+       *   9       12        5        8
+       *  12       11        9        3
+       *   9        4       11        8
+       *  12        9        5        3
+       *   1        2        0       11
+       *   8       11        2        4
+       *   1        2       11        4
+       *   9        4        1       11
+       *  10       11        8       12
+       *  12        6        7       10
+       *  10       11       12        3
+       *  12        6        3        5
+       *  12        3        6       10
+       */
+      
+      mesh.setNumberOfEntities< 3 >( 1 );
 
+       //  12        8        7        5
+      mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 1 ] = 8;
+      mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 2 ] = 7;
+      mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 3 ] = 5;
+
+       //  12        7        8       10
+      /*mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 1 ] = 7;
+      mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 2 ] = 8;
+      mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 3 ] = 10;
+                 
+       //  12       11        8        9
+      /*mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 2 ] = 8;
+      mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 3 ] = 9;
+                 
+       //  10       11        2        8
+      mesh.getEntities< 3 >()[ 3 ].getVerticesIndices()[ 0 ] = 10;
+      mesh.getEntities< 3 >()[ 3 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 3 ].getVerticesIndices()[ 2 ] = 2;
+      mesh.getEntities< 3 >()[ 3 ].getVerticesIndices()[ 3 ] = 8;
+                 
+       //  12        7        6        5
+      mesh.getEntities< 3 >()[ 4 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 4 ].getVerticesIndices()[ 1 ] = 7;
+      mesh.getEntities< 3 >()[ 4 ].getVerticesIndices()[ 2 ] = 6;
+      mesh.getEntities< 3 >()[ 4 ].getVerticesIndices()[ 3 ] = 5;
+                 
+       //   9       12        5        8
+      mesh.getEntities< 3 >()[ 5 ].getVerticesIndices()[ 0 ] = 9;
+      mesh.getEntities< 3 >()[ 5 ].getVerticesIndices()[ 1 ] = 12;
+      mesh.getEntities< 3 >()[ 5 ].getVerticesIndices()[ 2 ] = 5;
+      mesh.getEntities< 3 >()[ 5 ].getVerticesIndices()[ 3 ] = 8;
+                 
+       //  12       11        9        3
+      mesh.getEntities< 3 >()[ 6 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 6 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 6 ].getVerticesIndices()[ 2 ] = 9;
+      mesh.getEntities< 3 >()[ 6 ].getVerticesIndices()[ 3 ] = 3;
+                 
+       //   9        4       11        8
+      mesh.getEntities< 3 >()[ 7 ].getVerticesIndices()[ 0 ] = 9;
+      mesh.getEntities< 3 >()[ 7 ].getVerticesIndices()[ 1 ] = 4;
+      mesh.getEntities< 3 >()[ 7 ].getVerticesIndices()[ 2 ] = 11;
+      mesh.getEntities< 3 >()[ 7 ].getVerticesIndices()[ 3 ] = 8;
+                
+       //  12        9        5        3
+      mesh.getEntities< 3 >()[ 8 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 8 ].getVerticesIndices()[ 1 ] = 9;
+      mesh.getEntities< 3 >()[ 8 ].getVerticesIndices()[ 2 ] = 5;
+      mesh.getEntities< 3 >()[ 8 ].getVerticesIndices()[ 3 ] = 3;
+                 
+       //   1        2        0       11
+      mesh.getEntities< 3 >()[ 9 ].getVerticesIndices()[ 0 ] = 1;
+      mesh.getEntities< 3 >()[ 9 ].getVerticesIndices()[ 1 ] = 2;
+      mesh.getEntities< 3 >()[ 9 ].getVerticesIndices()[ 2 ] = 0;
+      mesh.getEntities< 3 >()[ 9 ].getVerticesIndices()[ 3 ] = 11;
+                 
+       //   8       11        2        4
+      mesh.getEntities< 3 >()[ 10 ].getVerticesIndices()[ 0 ] = 8;
+      mesh.getEntities< 3 >()[ 10 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 10 ].getVerticesIndices()[ 2 ] = 2;
+      mesh.getEntities< 3 >()[ 10 ].getVerticesIndices()[ 3 ] = 4;
+                 
+       //   1        2       11        4
+      mesh.getEntities< 3 >()[ 11 ].getVerticesIndices()[ 0 ] = 1;
+      mesh.getEntities< 3 >()[ 11 ].getVerticesIndices()[ 1 ] = 2;
+      mesh.getEntities< 3 >()[ 11 ].getVerticesIndices()[ 2 ] = 11;
+      mesh.getEntities< 3 >()[ 11 ].getVerticesIndices()[ 3 ] = 4;
+                 
+       //   9        4        1       11
+      mesh.getEntities< 3 >()[ 12 ].getVerticesIndices()[ 0 ] = 9;
+      mesh.getEntities< 3 >()[ 12 ].getVerticesIndices()[ 1 ] = 4;
+      mesh.getEntities< 3 >()[ 12 ].getVerticesIndices()[ 2 ] = 1;
+      mesh.getEntities< 3 >()[ 12 ].getVerticesIndices()[ 3 ] = 11;
+                 
+       //  10       11        8       12
+      mesh.getEntities< 3 >()[ 13 ].getVerticesIndices()[ 0 ] = 10;
+      mesh.getEntities< 3 >()[ 13 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 13 ].getVerticesIndices()[ 2 ] = 8;
+      mesh.getEntities< 3 >()[ 13 ].getVerticesIndices()[ 3 ] = 12;
+                 
+       //  12        6        7       10
+      mesh.getEntities< 3 >()[ 14 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 14 ].getVerticesIndices()[ 1 ] = 6;
+      mesh.getEntities< 3 >()[ 14 ].getVerticesIndices()[ 2 ] = 7;
+      mesh.getEntities< 3 >()[ 14 ].getVerticesIndices()[ 3 ] = 10;
+                 
+       //  10       11       12        3
+      mesh.getEntities< 3 >()[ 15 ].getVerticesIndices()[ 0 ] = 10;
+      mesh.getEntities< 3 >()[ 15 ].getVerticesIndices()[ 1 ] = 11;
+      mesh.getEntities< 3 >()[ 15 ].getVerticesIndices()[ 2 ] = 12;
+      mesh.getEntities< 3 >()[ 15 ].getVerticesIndices()[ 3 ] = 3;
+
+       //  12        6        3        5
+      mesh.getEntities< 3 >()[ 16 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 16 ].getVerticesIndices()[ 1 ] = 6;
+      mesh.getEntities< 3 >()[ 16 ].getVerticesIndices()[ 2 ] = 3;
+      mesh.getEntities< 3 >()[ 16 ].getVerticesIndices()[ 3 ] = 5;
+                 
+       //  12        3        6       10
+      mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 1 ] = 3;
+      mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 2 ] = 6;
+      mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 3 ] = 10;
+      */
+                 
+      tnlMeshInitializer< TestTetrahedronMeshConfig > meshInitializer;
+      meshInitializer.initMesh( mesh );
+
+      mesh.print( cout );
 
    }
 

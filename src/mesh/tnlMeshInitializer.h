@@ -48,9 +48,12 @@ class tnlMeshInitializer
 
    void initMesh( MeshType& mesh )
    {
+      cout << "======= Starting mesh initiation ========" << endl;
       this->setMesh( mesh );
+      cout << "========= Creating entities =============" << endl;
       this->createEntitiesFromCells();
       this->createEntityInitializers();
+      cout << "====== Initiating entities ==============" << endl;
       this->initEntities( *this );
       cout << "Mesh initiation done..." << endl;
    }
@@ -87,16 +90,13 @@ class tnlMeshInitializerLayer< ConfigTag,
    protected:
    void createEntitiesFromCells()
    {
-      cout << "Creating entities with dimensions " << DimensionsTraits::value << endl;
-      //ContainerType& cellContainer = this->getMesh().entityContainer( DimensionsTraits());
-
-      //cellInitializerContainer.create( cellContainer.getSize());
+      cout << " Creating entities with " << DimensionsTraits::value << " dimensions..." << endl;
       cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
       for( GlobalIndexType cell = 0;
            cell < this->getMesh().getNumberOfCells();
            cell++ )
       {
-         cout << "Setting the cell number " << cell << endl;
+         cout << "  Creating the cell number " << cell << endl;
          CellInitializerType& cellInitializer = cellInitializerContainer[ cell ];
          cellInitializer.init( this->getMesh().getCell( cell ), cell );
          BaseType::createEntitiesFromCells( cellInitializer );
@@ -106,16 +106,15 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType& meshInitializer )
    {
+      cout << " Initiating entities with " << DimensionsTraits::value << " dimensions..." << endl;
       for( typename CellInitializerContainerType::IndexType i = 0;
            i < cellInitializerContainer.getSize();
            i++ )
       {
-         cout << "Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
+         cout << "  Initiating entity " << i << " with " << DimensionsTraits::value << " dimensions..." << endl;
          cellInitializerContainer[ i ].initEntity( meshInitializer );
       }
-
       cellInitializerContainer.reset();
-
       BaseType::initEntities( meshInitializer );
    }
 
@@ -160,7 +159,8 @@ class tnlMeshInitializerLayer< ConfigTag,
    {
       GlobalIndexType idx;
       bool entityFound = uniqueContainer.find( entity, idx );
-      tnlAssert( entityFound, );
+      tnlAssert( entityFound,
+                 cerr << " entity = " << entity << endl; );
       return idx;
    }
 
@@ -174,31 +174,33 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void createEntitiesFromCells( const CellInitializerType& cellInitializer )
    {
+      cout << " Creating entities with " << DimensionsTraits::value << " dimensions..." << endl;
       SubentitiesContainerType subentities;
       cellInitializer.template createSubentities< DimensionsTraits >( subentities );
       for( typename SubentitiesContainerType::IndexType i = 0;
            i < subentities.getSize();
            i++ )
+      {
+         cout << "      Inserting subentity " << endl << subentities[ i ] << endl;
          uniqueContainer.insert( subentities[ i ] );
-
+      }
+      cout << " Container with entities with " << DimensionsTraits::value << " dimensions has: " << endl << this->uniqueContainer << endl;
       BaseType::createEntitiesFromCells( cellInitializer );
    }
 
    void createEntityInitializers()
    {
       entityInitializerContainer.setSize( uniqueContainer.getSize() );
-
       BaseType::createEntityInitializers();
    }
 
-   void initEntities(InitializerType &meshInitializer)
+   void initEntities( InitializerType &meshInitializer )
    {
+      cout << " Initiating entities with " << DimensionsTraits::value << " dimensions..." << endl;
+      cout << " Container with entities with " << DimensionsTraits::value << " dimensions has: " << endl << this->uniqueContainer << endl;
       const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
       this->getMesh().template setNumberOfEntities< DimensionsTraits::value >( numberOfEntities );
-      cout << " DimensionsTraits::value = " << DimensionsTraits::value << endl;
       uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTraits::value >() );
-      cout << "uniqueContainer = " << uniqueContainer << endl;
-      cout << "this->getMesh().template getEntities< DimensionsTraits::value >() = " << this->getMesh().template getEntities< DimensionsTraits::value >() << endl;
       uniqueContainer.reset();
 
       //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
@@ -287,6 +289,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType& meshInitializer )
    {
+      cout << " Initiating entities with " << DimensionsTraits::value << " dimensions..." << endl;
       SharedContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTraits::value >();
       for( GlobalIndexType i = 0;
            i < vertexContainer.getSize();

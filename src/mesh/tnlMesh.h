@@ -36,10 +36,10 @@ class tnlMesh : public tnlObject,
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
-   ~tnlMesh()
+   /*~tnlMesh()
    {
       cerr << "Destroying mesh " << this->getName() << endl;
-   }
+   }*/
 
    static tnlString getType()
    {
@@ -58,7 +58,10 @@ class tnlMesh : public tnlObject,
    {
       if( ! tnlObject::save( file ) ||
           ! BaseType::save( file ) )
+      {
+         cerr << "Mesh saving failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -67,7 +70,7 @@ class tnlMesh : public tnlObject,
       if( ! tnlObject::load( file ) ||
           ! BaseType::load( file ) )
       {
-         cerr << "Loading a mesh failed." << endl;
+         cerr << "Mesh loading failed." << endl;
          return false;
       }
       return true;

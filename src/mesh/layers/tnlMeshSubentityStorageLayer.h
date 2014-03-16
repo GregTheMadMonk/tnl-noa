@@ -76,10 +76,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       //this->subentitiesIndices.setName( "subentitiesIndices" );
    }
 
-   ~tnlMeshSubentityStorageLayer()
+   /*~tnlMeshSubentityStorageLayer()
    {
       cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
-   }
+   }*/
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
@@ -91,7 +91,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
+      {
+         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -99,7 +102,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
+      {
+         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
       return true;
    }
@@ -199,10 +205,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       this->sharedVerticesIndices.bind( this->verticesIndices );
    }
 
-   ~tnlMeshSubentityStorageLayer()
+   /*~tnlMeshSubentityStorageLayer()
    {
       cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
-   }
+   }*/
 
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -213,15 +219,21 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    bool save( tnlFile& file ) const
    {
-      if( ! this->subentitiesVertices.save( file ) )
+      if( ! this->verticesIndices.save( file ) )
+      {
+         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! this->subentitiesVertices.load( file ) )
+      if( ! this->verticesIndices.load( file ) )
+      {
+         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       this->sharedVerticesIndices.bind( this->verticesIndices );
       return true;
    }
@@ -274,6 +286,18 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
                                     tnlDimensionsTraits< 0 >,
                                     tnlStorageTraits< false > >
 {
+   public:
+
+   bool save( tnlFile& file ) const
+   {
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      return true;
+   }
+
 };
 
 

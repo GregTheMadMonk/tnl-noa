@@ -74,10 +74,10 @@ class tnlMeshStorageLayer< ConfigTag,
       this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
    }
 
-   ~tnlMeshStorageLayer()
+   /*~tnlMeshStorageLayer()
    {
       cout << "Destroying mesh storage layer with " << DimensionsTraits::value << " dimensions and " << this->entities.getSize() << " entities." << endl;
-   }
+   }*/
 
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
@@ -124,8 +124,11 @@ class tnlMeshStorageLayer< ConfigTag,
    bool save( tnlFile& file ) const
    {
       if( ! BaseType::save( file ) ||
-          ! this->entities.saveRecursively( file ) )
+          ! this->entities.save( file ) )
+      {
+         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -133,8 +136,11 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
       if( ! BaseType::load( file ) ||
-          ! this->entities.loadRecursively( file ) )
+          ! this->entities.load( file ) )
+      {
+         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       this->sharedEntities.bind( this->entities );
       return true;
    }
@@ -196,10 +202,10 @@ class tnlMeshStorageLayer< ConfigTag,
       this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
    }
 
-   ~tnlMeshStorageLayer()
+   /*~tnlMeshStorageLayer()
    {
         cout << "mesh storage layer: dimensions = " << DimensionsTraits::value << " entities = " << this->vertices.getSize() << endl;
-   }
+   }*/
 
 
    bool setNumberOfVertices( const GlobalIndexType size )
@@ -278,15 +284,21 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool save( tnlFile& file ) const
    {
-      if( ! this->vertices.saveRecursively( file ) )
+      if( ! this->vertices.save( file ) )
+      {
+         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! this->vertices.loadRecursively( file ) )
+      if( ! this->vertices.load( file ) )
+      {
+         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       this->sharedVertices.bind( this->vertices );
       return true;
    }
