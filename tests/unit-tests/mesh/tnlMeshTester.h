@@ -207,7 +207,7 @@ class tnlMeshTester : public CppUnit :: TestCase
        *  12        3        6       10
        */
       
-      mesh.setNumberOfEntities< 3 >( 1 );
+      mesh.setNumberOfEntities< 3 >( 18 );
 
        //  12        8        7        5
       mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 0 ] = 12;
@@ -216,13 +216,13 @@ class tnlMeshTester : public CppUnit :: TestCase
       mesh.getEntities< 3 >()[ 0 ].getVerticesIndices()[ 3 ] = 5;
 
        //  12        7        8       10
-      /*mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 0 ] = 12;
       mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 1 ] = 7;
       mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 2 ] = 8;
       mesh.getEntities< 3 >()[ 1 ].getVerticesIndices()[ 3 ] = 10;
                  
        //  12       11        8        9
-      /*mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 0 ] = 12;
+      mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 0 ] = 12;
       mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 1 ] = 11;
       mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 2 ] = 8;
       mesh.getEntities< 3 >()[ 2 ].getVerticesIndices()[ 3 ] = 9;
@@ -316,7 +316,6 @@ class tnlMeshTester : public CppUnit :: TestCase
       mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 1 ] = 3;
       mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 2 ] = 6;
       mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 3 ] = 10;
-      */
                  
       tnlMeshInitializer< TestTetrahedronMeshConfig > meshInitializer;
       meshInitializer.initMesh( mesh );

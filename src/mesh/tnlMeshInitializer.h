@@ -202,6 +202,7 @@ class tnlMeshInitializerLayer< ConfigTag,
       this->getMesh().template setNumberOfEntities< DimensionsTraits::value >( numberOfEntities );
       uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTraits::value >() );
       uniqueContainer.reset();
+      cout << "  this->getMesh().template getEntities< DimensionsTraits::value >() has: " << this->getMesh().template getEntities< DimensionsTraits::value >() << endl;
 
       //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTraits());
       for( GlobalIndexType i = 0;

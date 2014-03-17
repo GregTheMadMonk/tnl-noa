@@ -83,6 +83,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
+      BaseType::operator=( layer );
       this->subentitiesIndices = layer.subentitiesIndices;
       return *this;
    }
@@ -214,6 +215,8 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
       this->verticesIndices = layer.verticesIndices;
+      cout << " layer.verticesIndices = " << layer.verticesIndices << endl;
+      cout << " this->verticesIndices = " << this->verticesIndices << endl;
       return *this;
    }
 
