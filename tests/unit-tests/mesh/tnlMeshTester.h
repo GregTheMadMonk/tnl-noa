@@ -167,7 +167,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
-      tnlMesh< TestTetrahedronMeshConfig > mesh;
+      tnlMesh< TestTetrahedronMeshConfig > mesh, mesh2;
       mesh.setNumberOfVertices( 13 );
       mesh.setVertex(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
       mesh.setVertex(  1, PointType(  0.000000, 0.000000, 8.000000 ) );
@@ -320,7 +320,10 @@ class tnlMeshTester : public CppUnit :: TestCase
       tnlMeshInitializer< TestTetrahedronMeshConfig > meshInitializer;
       meshInitializer.initMesh( mesh );
 
-      mesh.print( cout );
+      CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
+      CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
+      CPPUNIT_ASSERT( mesh == mesh2 );
+      //mesh.print( cout );
 
    }
 
