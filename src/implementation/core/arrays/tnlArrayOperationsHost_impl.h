@@ -101,7 +101,7 @@ bool tnlArrayOperations< tnlHost >::compareMemory( const DestinationElement* des
    }
    else
       for( Index i = 0; i < size; i ++ )
-         if( destination[ i ] != source[ i ] )
+         if( ! ( destination[ i ] == source[ i ] ) )
             return false;
    return true;
 }

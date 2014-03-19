@@ -39,6 +39,11 @@ class tnlMeshEntityId
       this->id = id;
    }
 
+   bool operator==( const tnlMeshEntityId< IDType, GlobalIndexType >& id ) const
+   {
+      return ( this->id == id.id );
+   }
+
    protected:
    IDType id;
 };
@@ -49,6 +54,11 @@ class tnlMeshEntityId< void, GlobalIndexType >
    public:
    void setId( GlobalIndexType )
    {}
+
+   bool operator==( const tnlMeshEntityId< void, GlobalIndexType >& id ) const
+   {
+      return true;
+   }
 };
 
 

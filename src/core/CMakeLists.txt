@@ -8,6 +8,7 @@ set (headers tnlAssert.h
       	    tnlCuda.h
   		       tnlDataElement.h
   		       tnlDevice.h
+  		       tnlDynamicTypeTag.h
   		       tnlFeature.h
   		       tnlFile.h 
   		       tnlFlopsCounter.h

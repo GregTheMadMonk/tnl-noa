@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlMeshTest.cpp  -  description
+                          tnlDynamicTypeTag.h  -  description
                              -------------------
-    begin                : Feb 18, 2014
+    begin                : Mar 13, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,25 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
-#include <cstdlib>
+#ifndef TNLDYNAMICTYPETAG_H_
+#define TNLDYNAMICTYPETAG_H_
 
-#include "tnlMeshTester.h"
-#include "../tnlUnitTestStarter.h"
-
-int main( int argc, char* argv[] )
+template< typename Element >
+struct tnlDynamicTypeTag
 {
-#ifdef HAVE_CPPUNIT
-   //tnlMeshTester< double, tnlHost, long int > t;
-   //t.regularMeshOfHexahedronsTest();
-   if( ! tnlUnitTestStarter :: run< tnlMeshTester< double, tnlHost, long int > >()
-       )
-     return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-#else
-   return EXIT_FAILURE;
-#endif
-}
+   enum { value = false };
+};
 
 
+#endif /* TNLDYNAMICTYPETAG_H_ */

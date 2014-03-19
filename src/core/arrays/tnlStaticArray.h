@@ -93,6 +93,8 @@ class tnlStaticArray
    template< typename Array >
    bool operator != ( const Array& array ) const;
 
+   void setValue( const ElementType& val );
+
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file);
@@ -182,6 +184,8 @@ class tnlStaticArray< 1, Element >
 
    template< typename Array >
    bool operator != ( const Array& array ) const;
+
+   void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;
 
@@ -289,6 +293,8 @@ class tnlStaticArray< 2, Element >
 
    template< typename Array >
    bool operator != ( const Array& array ) const;
+
+   void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;
 
@@ -408,6 +414,8 @@ class tnlStaticArray< 3, Element >
 
    template< typename Array >
    bool operator != ( const Array& array ) const;
+
+   void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;
 
