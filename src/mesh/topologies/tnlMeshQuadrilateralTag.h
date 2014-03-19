@@ -43,6 +43,33 @@ struct tnlSubentities< tnlMeshQuadrilateralTag, 1>
 };
 
 
+/****
+ * Indexing of the vertices follows the VTK file format
+ *
+ *   3                     2
+ *    +-------------------+
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    +-------------------+
+ *   0                     1
+ *
+ * The edges are indexed as follows:
+ *
+ *              2
+ *    +-------------------+
+ *    |                   |
+ *    |                   |
+ *  3 |                   | 1
+ *    |                   |
+ *    |                   |
+ *    +-------------------+
+ *              0
+ *
+ */
+
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTag, tnlMeshEdgeTag, 0, 0> { enum { index = 0 }; };
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTag, tnlMeshEdgeTag, 0, 1> { enum { index = 1 }; };
 

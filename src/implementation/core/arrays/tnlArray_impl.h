@@ -272,8 +272,6 @@ template< typename Element,
           typename Index >
 void tnlArray< Element, Device, Index > :: setValue( const Element& e )
 {
-   tnlAssert( this -> size != 0,
-              cerr << "Array name is " << this -> getName() );
    tnlArrayOperations< Device > :: setMemory( this -> getData(), e, this -> getSize() );
 }
 
@@ -322,8 +320,6 @@ template< typename Element,
           typename Index >
 bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
-   tnlAssert( this -> size != 0,
-              cerr << "You try to save empty vector. Its name is " << this -> getName() );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -363,9 +359,9 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
       cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
       return false;
    }
+   setSize( _size );
    if( _size )
    {
-      setSize( _size );
       if( ! tnlArrayIO< Element, Device, Index >::load( file, this -> data, this -> size ) )
       {
          cerr << "I was not able to load " << this->getType()

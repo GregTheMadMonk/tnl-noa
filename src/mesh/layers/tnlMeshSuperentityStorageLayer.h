@@ -106,6 +106,7 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
     {
        if( ! this->superentitiesIndices.setSize( size ) )
           return false;
+       this->superentitiesIndices.setValue( -1 );
        this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
        return true;
     }
@@ -143,7 +144,7 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        if( ! BaseType::save( file ) ||
            ! this->superentitiesIndices.save( file ) )
        {
-          cerr << "Saving of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
+          //cerr << "Saving of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
           return false;
        }
        return true;
@@ -154,7 +155,7 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
        if( ! BaseType::load( file ) ||
            ! this->superentitiesIndices.load( file ) )
        {
-          cerr << "Loading of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
+          //cerr << "Loading of the entity superentities layer with " << DimensionsTraits::value << " failed." << endl;
           return false;
        }
        return true;
@@ -309,14 +310,5 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
       return true;
    }
 };
-
-/*template< typename ConfigTag,
-          typename EntityTag >
-class tnlMeshSuperentityStorageLayer< ConfigTag,
-                                      EntityTag,
-                                      tnlDimensionsTraits< 0 >,
-                                      tnlStorageTraits< false > >
-{
-};*/
 
 #endif /* TNLMESHSUPERENTITYSTORAGELAYER_H_ */

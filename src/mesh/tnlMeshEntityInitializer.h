@@ -94,7 +94,7 @@ class tnlMeshEntityInitializer
 
       initSuperentities();
       initSubentities( meshInitializer );
-      cout << " Entity initiation done ... " << endl;
+      //cout << " Entity initiation done ... " << endl;
    }
 
    template< typename SubentityDimensionsTag >
@@ -150,13 +150,13 @@ class tnlMeshEntityInitializer
 
    void initSubentities( InitializerType& meshInitializer )
    {
-      cout << "   Initiating subentities of entity ... " << endl;
+      //cout << "   Initiating subentities of entity ... " << endl;
       SubentityBaseType::initSubentities( *this, meshInitializer );
    }
 
    void initSuperentities()
    {
-      cout << "   Initiating superentities..." << endl;
+      //cout << "   Initiating superentities..." << endl;
       SuperentityBaseType::initSuperentities( *this) ;
    }
 
@@ -188,8 +188,8 @@ class tnlMeshEntityInitializer
                                      const EntityType &entity )
       {
          const SubentitiesIndicesContainerType& subvertexIndices = entity.template getSubentitiesIndices< 0 >();
-         cout << "        entity = " << entity << endl;
-         cout << "        subvertexIndices = " << subvertexIndices << endl;
+         //cout << "        entity = " << entity << endl;
+         //cout << "        subvertexIndices = " << subvertexIndices << endl;
          tnlStaticFor< LocalIndexType, 0, subentitiesCount, CreateSubentities >::exec( subentities, subvertexIndices );
       }
 
@@ -210,12 +210,13 @@ class tnlMeshEntityInitializer
          class SetSubentityVertex
          {
             public:
-            static void exec( SubentityType &subentity,
+            static bool exec( SubentityType &subentity,
                               const SubentitiesIndicesContainerType& subvertexIndices )
             {
                LocalIndexType vertexIndex = Tag::template Vertex< subentityIndex, subentityVertexIndex >::index;
-               cout << "        Setting subentity " << subentityIndex << " vertex " << subentityVertexIndex << " to " << subvertexIndices[ vertexIndex ] << endl;
+               //cout << "        Setting subentity " << subentityIndex << " vertex " << subentityVertexIndex << " to " << subvertexIndices[ vertexIndex ] << endl;
                tnlMeshEntityInitializer< ConfigTag, SubentityTag >::setEntityVertex( subentity, subentityVertexIndex, subvertexIndices[ vertexIndex ] );
+               return true;
             }
          };
       };
@@ -255,7 +256,7 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
    {
       this->entity->setId( this->entityIndex );
       initSuperentities();
-      cout << "Vertex initiation done ... " << endl;
+      //cout << "Vertex initiation done ... " << endl;
    }
 
    template< typename SuperentityDimensionsTag >
@@ -281,7 +282,7 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >
 
    void initSuperentities()
    {
-      cout << "    Initiating superentities of vertex ..." << endl;
+      //cout << "    Initiating superentities of vertex ..." << endl;
       SuperentityBaseType::initSuperentities(*this);
    }
 };
@@ -308,9 +309,8 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 
    typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
    typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
-   typedef typename SubentitiesTraits::ContainerType                                           ContainerType;
    typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
-   typedef typename ContainerType::ElementType                                                 GlobalIndexType;
+   typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
    typedef tnlMeshInitializer< ConfigTag >                                                     InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                    EntityInitializerType;
@@ -321,10 +321,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
-      cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
+      //cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
       entityInitializer.template createSubentities< DimensionsTag >( subentities );
       SharedContainerType& subentityContainer = entityInitializer.subentityContainer( DimensionsTag() );
-      cout << "      Subentities = " << subentities << endl;
+      //cout << "      Subentities = " << subentities << endl;
       for( typename SubentityContainerType::IndexType i = 0;
            i < subentities.getSize();
            i++ )
@@ -332,7 +332,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
          GlobalIndexType subentityIndex = meshInitializer.findEntityIndex( subentities[ i ] );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();
          subentityContainer[ i ] = subentityIndex;
-         cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
+         //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
          meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTraits(), superentityIndex );
       }
 
@@ -358,10 +358,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 
    typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                               EntityTag,
-                                              DimensionsTag >::SubentityContainerType              SubentityContainerType;
+                                              DimensionsTag >::SubentityContainerType          SubentityContainerType;
    typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                               EntityTag,
-                                              DimensionsTag >::ContainerType                       ContainerType;
+                                              DimensionsTag >::SharedContainerType             SharedContainerType;
 
    typedef tnlMeshInitializer< ConfigTag >                                                     InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                    EntityInitializerType;
@@ -371,15 +371,15 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
-      cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
+      //cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
       entityInitializer.template createSubentities< DimensionsTag >( subentities );
-      ContainerType& subentityContainer = entityInitializer.subentityContainer( DimensionsTag() );
+      SharedContainerType& subentityContainer = entityInitializer.subentityContainer( DimensionsTag() );
       for( typename SubentityContainerType::IndexType i = 0;
            i < subentityContainer.getSize();
            i++ )
       {
          subentityContainer[ i ] = meshInitializer.findEntityIndex( subentities[ i ] );
-         cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
+         //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
       }
 
       BaseType::initSubentities( entityInitializer, meshInitializer );
@@ -407,8 +407,8 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                               DimensionsTag >::SubentityContainerType        SubentityContainerType;
    typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                               EntityTag,
-                                              DimensionsTag >::ContainerType                 ContainerType;
-   typedef typename ContainerType::DataType                                                  GlobalIndexType;
+                                              DimensionsTag >::SharedContainerType           SharedContainerType;
+   typedef typename SharedContainerType::DataType                                            GlobalIndexType;
 
    typedef tnlMeshInitializer< ConfigTag >                                                   InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                  EntityInitializerType;
@@ -419,7 +419,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
-      cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
+      //cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
       entityInitializer.template createSubentities< DimensionsTag >( subentities );
 
       for( typename SubentityContainerType::IndexType i = 0;
@@ -428,7 +428,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
       {
          GlobalIndexType subentityIndex = meshInitializer.findEntityIndex( subentities[ i ] );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();
-         cout << "       NOT setting " << i << "-th subentity to " << subentityIndex << endl;
+         //cout << "       NOT setting " << i << "-th subentity to " << subentityIndex << endl;
          meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTag(), superentityIndex );
       }
       BaseType::initSubentities( entityInitializer, meshInitializer );
@@ -461,9 +461,8 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag >                 SubentitiesTraits;
 
-   typedef typename SubentitiesTraits::ContainerType                 ContainerType;
    typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
-   typedef typename ContainerType::ElementType                       GlobalIndexType;
+   typedef typename SharedContainerType::ElementType                 GlobalIndexType;
 
    typedef tnlMeshInitializer< ConfigTag >                           InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >          EntityInitializerType;
@@ -473,12 +472,12 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    void initSubentities( EntityInitializerType &entityInitializer,
                          InitializerType &meshInitializer )
    {
-      cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
+      //cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
       const SharedContainerType &subentityContainer = entityInitializer.subentityContainer( DimensionsTag() );
-      for (typename ContainerType::IndexType i = 0; i < subentityContainer.getSize(); i++)
+      for (typename SharedContainerType::IndexType i = 0; i < subentityContainer.getSize(); i++)
       {
          GlobalIndexType subentityIndex = subentityContainer[ i ];
-         cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
+         //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
          tnlAssert( subentityIndex >= 0,
                    cerr << " subentityContainer = " << subentityContainer << endl; );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();

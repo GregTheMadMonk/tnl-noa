@@ -18,7 +18,7 @@
 #ifndef TNLSTATICFOR_H_
 #define TNLSTATICFOR_H_
 
-template<typename IndexType, IndexType val>
+template< typename IndexType, IndexType val >
 class tnlStaticForIndexTag
 {
 public:

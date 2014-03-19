@@ -134,7 +134,7 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool load( tnlFile& file )
    {
-      cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
+      //cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
       if( ! BaseType::load( file ) ||
           ! this->entities.load( file ) )
       {

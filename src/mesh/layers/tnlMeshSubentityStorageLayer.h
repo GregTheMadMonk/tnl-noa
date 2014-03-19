@@ -71,6 +71,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    tnlMeshSubentityStorageLayer()
    {
+      this->subentitiesIndices.setValue( -1 );
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
       this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
       //this->subentitiesIndices.setName( "subentitiesIndices" );
@@ -203,6 +204,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    tnlMeshSubentityStorageLayer()
    {
+      this->verticesIndices.setValue( -1 );
       this->sharedVerticesIndices.bind( this->verticesIndices );
    }
 
@@ -215,8 +217,6 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
       this->verticesIndices = layer.verticesIndices;
-      cout << " layer.verticesIndices = " << layer.verticesIndices << endl;
-      cout << " this->verticesIndices = " << this->verticesIndices << endl;
       return *this;
    }
 

@@ -219,6 +219,12 @@ bool tnlStaticArray< 3, Element >::operator != ( const Array& array ) const
 }
 
 template< typename Element >
+void tnlStaticArray< 3, Element >::setValue( const ElementType& val )
+{
+   data[ 2 ] = data[ 1 ] = data[ 0 ] = val;
+}
+
+template< typename Element >
 bool tnlStaticArray< 3, Element >::save( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11

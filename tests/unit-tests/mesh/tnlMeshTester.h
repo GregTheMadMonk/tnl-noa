@@ -30,7 +30,9 @@
 #include <mesh/topologies/tnlMeshVertexTag.h>
 #include <mesh/topologies/tnlMeshEdgeTag.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/topologies/tnlMeshHexahedronTag.h>
 #include <mesh/tnlMeshInitializer.h>
 
  typedef tnlMeshConfigBase< 2, double, int, int, void > Mesh2dConfigBaseType;
@@ -47,6 +49,23 @@
 
  template< int Dimensions >
  struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshEdgeTag, Dimensions >
+ {
+    enum { enabled = true };
+ };
+ 
+ struct TestQuadrilateralMeshConfig : public Mesh2dConfigBaseType
+ {
+     typedef tnlMeshQuadrilateralTag CellTag;
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
+ {
+    enum { enabled = true };
+ };
+
+ template< int Dimensions >
+ struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
  {
     enum { enabled = true };
  };
@@ -75,6 +94,28 @@
      enum { enabled = true };
  };
 
+struct TestHexahedronMeshConfig : public Mesh3dConfigBaseType
+{
+   typedef tnlMeshHexahedronTag CellTag;
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshVertexTag, Dimensions >
+{
+  enum { enabled = true };
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
+{
+  enum { enabled = true };
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
+{
+   enum { enabled = true };
+};
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlMeshTester : public CppUnit :: TestCase
@@ -95,13 +136,14 @@ class tnlMeshTester : public CppUnit :: TestCase
 
       suiteOfTests -> addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
       suiteOfTests -> addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
-
+      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfTrianglesTest", &TesterType::regularMeshOfTrianglesTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfQuadrilateralsTest", &TesterType::regularMeshOfQuadrilateralsTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfHexahedronsTest", &TesterType::regularMeshOfHexahedronsTest ) );
       return suiteOfTests;
    }
 
    void twoTrianglesTest()
    {
-
        typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
        typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
        typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
@@ -324,8 +366,172 @@ class tnlMeshTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
       //mesh.print( cout );
-
    }
+
+   void regularMeshOfTrianglesTest()
+   {
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef typename VertexMeshEntityType::PointType PointType;
+
+      const IndexType xSize( 5 ), ySize( 5 );
+      const RealType width( 1.0 ), height( 1.0 );
+      const RealType hx( width / ( RealType ) xSize ),
+                     hy( height / ( RealType ) ySize );
+      const IndexType numberOfCells = 2*xSize * ySize;
+      const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
+
+      tnlMesh< TestTriangleMeshConfig > mesh, mesh2;
+      mesh.setNumberOfCells( numberOfCells );
+      mesh.setNumberOfVertices( numberOfVertices );
+
+      /****
+       * Setup vertices
+       */
+      for( IndexType i = 0; i <= xSize; i++ )
+         for( IndexType j = 0; j <= ySize; j++ )
+            mesh.setVertex(  j*xSize + i, PointType( i * hx, j * hy ) );
+
+      /****
+       * Setup cells
+       */
+      IndexType cellIdx( 0 );
+      for( IndexType i = 0; i < xSize; i++ )
+         for( IndexType j = 0; j < ySize; j++ )
+         {
+            IndexType vertex0 = j * xSize + i;
+            IndexType vertex1 = j * xSize + i + 1;
+            IndexType vertex2 = ( j + 1 ) * xSize + i;
+            IndexType vertex3 = ( j + 1 ) * xSize + i + 1;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex0;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex1;
+            mesh.getEntities< 2 >()[ cellIdx++ ].getVerticesIndices()[ 2 ] = vertex2;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex1;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex2;
+            mesh.getEntities< 2 >()[ cellIdx++ ].getVerticesIndices()[ 2 ] = vertex3;
+         }
+
+      tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
+      meshInitializer.initMesh( mesh );
+      CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh == mesh2 );
+      //mesh.print( cout );
+   }
+
+   void regularMeshOfQuadrilateralsTest()
+   {
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshQuadrilateralTag > QuadrilateralMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef typename VertexMeshEntityType::PointType PointType;
+
+      const IndexType xSize( 5 ), ySize( 5 );
+      const RealType width( 1.0 ), height( 1.0 );
+      const RealType hx( width / ( RealType ) xSize ),
+                     hy( height / ( RealType ) ySize );
+      const IndexType numberOfCells = xSize * ySize;
+      const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
+
+      tnlMesh< TestQuadrilateralMeshConfig > mesh, mesh2;
+      mesh.setNumberOfCells( numberOfCells );
+      mesh.setNumberOfVertices( numberOfVertices );
+
+      /****
+       * Setup vertices
+       */
+      for( IndexType i = 0; i <= xSize; i++ )
+         for( IndexType j = 0; j <= ySize; j++ )
+            mesh.setVertex(  j*xSize + i, PointType( i * hx, j * hy ) );
+
+      /****
+       * Setup cells
+       */
+      IndexType cellIdx( 0 );
+      for( IndexType i = 0; i < xSize; i++ )
+         for( IndexType j = 0; j < ySize; j++ )
+         {
+            IndexType vertex0 = j * xSize + i;
+            IndexType vertex1 = j * xSize + i + 1;
+            IndexType vertex2 = ( j + 1 ) * xSize + i;
+            IndexType vertex3 = ( j + 1 ) * xSize + i + 1;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex0;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex1;
+            mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 2 ] = vertex2;
+            mesh.getEntities< 2 >()[ cellIdx++ ].getVerticesIndices()[ 3 ] = vertex3;
+         }
+
+      tnlMeshInitializer< TestQuadrilateralMeshConfig > meshInitializer;
+      meshInitializer.initMesh( mesh );
+      CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh == mesh2 );
+      //mesh.print( cout );
+   }
+
+   void regularMeshOfHexahedronsTest()
+   {
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshHexahedronTag > HexahedronMeshEntityType;
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef typename VertexMeshEntityType::PointType PointType;
+
+      const IndexType xSize( 5 ), ySize( 5 ), zSize( 5 );
+      const RealType width( 1.0 ), height( 1.0 ), depth( 1.0 );
+      const RealType hx( width / ( RealType ) xSize ),
+                     hy( height / ( RealType ) ySize ),
+                     hz( depth / ( RealType ) zSize );
+      const IndexType numberOfCells = xSize * ySize * zSize;
+      const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
+
+      tnlMesh< TestHexahedronMeshConfig > mesh, mesh2;
+      mesh.setNumberOfCells( numberOfCells );
+      mesh.setNumberOfVertices( numberOfVertices );
+
+      /****
+       * Setup vertices
+       */
+      for( IndexType i = 0; i <= xSize; i++ )
+         for( IndexType j = 0; j <= ySize; j++ )
+            for( IndexType k = 0; k <= zSize; k++ )
+               mesh.setVertex(  k * xSize * ySize + j * xSize + i, PointType( i * hx, j * hy, k * hz ) );
+
+      /****
+       * Setup cells
+       */
+      IndexType cellIdx( 0 );
+      for( IndexType i = 0; i < xSize; i++ )
+         for( IndexType j = 0; j < ySize; j++ )
+            for( IndexType k = 0; k < zSize; k++ )
+            {
+               IndexType vertex0 = k * xSize * ySize + j * xSize + i;
+               IndexType vertex1 = k * xSize * ySize + j * xSize + i + 1;
+               IndexType vertex2 = k * xSize * ySize + ( j + 1 ) * xSize + i;
+               IndexType vertex3 = k * xSize * ySize + ( j + 1 ) * xSize + i + 1;
+               IndexType vertex4 = ( k + 1 ) * xSize * ySize + j * xSize + i;
+               IndexType vertex5 = ( k + 1 ) * xSize * ySize + j * xSize + i + 1;
+               IndexType vertex6 = ( k + 1 ) * xSize * ySize + ( j + 1 ) * xSize + i;
+               IndexType vertex7 = ( k + 1 )* xSize * ySize + ( j + 1 ) * xSize + i + 1;
+
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex0;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex1;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 2 ] = vertex2;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 3 ] = vertex3;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 4 ] = vertex4;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 5 ] = vertex5;
+               mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 6 ] = vertex6;
+               mesh.getEntities< 3 >()[ cellIdx++ ].getVerticesIndices()[ 7 ] = vertex7;
+            }
+
+      tnlMeshInitializer< TestHexahedronMeshConfig > meshInitializer;
+      meshInitializer.initMesh( mesh );
+      /*CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
+      CPPUNIT_ASSERT( mesh == mesh2 );*/
+      //mesh.print( cout );
+   }
+
 
 };
 
