@@ -23,7 +23,29 @@
 template< typename MeshType >
 class tnlMeshIntegrityChecker
 {
+   public:
 
+   typedef typename MeshType::Config                       ConfigTag;
+   typedef typename ConfigTag::CellTag                     CellTag;
+   typedef tnlDimensionsTraits< CellTag::dimensions >      CellDimensionsTraits;
+   typedef tnlMeshEntitiesTraits< ConfigTag,
+                                  CellDimensionsTraits >   CellTraits;
+   typedef typename CellTraits::SharedContainerType        CellsSharedContainerType;
+   typedef tnlDimensionsTraits< 0 >                        VertexDimensionsTraits;
+   typedef tnlMeshEntitiesTraits< ConfigTag,
+                                  VertexDimensionsTraits > VertexTraits;
+   typedef typename VertexTraits::SharedContainerType      VertexSharedConatinerType;
+
+   static bool checkMesh( const MeshType& mesh )
+   {
+      for( CellsGlobalIndexType cell = 0;
+           cell < mesh.getNumberOfCells();
+           cell++ )
+      {
+         cout << "Checking cell number " << cell << endl;
+      }
+      return true;
+   }
 };
 
 

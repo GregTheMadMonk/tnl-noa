@@ -108,17 +108,27 @@ class tnlMeshInitializerLayer< ConfigTag,
    bool checkCells()
    {
       typedef typename tnlMeshEntity< ConfigTag, EntityTag >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
+      const GlobalIndexType numberOfVertices( this->getMesh().getNumberOfVertices() );
       for( GlobalIndexType cell = 0;
            cell < this->getMesh().getNumberOfCells();
            cell++ )
          for( LocalIndexType i = 0;
               i < this->getMesh().getCell( cell ).getNumberOfVertices();
               i++ )
+         {
             if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
             {
                cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << endl;
                return false;
             }
+            if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
+            {
+               cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
+                    << ". The index is higher than the number of all vertices ( " << numberOfVertices
+                    << " )." << endl;
+               return false;
+            }
+         }
       return true;
    }
 

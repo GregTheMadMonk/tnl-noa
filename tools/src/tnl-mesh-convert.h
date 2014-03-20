@@ -25,6 +25,7 @@
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
 #include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshInitializer.h>
+#include <mesh/tnlMeshIntegrityChecker.h>
 #include <core/mfilename.h>
 
 template< int Dimensions >
@@ -38,14 +39,17 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
          typedef tnlMeshTriangleTag CellTag;
-      };      
-      tnlMesh< MeshConfig > mesh;
+      };            
+      typedef tnlMesh< MeshConfig >  MeshType;
+      MeshType mesh;
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
       tnlMeshInitializer< MeshConfig > meshInitializer;
       meshInitializer.setVerbose( true );
       if( ! meshInitializer.initMesh( mesh ) )
+         return false;
+      if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
          return false;
       tnlString outputFile;
       if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
@@ -64,13 +68,16 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       {
          typedef tnlMeshTetrahedronTag CellTag;
       };
-      tnlMesh< MeshConfig > mesh;
+      typedef tnlMesh< MeshConfig > MeshType;
+      MeshType mesh;
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
       tnlMeshInitializer< MeshConfig > meshInitializer;
       meshInitializer.setVerbose( true );
       if( ! meshInitializer.initMesh( mesh ) )
+         return false;
+      if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
          return false;
       tnlString outputFile;
       if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
