@@ -22,6 +22,7 @@
 #include <mesh/tnlMeshReaderNetgen.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
+#include <mesh/topologies/tnlMeshTetrahedronTag.h>
 #include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshInitializer.h>
 #include <core/mfilename.h>
@@ -42,12 +43,14 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
-      //if( ! tnlMeshInitializer< MeshConfig >::initMesh( mesh ) )
-      //   return false;
+      tnlMeshInitializer< MeshConfig > meshInitializer;
+      meshInitializer.setVerbose( true );
+      if( ! meshInitializer.initMesh( mesh ) )
+         return false;
       tnlString outputFile;
       if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
       {
-         cout << "Writing the mesh to the file " << outputFile << "." << endl;
+         cout << "Writing the 2D mesh to the file " << outputFile << "." << endl;
          if( ! mesh.save( outputFile ) )
          {
             cerr << "I am not able to safe the mesh into the file " << outputFile << "." << endl;
@@ -55,6 +58,32 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
          }
       }
    }
+   if( Dimensions == 3 )
+   {
+      struct MeshConfig : public tnlMeshConfigBase< 3 >
+      {
+         typedef tnlMeshTetrahedronTag CellTag;
+      };
+      tnlMesh< MeshConfig > mesh;
+      if( fileExt == "ng" &&
+          ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
+         return false;
+      tnlMeshInitializer< MeshConfig > meshInitializer;
+      meshInitializer.setVerbose( true );
+      if( ! meshInitializer.initMesh( mesh ) )
+         return false;
+      tnlString outputFile;
+      if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
+      {
+         cout << "Writing the 3D mesh to the file " << outputFile << "." << endl;
+         if( ! mesh.save( outputFile ) )
+         {
+            cerr << "I am not able to safe the mesh into the file " << outputFile << "." << endl;
+            return false;
+         }
+      }
+   }
+
    return true;
 }
 
