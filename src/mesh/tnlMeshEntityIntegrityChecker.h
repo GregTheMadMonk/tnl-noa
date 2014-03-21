@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshIntegrityChecker.h  -  description
+                          tnlMeshEntityIntegrityChecker.h  -  description
                              -------------------
     begin                : Mar 20, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,28 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHINTEGRITYCHECKER_H_
-#define TNLMESHINTEGRITYCHECKER_H_
+#ifndef TNLMESHENTITYINTEGRITYCHECKER_H_
+#define TNLMESHENTITYINTEGRITYCHECKER_H_
 
-#include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshIntegrityCheckerLayer.h>
-
-template< typename MeshType >
-class tnlMeshIntegrityChecker
-: public tnlMeshIntegrityCheckerLayer< MeshType,
-                                       tnlDimensionsTraits< MeshType::Config::CellTag::dimensions > >
+template< typename MeshEntity >
+class tnlMeshEntityIntegrityChecker
 {
-      typedef tnlDimensionsTraits< MeshType::Config::CellTag::dimensions > DimensionsTraits;
-      typedef tnlMeshIntegrityCheckerLayer< MeshType, DimensionsTraits > BaseType;
-
    public:
-      static bool checkMesh( const MeshType& mesh )
+
+      static bool checkEntity( const MeshEntity& entity )
       {
-         if( ! BaseType::checkEntities( mesh ) )
-            return false;
          return true;
       }
+
 };
 
 
-#endif /* TNLMESHINTEGRITYCHECKER_H_ */
+#endif /* TNLMESHENTITYINTEGRITYCHECKER_H_ */

@@ -124,7 +124,8 @@ class tnlMeshInitializerLayer< ConfigTag,
             if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
             {
                cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
-                    << ". The index is higher than the number of all vertices ( " << numberOfVertices
+                    << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
+                    << "is higher than the number of all vertices ( " << numberOfVertices
                     << " )." << endl;
                return false;
             }

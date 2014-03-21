@@ -140,6 +140,7 @@ class tnlMeshReaderNetgen
           return false;
        }
        getline( inputFile, line );
+       iss.clear();
        iss.str( line );
        CellIndexType numberOfCells=atoi( line.data() );
        //iss >> numberOfCells; // TODO: I do not know why this does not work
@@ -159,7 +160,7 @@ class tnlMeshReaderNetgen
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
-             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx );
+             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx - 1 );
           }
           if( verbose )
              cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << flush;

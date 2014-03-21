@@ -24,13 +24,15 @@
  * It means that each mesh entity stores its index in its
  * mesh storage layer.
  */
-template< int WorldDimensions,
+template< typename Cell,
+          int WorldDimensions = Cell::dimensions,
           typename Real = double,
           typename GlobalIndex = int,
           typename LocalIndex = GlobalIndex,
           typename Id = void >
 struct tnlMeshConfigBase
 {
+   typedef Cell        CellTag;
    typedef Real        RealType;
    typedef GlobalIndex GlobalIndexType;
    typedef LocalIndex  LocalIndexType;
@@ -43,6 +45,7 @@ struct tnlMeshConfigBase
       return tnlString( "tnlMeshConfigBase< >");
    };
 
+   tnlStaticAssert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
 /****

@@ -28,6 +28,10 @@ else()
     AddCompilerFlag( "-O3 -DNDEBUG " )
 endif()
 
+if( WITH_PROFILING STREQUAL "yes" )
+   AddCompilerFlag( "-pg" )
+endif()   
+
 if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
    AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
 endif()   

@@ -36,16 +36,12 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 
    if( Dimensions == 2 )
    {
-      struct MeshConfig : public tnlMeshConfigBase< 2 >
-      {
-         typedef tnlMeshTriangleTag CellTag;
-      };            
-      typedef tnlMesh< MeshConfig >  MeshType;
+      typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTag > > MeshType;
       MeshType mesh;
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
-      tnlMeshInitializer< MeshConfig > meshInitializer;
+      tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTriangleTag > > meshInitializer;
       meshInitializer.setVerbose( true );
       if( ! meshInitializer.initMesh( mesh ) )
          return false;
@@ -64,16 +60,12 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
    }
    if( Dimensions == 3 )
    {
-      struct MeshConfig : public tnlMeshConfigBase< 3 >
-      {
-         typedef tnlMeshTetrahedronTag CellTag;
-      };
-      typedef tnlMesh< MeshConfig > MeshType;
+      typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTag > > MeshType;
       MeshType mesh;
       if( fileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
-      tnlMeshInitializer< MeshConfig > meshInitializer;
+      tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTetrahedronTag > > meshInitializer;
       meshInitializer.setVerbose( true );
       if( ! meshInitializer.initMesh( mesh ) )
          return false;
