@@ -18,6 +18,53 @@
 #ifndef SIMPLEPROBLEMSETTER_IMPL_H_
 #define SIMPLEPROBLEMSETTER_IMPL_H_
 
+#include "simpleProblemSetter.h"
+
+template< typename MeshType, typename SolverStarter >
+template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
+bool simpleProblemSetter< MeshType, SolverStarter > ::setAnalyticSpaceFunction (const tnlParameterContainer& parameters)
+{
+   SolverStarter solverStarter;
+   
+   const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("analytic-space-function");
+   
+   if (analyticSpaceFunctionParameter == "sin-wave")
+      return solverStarter.run< simpleProblemSolver< MeshType,tnlLinearDiffusion<MeshType>,
+                                 tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
+                                 TimeFunction,tnlSinWaveFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   if (analyticSpaceFunctionParameter == "sin-bumps")
+     return solverStarter.run< simpleProblemSolver< MeshType,tnlLinearDiffusion<MeshType>,
+                               tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
+                               TimeFunction, tnlSinBumpsFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   if (analyticSpaceFunctionParameter == "exp-bump")
+      return solverStarter.run< simpleProblemSolver< MeshType,tnlLinearDiffusion<MeshType>,
+                                tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
+                                TimeFunction, tnlExpBumpFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   
+   cerr<<"Unknown analytic-space-function parameter: "<<analyticSpaceFunctionParameter<<". ";
+   return 0;
+}
+
+template< typename MeshType, typename SolverStarter >
+template< typename RealType, typename DeviceType, typename IndexType>
+bool simpleProblemSetter< MeshType, SolverStarter > ::setTimeFunction (const tnlParameterContainer& parameters)
+{
+   const tnlString& timeFunctionParameter = parameters.GetParameter<tnlString>("time-function");
+   
+   if (timeFunctionParameter == "time-independent")
+      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, TimeIndependent>(parameters);
+   if (timeFunctionParameter == "linear")
+      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Linear>(parameters);
+   if (timeFunctionParameter == "quadratic")
+      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Quadratic>(parameters);
+   if (timeFunctionParameter == "cosinus")
+      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Cosinus>(parameters);
+   
+   cerr<<"Unknown time-function parameter: "<<timeFunctionParameter<<". ";
+   return 0;
+}
+
+
 template< typename MeshType,
           typename SolverStarter >
    template< typename RealType,
@@ -25,8 +72,7 @@ template< typename MeshType,
              typename IndexType >
 bool simpleProblemSetter< MeshType, SolverStarter > :: run( const tnlParameterContainer& parameters )
 {
-   SolverStarter solverStarter;
-   return solverStarter. run< simpleProblemSolver< MeshType > >( parameters );
+   return setTimeFunction<RealType, DeviceType, IndexType>(parameters);
 }
 
 

@@ -21,13 +21,37 @@
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlGrid.h>
 #include "simpleProblemSolver.h"
+#include <generators/functions/tnlSinWaveFunction.h>
+#include <generators/functions/tnlExpBumpFunction.h>
+#include <generators/functions/tnlSinBumpsFunction.h>
+#include "tnlTimeFunction.h"
+#include "tnlDirichletBoundaryConditions.h"
+#include "tnlLinearDiffusion.h"
+#include "tnlNeumannBoundaryConditions.h"
+#include "tnlZeroRightHandSide.h"
+#include "tnlRightHandSide.h"
 
+   
 template< typename MeshType,
           typename SolverStarter >
 class simpleProblemSetter
 {
    public:
+ 
+   typedef TimeFunction<MeshType,TimeFunctionBase::TimeIndependent> TimeIndependent;
+   typedef TimeFunction<MeshType,TimeFunctionBase::Linear> Linear;
+   typedef TimeFunction<MeshType,TimeFunctionBase::Quadratic> Quadratic;
+   typedef TimeFunction<MeshType,TimeFunctionBase::Cosinus> Cosinus;
+   typedef typename MeshType::RealType RealType;
+   typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
 
+      
+   template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
+   static bool setAnalyticSpaceFunction (const tnlParameterContainer& parameters);  
+    
+   template< typename RealType, typename DeviceType, typename IndexType>
+   static bool setTimeFunction (const tnlParameterContainer& parameters);
+      
    template< typename RealType,
              typename DeviceType,
              typename IndexType >
