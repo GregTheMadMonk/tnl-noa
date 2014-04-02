@@ -24,8 +24,11 @@
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
+#include "simpleProblemSolver.h"
+#include "tnlAnalyticSolution.h"
 
-template< typename Mesh >
+
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, typename TimeFunction, typename AnalyticSpaceFunction>
 class simpleProblemSolver
 {
    public:
@@ -59,15 +62,18 @@ class simpleProblemSolver
                         DofVectorType& _fu );
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
-
+   
    protected:
 
-   DofVectorType dofVector;
-
-   tnlSharedVector< RealType, DeviceType, IndexType > u, v;
-
+   DofVectorType dofVector,dofVector2;
+   tnlSharedVector< RealType, DeviceType, IndexType > u,v;
    MeshType mesh;
-
+   AnalyticSpaceFunction analyticSpaceFunction;
+   TimeFunction timeFunction;
+   AnalyticSolution<MeshType> analyticSolution;
+   BoundaryCondition boundaryCondition;
+   Diffusion diffusion;
+   RightHandSide RHS;
 };
 
 #include "simpleProblemSolver_impl.h"

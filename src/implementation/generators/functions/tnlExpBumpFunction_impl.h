@@ -69,7 +69,11 @@ template< typename Vertex, typename Device >
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return this->amplitude * sin( -x*x / ( this->sigma*this->sigma ) );
+      return this->amplitude * exp( -x*x / ( this->sigma*this->sigma ) );
+   if( XDiffOrder == 1 )
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 2 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) );
    return 0.0;
 }
 
@@ -88,10 +92,18 @@ template< typename Vertex, typename Device >
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
-   if( YDiffOrder != 0 || ZDiffOrder != 0 )
+   if( ZDiffOrder != 0 )
       return 0.0;
-   if( XDiffOrder == 0 )
+   if( XDiffOrder == 0 && YDiffOrder == 0 )
       return this->amplitude * exp( ( -x*x - y*y ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 0 )
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 2 && YDiffOrder == 0 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 1 )
+      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 2 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
    return 0.0;
 }
 
@@ -111,11 +123,22 @@ template< typename Vertex, typename Device >
    const RealType& x = v.x();
    const RealType& y = v.y();
    const RealType& z = v.z();
-   if( YDiffOrder != 0 || ZDiffOrder != 0 )
-      return 0.0;
-   if( XDiffOrder == 0 )
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
       return this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
+      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 2 && ZDiffOrder == 0 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
+      return -2.0 * z / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * z * z / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    return 0.0;
 }
+
 
 #endif /* TNLEXPBUMPFUNCTION_IMPL_H_ */

@@ -45,7 +45,7 @@ class simpleProblemSetter
    typedef typename MeshType::RealType RealType;
    typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
 
-      
+     
    template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
    static bool setAnalyticSpaceFunction (const tnlParameterContainer& parameters);  
     

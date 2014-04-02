@@ -86,6 +86,8 @@ template< typename Vertex, typename Device >
       return this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
    if( XDiffOrder == 1 )
       return 2.0 * M_PI / this->waveLength.x() * this->amplitude * cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
+   if( XDiffOrder == 2 )
+      return -4.0 * M_PI * M_PI / ( this->waveLength.x() * this->waveLength.x() ) * this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
    return 0.0;
 }
 
@@ -116,12 +118,20 @@ template< typename Vertex, typename Device >
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
-   if( YDiffOrder != 0 || ZDiffOrder != 0 )
+   if( ZDiffOrder != 0 )
       return 0.0;
-   if( XDiffOrder == 0 )
+   if( XDiffOrder == 0 && YDiffOrder == 0 )
       return this->amplitude *
              sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
              sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() );
+   if( XDiffOrder == 1 && YDiffOrder == 0 )
+      return 2.0 * M_PI / this->waveLength.x() * this->amplitude * cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() );
+   if( XDiffOrder == 2 && YDiffOrder == 0 )
+      return -4.0 * M_PI * M_PI / ( this->waveLength.x() * this->waveLength.x() ) * this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() );
+   if( XDiffOrder == 0 && YDiffOrder == 1 )
+      return 2.0 * M_PI / this->waveLength.y() * this->amplitude * cos( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
+   if( XDiffOrder == 0 && YDiffOrder == 2 )
+      return -4.0 * M_PI * M_PI / ( this->waveLength.y() * this->waveLength.y() ) * this->amplitude * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
    return 0.0;
 }
 
@@ -155,13 +165,23 @@ template< typename Vertex, typename Device >
    const RealType& x = v.x();
    const RealType& y = v.y();
    const RealType& z = v.z();
-   if( YDiffOrder != 0 || ZDiffOrder != 0 )
-      return 0.0;
-   if( XDiffOrder == 0 )
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0)
       return this->amplitude *
              sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
              sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
              sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
+   if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0)
+      return 2.0 * M_PI / this->waveLength.x() * this->amplitude * cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
+   if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0)
+      return -4.0 * M_PI * M_PI / ( this->waveLength.x() * this->waveLength.x() ) * this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
+   if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0)
+      return 2.0 * M_PI / this->waveLength.y() * this->amplitude * cos( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
+   if( XDiffOrder == 0 && YDiffOrder == 2 && ZDiffOrder == 0)
+      return -4.0 * M_PI * M_PI / ( this->waveLength.y() * this->waveLength.y() ) * this->amplitude * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) * sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1)
+      return 2.0 * M_PI / this->waveLength.z() * this->amplitude * cos( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
+   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2)
+      return -4.0 * M_PI * M_PI / ( this->waveLength.z() * this->waveLength.z() ) * this->amplitude * sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
    return 0.0;
 }
 
