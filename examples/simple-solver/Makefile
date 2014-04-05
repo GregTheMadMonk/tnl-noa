@@ -7,8 +7,9 @@ CONFIG_FILE = $(TARGET).cfg.desc
 INSTALL_DIR = ${HOME}/local
 CXX = g++
 CUDA_CXX = nvcc
-CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR)
-LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1
+OMP_FLAGS = -DHAVE_OPENMP -fopenmp 
+CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR) -O3 $(OMP_FLAGS)
+LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1 -lgomp
 
 SOURCES = main.cpp
 HEADERS = 
@@ -25,11 +26,11 @@ dist: $(DIST)
 
 install: $(TARGET)
 	cp $(TARGET) $(INSTALL_DIR)/bin
-	cp $(CONFIG_FILE) $(INSTALL_DIR)/share
+	cp $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/simple-solver
 
 uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
-	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share
+	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/simple-solver
 
 $(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
@@ -38,5 +39,5 @@ $(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
 
 $(TARGET)-conf.h:
-	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
+	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/tnl-0.1/examples/simple-solver/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
 

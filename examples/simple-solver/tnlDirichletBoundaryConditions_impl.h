@@ -58,29 +58,35 @@ applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time,
    
    coordinates1.y()=0;
    coordinates2.y()=dimensions.y()-1;
-   
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for firstprivate(coordinates1,coordinates2) private(vertex)
+   #endif
    for(IndexType i=0; i<dimensions.x(); i++)
    {
       coordinates1.x()=coordinates2.x()=i;
       mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(i,0)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       
       mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(i,dimensions.y()-1)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[(dimensions.y()-1) * mesh.getDimensions(). x() + i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
    
    coordinates1.x()=0;
    coordinates2.x()=dimensions.x()-1;
-   
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for firstprivate(coordinates1,coordinates2) private(vertex)
+   #endif
    for(IndexType i=0; i<dimensions.y(); i++)
    {
       coordinates1.y()=coordinates2.y()=i;
            
       mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(0,i)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[i * mesh.getDimensions(). x()] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       
       mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(dimensions.x()-1,i)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[i * mesh.getDimensions(). x() + dimensions.x()-1] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
 }
 
@@ -99,29 +105,35 @@ applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& tim
 
    coordinates1.y()=0;
    coordinates2.y()=dimensions.y()-1;  
-   
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for firstprivate(coordinates1,coordinates2) private(vertex)
+   #endif
    for(IndexType i=0; i<dimensions.x(); i++)
    {
       coordinates1.x()=coordinates2.x()=i;
       mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(i,0)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       
       mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(i,dimensions.y()-1)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[(dimensions.y()-1) * mesh.getDimensions(). x() + i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
    
    coordinates1.x()=0;
    coordinates2.x()=dimensions.x()-1; 
-   
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for firstprivate(coordinates1,coordinates2) private(vertex)
+   #endif
    for(IndexType i=0;i < dimensions.y(); i++)
    {
       coordinates1.y()=coordinates2.y()=i;
            
       mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(0,i)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
-      
+      u[i * mesh.getDimensions(). x()] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+
       mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(dimensions.x()-1,i)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      u[i * mesh.getDimensions(). x() + dimensions.x()-1] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
 }
 

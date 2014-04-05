@@ -49,14 +49,14 @@ class tnlLinearDiffusion<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>
    typedef typename MeshType::IndexType IndexType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 
-   void getExplicitRHS( const MeshType& mesh,
+   void getExplicitRHS(MeshType& mesh,
                         const RealType& time,
                         const RealType& tau,
                         const CoordinatesType& coordinates,
                         DofVectorType& _u,
                         DofVectorType& _fu);
  
-   void getExplicitRHS( const MeshType& mesh,
+   void getExplicitRHS(MeshType& mesh,
                         const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,

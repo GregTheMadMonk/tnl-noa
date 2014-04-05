@@ -34,6 +34,9 @@ compute(const MeshType& mesh, const RealType& time, SharedVector& output,
    VertexType vertex;
    CoordinatesType coordinates;
    
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for private(coordinates,vertex)
+   #endif
    for(IndexType i=0; i<output.getSize(); i++)
    {      
       mesh.getElementCoordinates(i,coordinates);

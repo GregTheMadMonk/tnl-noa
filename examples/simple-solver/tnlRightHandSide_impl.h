@@ -37,7 +37,10 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
    VertexType vertex;
    CoordinatesType coordinates;
    CoordinatesType dimensions = mesh.getDimensions();
-    
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for private(coordinates,vertex)
+   #endif
    for(IndexType i=1; i<(dimensions.x()-1); i++)
    {
       for(IndexType j=1; j<(dimensions.y()-1); j++)
@@ -47,7 +50,7 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
          
          mesh.getElementCenter(coordinates,vertex);
          
-         _fu[mesh.getElementIndex(i,j)] += timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex)- 
+         _fu[j * mesh.getDimensions(). x() + i] += timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex)- 
                     timeFunctionValue*(analyticSpaceFunction.template getF<2,0,0>(vertex)+
                     analyticSpaceFunction.template getF<0,2,0>(vertex));
       } 
