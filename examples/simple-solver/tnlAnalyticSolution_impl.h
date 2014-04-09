@@ -9,6 +9,8 @@ void AnalyticSolution<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output, 
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
 {  
+      RealType timeFunctionValue = timeFunction.getTimeValue(time);
+      
       VertexType vertex;
       CoordinatesType coordinates;
 
@@ -17,7 +19,7 @@ compute(const MeshType& mesh, const RealType& time, SharedVector& output,
          mesh.getElementCoordinates(i,coordinates);
          mesh.getElementCenter(coordinates,vertex);
          
-         output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
+         output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       }
 }
 
@@ -27,6 +29,8 @@ void AnalyticSolution<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output, 
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
 { 
+   RealType timeFunctionValue = timeFunction.getTimeValue(time);
+   
    VertexType vertex;
    CoordinatesType coordinates;
    
@@ -38,7 +42,7 @@ compute(const MeshType& mesh, const RealType& time, SharedVector& output,
       mesh.getElementCoordinates(i,coordinates);
       mesh.getElementCenter(coordinates,vertex);
       
-      output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
+      output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }   
    
 }
@@ -49,6 +53,8 @@ void AnalyticSolution<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output,
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
 {
+   RealType timeFunctionValue = timeFunction.getTimeValue(time);
+   
    VertexType vertex;
    CoordinatesType coordinates;
 
@@ -60,7 +66,7 @@ compute(const MeshType& mesh, const RealType& time, SharedVector& output,
       mesh.getElementCoordinates(i,coordinates);
       mesh.getElementCenter(coordinates,vertex);
       
-      output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
+      output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }   
 }
 
