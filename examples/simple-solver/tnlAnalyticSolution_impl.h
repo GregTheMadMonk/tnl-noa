@@ -9,17 +9,15 @@ void AnalyticSolution<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output, 
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
 {  
-      RealType timeFunctionValue = timeFunction.getTimeValue(time);
-      
       VertexType vertex;
       CoordinatesType coordinates;
-      
+
       for(IndexType i=0; i<output.getSize(); i++)
       {
          mesh.getElementCoordinates(i,coordinates);
          mesh.getElementCenter(coordinates,vertex);
          
-         output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
       }
 }
 
@@ -28,9 +26,7 @@ template< typename TimeFunction, typename AnalyticSpaceFunction>
 void AnalyticSolution<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output, 
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
-{
-   RealType timeFunctionValue = timeFunction.getTimeValue(time);
-   
+{ 
    VertexType vertex;
    CoordinatesType coordinates;
    
@@ -42,7 +38,7 @@ compute(const MeshType& mesh, const RealType& time, SharedVector& output,
       mesh.getElementCoordinates(i,coordinates);
       mesh.getElementCenter(coordinates,vertex);
       
-      output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
    }   
    
 }
@@ -53,17 +49,18 @@ void AnalyticSolution<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
 compute(const MeshType& mesh, const RealType& time, SharedVector& output,
         SharedVector& numerical, TimeFunction timeFunction, AnalyticSpaceFunction analyticSpaceFunction)
 {
-   RealType timeFunctionValue = timeFunction.getTimeValue(time);
-   
    VertexType vertex;
    CoordinatesType coordinates;
-      
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for private(coordinates,vertex)
+   #endif
    for(IndexType i=0; i<output.getSize(); i++)
    {      
       mesh.getElementCoordinates(i,coordinates);
       mesh.getElementCenter(coordinates,vertex);
       
-      output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+      output[i] = timeFunction.getTimeValue(time)*analyticSpaceFunction.getF(vertex);
    }   
 }
 

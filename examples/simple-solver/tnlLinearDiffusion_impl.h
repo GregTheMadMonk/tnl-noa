@@ -25,13 +25,15 @@ template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>> ::
 getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
                 DofVectorType& _u, DofVectorType& _fu)
-{
-   RealType stepSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
+{   
    CoordinatesType dimensions = mesh.getDimensions();
-   
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for
+   #endif
    for(IndexType i=1;i<(dimensions.x()-1);i++)
    {
-      _fu[i]=(_u[i-1]-2*_u[i]+_u[i+1])/(stepSquare);
+      _fu[i]=(_u[i-1]-2*_u[i]+_u[i+1])/(mesh.getParametricStep().x()*mesh.getParametricStep().x());
    } 
    
 }
@@ -61,10 +63,7 @@ template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
 getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
                 DofVectorType& _u, DofVectorType& _fu)
-{
-   RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
-   RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y();
-
+{  
    CoordinatesType dimensions = mesh.getDimensions();
 
    #ifdef HAVE_OPENMP
@@ -74,9 +73,9 @@ getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
    {
       for(IndexType j=1;j<(dimensions.y()-1);j++)
       {
-         _fu[j * mesh.getDimensions(). x() + i]=(_u[j * mesh.getDimensions(). x() + i-1]-2*_u[j * mesh.getDimensions(). x() + i]+
-             _u[j * mesh.getDimensions(). x() + i+1])/(stepXSquare)+(_u[(j-1) * mesh.getDimensions(). x() + i]-2*_u[j * mesh.getDimensions(). x() + i]+
-             _u[(j+1) * mesh.getDimensions(). x() + i])/(stepYSquare);
+         _fu[mesh.getElementIndex(i,j)]=(_u[mesh.getElementIndex(i-1,j)]-2*_u[mesh.getElementIndex(i,j)]+
+             _u[mesh.getElementIndex(i+1,j)])/(mesh.getParametricStep().x()*mesh.getParametricStep().x())+(_u[mesh.getElementIndex(i,j-1)]-2*_u[mesh.getElementIndex(i,j)]+
+             _u[mesh.getElementIndex(i,j+1)])/(mesh.getParametricStep().y()*mesh.getParametricStep().y());
       }
    }
 }
@@ -116,13 +115,12 @@ template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
 getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
                 DofVectorType& _u, DofVectorType& _fu)
-{
-   RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
-   RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y();   
-   RealType stepZSquare = mesh.getParametricStep().z()*mesh.getParametricStep().z();  
-   
+{  
    CoordinatesType dimensions = mesh.getDimensions();
-    
+
+   #ifdef HAVE_OPENMP
+    #pragma omp parallel for
+   #endif
    for(IndexType i=1;i<(dimensions.x()-1);i++)
    {
       for(IndexType j=1;j<(dimensions.y()-1);j++)
@@ -131,11 +129,11 @@ getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
          {
             _fu[mesh.getElementIndex(i,j,k)]=(_u[mesh.getElementIndex(i-1,j,k)]-
                     2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i+1,j,k)])/
-                    (stepXSquare) + (_u[mesh.getElementIndex(i,j-1,k)]-
+                    (mesh.getParametricStep().x()*mesh.getParametricStep().x()) + (_u[mesh.getElementIndex(i,j-1,k)]-
                     2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i,j+1,k)])/
-                    (stepYSquare) + (_u[mesh.getElementIndex(i,j,k-1)]-
+                    (mesh.getParametricStep().y()*mesh.getParametricStep().y()) + (_u[mesh.getElementIndex(i,j,k-1)]-
                     2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i,j,k+1)])/
-                    (stepZSquare);
+                    (mesh.getParametricStep().z()*mesh.getParametricStep().z());
          }
       }
    }   
