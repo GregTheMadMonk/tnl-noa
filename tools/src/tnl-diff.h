@@ -20,6 +20,7 @@
 
 #include <iomanip>
 #include <config/tnlParameterContainer.h>
+#include <core/mfilename.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlStaticVector.h>
 
@@ -31,6 +32,7 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
    tnlString mode = parameters. GetParameter< tnlString >( "mode" );
    tnlString outputFileName = parameters. GetParameter< tnlString >( "output-file" );
    double tau = parameters. GetParameter< double >( "tau" );
+   bool writeDifference = parameters. GetParameter< bool >( "write-difference" );
 
    fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
@@ -126,6 +128,18 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
          totalL2Diff += tau * l2Diff * l2Diff;
          totalMaxDiff = Max( totalMaxDiff, maxDiff );
          cout << totalL2Diff << endl;
+      }
+      if( writeDifference )
+      {
+         tnlString differenceFileName;
+         differenceFileName = inputFiles[ i ];
+         RemoveFileExtension( differenceFileName );
+         differenceFileName += ".diff.tnl";
+         tnlVector< Real, tnlHost, Index > diff;
+         diff.setLike( v1 );
+         diff = v1;
+         diff -= v2;
+         diff.save( differenceFileName );
       }
    }
    if( tau != 0 )

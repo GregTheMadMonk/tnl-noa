@@ -13,6 +13,7 @@
 /autom4te.cache
 /Debug
 /Release
+.settings
 
 # /src/
 /src/Makefile.in
