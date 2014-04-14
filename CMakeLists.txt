@@ -35,7 +35,7 @@ endif()
 if( WITH_CUDA STREQUAL "yes" )
    AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
 else()
-   AddCompilerFlag( "-std=gnu++0x" )
+   AddCompilerFlag( "-std=gnu++0x -std=gnu++11" )
 endif()      
 
 #####
