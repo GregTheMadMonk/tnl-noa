@@ -34,6 +34,7 @@ endif()
 
 if( WITH_CUDA STREQUAL "yes" )
    AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
+   set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" ) # TODO: fix this in the rest of cmake files
 else()
    AddCompilerFlag( "-std=gnu++0x" )
 endif()      

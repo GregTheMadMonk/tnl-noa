@@ -14,6 +14,8 @@
 /Debug
 /Release
 
+.settings
+
 # /src/
 /src/Makefile.in
 

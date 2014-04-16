@@ -16,16 +16,16 @@ if( BUILD_CUDA )
                                                                       tnl${mpiExt}${debugExt}-0.1 )
 endif()                                                                      
 
-#ADD_EXECUTABLE( tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${headers} tnlTridiagonalMatrixTest.cpp )
-#TARGET_LINK_LIBRARIES( tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                              tnl${mpiExt}${debugExt}-0.1 )
-#
-#if( BUILD_CUDA )                                                           
-#   CUDA_ADD_EXECUTABLE( tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlTridiagonalMatrixTest.cu
-#                        OPTIONS -arch sm_20 )
-#   TARGET_LINK_LIBRARIES( tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                                      tnl${mpiExt}${debugExt}-0.1 )
-#endif()                                                                      
+ADD_EXECUTABLE( tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${headers} tnlTridiagonalMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlTridiagonalMatrixTest.cu
+                        OPTIONS -arch sm_20 )
+   TARGET_LINK_LIBRARIES( tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()                                                                      
 #                                                                          
 #ADD_EXECUTABLE( tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${headers} tnlMultidiagonalMatrixTest.cpp )
 #TARGET_LINK_LIBRARIES( tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
