@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCSRMatrixTester.h  -  description
+                          tnlSparseMatrixTester.h  -  description
                              -------------------
     begin                : Jul 11, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCSRMATRIXTESTER_H_
-#define TNLCSRMATRIXTESTER_H_
+#ifndef TNLSPARSEMATRIXTESTER_H_
+#define TNLSPARSEMATRIXTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -24,28 +24,33 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlCSRMatrix.h>
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
 
-template< typename RealType, typename Device, typename IndexType >
-class tnlCSRMatrixTester : public CppUnit :: TestCase
+template< typename Matrix >
+class tnlSparseMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlCSRMatrix< RealType, Device, IndexType > MatrixType;
+   typedef tnlMatrix MatrixType;
+   typedef typename Matrix::RealType RealType;
+   typedef typename Matrix::DeviceType DeviceType;
+   typedef typename Matrix::IndexType IndexType;
    typedef tnlVector< RealType, Device, IndexType > VectorType;
    typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlCSRMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef tnlSparseMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlCSRMatrixTester(){};
+   tnlSparseMatrixTester(){};
 
    virtual
-   ~tnlCSRMatrixTester(){};
+   ~tnlSparseMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
+      tnlString testSuiteName( "tnlSparseMatrixTester< " );
+      testSuiteName += MatrixType::getType() + " >";
+
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -250,4 +255,4 @@ class tnlCSRMatrixTester : public CppUnit :: TestCase
 
 #endif
 
-#endif /* TNLCSRMATRIXTESTER_H_ */
+#endif /* TNLSPARSEMATRIXTESTER_H_ */

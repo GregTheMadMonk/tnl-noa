@@ -33,10 +33,35 @@ using namespace std;
 template< typename Element,
           typename Device,
           typename Index >
-tnlSharedArray< Element, Device, Index > :: tnlSharedArray()
+tnlSharedArray< Element, Device, Index >::tnlSharedArray()
 : size( 0 ), data( 0 )
 {
 };
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( Element* _data,
+                                                          const Index _size )
+{
+   this->bind( _data, _size );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlArray< Element, Device, Index >& array )
+{
+   this->bind( array );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlSharedArray< Element, Device, Index >& array )
+{
+   this->bind( array );
+}
 
 template< typename Element,
           typename Device,

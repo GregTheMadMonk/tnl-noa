@@ -113,12 +113,12 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       m.getRow( row,
-                    rowColumns.getData(),
-                    rowValues.getData() );
+                rowColumns.getData(),
+                rowValues.getData() );
       this->setRow( row,
                     rowColumns.getData(),
                     rowValues.getData(),
-                    rowLengths.getElement( row ) );
+                    m.getRowLength( row ) );
    }
 }
 

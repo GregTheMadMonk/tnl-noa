@@ -24,79 +24,7 @@
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
 
-template<>
-class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
-{
-   public:
 
-      template< typename Index >
-      static Index getElementIndex( const Index rows,
-                                    const Index row,
-                                    const Index column )
-      {
-         return 3*row + column - row;
-      }
-
-      template< typename Vector,
-                typename Index,
-                typename ValuesType  >
-      static typename Vector::RealType rowVectorProduct( const Index rows,
-                                                         const ValuesType& values,
-                                                         const Index row,
-                                                         const Vector& vector )
-      {
-         if( row == 0 )
-            return vector[ 0 ] * values[ 0 ] +
-                   vector[ 1 ] * values[ 1 ];
-         Index i = 3 * row - 1;
-         if( row == rows - 1 )
-            return vector[ row - 1 ] * values[ i++ ] +
-                   vector[ row ] * values[ i ];
-         return vector[ row - 1 ] * values[ i++ ] +
-                vector[ row ] * values[ i++ ] +
-                vector[ row + 1 ] * values[ i ];
-      }
-};
-
-template<>
-class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
-{
-   public:
-
-      template< typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      static Index getElementIndex( const Index rows,
-                                    const Index row,
-                                    const Index column )
-      {
-         return ( column - row + 1 )*rows + row - 1;
-      }
-      
-      template< typename Vector,
-                typename Index,
-                typename ValuesType >
-#ifdef HAVE_CUDA
-      __device__
-#endif
-      static typename Vector::RealType rowVectorProduct( const Index rows,
-                                                         const ValuesType& values,
-                                                         const Index row,
-                                                         const Vector& vector )
-      {
-         if( row == 0 )
-            return vector[ 0 ] * values[ 0 ] +
-                   vector[ 1 ] * values[ rows - 1 ];
-         Index i = row - 1;
-         if( row == rows - 1 )
-            return vector[ row - 1 ] * values[ i ] +
-                   vector[ row ] * values[ i + rows ];
-         return vector[ row - 1 ] * values[ i ] +
-                vector[ row ] * values[ i + rows ] +
-                vector[ row + 1 ] * values[ i + 2*rows ];
-      }
-};
 
 
 
@@ -716,6 +644,79 @@ Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexT
    return tnlTridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }
 
+template<>
+class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      template< typename Index >
+      static Index getElementIndex( const Index rows,
+                                    const Index row,
+                                    const Index column )
+      {
+         return 3*row + column - row;
+      }
+
+      template< typename Vector,
+                typename Index,
+                typename ValuesType  >
+      static typename Vector::RealType rowVectorProduct( const Index rows,
+                                                         const ValuesType& values,
+                                                         const Index row,
+                                                         const Vector& vector )
+      {
+         if( row == 0 )
+            return vector[ 0 ] * values[ 0 ] +
+                   vector[ 1 ] * values[ 1 ];
+         Index i = 3 * row - 1;
+         if( row == rows - 1 )
+            return vector[ row - 1 ] * values[ i++ ] +
+                   vector[ row ] * values[ i ];
+         return vector[ row - 1 ] * values[ i++ ] +
+                vector[ row ] * values[ i++ ] +
+                vector[ row + 1 ] * values[ i ];
+      }
+};
+
+template<>
+class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      template< typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getElementIndex( const Index rows,
+                                    const Index row,
+                                    const Index column )
+      {
+         return ( column - row + 1 )*rows + row - 1;
+      }
+
+      template< typename Vector,
+                typename Index,
+                typename ValuesType >
+#ifdef HAVE_CUDA
+      __device__
+#endif
+      static typename Vector::RealType rowVectorProduct( const Index rows,
+                                                         const ValuesType& values,
+                                                         const Index row,
+                                                         const Vector& vector )
+      {
+         if( row == 0 )
+            return vector[ 0 ] * values[ 0 ] +
+                   vector[ 1 ] * values[ rows - 1 ];
+         Index i = row - 1;
+         if( row == rows - 1 )
+            return vector[ row - 1 ] * values[ i ] +
+                   vector[ row ] * values[ i + rows ];
+         return vector[ row - 1 ] * values[ i ] +
+                vector[ row ] * values[ i + rows ] +
+                vector[ row + 1 ] * values[ i + 2*rows ];
+      }
+};
 
 
 

@@ -227,8 +227,8 @@ tnlArray< Element, Device, Index >&
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
-   tnlArrayOperations< typename Array :: DeviceType,
-                       Device > ::
+   tnlArrayOperations< Device,
+                       typename Array :: DeviceType > ::
     template copyMemory< Element,
                          typename Array :: ElementType,
                          typename Array :: IndexType >

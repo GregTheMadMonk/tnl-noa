@@ -19,6 +19,7 @@
 #define TNLSHAREDVECTOR_H_
 
 #include <core/arrays/tnlSharedArray.h>
+#include <core/vectors/tnlVector.h>
 
 class tnlHost;
 
@@ -32,6 +33,15 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+
+   tnlSharedVector();
+
+   tnlSharedVector( Real* data,
+                    const Index size );
+
+   tnlSharedVector( tnlVector< Real, Device, Index >& vector );
+
+   tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
    tnlString getType() const;
 

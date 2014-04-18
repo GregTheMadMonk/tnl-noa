@@ -23,6 +23,38 @@
 template< typename Real,
           typename Device,
           typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector()
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
+                                                         const Index size )
+: tnlSharedArray< Real, Device, Index >( data, size )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device, Index >& vector )
+: tnlSharedArray< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector )
+: tnlSharedArray< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlVector< " ) +
