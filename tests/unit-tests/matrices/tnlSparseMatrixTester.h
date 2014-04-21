@@ -31,13 +31,13 @@ template< typename Matrix >
 class tnlSparseMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlMatrix MatrixType;
+   typedef Matrix MatrixType;
    typedef typename Matrix::RealType RealType;
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
-   typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlSparseMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
+   typedef tnlVector< IndexType, DeviceType, IndexType > IndexVector;
+   typedef tnlSparseMatrixTester< MatrixType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
    tnlSparseMatrixTester(){};

@@ -190,12 +190,13 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType 
                                                                 const RealType& value,
                                                                 const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   // TODO: return this back when CUDA kernels support cerr
+   /*tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
-                   << " this->columns = " << this-> columns );
+                   << " this->columns = " << this-> columns );*/
    IndexType i( row * this->rowLengths );
    const IndexType rowEnd( i + this->rowLengths );
    while( i < rowEnd && this->columnIndexes[ i ] < column ) i++;
