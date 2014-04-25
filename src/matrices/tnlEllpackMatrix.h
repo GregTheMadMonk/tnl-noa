@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlEllpackMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -29,7 +32,10 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef tnlEllpackMatrix< Real, Device, Index > ThisType;
 
    tnlEllpackMatrix();
 
@@ -131,6 +137,13 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;
 
+template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   typename Vector::RealType rowVectorProduct( const IndexType row,
+                                               const Vector& vector ) const;
+
    template< typename Vector >
    void vectorProduct( const Vector& inVector,
                        Vector& outVector ) const;
@@ -164,7 +177,9 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    bool allocateElements();
 
-   IndexType rowLengths;
+   IndexType rowLengths, alignedRows;
+
+   friend class tnlEllpackMatrixDeviceDependentCode< DeviceType >;
 };
 
 #include <implementation/matrices/tnlEllpackMatrix_impl.h>

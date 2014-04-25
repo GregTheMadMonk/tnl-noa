@@ -79,6 +79,16 @@ inline int roundUpDivision( const int num, const int div )
 {
    return num / div + ( num % div != 0 );
 }
+
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+inline int roundToMultiple( int number, int multiple )
+{
+   return multiple*( number/ multiple + ( number % multiple != 0 ) );
+}
+
+
 /*template< typename T >
 void swap( T& a, T& b)
 {

@@ -48,18 +48,18 @@ if( BUILD_CUDA )
    TARGET_LINK_LIBRARIES( tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                       tnl${mpiExt}${debugExt}-0.1 )
 endif()                                                                        
-#             
-#ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} ${headers} tnlSlicedEllpackMatrixTest.cpp )
-#TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                              tnl${mpiExt}${debugExt}-0.1 )
-#
-#if( BUILD_CUDA )                                                           
-#   CUDA_ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlSlicedEllpackMatrixTest.cu
-#                        OPTIONS -arch sm_20 )
-#   TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                                      tnl${mpiExt}${debugExt}-0.1 )
-#endif()
-#
+             
+ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} ${headers} tnlSlicedEllpackMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlSlicedEllpackMatrixTest.cu
+                        OPTIONS -arch sm_20 )
+   TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()
+
 #ADD_EXECUTABLE( tnlChunkedEllpackMatrixTest${mpiExt}${debugExt} ${headers} tnlChunkedEllpackMatrixTest.cpp )
 #TARGET_LINK_LIBRARIES( tnlChunkedEllpackMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
 #                                                              tnl${mpiExt}${debugExt}-0.1 )

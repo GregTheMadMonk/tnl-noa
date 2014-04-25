@@ -28,6 +28,8 @@ class tnlCuda
 {
    public:
 
+   enum { DeviceType = tnlCudaDevice };
+
    static tnlString getDeviceType();
 
 #ifdef HAVE_CUDA
@@ -62,6 +64,13 @@ static inline int getWarpSize();
 
    template< typename ObjectType >
    static ObjectType* passToDevice( const ObjectType& object );
+
+   template< typename ObjectType >
+   static ObjectType passFromDevice( const ObjectType& object );
+
+   template< typename ObjectType >
+   static void passFromDevice( const ObjectType& deviceObject,
+                               ObjectType& hostObject );
 
    template< typename ObjectType >
    static void freeFromDevice( ObjectType* object );

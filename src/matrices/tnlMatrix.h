@@ -33,6 +33,7 @@ class tnlMatrix : public virtual tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlVector< IndexType, DeviceType, IndexType > RowLengthsVector;
+   typedef tnlVector< RealType, DeviceType, IndexType > ValuesVector;
 
    tnlMatrix();
 
@@ -111,7 +112,7 @@ class tnlMatrix : public virtual tnlObject
 
    public: // TODO: remove this
 
-   tnlVector< Real, Device, Index > values;
+   ValuesVector values;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -120,6 +121,13 @@ ostream& operator << ( ostream& str, const tnlMatrix< Real, Device, Index >& m )
    m.print( str );
    return str;
 }
+
+template< typename Matrix,
+          typename Vector >
+void tnlMatrixVectorProductCuda( const Matrix& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector );
+
 
 #include <implementation/matrices/tnlMatrix_impl.h>
 

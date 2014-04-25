@@ -64,7 +64,6 @@ inline int tnlCuda::getNumberOfSharedMemoryBanks()
    return 32;
 }
 
-
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 {
@@ -85,6 +84,29 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
       return 0;
    }
    return deviceObject;
+}
+
+template< typename ObjectType >
+ObjectType tnlCuda::passFromDevice( const ObjectType& object )
+{
+   ObjectType aux;
+   cudaMemcpy( ( void* ) &aux,
+               ( void* ) &object,
+               sizeof( ObjectType ),
+               cudaMemcpyDeviceToHost );
+   checkCudaDevice;
+   return aux;
+}
+
+template< typename ObjectType >
+void tnlCuda::passFromDevice( const ObjectType& deviceObject,
+                              ObjectType& hostObject )
+{
+   cudaMemcpy( ( void* ) &hostObject,
+               ( void* ) &deviceObject,
+               sizeof( ObjectType ),
+               cudaMemcpyDeviceToHost );
+   checkCudaDevice;
 }
 
 template< typename ObjectType >

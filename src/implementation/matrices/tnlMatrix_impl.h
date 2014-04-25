@@ -171,4 +171,50 @@ void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
 {
 }
 
+#ifdef HAVE_CUDA
+template< typename Matrix,
+          typename Vector >
+__global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
+                                                  const Vector* inVector,
+                                                  Vector* outVector,
+                                                  int gridIdx )
+{
+   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
+   const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx < matrix->getRows() )
+      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
+}
+#endif
+
+template< typename Matrix,
+          typename Vector >
+void tnlMatrixVectorProductCuda( const Matrix& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+{
+#ifdef HAVE_CUDA
+   typedef typename Matrix::IndexType IndexType;
+   Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+   Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
+   Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+   {
+      if( gridIdx == cudaGrids - 1 )
+         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+      tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                     ( kernel_this,
+                                       kernel_inVector,
+                                       kernel_outVector,
+                                       gridIdx );
+   }
+   tnlCuda::freeFromDevice( kernel_this );
+   tnlCuda::freeFromDevice( kernel_inVector );
+   tnlCuda::freeFromDevice( kernel_outVector );
+   checkCudaDevice;
+#endif
+}
+
 #endif /* TNLMATRIX_IMPL_H_ */

@@ -24,10 +24,6 @@
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
 
-
-
-
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -395,21 +391,6 @@ typename Vector::RealType tnlTridiagonalMatrix< Real, Device, Index >::rowVector
                                vector );
 }
 
-#ifdef HAVE_CUDA
-template< typename Real,
-          typename Index,
-          typename Vector >
-__global__ void tnlTridiagonalMatrixVectorProductCudaKernel( tnlTridiagonalMatrix< Real, tnlCuda, Index >* matrix,
-                                                             const Vector* inVector,
-                                                             Vector* outVector,
-                                                             const Index gridIdx )
-{
-   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( rowIdx < matrix->getRows() )
-      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
-}
-#endif
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -433,27 +414,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& i
          outVector[ row ] = this->rowVectorProduct( row, inVector );
 
    if( Device::getDevice() == tnlCudaDevice )
-   {
-#ifdef HAVE_CUDA
-      ThisType* kernel_this = tnlCuda::passToDevice( *this );
-      Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
-      Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
-      dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
-      const IndexType cudaBlocks = roundUpDivision( this->getRows(), cudaBlockSize.x );
-      const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
-      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-      {
-         if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-         tnlTridiagonalMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
-                                                    ( kernel_this, kernel_inVector, kernel_outVector, gridIdx );
-      }
-      tnlCuda::freeFromDevice( kernel_this );
-      tnlCuda::freeFromDevice( kernel_inVector );
-      tnlCuda::freeFromDevice( kernel_outVector );
-      checkCudaDevice;
-#endif
-   }
+      tnlMatrixVectorProductCuda( *this, inVector, outVector );
 }
 
 template< typename Real,

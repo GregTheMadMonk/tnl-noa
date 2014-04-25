@@ -71,6 +71,11 @@ if( BUILD_CUDA )
    ADD_TEST( matrices/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} )
    SET_TESTS_PROPERTIES ( matrices/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} )         
             
+   ADD_TEST( matrices/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} )         
+            
+   ADD_TEST( matrices/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} )         
             
 endif()
 

@@ -26,7 +26,7 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlEllpackMatrix< Real, Device, Index > :: tnlEllpackMatrix()
-: rowLengths( 0 )
+: rowLengths( 0 ), alignedRows( 0 )
 {
 };
 
@@ -61,6 +61,9 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
                    << " columns = " << columns << endl );
    this->rows = rows;
    this->columns = columns;
+   if( Device::DeviceType == tnlCudaDevice )
+      this->alignedRows = roundToMultiple( columns, tnlCuda::getWarpSize() );
+   else this->alignedRows = rows;
    if( this->rowLengths != 0 )
       return allocateElements();
    return true;
@@ -71,9 +74,7 @@ template< typename Real,
           typename Index >
 bool tnlEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
 {
-   this->rowLengths = 0;
-   for( IndexType i = 0; i < rowLengths.getSize(); i++ )
-      this->rowLengths = Max( this->rowLengths, rowLengths[ i ] );
+   this->rowLengths = rowLengths.max();
    tnlAssert( this->rowLengths > 0,
               cerr << "this->rowLengths = " << this->rowLengths );
    if( this->rows > 0 )
@@ -165,7 +166,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setElementFast( const IndexType 
                                                                 const IndexType column,
                                                                 const Real& value )
 {
-   return this->addElement( row, column, value, 0.0 );
+   return this->addElementFast( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -197,9 +198,12 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType 
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
-   IndexType i( row * this->rowLengths );
-   const IndexType rowEnd( i + this->rowLengths );
-   while( i < rowEnd && this->columnIndexes[ i ] < column ) i++;
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType i = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   while( i < rowEnd && this->columnIndexes[ i ] < column ) i += step;
    if( i == rowEnd )
       return false;
    if( this->columnIndexes[ i ] == column )
@@ -208,26 +212,24 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType 
       return true;
    }
    else
-      if( this->columnIndexes[ i ] == this->columns )
+      if( this->columnIndexes[ i ] == this->columns ) // artificial zero
       {
          this->columnIndexes[ i ] = column;
          this->values[ i ] = value;
-         return true;
       }
       else
       {
-         IndexType j = rowEnd - 1;
+         Index j = rowEnd - step;
          while( j > i )
          {
-            this->columnIndexes[ j ] = this->columnIndexes[ j - 1 ];
-            this->values[ j ] = this->values[ j - 1 ];
-            j--;
+            this->columnIndexes[ j ] = this->columnIndexes[ j - step ];
+            this->values[ j ] = this->values[ j - step ];
+            j -= step;
          }
          this->columnIndexes[ i ] = column;
          this->values[ i ] = value;
-         return true;
       }
-   return false;
+   return true;
 }
 
 template< typename Real,
@@ -238,7 +240,38 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
                                                             const RealType& value,
                                                             const RealType& thisElementMultiplicator )
 {
-   return this->addElementFast( row, column, value, thisElementMultiplicator );
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType i = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   while( i < rowEnd && this->columnIndexes.getElement( i ) < column ) i += step;
+   if( i == rowEnd )
+      return false;
+   if( this->columnIndexes.getElement( i ) == column )
+   {
+      this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value );
+      return true;
+   }
+   else
+      if( this->columnIndexes.getElement( i ) == this->columns )
+      {
+         this->columnIndexes.setElement( i, column );
+         this->values.setElement( i, value );
+      }
+      else
+      {
+         IndexType j = rowEnd - step;
+         while( j > i )
+         {
+            this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - step ) );
+            this->values.setElement( j, this->values.getElement( j - step ) );
+            j -= step;
+         }
+         this->columnIndexes.setElement( i, column );
+         this->values.setElement( i, value );
+      }
+   return true;
 }
 
 template< typename Real,
@@ -252,17 +285,24 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                             const RealType* values,
                                                             const IndexType elements )
 {
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPointer = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
    if( elements > this->rowLengths )
       return false;
-   IndexType elementPointer( row * this->rowLengths );
-   for( IndexType i = 0; i < elements; i++ )
+   for( Index i = 0; i < elements; i++ )
    {
       this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
       this->values[ elementPointer ] = values[ i ];
-      elementPointer++;
+      elementPointer += step;
    }
-   for( IndexType i = elements; i < this->rowLengths; i++ )
-      this->columnIndexes[ elementPointer++ ] = this->getColumns();
+   for( Index i = elements; i < this->rowLengths; i++ )
+   {
+      this->columnIndexes[ elementPointer ] = this->getColumns();
+      elementPointer += step;
+   }
    return true;
 }
 
@@ -274,7 +314,26 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
                                                         const RealType* values,
                                                         const IndexType elements )
 {
-   return this->setRowFast( row, columnIndexes, values, elements );
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPointer = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   if( elements > this->rowLengths )
+      return false;
+
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes.setElement( elementPointer, columnIndexes[ i ] );
+      this->values.setElement( elementPointer, values[ i ] );
+      elementPointer += step;
+   }
+   for( IndexType i = elements; i < this->rowLengths; i++ )
+   {
+      this->columnIndexes.setElement( elementPointer, this->getColumns() );
+      elementPointer += step;
+   }
+   return true;
 }
 
 template< typename Real,
@@ -315,11 +374,14 @@ template< typename Real,
 Real tnlEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
-   IndexType elementPtr( row * this->rowLengths );
-   const IndexType rowEnd( elementPtr + this->rowLengths );
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPtr = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr += step;
    if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
-      return this->values.getElement( elementPtr );
+      return this->values[ elementPtr ];
    return 0.0;
 }
 
@@ -329,7 +391,15 @@ template< typename Real,
 Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                           const IndexType column ) const
 {
-   return this->getElementFast( row, column );
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPtr = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column ) elementPtr += step;
+   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+      return this->values.getElement( elementPtr );
+   return 0.0;
 }
 
 
@@ -343,12 +413,16 @@ void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
 {
-   IndexType elementPtr( row * this->rowLengths );
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPtr = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
    for( IndexType i = 0; i < this->rowLengths; i++ )
    {
       columns[ i ] = this->columnIndexes[ elementPtr ];
       values[ i ] = this->values[ elementPtr ];
-      elementPtr++;
+      elementPtr += step;
    }
 }
 
@@ -359,7 +433,42 @@ void tnlEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
 {
-   return this->getRowFast( row, columns, values );
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPtr = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   for( IndexType i = 0; i < this->rowLengths; i++ )
+   {
+      columns[ i ] = this->columnIndexes.getElement( elementPtr );
+      values[ i ] = this->values.getElement( elementPtr );
+      elementPtr += step;
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+  template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename Vector::RealType tnlEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+                                                                                     const Vector& vector ) const
+{
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType i = DDCType::getRowBegin( *this, row );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   const IndexType step = DDCType::getElementStep( *this );
+
+   Real result = 0.0;
+   while( i < rowEnd && this->columnIndexes[ i ] < this->columns )
+   {
+      const Index column = this->columnIndexes[ i ];
+      result += this->values[ i ] * vector[ column ];
+      i += step;
+   }
+   return result;
 }
 
 template< typename Real,
@@ -369,18 +478,11 @@ template< typename Real,
 void tnlEllpackMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
                                                                    Vector& outVector ) const
 {
-   for( Index row = 0; row < this->getRows(); row ++ )
-   {
-      Real result = 0.0;
-      IndexType i( row * this->rowLengths );
-      const IndexType rowEnd( i + this->rowLengths );
-      while( i < rowEnd && this->columnIndexes[ i ] < this->columns )
-      {
-         const Index column = this->columnIndexes.getElement( i );
-         result += this->values.getElement( i++ ) * inVector.getElement( column );
-      }
-      outVector.setElement( row, result );
-   }
+   if( DeviceType::getDevice() == tnlHostDevice )
+      for( Index row = 0; row < this->getRows(); row ++ )
+         outVector[ row ] = this->rowVectorProduct( row, inVector);
+   if( DeviceType::getDevice() == tnlCudaDevice )
+      tnlMatrixVectorProductCuda( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -500,7 +602,7 @@ void tnlEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
       str <<"Row: " << row << " -> ";
       IndexType i( row * this->rowLengths );
       const IndexType rowEnd( i + this->rowLengths );
-      while( i < rowEnd && this->columnIndexes[ i ] < this->columns )
+      while( i < rowEnd && this->columnIndexes.getElement( i ) < this->columns )
       {
          const Index column = this->columnIndexes.getElement( i );
          str << " Col:" << column << "->" << this->values.getElement( i ) << "\t";
@@ -515,9 +617,83 @@ template< typename Real,
           typename Index >
 bool tnlEllpackMatrix< Real, Device, Index >::allocateElements()
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( this->rows * this->rowLengths ) )
+   if( ! tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
       return false;
    return true;
 }
+
+template<>
+class tnlEllpackMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Real,
+                typename Index >
+      static Index getRowBegin( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                const Index row )
+      {
+         return row * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index >
+      static Index getRowEnd( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                const Index row )
+      {
+         return ( row + 1 ) * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index >
+      static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
+      {
+         return 1;
+      }
+};
+
+template<>
+class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getRowBegin( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                const Index row )
+      {
+         return row * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getRowEnd( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                const Index row )
+      {
+         return ( row + 1 ) * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
+      {
+         return 1;
+      }
+};
+
+
+
 
 #endif /* TNLELLPACKMATRIX_IMPL_H_ */
