@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlSlicedEllpackMatrixDeviceDependentCode;
+
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int,
@@ -32,7 +35,10 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef tnlSlicedEllpackMatrix< Real, Device, Index > ThisType;
 
    tnlSlicedEllpackMatrix();
 
@@ -131,6 +137,13 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 RealType* values ) const;
 
    template< typename Vector >
+   #ifdef HAVE_CUDA
+      __device__ __host__
+   #endif
+   typename Vector::RealType rowVectorProduct( const IndexType row,
+                                               const Vector& vector ) const;
+
+   template< typename Vector >
    void vectorProduct( const Vector& inVector,
                        Vector& outVector ) const;
 
@@ -162,6 +175,9 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    protected:
 
    tnlVector< Index, Device, Index > slicePointers, sliceRowLengths;
+
+   typedef tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType >;
 
 };
 

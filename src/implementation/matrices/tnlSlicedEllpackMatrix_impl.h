@@ -75,26 +75,11 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( co
    if( ! this->sliceRowLengths.setSize( slices ) ||
        ! this->slicePointers.setSize( slices + 1 ) )
       return false;
-   IndexType row( 0 ), slice( 0 ), sliceRowLength( 0 );
 
    /****
     * Compute maximal row length in each slice
     */
-   while( row < this->rows )
-   {
-      sliceRowLength = Max( rowLengths.getElement( row++ ), sliceRowLength );
-      if( row % SliceSize == 0 )
-      {
-         this->sliceRowLengths.setElement( slice, sliceRowLength );
-         this->slicePointers.setElement( slice++, sliceRowLength*SliceSize );
-         sliceRowLength = 0;
-      }
-   }
-   if( row % SliceSize != 0 )
-   {
-      this->sliceRowLengths.setElement( slice, sliceRowLength );
-      this->slicePointers.setElement( slice++, sliceRowLength*SliceSize );
-   }
+   DeviceDependentCode::computeMaximalRowLengthInSlices( *this, rowLengths );
 
    /****
     * Compute the slice pointers using the exclusive prefix sum
@@ -566,5 +551,152 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
       str << endl;
    }
 }
+
+template<>
+class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static Index getRowBegin( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                const Index row )
+      {
+         return row * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static Index getRowEnd( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                const Index row )
+      {
+         return ( row + 1 ) * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static Index getElementStep( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix )
+      {
+         return 1;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static bool computeMaximalRowLengthInSlices( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+      {
+         Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
+         while( row < matrix.getRows() )
+         {
+            sliceRowLength = Max( rowLengths.getElement( row++ ), sliceRowLength );
+            if( row % SliceSize == 0 )
+            {
+               matrix.sliceRowLengths.setElement( slice, sliceRowLength );
+               matrix.slicePointers.setElement( slice++, sliceRowLength * SliceSize );
+               sliceRowLength = 0;
+            }
+         }
+         if( row % SliceSize != 0 )
+         {
+            matrix.sliceRowLengths.setElement( slice, sliceRowLength );
+            matrix.slicePointers.setElement( slice++, sliceRowLength * SliceSize );
+         }
+      }
+};
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+__global__ void tnlSlicedEllpackMatrix_compuetMaximalRowLengthInSlices_CudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                                                                ( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >* matrix,
+                                                                                  const typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::RowLentghsVector* rowLengths,
+                                                                                  int gridIdx )
+{
+
+}
+#endif
+
+template<>
+class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getRowBegin( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                const Index row )
+      {
+         return row * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getRowEnd( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                const Index row )
+      {
+         return ( row + 1 ) * matrix.rowLengths;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getElementStep( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix )
+      {
+         return 1;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static bool computeMaximalRowLengthInSlices( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+      {
+#ifdef HAVE_CUDA
+         typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
+         typedef typename Matrix::RowLengthsVector RowLengthsVector;
+         Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
+         RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
+         const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+         const IndexType cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
+         const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+         for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+         {
+            if( gridIdx == cudaGrids - 1 )
+               cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+            tnlSlicedEllpackMatrix_compuetMaximalRowLengthInSlices_CudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                                                             ( kernel_matrix,
+                                                                               kernel_rowLengths,
+                                                                               gridIdx );
+         }
+         tnlCuda::freeFromDevice( kernel_matrix );
+         tnlCuda::freeFromDevice( kernel_rowLengths );
+         checkCudaDevice;
+#endif
+      }
+};
+
+
 
 #endif /* TNLSLICEDELLPACKMATRIX_IMPL_H_ */

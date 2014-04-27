@@ -668,7 +668,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
       static Index getRowBegin( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
-         return row * matrix.rowLengths;
+         return row;
       }
 
       template< typename Real,
@@ -679,7 +679,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
       static Index getRowEnd( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
-         return ( row + 1 ) * matrix.rowLengths;
+         return row + getElementStep( matrix ) * matrix.rowLengths;
       }
 
       template< typename Real,
@@ -689,7 +689,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 #endif
       static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
       {
-         return 1;
+         return matrix.alignedRows;
       }
 };
 
