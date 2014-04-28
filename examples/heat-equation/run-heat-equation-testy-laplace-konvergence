@@ -1,7 +1,8 @@
 #!/bin/bash
 
-dofSize=256
+dofSize=8192
 dimension=1 
+proportions=1
 
 analyticFunction="exp-bump"
 timeFunction="cosinus"
@@ -22,9 +23,9 @@ phaseZ=0.0
 sigma=1.0
 
 tnl-grid-setup --dimensions ${dimension} \
-               --proportions-x 2 \
-               --proportions-y 2 \
-               --proportions-z 2 \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
                --origin-x 0 \
                --origin-y 0 \
                --origin-z 0 \
@@ -71,7 +72,7 @@ tnl-discrete --mesh mesh.tnl \
                 --sigma ${sigma} \
                 --snapshot-period 0.05 \
                 --final-time 1.0 \
-                --laplce-convergence 1 \
+                --laplace-convergence-test 1 \
 
 rm u-ini.tnl
 
@@ -80,4 +81,4 @@ tnl-diff --mesh mesh.tnl \
          --mode halves \
          --output-file laplceDiff-${dofSize}-dofs \
 
-rm *.tnl     
+rm *.tnl    

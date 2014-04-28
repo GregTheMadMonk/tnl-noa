@@ -39,5 +39,6 @@ group Solver
    real snapshot-period(!)                          [Time period for writing a state of the time dependent problem to a file.];
    real final-time(!)                               [Stop time of the time dependent simulation.];
    integer verbose(1)                               [Set the verbose mode. The higher number the more messages are generated.];
-   integer laplce-convergence(0)                    [Set 1 if you want compare analytic and numerical Laplace operator in diff program];
+   integer laplace-convergence-test(0)              [Set 1 if you want compare analytic and numerical Laplace operator in diff program];
+   integer solution-convergence-test(0)             [Set 1 if you want compare analytic and numerical solution of equation for test functions];
 },[The solver set-up.];

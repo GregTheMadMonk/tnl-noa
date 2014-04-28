@@ -26,6 +26,8 @@ bool heatEquationSetter< MeshType, SolverStarter > ::setAnalyticSpaceFunction (c
 {
    SolverStarter solverStarter;
    
+   //DODELAT NACTENI Z PRIKAZOVY RADKY: RHS, Diffusion, BoundaryConditions !!!!!
+  
    const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("analytic-space-function");
    
    if (analyticSpaceFunctionParameter == "sin-wave")

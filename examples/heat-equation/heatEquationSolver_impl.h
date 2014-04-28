@@ -52,8 +52,19 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 :: init( const tnlParameterContainer& parameters )
 {
    analyticSpaceFunction.init(parameters);
-   ifLaplaceDiff = parameters.GetParameter< IndexType >( "laplce-convergence" );
-
+   ifLaplaceCompare = parameters.GetParameter< IndexType >( "laplace-convergence-test" );
+   if((ifLaplaceCompare != 0) && (ifLaplaceCompare != 1))
+   {
+      cerr << "Unknown value of laplace-convergence-test parameter. Valid values are 0 or 1. You set " << ifLaplaceCompare << ". ";
+      return false;
+   }
+   ifSolutionCompare = parameters.GetParameter< IndexType >("solution-convergence-test");
+   if((ifSolutionCompare != 0) && (ifSolutionCompare != 1))
+   {
+      cerr << "Unknown value of solution-convergence-test parameter. Valid values are 0 or 1. You set " << ifSolutionCompare << ". ";
+      return false;
+   }
+   
    const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
    if( ! this->mesh.load( meshFile ) )
    {
@@ -62,13 +73,13 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
    }
    
    const IndexType& dofs = this->mesh.getDofs();
-   dofVector. setSize(dofs);
-   dofVector2. setSize(dofs);
+   dofVectorAnalyticSolution. setSize(dofs);
+   dofVectorNumericalSolution. setSize(dofs);
    analyticLaplace. setSize(dofs);
    numericalLaplace. setSize(dofs);
    
-   this -> u. bind( & dofVector. getData()[ 0 * dofs ], dofs );
-   this -> v. bind( & dofVector2. getData()[ 0 * dofs ], dofs );
+   this -> sharedVectorAnalyticSolution. bind( & dofVectorAnalyticSolution. getData()[ 0 * dofs ], dofs );
+   this -> sharedVectorNumericalSolution. bind( & dofVectorNumericalSolution. getData()[ 0 * dofs ], dofs );
 
    return true;
 }
@@ -79,14 +90,14 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 :: setInitialCondition( const tnlParameterContainer& parameters )
 {
    const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
-   if( ! this->u.load( initialConditionFile ) )
+   if( ! this->sharedVectorNumericalSolution.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
    }
    
-   boundaryCondition.applyBoundaryConditions(mesh,u,0.0,timeFunction,analyticSpaceFunction);
-   timeFunction.applyInitTimeValues(u);
+   boundaryCondition.applyBoundaryConditions(mesh,sharedVectorNumericalSolution,0.0,timeFunction,analyticSpaceFunction);
+   timeFunction.applyInitTimeValues(sharedVectorNumericalSolution);
    
    return true;
 }
@@ -97,31 +108,36 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 :: makeSnapshot( const RealType& time, const IndexType& step )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
-   
-   analyticSolution.computeAnalyticSolution(mesh,time,v,timeFunction,analyticSpaceFunction);
-   
+
    tnlString fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this -> u. save( fileName ) )
-      return false;
-   
-   FileNameBaseNumberEnding( "v-", step, 5, ".tnl", fileName );
-   if( ! this -> v. save( fileName ) )
+   FileNameBaseNumberEnding( "numericalSolution-", step, 5, ".tnl", fileName );
+   if( ! this -> sharedVectorNumericalSolution. save( fileName ) )
       return false;
  
-   if(ifLaplaceDiff == 1)
+   if( ifSolutionCompare == 1)
+   {
+      analyticSolution.computeAnalyticSolution(mesh,time,sharedVectorAnalyticSolution,timeFunction,analyticSpaceFunction);
+   
+   FileNameBaseNumberEnding( "analyticSolution-", step, 5, ".tnl", fileName );
+   if( ! this -> sharedVectorAnalyticSolution. save( fileName ) )
+      return false;
+   }
+   
+   if(ifLaplaceCompare == 1)
    {
       analyticSolution.computeLaplace(mesh, time, analyticLaplace, timeFunction, analyticSpaceFunction);
-      diffusion.getExplicitRHS(mesh, dofVector2, numericalLaplace);
+      diffusion.getExplicitRHS(mesh, dofVectorNumericalSolution, numericalLaplace);
       
       tnlString fileName;
-      FileNameBaseNumberEnding( "analyticLaplace-", step, 5, ".tnl", fileName );
+      FileNameBaseNumberEnding( "analyticLaplace", 0, 1, ".tnl", fileName );
       if( ! this -> analyticLaplace. save( fileName ) )
          return false;
       
-      FileNameBaseNumberEnding( "numericalLaplace-", step, 5, ".tnl", fileName );
+      FileNameBaseNumberEnding( "numericalLaplace", 0, 1, ".tnl", fileName );
       if( ! this -> numericalLaplace. save( fileName ) )
          return false;
+      
+      exit(0);
    }
    
    return true;
@@ -133,7 +149,7 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,Time
 :: DofVectorType& heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> 
 :: getDofVector()
 {
-   return dofVector;
+   return dofVectorNumericalSolution;
 }
 
 template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,

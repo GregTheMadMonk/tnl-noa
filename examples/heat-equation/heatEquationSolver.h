@@ -65,8 +65,8 @@ class heatEquationSolver
    
    protected:
 
-   DofVectorType dofVector,dofVector2,analyticLaplace,numericalLaplace;
-   tnlSharedVector< RealType, DeviceType, IndexType > u,v;
+   DofVectorType dofVectorAnalyticSolution,dofVectorNumericalSolution,analyticLaplace,numericalLaplace;
+   tnlSharedVector< RealType, DeviceType, IndexType > sharedVectorNumericalSolution,sharedVectorAnalyticSolution;
    MeshType mesh;
    AnalyticSpaceFunction analyticSpaceFunction;
    TimeFunction timeFunction;
@@ -74,7 +74,7 @@ class heatEquationSolver
    BoundaryCondition boundaryCondition;
    Diffusion diffusion;
    RightHandSide RHS;
-   IndexType ifLaplaceDiff;
+   IndexType ifLaplaceCompare, ifSolutionCompare;
 };
 
 #include "heatEquationSolver_impl.h"

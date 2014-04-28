@@ -1,7 +1,8 @@
 #!/bin/bash
 
-dofSize=128
+dofSize=64
 dimension=2 
+proportions=1
 
 analyticFunction="exp-bump"
 timeFunction="cosinus"
@@ -22,9 +23,9 @@ phaseZ=0.0
 sigma=1.0
 
 tnl-grid-setup --dimensions ${dimension} \
-               --proportions-x 2 \
-               --proportions-y 2 \
-               --proportions-z 2 \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
                --origin-x 0 \
                --origin-y 0 \
                --origin-z 0 \
@@ -71,12 +72,12 @@ tnl-discrete --mesh mesh.tnl \
                 --sigma ${sigma} \
                 --snapshot-period 0.05 \
                 --final-time 1.0 \
-                --laplce-convergence 0 \
+                --solution-convergence-test 1 \
 
 rm u-ini.tnl
 
 tnl-diff --mesh mesh.tnl \
-         --input-files u-*.tnl v-*.tnl \
+         --input-files numericalSolution-*.tnl analyticSolution-*.tnl \
          --mode halves \
          --output-file ${dofSize}-dofs \
 

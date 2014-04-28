@@ -2,6 +2,7 @@
 
 dofSize=128
 dimension=1;
+proportions=1
 
 analyticFunction="sin-wave"
 timeFunction="cosinus"
@@ -22,9 +23,9 @@ phaseZ=0.0
 sigma=1.0
 
 tnl-grid-setup --dimensions ${dimension} \
-               --proportions-x 1 \
-               --proportions-y 1 \
-               --proportions-z 1 \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
                --origin-x 0 \
                --origin-y 0 \
                --origin-z 0 \
@@ -75,7 +76,7 @@ tnl-discrete --mesh mesh.tnl \
 tnl-view --mesh mesh.tnl \
          --input-files *.tnl \ 
 
-seznam=`ls u-*.gplt`
+seznam=`ls numericalSolution-*.gplt`
 
 for fname in $seznam ; do
 gnuplot << EOF
@@ -86,7 +87,7 @@ gnuplot << EOF
     #unset ztics
     unset border
     set output '$fname.png'
-    plot 'u-00000.gplt' with line 
+    plot 'numericalSolution-00000.gplt' with line 
     set yrange [-1.2:1.2]    
     set terminal png
     set title "Numerical solution" 
@@ -95,9 +96,9 @@ EOF
 done
 
 
-mencoder "mf://u-*.png" -mf fps=22 -o DiffusionNumerical.avi -ovc lavc -lavcopts vcodec=mpeg4
+mencoder "mf://numericalSolution-*.png" -mf fps=22 -o DiffusionNumerical.avi -ovc lavc -lavcopts vcodec=mpeg4
 
-seznam=`ls v-*.gplt`
+seznam=`ls analyticSolution-*.gplt`
 
 for fname in $seznam ; do
 gnuplot << EOF
@@ -108,7 +109,7 @@ gnuplot << EOF
     #unset ztics
     unset border
     set output '$fname.png'
-    plot 'v-00000.gplt' with line 
+    plot 'analyticSolution-00000.gplt' with line 
     set yrange [-1.2:1.2]    
     set terminal png
     set title "Analytic solution" 
@@ -117,7 +118,7 @@ EOF
 done
 
 
-mencoder "mf://v-*.png" -mf fps=22 -o DiffusionAnalytic.avi -ovc lavc -lavcopts vcodec=mpeg4
+mencoder "mf://analyticSolution-*.png" -mf fps=22 -o DiffusionAnalytic.avi -ovc lavc -lavcopts vcodec=mpeg4
       
 rm *.png
 rm *.tnl      
