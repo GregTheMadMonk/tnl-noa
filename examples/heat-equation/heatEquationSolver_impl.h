@@ -172,8 +172,6 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
       
       diffusion.getExplicitRHS(mesh,_u,_fu);  
       
-      boundaryCondition.applyBoundaryTimeDerivation(mesh, _fu, time, timeFunction, analyticSpaceFunction);
-      
       RHS.applyRHSValues(mesh, time, _fu, timeFunction, analyticSpaceFunction);
       
    }
