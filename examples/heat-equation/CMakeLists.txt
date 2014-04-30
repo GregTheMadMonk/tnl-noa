@@ -7,8 +7,8 @@ INSTALL( FILES Makefile
                tnlRightHandSide.h
                tnlNeumannBoundaryConditions_impl.h
                tnlNeumannBoundaryConditions.h
-               tnlLinearDiffusion_impl.h
                tnlLinearDiffusion.h
+	       tnlLinearDiffusion_impl.h
                tnlDirichletBoundaryConditions_impl.h
                tnlDirichletBoundaryConditions.h
                tnlAnalyticSolution_impl.h
@@ -23,5 +23,6 @@ INSTALL( FILES Makefile
                heatEquationSetter_impl.h
                heatEquationSetter.h
                heat-equation.cfg.desc
-               heat-equation-conf
+               heat-equation-conf.h
+
          DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )
