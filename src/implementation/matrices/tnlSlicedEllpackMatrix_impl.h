@@ -612,13 +612,11 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
 
 #ifdef HAVE_CUDA
 template< typename Real,
-          typename Device,
           typename Index,
           int SliceSize >
-__global__ void tnlSlicedEllpackMatrix_compuetMaximalRowLengthInSlices_CudaKernel<<< cudaGridSize, cudaBlockSize >>>
-                                                                                ( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >* matrix,
-                                                                                  const typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::RowLentghsVector* rowLengths,
-                                                                                  int gridIdx )
+__global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+                                                                                   const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                   int gridIdx )
 {
 
 }
@@ -679,13 +677,13 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
          RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
          dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
-         const IndexType cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
-         const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
-         for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+         const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
+         const Index cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+         for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
                cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-            tnlSlicedEllpackMatrix_compuetMaximalRowLengthInSlices_CudaKernel<<< cudaGridSize, cudaBlockSize >>>
+            tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
                                                                                kernel_rowLengths,
                                                                                gridIdx );
