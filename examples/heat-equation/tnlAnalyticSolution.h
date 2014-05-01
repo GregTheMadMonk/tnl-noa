@@ -22,8 +22,12 @@ class AnalyticSolution<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>
    typedef tnlStaticVector< 1, RealType > VertexType;
    
    template< typename TimeFunction, typename AnalyticSpaceFunction>
-   void compute(const MeshType& mesh, const RealType& time, SharedVector& output, SharedVector& numerical, 
-                TimeFunction timeFunction, AnalyticSpaceFunction anlayticSpaceFunction);
+   void computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output, 
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
+   
+   template< typename TimeFunction, typename AnalyticSpaceFunction>
+   void computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
 };
 
 template<typename Real, typename Device, typename Index>
@@ -41,8 +45,12 @@ class AnalyticSolution<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>
    typedef tnlStaticVector< 2, RealType > VertexType;
    
    template< typename TimeFunction, typename AnalyticSpaceFunction>
-   void compute(const MeshType& mesh, const RealType& time, SharedVector& output, SharedVector& numerical,
-                TimeFunction timeFunction, AnalyticSpaceFunction anlayticSpaceFunction);
+   void computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output,
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
+
+   template< typename TimeFunction, typename AnalyticSpaceFunction>
+   void computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
 };
 
 template<typename Real, typename Device, typename Index>
@@ -60,11 +68,14 @@ class AnalyticSolution<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>
    typedef tnlStaticVector< 3, RealType > VertexType;
    
    template< typename TimeFunction, typename AnalyticSpaceFunction>
-   void compute(const MeshType& mesh, const RealType& time, SharedVector& output, SharedVector& numerical,
-                TimeFunction timeFunction, AnalyticSpaceFunction anlayticSpaceFunction);
+   void computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output,
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
+
+   template< typename TimeFunction, typename AnalyticSpaceFunction>
+   void computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
+                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction);
 };
 
 #include "tnlAnalyticSolution_impl.h"
 
 #endif	/* TNLANALYTICSOLUTION_H */
-

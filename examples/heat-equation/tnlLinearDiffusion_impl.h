@@ -6,8 +6,8 @@
 
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>> ::
-getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
-                const CoordinatesType& coordinates, DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS( const MeshType& mesh, const CoordinatesType& coordinates, 
+               DofVectorType& _u, DofVectorType& _fu)
 {
    if((coordinates.x() <= 0) || (coordinates.x() >= (mesh.getDimensions().x()-1)))
    {
@@ -23,8 +23,7 @@ getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
    
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>> ::
-getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
-                DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS( const MeshType& mesh, DofVectorType& _u, DofVectorType& _fu)
 {
    RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
    
@@ -42,8 +41,8 @@ getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
 
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
-getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
-                const CoordinatesType& coordinates, DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS(const MeshType& mesh, const CoordinatesType& coordinates, 
+               DofVectorType& _u, DofVectorType& _fu)
 {
    if((coordinates.x() <= 0) || (coordinates.x() >= (mesh.getDimensions().x()-1)) || 
       (coordinates.y() <= 0 ) || (coordinates.y() >= (mesh.getDimensions().y()-1)))
@@ -63,8 +62,7 @@ getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
    
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
-getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
-                DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS(const MeshType& mesh, DofVectorType& _u, DofVectorType& _fu)
 {
    RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
    RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y(); 
@@ -87,8 +85,8 @@ getExplicitRHS(MeshType& mesh, const RealType& time, const RealType& tau,
 
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
-getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
-                const CoordinatesType& coordinates, DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS( const MeshType& mesh, const CoordinatesType& coordinates, 
+               DofVectorType& _u, DofVectorType& _fu)
 {
    if((coordinates.x() <= 0) || (coordinates.x() >= (mesh.getDimensions().x()-1)) || 
       (coordinates.y() <= 0 ) || (coordinates.y() >= (mesh.getDimensions().y()-1)) || 
@@ -118,8 +116,7 @@ getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
    
 template<typename Real, typename Device, typename Index>
 void tnlLinearDiffusion<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>> :: 
-getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
-                DofVectorType& _u, DofVectorType& _fu)
+getExplicitRHS( const MeshType& mesh, DofVectorType& _u, DofVectorType& _fu)
 {
    RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
    RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y();   
@@ -150,4 +147,3 @@ getExplicitRHS( const MeshType& mesh, const RealType& time, const RealType& tau,
 
 
 #endif	/* TNLLINEARDIFFUSION_IMP_H */
-

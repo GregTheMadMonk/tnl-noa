@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "simple-solver-conf.h"
-#include "simpleProblemSetter.h"
+#include "heat-equation-conf.h"
+#include "heatEquationSetter.h"
 #include <solvers/tnlSolver.h>
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< simpleProblemSetter > solver;
+   tnlSolver< heatEquationSetter > solver;
    if( ! solver. run( CONFIG_FILE, argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

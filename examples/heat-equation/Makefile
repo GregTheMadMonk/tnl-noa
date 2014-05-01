@@ -2,7 +2,7 @@ TNL_VERSION=0.1
 TNL_INSTALL_DIR=${HOME}/local/lib
 TNL_INCLUDE_DIR=${HOME}/local/include/tnl-${TNL_VERSION}
 
-TARGET = simple-solver
+TARGET = heat-equation
 CONFIG_FILE = $(TARGET).cfg.desc
 INSTALL_DIR = ${HOME}/local
 CXX = g++
@@ -26,11 +26,11 @@ dist: $(DIST)
 
 install: $(TARGET)
 	cp $(TARGET) $(INSTALL_DIR)/bin
-	cp $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/simple-solver
+	cp $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/heat-equation
 
 uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
-	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/simple-solver
+	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/heat-equation
 
 $(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
@@ -39,5 +39,5 @@ $(TARGET): $(TARGET)-conf.h $(OBJECTS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
 
 $(TARGET)-conf.h:
-	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/tnl-0.1/examples/simple-solver/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
+	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/tnl-0.1/examples/heat-equation/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
 

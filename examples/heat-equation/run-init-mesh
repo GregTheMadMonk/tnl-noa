@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dofSize=32
+dofSize=4
 dimension=1
 
 analyticFunction="sin-wave"

@@ -137,7 +137,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
       if( ! this -> numericalLaplace. save( fileName ) )
          return false;
       
-      exit(0);
+      EXIT_SUCCESS;
    }
    
    return true;
@@ -168,6 +168,8 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
+      boundaryCondition.applyBoundaryTimeDerivation(mesh, _fu, time, timeFunction, analyticSpaceFunction);
+      
       boundaryCondition.applyBoundaryConditions(mesh, _u, time, timeFunction, analyticSpaceFunction);
       
       diffusion.getExplicitRHS(mesh,_u,_fu);  
