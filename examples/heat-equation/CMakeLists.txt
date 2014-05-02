@@ -23,6 +23,5 @@ INSTALL( FILES Makefile
                heatEquationSetter_impl.h
                heatEquationSetter.h
                heat-equation.cfg.desc
-               heat-equation-conf.h
 
          DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )
