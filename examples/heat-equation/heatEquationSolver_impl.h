@@ -137,7 +137,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
       if( ! this -> numericalLaplace. save( fileName ) )
          return false;
       
-      EXIT_SUCCESS;
+      exit(0);
    }
    
    return true;
