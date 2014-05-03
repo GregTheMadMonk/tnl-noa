@@ -28,6 +28,21 @@ template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int,
           int SliceSize = 32 >
+class tnlSlicedEllpackMatrix;
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          int SliceSize >
+__global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+                                                                                   const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                   int gridIdx );
+#endif
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
 class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
@@ -178,6 +193,12 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    typedef tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType >;
+#ifdef HAVE_CUDA
+   friend void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( 
+   tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+                                                                                                                       const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                                                       int gridIdx );
+#endif
 
 };
 

@@ -618,7 +618,20 @@ __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKerne
                                                                                    const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
                                                                                    int gridIdx )
 {
-
+   const Index sliceIdx = gridIdx * tnlCuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+   Index rowIdx = sliceIdx * SliceSize;
+   Index rowInSliceIdx( 0 );
+   Index maxRowLength( 0 );
+   while( rowInSliceIdx < SliceSize && rowIdx < matrix->getRows() )
+   {
+      printf( "sliceIdx = %d rowInSliceIdx = %d SliceSize = %d rowIdx = %d matrix->getRows() = %d \n", sliceIdx, rowInSliceIdx, SliceSize, rowIdx, matrix->getRows() );
+      maxRowLength = Max( maxRowLength, rowLengths[ rowIdx ] );
+      printf( "threadIdx.x = %d, maxRowLength = %d \n", threadIdx.x, maxRowLength );
+      rowIdx++;
+      rowInSliceIdx++;
+   }
+   //matrix->sliceRowLengths[ sliceIdx ] = maxRowLength;
+   //matrix->slicePointers[ sliceIdx ] = maxRowLength * SliceSize;
 }
 #endif
 
@@ -679,6 +692,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
          dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
          const Index cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+         cout << rowLengths << endl;
          for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
@@ -691,6 +705,8 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
          tnlCuda::freeFromDevice( kernel_matrix );
          tnlCuda::freeFromDevice( kernel_rowLengths );
          checkCudaDevice;
+         cout << rowLengths << endl;
+         cout << matrix.slicePointers << endl << matrix.sliceRowLengths << endl;
 #endif
       }
 };

@@ -21,24 +21,40 @@
 #include <math.h>
 #include <stdlib.h>
 
-template< typename Type1, typename Type2 > Type1 Min( const Type1& a, const Type2& b )
+template< typename Type1, typename Type2 >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Type1 Min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
-template< typename Type1, typename Type2 > Type1 Max( const Type1& a, const Type2& b )
+template< typename Type1, typename Type2 >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Type1 Max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
 
-template< typename Type > void Swap( Type& a, Type& b )
+template< typename Type >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void Swap( Type& a, Type& b )
 {
    Type tmp( a );
    a = b;
    b = tmp;
 };
 
-template< class T > T Sign( const T& a )
+template< class T >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+T Sign( const T& a )
 {
    if( a < ( T ) 0 ) return -1;
    if( a == ( T ) 0 ) return 0;
@@ -46,6 +62,9 @@ template< class T > T Sign( const T& a )
 };
 
 template< class T >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
 T tnlAbs( const T& n )
 {
    if( n < ( T ) 0 )
