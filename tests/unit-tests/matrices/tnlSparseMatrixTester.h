@@ -51,8 +51,6 @@ __global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestC
 template< typename MatrixType >
 __global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                             bool* testResult );
-
-
 #endif
 
 
@@ -82,18 +80,19 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElementFastTest", &TesterType::setElementFastTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElementFast_DiagonalMatrixTest", &TesterType::setElementFast_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElementFast_DenseMatrixTest", &TesterType::setElementFast_DenseMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElementFast_LowerTriangularMatrixTest", &TesterType::setElementFast_LowerTriangularMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElementFastTest", &TesterType::setElementFastTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElementFast_DiagonalMatrixTest", &TesterType::setElementFast_DiagonalMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElementFast_DenseMatrixTest", &TesterType::setElementFast_DenseMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setElementFast_LowerTriangularMatrixTest", &TesterType::setElementFast_LowerTriangularMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalMatrixTest", &TesterType::setRow_DiagonalMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
+      suiteOfTests->addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
 
@@ -496,6 +495,37 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
+
+   void setRow_DiagonalMatrixTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( 7 );
+      m.setRowLengths( rowLengths );
+      RealType values[ 1 ];
+      IndexType columnIndexes[ 1 ];
+
+      for( int i = 0; i < 10; i++ )
+      {
+         values[ 0 ] = i;
+         columnIndexes[ 0 ] = i;
+         m.setRow( i, columnIndexes, values, 1 );
+      }
+
+      for( int i = 0; i < 10; i++ )
+      {
+         for( int j = 0; j < 10; j++ )
+         {
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, j ) == i );
+            else
+               CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+         }
+      }
+   }
+
 
    void vectorProductTest()
    {
