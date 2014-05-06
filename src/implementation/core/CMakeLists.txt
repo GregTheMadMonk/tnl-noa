@@ -3,7 +3,8 @@ ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
-SET( headers tnlLogger_impl.h 
+SET( headers tnlCuda_impl.h
+             tnlLogger_impl.h 
              tnlIndexedSet_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/core )
