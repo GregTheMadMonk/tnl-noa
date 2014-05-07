@@ -276,7 +276,7 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Geometry< 2, Real, Device, Index > GeometryType;
+   typedef Geometry< 3, Real, Device, Index > GeometryType;
    typedef tnlStaticVector< 3, Real > VertexType;
    typedef tnlStaticVector< 3, Index > CoordinatesType;
    enum { Dimensions = 3};
@@ -287,9 +287,9 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   void setDimensions( const Index xSize, const Index ySize, const Index zSize );
+   bool setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
-   void setDimensions( const CoordinatesType& );
+   bool setDimensions( const CoordinatesType& );
 
    const CoordinatesType& getDimensions() const;
 

@@ -57,7 +57,7 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
+bool tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
    tnlAssert( xSize > 1,
               cerr << "The number of Elements along x-axis must be larger than 1." );
@@ -66,19 +66,20 @@ void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index x
    tnlAssert( zSize > 1,
               cerr << "The number of Elements along z-axis must be larger than 1." );
 
-   this -> dimensions. x() = xSize;
-   this -> dimensions. y() = ySize;
-   this -> dimensions. z() = zSize;
+   this -> dimensions.x() = xSize;
+   this -> dimensions.y() = ySize;
+   this -> dimensions.z() = zSize;
    dofs = zSize * ySize * xSize;
+   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
+bool tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
 {
-   this -> setDimensions( this -> dimensions. x(), this -> dimensions. y(), this -> dimensions. z() );
+   return this -> setDimensions( dimensions. x(), dimensions. y(), dimensions. z() );
 }
 
 template< typename Real,
@@ -273,13 +274,17 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
    if( ! tnlObject :: save( file ) )
       return false;
    if( ! this -> origin. save( file ) ||
-       ! this -> proportions. save( file ) ||
        ! this -> dimensions. save( file ) )
    {
       cerr << "I was not able to save the domain description of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
+   /*if( ! geometry. save( file ) )
+   {
+      cerr << "I was not able to save the mesh." << endl;
+      return false;
+   }*/
    return true;
 };
 
@@ -291,20 +296,26 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
+   CoordinatesType dim;
    if( ! this -> origin. load( file ) ||
-       ! this -> proportions. load( file ) ||
-       ! this -> dimensions. load( file ) )
+       ! dim. load( file ) )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
-   this -> dofs = this -> getDimensions(). x() *
-                  this -> getDimensions(). y() *
-                  this -> getDimensions(). z();
+   /*if( ! geometry. load( file ) )
+   {
+      cerr << "I am not able to load the grid geometry." << endl;
+      return false;
+   }*/
+   if( ! this -> setDimensions( dim ) )
+   {
+      cerr << "I am not able to allocate the loaded grid." << endl;
+      return false;
+   }
    return true;
 };
-
 
 template< typename Real,
           typename Device,
