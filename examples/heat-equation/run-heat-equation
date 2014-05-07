@@ -1,0 +1,127 @@
+#!/bin/bash
+
+dofSize=128
+dimension=1;
+proportions=1
+
+analyticFunction="sin-wave"
+timeFunction="cosinus"
+
+amplitude=1.0
+waveLength=1.0
+waveLengthX=1.0
+waveLengthY=1.0
+waveLengthZ=1.0
+wavesNumber=0.0
+wavesNumberX=0.0
+wavesNumberY=0.0
+wavesNumberZ=0.0
+phase=0.0
+phaseX=0.0
+phaseY=0.0
+phaseZ=0.0
+sigma=1.0
+
+tnl-grid-setup --dimensions ${dimension} \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
+               --origin-x 0 \
+               --origin-y 0 \
+               --origin-z 0 \
+               --size-x ${dofSize} \
+               --size-y ${dofSize} \
+               --size-z ${dofSize} \
+               
+tnl-discrete --mesh mesh.tnl \
+             --function ${analyticFunction} \
+             --output-file u-ini.tnl \
+             --amplitude ${amplitude} \
+             --wave-length ${waveLength} \
+             --wave-length-x ${waveLengthX} \
+             --wave-length-y ${waveLengthY} \
+             --wave-length-z ${waveLengthZ} \
+             --waves-number ${wavesNumber} \
+             --waves-number-x ${wavesNumberX} \
+             --waves-number-y ${wavesNumberY} \
+             --waves-number-z ${wavesNumberZ} \
+             --phase ${phase} \
+             --phase-x ${phaseX} \
+             --phase-y ${phaseY} \
+             --phase-z ${phaseZ} \
+             --sigma ${sigma} \
+
+./heat-equation --dimensions ${dimension} \
+                --time-discretisation explicit \
+                --discrete-solver merson \
+                --time-function ${timeFunction}\
+                --analytic-space-function ${analyticFunction}\
+                --amplitude ${amplitude} \
+                --wave-length ${waveLength} \
+                --wave-length-x ${waveLengthX} \
+                --wave-length-y ${waveLengthY} \
+                --wave-length-z ${waveLengthZ} \
+                --waves-number ${wavesNumber} \
+                --waves-number-x ${wavesNumberX} \
+                --waves-number-y ${wavesNumberY} \
+                --waves-number-z ${wavesNumberZ} \
+                --phase ${phase} \
+                --phase-x ${phaseX} \
+                --phase-y ${phaseY} \
+                --phase-z ${phaseZ} \
+                --sigma ${sigma} \
+                --snapshot-period 0.001 \
+                --final-time 1.0 \
+              
+tnl-view --mesh mesh.tnl \
+         --input-files *.tnl \ 
+
+seznam=`ls numericalSolution-*.gplt`
+
+for fname in $seznam ; do
+gnuplot << EOF
+    set terminal unknown
+    #set view 33,33 #3D
+    #unset xtics 
+    #unset ytics
+    #unset ztics
+    unset border
+    set output '$fname.png'
+    plot 'numericalSolution-00000.gplt' with line 
+    set yrange [-1.2:1.2]    
+    set terminal png
+    set title "Numerical solution" 
+    plot '$fname' with line 
+EOF
+done
+
+
+mencoder "mf://numericalSolution-*.png" -mf fps=22 -o DiffusionNumerical.avi -ovc lavc -lavcopts vcodec=mpeg4
+
+seznam=`ls analyticSolution-*.gplt`
+
+for fname in $seznam ; do
+gnuplot << EOF
+    set terminal unknown
+    #set view 33,33 #3D
+    #unset xtics 
+    #unset ytics
+    #unset ztics
+    unset border
+    set output '$fname.png'
+    plot 'analyticSolution-00000.gplt' with line 
+    set yrange [-1.2:1.2]    
+    set terminal png
+    set title "Analytic solution" 
+    plot '$fname' with line 
+EOF
+done
+
+
+mencoder "mf://analyticSolution-*.png" -mf fps=22 -o DiffusionAnalytic.avi -ovc lavc -lavcopts vcodec=mpeg4
+      
+rm *.png
+rm *.tnl      
+   
+rm *.gplt      
+              

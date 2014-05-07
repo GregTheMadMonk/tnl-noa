@@ -29,12 +29,13 @@ bool setupGrid( const tnlParameterContainer& parameters )
    tnlString gridName = parameters. GetParameter< tnlString >( "grid-name" );
    tnlString outputFile = parameters. GetParameter< tnlString >( "output-file" );
    int dimensions = parameters. GetParameter< int >( "dimensions" );
-   cout << "Writing the grid to the file " << outputFile << " .... ";
    if( dimensions == 1 )
    {
       RealType originX = parameters. GetParameter< double >( "origin-x" );
       RealType proportionsX = parameters. GetParameter< double >( "proportions-x" );
       IndexType sizeX = parameters. GetParameter< int >( "size-x" );
+      cout << "Setting dimensions to  ... " << sizeX << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
       tnlGrid< 1, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
@@ -55,6 +56,8 @@ bool setupGrid( const tnlParameterContainer& parameters )
       RealType proportionsY = parameters. GetParameter< double >( "proportions-y" );
       IndexType sizeX = parameters. GetParameter< int >( "size-x" );
       IndexType sizeY = parameters. GetParameter< int >( "size-y" );
+      cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
       tnlGrid< 2, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
@@ -78,6 +81,8 @@ bool setupGrid( const tnlParameterContainer& parameters )
       IndexType sizeX = parameters. GetParameter< int >( "size-x" );
       IndexType sizeY = parameters. GetParameter< int >( "size-y" );
       IndexType sizeZ = parameters. GetParameter< int >( "size-z" );
+      cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << "x" << sizeZ << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
       tnlGrid< 3, RealType, tnlHost, IndexType > grid;
       grid.setName( gridName );
@@ -98,7 +103,7 @@ template< typename RealType >
 bool resolveIndexType( const tnlParameterContainer& parameters )
 {
    const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
-   cout << "Setting  to  ... " << indexType << endl;
+   cout << "Setting index type to  ... " << indexType << endl;
    if( indexType == "int" )
       return setupGrid< RealType, int >( parameters );
    if( indexType == "long int" )

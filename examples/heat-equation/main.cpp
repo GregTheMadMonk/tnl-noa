@@ -1,7 +1,7 @@
 /***************************************************************************
-                          simpleProblemSetter.h  -  description
+                          main.cpp  -  description
                              -------------------
-    begin                : Feb 23, 2013
+    begin                : Jan 12, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,25 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEMTYPESSETTER_H_
-#define SIMPLEPROBLEMTYPESSETTER_H_
+#include "heat-equation-conf.h"
+#include "heatEquationSetter.h"
+#include <solvers/tnlSolver.h>
 
-#include <config/tnlParameterContainer.h>
-#include <mesh/tnlGrid.h>
-#include "simpleProblemSolver.h"
-
-template< typename MeshType,
-          typename SolverStarter >
-class simpleProblemSetter
+int main( int argc, char* argv[] )
 {
-   public:
+   tnlSolver< heatEquationSetter > solver;
+   if( ! solver. run( CONFIG_FILE, argc, argv ) )
+      return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
 
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-   static bool run( const tnlParameterContainer& parameters );
-};
 
-#include "simpleProblemSetter_impl.h"
-
-#endif /* SIMPLEPROBLEMSETTER_H_ */

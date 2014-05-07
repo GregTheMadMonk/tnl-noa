@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEMSOLVER_H_
-#define SIMPLEPROBLEMSOLVER_H_
+#ifndef HEATEQUATIONSOLVER_H_
+#define HEATEQUATIONSOLVER_H_
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -24,9 +24,12 @@
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
+#include "heatEquationSolver.h"
+#include "tnlAnalyticSolution.h"
 
-template< typename Mesh >
-class simpleProblemSolver
+
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, typename TimeFunction, typename AnalyticSpaceFunction>
+class heatEquationSolver
 {
    public:
 
@@ -59,17 +62,21 @@ class simpleProblemSolver
                         DofVectorType& _fu );
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
-
+   
    protected:
 
-   DofVectorType dofVector;
-
-   tnlSharedVector< RealType, DeviceType, IndexType > u, v;
-
+   DofVectorType dofVectorAnalyticSolution,dofVectorNumericalSolution,analyticLaplace,numericalLaplace;
+   tnlSharedVector< RealType, DeviceType, IndexType > sharedVectorNumericalSolution,sharedVectorAnalyticSolution;
    MeshType mesh;
-
+   AnalyticSpaceFunction analyticSpaceFunction;
+   TimeFunction timeFunction;
+   AnalyticSolution<MeshType> analyticSolution;
+   BoundaryCondition boundaryCondition;
+   Diffusion diffusion;
+   RightHandSide RHS;
+   IndexType ifLaplaceCompare, ifSolutionCompare;
 };
 
-#include "simpleProblemSolver_impl.h"
+#include "heatEquationSolver_impl.h"
 
-#endif /* SIMPLEPROBLEM_H_ */
+#endif /* HEATEQUATIONSOLVER_H_ */
