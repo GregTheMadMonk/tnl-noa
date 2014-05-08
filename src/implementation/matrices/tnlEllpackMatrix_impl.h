@@ -294,7 +294,10 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
       return false;
    for( Index i = 0; i < elements; i++ )
    {
-      this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
+      const IndexType column = columnIndexes[ i ];
+      if( column < 0 || column >= this->getColumns() )
+         return false;
+      this->columnIndexes[ elementPointer ] = column;
       this->values[ elementPointer ] = values[ i ];
       elementPointer += step;
    }
@@ -324,7 +327,10 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
 
    for( IndexType i = 0; i < elements; i++ )
    {
-      this->columnIndexes.setElement( elementPointer, columnIndexes[ i ] );
+      const IndexType column = columnIndexes[ i ];
+      if( column < 0 || column >= this->getColumns() )
+         return false;
+      this->columnIndexes.setElement( elementPointer, column );
       this->values.setElement( elementPointer, values[ i ] );
       elementPointer += step;
    }

@@ -16,27 +16,28 @@
  ***************************************************************************/
 
 #include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <core/tnlCuda.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
 #include <cstdlib>
 
-#include "tnlChunkedEllpackMatrixTester.h"
+#include "tnlSparseMatrixTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 4, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 4, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 4, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 4, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 16, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 16, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 16, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 16, 2 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, int, 2, 16 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, int, 2, 16 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< float, tnlHost, long int, 2, 16 > >() ||
-       ! tnlUnitTestStarter :: run< tnlChunkedEllpackMatrixTester< double, tnlHost, long int, 2, 16 > >()
+   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int, 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int, 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int, 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int, 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int, 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int, 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int, 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int, 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int, 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int, 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int, 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int, 2, 16 > > >() 
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
