@@ -74,7 +74,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexT
     * Allocate slice info array. Note that there cannot be
     * more slices than rows.
     */
-   if( ! this->slices.setSize( rows ) ||
+   if( ! this->slices.setSize( this->rows ) ||
        ! this->chunksToRowsMapping.setSize( this-> rows ) ||
        ! this->slicesToRowsMapping.setSize( this->rows ) ||
        ! this->rowPointers.setSize( this->rows + 1 ) )
@@ -331,12 +331,13 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
                                                                      const RealType& value,
                                                                      const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   // TODO: return this back when CUDA kernels support cerr
+   /*tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
-                   << " this->columns = " << this-> columns );
+                   << " this->columns = " << this-> columns );*/
 
    const IndexType& sliceIndex = slicesToRowsMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
@@ -344,10 +345,11 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
 
-   tnlAssert( elementPtr >= 0,
+   // TODO: return this back when CUDA kernels support cerr
+   /*tnlAssert( elementPtr >= 0,
             cerr << "elementPtr = " << elementPtr );
    tnlAssert( rowEnd <= this->columnIndexes.getSize(),
-            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );
+            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );*/
 
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
    if( elementPtr == rowEnd )
@@ -476,8 +478,9 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const Index
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
-   tnlAssert( rowEnd <= this->columnIndexes.getSize(),
-            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );
+   // TODO: return this back when CUDA kernels support cerr
+   /*tnlAssert( rowEnd <= this->columnIndexes.getSize(),
+            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );*/
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
       elementPtr++;
    if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )

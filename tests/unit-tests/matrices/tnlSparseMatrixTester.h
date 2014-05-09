@@ -69,21 +69,23 @@ __global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaK
 
 #endif
 
-template< typename Matrix >
-class tnlSparseMatrixTesterMatrixSetter;
+class tnlSparseMatrixTestDefaultSetup
+{};
 
-template<>
+template< typename Matrix,
+          typename TestSetup >
 class tnlSparseMatrixTesterMatrixSetter
 {
    public:
 
-   bool setup( Matrix& matrix )
+   static bool setup( Matrix& matrix )
    {
       return true;
    }
 };
 
-template< typename Matrix >
+template< typename Matrix,
+          typename MatrixSetup = tnlSparseMatrixTestDefaultSetup >
 class tnlSparseMatrixTester : public CppUnit :: TestCase
 {
    public:
@@ -93,7 +95,8 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    typedef typename Matrix::IndexType IndexType;
    typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
    typedef tnlVector< IndexType, DeviceType, IndexType > IndexVector;
-   typedef tnlSparseMatrixTester< MatrixType > TesterType;
+   typedef tnlSparseMatrixTester< MatrixType, MatrixSetup > TesterType;
+   typedef tnlSparseMatrixTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
    tnlSparseMatrixTester(){};
@@ -136,6 +139,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setDimensionsTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       CPPUNIT_ASSERT( m.getRows() == 10 );
       CPPUNIT_ASSERT( m.getColumns() == 10 );
@@ -144,6 +148,8 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setLikeTest()
    {
       MatrixType m1, m2;
+      MatrixSetter::setup( m1 );
+      MatrixSetter::setup( m2 );
       m1.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m1.getRows() );
@@ -159,11 +165,14 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElementTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
       m.setRowLengths( rowLengths );
+
+      cout << m << endl;
 
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
@@ -177,6 +186,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElementFastTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -215,6 +225,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElement_DiagonalMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -239,6 +250,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElementFast_DiagonalMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -284,6 +296,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElement_DenseMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -318,6 +331,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElementFast_DenseMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -395,6 +409,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElement_LowerTriangularMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -431,6 +446,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setElementFast_LowerTriangularMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -510,6 +526,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void addElementTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -539,6 +556,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRow_DiagonalMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -569,6 +587,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRowFast_DiagonalMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -622,6 +641,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRow_DenseMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -668,6 +688,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRowFast_DenseMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -760,6 +781,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRow_LowerTriangularMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -809,6 +831,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    void setRowFast_LowerTriangularMatrixTest()
    {
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -907,6 +930,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       v.setSize( size );
       w.setSize( size );
       MatrixType m;
+      MatrixSetter::setup( m );
       m.setDimensions( size, size );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
