@@ -32,8 +32,8 @@ tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackMatrix()
 {
    this->values.setName( "tnlChunkedEllpackMatrix::values" );
    this->columnIndexes.setName( "tnlChunkedEllpackMatrix::columnIndexes" );
-   chunksToRowsMapping.setName( "tnlChunkedEllpackMatrix::chunksToRowsMapping" );
-   slicesToRowsMapping.setName( "tnlChunkedEllpackMatrix::slicesToRowsMapping" );
+   rowToChunkMapping.setName( "tnlChunkedEllpackMatrix::rowToChunkMapping" );
+   rowToSliceMapping.setName( "tnlChunkedEllpackMatrix::rowToSliceMapping" );
    rowPointers.setName( "tnlChunkedEllpackMatrix::rowPointers" );
    slices.setName( "tnlChunkedEllpackMatrix::slices" );
 };
@@ -75,8 +75,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexT
     * more slices than rows.
     */
    if( ! this->slices.setSize( this->rows ) ||
-       ! this->chunksToRowsMapping.setSize( this-> rows ) ||
-       ! this->slicesToRowsMapping.setSize( this->rows ) ||
+       ! this->rowToChunkMapping.setSize( this-> rows ) ||
+       ! this->rowToSliceMapping.setSize( this->rows ) ||
        ! this->rowPointers.setSize( this->rows + 1 ) )
       return false;
    return true;
@@ -85,24 +85,22 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexT
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths,
+                                                                        tnlArray< tnlChunkedEllpackSliceInfo, tnlHost, Index >& slices,
+                                                                        IndexType& numberOfSlices )
 {
    /****
     * Iterate over rows and allocate slices so that each slice has
     * approximately the same number of allocated elements
     */
-
-   IndexType row( 0 ),
-             sliceIndex( 0 ),
-             sliceBegin( 0 ),
-             sliceEnd( 0 ),
-             sliceSize( 0 ),
-             allocatedElementsInSlice( 0 ),
-             elementsToAllocation( 0 );
    const IndexType desiredElementsInSlice =
             this->chunksInSlice * this->desiredChunkSize;
-   this->rowPointers[ 0 ] = 0;
-   while( true )
+
+   IndexType row( 0 ),
+             sliceSize( 0 ),
+             allocatedElementsInSlice( 0 );
+   numberOfSlices = 0;
+   while( row < this->rows )
    {
       /****
        * Add one row to the current slice until we reach the desired
@@ -112,86 +110,121 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
       sliceSize++;
       row++;
       if( allocatedElementsInSlice < desiredElementsInSlice )
-         if( row < this->rows && sliceSize < chunksInSlice ) continue;
+         if( row < this->rows - 1 && sliceSize < chunksInSlice ) continue;
       tnlAssert( sliceSize >0, );
-
-      /****
-       * Now, compute the number of chunks per each row.
-       * Each row get one chunk by default.
-       * Then each row will get additional chunks w.r. to the
-       * number of the elements in the row. If there are some
-       * free chunks left, repeat it again.
-       */
-      IndexType freeChunks = this->chunksInSlice - sliceSize;
-      const IndexType sliceBegin = row - sliceSize;
-      const IndexType sliceEnd = row;
-      for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-         this->chunksToRowsMapping.setElement( i, 1 );
-      while( freeChunks )
-      {
-         for( IndexType i = sliceBegin; i < sliceEnd && freeChunks > 0; i++ )
-         {
-            RealType rowRatio( 0.0 );
-            if( allocatedElementsInSlice != 0 )
-               rowRatio = ( RealType ) rowLengths[ i ] / ( RealType ) allocatedElementsInSlice;
-            const IndexType addedChunks = ceil( freeChunks * rowRatio );
-            freeChunks -= addedChunks;
-            this->chunksToRowsMapping[ i ] += addedChunks;
-            tnlAssert( chunksToRowsMapping[ i ] > 0,
-                       cerr << " chunksToRowsMapping[ i ] = " << chunksToRowsMapping[ i ] << endl );
-         }
-         tnlAssert( freeChunks >= 0, );
-         //cout << "freeChunks = " << freeChunks << endl;
-      }
-
-      /****
-       * Compute the chunk size
-       */
-      IndexType maxChunkInSlice( 0 );
-      for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-         maxChunkInSlice = Max( maxChunkInSlice,
-                             ceil( ( RealType ) rowLengths[ i ] /
-                                   ( RealType ) this->chunksToRowsMapping[ i ] ) );
-      tnlAssert( maxChunkInSlice > 0,
-                 cerr << " maxChunkInSlice = " << maxChunkInSlice << endl );
-
-
-      /****
-       * Set-up the slice info.
-       */
-      this->slices[ sliceIndex ].size = sliceSize;
-      this->slices[ sliceIndex ].chunkSize = maxChunkInSlice;
-      this->slices[ sliceIndex ].firstRow = sliceBegin;
-      this->slices[ sliceIndex ].pointer = elementsToAllocation;
-      elementsToAllocation += this->chunksInSlice * maxChunkInSlice;
-
-      for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-         this->slicesToRowsMapping[ i ] = sliceIndex;
-      sliceIndex++;
-
-      for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-      {
-         this->rowPointers[ i + 1 ] =
-            this->rowPointers[ i ] + maxChunkInSlice*chunksToRowsMapping[ i ];
-         tnlAssert( this->rowPointers[ i ] >= 0,
-                    cerr << "this->rowPointers[ i ] = " << this->rowPointers[ i ] );
-         tnlAssert( this->rowPointers[ i + 1 ] >= 0,
-                    cerr << "this->rowPointers[ i + 1 ] = " << this->rowPointers[ i + 1 ] );
-      }
-
-      /****
-       * Finish the chunks to rows mapping by computing the prefix sum.
-       */
-      this->chunksToRowsMapping.computePrefixSum( sliceBegin, sliceEnd );
-
-      /****
-       * Proceed to the next row
-       */
+      slices[ numberOfSlices ].size = sliceSize;
+      slices[ numberOfSlices ].firstRow = row - sliceSize;
+      slices[ numberOfSlices ].pointer = allocatedElementsInSlice; // this is only temporary
       sliceSize = 0;
+      numberOfSlices++;
       allocatedElementsInSlice = 0;
-      if( row < this->rows ) continue;
-      else break;
    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const RowLengthsVector& rowLengths,
+                                                               const IndexType sliceIndex,
+                                                               IndexType& elementsToAllocation )
+{
+   /****
+    * Now, compute the number of chunks per each row.
+    * Each row get one chunk by default.
+    * Then each row will get additional chunks w.r. to the
+    * number of the elements in the row. If there are some
+    * free chunks left, repeat it again.
+    */
+   const IndexType sliceSize = this->slices[ sliceIndex ].size;
+   const IndexType sliceBegin = this->slices[ sliceIndex ].firstRow;
+   const IndexType allocatedElementsInSlice = this->slices[ sliceIndex ].pointer;
+   const IndexType sliceEnd = sliceBegin + sliceSize;
+
+   IndexType freeChunks = this->chunksInSlice - sliceSize;
+   for( IndexType i = sliceBegin; i < sliceEnd; i++ )
+      this->rowToChunkMapping.setElement( i, 1 );
+   while( freeChunks )
+   {
+      for( IndexType i = sliceBegin; i < sliceEnd && freeChunks > 0; i++ )
+      {
+         RealType rowRatio( 0.0 );
+         if( allocatedElementsInSlice != 0 )
+            rowRatio = ( RealType ) rowLengths[ i ] / ( RealType ) allocatedElementsInSlice;
+         const IndexType addedChunks = ceil( freeChunks * rowRatio );
+         freeChunks -= addedChunks;
+         this->rowToChunkMapping[ i ] += addedChunks;
+#ifndef HAVE_CUDA         
+         tnlAssert( rowToChunkMapping[ i ] > 0,
+                    cerr << " rowToChunkMapping[ i ] = " << rowToChunkMapping[ i ] << endl );
+#endif         
+      }
+#ifndef HAVE_CUDA
+      tnlAssert( freeChunks >= 0, );
+#endif
+   }
+
+   /****
+    * Compute the chunk size
+    */
+   IndexType maxChunkInSlice( 0 );
+   for( IndexType i = sliceBegin; i < sliceEnd; i++ )
+      maxChunkInSlice = Max( maxChunkInSlice,
+                          ceil( ( RealType ) rowLengths[ i ] /
+                                ( RealType ) this->rowToChunkMapping[ i ] ) );
+#ifndef HAVE_CUDA
+   tnlAssert( maxChunkInSlice > 0,
+              cerr << " maxChunkInSlice = " << maxChunkInSlice << endl );
+#endif
+
+
+   /****
+    * Set-up the slice info.
+    */
+   this->slices[ sliceIndex ].chunkSize = maxChunkInSlice;
+   this->slices[ sliceIndex ].pointer = elementsToAllocation;
+   elementsToAllocation += this->chunksInSlice * maxChunkInSlice;
+
+   for( IndexType i = sliceBegin; i < sliceEnd; i++ )
+      this->rowToSliceMapping[ i ] = sliceIndex;
+
+   for( IndexType i = sliceBegin; i < sliceEnd; i++ )
+   {
+      this->rowPointers[ i + 1 ] = maxChunkInSlice*rowToChunkMapping[ i ];
+#ifndef HAVE_CUDA
+      tnlAssert( this->rowPointers[ i ] >= 0,
+                 cerr << "this->rowPointers[ i ] = " << this->rowPointers[ i ] );
+      tnlAssert( this->rowPointers[ i + 1 ] >= 0,
+                 cerr << "this->rowPointers[ i + 1 ] = " << this->rowPointers[ i + 1 ] );
+#endif
+   }
+
+   /****
+    * Finish the row to chunk mapping by computing the prefix sum.
+    */
+   for( IndexType j = sliceBegin + 1; j < sliceEnd; j++ )
+      rowToChunkMapping[ j ] += rowToChunkMapping[ j - 1 ];
+
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+{
+
+   IndexType numberOfSlices, elementsToAllocation( 0 );
+
+   if( ! DeviceDependentCode::resolveSliceSizes( *this, rowLengths, numberOfSlices ) )
+      return false;
+
+   this->rowPointers.setElement( 0, 0 );
+   for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
+      this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
+
+   this->rowPointers.computePrefixSum();
 
    return tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
@@ -201,7 +234,7 @@ template< typename Real,
           typename Index >
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
@@ -218,8 +251,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setLike( const tnlChunkedEl
    this->chunksInSlice = matrix.chunksInSlice;
    this->desiredChunkSize = matrix.desiredChunkSize;
    if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
-       ! this->chunksToRowsMapping.setLike( matrix.chunksToRowsMapping ) ||
-       ! this->slicesToRowsMapping.setLike( matrix.slicesToRowsMapping ) )
+       ! this->rowToChunkMapping.setLike( matrix.rowToChunkMapping ) ||
+       ! this->rowToSliceMapping.setLike( matrix.rowToSliceMapping ) )
       return false;
    return true;
 }
@@ -230,8 +263,8 @@ template< typename Real,
 void tnlChunkedEllpackMatrix< Real, Device, Index >::reset()
 {
    tnlSparseMatrix< Real, Device, Index >::reset();
-   this->chunksToRowsMapping.reset();
-   this->slicesToRowsMapping.reset();
+   this->rowToChunkMapping.reset();
+   this->rowToSliceMapping.reset();
 }
 
 template< typename Real,
@@ -339,9 +372,9 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
 
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
-   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
 
@@ -391,7 +424,53 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType
                                                                  const RealType& value,
                                                                  const RealType& thisElementMultiplicator )
 {
-   return this->addElementFast( row, column, value, thisElementMultiplicator );
+   tnlAssert( row >= 0 && row < this->rows &&
+              column >= 0 && column <= this->rows,
+              cerr << " row = " << row
+                   << " column = " << column
+                   << " this->rows = " << this->rows
+                   << " this->columns = " << this-> columns );
+
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+   tnlAssert( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   IndexType elementPtr = rowPointers.getElement( row );
+   const IndexType rowEnd = rowPointers.getElement( row + 1 );
+
+   tnlAssert( elementPtr >= 0,
+            cerr << "elementPtr = " << elementPtr );
+   tnlAssert( rowEnd <= this->columnIndexes.getSize(),
+            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );
+
+   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column ) elementPtr++;
+   if( elementPtr == rowEnd )
+      return false;
+   if( this->columnIndexes.getElement( elementPtr ) == column )
+   {
+      this->values.setElement( elementPtr, thisElementMultiplicator * this->values.getElement( elementPtr ) + value );
+      return true;
+   }
+   else
+      if( this->columnIndexes.getElement( elementPtr ) == this->columns )
+      {
+         this->columnIndexes.setElement( elementPtr, column );
+         this->values.setElement( elementPtr, value );
+         return true;
+      }
+      else
+      {
+         IndexType j = rowEnd - 1;
+         while( j > elementPtr )
+         {
+            this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - 1 ) );
+            this->values.setElement( j, this->values.getElement( j - 1 ) );
+            j--;
+         }
+         this->columnIndexes.setElement( elementPtr, column );
+         this->values.setElement( elementPtr, value );
+         return true;
+      }
+   return false;
 }
 
 template< typename Real,
@@ -405,9 +484,9 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexTy
                                                                    const RealType* values,
                                                                    const IndexType elements )
 {
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
-   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    IndexType elementPointer = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
    const IndexType rowLength = rowEnd - elementPointer;
@@ -433,7 +512,25 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: setRow( const IndexType r
                                                                const RealType* values,
                                                                const IndexType elements )
 {
-   return this->setRowFast( row, columnIndexes, values, elements );
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+   tnlAssert( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   IndexType elementPointer = rowPointers.getElement( row );
+   const IndexType rowEnd = rowPointers.getElement( row + 1 );
+   const IndexType rowLength = rowEnd - elementPointer;
+   if( elements >  rowLength )
+      return false;
+
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes.setElement( elementPointer, columnIndexes[ i ] );
+      this->values.setElement( elementPointer, values[ i ] );
+      elementPointer++;
+   }
+   for( IndexType i = elements; i < rowLength; i++ )
+      this->columnIndexes.setElement( elementPointer++, this->getColumns() );
+   return true;
+
 }
 
 template< typename Real,
@@ -473,9 +570,9 @@ template< typename Real,
 Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                      const IndexType column ) const
 {
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
-   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
    // TODO: return this back when CUDA kernels support cerr
@@ -494,7 +591,19 @@ template< typename Real,
 Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                                  const IndexType column ) const
 {
-   return this->getElementFast( row, column );
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+   tnlAssert( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   IndexType elementPtr = rowPointers.getElement( row );
+   const IndexType rowEnd = rowPointers.getElement( row + 1 );
+   // TODO: return this back when CUDA kernels support cerr
+   /*tnlAssert( rowEnd <= this->columnIndexes.getSize(),
+            cerr << "rowEnd = " << rowEnd << " this->columnIndexes.getSize() = " << this->columnIndexes.getSize() );*/
+   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column )
+      elementPtr++;
+   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+      return this->values.getElement( elementPtr );
+   return 0.0;
 }
 
 template< typename Real,
@@ -507,9 +616,9 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
                                                                  IndexType* columns,
                                                                  RealType* values ) const
 {
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
-   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    IndexType elementPointer = rowPointers[ row ];
    const IndexType rowLength = rowPointers[ row + 1 ] - elementPointer;
 
@@ -528,7 +637,18 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row
                                                              IndexType* columns,
                                                              RealType* values ) const
 {
-   return this->getRowFast( row, columns, values );
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+   tnlAssert( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   IndexType elementPointer = rowPointers.getElement( row );
+   const IndexType rowLength = rowPointers.getElement( row + 1 ) - elementPointer;
+
+   for( IndexType i = 0; i < rowLength; i++ )
+   {
+      columns[ i ] = this->columnIndexes.getElement( elementPointer );
+      values[ i ] = this->values.getElement( elementPointer );
+      elementPointer++;
+   }
 }
 
 template< typename Real,
@@ -541,7 +661,7 @@ typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::rowVec
    tnlAssert( row >=0 && row < this->rows,
             cerr << " row = " << row << " this->rows = " << this->rows );
 
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPtr = rowPointers[ row ];
@@ -609,7 +729,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   const IndexType& sliceIndex = slicesToRowsMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPtr = rowPointers[ row ];
@@ -639,8 +759,8 @@ template< typename Real,
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
-       ! this->chunksToRowsMapping.save( file ) ||
-       ! this->slicesToRowsMapping.save( file ) ||
+       ! this->rowToChunkMapping.save( file ) ||
+       ! this->rowToSliceMapping.save( file ) ||
        ! this->rowPointers.save( file ) ||
        ! this->slices.save( file ) )
       return false;
@@ -653,8 +773,8 @@ template< typename Real,
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
-       ! this->chunksToRowsMapping.load( file ) ||
-       ! this->slicesToRowsMapping.load( file ) ||
+       ! this->rowToChunkMapping.load( file ) ||
+       ! this->rowToSliceMapping.load( file ) ||
        ! this->rowPointers.load( file ) ||
        ! this->slices.load( file ) )
       return false;
@@ -686,13 +806,13 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
    {
       str <<"Row: " << row << " -> ";
 
-      const IndexType& sliceIndex = slicesToRowsMapping[ row ];
-      tnlAssert( sliceIndex < this->rows, );
+      const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+      //tnlAssert( sliceIndex < this->rows, );
       const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
-      IndexType elementPtr = rowPointers[ row ];
-      const IndexType rowEnd = rowPointers[ row + 1 ];
+      IndexType elementPtr = rowPointers.getElement( row );
+      const IndexType rowEnd = rowPointers.getElement( row + 1 );
 
-      while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
+      while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < this->columns )
       {
          const Index column = this->columnIndexes.getElement( elementPtr );
          str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
@@ -702,5 +822,56 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
    }
 }
 
+template<>
+class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Real,
+                typename Index >
+      static bool resolveSliceSizes( tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
+                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths,
+                                     Index& numberOfSlices )
+      {
+         matrix.resolveSliceSizes( rowLengths, matrix.slices, numberOfSlices );
+         return true;
+      }
+};
+
+
+template<>
+class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+      
+      template< typename Real,
+                typename Index >
+      static bool resolveSliceSizes( tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
+                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths,
+                                     Index& numberOfSlices )
+      {
+         /****
+          * The slice sizes must be resolved on the host. If necessary, copy
+          * the row lengths the host.
+          */
+         tnlVector< Index, tnlHost, Index > hostRowLengths;
+         tnlArray< typename tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackSliceInfo, tnlHost, Index > hostSlices;
+
+
+         if( ! hostRowLengths.setLike( rowLengths ) ||
+             ! hostSlices.setLike( matrix.slices ) )
+            return false;
+         hostRowLengths = rowLengths;
+         matrix.resolveSliceSizes( hostRowLengths, hostSlices, numberOfSlices );
+         matrix.slices = hostSlices;
+         return true;
+      }
+
+
+};
 
 #endif /* TNLCHUNKEDELLPACKMATRIX_IMPL_H_ */

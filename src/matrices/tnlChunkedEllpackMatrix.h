@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlChunkedEllpackMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -185,13 +188,30 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
       { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
    };
 
+   void resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths,
+                           tnlArray< tnlChunkedEllpackSliceInfo, tnlHost, Index >& slices,
+                           IndexType& numberOfSlices );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool setSlice( const RowLengthsVector& rowLengths,
+                  const IndexType sliceIdx,
+                  IndexType& elementsToAllocation );
+
    IndexType chunksInSlice, desiredChunkSize;
 
-   tnlVector< Index, Device, Index > chunksToRowsMapping, slicesToRowsMapping, rowPointers;
+   tnlVector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
 
    tnlArray< tnlChunkedEllpackSliceInfo, Device, Index > slices;
 
    //IndexType numberOfSlices;
+
+   typedef tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType >;
+#ifdef HAVE_CUDA
+#endif
+
 
 };
 

@@ -194,10 +194,9 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType >;
 #ifdef HAVE_CUDA
-   friend void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( 
-   tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                                                       const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
-                                                                                                                       int gridIdx );
+   friend void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+                                                                                                            const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                                            int gridIdx );
 #endif
 
 };

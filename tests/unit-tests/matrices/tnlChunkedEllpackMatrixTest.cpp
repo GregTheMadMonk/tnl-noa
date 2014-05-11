@@ -26,6 +26,9 @@
 
 int main( int argc, char* argv[] )
 {
+   tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > tester;
+   //tester.setElementTest();
+
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
