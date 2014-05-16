@@ -18,10 +18,13 @@
 #ifndef TNLCHUNKEDELLPACKMATRIX_IMPL_H_
 #define TNLCHUNKEDELLPACKMATRIX_IMPL_H_
 
-
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
+
+#ifdef HAVE_CUDA
+#include <cuda.h>
+#endif
 
 template< typename Real,
           typename Device,
@@ -179,7 +182,6 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const RowLengthsV
               cerr << " maxChunkInSlice = " << maxChunkInSlice << endl );
 #endif
 
-
    /****
     * Set-up the slice info.
     */
@@ -221,8 +223,41 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
       return false;
 
    this->rowPointers.setElement( 0, 0 );
-   for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
-      this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
+   if( DeviceType::DeviceType == tnlHostDevice )
+   {
+      for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
+         this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
+   }
+   if( DeviceType::DeviceType == tnlCudaDevice )
+   {
+#ifdef HAVE_CUDA
+      typedef tnlChunkedEllpackMatrix< Real, Device, Index > Matrix;
+      Matrix* kernel_matrix = tnlCuda::passToDevice( *this );
+      RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
+      Index* kernel_elementsToAllocation = tnlCuda::passToDevice( elementsToAllocation );
+      dim3 cudaBlockSize( 256 ),
+           cudaGridSize( tnlCuda::getMaxGridSize() );
+      const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
+      const Index cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+      for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+      {
+         if( gridIdx == cudaGrids - 1 )
+            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+         tnlChunkedEllpackMatrix_setSlices_CudaKernel< Real, Index, 256 >
+                                                     <<< cudaGridSize, cudaBlockSize, cudaBlockSize.x * sizeof( Index ) >>>
+                                                     ( kernel_matrix,
+                                                       kernel_rowLengths,
+                                                       numberOfSlices,
+                                                       kernel_elementsToAllocation,
+                                                       gridIdx );
+      }
+      elementsToAllocation = tnlCuda::passFromDevice( *kernel_elementsToAllocation );
+      tnlCuda::freeFromDevice( kernel_matrix );
+      tnlCuda::freeFromDevice( kernel_rowLengths );
+      tnlCuda::freeFromDevice( kernel_elementsToAllocation );
+      checkCudaDevice;
+#endif
+   }
 
    this->rowPointers.computePrefixSum();
 
@@ -873,5 +908,60 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
 
 
 };
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          int blockSize >
+__global__ void tnlChunkedEllpackMatrix_setSlices_CudaKernel( tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+                                                              const typename tnlChunkedEllpackMatrix< Real, tnlCuda, Index >::RowLengthsVector* rowLengths,
+                                                              const Index numberOfSlices,
+                                                              Index* elementsToAllocation,
+                                                              const Index gridIdx )
+{
+   Index* threadElementsToAllocation = getSharedMemory< Index >();
+   const Index sliceIdx = tnlCuda::getGlobalThreadIdx< Index >( gridIdx );
+   if( sliceIdx < numberOfSlices )
+      matrix->setSlice( *rowLengths,
+                        sliceIdx,
+                        threadElementsToAllocation[ threadIdx.x ] );
+   else
+      threadElementsToAllocation[ threadIdx.x ] = 0;
+
+   /****
+    * Reduce elements to allocation from each thread to whole block
+    */
+   if( blockSize >= 512 )
+     {
+        if( threadIdx.x < 256 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 256 ];
+        __syncthreads();
+     }
+     if( blockSize >= 256 )
+     {
+        if( threadIdx.x < 128 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 128 ];
+        __syncthreads();
+     }
+     if( blockSize >= 128 )
+     {
+        if( threadIdx.x < 64 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 64 ];
+        __syncthreads();
+     }
+
+     /***
+      * This runs in one warp so it is synchronised implicitly.
+      */
+     if ( threadIdx.x < 32)
+     {
+        if( blockSize >= 64 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 32 ];
+        if( blockSize >= 32 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 16 ];
+        if( blockSize >= 16 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 8 ];
+        if( blockSize >=  8 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 4 ];
+        if( blockSize >=  4 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 2 ];
+        if( blockSize >=  2 ) threadElementsToAllocation[ threadIdx.x ] += threadElementsToAllocation[ threadIdx.x + 1 ];
+     }
+     atomicAdd( elementsToAllocation, threadElementsToAllocation[ 0 ] );
+}
+
+#endif
 
 #endif /* TNLCHUNKEDELLPACKMATRIX_IMPL_H_ */

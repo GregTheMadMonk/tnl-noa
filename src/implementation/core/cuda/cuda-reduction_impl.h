@@ -55,6 +55,7 @@ __device__ void reduceAligned( const Operation& operation,
    }
 }
 
+
 /***
  * For each thread in block with thread ID smaller then s this function reduces
  * data elements with indices tid and tid + s. This is a modified version of
@@ -143,6 +144,7 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
       sdata[ tid ] = operation. firstReductionOnDevice( tid, gid, sdata, deviceInput, deviceInput2 );
    __syncthreads();
 
+   unsigned int n = lastTId < blockDim. x ? lastTId : blockDim. x;
 
    /***
     *  Perform the parallel reduction.
@@ -153,7 +155,6 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
     *  We also separate the case when the blockDim. x is power of 2 and the algorithm
     *  can be written in more efficient way without some conditions.
     */
-   unsigned int n = lastTId < blockDim. x ? lastTId : blockDim. x;
    if( n == 128 || n ==  64 || n ==  32 || n ==  16 ||
        n ==   8 || n ==   4 || n ==   2 || n == 256 ||
        n == 512 )

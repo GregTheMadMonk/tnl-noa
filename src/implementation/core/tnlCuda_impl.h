@@ -56,6 +56,15 @@ inline int tnlCuda::getWarpSize()
 }
 
 #ifdef HAVE_CUDA
+template< typename Index >
+__device__ Index tnlCuda::getGlobalThreadIdx( const Index gridIdx )
+{
+   return ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+}
+#endif
+
+
+#ifdef HAVE_CUDA
 __host__ __device__
 #endif
 inline int tnlCuda::getNumberOfSharedMemoryBanks()

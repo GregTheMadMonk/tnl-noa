@@ -25,6 +25,22 @@ template< typename Device >
 class tnlChunkedEllpackMatrixDeviceDependentCode;
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
+class tnlChunkedEllpackMatrix;
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          int blockSize >
+__global__ void tnlChunkedEllpackMatrix_setSlices_CudaKernel( tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+                                                              const typename tnlChunkedEllpackMatrix< Real, tnlCuda, Index >::RowLengthsVector* rowLengths,
+                                                              const Index numberOfSlices,
+                                                              Index* elementsToAllocation,
+                                                              const Index gridIdx );
+#endif
+
+
+
+template< typename Real, typename Device, typename Index >
 class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
@@ -209,7 +225,13 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    typedef tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType >;
+
 #ifdef HAVE_CUDA
+   friend void tnlChunkedEllpackMatrix_setSlices_CudaKernel< Real, Index, 256 >( tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+                                                                                 const RowLengthsVector* rowLengths,
+                                                                                 const Index numberOfSlices,
+                                                                                 Index* elementsToAllocation,
+                                                                                 const Index gridIdx );
 #endif
 
 

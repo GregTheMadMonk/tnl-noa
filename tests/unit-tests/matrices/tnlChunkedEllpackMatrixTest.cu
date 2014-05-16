@@ -29,16 +29,10 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() 
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

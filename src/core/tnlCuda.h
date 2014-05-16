@@ -50,8 +50,12 @@ class tnlCuda
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-static inline int getWarpSize();
+   static inline int getWarpSize();
 
+   template< typename Index >
+#ifdef HAVE_CUDA
+   __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
+#endif
 
 #ifdef HAVE_CUDA
    __host__ __device__
