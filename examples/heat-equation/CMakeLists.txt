@@ -23,5 +23,8 @@ INSTALL( FILES Makefile
                heatEquationSetter_impl.h
                heatEquationSetter.h
                heat-equation.cfg.desc
+					debugging_parameters
+					EOCtest
+					EOCtest-adaptivity-cycle
 
          DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )
