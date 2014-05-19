@@ -122,7 +122,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       suiteOfTests->addTest( new TestCallerType( "setElementFast_DenseMatrixTest", &TesterType::setElementFast_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setElementFast_LowerTriangularMatrixTest", &TesterType::setElementFast_LowerTriangularMatrixTest ) );
-      suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalMatrixTest", &TesterType::setRow_DiagonalMatrixTest ) );
+      /*suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalMatrixTest", &TesterType::setRow_DiagonalMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRowFast_DiagonalMatrixTest", &TesterType::setRowFast_DiagonalMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRow_DenseMatrixTest", &TesterType::setRow_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRowFast_DenseMatrixTest", &TesterType::setRowFast_DenseMatrixTest ) );

@@ -28,17 +28,19 @@ template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlChunkedEllpackMatrix;
 
 #ifdef HAVE_CUDA
-template< typename Real,
-          typename Index,
-          int blockSize >
-__global__ void tnlChunkedEllpackMatrix_setSlices_CudaKernel( tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
-                                                              const typename tnlChunkedEllpackMatrix< Real, tnlCuda, Index >::RowLengthsVector* rowLengths,
-                                                              const Index numberOfSlices,
-                                                              Index* elementsToAllocation,
-                                                              const Index gridIdx );
 #endif
 
+template< typename IndexType >
+struct tnlChunkedEllpackSliceInfo
+{
+   IndexType size;
+   IndexType chunkSize;
+   IndexType firstRow;
+   IndexType pointer;
 
+   static inline tnlString getType()
+   { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
+};
 
 template< typename Real, typename Device, typename Index >
 class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
@@ -48,6 +50,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
 
    tnlChunkedEllpackMatrix();
@@ -193,24 +196,10 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    protected:
 
-   struct tnlChunkedEllpackSliceInfo
-   {
-      IndexType size;
-      IndexType chunkSize;
-      IndexType firstRow;
-      IndexType pointer;
-
-      static inline tnlString getType()
-      { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
-   };
 
    void resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths,
-                           tnlArray< tnlChunkedEllpackSliceInfo, tnlHost, Index >& slices,
                            IndexType& numberOfSlices );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
    bool setSlice( const RowLengthsVector& rowLengths,
                   const IndexType sliceIdx,
                   IndexType& elementsToAllocation );
@@ -219,20 +208,22 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    tnlVector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
 
-   tnlArray< tnlChunkedEllpackSliceInfo, Device, Index > slices;
+   tnlArray< ChunkedEllpackSliceInfo, Device, Index > slices;
 
    //IndexType numberOfSlices;
 
    typedef tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType >;
+   friend class tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType >;
+   friend class tnlChunkedEllpackMatrix< RealType, tnlCuda, IndexType >;
 
-#ifdef HAVE_CUDA
+/*#ifdef HAVE_CUDA
    friend void tnlChunkedEllpackMatrix_setSlices_CudaKernel< Real, Index, 256 >( tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
                                                                                  const RowLengthsVector* rowLengths,
                                                                                  const Index numberOfSlices,
                                                                                  Index* elementsToAllocation,
                                                                                  const Index gridIdx );
-#endif
+#endif*/
 
 
 };
