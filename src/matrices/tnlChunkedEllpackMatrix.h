@@ -204,6 +204,33 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                   const IndexType sliceIdx,
                   IndexType& elementsToAllocation );
 
+   bool addElementToChunk( const IndexType sliceOffset,
+                           const IndexType chunkIndex,
+                           const IndexType chunkSize,
+                           IndexType& column,
+                           RealType& value,
+                           RealType& thisElementMultiplicator );
+
+   bool addElementToChunkFast( const IndexType sliceOffset,
+                               const IndexType chunkIndex,
+                               const IndexType chunkSize,
+                               IndexType& column,
+                               RealType& value,
+                               RealType& thisElementMultiplicator );
+
+   bool getElementInChunk( const IndexType sliceOffset,
+                           const IndexType chunkIndex,
+                           const IndexType chunkSize,
+                           const IndexType column,
+                           RealType& value ) const;
+
+   bool getElementInChunkFast( const IndexType sliceOffset,
+                               const IndexType chunkIndex,
+                               const IndexType chunkSize,
+                               const IndexType column,
+                               RealType& value ) const;
+
+
    IndexType chunksInSlice, desiredChunkSize;
 
    tnlVector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
