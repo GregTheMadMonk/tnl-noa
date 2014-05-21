@@ -385,13 +385,11 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
 
-   /*const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
    tnlAssert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    IndexType elementPtr = rowPointers[ row ];
-   const IndexType rowEnd = rowPointers[ row + 1 ];*/
-   IndexType elementPtr, rowEnd;
-   DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
+   const IndexType rowEnd = rowPointers[ row + 1 ];
 
    // TODO: return this back when CUDA kernels support cerr
    /*tnlAssert( elementPtr >= 0,
@@ -855,24 +853,40 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
       static void initRowTraverseFast( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
                                        const Index row,
                                        Index& rowBegin,
                                        Index& rowEnd,
                                        Index& step )
       {
+         const IndexType& sliceIndex = matrix.rowToSliceMapping[ row ];
+         //tnlAssert( sliceIndex < this->rows, );
+         const IndexType& chunkSize = matrix.slices[ sliceIndex ].chunkSize;
+         IndexType elementBegin = matrix.rowPointers[ row ];
+         const IndexType rowEnd = matrix.rowPointers[ row + 1 ];
+         step = 1;
+      }
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static void initRowTraverse( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
+                                   const Index row,
+                                   Index& rowBegin,
+                                   Index& rowEnd,
+                                   Index& step )
+      {
          const Index sliceIdx = row / SliceSize;
-         const Index slicePointer = matrix.slicePointers[ sliceIdx ];
-         const Index rowLength = matrix.sliceRowLengths[ sliceIdx ];
+         const Index slicePointer = matrix.slicePointers.getElement( sliceIdx );
+         const Index rowLength = matrix.sliceRowLengths.getElement( sliceIdx );
 
          rowBegin = slicePointer + row - sliceIdx * SliceSize;
          rowEnd = rowBegin + rowLength * SliceSize;
          step = SliceSize;
-
       }
+
 };
 
 
@@ -889,6 +903,46 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
                                      const typename tnlChunkedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths,
                                      Index& numberOfSlices )
       {
+      }
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static void initRowTraverseFast( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
+                                       const Index row,
+                                       Index& rowBegin,
+                                       Index& rowEnd,
+                                       Index& step )
+      {
+         const Index sliceIdx = row / SliceSize;
+         const Index slicePointer = matrix.slicePointers[ sliceIdx ];
+         const Index rowLength = matrix.sliceRowLengths[ sliceIdx ];
+
+         rowBegin = slicePointer + row - sliceIdx * SliceSize;
+         rowEnd = rowBegin + rowLength * SliceSize;
+         step = SliceSize;
+      }
+
+      template< typename Real,
+                typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static void initRowTraverse( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
+                                   const Index row,
+                                   Index& rowBegin,
+                                   Index& rowEnd,
+                                   Index& step )
+      {
+         const Index sliceIdx = row / SliceSize;
+         const Index slicePointer = matrix.slicePointers.getElement( sliceIdx );
+         const Index rowLength = matrix.sliceRowLengths.getElement( sliceIdx );
+
+         rowBegin = slicePointer + row - sliceIdx * SliceSize;
+         rowEnd = rowBegin + rowLength * SliceSize;
+         step = SliceSize;
       }
 
 
