@@ -122,14 +122,16 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       suiteOfTests->addTest( new TestCallerType( "setElementFast_DenseMatrixTest", &TesterType::setElementFast_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setElementFast_LowerTriangularMatrixTest", &TesterType::setElementFast_LowerTriangularMatrixTest ) );
-      /*suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalMatrixTest", &TesterType::setRow_DiagonalMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalMatrixTest", &TesterType::setRow_DiagonalMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRowFast_DiagonalMatrixTest", &TesterType::setRowFast_DiagonalMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRow_DenseMatrixTest", &TesterType::setRow_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRowFast_DenseMatrixTest", &TesterType::setRowFast_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRow_LowerTriangularMatrixTest", &TesterType::setRow_LowerTriangularMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "setRowFast_LowerTriangularMatrixTest", &TesterType::setRowFast_LowerTriangularMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
-      suiteOfTests->addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
+      suiteOfTests->addTest( new TestCallerType( "vectorProduct_DiagonalMatrixTest", &TesterType::vectorProduct_DiagonalMatrixTest ) );
+      /*suiteOfTests->addTest( new TestCallerType( "vectorProduct_DenseMatrixTest", &TesterType::vectorProduct_DenseMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "vectorProduct_LowerTriangularMatrixTest", &TesterType::vectorProduct_LowerTriangularMatrixTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
 
@@ -922,7 +924,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
 
-   void vectorProductTest()
+   void vectorProduct_DiagonalMatrixTest()
    {
       const int size = 10;
       VectorType v, w;
@@ -945,6 +947,57 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < size; i++ )
          CPPUNIT_ASSERT( w.getElement( i ) == i*i );
    }
+
+   void vectorProduct_DenseMatrixTest()
+   {
+      const int size = 10;
+      VectorType v, w;
+      v.setSize( size );
+      w.setSize( size );
+      MatrixType m;
+      MatrixSetter::setup( m );
+      m.setDimensions( size, size );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( size );
+      m.setRowLengths( rowLengths );
+      for( int i = 0; i < size; i++ )
+      {
+         for( int j = 0; j < size; j++ )
+            m.setElement( i, j, i );
+         v.setElement( i, 1 );
+      }
+      m.vectorProduct( v, w );
+
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( w.getElement( i ) == i*size );
+   }
+
+   void vectorProduct_LowerTriangularMatrixTest()
+   {
+      const int size = 10;
+      VectorType v, w;
+      v.setSize( size );
+      w.setSize( size );
+      MatrixType m;
+      MatrixSetter::setup( m );
+      m.setDimensions( size, size );
+      IndexVector rowLengths;
+      rowLengths.setSize( m.getRows() );
+      rowLengths.setValue( size );
+      m.setRowLengths( rowLengths );
+      for( int i = 0; i < size; i++ )
+      {
+         for( int j = 0; j <= i; j++ )
+            m.setElement( i, j, i );
+         v.setElement( i, 1 );
+      }
+      m.vectorProduct( v, w );
+
+      for( int i = 0; i < size; i++ )
+         CPPUNIT_ASSERT( w.getElement( i ) == i*( i + 1 ) );
+   }
+
 
    void addMatrixTest()
    {
@@ -1038,7 +1091,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       typedef typename MatrixType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
-      if( row > matrix->getRows() )
+      if( row >= matrix->getRows() )
          return;
 
       IndexType* columnIndexes = getSharedMemory< IndexType >();
@@ -1059,7 +1112,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       typedef typename MatrixType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
-      if( row > matrix->getRows() )
+      if( row >= matrix->getRows() )
          return;
 
       IndexType* columnIndexes = getSharedMemory< IndexType >();
@@ -1086,7 +1139,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       typedef typename MatrixType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
-      if( row > matrix->getRows() )
+      if( row >= matrix->getRows() )
          return;
 
       IndexType* columnIndexes = getSharedMemory< IndexType >();
@@ -1110,7 +1163,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       typedef typename MatrixType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
-      if( row > matrix->getRows() )
+      if( row >= matrix->getRows() )
          return;
 
       IndexType* columnIndexes = getSharedMemory< IndexType >();

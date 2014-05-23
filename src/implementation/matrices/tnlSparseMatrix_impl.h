@@ -111,5 +111,12 @@ bool tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( const Index
    return true;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlSparseMatrix< Real, Device, Index >::printStructure( ostream& str ) const
+{
+
+}
 
 #endif /* TNLSPARSEMATRIX_IMPL_H_ */

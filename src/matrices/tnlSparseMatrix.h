@@ -49,9 +49,12 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    bool load( tnlFile& file );
 
+   void printStructure( ostream& str ) const;
+
    protected:
 
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
+
 
    tnlVector< Index, Device, Index > columnIndexes;
 };
