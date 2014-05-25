@@ -89,6 +89,9 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setNumberOfChunksInSlice( const IndexType chunksInSlice );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    IndexType getNumberOfChunksInSlice() const;
 
    void setDesiredChunkSize( const IndexType desiredChunkSize );

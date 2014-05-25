@@ -130,7 +130,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       suiteOfTests->addTest( new TestCallerType( "setRowFast_LowerTriangularMatrixTest", &TesterType::setRowFast_LowerTriangularMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests->addTest( new TestCallerType( "vectorProduct_DiagonalMatrixTest", &TesterType::vectorProduct_DiagonalMatrixTest ) );
-      /*suiteOfTests->addTest( new TestCallerType( "vectorProduct_DenseMatrixTest", &TesterType::vectorProduct_DenseMatrixTest ) );
+      suiteOfTests->addTest( new TestCallerType( "vectorProduct_DenseMatrixTest", &TesterType::vectorProduct_DenseMatrixTest ) );
       suiteOfTests->addTest( new TestCallerType( "vectorProduct_LowerTriangularMatrixTest", &TesterType::vectorProduct_LowerTriangularMatrixTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
@@ -219,6 +219,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
 #endif
       }
+
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.getElement( 0, i ) == i );
    }
