@@ -119,8 +119,8 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const tn
       allocatedElementsInSlice += rowLengths[ row ];
       sliceSize++;
       row++;
-      if( allocatedElementsInSlice < desiredElementsInSlice )
-         if( row < this->rows - 1 && sliceSize < chunksInSlice ) continue;
+      if( allocatedElementsInSlice < desiredElementsInSlice  )
+          if( row < this->rows - 1 && sliceSize < chunksInSlice ) continue;
       tnlAssert( sliceSize >0, );
       this->slices[ numberOfSlices ].size = sliceSize;
       this->slices[ numberOfSlices ].firstRow = row - sliceSize;
@@ -599,7 +599,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType
    /*tnlAssert( row >= 0 && row < this->rows,
               cerr << " row = " << row
                    << " this->rows = " << this->rows );*/
-   const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   const IndexType sliceIndex = rowToSliceMapping[ row ];
    //tnlAssert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
