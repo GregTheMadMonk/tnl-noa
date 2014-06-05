@@ -26,6 +26,21 @@
 using namespace std;
 
 template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
+                                             Matrix& matrix,
+                                             bool verbose )
+{
+   fstream file;
+   file.open( fileName.getString(), ios::in );
+   if( ! file )
+   {
+      cerr << "I am not able to open the file " << fileName << "." << endl;
+      return false;
+   }
+   return readMtxFile( file, matrix, verbose );
+}
+
+template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              Matrix& matrix,
                                              bool verbose )

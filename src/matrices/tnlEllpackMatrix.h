@@ -179,6 +179,7 @@ template< typename Vector >
 
    IndexType rowLengths, alignedRows;
 
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlEllpackMatrixDeviceDependentCode< DeviceType >;
 };
 

@@ -19,8 +19,20 @@ ELSE()
 ENDIF()
 TARGET_LINK_LIBRARIES( tnl-sparse-matrix-benchmark${debugExt} tnl${debugExt}-${tnlVersion}
                                                               ${CUSPARSE_LIBRARY} )
-
+                                                              
+                                                              
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cu
+                         OPTIONS -arch sm_20 -shared )
+    SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )        
+ELSE()
+    ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cpp )
+    SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
+ENDIF()
+TARGET_LINK_LIBRARIES( tnl-benchmark-spmv${debugExt} tnl${debugExt}-${tnlVersion} )
+                                                              
 INSTALL( TARGETS tnl-sparse-matrix-benchmark${debugExt}
+                 tnl-benchmark-spmv${debugExt}
          RUNTIME DESTINATION bin )
 
 

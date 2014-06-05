@@ -496,11 +496,7 @@ template< typename Real,
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( const Vector& inVector,
                                                                               Vector& outVector ) const
 {
-   if( DeviceType::getDevice() == tnlHostDevice )
-      for( Index row = 0; row < this->getRows(); row ++ )
-         outVector[ row ] = this->rowVectorProduct( row, inVector);
-   if( DeviceType::getDevice() == tnlCudaDevice )
-      tnlMatrixVectorProductCuda( *this, inVector, outVector );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -706,6 +702,18 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
          }
          matrix.slicePointers.setElement( matrix.slicePointers.getSize() - 1, 0 );
       }
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index >& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
+
 };
 
 #ifdef HAVE_CUDA
@@ -811,6 +819,17 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
          checkCudaDevice;
 #endif
       }
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index >& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+      }
+
 };
 
 

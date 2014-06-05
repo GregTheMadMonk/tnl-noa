@@ -1,0 +1,245 @@
+/***************************************************************************
+                          tnl-benchmark-spmv.h  -  description
+                             -------------------
+    begin                : Jun 5, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNL_BENCHMARK_SPMV_H_
+#define TNL_BENCHMARK_SPMV_H_
+
+#include <fstream>
+#include <iomanip>
+#include <unistd.h>
+
+
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlMatrixReader.h>
+#include <core/tnlTimerRT.h>
+
+#include "tnlConfig.h"
+const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-benchmark-spmv.cfg.desc";
+
+bool initLogFile( fstream& logFile, const tnlString& fileName )
+{
+   if( access( fileName.getString(), F_OK ) == -1 )
+   {
+      logFile.open( fileName.getString(), ios::out );
+      if( ! logFile )
+         return false;
+      logFile << "# Logfile header " << endl;
+      return true;
+   }
+   logFile.open( fileName.getString(), ios::out | ios::app );
+   if( ! logFile )
+      return false;
+}
+
+template< typename Matrix >
+void printMatrixInfo( const tnlString& inputFileName,
+                      const Matrix& matrix,
+                      ostream& str )
+{
+   str << " Rows: " << matrix.getRows();
+   str << " Columns: " << matrix.getColumns();
+   str << " Nonzero Elements: " << matrix.getNumberOfNonzeroMatrixElements();
+   const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
+   str << " Filling: " << 100.0 * fillingRatio << endl;
+}
+
+template< typename Matrix >
+bool writeMatrixInfo( const tnlString& inputFileName,
+                      const Matrix& matrix,
+                      ostream& logFile )
+{
+   logFile << endl;
+   logFile << inputFileName << endl;
+   logFile << " " << matrix.getRows() << endl;
+   logFile << " " << matrix.getColumns() << endl;
+   logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << endl;
+   const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
+   logFile << " " << 100.0 * fillingRatio << "%" << endl;
+   logFile << flush;
+   if( ! logFile.good() )
+      return false;
+   return true;
+}
+
+double computeGflops( const long int nonzeroElements,
+                      const int iterations,
+                      const double& time )
+{
+   return ( double ) ( 2 * iterations * nonzeroElements ) / time * 1.0e-9;
+}
+
+template< typename Real >
+double computeThroughput( const long int nonzeroElements,
+                          const int iterations,
+                          const int rows,
+                          const double& time )
+{
+   return ( double ) ( ( 2 * nonzeroElements + rows ) * iterations ) * sizeof( Real ) / time * 1.0e-9;
+}
+
+template< typename Matrix,
+          typename Vector >
+void benchmarkHostMatrix( const Matrix& matrix,
+                          const Vector& x,
+                          Vector& b,
+                          const long int nonzeroElements,
+                          const char* format,
+                          const double& stopTime,
+                          int verbose,
+                          fstream& logFile )
+{
+   tnlTimerRT timer;
+   timer.Reset();
+   double time( 0.0 );
+   int iterations( 0 );
+   while( time < stopTime )
+   {
+      matrix.vectorProduct( x, b );
+      time = timer.GetTime();
+      iterations++;
+   }
+   const double gflops = computeGflops( nonzeroElements, iterations, time );
+   const double throughput = computeThroughput< typename Matrix::RealType >( nonzeroElements, iterations, matrix.getRows(), time );
+   if( verbose )
+      cout << " " << format
+           << " Time: " << time
+           << " GFlops: " << gflops
+           << " Throughput: "<< throughput << endl;
+   logFile << "  " << gflops << endl;
+   logFile << "  " << throughput << endl;
+}
+
+template< typename Real >
+bool setupBenchmark( const tnlParameterContainer& parameters )
+{
+   const tnlString& test = parameters.GetParameter< tnlString >( "test" );
+   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
+   const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
+   const int verbose = parameters.GetParameter< int >( "verbose" );
+   const double stopTime = parameters.GetParameter< double >( "stop-time" );
+   fstream logFile;
+   if( ! initLogFile( logFile, logFileName ) )
+   {
+      cerr << "I am not able to open the file " << logFileName << "." << endl;
+      return false;
+   }
+   if( test == "mtx" )
+   {
+      typedef tnlCSRMatrix< Real, tnlHost, int > CSRMatrixType;
+      CSRMatrixType csrMatrix;
+      if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+      {
+         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+         return false;
+      }
+      if( verbose )
+         printMatrixInfo( inputFileName, csrMatrix, cout );
+      if( ! writeMatrixInfo( inputFileName, csrMatrix, logFile ) )
+      {
+         cerr << "I am not able to write new matrix to the log file." << endl;
+         return false;
+      }
+      const int rows = csrMatrix.getRows();
+      const int columns = csrMatrix.getColumns();
+      const long int nonzeroElements = csrMatrix.getNumberOfNonzeroMatrixElements();
+      tnlVector< int, tnlHost, int > rowLengthsHost;
+      rowLengthsHost.setSize( rows );
+      for( int row = 0; row < rows; row++ )
+         rowLengthsHost[ row ] = csrMatrix.getRowLength( row );
+
+      typedef tnlVector< Real, tnlHost, int > HostVector;
+      HostVector hostX, hostB;
+      hostX.setSize( csrMatrix.getColumns() );
+      hostX.setValue( 1.0 );
+      hostB.setSize( csrMatrix.getRows() );
+      benchmarkHostMatrix( csrMatrix,
+                           hostX,
+                           hostB,
+                           nonzeroElements,
+                           "CSR Host",
+                           stopTime,
+                           verbose,
+                           logFile );
+      csrMatrix.reset();
+
+      typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
+      EllpackMatrixType ellpackMatrixHost;
+      ellpackMatrixHost.setDimensions( rows, columns );
+      ellpackMatrixHost.setRowLengths( rowLengthsHost );
+      if( ! tnlMatrixReader< EllpackMatrixType >::readMtxFile( inputFileName, ellpackMatrixHost ) )
+      {
+         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+         return false;
+      }
+      benchmarkHostMatrix( ellpackMatrixHost,
+                           hostX,
+                           hostB,
+                           nonzeroElements,
+                           "Ellpack Host",
+                           stopTime,
+                           verbose,
+                           logFile );
+      ellpackMatrixHost.reset();
+
+      typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
+      SlicedEllpackMatrixType slicedEllpackMatrixHost;
+      slicedEllpackMatrixHost.setDimensions( rows, columns );
+      slicedEllpackMatrixHost.setRowLengths( rowLengthsHost );
+      if( ! tnlMatrixReader< SlicedEllpackMatrixType >::readMtxFile( inputFileName, slicedEllpackMatrixHost ) )
+      {
+         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+         return false;
+      }
+      benchmarkHostMatrix( slicedEllpackMatrixHost,
+                           hostX,
+                           hostB,
+                           nonzeroElements,
+                           "SlicedEllpack Host",
+                           stopTime,
+                           verbose,
+                           logFile );
+      slicedEllpackMatrixHost.reset();
+   }
+}
+
+int main( int argc, char* argv[] )
+{
+   tnlParameterContainer parameters;
+   tnlConfigDescription conf_desc;
+
+   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+      return 1;
+   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   {
+      conf_desc. PrintUsage( argv[ 0 ] );
+      return 1;
+   }
+   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   if( precision == "float" )
+      if( ! setupBenchmark< float >( parameters ) )
+         return EXIT_FAILURE;
+   if( precision == "double" )
+      if( ! setupBenchmark< double >( parameters ) )
+         return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+}
+
+#endif /* TNL_BENCHMARK_SPMV_H_ */

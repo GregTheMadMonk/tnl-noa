@@ -370,8 +370,8 @@ typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct(
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
    while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
    {
-      const Index column = this->columnIndexes.getElement( elementPtr );
-      result += this->values.getElement( elementPtr++ ) * vector.getElement( column );
+      const Index column = this->columnIndexes[ elementPtr ];
+      result += this->values[ elementPtr++ ] * vector[ column ];
    }
    return result;
 }

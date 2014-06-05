@@ -462,10 +462,9 @@ template< typename Real,
 typename Vector::RealType tnlEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                      const Vector& vector ) const
 {
-   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType i = DDCType::getRowBegin( *this, row );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
-   const IndexType step = DDCType::getElementStep( *this );
+   IndexType i = DeviceDependentCode::getRowBegin( *this, row );
+   const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+   const IndexType step = DeviceDependentCode::getElementStep( *this );
 
    Real result = 0.0;
    while( i < rowEnd && this->columnIndexes[ i ] < this->columns )
@@ -484,11 +483,7 @@ template< typename Real,
 void tnlEllpackMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
                                                                    Vector& outVector ) const
 {
-   if( DeviceType::getDevice() == tnlHostDevice )
-      for( Index row = 0; row < this->getRows(); row ++ )
-         outVector[ row ] = this->rowVectorProduct( row, inVector);
-   if( DeviceType::getDevice() == tnlCudaDevice )
-      tnlMatrixVectorProductCuda( *this, inVector, outVector );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -657,6 +652,17 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
       {
          return 1;
       }
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
 };
 
 template<>
@@ -696,6 +702,16 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
       static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlEllpackMatrix< Real, Device, Index >& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
       }
 };
 

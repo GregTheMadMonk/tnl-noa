@@ -30,6 +30,10 @@ class tnlMatrixReader
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
+   static bool readMtxFile( const tnlString& fileName,
+                            Matrix& matrix,
+                            bool verbose = false );
+
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
                             bool verbose = false );
