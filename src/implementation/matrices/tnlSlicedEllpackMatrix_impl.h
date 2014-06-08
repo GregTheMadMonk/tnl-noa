@@ -634,6 +634,33 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
    }
 }
 
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+__device__ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const RowLengthsVector& rowLengths,
+                                                                                                               const IndexType sliceIdx )
+{
+   Index rowIdx = sliceIdx * SliceSize;
+   Index rowInSliceIdx( 0 );
+   Index maxRowLength( 0 );
+   if( rowIdx >= this->getRows() )
+      return;
+   while( rowInSliceIdx < SliceSize && rowIdx < this->getRows() )
+   {
+      maxRowLength = Max( maxRowLength, rowLengths[ rowIdx ] );
+      rowIdx++;
+      rowInSliceIdx++;
+   }
+   this->sliceRowLengths[ sliceIdx ] = maxRowLength;
+   this->slicePointers[ sliceIdx ] = maxRowLength * SliceSize;
+   if( threadIdx.x == 0 )
+      this->slicePointers[ this->slicePointers.getSize() - 1 ] = 0;
+
+}
+#endif
+
 template<>
 class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
 {
@@ -705,8 +732,9 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index,
-                typename Vector >
-      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index >& matrix,
+                typename Vector,
+                int SliceSize >
+      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                  const Vector& inVector,
                                  Vector& outVector )
       {
@@ -725,21 +753,7 @@ __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKerne
                                                                                    int gridIdx )
 {
    const Index sliceIdx = gridIdx * tnlCuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
-   Index rowIdx = sliceIdx * SliceSize;
-   Index rowInSliceIdx( 0 );
-   Index maxRowLength( 0 );
-   if( rowIdx >= matrix->getRows() )
-      return;
-   while( rowInSliceIdx < SliceSize && rowIdx < matrix->getRows() )
-   {
-      maxRowLength = Max( maxRowLength, ( *rowLengths )[ rowIdx ] );
-      rowIdx++;
-      rowInSliceIdx++;
-   }
-   matrix->sliceRowLengths[ sliceIdx ] = maxRowLength;
-   matrix->slicePointers[ sliceIdx ] = maxRowLength * SliceSize;
-   if( threadIdx.x == 0 )
-      matrix->slicePointers[ matrix->slicePointers.getSize() - 1 ] = 0;
+   matrix->computeMaximalRowLengthInSlicesCuda( *rowLengths, sliceIdx );
 }
 #endif
 
@@ -822,8 +836,9 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index,
-                typename Vector >
-      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index >& matrix,
+                typename Vector,
+                int SliceSize >
+      static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                  const Vector& inVector,
                                  Vector& outVector )
       {

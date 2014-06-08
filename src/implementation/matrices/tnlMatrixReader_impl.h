@@ -59,7 +59,7 @@ bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
       return false;
    }
 
-   if( ! computeRowLengthsFromMtxFile( file, rowLengths, symmetricMatrix, verbose ) )
+   if( ! computeRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
    if( ! matrix.setRowLengths( rowLengths ) )
@@ -253,6 +253,8 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file,
                                                               tnlVector< int, tnlHost, int >& rowLengths,
+                                                              const int columns,
+                                                              const int rows,
                                                               bool symmetricMatrix,
                                                               bool verbose )
 {
@@ -276,11 +278,28 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
       numberOfElements++;
+      if( column > columns || row > rows )
+      {
+         cerr << "There is an element at position " << row << ", " << column << " out of the matrix dimensions " << rows << " x " << columns << "." << endl;
+         return false;
+      }
       if( verbose )
          cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
       rowLengths[ row - 1 ]++;
+      if( rowLengths[ row - 1 ] >= columns )
+      {
+         cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
+         return false;
+      }
       if( symmetricMatrix && row != column )
+      {
          rowLengths[ column - 1 ]++;
+         if( rowLengths[ column - 1 ] >= columns )
+         {
+            cerr << "There are more elements than the matrix columns at the row " << column << " ." << endl;
+            return false;
+         }
+      }
    }
    file.clear();
    long int fileSize = file.tellg();

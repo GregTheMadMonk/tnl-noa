@@ -49,12 +49,6 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void reset();
 
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
-
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
-
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

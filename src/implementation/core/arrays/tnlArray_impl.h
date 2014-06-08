@@ -73,23 +73,22 @@ bool tnlArray< Element, Device, Index > :: setSize( const Index size )
               cerr << "You try to set size of tnlArray to negative value."
                    << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
-   if( this -> size == size ) return true;
-   if( this -> data )
+   if( this->size == size ) return true;
+   if( this->data )
    {
-      tnlArrayOperations< Device > :: freeMemory( this -> data );
-      this -> data = 0;
+      tnlArrayOperations< Device >::freeMemory( this->data );
+      this->data = 0;
    }
-   this -> size = size;
-   tnlArrayOperations< Device > :: allocateMemory( this -> data, size );
-   if( ! this -> data )
+   this->size = size;
+   tnlArrayOperations< Device >::allocateMemory( this->data, size );
+   if( ! this->data )
    {
       cerr << "I am not able to allocate new array with size "
-           << ( double ) this -> size * sizeof( ElementType ) / 1.0e9 << " GB for "
-           << this -> getName() << "." << endl;
+           << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB for "
+           << this->getName() << "." << endl;
       this -> size = 0;
       return false;
    }
-   //( this -> data ) ++;
    return true;
 };
 
@@ -104,7 +103,7 @@ bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
                    << "Name: " << this -> getName() << endl
                    << "Array name:" << array. getName()
                    << "Array size: " << array. getSize() << endl );
-   return setSize( array. getSize() );
+   return setSize( array.getSize() );
 };
 
 template< typename Element,
@@ -112,8 +111,8 @@ template< typename Element,
           typename Index >
 void tnlArray< Element, Device, Index > :: swap( tnlArray< Element, Device, Index >& array )
 {
-   :: swap( this -> size, array. size );
-   :: swap( this -> data, array. data );
+   ::swap( this->size, array.size );
+   ::swap( this->data, array.data );
 };
 
 template< typename Element,
@@ -121,8 +120,9 @@ template< typename Element,
           typename Index >
 void tnlArray< Element, Device, Index > :: reset()
 {
-   this -> size = 0;
-   this -> data = 0;
+   this->size = 0;
+   tnlArrayOperations< Device >::freeMemory( this->data );
+   this->data = 0;
 };
 
 template< typename Element,

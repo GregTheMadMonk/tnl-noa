@@ -116,7 +116,6 @@ template< typename Real,
           typename Index >
 void tnlSparseMatrix< Real, Device, Index >::printStructure( ostream& str ) const
 {
-
 }
 
 #endif /* TNLSPARSEMATRIX_IMPL_H_ */

@@ -122,36 +122,6 @@ void tnlCSRMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Real2,
-             typename Device2,
-             typename Index2 >
-bool tnlCSRMatrix< Real, Device, Index >::operator == ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const
-{
-   tnlAssert( this->getRows() == matrix.getRows() &&
-              this->getColumns() == matrix.getColumns(),
-              cerr << "this->getRows() = " << this->getRows()
-                   << " matrix.getRows() = " << matrix.getRows()
-                   << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
-   // TODO: implement this
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Real2,
-             typename Device2,
-             typename Index2 >
-bool tnlCSRMatrix< Real, Device, Index >::operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const
-{
-   return ! ( ( *this ) == matrix );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

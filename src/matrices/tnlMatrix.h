@@ -100,6 +100,16 @@ class tnlMatrix : public virtual tnlObject
 
    tnlMatrix< RealType, DeviceType, IndexType >& operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& );
 
+   template< typename Matrix >
+   bool operator == ( const Matrix& matrix ) const;
+
+   template< typename Matrix >
+   bool operator != ( const Matrix& matrix ) const;
+
+   template< typename Matrix >
+   bool copyFrom( const Matrix& matrix,
+                  const RowLengthsVector& rowLengths );
+
    virtual bool save( tnlFile& file ) const;
 
    virtual bool load( tnlFile& file );

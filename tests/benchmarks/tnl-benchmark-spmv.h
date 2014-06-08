@@ -28,6 +28,7 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <core/tnlTimerRT.h>
 
@@ -41,7 +42,39 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile.open( fileName.getString(), ios::out );
       if( ! logFile )
          return false;
-      logFile << "# Logfile header " << endl;
+      logFile << "#Matrix file " << endl;
+      logFile << "#Rows" << endl;
+      logFile << "#Columns" << endl;
+      logFile << "#Non-zero elements" << endl;
+      logFile << "#Filling (in %)" << endl;
+      logFile << "#CSR Format" << endl;
+      logFile << "# CPU" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "# CUDA" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "#Ellpack Format" << endl;
+      logFile << "# CPU" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "# CUDA" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "#SlicedEllpack Format" << endl;
+      logFile << "# CPU" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "# CUDA" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "#ChunkedEllpack Format" << endl;
+      logFile << "# CPU" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "# CUDA" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
       return true;
    }
    logFile.open( fileName.getString(), ios::out | ios::app );
@@ -170,6 +203,13 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       hostX.setSize( csrMatrix.getColumns() );
       hostX.setValue( 1.0 );
       hostB.setSize( csrMatrix.getRows() );
+#ifdef HAVE_CUDA
+      typedef tnlVector< Real, tnlCuda, int > CudaVector;
+      CudaVector cudaX, cudaB;
+      cudaX.setSize( csrMatrix.getColumns() );
+      cudaX.setValue( 1.0 );
+      cudaB.setSize( csrMatrix.getRows() );
+#endif
       benchmarkHostMatrix( csrMatrix,
                            hostX,
                            hostB,
@@ -178,18 +218,12 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                            stopTime,
                            verbose,
                            logFile );
-      csrMatrix.reset();
+      //csrMatrix.reset();
 
       typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
-      EllpackMatrixType ellpackMatrixHost;
-      ellpackMatrixHost.setDimensions( rows, columns );
-      ellpackMatrixHost.setRowLengths( rowLengthsHost );
-      if( ! tnlMatrixReader< EllpackMatrixType >::readMtxFile( inputFileName, ellpackMatrixHost ) )
-      {
-         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
-         return false;
-      }
-      benchmarkHostMatrix( ellpackMatrixHost,
+      EllpackMatrixType ellpackMatrix;
+      ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      benchmarkHostMatrix( ellpackMatrix,
                            hostX,
                            hostB,
                            nonzeroElements,
@@ -197,18 +231,25 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                            stopTime,
                            verbose,
                            logFile );
-      ellpackMatrixHost.reset();
+#ifdef HAVE_CUDA
+      /*typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
+      EllpackMatrixCudaType cudaEllpackMatrix( ellpackMatrix);
+      benchmarkHostMatrix( cudaEllpackMatrix,
+                           cudaX,
+                           cudaB,
+                           nonzeroElements,
+                           "Ellpack Cuda",
+                           stopTime,
+                           verbose,
+                           logFile );
+      cudaEllpackMatrix.reset();*/
+#endif
+      ellpackMatrix.reset();
 
       typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
-      SlicedEllpackMatrixType slicedEllpackMatrixHost;
-      slicedEllpackMatrixHost.setDimensions( rows, columns );
-      slicedEllpackMatrixHost.setRowLengths( rowLengthsHost );
-      if( ! tnlMatrixReader< SlicedEllpackMatrixType >::readMtxFile( inputFileName, slicedEllpackMatrixHost ) )
-      {
-         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
-         return false;
-      }
-      benchmarkHostMatrix( slicedEllpackMatrixHost,
+      SlicedEllpackMatrixType slicedEllpackMatrix;
+      slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      benchmarkHostMatrix( slicedEllpackMatrix,
                            hostX,
                            hostB,
                            nonzeroElements,
@@ -216,7 +257,20 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                            stopTime,
                            verbose,
                            logFile );
-      slicedEllpackMatrixHost.reset();
+      slicedEllpackMatrix.reset();
+
+      typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
+      ChunkedEllpackMatrixType chunkedEllpackMatrix;
+      chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      benchmarkHostMatrix( chunkedEllpackMatrix,
+                           hostX,
+                           hostB,
+                           nonzeroElements,
+                           "ChunkedEllpack Host",
+                           stopTime,
+                           verbose,
+                           logFile );
+      chunkedEllpackMatrix.reset();
    }
 }
 

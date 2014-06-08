@@ -60,6 +60,8 @@ class tnlMatrixReader
 
    static bool computeRowLengthsFromMtxFile( std::istream& file,
                                              tnlVector< int, tnlHost, int >& rowLengths,
+                                             const int columns,
+                                             const int rows,
                                              bool symmetricMatrix,
                                              bool verbose );
 

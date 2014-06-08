@@ -149,7 +149,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
@@ -159,7 +159,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
@@ -169,7 +169,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorAbsMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
@@ -179,7 +179,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorAbsMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
@@ -189,7 +189,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorLpNormTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
@@ -199,7 +199,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorSumTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
@@ -213,7 +213,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -225,7 +225,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -233,12 +233,12 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       setOnesSequence( v );
 
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( u, v ) == -1 );
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -1234565 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -123454 );
    }
 
    void getVectorDifferenceAbsMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -250,7 +250,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceAbsMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );

@@ -19,6 +19,7 @@
 #define TNLMATRIX_IMPL_H_
 
 #include <matrices/tnlMatrix.h>
+#include <core/tnlAssert.h>
 
 template< typename Real,
           typename Device,
@@ -97,6 +98,31 @@ void tnlMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
+                                                 const RowLengthsVector& rowLengths )
+{
+   /*tnlStaticAssert( DeviceType::DeviceType == tnlHostDevice, );
+   tnlStaticAssert( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
+
+   this->setLike( matrix );
+   if( ! this->setRowLengths( rowLengths ) )
+      return false;
+   tnlVector< RealType, tnlHost, IndexType > values;
+   tnlVector< IndexType, tnlHost, IndexType > columns;
+   if( ! values.setSize( this->getColumns() ) ||
+       ! columns.setSize( this->getColumns() ) )
+      return false;
+   for( IndexType row = 0; row < this->getRows(); row++ )
+   {
+      matrix.getRow( row, columns.getData(), values.getData() );
+      this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& m )
 {
    this->setLike( m );
@@ -120,6 +146,31 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
                     rowValues.getData(),
                     m.getRowLength( row ) );
    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::operator == ( const Matrix& matrix ) const
+{
+   if( this->getRows() != matrix.getRows() ||
+       this->getColumns() != matrix.getColumns() )
+      return false;
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      for( IndexType column = 0; column < this->getColumns(); column++ )
+         if( this->getElement( row, column ) != matrix.getElement( row, column ) )
+            return false;
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::operator != ( const Matrix& matrix ) const
+{
+   return ! operator == ( matrix );
 }
 
 template< typename Real,

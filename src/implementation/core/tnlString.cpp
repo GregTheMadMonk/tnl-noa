@@ -100,9 +100,6 @@ void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_of
    }
    int c_len = ( int ) strlen( c );
    int _length = Max( 0, c_len - prefix_cut_off - sufix_cut_off );
-   //assert( _length );
-   //dbgExpr( _length );
-   //dbgExpr( string );
 
    if( length < _length || length == 0 )
    {
@@ -110,8 +107,7 @@ void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_of
       length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
       string = new char[ length ];
    }
-   assert( string );
-   //dbgExpr( length );
+   tnlAssert( string, );
    memcpy( string, c + Min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
