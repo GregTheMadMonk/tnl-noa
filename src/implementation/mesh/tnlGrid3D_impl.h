@@ -70,6 +70,11 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index x
    this -> dimensions.y() = ySize;
    this -> dimensions.z() = zSize;
    dofs = zSize * ySize * xSize;
+	VertexType parametricStep;
+   parametricStep. x() = geometry. getProportions(). x() / xSize;
+   parametricStep. y() = geometry. getProportions(). y() / ySize;
+	parametricStep. z() = geometry. getProportions(). z() / zSize;
+   geometry. setParametricStep( parametricStep );
    return true;
 }
 
@@ -117,7 +122,12 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 3, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
 {
-   this -> proportions = proportions;
+   geometry. setProportions( proportions );
+   VertexType parametricStep;
+   parametricStep. x() = proportions. x() / ( this -> dimensions. x() );
+   parametricStep. y() = proportions. y() / ( this -> dimensions. y() );
+	parametricStep. z() = proportions. z() / ( this -> dimensions. z() );
+   geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -127,7 +137,7 @@ template< typename Real,
 const typename tnlGrid< 3, Real, Device, Index, Geometry > :: VertexType&
    tnlGrid< 3, Real, Device, Index, Geometry > :: getProportions() const
 {
-   return this -> proportions;
+	return geometry. getProportions();
 }
 
 template< typename Real,
@@ -136,12 +146,11 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 void tnlGrid< 3, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& spaceStep )
 {
-   this -> proportions. x() = this -> dimensions. x() *
-                              spaceStep. x();
-   this -> proportions. y() = this -> dimensions. y() *
-                              spaceStep. y();
-   this -> proportions. z() = this -> dimensions. z() *
-                              spaceStep. z();
+      geometry. setProportions(
+         VertexType(
+            this -> dimensions. x() * geometry. getParametricStep(). x(),
+            this -> dimensions. y() * geometry. getParametricStep(). y(),
+				this -> dimensions. z() * geometry. getParametricStep(). z() ) );
 }
 
 template< typename Real,
@@ -151,7 +160,7 @@ template< typename Real,
 const typename tnlGrid< 3, Real, Device, Index, Geometry > :: VertexType&
    tnlGrid< 3, Real, Device, Index, Geometry > :: getParametricStep() const
 {
-   //return geometry. getParametricStep();
+   return geometry. getParametricStep();
 }
 
 template< typename Real,
@@ -183,6 +192,13 @@ template< typename Real,
 void tnlGrid< 3, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
                                                                            CoordinatesType& coordinates ) const
 {
+   tnlAssert( element >= 0 && element < dofs,
+              cerr << " element = " << element << " dofs = " << dofs
+                   << " in tnlGrid " << this -> getName(); );
+
+	coordinates. z() = element / (this -> dimensions. x()*this -> dimensions. y());
+   coordinates. y() = (element - coordinates. z()*(this -> dimensions. x()*this -> dimensions. y())) / this -> dimensions. x();
+	coordinates. x() = element - coordinates. z()*(this -> dimensions. x()*this -> dimensions. y()) - this -> dimensions. x()*coordinates. y();
 }
 
 template< typename Real,
@@ -192,7 +208,7 @@ template< typename Real,
 void tnlGrid< 3, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
                                                                       VertexType& center ) const
 {
-      //geometry. getElementCenter( origin, coordinates, center );
+      geometry. getElementCenter( origin, coordinates, center );
 }
 
 template< typename Real,
@@ -210,7 +226,7 @@ template< typename Real,
           template< int, typename, typename, typename > class Geometry >
 Real tnlGrid< 3, Real, Device, Index, Geometry > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
-   return 0.0; // TODO: fix this
+   return geometry. getElementMeasure( coordinates );
 }
 
 template< typename Real,
@@ -280,11 +296,11 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
            << this -> getName() << endl;
       return false;
    }
-   /*if( ! geometry. save( file ) )
+   if( ! geometry. save( file ) )
    {
       cerr << "I was not able to save the mesh." << endl;
       return false;
-   }*/
+   }
    return true;
 };
 
@@ -304,11 +320,11 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: load( tnlFile& file )
            << this -> getName() << endl;
       return false;
    }
-   /*if( ! geometry. load( file ) )
+   if( ! geometry. load( file ) )
    {
       cerr << "I am not able to load the grid geometry." << endl;
       return false;
-   }*/
+   }
    if( ! this -> setDimensions( dim ) )
    {
       cerr << "I am not able to allocate the loaded grid." << endl;
