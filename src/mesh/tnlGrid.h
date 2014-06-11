@@ -353,6 +353,8 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
 
    tnlStaticVector< 3, RealType > origin, proportions;
 
+	GeometryType geometry;
+
    IndexType dofs;
 
 };
