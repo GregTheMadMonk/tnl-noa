@@ -11,6 +11,7 @@ INSTALL( FILES matrix-market
                run-tnl-benchmark-spmv
                cuda-profiler.conf
                process-cuda-profile.pl 
+               tnl-log-to-html.py
                DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
 
 INSTALL( FILES tnl-run-spmv-benchmark

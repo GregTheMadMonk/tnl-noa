@@ -156,6 +156,16 @@ bool tnlEllpackMatrix< Real, Device, Index >::operator != ( const tnlEllpackMatr
    return ! ( ( *this ) == matrix );
 }
 
+/*template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Matrix >
+bool tnlEllpackMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
+                                                        const RowLengthsVector& rowLengths )
+{
+   return tnlMatrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
+}*/
+
 template< typename Real,
           typename Device,
           typename Index >

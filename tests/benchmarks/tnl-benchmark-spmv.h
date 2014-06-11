@@ -206,9 +206,12 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 #ifdef HAVE_CUDA
       typedef tnlVector< Real, tnlCuda, int > CudaVector;
       CudaVector cudaX, cudaB;
+      tnlVector< int, tnlCuda, int > rowLengthsCuda;
       cudaX.setSize( csrMatrix.getColumns() );
       cudaX.setValue( 1.0 );
       cudaB.setSize( csrMatrix.getRows() );
+      rowLengthsCuda.setSize( csrMatrix.getRows() );
+      rowLengthsCuda = rowLengthsHost;
 #endif
       benchmarkHostMatrix( csrMatrix,
                            hostX,
@@ -232,8 +235,15 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                            verbose,
                            logFile );
 #ifdef HAVE_CUDA
-      /*typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
-      EllpackMatrixCudaType cudaEllpackMatrix( ellpackMatrix);
+      typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
+      EllpackMatrixCudaType cudaEllpackMatrix;
+      cout << "Copying matrix to GPU... ";
+      if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
+      {
+         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         return false;
+      }
+      cout << " done." << endl;
       benchmarkHostMatrix( cudaEllpackMatrix,
                            cudaX,
                            cudaB,
@@ -242,7 +252,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                            stopTime,
                            verbose,
                            logFile );
-      cudaEllpackMatrix.reset();*/
+      cudaEllpackMatrix.reset();
 #endif
       ellpackMatrix.reset();
 

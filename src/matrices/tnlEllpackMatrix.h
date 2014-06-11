@@ -63,6 +63,10 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
+   /*template< typename Matrix >
+   bool copyFrom( const Matrix& matrix,
+                  const RowLengthsVector& rowLengths );*/
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
