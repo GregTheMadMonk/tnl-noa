@@ -327,7 +327,7 @@ template< typename Real,
 void tnlIdenticalGridGeometry< 3, Real, Device, Index > :: setParametricStep( const VertexType& parametricStep )
 {
    this -> parametricStep = parametricStep;
-   this -> elementMeasure = this -> parametricStep. x() * this -> parametricStep. y();
+   this -> elementMeasure = this -> parametricStep. x() * this -> parametricStep. y()* this -> parametricStep. z();
 }
 
 template< typename Real,
