@@ -130,14 +130,14 @@ double computeThroughput( const long int nonzeroElements,
 
 template< typename Matrix,
           typename Vector >
-void benchmarkHostMatrix( const Matrix& matrix,
-                          const Vector& x,
-                          Vector& b,
-                          const long int nonzeroElements,
-                          const char* format,
-                          const double& stopTime,
-                          int verbose,
-                          fstream& logFile )
+void benchmarkMatrix( const Matrix& matrix,
+                      const Vector& x,
+                      Vector& b,
+                      const long int nonzeroElements,
+                      const char* format,
+                      const double& stopTime,
+                      int verbose,
+                      fstream& logFile )
 {
    tnlTimerRT timer;
    timer.Reset();
@@ -158,6 +158,12 @@ void benchmarkHostMatrix( const Matrix& matrix,
            << " Throughput: "<< throughput << endl;
    logFile << "  " << gflops << endl;
    logFile << "  " << throughput << endl;
+}
+
+void writeTestFailed( fstream& logFile )
+{
+   logFile << "N/A" << endl;
+   logFile << "N/A" << endl;
 }
 
 template< typename Real >
@@ -213,27 +219,27 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       rowLengthsCuda.setSize( csrMatrix.getRows() );
       rowLengthsCuda = rowLengthsHost;
 #endif
-      benchmarkHostMatrix( csrMatrix,
-                           hostX,
-                           hostB,
-                           nonzeroElements,
-                           "CSR Host",
-                           stopTime,
-                           verbose,
-                           logFile );
+      benchmarkMatrix( csrMatrix,
+                       hostX,
+                       hostB,
+                       nonzeroElements,
+                       "CSR Host",
+                       stopTime,
+                       verbose,
+                       logFile );
       //csrMatrix.reset();
 
       typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
       EllpackMatrixType ellpackMatrix;
       ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      benchmarkHostMatrix( ellpackMatrix,
-                           hostX,
-                           hostB,
-                           nonzeroElements,
-                           "Ellpack Host",
-                           stopTime,
-                           verbose,
-                           logFile );
+      benchmarkMatrix( ellpackMatrix,
+                       hostX,
+                       hostB,
+                       nonzeroElements,
+                       "Ellpack Host",
+                       stopTime,
+                       verbose,
+                       logFile );
 #ifdef HAVE_CUDA
       typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
       EllpackMatrixCudaType cudaEllpackMatrix;
@@ -241,17 +247,20 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
       {
          cerr << "I am not able to transfer the matrix on GPU." << endl;
-         return false;
+         writeTestFailed( logFile );
       }
-      cout << " done." << endl;
-      benchmarkHostMatrix( cudaEllpackMatrix,
-                           cudaX,
-                           cudaB,
-                           nonzeroElements,
-                           "Ellpack Cuda",
-                           stopTime,
-                           verbose,
-                           logFile );
+      else
+      {
+         cout << " done." << endl;
+         benchmarkMatrix( cudaEllpackMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "Ellpack Cuda",
+                          stopTime,
+                          verbose,
+                          logFile );
+      }
       cudaEllpackMatrix.reset();
 #endif
       ellpackMatrix.reset();
@@ -259,27 +268,73 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
       SlicedEllpackMatrixType slicedEllpackMatrix;
       slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      benchmarkHostMatrix( slicedEllpackMatrix,
-                           hostX,
-                           hostB,
-                           nonzeroElements,
-                           "SlicedEllpack Host",
-                           stopTime,
-                           verbose,
-                           logFile );
+      benchmarkMatrix( slicedEllpackMatrix,
+                       hostX,
+                       hostB,
+                       nonzeroElements,
+                       "SlicedEllpack Host",
+                       stopTime,
+                       verbose,
+                       logFile );
+#ifdef HAVE_CUDA
+      typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
+      SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
+      cout << "Copying matrix to GPU... ";
+      if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+      {
+         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         writeTestFailed( logFile );
+      }
+      else
+      {
+         cout << " done." << endl;
+         benchmarkMatrix( cudaSlicedEllpackMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "SlicedEllpack Cuda",
+                          stopTime,
+                          verbose,
+                          logFile );
+      }
+      cudaSlicedEllpackMatrix.reset();
+#endif
       slicedEllpackMatrix.reset();
 
       typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
       chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      benchmarkHostMatrix( chunkedEllpackMatrix,
-                           hostX,
-                           hostB,
-                           nonzeroElements,
-                           "ChunkedEllpack Host",
-                           stopTime,
-                           verbose,
-                           logFile );
+      benchmarkMatrix( chunkedEllpackMatrix,
+                       hostX,
+                       hostB,
+                       nonzeroElements,
+                       "ChunkedEllpack Host",
+                       stopTime,
+                       verbose,
+                       logFile );
+#ifdef HAVE_CUDA
+      typedef tnlChunkedEllpackMatrix< Real, tnlCuda, int > ChunkedEllpackMatrixCudaType;
+      ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
+      cout << "Copying matrix to GPU... ";
+      if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
+      {
+         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         writeTestFailed( logFile );
+      }
+      else
+      {
+         cout << " done." << endl;
+         benchmarkMatrix( cudaChunkedEllpackMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "ChunkedEllpack Cuda",
+                          stopTime,
+                          verbose,
+                          logFile );
+      }
+      cudaChunkedEllpackMatrix.reset();
+#endif
       chunkedEllpackMatrix.reset();
    }
 }
