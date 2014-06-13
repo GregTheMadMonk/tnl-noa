@@ -904,7 +904,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
    {
       getChunk( sliceOffset,
                 chunkIndex,
-                chunkSize,
+                Min( chunkSize, this->getColumns - offset ),
                 &columns[ offset ],
                 &values[ offset ] );
       chunkIndex++;
@@ -958,7 +958,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row
    {
       getChunk( sliceOffset,
                 chunkIndex,
-                chunkSize,
+                Min( chunkSize, this->getColumns() - offset ),
                 &columns[ offset ],
                 &values[ offset ] );
       chunkIndex++;

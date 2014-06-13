@@ -2,17 +2,39 @@
 
 import sys;
 
+class columnFormating:
+
+   def __init__( self, data ):
+      self.coloring = []
+      print "Column formating ", data
+      dataSplit = data.split( ' ' )
+      currentFormating = ""
+      for word in dataSplit:
+         print word
+         if word == "COLORING":
+            currentFormating = word
+            continue
+         if currentFormating == "COLORING":
+
+
+
 class tableColumn:
 
-   def __init__( self, level, label ):
+   def __init__( self, level, data ):
       self.level = level
       self.maxLevel = 0
       self.height = 0
-      self.label = label
       self.subcolumns = []
       self.numberOfSubcolumns = 0
       self.rowspan = 0
-   
+      dataSplit = data.split( ':', 1 );
+      label = dataSplit[ 0 ];   
+      self.label = label.rstrip( ' ' );
+      if len( dataSplit ) == 2:
+         self.formating = columnFormating( dataSplit[ 1 ] )
+      else:
+         self.formating = columnFormating( "" )
+
    def insertSubcolumn( self, level, label ):
       if level > self.maxLevel:
          self.maxLevel = level
@@ -55,6 +77,14 @@ class tableColumn:
       if currentLevel == self.level:
          print "Label  = ", self.label, " self.height = ", self.height, " height = ", height
          htmlFile.write( "            <td rowspan=" + str( self.rowspan ) + " colspan=" + str( self.numberOfSubcolumns) + ">" + self.label + "</td>\n" )
+
+   def pickLeafColumns( self, leafColumns ):
+      if len( self.subcolumns ) == 0:
+         print "Appending leaf column ", self.label
+         leafColumns.append( self )
+      else:
+         for subcolumn in self.subcolumns:
+            subcolumn.pickLeafColumns( leafColumns )
       
       
 class logToHtmlConvertor:
@@ -62,6 +92,7 @@ class logToHtmlConvertor:
    def __init__( self ):
       self.tableColumns = []
       self.maxLevel = 0
+      self.leafColumns = []
 
    def processFile( self, logFileName, htmlFileName ):
       print "Processing file", logFileName 
@@ -116,6 +147,10 @@ class logToHtmlConvertor:
          print "-------------------------------"
          level = level + 1
 
+   def pickLeafColumns( self ):
+      for subcolumn in self.tableColumns:
+         subcolumn.pickLeafColumns( self.leafColumns )
+
    def writeTable( self, logFile, htmlFile ):
       firstLine = "true"
       for line in logFile:
@@ -144,6 +179,7 @@ class logToHtmlConvertor:
       self.countRowspan()
       self.recomputeLevel()
       self.writeColumnsHeader( htmlFile )
+      self.pickLeafColumns();
       self.writeTable( logFile, htmlFile )
       htmlFile.write( "      </table>\n")
       htmlFile.write( "   </body>\n" )

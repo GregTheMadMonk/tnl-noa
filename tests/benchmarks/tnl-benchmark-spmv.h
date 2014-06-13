@@ -22,7 +22,6 @@
 #include <iomanip>
 #include <unistd.h>
 
-
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <matrices/tnlCSRMatrix.h>
@@ -31,6 +30,8 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <core/tnlTimerRT.h>
+
+using namespace std;
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-benchmark-spmv.cfg.desc";
@@ -46,38 +47,58 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "#Rows" << endl;
       logFile << "#Columns" << endl;
       logFile << "#Non-zero elements" << endl;
-      logFile << "#Filling (in %)" << endl;
+      logFile << "#Filling (in %) : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100" << endl;
       logFile << "#CSR Format" << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#endif
       logFile << "#Ellpack Format" << endl;
+      logFile << "# Padding (in %)" << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#endif
       logFile << "#SlicedEllpack Format" << endl;
+      logFile << "# Padding (in %)" << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#endif
       logFile << "#ChunkedEllpack Format" << endl;
+      logFile << "# Padding (in %)" << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << endl;
+#endif
       return true;
    }
    logFile.open( fileName.getString(), ios::out | ios::app );
+   //logFile << setprecision( 2 );
    if( ! logFile )
       return false;
 }
@@ -87,11 +108,17 @@ void printMatrixInfo( const tnlString& inputFileName,
                       const Matrix& matrix,
                       ostream& str )
 {
-   str << " Rows: " << matrix.getRows();
-   str << " Columns: " << matrix.getColumns();
-   str << " Nonzero Elements: " << matrix.getNumberOfNonzeroMatrixElements();
+   str << " Rows: " << setw( 8 ) << matrix.getRows();
+   str << " Columns: " << setw( 8 ) << matrix.getColumns();
+   str << " Nonzero Elements: " << setw( 10 ) << matrix.getNumberOfNonzeroMatrixElements();
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   str << " Filling: " << 100.0 * fillingRatio << endl;
+   str << " Filling: " << setw( 5 ) << 100.0 * fillingRatio << "%" << endl;
+   str << setw( 25 ) << "Format"
+       << setw( 15 ) << "Padding"
+       << setw( 15 ) << "Time"
+       << setw( 15 ) << "GFLOPS"
+       << setw( 15 ) << "Throughput"
+       << setw( 15 ) << "Speedup" << endl;
 }
 
 template< typename Matrix >
@@ -130,14 +157,15 @@ double computeThroughput( const long int nonzeroElements,
 
 template< typename Matrix,
           typename Vector >
-void benchmarkMatrix( const Matrix& matrix,
-                      const Vector& x,
-                      Vector& b,
-                      const long int nonzeroElements,
-                      const char* format,
-                      const double& stopTime,
-                      int verbose,
-                      fstream& logFile )
+double benchmarkMatrix( const Matrix& matrix,
+                        const Vector& x,
+                        Vector& b,
+                        const long int nonzeroElements,
+                        const char* format,
+                        const double& stopTime,
+                        const double& baseline,
+                        int verbose,
+                        fstream& logFile )
 {
    tnlTimerRT timer;
    timer.Reset();
@@ -151,17 +179,32 @@ void benchmarkMatrix( const Matrix& matrix,
    }
    const double gflops = computeGflops( nonzeroElements, iterations, time );
    const double throughput = computeThroughput< typename Matrix::RealType >( nonzeroElements, iterations, matrix.getRows(), time );
+   const long int allocatedElements = matrix.getNumberOfMatrixElements();
+   const double padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
    if( verbose )
-      cout << " " << format
-           << " Time: " << time
-           << " GFlops: " << gflops
-           << " Throughput: "<< throughput << endl;
+   {
+      cout << setw( 25 ) << format
+           << setw( 15 ) << padding
+           << setw( 15 ) << time
+           << setw( 15 ) << gflops
+           << setw( 15 ) << throughput;
+      if( baseline )
+         cout << setw( 15 ) << gflops / baseline << endl;
+      else
+         cout << setw( 15 ) << "N/A" << endl;
+   }
    logFile << "  " << gflops << endl;
    logFile << "  " << throughput << endl;
+   if( baseline )
+      logFile << gflops / baseline << endl;
+   else
+      logFile << "N/A" << endl;
+   return gflops;
 }
 
 void writeTestFailed( fstream& logFile )
 {
+   logFile << "N/A" << endl;
    logFile << "N/A" << endl;
    logFile << "N/A" << endl;
 }
@@ -198,7 +241,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       }
       const int rows = csrMatrix.getRows();
       const int columns = csrMatrix.getColumns();
-      const long int nonzeroElements = csrMatrix.getNumberOfNonzeroMatrixElements();
+      const long int nonzeroElements = csrMatrix.getNumberOfMatrixElements();
       tnlVector< int, tnlHost, int > rowLengthsHost;
       rowLengthsHost.setSize( rows );
       for( int row = 0; row < rows; row++ )
@@ -219,25 +262,35 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       rowLengthsCuda.setSize( csrMatrix.getRows() );
       rowLengthsCuda = rowLengthsHost;
 #endif
-      benchmarkMatrix( csrMatrix,
-                       hostX,
-                       hostB,
-                       nonzeroElements,
-                       "CSR Host",
-                       stopTime,
-                       verbose,
-                       logFile );
+      const double baseline = benchmarkMatrix( csrMatrix,
+                                               hostX,
+                                               hostB,
+                                               nonzeroElements,
+                                               "CSR Host",
+                                               stopTime,
+                                               0.0,
+                                               verbose,
+                                               logFile );
+#ifdef HAVE_CUDA
+      writeTestFailed( logFile );
+#endif
       //csrMatrix.reset();
 
+      long int allocatedElements;
+      double padding;
       typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
       EllpackMatrixType ellpackMatrix;
       ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      logFile << "    " << padding << endl;
       benchmarkMatrix( ellpackMatrix,
                        hostX,
                        hostB,
                        nonzeroElements,
                        "Ellpack Host",
                        stopTime,
+                       baseline,
                        verbose,
                        logFile );
 #ifdef HAVE_CUDA
@@ -251,13 +304,14 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       }
       else
       {
-         cout << " done." << endl;
+         cout << " done.   \r";
          benchmarkMatrix( cudaEllpackMatrix,
                           cudaX,
                           cudaB,
                           nonzeroElements,
                           "Ellpack Cuda",
                           stopTime,
+                          baseline,
                           verbose,
                           logFile );
       }
@@ -268,12 +322,16 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
       SlicedEllpackMatrixType slicedEllpackMatrix;
       slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      logFile << "    " << padding << endl;
       benchmarkMatrix( slicedEllpackMatrix,
                        hostX,
                        hostB,
                        nonzeroElements,
                        "SlicedEllpack Host",
                        stopTime,
+                       baseline,
                        verbose,
                        logFile );
 #ifdef HAVE_CUDA
@@ -287,13 +345,14 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       }
       else
       {
-         cout << " done." << endl;
+         cout << " done.   \r";
          benchmarkMatrix( cudaSlicedEllpackMatrix,
                           cudaX,
                           cudaB,
                           nonzeroElements,
                           "SlicedEllpack Cuda",
                           stopTime,
+                          baseline,
                           verbose,
                           logFile );
       }
@@ -304,12 +363,16 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
       chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
+      allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      logFile << "    " << padding << endl;
       benchmarkMatrix( chunkedEllpackMatrix,
                        hostX,
                        hostB,
                        nonzeroElements,
                        "ChunkedEllpack Host",
                        stopTime,
+                       baseline,
                        verbose,
                        logFile );
 #ifdef HAVE_CUDA
@@ -323,13 +386,14 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       }
       else
       {
-         cout << " done." << endl;
+         cout << " done.    \r";
          benchmarkMatrix( cudaChunkedEllpackMatrix,
                           cudaX,
                           cudaB,
                           nonzeroElements,
                           "ChunkedEllpack Cuda",
                           stopTime,
+                          baseline,
                           verbose,
                           logFile );
       }

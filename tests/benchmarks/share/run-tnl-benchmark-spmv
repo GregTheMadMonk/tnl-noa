@@ -26,7 +26,7 @@ do
       #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log            
    else
       gunzip -c ${matrix} > ${unzipped_matrix}      
-      echo "Checking with the matrix $unzipped_matrix ..."
+      echo "Benchmarking with the matrix $unzipped_matrix ..."
       export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
       if test x$DEBUG = xyes;
       then
@@ -56,7 +56,7 @@ do
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
      do
          echo "###############################################################################################"
-         echo "Checking with the matrix $file ..."
+         echo "Benchmarking with the matrix $file ..."
          $SPARSE_MATRIX_BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1                        
      done
    fi

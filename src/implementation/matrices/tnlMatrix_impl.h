@@ -118,6 +118,7 @@ bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
       matrix.getRow( row, columns.getData(), values.getData() );
       this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
    }
+   return true;
 }
 
 template< typename Real,
