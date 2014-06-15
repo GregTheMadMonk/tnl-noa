@@ -60,43 +60,43 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - csr-cuda-speedup.txt" << endl;
 #endif
       logFile << "#Ellpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-host-speedup.txt" << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-cuda-speedup.txt" << endl;
 #endif
       logFile << "#SlicedEllpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-host-speedup.txt" << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-cuda-speedup.txt" << endl;
 #endif
       logFile << "#ChunkedEllpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-host-speedup.txt" << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-cuda-speedup.txt" << endl;
 #endif
       return true;
    }

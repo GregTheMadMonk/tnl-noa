@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlCSRMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -125,6 +128,9 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -160,6 +166,9 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    protected:
 
    tnlVector< Index, Device, Index > rowPointers;
+
+   typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;
 
 };
 

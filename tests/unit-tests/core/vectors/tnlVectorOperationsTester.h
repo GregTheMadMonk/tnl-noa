@@ -313,13 +313,13 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusYTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y;
       x.setSize( size );
       y.setSize( size );
       setLinearSequence( x );
       setOnesSequence( y );
-      tnlVectorOperations< Device >:: alphaXPlusY( y, x, 3.0 );
+      tnlVectorOperations< Device >::alphaXPlusY( y, x, 3.0 );
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );
@@ -327,7 +327,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaYTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y;
       x.setSize( size );
       y.setSize( size );
@@ -341,7 +341,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaZTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y, z;
       x.setSize( size );
       y.setSize( size );
@@ -356,7 +356,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaZPlusYTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y, z;
       x.setSize( size );
       y.setSize( size );
@@ -372,7 +372,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void prefixSumTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
       v.setName( "prefixSumTest::v" );
@@ -396,7 +396,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void exclusivePrefixSumTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
       v.setName( "exclusivePrefixSumTest::v" );

@@ -71,14 +71,14 @@ if( BUILD_CUDA )
                                                                       tnl${mpiExt}${debugExt}-0.1 )
 endif()              
         
-#ADD_EXECUTABLE( tnlCSRMatrixTest${mpiExt}${debugExt} ${headers} tnlCSRMatrixTest.cpp )
-#TARGET_LINK_LIBRARIES( tnlCSRMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                              tnl${mpiExt}${debugExt}-0.1 )
-#
-#if( BUILD_CUDA )                                                           
-#   CUDA_ADD_EXECUTABLE( tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlCSRMatrixTest.cu
-#                        OPTIONS -arch sm_20 )
-#   TARGET_LINK_LIBRARIES( tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                                      tnl${mpiExt}${debugExt}-0.1 )
-#endif()             
+ADD_EXECUTABLE( tnlCSRMatrixTest${mpiExt}${debugExt} ${headers} tnlCSRMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( tnlCSRMatrixTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
+
+if( BUILD_CUDA )                                                           
+   CUDA_ADD_EXECUTABLE( tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${headers} tnlCSRMatrixTest.cu
+                        OPTIONS -arch sm_20 )
+   TARGET_LINK_LIBRARIES( tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                      tnl${mpiExt}${debugExt}-0.1 )
+endif()             
                                                                                      

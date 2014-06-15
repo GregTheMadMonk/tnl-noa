@@ -178,7 +178,7 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
 
     int getTestSize()
     {
-       return 1 << 18;
+       return 10000; //1 << 18;
        //const int cudaGridSize = 256;
        //return 1.5 * cudaGridSize * maxCudaBlockSize;
        //return  1 << 22;

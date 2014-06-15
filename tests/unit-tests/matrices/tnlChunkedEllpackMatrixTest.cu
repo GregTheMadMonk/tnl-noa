@@ -26,9 +26,6 @@
 
 int main( int argc, char* argv[] )
 {
-   tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > tester;
-   //tester. vectorProduct_DiagonalMatrixTest();
-
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
        ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlCuda, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||

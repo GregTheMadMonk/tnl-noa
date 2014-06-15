@@ -6,16 +6,69 @@ class columnFormating:
 
    def __init__( self, data ):
       self.coloring = []
-      print "Column formating ", data
+      self.sorting = "none"
+      self.sortingFile = ""
+      self.sortingData = []
+      self.sortingNaNs = 0
       dataSplit = data.split( ' ' )
       currentFormating = ""
       for word in dataSplit:
-         print word
-         if word == "COLORING":
+         if word == "COLORING" or word == "SORT":
             currentFormating = word
             continue
          if currentFormating == "COLORING":
+            self.coloring.append( word )
+         if currentFormating == "SORT":
+            if word == "+" or word == "-":
+               self.sorting = word
+            else:
+               self.sortingFile = word
 
+
+   def write( self, htmlFile, line ):
+      color = ""
+      if len( self.coloring ) > 0:
+         for token in self.coloring:
+            if token.find( "#" ) == 0:
+               color = token
+            else:
+               try:
+                  if float( token ) > float( line ):
+                     break
+               except ValueError:
+                  color = ""
+                  break
+      if color != "":
+         htmlFile.write( " bgcolor=\"" )
+         htmlFile.write( color )
+         htmlFile.write( "\"" )
+
+      if self.sorting == "+" or self.sorting == "-":
+         try:
+            number = float( line )
+            self.sortingData.append( number )
+         except ValueError:
+            self.sortingNaNs += 1
+
+   def processSorting( self ):
+      if self.sorting == "none":
+         return
+      if self.sorting == "+":
+         self.sortingData.sort()
+      if self.sorting == "-":
+         self.sortingData.sort( reverse = True )
+      sortFile = open( self.sortingFile, "w" )
+      sortFile.write( "# Number of NaNs is ")
+      sortFile.write( str( self.sortingNaNs ) )
+      sortFile.write( "\n\n" )
+      idx = 0
+      for n in self.sortingData:
+         sortFile.write( str( idx ) )
+         sortFile.write( "\t" )
+         sortFile.write( str( n ) )
+         sortFile.write( "\n" )
+         idx += 1
+      sortFile.close()
 
 
 class tableColumn:
@@ -30,6 +83,7 @@ class tableColumn:
       dataSplit = data.split( ':', 1 );
       label = dataSplit[ 0 ];   
       self.label = label.rstrip( ' ' );
+      #print self.label
       if len( dataSplit ) == 2:
          self.formating = columnFormating( dataSplit[ 1 ] )
       else:
@@ -45,10 +99,11 @@ class tableColumn:
 
    def countSubcolumns( self ):
       if( len( self.subcolumns ) == 0 ):
-         return 1
-      self.numberOfSubcolumns = 0;
-      for subcolumn in self.subcolumns:
-         self.numberOfSubcolumns = self.numberOfSubcolumns + subcolumn.countSubcolumns()
+         self.numberOfSubcolumns = 1
+      else:
+         self.numberOfSubcolumns = 0;
+         for subcolumn in self.subcolumns:
+            self.numberOfSubcolumns = self.numberOfSubcolumns + subcolumn.countSubcolumns()
       return self.numberOfSubcolumns
 
    def countHeight( self ):
@@ -61,7 +116,7 @@ class tableColumn:
 
    def countRowspan( self, height ):
       self.rowspan = height - self.height + 1
-      print "Setting rowspan of ", self.label, " to ", self.rowspan
+      #print "Setting rowspan of ", self.label, " to ", self.rowspan
       for subcolumn in self.subcolumns:
          subcolumn.countRowspan( self.height - 1 )
 
@@ -75,16 +130,24 @@ class tableColumn:
          for subcolumn in self.subcolumns:
             subcolumn.writeToColumnsHeader( htmlFile, self.height , currentLevel )
       if currentLevel == self.level:
-         print "Label  = ", self.label, " self.height = ", self.height, " height = ", height
+         #print "Label  = ", self.label, " self.height = ", self.height, " height = ", height
          htmlFile.write( "            <td rowspan=" + str( self.rowspan ) + " colspan=" + str( self.numberOfSubcolumns) + ">" + self.label + "</td>\n" )
 
    def pickLeafColumns( self, leafColumns ):
       if len( self.subcolumns ) == 0:
-         print "Appending leaf column ", self.label
+         #print "Appending leaf column ", self.label
          leafColumns.append( self )
       else:
          for subcolumn in self.subcolumns:
             subcolumn.pickLeafColumns( leafColumns )
+
+   def writeFormating( self, htmlFile, line ):
+      self.formating.write( htmlFile, line )
+
+   def processSorting( self ):
+      self.formating.processSorting()
+      
+      
       
       
 class logToHtmlConvertor:
@@ -112,7 +175,7 @@ class logToHtmlConvertor:
          level = level + 1
          label = data.lstrip( ' ')
          label = label.rstrip( '\n' )
-         print " Inserting column on level ", level, " and label ", label
+         #print " Inserting column on level ", level, " and label ", label
          if level > self.maxLevel:
             self.maxLevel = level;
          if level == 1:
@@ -139,12 +202,11 @@ class logToHtmlConvertor:
    def writeColumnsHeader( self, htmlFile ):
       level = 1
       while level <= self.maxLevel:
-         print "Writing columns on level ", level 
+         #print "Writing columns on level ", level 
          htmlFile.write( "         <tr>\n")
          for column in self.tableColumns:
             column.writeToColumnsHeader( htmlFile, self.maxLevel, level )
          htmlFile.write( "         </tr>\n")
-         print "-------------------------------"
          level = level + 1
 
    def pickLeafColumns( self ):
@@ -154,20 +216,30 @@ class logToHtmlConvertor:
    def writeTable( self, logFile, htmlFile ):
       firstLine = "true"
       for line in logFile:
-         if len( line ) == 1:
+         if len( line ) == 1 or firstLine == "true":
             if firstLine == "true":
                htmlFile.write( "         <tr>\n" )
+               leafColumnsPointer = 0
                firstLine = "false"
             else:
                htmlFile.write( "         </tr>\n" )
                htmlFile.write( "         <tr>\n" )
-         else:
-            htmlFile.write( "      <td>" )
+               leafColumnsPointer = 0
+         if len( line ) > 1:
             line = line.lstrip( ' ' )
             line = line.rstrip( '\n' )
+            leafColumn = self.leafColumns[ leafColumnsPointer ]
+            htmlFile.write( "             <td" )
+            leafColumn.writeFormating( htmlFile, line )
+            htmlFile.write( ">")
             htmlFile.write( line )
-            htmlFile.write( "      </td>" )
+            htmlFile.write( "</td>\n" )
+            leafColumnsPointer = leafColumnsPointer + 1
       htmlFile.write( "         </tr>\n" )
+
+   def processSorting( self ):
+      for column in self.leafColumns:
+         column.processSorting()
 
    def writeHtmlHeader( self, htmlFile, logFile ):
       htmlFile.write( "<html>\n" )
@@ -184,7 +256,7 @@ class logToHtmlConvertor:
       htmlFile.write( "      </table>\n")
       htmlFile.write( "   </body>\n" )
       htmlFile.write( "</html>\n" )
-      print "Max level = ", self.maxLevel
+      self.processSorting()
 
       
 

@@ -20,6 +20,7 @@
 
 #include <matrices/tnlCSRMatrix.h>
 #include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlSharedVector.h>
 #include <core/mfuncs.h>
 
 template< typename Real,
@@ -73,16 +74,17 @@ bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector&
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   for( IndexType i = 0; i < this->rows; i++ )
-      this->rowPointers[ i ] = rowLengths[ i ];
-   this->rowPointers[ this->rows ] = 0;
+   tnlSharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
+   rowPtrs = rowLengths;
+   this->rowPointers.setElement( this->rows, 0 );
    this->rowPointers.computeExclusivePrefixSum();
 
    /****
     * Allocate values and column indexes
     */
-   if( ! this->values.setSize( this->rowPointers[ this->rows ] ) ||
-       ! this->columnIndexes.setSize( this->rowPointers[ this->rows ] ) )
+   if( ! this->values.setSize( this->rowPointers.getElement( this->rows ) ) ||
+       ! this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) ) )
       return false;
    this->columnIndexes.setValue( this->columns );
    return true;
@@ -139,7 +141,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
                                                       const IndexType column,
                                                       const Real& value )
 {
-   return this->addElementFast( row, column, value, 0.0 );
+   return this->addElement( row, column, value, 0.0 );
 }
 
 
@@ -154,12 +156,12 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   /*tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
-                   << " this->columns = " << this-> columns );
+                   << " this->columns = " << this-> columns );*/
 
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
@@ -202,7 +204,44 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
 {
-   return this->addElementFast( row, column, value, thisElementMultiplicator );
+   tnlAssert( row >= 0 && row < this->rows &&
+               column >= 0 && column <= this->rows,
+               cerr << " row = " << row
+                    << " column = " << column
+                    << " this->rows = " << this->rows
+                    << " this->columns = " << this-> columns );
+
+    IndexType elementPtr = this->rowPointers.getElement( row );
+    const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
+    while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column ) elementPtr++;
+    if( elementPtr == rowEnd )
+       return false;
+    if( this->columnIndexes.getElement( elementPtr ) == column )
+    {
+       this->values.setElement( elementPtr, thisElementMultiplicator * this->values.getElement( elementPtr ) + value );
+       return true;
+    }
+    else
+       if( this->columnIndexes.getElement( elementPtr ) == this->columns )
+       {
+          this->columnIndexes.setElement( elementPtr, column );
+          this->values.setElement( elementPtr, value );
+          return true;
+       }
+       else
+       {
+          IndexType j = rowEnd - 1;
+          while( j > elementPtr )
+          {
+             this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - 1 ) );
+             this->values.setElement( j, this->values.getElement( j - 1 ) );
+             j--;
+          }
+          this->columnIndexes.setElement( elementPtr, column );
+          this->values.setElement( elementPtr, value );
+          return true;
+       }
+    return false;
 }
 
 template< typename Real,
@@ -240,7 +279,20 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
                                                     const RealType* values,
                                                     const IndexType elements )
 {
-   return this->setRowFast( row, columnIndexes, values, elements );
+   IndexType elementPointer = this->rowPointers.getElement( row );
+   const IndexType rowLength = this->rowPointers.getElement( row + 1 ) - elementPointer;
+   if( elements > rowLength )
+      return false;
+
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      this->columnIndexes.setElement( elementPointer, columnIndexes[ i ] );
+      this->values.setElement( elementPointer, values[ i ] );
+      elementPointer++;
+   }
+   for( IndexType i = elements; i < rowLength; i++ )
+      this->columnIndexes.setElement( elementPointer++, this->getColumns() );
+   return true;
 }
 
 template< typename Real,
@@ -295,7 +347,13 @@ template< typename Real,
 Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                       const IndexType column ) const
 {
-   return this->getElementFast( row, column );
+   IndexType elementPtr = this->rowPointers.getElement( row );
+   const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
+   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column )
+      elementPtr++;
+   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+      return this->values.getElement( elementPtr );
+   return 0.0;
 }
 
 template< typename Real,
@@ -325,13 +383,23 @@ void tnlCSRMatrix< Real, Device, Index >::getRow( const IndexType row,
                                                   IndexType* columns,
                                                   RealType* values ) const
 {
-   return this->getRowFast( row, columns, values );
+   IndexType elementPointer = this->rowPointers.getElement( row );
+   const IndexType rowLength = this->rowPointers.getElement( row + 1 ) - elementPointer;
+   for( IndexType i = 0; i < rowLength; i++ )
+   {
+      columns[ i ] = this->columnIndexes.getElement( elementPointer );
+      values[ i ] = this->values.getElement( elementPointer );
+      elementPointer++;
+   }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                  const Vector& vector ) const
 {
@@ -353,8 +421,7 @@ template< typename Real,
 void tnlCSRMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                          OutVector& outVector ) const
 {
-   for( Index row = 0; row < this->getRows(); row ++ )
-      outVector.setElement( row, rowVectorProduct( row, inVector ) );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -477,5 +544,46 @@ void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
       str << endl;
    }
 }
+
+template<>
+class tnlCSRMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlCSRMatrix< Real, Device, Index >& matrix,      
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
+
+};
+
+template<>
+class tnlCSRMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+
+      template< typename Real,
+                typename Index,
+                typename Vector >
+      static void vectorProduct( const tnlCSRMatrix< Real, Device, Index >& matrix,
+                                 const Vector& inVector,
+                                 Vector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+      }
+
+};
+
+
 
 #endif /* TNLCSRMATRIX_IMPL_H_ */

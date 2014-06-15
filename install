@@ -33,7 +33,7 @@ ${CMAKE} .. -DCMAKE_BUILD_TYPE=Debug \
             -DPETSC_DIR=${PETSC_DIR} \
             -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
 make -j${CPUS} ${VERBOSE}
-#make -j${CPUS} test
+make -j${CPUS} test
 make -j${CPUS} install
 
 cd ../Release
@@ -43,7 +43,7 @@ ${CMAKE} .. -DCMAKE_INSTALL_PREFIX=${HOME}/local \
             -DWITH_CUSPARSE=${WITH_CUSPARSE} \
             -DPETSC_DIR=${PETSC_DIR} \
             -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
-make -j${CPUS} ${VERBOSE}
+#make -j${CPUS} ${VERBOSE}
 #make -j${CPUS} test
-make -j${CPUS} install
+#make -j${CPUS} install
 

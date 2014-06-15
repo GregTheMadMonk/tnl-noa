@@ -81,7 +81,11 @@ if( BUILD_CUDA )
    SET_TESTS_PROPERTIES ( matrices/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} )         
    
    ADD_TEST( matrices/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( matrices/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} )                     
+   SET_TESTS_PROPERTIES ( matrices/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   
+   ADD_TEST( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} )                     
+                        
             
 endif()
 
