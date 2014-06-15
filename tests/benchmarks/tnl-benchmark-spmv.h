@@ -43,57 +43,60 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile.open( fileName.getString(), ios::out );
       if( ! logFile )
          return false;
+      const tnlString fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
+      const tnlString speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
+      const tnlString paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
       logFile << "#Matrix file " << endl;
       logFile << "#Rows" << endl;
       logFile << "#Columns" << endl;
       logFile << "#Non-zero elements" << endl;
-      logFile << "#Filling (in %) : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100" << endl;
+      logFile << "#Filling (in %)" << fillingColoring << endl;
       logFile << "#CSR Format" << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #endif
       logFile << "#Ellpack Format" << endl;
-      logFile << "# Padding (in %)" << endl;
+      logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #endif
       logFile << "#SlicedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << endl;
+      logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #endif
       logFile << "#ChunkedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << endl;
+      logFile << "# Padding (in %)" << paddingColoring << endl;
       logFile << "# CPU" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
       logFile << "#  Gflops" << endl;
       logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << endl;
+      logFile << "#  Speedup" << speedupColoring << endl;
 #endif
       return true;
    }
@@ -132,7 +135,7 @@ bool writeMatrixInfo( const tnlString& inputFileName,
    logFile << " " << matrix.getColumns() << endl;
    logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << endl;
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   logFile << " " << 100.0 * fillingRatio << "%" << endl;
+   logFile << " " << 100.0 * fillingRatio << endl;
    logFile << flush;
    if( ! logFile.good() )
       return false;
@@ -180,7 +183,7 @@ double benchmarkMatrix( const Matrix& matrix,
    const double gflops = computeGflops( nonzeroElements, iterations, time );
    const double throughput = computeThroughput< typename Matrix::RealType >( nonzeroElements, iterations, matrix.getRows(), time );
    const long int allocatedElements = matrix.getNumberOfMatrixElements();
-   const double padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+   const double padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
    if( verbose )
    {
       cout << setw( 25 ) << format
@@ -282,7 +285,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       EllpackMatrixType ellpackMatrix;
       ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
       allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
       logFile << "    " << padding << endl;
       benchmarkMatrix( ellpackMatrix,
                        hostX,
@@ -323,7 +326,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       SlicedEllpackMatrixType slicedEllpackMatrix;
       slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
       allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
       logFile << "    " << padding << endl;
       benchmarkMatrix( slicedEllpackMatrix,
                        hostX,
@@ -364,7 +367,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
       chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
       allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0;
+      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
       logFile << "    " << padding << endl;
       benchmarkMatrix( chunkedEllpackMatrix,
                        hostX,
