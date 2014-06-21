@@ -34,6 +34,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
 
+   enum SPMVCudaKernel { scalar, vector, hybrid };
+
    tnlCSRMatrix();
 
    static tnlString getType();
@@ -163,9 +165,15 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void print( ostream& str ) const;
 
+   void setCudaKernelType( const SPMVCudaKernel kernel );
+
+   SPMVCudaKernel getCudaKernelType() const;
+
    protected:
 
    tnlVector< Index, Device, Index > rowPointers;
+
+   SPMVCudaKernel spmvCudaKernel;
 
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;

@@ -57,7 +57,12 @@ do
      do
          echo "###############################################################################################"
          echo "Benchmarking with the matrix $file ..."
-         $SPARSE_MATRIX_BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1                        
+         if test x$DEBUG = xyes;
+         then
+            gdb --args $SPARSE_MATRIX_BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+         else
+            $SPARSE_MATRIX_BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1                        
+         fi
      done
    fi
 done
