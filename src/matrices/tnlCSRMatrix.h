@@ -136,7 +136,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename InVector, typename OutVector >
+   template< typename InVector,
+             typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
 
@@ -167,13 +168,31 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setCudaKernelType( const SPMVCudaKernel kernel );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    SPMVCudaKernel getCudaKernelType() const;
+
+   void setCudaWarpSize( const int warpSize );
+
+   int getCudaWarpSize() const;
+
+#ifdef HAVE_CUDA
+   template< typename Vector,
+             int warpSize >
+   __device__
+   void vectorProductCuda( const Vector& inVector,
+                           Vector& outVector,
+                           int gridIdx ) const;
+#endif
 
    protected:
 
    tnlVector< Index, Device, Index > rowPointers;
 
    SPMVCudaKernel spmvCudaKernel;
+
+   int cudaWarpSize;
 
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;

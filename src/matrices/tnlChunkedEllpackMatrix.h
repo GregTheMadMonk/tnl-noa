@@ -191,9 +191,10 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 #endif
 
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,

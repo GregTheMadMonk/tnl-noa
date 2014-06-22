@@ -58,9 +58,35 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - csr-cuda-speedup.txt" << endl;
+      logFile << "#  Scalar" << endl;
+      logFile << "#   Gflops" << endl;
+      logFile << "#   Throughput" << endl;
+      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << endl;
+      logFile << "#  Vector" << endl;
+      logFile << "#   Warp Size 1" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 2" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 4" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 8" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 16" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 32" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
 #endif
       logFile << "#Ellpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
@@ -235,12 +261,23 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
    {
       typedef tnlCSRMatrix< Real, tnlHost, int > CSRMatrixType;
       CSRMatrixType csrMatrix;
-      if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+      try
       {
-         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+         if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+         {
+            cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+            logFile << endl;
+            logFile << inputFileName << endl;
+            logFile << "Benchmark failed: Unable to read the matrix." << endl;
+            return false;
+         }
+      }
+      catch( std::bad_alloc )
+      {
+         cerr << "Not enough memory to read the matrix." << endl;
          logFile << endl;
          logFile << inputFileName << endl;
-         logFile << "Benchmark failed." << endl;
+         logFile << "Benchmark failed: Not enough memory." << endl;
          return false;
       }
       if( verbose )
@@ -289,16 +326,78 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
       {
          cerr << "I am not able to transfer the matrix on GPU." << endl;
-         writeTestFailed( logFile, 3 );
+         writeTestFailed( logFile, 21 );
       }
       else
       {
          cout << " done.   \r";
+         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
          benchmarkMatrix( cudaCSRMatrix,
                           cudaX,
                           cudaB,
                           nonzeroElements,
-                          "CSR Cuda",
+                          "CSR Cuda Scalar",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::vector );
+         cudaCSRMatrix.setCudaWarpSize( 1 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 1",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 2 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 2",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 4 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 4",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 8 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 8",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 16 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 16",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 32 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 32",
                           stopTime,
                           baseline,
                           verbose,

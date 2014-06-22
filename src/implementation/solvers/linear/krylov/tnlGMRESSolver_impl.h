@@ -31,7 +31,7 @@ tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
   _sn( "tnlGMRESSolver::_sn" ),
   _H( "tnlGMRESSolver:_H" ),
   size( 0 ),
-  restarting( 0 ),
+  restarting( 10 ),
   matrix( 0 ),
   preconditioner( 0 )
 {
@@ -164,7 +164,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
           */
          if( preconditioner )
          {
-            matrix -> vectorProduct( vi, _M_tmp );
+            matrix->vectorProduct( vi, _M_tmp );
             this->preconditioner->solve( _M_tmp, _w );
          }
          else

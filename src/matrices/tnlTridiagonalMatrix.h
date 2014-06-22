@@ -21,6 +21,9 @@
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlTridiagonalMatrixDeviceDependentCode;
+
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
@@ -143,9 +146,10 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
@@ -187,6 +191,9 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                               const IndexType column ) const;
 
    tnlVector< RealType, DeviceType, IndexType > values;
+
+   typedef tnlTridiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;
 };
 
 #include <implementation/matrices/tnlTridiagonalMatrix_impl.h>

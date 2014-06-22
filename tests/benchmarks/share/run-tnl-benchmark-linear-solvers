@@ -7,8 +7,8 @@ export CUDA_PROFILE=0
 PWD=`pwd`
 IWD="$PWD"
 BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
-BENCHMARK="tnl-benchmark-spmv"
-BENCHMARK_DBG="tnl-benchmark-spmv-dbg"
+BENCHMARK="tnl-benchmark-linear-solvers"
+BENCHMARK_DBG="tnl-benchmark-linear-solvers-dbg"
 
 export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
 PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
@@ -30,9 +30,9 @@ do
       export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
       if test x$DEBUG = xyes;
       then
-         gdb --args ${BENCHMARK_DBG} --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+         gdb --args ${BENCHMARK_DBG} --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
       else
-         $BENCHMARK --test mtx --input-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+         $BENCHMARK --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
       fi
       #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log          
    fi
@@ -54,16 +54,15 @@ do
      SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
      rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usualy in array format
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
-     do        
+     do
          echo "======================================================================================================"
          echo "Benchmarking with the matrix $file ..."
          if test x$DEBUG = xyes;
          then
-            gdb --args $BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+            gdb --args $BENCHMARK --test mtx --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1
          else
-            $BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1                        
+            $BENCHMARK --test mtx --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1                        
          fi
      done
    fi
 done
-

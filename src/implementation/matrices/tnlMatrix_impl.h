@@ -225,10 +225,11 @@ void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
 
 #ifdef HAVE_CUDA
 template< typename Matrix,
-          typename Vector >
+          typename InVector,
+          typename OutVector >
 __global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
-                                                  const Vector* inVector,
-                                                  Vector* outVector,
+                                                  const InVector* inVector,
+                                                  OutVector* outVector,
                                                   int gridIdx )
 {
    tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
@@ -239,16 +240,17 @@ __global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
 #endif
 
 template< typename Matrix,
-          typename Vector >
+          typename InVector,
+          typename OutVector >
 void tnlMatrixVectorProductCuda( const Matrix& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
 {
 #ifdef HAVE_CUDA
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-   Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
-   Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
+   InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+   OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
    dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
    const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
