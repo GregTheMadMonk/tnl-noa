@@ -64,7 +64,7 @@ bool benchmarkSolver( const tnlParameterContainer& parameters,
    monitor.setVerbose( 1 );
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );
-   solver.setMaxResidue( 1.0e-6 );
+   solver.setConvergenceResidue( 1.0e-6 );
    solver.template solve< VectorType, tnlLinearResidueGetter< MatrixType, VectorType > >( b, y );
    cout << endl;
    return true;

@@ -55,18 +55,18 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
    if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
-   this -> setResidue( this -> getMaxResidue() + 1.0 );
+   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, s1, s2;
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
    // r_0 = b - A x_0, p_0 = r_0
    this -> matrix -> vectorProduct( x, r );
-   r. alphaXPlusBetaY( 1.0, b, -1.0 );
+   r. addVector( b, 1.0, -1.0 );
    p = r;
 
    while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getMaxResidue() )
+          this -> getResidue() > this -> getConvergenceResidue() )
    {
       // 1. alpha_j = ( r_j, r_j ) / ( A * p_j, p_j )
       this -> matrix -> vectorProduct( p, Ap );
@@ -79,11 +79,11 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
       else alpha = s1 / s2;
       
       // 2. x_{j+1} = x_j + \alpha_j p_j
-      x. alphaXPlusY( alpha, p );
+      x. addVector( p, alpha );
       
       // 3. r_{j+1} = r_j - \alpha_j A * p_j
       new_r = r;
-      new_r. alphaXPlusY( -alpha, Ap );
+      new_r. addVector( Ap, -alpha );
 
       //4. beta_j = ( r_{j+1}, r_{j+1} ) / ( r_j, r_j )
       s1 = new_r. scalarProduct( new_r );
@@ -93,7 +93,7 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
       else beta = s1 / s2;
 
       // 5. p_{j+1} = r_{j+1} + beta_j * p_j
-      p. alphaXPlusBetaY( 1.0, new_r, beta );
+      p. addVector( new_r, 1.0, beta );
 
       // 6. r_{j+1} = new_r
       new_r. swap( r );
@@ -106,7 +106,7 @@ bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x 
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getMaxResidue() ) return false;
+      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 

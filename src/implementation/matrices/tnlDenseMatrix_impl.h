@@ -392,9 +392,9 @@ void tnlDenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
                  << "That matrix name: " << matrix.getName() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-      this->values.alphaXPlusY( matrixMultiplicator, matrix.values );
+      this->values.addVector( matrix.values, matrixMultiplicator );
    else
-      this->values.alphaXPlusBetaY( matrixMultiplicator, matrix.values, thisMatrixMultiplicator );
+      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
 }
 
 #ifdef HAVE_CUDA

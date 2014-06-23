@@ -297,10 +297,11 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: alphaXPlusY( const Real& alpha,
-                                                            const Vector& x )
+void tnlSharedVector< Real, Device, Index > :: addVector( const Vector& x,
+                                                          const Real& alpha,
+                                                          const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
+   tnlVectorOperations< Device > :: addVector( *this, x, alpha, thisMultiplicator );
 }
 
 template< typename Real,

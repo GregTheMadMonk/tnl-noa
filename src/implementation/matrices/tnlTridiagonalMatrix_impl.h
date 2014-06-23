@@ -427,9 +427,9 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
                  << "This matrix name: " << this->getName() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-      this->values.alphaXPlusY( matrixMultiplicator, matrix.values );
+      this->values.addVector( matrix.values, matrixMultiplicator );
    else
-      this->values.alphaXPlusBetaY( matrixMultiplicator, matrix.values, thisMatrixMultiplicator );
+      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
 }
 
 #ifdef HAVE_CUDA
