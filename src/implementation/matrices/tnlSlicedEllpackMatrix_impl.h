@@ -492,9 +492,10 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-   template< typename Vector >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( const Vector& inVector,
-                                                                              Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( const InVector& inVector,
+                                                                              OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -732,11 +733,12 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index,
-                typename Vector,
+                typename InVector,
+                typename OutVector,
                 int SliceSize >
       static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -836,11 +838,12 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index,
-                typename Vector,
+                typename InVector,
+                typename OutVector,
                 int SliceSize >
       static void vectorProduct( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          tnlMatrixVectorProductCuda( matrix, inVector, outVector );
       }

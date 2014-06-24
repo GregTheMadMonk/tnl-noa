@@ -46,7 +46,7 @@ bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              bool verbose )
 {
    IndexType rows, columns;
-   bool symmetricMatrix;
+   bool symmetricMatrix( false );
 
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
       return false;
@@ -212,13 +212,12 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
       line.getLine( file );
       if( ! headerParsed )
       {
-           headerParsed = checkMtxHeader( line, symmetric );
-           if( headerParsed && verbose )
-           {
-               if( symmetric )
-                  cout << "The matrix is SYMMETRIC ... ";
-           }
-           continue;
+         headerParsed = checkMtxHeader( line, symmetric );
+         if( ! headerParsed )
+            return false;
+         if( verbose && symmetric )
+            cout << "The matrix is SYMMETRIC ... ";
+         continue;
       }
       if( line[ 0 ] == '%' ) continue;
       if( ! headerParsed )

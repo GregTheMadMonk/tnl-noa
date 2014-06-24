@@ -319,9 +319,10 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
 }
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: alphaXPlusY( Vector1& y,
-                                                    const Vector2& x,
-                                                    const typename Vector1 :: RealType& alpha )
+void tnlVectorOperations< tnlHost > :: addVector( Vector1& y,
+                                                  const Vector2& x,
+                                                  const typename Vector2::RealType& alpha,
+                                                  const typename Vector1::RealType& thisMultiplicator )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -332,8 +333,13 @@ void tnlVectorOperations< tnlHost > :: alphaXPlusY( Vector1& y,
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
 
    const Index n = y. getSize();
-   for( Index i = 0; i < n; i ++ )
-      y[ i ] += alpha * x[ i ];
+   if( thisMultiplicator == 1.0 )
+      for( Index i = 0; i < n; i ++ )
+         y[ i ] += alpha * x[ i ];
+   else
+      for( Index i = 0; i < n; i ++ )
+         y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
+
 }
 
 template< typename Vector1, typename Vector2 >

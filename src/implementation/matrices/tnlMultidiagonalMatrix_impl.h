@@ -468,17 +468,23 @@ typename Vector::RealType tnlMultidiagonalMatrix< Real, Device, Index >::rowVect
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                   Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                                   OutVector& outVector ) const
 {
-   if( Device::getDevice() == tnlHostDevice )
-   {
-      for( Index row = 0; row < this->getRows(); row ++ )
-         outVector[ row ] = this->rowVectorProduct( row, inVector );
-   }
-   if( Device::getDevice() == tnlCudaDevice )
-      tnlMatrixVectorProductCuda( *this, inVector, outVector );
+   tnlAssert( this->getColumns() == inVector.getSize(),
+            cerr << "Matrix columns: " << this->getColumns() << endl
+                 << "Matrix name: " << this->getName() << endl
+                 << "Vector size: " << inVector.getSize() << endl
+                 << "Vector name: " << inVector.getName() << endl );
+   tnlAssert( this->getRows() == outVector.getSize(),
+               cerr << "Matrix rows: " << this->getRows() << endl
+                    << "Matrix name: " << this->getName() << endl
+                    << "Vector size: " << outVector.getSize() << endl
+                    << "Vector name: " << outVector.getName() << endl );
+
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -680,6 +686,8 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
 {
    public:
 
+      typedef tnlHost Device;
+
       template< typename Index >
       static Index getElementIndex( const Index rows,
                                     const Index diagonals,
@@ -688,12 +696,26 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
       {
          return row*diagonals + diagonal;
       }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlMultidiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
 };
 
 template<>
 class tnlMultidiagonalMatrixDeviceDependentCode< tnlCuda >
 {
    public:
+
+      typedef tnlCuda Device;
 
       template< typename Index >
 #ifdef HAVE_CUDA
@@ -705,6 +727,17 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlCuda >
                                     const Index diagonal )
       {
          return diagonal*rows + row;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlMultidiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
       }
 };
 

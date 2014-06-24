@@ -133,10 +133,11 @@ ostream& operator << ( ostream& str, const tnlMatrix< Real, Device, Index >& m )
 }
 
 template< typename Matrix,
-          typename Vector >
+          typename InVector,
+          typename OutVector >
 void tnlMatrixVectorProductCuda( const Matrix& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector );
+                                 const InVector& inVector,
+                                 OutVector& outVector );
 
 
 #include <implementation/matrices/tnlMatrix_impl.h>

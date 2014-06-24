@@ -58,9 +58,35 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
       logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - csr-cuda-speedup.txt" << endl;
+      logFile << "#  Scalar" << endl;
+      logFile << "#   Gflops" << endl;
+      logFile << "#   Throughput" << endl;
+      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << endl;
+      logFile << "#  Vector" << endl;
+      logFile << "#   Warp Size 1" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 2" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 4" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 8" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 16" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#   Warp Size 32" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
 #endif
       logFile << "#Ellpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
@@ -104,6 +130,7 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
    //logFile << setprecision( 2 );
    if( ! logFile )
       return false;
+   return true;
 }
 
 template< typename Matrix >
@@ -177,6 +204,10 @@ double benchmarkMatrix( const Matrix& matrix,
    while( time < stopTime )
    {
       matrix.vectorProduct( x, b );
+#ifdef HAVE_CUDA
+      if( Matrix::DeviceType::DeviceType == tnlCudaDevice )
+         cudaThreadSynchronize();
+#endif
       time = timer.GetTime();
       iterations++;
    }
@@ -205,11 +236,11 @@ double benchmarkMatrix( const Matrix& matrix,
    return gflops;
 }
 
-void writeTestFailed( fstream& logFile )
+void writeTestFailed( fstream& logFile,
+                      int repeat )
 {
-   logFile << "N/A" << endl;
-   logFile << "N/A" << endl;
-   logFile << "N/A" << endl;
+   for( int i = 0; i < repeat; i++ )
+      logFile << "N/A" << endl;
 }
 
 template< typename Real >
@@ -230,9 +261,23 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
    {
       typedef tnlCSRMatrix< Real, tnlHost, int > CSRMatrixType;
       CSRMatrixType csrMatrix;
-      if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+      try
       {
-         cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+         if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+         {
+            cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
+            logFile << endl;
+            logFile << inputFileName << endl;
+            logFile << "Benchmark failed: Unable to read the matrix." << endl;
+            return false;
+         }
+      }
+      catch( std::bad_alloc )
+      {
+         cerr << "Not enough memory to read the matrix." << endl;
+         logFile << endl;
+         logFile << inputFileName << endl;
+         logFile << "Benchmark failed: Not enough memory." << endl;
          return false;
       }
       if( verbose )
@@ -275,134 +320,228 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                                                verbose,
                                                logFile );
 #ifdef HAVE_CUDA
-      writeTestFailed( logFile );
+      typedef tnlCSRMatrix< Real, tnlCuda, int > CSRMatrixCudaType;
+      CSRMatrixCudaType cudaCSRMatrix;
+      cout << "Copying matrix to GPU... ";
+      if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
+      {
+         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         writeTestFailed( logFile, 21 );
+      }
+      else
+      {
+         cout << " done.   \r";
+         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Scalar",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::vector );
+         cudaCSRMatrix.setCudaWarpSize( 1 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 1",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 2 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 2",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 4 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 4",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 8 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 8",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 16 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 16",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaWarpSize( 32 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Vector 32",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+      }
+      cudaCSRMatrix.reset();
 #endif
-      //csrMatrix.reset();
 
       long int allocatedElements;
       double padding;
       typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
       EllpackMatrixType ellpackMatrix;
-      ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-      logFile << "    " << padding << endl;
-      benchmarkMatrix( ellpackMatrix,
-                       hostX,
-                       hostB,
-                       nonzeroElements,
-                       "Ellpack Host",
-                       stopTime,
-                       baseline,
-                       verbose,
-                       logFile );
-#ifdef HAVE_CUDA
-      typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
-      EllpackMatrixCudaType cudaEllpackMatrix;
-      cout << "Copying matrix to GPU... ";
-      if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
-      {
-         cerr << "I am not able to transfer the matrix on GPU." << endl;
-         writeTestFailed( logFile );
-      }
+      if( ! ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+         writeTestFailed( logFile, 7 );
       else
       {
-         cout << " done.   \r";
-         benchmarkMatrix( cudaEllpackMatrix,
-                          cudaX,
-                          cudaB,
+         allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding << endl;
+         benchmarkMatrix( ellpackMatrix,
+                          hostX,
+                          hostB,
                           nonzeroElements,
-                          "Ellpack Cuda",
+                          "Ellpack Host",
                           stopTime,
                           baseline,
                           verbose,
                           logFile );
-      }
-      cudaEllpackMatrix.reset();
+#ifdef HAVE_CUDA
+         typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
+         EllpackMatrixCudaType cudaEllpackMatrix;
+         cout << "Copying matrix to GPU... ";
+         if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
+         {
+            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else
+         {
+            cout << " done.   \r";
+            benchmarkMatrix( cudaEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "Ellpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaEllpackMatrix.reset();
 #endif
-      ellpackMatrix.reset();
+         ellpackMatrix.reset();
+      }
 
       typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
       SlicedEllpackMatrixType slicedEllpackMatrix;
-      slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-      logFile << "    " << padding << endl;
-      benchmarkMatrix( slicedEllpackMatrix,
-                       hostX,
-                       hostB,
-                       nonzeroElements,
-                       "SlicedEllpack Host",
-                       stopTime,
-                       baseline,
-                       verbose,
-                       logFile );
-#ifdef HAVE_CUDA
-      typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
-      SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
-      cout << "Copying matrix to GPU... ";
-      if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
-      {
-         cerr << "I am not able to transfer the matrix on GPU." << endl;
-         writeTestFailed( logFile );
-      }
+      if( ! slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+         writeTestFailed( logFile, 7 );
       else
       {
-         cout << " done.   \r";
-         benchmarkMatrix( cudaSlicedEllpackMatrix,
-                          cudaX,
-                          cudaB,
+         allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding << endl;
+         benchmarkMatrix( slicedEllpackMatrix,
+                          hostX,
+                          hostB,
                           nonzeroElements,
-                          "SlicedEllpack Cuda",
+                          "SlicedEllpack Host",
                           stopTime,
                           baseline,
                           verbose,
                           logFile );
-      }
-      cudaSlicedEllpackMatrix.reset();
+#ifdef HAVE_CUDA
+         typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
+         SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
+         cout << "Copying matrix to GPU... ";
+         if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+         {
+            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else
+         {
+            cout << " done.   \r";
+            benchmarkMatrix( cudaSlicedEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "SlicedEllpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaSlicedEllpackMatrix.reset();
 #endif
-      slicedEllpackMatrix.reset();
+         slicedEllpackMatrix.reset();
+      }
 
       typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
-      chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost );
-      allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-      logFile << "    " << padding << endl;
-      benchmarkMatrix( chunkedEllpackMatrix,
-                       hostX,
-                       hostB,
-                       nonzeroElements,
-                       "ChunkedEllpack Host",
-                       stopTime,
-                       baseline,
-                       verbose,
-                       logFile );
-#ifdef HAVE_CUDA
-      typedef tnlChunkedEllpackMatrix< Real, tnlCuda, int > ChunkedEllpackMatrixCudaType;
-      ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
-      cout << "Copying matrix to GPU... ";
-      if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
-      {
-         cerr << "I am not able to transfer the matrix on GPU." << endl;
-         writeTestFailed( logFile );
-      }
+      if( ! chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+         writeTestFailed( logFile, 7 );
       else
       {
-         cout << " done.    \r";
-         benchmarkMatrix( cudaChunkedEllpackMatrix,
-                          cudaX,
-                          cudaB,
+         allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding << endl;
+         benchmarkMatrix( chunkedEllpackMatrix,
+                          hostX,
+                          hostB,
                           nonzeroElements,
-                          "ChunkedEllpack Cuda",
+                          "ChunkedEllpack Host",
                           stopTime,
                           baseline,
                           verbose,
                           logFile );
-      }
-      cudaChunkedEllpackMatrix.reset();
+#ifdef HAVE_CUDA
+         typedef tnlChunkedEllpackMatrix< Real, tnlCuda, int > ChunkedEllpackMatrixCudaType;
+         ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
+         cout << "Copying matrix to GPU... ";
+         if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
+         {
+            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else
+         {
+            cout << " done.    \r";
+            benchmarkMatrix( cudaChunkedEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "ChunkedEllpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaChunkedEllpackMatrix.reset();
 #endif
-      chunkedEllpackMatrix.reset();
+         chunkedEllpackMatrix.reset();
+      }
    }
 }
 

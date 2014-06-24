@@ -107,8 +107,9 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    //! Computes Y = alpha * X + Y.
    template< typename Vector >
-   void alphaXPlusY( const Real& alpha,
-                     const Vector& x );
+   void addVector( const Vector& x,
+                   const Real& alpha = 1.0,
+                   const Real& thisMultiplicator = 1.0 );
 
    //! Computes Y = alpha * X + beta * Y.
    template< typename Vector >

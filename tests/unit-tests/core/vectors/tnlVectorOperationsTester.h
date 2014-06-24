@@ -61,7 +61,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceSumTest", &tnlVectorOperationsTester::getVectorDifferenceSumTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorScalarMultiplicationTest", &tnlVectorOperationsTester::vectorScalarMultiplicationTest ) );
       suiteOfTests -> addTest( new TestCallerType( "getSclaraProductTest", &tnlVectorOperationsTester::getVectorScalarProductTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusYTest", &tnlVectorOperationsTester::alphaXPlusYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addVectorTest", &tnlVectorOperationsTester::addVectorTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaYTest", &tnlVectorOperationsTester::alphaXPlusBetaYTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZTest", &tnlVectorOperationsTester::alphaXPlusBetaZTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZPlusYTest", &tnlVectorOperationsTester::alphaXPlusBetaZPlusYTest ) );
@@ -311,7 +311,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getScalarProduct( u, v ) == 1.0 );
    }
 
-   void alphaXPlusYTest()
+   void addVectorTest()
    {
       const int size( 10000 );
       tnlVector< Real, Device > x, y;
@@ -319,7 +319,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       y.setSize( size );
       setLinearSequence( x );
       setOnesSequence( y );
-      tnlVectorOperations< Device >::alphaXPlusY( y, x, 3.0 );
+      tnlVectorOperations< Device >::addVector( y, x, 3.0 );
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );

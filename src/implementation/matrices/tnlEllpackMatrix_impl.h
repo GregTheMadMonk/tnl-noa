@@ -489,9 +489,10 @@ typename Vector::RealType tnlEllpackMatrix< Real, Device, Index >::rowVectorProd
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlEllpackMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                   Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlEllpackMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                                   OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -665,10 +666,11 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index,
-                typename Vector >
+                typename InVector,
+                typename OutVector >
       static void vectorProduct( const tnlEllpackMatrix< Real, Device, Index >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -716,10 +718,11 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index,
-                typename Vector >
+                typename InVector,
+                typename OutVector >
       static void vectorProduct( const tnlEllpackMatrix< Real, Device, Index >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          tnlMatrixVectorProductCuda( matrix, inVector, outVector );
       }

@@ -148,9 +148,10 @@ template< typename Vector >
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlEllpackMatrix< Real2, Device, Index2 >& matrix,

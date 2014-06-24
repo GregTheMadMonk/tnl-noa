@@ -21,6 +21,9 @@
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlMultidiagonalMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
@@ -148,9 +151,10 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
@@ -183,7 +187,6 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                          const IndexType column,
                          IndexType& index ) const;
 
-
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -194,6 +197,10 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    tnlVector< Real, Device, Index > values;
 
    tnlVector< Index, Device, Index > diagonalsShift;
+
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlMultidiagonalMatrixDeviceDependentCode< DeviceType >;
+
 
 };
 

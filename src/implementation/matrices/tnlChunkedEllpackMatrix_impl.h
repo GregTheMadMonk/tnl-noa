@@ -1098,9 +1098,10 @@ __device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVect
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                    Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlChunkedEllpackMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                                    OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -1295,10 +1296,11 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index,
-                typename Vector >
+                typename InVector,
+                typename OutVector >
       static void vectorProduct( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -1308,10 +1310,11 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
-          typename Vector >
+          typename InVector,
+          typename OutVector >
 __global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
-                                                                const Vector* inVector,
-                                                                Vector* outVector,
+                                                                const InVector* inVector,
+                                                                OutVector* outVector,
                                                                 int gridIdx )
 {
    const Index sliceIdx = gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x;
@@ -1359,18 +1362,19 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index, 
-                typename Vector >
+                typename InVector,
+                typename OutVector >
       static void vectorProduct( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
-                                 const Vector& inVector,
-                                 Vector& outVector )
+                                 const InVector& inVector,
+                                 OutVector& outVector )
       {
          #ifdef HAVE_CUDA
             typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > Matrix;
             typedef Index IndexType;
             typedef Real RealType;
             Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-            Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
-            Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
             dim3 cudaBlockSize( matrix.getNumberOfChunksInSlice() ),
                  cudaGridSize( tnlCuda::getMaxGridSize() );
             const IndexType cudaBlocks = matrix.getNumberOfSlices();
@@ -1381,7 +1385,7 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
             {
                if( gridIdx == cudaGrids - 1 )
                   cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-               tnlChunkedEllpackMatrixVectorProductCudaKernel< Real, Index, Vector >
+               tnlChunkedEllpackMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector >
                                                              <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
                                                              ( kernel_this,
                                                                kernel_inVector,
