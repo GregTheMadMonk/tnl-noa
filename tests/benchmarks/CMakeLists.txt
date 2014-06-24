@@ -2,10 +2,10 @@ ADD_SUBDIRECTORY( share )
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cu
-                         OPTIONS -arch sm_20 -shared )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
     CUDA_ADD_EXECUTABLE( tnl-benchmark-linear-solvers${debugExt} tnl-benchmark-linear-solvers.cu
-                         OPTIONS -arch sm_20 -shared )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
     SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )                    
 ELSE()
@@ -37,7 +37,7 @@ SET( tnlSpmvBenchmark_headers sparse-matrix-benchmark.h
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cu
-                         OPTIONS -arch sm_20 -shared )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     SET_TARGET_PROPERTIES( tnl-sparse-matrix-benchmark${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )        
 ELSE()
     ADD_EXECUTABLE( tnl-sparse-matrix-benchmark${debugExt} sparse-matrix-benchmark.cpp )
