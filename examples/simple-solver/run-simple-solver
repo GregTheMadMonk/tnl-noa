@@ -1,0 +1,21 @@
+#!/bin/bash
+
+tnl-grid-setup --dimensions 2 \
+               --origin-x 0.0 \
+               --origin-y 0.0 \
+               --proportions-x 1.0 \
+               --proportions-y 1.0 \
+               --size-x 100 \
+               --size-y 100
+               
+tnl-discrete --function sin-waves \
+             --output-file u-ini.tnl               
+
+simple-solver --dimensions 2 \
+              --time-discretisation explicit \
+              --discrete-solver merson \
+              --snapshot-period 0.01 \
+              --final-time 1.0
+              
+tnl-view --mesh mesh.tnl *tnl              
+              
