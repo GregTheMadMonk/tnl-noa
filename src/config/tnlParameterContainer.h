@@ -119,7 +119,7 @@ bool ParseCommandLine( int argc, char* argv[],
 template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
                                                                 const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, GetParameterType( value ). getString(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, ::getParameterType< T >(). getString(), value ) );
 };
 
 template< class T > bool tnlParameterContainer :: SetParameter( const char* name,

@@ -22,94 +22,83 @@
 #include <config/tnlParameterContainer.h>
 #include <core/mfuncs.h>
 
-//--------------------------------------------------------------------------
+
 tnlConfigDescription :: tnlConfigDescription()
+: currentEntry( 0 )
 {
 }
-//--------------------------------------------------------------------------
+
 tnlConfigDescription :: ~tnlConfigDescription()
 {
-   groups. DeepEraseAll();
    entries. DeepEraseAll();
 }
-//--------------------------------------------------------------------------
-void tnlConfigDescription :: AddGroup( const char* name,
-                                     const char* description )
-{
-   groups. Append( new tnlConfigGroup( name, description ) );
-}
-//--------------------------------------------------------------------------
-void tnlConfigDescription :: AddEntry( const char* name,
-                                     const tnlConfigEntryType& type,
-                                     const char* group,
-                                     const char* comment,
-                                     bool required )
-{
-   entries. Append( new tnlConfigEntryBase( name, type, group, comment, required ) );
-}
-//--------------------------------------------------------------------------
-const tnlConfigEntryType* tnlConfigDescription :: GetEntryType( const char* name ) const
+
+/*const tnlString tnlConfigDescription :: getEntryType( const char* name ) const
 {
    int i;
-   const int size = entries. getSize();
+   const int size = entries.getSize();
    for( i = 0; i < size; i ++ )
-      if( entries[ i ] -> name == name )
-         return &( entries[ i ] -> type );
-   return NULL;
-}
-//--------------------------------------------------------------------------
-void tnlConfigDescription :: PrintUsage( const char* program_name )
+      if( entries[ i ]->name == name )
+         return entries[ i ]->getEntryType();
+   return tnlString( "" );
+}*/
+
+void tnlConfigDescription::printUsage( const char* program_name )
 {
    cout << "Usage of: " << program_name << endl << endl;
    int i, j;
-   const int group_num = groups. getSize();
+   //const int group_num = groups. getSize();
    const int entries_num = entries. getSize();
-   for( i = 0; i < group_num; i ++ )
-   {
-      const char* group_name = groups[ i ] -> name. getString();
-      cout << groups[ i ] -> comment << endl;
-      int max_name_length( 0 );
-      int max_type_length( 0 );
-      for( j = 0; j < entries_num; j ++ )
-         if( entries[ j ] -> group == group_name )
-         {
-            max_name_length = Max( max_name_length, 
-                        entries[ j ] -> name. getLength() );
-            max_type_length = Max( max_type_length, 
-                        entries[ j ] -> type. basic_type. getLength() );
-         }
-            
-      for( j = 0; j < entries_num; j ++ )
+   int max_name_length( 0 );
+   int max_type_length( 0 );
+   for( j = 0; j < entries_num; j ++ )
+      if( ! entries[ j ]->isDelimiter() )
       {
-         if( entries[ j ] -> group == group_name )
-         {
-            cout << setw( max_name_length + 3 ) << entries[ j ] -> name 
-                 << setw( max_type_length + 5 ) << entries[ j ] -> type. basic_type   
-                 << "    " << entries[ j ] -> comment;
-            if( entries[ j ] -> has_default_value )
-            {
-               cout << " DEFAULT VALUE IS: ";
-               if( entries[ j ] -> type. basic_type == "string" )
-                  cout << ( ( tnlConfigEntry< tnlString >* ) entries[ j ] ) -> default_value;
-               if( entries[ j ] -> type. basic_type == "integer" )
-                  cout << ( ( tnlConfigEntry< int >* ) entries[ j ] ) -> default_value;
-               if( entries[ j ] -> type. basic_type == "real" )
-                  cout << ( ( tnlConfigEntry< double >* ) entries[ j ] ) -> default_value;
-               if( entries[ j ] -> type. basic_type == "bool" )
-                  if( ( ( tnlConfigEntry< bool >* ) entries[ j ] ) -> default_value )
-                     cout << "yes";
-                  else cout << "no";
-            }
-            if( entries[ j ] -> required )
-               cout << " REQUIRED."; 
-            cout << endl;
-         }
+         max_name_length = Max( max_name_length,
+                     entries[ j ] -> name. getLength() );
+         max_type_length = Max( max_type_length,
+                     entries[ j ] -> getUIEntryType().getLength() );
       }
-      cout << endl;
+   max_name_length += 2; // this is for '--'
+
+   for( j = 0; j < entries_num; j ++ )
+   {
+      if( entries[ j ]->isDelimiter() )
+      {
+         cout << endl;
+         cout << entries[ j ]->description;
+         cout << endl << endl;
+      }
+      else
+      {
+         cout << setw( max_name_length + 3 ) << tnlString( "--" ) + entries[ j ]->name
+              << setw( max_type_length + 5 ) << entries[ j ] -> getUIEntryType()
+              << "    " << entries[ j ]->description;
+         if( entries[ j ] -> required )
+            cout << " *** REQUIRED ***";
+         if( entries[ j ]->hasEnumValues() )
+         {
+            cout << endl
+                 << setw( max_name_length + 3 ) << ""
+                 << setw( max_type_length + 5 ) << ""
+                 << "    ";
+            entries[ j ]->printEnumValues();
+         }
+         if( entries[ j ]->hasDefaultValue )
+         {
+            cout << endl
+                 << setw( max_name_length + 3 ) << ""
+                 << setw( max_type_length + 5 ) << ""
+                 << "    ";
+            cout << "- Default value is: " << entries[ j ]->printDefaultValue();
+         }
+         cout << endl;
+      }
    }
+   cout << endl;
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription :: ParseConfigDescription( const char* file_name )
+bool tnlConfigDescription::parseConfigDescription( const char* file_name )
 {
    tnlConfigDescriptionParser parser;
    fstream in_file;
@@ -124,49 +113,49 @@ bool tnlConfigDescription :: ParseConfigDescription( const char* file_name )
    return true;
 }
 //--------------------------------------------------------------------------
-void tnlConfigDescription :: AddMissingEntries( tnlParameterContainer& parameter_container ) const
+void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter_container ) const
 {
    int i;
-   const int size = entries. getSize();
+   const int size = entries.getSize();
    for( i = 0; i < size; i ++ )
    {
-      const char* entry_name = entries[ i ] -> name. getString();
-      if( entries[ i ] -> has_default_value && 
-          ! parameter_container. CheckParameter( entry_name ) )
+      const char* entry_name = entries[ i ]->name.getString();
+      if( entries[ i ]->hasDefaultValue &&
+          ! parameter_container.CheckParameter( entry_name ) )
       {
-         if( entries[ i ] -> type. basic_type == "string" )
+         if( entries[ i ]->getEntryType() == "tnlString" )
          {
             parameter_container. AddParameter< tnlString >(
                entry_name,
-               ( ( tnlConfigEntry< tnlString >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< tnlString >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
-         if( entries[ i ] -> type. basic_type == "bool" )
+         if( entries[ i ]->getEntryType() == "bool" )
          {
             parameter_container. AddParameter< bool >(
                entry_name,
-               ( ( tnlConfigEntry< bool >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< bool >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
-         if( entries[ i ] -> type. basic_type == "integer" )
+         if( entries[ i ]->getEntryType() == "int" )
          {
             parameter_container. AddParameter< int >(
                entry_name,
-               ( ( tnlConfigEntry< int >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< int >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
-         if( entries[ i ] -> type. basic_type == "real" )
+         if( entries[ i ]->getEntryType() == "double" )
          {
             parameter_container. AddParameter< double >(
                entry_name,
-               ( ( tnlConfigEntry< double >* ) entries[ i ] ) -> default_value );
+               ( ( tnlConfigEntry< double >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
       }
    }
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription :: CheckMissingEntries( tnlParameterContainer& parameter_container ) const
+bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& parameter_container ) const
 {
    int i;
    const int size = entries. getSize();

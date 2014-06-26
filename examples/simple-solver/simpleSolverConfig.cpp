@@ -1,8 +1,8 @@
 /***************************************************************************
-                          main.cpp  -  description
+                          simpleSolverConfig.cpp  -  description
                              -------------------
-    begin                : Jan 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jun 25, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,10 +14,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#include "simple-solver-conf.h"
-#include "simpleProblemSetter.h"
-#include <solvers/tnlSolver.h>
 
 void configSetup( tnlConfigDecsription& config )
 {
@@ -50,13 +46,3 @@ void configSetup( tnlConfigDecsription& config )
    config.addEntry< int >( "verbose", "Set the verbose mode. The higher number the more messages are generated.", 1 );
    config.addEntry< tnlString >( "log-file", "File name for the log.", "simple-problem.log" );
 }
-
-int main( int argc, char* argv[] )
-{
-   tnlSolver< simpleProblemSetter > solver;
-   if( ! solver. run( CONFIG_FILE, argc, argv ) )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-}
-
-

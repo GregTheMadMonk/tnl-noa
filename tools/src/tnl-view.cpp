@@ -32,18 +32,45 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>*/
 
-#include "tnlConfig.h"
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-view.cfg.desc";
+void setupConfig( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addEntry        < tnlString >           ( "mesh", "Mesh file.", "mesh.tnl" );
+   config.addRequiredEntry< tnlList< tnlString > >( "input-files", "Input files." );
+   config.addEntry        < tnlList< tnlString > >( "output-files", "Output files." );
+   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", "false" );
+
+   config.addDelimiter( "Grid settings:");
+   config.addEntry        < tnlList< double > >   ( "level-lines", "List of level sets which will be drawn." );
+   config.addEntry        < int >                 ( "output-x-size", "X size of the output." );
+   config.addEntry        < int >                 ( "output-y-size", "Y size of the output." );
+   config.addEntry        < int >                 ( "output-z-size", "Z size of the output." );
+   config.addEntry        < double >              ( "scale", "Multiply the function by given number.", 1.0 );
+   config.addEntry        < tnlString >           ( "output-format", "Output file format.", "gnuplot" );
+      config.addEntryEnum  < tnlString >             ( "gnuplot" );
+      config.addEntryEnum  < tnlString >             ( "vti" );
+   config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );
+
+   config.addDelimiter( "Matrix settings:" );
+   config.addEntry        < tnlString >           ( "matrix-format", "Matrix format to be drawn." );
+      config.addEntryEnum  < tnlString >             ( "csr" );
+      config.addEntryEnum  < tnlString >             ( "ellpack" );
+      config.addEntryEnum  < tnlString >             ( "sliced-ellpack" );
+      config.addEntryEnum  < tnlString >             ( "chunked-ellpack" );
+   config.addEntry        < int >                 ( "matrix-slice-size", "Sets the slice size of the matrix.", 0 );
+   config.addEntry        < int >                 ( "desired-matrix-chunk-size", "Sets desired chunk size for the Chunked Ellpack format.");
+   config.addEntry        < int >                 ( "cuda-block-size", "Sets CUDA block size for the Chunked Ellpack format." );
+   config.addEntry       < bool >                 ( "sort-matrix", "Sort the matrix rows decreasingly by the number of the non-zero elements.", false );
+}
 
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
-      return 1;
+   setupConfig( conf_desc );
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
 

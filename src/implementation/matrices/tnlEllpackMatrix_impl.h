@@ -36,7 +36,7 @@ template< typename Real,
 tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlEllpackMatrix< ") +
-          tnlString( GetParameterType( Real( 0.0 ) ) ) +
+          tnlString( getParameterType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );

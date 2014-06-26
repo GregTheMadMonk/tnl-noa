@@ -24,11 +24,11 @@ bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: run( const char* confi
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( configFileName ) != 0 )
+   if( conf_desc.parseConfigDescription( configFileName ) != 0 )
       return false;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return false;
    }
    this -> verbose = parameters. GetParameter< int >( "verbose" );

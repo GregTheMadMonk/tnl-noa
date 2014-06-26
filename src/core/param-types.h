@@ -19,7 +19,6 @@
 #define param_typesH
 
 #include <core/tnlReal.h>
-#include <core/tnlList.h>
 #include <core/tnlString.h>
 
 template< typename T >

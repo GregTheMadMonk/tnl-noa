@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include "mpi-supp.h"
 
 using namespace :: std;
@@ -153,8 +154,20 @@ class tnlString
    friend ostream& operator << ( ostream& stream, const tnlString& str );
 };
 
-inline tnlString GetParameterType( const tnlString& ) { return tnlString( "tnlString" ); };
-
 ostream& operator << ( ostream& stream, const tnlString& str );
+
+template< typename T >
+tnlString convertToString( const T& value )
+{
+   std::stringstream str;
+   str << value;
+   return tnlString( str.str().data() );
+};
+
+template<> inline tnlString convertToString( const bool& b )
+{
+   if( b ) return "true";
+   return "false";
+}
 
 #endif

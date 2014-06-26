@@ -99,8 +99,8 @@ void tnlConfigDescriptionParser :: AddCurrentGroup()
 {
    //cout << "Adding group with ID " << current_group_name << 
    //        " and comment " << current_group_comment << endl;
-   config_description -> AddGroup( current_group_name. getString(),
-                                   current_group_comment. getString() );
+   /*config_description -> AddGroup( current_group_name. getString(),
+                                   current_group_comment. getString() );*/
    current_group_name. setString( 0 );
    current_group_comment. setString( 0 );
 }
@@ -130,11 +130,68 @@ void tnlConfigDescriptionParser :: SetCurrentEntryComment( const char* comment )
 //--------------------------------------------------------------------------
 void tnlConfigDescriptionParser :: AddCurrentEntry( bool required )
 {
-   config_description -> AddEntry( current_entry_name. getString(),
-                                   current_entry_type,
-                                   current_group_name. getString(),
-                                   current_entry_comment. getString(),
-                                   required );
+   if( current_entry_type.list_entry )
+   {
+      if( current_entry_type.basic_type == "string" )
+         if( required )
+            config_description->addRequiredEntry< tnlList< tnlString > >( current_entry_name.getString(),
+                                                                          current_entry_comment.getString() );
+         else
+            config_description->addEntry< tnlList< tnlString > >( current_entry_name.getString(),
+                                                                  current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "bool" )
+         if( required )
+            config_description->addRequiredEntry< tnlList< bool > >( current_entry_name.getString(),
+                                                                     current_entry_comment.getString() );
+         else
+            config_description->addEntry< tnlList< bool > >( current_entry_name.getString(),
+                                                             current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "integer" )
+         if( required )
+            config_description->addRequiredEntry< tnlList< int > >( current_entry_name.getString(),
+                                                                    current_entry_comment.getString() );
+         else
+            config_description->addEntry< tnlList< int > >( current_entry_name.getString(),
+                                                            current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "real" )
+         if( required )
+            config_description->addRequiredEntry< tnlList< double > >( current_entry_name.getString(),
+                                                                       current_entry_comment.getString() );
+         else
+            config_description->addEntry< tnlList< double > >( current_entry_name.getString(),
+                                                               current_entry_comment.getString() );
+   }
+   else
+   {
+      if( current_entry_type.basic_type == "string" )
+         if( required )
+            config_description->addRequiredEntry< tnlString >( current_entry_name.getString(),
+                                                       current_entry_comment.getString() );
+         else         
+            config_description->addEntry< tnlString >( current_entry_name.getString(),
+                                                       current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "bool" )
+         if( required )
+            config_description->addRequiredEntry< bool >( current_entry_name.getString(),
+                                                  current_entry_comment.getString() );
+         else         
+            config_description->addEntry< bool >( current_entry_name.getString(),
+                                                  current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "integer" )
+         if( required )
+            config_description->addRequiredEntry< int >( current_entry_name.getString(),
+                                                 current_entry_comment.getString() );
+         else         
+            config_description->addEntry< int >( current_entry_name.getString(),
+                                                 current_entry_comment.getString() );
+      if( current_entry_type.basic_type == "real" )
+         if( required )
+            config_description->addRequiredEntry< double >( current_entry_name.getString(),
+                                                    current_entry_comment.getString() );
+         else         
+            config_description->addEntry< double >( current_entry_name.getString(),
+                                                    current_entry_comment.getString() );
+   }
    current_entry_type. Reset();
 }
 //--------------------------------------------------------------------------
@@ -142,10 +199,8 @@ void tnlConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
 {
    if( current_entry_type. basic_type == "string" )
    {
-      config_description -> AddEntryWithDefaultValue(
+      config_description -> addEntry(
                                    current_entry_name. getString(),
-                                   current_entry_type,
-                                   current_group_name. getString(),
                                    current_entry_comment. getString(),
                                    string_default_value );
       current_entry_type. Reset();
@@ -153,10 +208,8 @@ void tnlConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
    }
    if( current_entry_type. basic_type == "integer" )
    {
-      config_description -> AddEntryWithDefaultValue(
+      config_description -> addEntry(
                                    current_entry_name. getString(),
-                                   current_entry_type,
-                                   current_group_name. getString(),
                                    current_entry_comment. getString(),
                                    integer_default_value );
       current_entry_type. Reset();
@@ -164,10 +217,8 @@ void tnlConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
    }
    if( current_entry_type. basic_type == "real" )
    {
-      config_description -> AddEntryWithDefaultValue(
+      config_description -> addEntry(
                                    current_entry_name. getString(),
-                                   current_entry_type,
-                                   current_group_name. getString(),
                                    current_entry_comment. getString(),
                                    real_default_value );
       current_entry_type. Reset();
@@ -175,10 +226,8 @@ void tnlConfigDescriptionParser :: AddCurrentEntryWithDefaultValue()
    }
    if( current_entry_type. basic_type == "bool" )
    {
-      config_description -> AddEntryWithDefaultValue(
+      config_description -> addEntry(
                                    current_entry_name. getString(),
-                                   current_entry_type,
-                                   current_group_name. getString(),
                                    current_entry_comment. getString(),
                                    bool_default_value );
       current_entry_type. Reset();
