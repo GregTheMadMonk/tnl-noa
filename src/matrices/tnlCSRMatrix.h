@@ -177,12 +177,31 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    int getCudaWarpSize() const;
 
+   void setHybridModeSplit( const IndexType hybridModeSplit );
+
 #ifdef HAVE_CUDA
-   template< typename Vector,
+   __device__ __host__
+#endif
+   IndexType getHybridModeSplit() const;
+
+#ifdef HAVE_CUDA
+
+   template< typename InVector,
+             typename OutVector,
              int warpSize >
    __device__
-   void vectorProductCuda( const Vector& inVector,
-                           Vector& outVector,
+   void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
+                                                                 OutVector& outVector,
+                                                                 const IndexType warpStart,
+                                                                 const IndexType warpEnd,
+                                                                 const IndexType inWarpIdx ) const;
+
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+   __device__
+   void vectorProductCuda( const InVector& inVector,
+                           OutVector& outVector,
                            int gridIdx ) const;
 #endif
 
@@ -192,7 +211,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    SPMVCudaKernel spmvCudaKernel;
 
-   int cudaWarpSize;
+   int cudaWarpSize, hybridModeSplit;
 
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;

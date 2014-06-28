@@ -27,8 +27,9 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlCSRMatrix< Real, Device, Index >::tnlCSRMatrix()
-: spmvCudaKernel( vector ),
-  cudaWarpSize( 32 ) //tnlCuda::getWarpSize() )
+: spmvCudaKernel( hybrid ),
+  cudaWarpSize( 32 ), //tnlCuda::getWarpSize() )
+  hybridModeSplit( 4 )
 {
 };
 
@@ -582,23 +583,40 @@ int tnlCSRMatrix< Real, Device, Index >::getCudaWarpSize() const
    return this->cudaWarpSize;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlCSRMatrix< Real, Device, Index >::setHybridModeSplit( const IndexType hybridModeSplit )
+{
+   this->hybridModeSplit = hybridModeSplit;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlCSRMatrix< Real, Device, Index >::getHybridModeSplit() const
+{
+   return this->hybridModeSplit;
+}
 
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector,
+   template< typename InVector,
+             typename OutVector,
              int warpSize >
 __device__
-void tnlCSRMatrix< Real, Device, Index >::vectorProductCuda( const Vector& inVector,
-                                                             Vector& outVector,
-                                                             int gridIdx ) const
+void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
+                                                              OutVector& outVector,
+                                                              const IndexType warpStart,
+                                                              const IndexType warpEnd,
+                                                              const IndexType inWarpIdx ) const
 {
    Real* aux = getSharedMemory< Real >();
-   IndexType globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType warpStart = warpSize * ( globalIdx / warpSize );
-   const IndexType warpEnd = Min( warpStart + warpSize, this->getRows() );
-   const IndexType inWarpIdx = globalIdx % warpSize;
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
@@ -628,6 +646,50 @@ void tnlCSRMatrix< Real, Device, Index >::vectorProductCuda( const Vector& inVec
          outVector[ row ] = aux[ threadIdx.x ];
    }
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+__device__
+void tnlCSRMatrix< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
+                                                             OutVector& outVector,
+                                                             int gridIdx ) const
+{
+   IndexType globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType warpStart = warpSize * ( globalIdx / warpSize );
+   const IndexType warpEnd = Min( warpStart + warpSize, this->getRows() );
+   const IndexType inWarpIdx = globalIdx % warpSize;
+
+   if( this->getCudaKernelType() == vector )
+      spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
+
+   /****
+    * Hybrid mode
+    */
+   const Index firstRow = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
+   const IndexType lastRow = Min( this->getRows(), firstRow + blockDim. x );
+   const IndexType nonzerosPerRow = ( this->rowPointers[ lastRow ] - this->rowPointers[ firstRow ] ) /
+                                    ( lastRow - firstRow );
+
+   if( nonzerosPerRow < this->getHybridModeSplit() )
+   {
+      /****
+       * Use the scalar mode
+       */
+      if( globalIdx < this->getRows() )
+          outVector[ globalIdx ] = this->rowVectorProduct( globalIdx, inVector );
+   }
+   else
+   {
+      /****
+       * Use the vector mode
+       */
+      spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
+   }
+}
 #endif
 
 template<>
@@ -654,11 +716,12 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
-          typename Vector,
+          typename InVector,
+          typename OutVector,
           int warpSize >
 __global__ void tnlCSRMatrixVectorProductCudaKernel( const tnlCSRMatrix< Real, tnlCuda, Index >* matrix,
-                                                     const Vector* inVector,
-                                                     Vector* outVector,
+                                                     const InVector* inVector,
+                                                     OutVector* outVector,
                                                      int gridIdx )
 {
    typedef tnlCSRMatrix< Real, tnlCuda, Index > Matrix;
@@ -669,26 +732,29 @@ __global__ void tnlCSRMatrixVectorProductCudaKernel( const tnlCSRMatrix< Real, t
       if( rowIdx < matrix->getRows() )
          ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
    }
-   if( matrix->getCudaKernelType() == Matrix::vector )
+   if( matrix->getCudaKernelType() == Matrix::vector ||
+       matrix->getCudaKernelType() == Matrix::hybrid )
    {
-      matrix->template vectorProductCuda< Vector, warpSize >( *inVector, *outVector, gridIdx );
+      matrix->template vectorProductCuda< InVector, OutVector, warpSize >
+                                        ( *inVector, *outVector, gridIdx );
    }
 }
 #endif
 
 template< typename Real,
           typename Index,
-          typename Vector >
+          typename InVector,
+          typename OutVector >
 void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& matrix,
-                                    const Vector& inVector,
-                                    Vector& outVector )
+                                    const InVector& inVector,
+                                    OutVector& outVector )
 {
 #ifdef HAVE_CUDA
    typedef tnlCSRMatrix< Real, tnlCuda, Index > Matrix;
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-   Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
-   Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
+   InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+   OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
    dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
    const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
@@ -698,42 +764,42 @@ void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& 
          cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
       const int sharedMemory = cudaBlockSize.x * sizeof( Real );
       if( matrix.getCudaWarpSize() == 32 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 32 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 32 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 16 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 16 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 16 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 8 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 8 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 8 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 4 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 4 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 4 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 2 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 2 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 2 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 1 )
-         tnlCSRMatrixVectorProductCudaKernel< Real, Index, Vector, 1 >
+         tnlCSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 1 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,

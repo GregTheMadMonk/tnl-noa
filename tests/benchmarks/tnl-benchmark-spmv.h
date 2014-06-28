@@ -66,27 +66,52 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "#   Warp Size 1" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-1-cuda-speedup.txt" << endl;
       logFile << "#   Warp Size 2" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-2-cuda-speedup.txt" << endl;
       logFile << "#   Warp Size 4" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-4-cuda-speedup.txt" << endl;
       logFile << "#   Warp Size 8" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-8-cuda-speedup.txt" << endl;
       logFile << "#   Warp Size 16" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-16-cuda-speedup.txt" << endl;
       logFile << "#   Warp Size 32" << endl;
       logFile << "#    Gflops" << endl;
       logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-cuda-speedup.txt" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-32-cuda-speedup.txt" << endl;
+      logFile << "#  Hybrid" << endl;
+      logFile << "#   Split 2" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-2-cuda-speedup.txt" << endl;
+      logFile << "#   Split 4" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-4-cuda-speedup.txt" << endl;
+      logFile << "#   Split 8" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-8-cuda-speedup.txt" << endl;
+      logFile << "#   Split 16" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-16-cuda-speedup.txt" << endl;
+      logFile << "#   Split 32" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-32-cuda-speedup.txt" << endl;
+      logFile << "#   Split 64" << endl;
+      logFile << "#    Gflops" << endl;
+      logFile << "#    Throughput" << endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-64-cuda-speedup.txt" << endl;
 #endif
       logFile << "#Ellpack Format" << endl;
       logFile << "# Padding (in %)" << paddingColoring << endl;
@@ -398,6 +423,67 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           cudaB,
                           nonzeroElements,
                           "CSR Cuda Vector 32",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::hybrid );
+         cudaCSRMatrix.setHybridModeSplit( 2 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 2",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setHybridModeSplit( 4 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 4",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setHybridModeSplit( 8 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 8",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setHybridModeSplit( 16 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 16",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setHybridModeSplit( 32 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 32",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cudaCSRMatrix.setHybridModeSplit( 64 );
+         benchmarkMatrix( cudaCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "CSR Cuda Hyrbid 64",
                           stopTime,
                           baseline,
                           verbose,
