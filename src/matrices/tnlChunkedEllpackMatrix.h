@@ -62,6 +62,9 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef tnlChunkedEllpackMatrix< Real, Device, Index > ThisType;
+   typedef tnlChunkedEllpackMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > CudaType;
 
    tnlChunkedEllpackMatrix();
 
@@ -184,9 +187,10 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                                                const Vector& vector ) const;
 
 #ifdef HAVE_CUDA
-   template< typename Vector >
-   __device__ void computeSliceVectorProduct( const Vector* inVector,
-                                              Vector* outVector,
+   template< typename InVector,
+             typename OutVector >
+   __device__ void computeSliceVectorProduct( const InVector* inVector,
+                                              OutVector* outVector,
                                               int gridIdx  ) const;
 #endif
 

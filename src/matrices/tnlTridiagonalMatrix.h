@@ -36,6 +36,9 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
    typedef tnlTridiagonalMatrix< Real, Device, Index > ThisType;
+   typedef tnlTridiagonalMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlTridiagonalMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlTridiagonalMatrix();
 

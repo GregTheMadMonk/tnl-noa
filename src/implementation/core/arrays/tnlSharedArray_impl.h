@@ -409,16 +409,18 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-extern template class tnlSharedArray< float, tnlHost, int >;
+// TODO: this does not work with CUDA 5.5 - fix it later
+
+/*extern template class tnlSharedArray< float, tnlHost, int >;
 extern template class tnlSharedArray< double, tnlHost, int >;
 extern template class tnlSharedArray< float, tnlHost, long int >;
-extern template class tnlSharedArray< double, tnlHost, long int >;
+extern template class tnlSharedArray< double, tnlHost, long int >;*/
 
 #ifdef HAVE_CUDA
-extern template class tnlSharedArray< float, tnlCuda, int >;
+/*extern template class tnlSharedArray< float, tnlCuda, int >;
 extern template class tnlSharedArray< double, tnlCuda, int >;
 extern template class tnlSharedArray< float, tnlCuda, long int >;
-extern template class tnlSharedArray< double, tnlCuda, long int >;
+extern template class tnlSharedArray< double, tnlCuda, long int >;*/
 #endif
 
 #endif

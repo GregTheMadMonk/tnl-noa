@@ -33,6 +33,10 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef tnlCSRMatrix< Real, Device, Index > ThisType;
+   typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
+
 
    enum SPMVCudaKernel { scalar, vector, hybrid };
 

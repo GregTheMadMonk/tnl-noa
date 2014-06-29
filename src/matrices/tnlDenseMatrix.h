@@ -37,6 +37,9 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
+   typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlDenseMatrix();
 

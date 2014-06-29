@@ -1062,9 +1062,10 @@ typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::chunkV
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-__device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVectorProduct( const Vector* inVector,
-                                                                                           Vector* outVector,
+   template< typename InVector,
+             typename OutVector >
+__device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVectorProduct( const InVector* inVector,
+                                                                                           OutVector* outVector,
                                                                                            int sliceIdx  ) const
 {
    tnlStaticAssert( DeviceType::DeviceType == tnlCudaDevice, );

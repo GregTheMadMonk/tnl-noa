@@ -45,13 +45,22 @@ bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              Matrix& matrix,
                                              bool verbose )
 {
+   return tnlMatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
+                                                       Matrix& matrix,
+                                                       typename Matrix::RowLengthsVector& rowLengths,
+                                                       bool verbose )
+{
    IndexType rows, columns;
    bool symmetricMatrix( false );
 
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
       return false;
 
-   tnlVector< int, tnlHost, int > rowLengths;
+
    if( ! matrix.setDimensions( rows, columns ) ||
        ! rowLengths.setSize( rows ) )
    {
@@ -370,6 +379,48 @@ bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const tnlString& line,
    value = ( RealType ) atof( parsedLine[ 2 ].getString() );
    return true;
 }
+
+template<>
+class tnlMatrixReaderDeviceDependentCode< tnlHost >
+{
+   public:
+
+   template< typename Matrix >
+   static bool readMtxFile( std::istream& file,
+                            Matrix& matrix,
+                            bool verbose )
+   {
+      typename Matrix::RowLengthsVector rowLengths;
+      return tnlMatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
+   }
+};
+
+template<>
+class tnlMatrixReaderDeviceDependentCode< tnlCuda >
+{
+   public:
+
+   template< typename Matrix >
+   static bool readMtxFile( std::istream& file,
+                            Matrix& matrix,
+                            bool verbose )
+   {
+      typedef typename Matrix::HostType HostMatrixType;
+      typedef typename HostMatrixType::RowLengthsVector RowLengthsVector;
+
+      HostMatrixType hostMatrix;
+      RowLengthsVector rowLengthsVector;
+      if( ! tnlMatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
+         return false;
+
+      typename Matrix::RowLengthsVector cudaRowLengthsVector;
+      cudaRowLengthsVector.setLike( rowLengthsVector );
+      cudaRowLengthsVector = rowLengthsVector;
+      if( ! matrix.copyFrom( hostMatrix, cudaRowLengthsVector ) )
+         return false;
+      return true;
+   }
+};
 
 
 #endif /* TNLMATRIXREADER_IMPL_H_ */

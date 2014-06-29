@@ -34,6 +34,9 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
+#include <solvers/linear/krylov/tnlCGSolver.h>
+#include <solvers/linear/krylov/tnlBICGStabSolver.h>
+#include <solvers/linear/krylov/tnlTFQMRSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 
@@ -119,6 +122,15 @@ bool resolveLinearSolver( const tnlParameterContainer& parameters )
    if( solver == "gmres" )
       return benchmarkSolver< tnlGMRESSolver< Matrix > >( parameters, matrix );
 
+   if( solver == "cg" )
+      return benchmarkSolver< tnlCGSolver< Matrix > >( parameters, matrix );
+
+   if( solver == "bicgstab" )
+      return benchmarkSolver< tnlBICGStabSolver< Matrix > >( parameters, matrix );
+
+   if( solver == "tfqmr" )
+      return benchmarkSolver< tnlTFQMRSolver< Matrix > >( parameters, matrix );
+
    cerr << "Unknown solver " << solver << "." << endl;
    return false;
 }
@@ -162,8 +174,8 @@ bool resolveDevice( const tnlParameterContainer& parameters )
    if( device == "host" )
       return resolveMatrixFormat< Real, tnlHost >( parameters );
 
-   //if( device == "cuda" )
-   //   return resolveMatrixFormat< Real, tnlCuda >( parameters );
+   if( device == "cuda" )
+      return resolveMatrixFormat< Real, tnlCuda >( parameters );
 
    cerr << "Uknown device " << device << "." << endl;
    return false;

@@ -54,6 +54,9 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef tnlSlicedEllpackMatrix< Real, Device, Index > ThisType;
+   typedef tnlSlicedEllpackMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlSlicedEllpackMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlSlicedEllpackMatrix();
 

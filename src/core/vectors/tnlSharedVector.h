@@ -143,20 +143,4 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
 #include <implementation/core/vectors/tnlSharedVector_impl.h>
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-extern template class tnlSharedVector< float, tnlHost, int >;
-extern template class tnlSharedVector< double, tnlHost, int >;
-extern template class tnlSharedVector< float, tnlHost, long int >;
-extern template class tnlSharedVector< double, tnlHost, long int >;
-
-#ifdef HAVE_CUDA
-extern template class tnlSharedVector< float, tnlCuda, int >;
-extern template class tnlSharedVector< double, tnlCuda, int >;
-extern template class tnlSharedVector< float, tnlCuda, long int >;
-extern template class tnlSharedVector< double, tnlCuda, long int >;
-#endif
-
-#endif
-
 #endif /* TNLSHAREDVECTOR_H_ */

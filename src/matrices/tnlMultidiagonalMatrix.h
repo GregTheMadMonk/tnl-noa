@@ -34,6 +34,9 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
    typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
+   typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlMultidiagonalMatrix();
 

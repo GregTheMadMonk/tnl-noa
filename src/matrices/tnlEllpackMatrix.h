@@ -36,6 +36,9 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef tnlEllpackMatrix< Real, Device, Index > ThisType;
+   typedef tnlEllpackMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlEllpackMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlEllpackMatrix();
 

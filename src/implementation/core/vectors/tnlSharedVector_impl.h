@@ -372,4 +372,22 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const 
    tnlVectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlSharedVector< float, tnlHost, int >;
+extern template class tnlSharedVector< double, tnlHost, int >;
+extern template class tnlSharedVector< float, tnlHost, long int >;
+extern template class tnlSharedVector< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+// TODO: fix this - it does not work with CUDA 5.5
+/*extern template class tnlSharedVector< float, tnlCuda, int >;
+extern template class tnlSharedVector< double, tnlCuda, int >;
+extern template class tnlSharedVector< float, tnlCuda, long int >;
+extern template class tnlSharedVector< double, tnlCuda, long int >;*/
+#endif
+
+#endif
+
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */
