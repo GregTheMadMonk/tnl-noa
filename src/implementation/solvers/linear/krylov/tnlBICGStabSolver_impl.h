@@ -165,7 +165,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getMaxResidue() ) return false;
+      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 
