@@ -200,16 +200,19 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( c
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr += step;
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes[ elementPtr ] ) < column &&
+          col != this->getPaddingIndex() ) elementPtr += step;
    if( elementPtr == rowEnd )
       return false;
-   if( this->columnIndexes[ elementPtr ] == column )
+   if( col == column )
    {
       this->values[ elementPtr ] = thisElementMultiplicator * this->values[ elementPtr ] + value;
       return true;
    }
    else
-      if( this->columnIndexes[ elementPtr ] == this->columns )
+      if( col == this->getPaddingIndex() )
       {
          this->columnIndexes[ elementPtr ] = column;
          this->values[ elementPtr ] = value;
@@ -250,16 +253,19 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
-   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column ) elementPtr += step;
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
+          col != this->getPaddingIndex() ) elementPtr += step;
    if( elementPtr == rowEnd )
       return false;
-   if( this->columnIndexes.getElement( elementPtr ) == column )
+   if( col == column )
    {
       this->values.setElement( elementPtr, thisElementMultiplicator * this->values.getElement( elementPtr ) + value );
       return true;
    }
    else
-      if( this->columnIndexes.getElement( elementPtr ) == this->columns )
+      if( col == this->getPaddingIndex() )
       {
          this->columnIndexes.setElement( elementPtr, column );
          this->values.setElement( elementPtr, value );
@@ -312,7 +318,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRowFast( con
    }
    for( IndexType i = elements; i < rowLength; i++ )
    {
-      this->columnIndexes[ elementPointer ] = this->getColumns();
+      this->columnIndexes[ elementPointer ] = this->getPaddingIndex();
       elementPointer += step;
    }
    return true;
@@ -346,7 +352,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRow( const I
    }
    for( IndexType i = elements; i < rowLength; i++ )
    {
-      this->columnIndexes.setElement( elementPointer, this->getColumns() );
+      this->columnIndexes.setElement( elementPointer, this->getPaddingIndex() );
       elementPointer += step;
    }
    return true;
@@ -396,9 +402,12 @@ Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElementFast( c
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes[ elementPtr ] ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr += step;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
+   if( elementPtr < rowEnd && col == column )
       return this->values[ elementPtr ];
    return 0.0;
 }
@@ -414,9 +423,12 @@ Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
-   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column )
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr += step;
-   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+   if( elementPtr < rowEnd && col == column )
       return this->values.getElement( elementPtr );
    return 0.0;
 }
@@ -479,9 +491,11 @@ typename Vector::RealType tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
+   IndexType column;
+   while( elementPtr < rowEnd &&
+          ( column = this->columnIndexes[ elementPtr ] ) < this->columns &&
+          column != this->getPaddingIndex() )
    {
-      const Index column = this->columnIndexes[ elementPtr ];
       result += this->values[ elementPtr ] * vector[ column ];
       elementPtr += step;
    }
@@ -625,7 +639,9 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
       IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
                              rowLength * ( row - sliceIdx * SliceSize );
       const IndexType rowEnd( elementPtr + rowLength );
-      while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < this->columns )
+      while( elementPtr < rowEnd &&
+             this->columnIndexes.getElement( elementPtr ) < this->columns &&
+             this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
       {
          const Index column = this->columnIndexes.getElement( elementPtr );
          str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";

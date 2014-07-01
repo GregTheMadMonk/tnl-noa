@@ -455,7 +455,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunkFast( cons
                                            step );
    IndexType col;
    while( elementPtr < chunkEnd &&
-          ( col = this->columnIndexes[ elementPtr ] ) < column )
+          ( col = this->columnIndexes[ elementPtr ] ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr += step;
 
    if( col == column )
@@ -478,7 +479,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunkFast( cons
    IndexType elementColumn( column );
    RealType elementValue( value );
    bool chunkOverflow( false );
-   if( ( col = this->columnIndexes[ i ] ) < this->getColumns() )
+   if( ( col = this->columnIndexes[ i ] ) != this->getPaddingIndex() )
    {
       chunkOverflow = true;
       column = col;
@@ -551,7 +552,8 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunk( const In
                                            step );
    IndexType col;
    while( elementPtr < chunkEnd &&
-          ( col = this->columnIndexes.getElement( elementPtr ) ) < column )
+          ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr += step;
    if( col == column )
    {
@@ -573,7 +575,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunk( const In
    IndexType elementColumn( column );
    RealType elementValue( value );
    bool chunkOverflow( false );
-   if( ( col = this->columnIndexes.getElement( i ) ) < this->getColumns() )
+   if( ( col = this->columnIndexes.getElement( i ) ) != this->getPaddingIndex() )
    {
       chunkOverflow = true;
       column = col;
@@ -667,7 +669,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunkFast( const IndexTy
    }
    while( i < chunkSize )
    {
-      this->columnIndexes[ elementPtr ] = this->getColumns();
+      this->columnIndexes[ elementPtr ] = this->getPaddingIndex();
       elementPtr += step;
       i++;
    }
@@ -742,7 +744,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunk( const IndexType s
    }
    while( i < chunkSize )
    {
-      this->columnIndexes.setElement( elementPtr, this->getColumns() );
+      this->columnIndexes.setElement( elementPtr, this->getPaddingIndex() );
       elementPtr += step;
       i++;
    }
@@ -819,7 +821,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunkFast( cons
       const IndexType col = this->columnIndexes[ elementPtr ];
       if( col == column )
          value = this->values[ elementPtr ];
-      if( col >= column )
+      if( col >= column || col == this->getPaddingIndex() )
          return true;
       elementPtr += step;
    }
@@ -872,7 +874,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunk( const In
       const IndexType col = this->columnIndexes.getElement( elementPtr );
       if( col == column )
          value = this->values.getElement( elementPtr );
-      if( col >= column )
+      if( col >= column || col == this->getPaddingIndex() )
          return true;
       elementPtr += step;
    }
@@ -1048,7 +1050,7 @@ typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::chunkV
                                            step );
    IndexType i( 0 ), col;
    typename Vector::RealType result( 0.0 );
-   while( i < chunkSize && ( col = this->columnIndexes[ elementPtr ] ) < this->getColumns() )
+   while( i < chunkSize && ( col = this->columnIndexes[ elementPtr ] ) != this->getPaddingIndex() )
    {
       result += this->values[ elementPtr ] * vector[ col ];
       i++;
@@ -1233,7 +1235,9 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
       IndexType elementPtr = rowPointers.getElement( row );
       const IndexType rowEnd = rowPointers.getElement( row + 1 );
 
-      while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < this->columns )
+      while( elementPtr < rowEnd &&
+             this->columnIndexes.getElement( elementPtr ) < this->columns &&
+             this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
       {
          const Index column = this->columnIndexes.getElement( elementPtr );
          str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";

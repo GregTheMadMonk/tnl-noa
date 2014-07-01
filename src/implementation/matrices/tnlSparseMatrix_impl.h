@@ -63,6 +63,17 @@ Index tnlSparseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements()
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlSparseMatrix< Real, Device, Index >::getPaddingIndex() const
+{
+   return this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlSparseMatrix< Real, Device, Index >::reset()
 {
    tnlMatrix< Real, Device, Index >::reset();

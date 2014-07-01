@@ -43,6 +43,11 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfNonzeroMatrixElements() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getPaddingIndex() const;
+
    void reset();
 
    bool save( tnlFile& file ) const;

@@ -48,7 +48,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
-        set(CUDA_SEPARABLE_COMPILATION ON)
+        set(CUDA_SEPARABLE_COMPILATION ON)      
         
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
         if( CUDA_ARCHITECTURE STREQUAL "2.0" )
@@ -101,6 +101,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
+        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
@@ -112,18 +113,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
                message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
                set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-           endif() 
-           
-           string( REPLACE "/include" "" CUSPARSE_LINK_DIR_HINT ${CUSPARSE_INCLUDE_DIR} )           
-           find_library( CUSPARSE_LIBRARY
-                         NAME cusparse 
-                         HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
-                         DOC "CUSPARSE library" )                                                                  
-           if( ${CUSPARSE_LIBRARY} STREQUAL "CUSPARSE_LIBRARY-NOTFOUND" )
-               message( "Cannot find CUSPARSE library." )
-           endif()    
-           string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
-           link_directories( ${CUSPARSE_LINK_DIRECTORY} )
+           endif()            
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
             
     endif( CUDA_FOUND )

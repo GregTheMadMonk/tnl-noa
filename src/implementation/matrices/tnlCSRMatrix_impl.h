@@ -168,16 +168,19 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
 
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column ) elementPtr++;
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes[ elementPtr ] ) < column &&
+          col != this->getPaddingIndex() ) elementPtr++;
    if( elementPtr == rowEnd )
       return false;
-   if( this->columnIndexes[ elementPtr ] == column )
+   if( col == column )
    {
       this->values[ elementPtr ] = thisElementMultiplicator * this->values[ elementPtr ] + value;
       return true;
    }
    else
-      if( this->columnIndexes[ elementPtr ] == this->columns )
+      if( col == this->getPaddingIndex() )
       {
          this->columnIndexes[ elementPtr ] = column;
          this->values[ elementPtr ] = value;
@@ -216,16 +219,19 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
 
     IndexType elementPtr = this->rowPointers.getElement( row );
     const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
-    while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column ) elementPtr++;
+    IndexType col;
+    while( elementPtr < rowEnd &&
+           ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
+           col != this->getPaddingIndex() ) elementPtr++;
     if( elementPtr == rowEnd )
        return false;
-    if( this->columnIndexes.getElement( elementPtr ) == column )
+    if( col == column )
     {
        this->values.setElement( elementPtr, thisElementMultiplicator * this->values.getElement( elementPtr ) + value );
        return true;
     }
     else
-       if( this->columnIndexes.getElement( elementPtr ) == this->columns )
+       if( col == this->getPaddingIndex() )
        {
           this->columnIndexes.setElement( elementPtr, column );
           this->values.setElement( elementPtr, value );
@@ -270,7 +276,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
       elementPointer++;
    }
    for( IndexType i = elements; i < rowLength; i++ )
-      this->columnIndexes[ elementPointer++ ] = this->getColumns();
+      this->columnIndexes[ elementPointer++ ] = this->getPaddingIndex();
    return true;
 }
 
@@ -294,7 +300,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
       elementPointer++;
    }
    for( IndexType i = elements; i < rowLength; i++ )
-      this->columnIndexes.setElement( elementPointer++, this->getColumns() );
+      this->columnIndexes.setElement( elementPointer++, this->getPaddingIndex() );
    return true;
 }
 
@@ -337,9 +343,12 @@ Real tnlCSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
 {
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < column )
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes[ elementPtr ] ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr++;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
+   if( elementPtr < rowEnd && col == column )
       return this->values[ elementPtr ];
    return 0.0;
 }
@@ -352,9 +361,12 @@ Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
 {
    IndexType elementPtr = this->rowPointers.getElement( row );
    const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
-   while( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) < column )
+   IndexType col;
+   while( elementPtr < rowEnd &&
+          ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
+          col != this->getPaddingIndex() )
       elementPtr++;
-   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+   if( elementPtr < rowEnd && col == column )
       return this->values.getElement( elementPtr );
    return 0.0;
 }
@@ -409,11 +421,11 @@ typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct(
    Real result = 0.0;
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
-   {
-      const Index column = this->columnIndexes[ elementPtr ];
+   IndexType column;
+   while( elementPtr < rowEnd &&
+          ( column = this->columnIndexes[ elementPtr ] ) < this->columns &&
+          column != this->getPaddingIndex() )
       result += this->values[ elementPtr++ ] * vector[ column ];
-   }
    return result;
 }
 
@@ -538,12 +550,11 @@ void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
       str <<"Row: " << row << " -> ";
       IndexType elementPtr = this->rowPointers[ row ];
       const IndexType rowEnd = this->rowPointers[ row + 1 ];
-      while( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] < this->columns )
-      {
-         const Index column = this->columnIndexes.getElement( elementPtr );
-         str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
-         elementPtr++;
-      }
+      IndexType column;
+      while( elementPtr < rowEnd &&
+             ( column = this->columnIndexes.getElement( elementPtr ) ) < this->columns &&
+             column != this->getPaddingIndex() )
+         str << " Col:" << column << "->" << this->values.getElement( elementPtr++ ) << "\t";
       str << endl;
    }
 }
