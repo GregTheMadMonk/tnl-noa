@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Real >
+class tnlCusparseCSRMatrix;
+
 template< typename Device >
 class tnlCSRMatrixDeviceDependentCode;
 
@@ -219,6 +222,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;
+   friend class tnlCusparseCSRMatrix< RealType >;
 
 };
 

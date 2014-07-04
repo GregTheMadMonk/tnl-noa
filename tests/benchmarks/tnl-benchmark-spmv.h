@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iomanip>
 #include <unistd.h>
+#include <cusparse.h>
 
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
@@ -30,6 +31,7 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <core/tnlTimerRT.h>
+#include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
 
@@ -57,6 +59,10 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
       logFile << "#  Throughput" << endl;
       logFile << "#  Speedup" << speedupColoring << endl;
 #ifdef HAVE_CUDA
+      logFile << "# Cusparse CSR" << endl;
+      logFile << "#  Gflops" << endl;
+      logFile << "#  Throughput" << endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - cusparse-csr-speedup.txt" << endl;
       logFile << "# CUDA" << endl;
       logFile << "#  Scalar" << endl;
       logFile << "#   Gflops" << endl;
@@ -334,6 +340,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       cudaB.setSize( csrMatrix.getRows() );
       rowLengthsCuda.setSize( csrMatrix.getRows() );
       rowLengthsCuda = rowLengthsHost;
+      cusparseHandle_t cusparseHandle;
+      cusparseCreate( &cusparseHandle );
 #endif
       const double baseline = benchmarkMatrix( csrMatrix,
                                                hostX,
@@ -347,7 +355,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 #ifdef HAVE_CUDA
       typedef tnlCSRMatrix< Real, tnlCuda, int > CSRMatrixCudaType;
       CSRMatrixCudaType cudaCSRMatrix;
-      cout << "Copying matrix to GPU... ";
+      //cout << "Copying matrix to GPU... ";
       if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
       {
          cerr << "I am not able to transfer the matrix on GPU." << endl;
@@ -355,6 +363,19 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       }
       else
       {
+         tnlCusparseCSRMatrix< Real > cusparseCSRMatrix;
+         cusparseCSRMatrix.init( cudaCSRMatrix, &cusparseHandle );
+         benchmarkMatrix( cusparseCSRMatrix,
+                          cudaX,
+                          cudaB,
+                          nonzeroElements,
+                          "Cusparse CSR",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         cusparseDestroy( cusparseHandle );
+
          cout << " done.   \r";
          cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
          benchmarkMatrix( cudaCSRMatrix,

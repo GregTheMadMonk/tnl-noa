@@ -48,7 +48,8 @@ if( NOT WITH_CUDA STREQUAL "no" )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
-        set(CUDA_SEPARABLE_COMPILATION ON)      
+        set(CUDA_SEPARABLE_COMPILATION ON)
+        set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this      
         
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
         if( CUDA_ARCHITECTURE STREQUAL "2.0" )
@@ -82,7 +83,8 @@ if( NOT WITH_CUDA STREQUAL "no" )
             set( CUDA_ADD_LIBRARY_OPTIONS -arch sm_35 -shared )                       
         endif()    
             
-    
+       set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" )
+       set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" -shared )
         ####
         # Check for CUSP
         #
