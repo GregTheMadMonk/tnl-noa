@@ -211,27 +211,22 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( c
       this->values[ elementPtr ] = thisElementMultiplicator * this->values[ elementPtr ] + value;
       return true;
    }
-   else
-      if( col == this->getPaddingIndex() )
-      {
-         this->columnIndexes[ elementPtr ] = column;
-         this->values[ elementPtr ] = value;
-         return true;
-      }
-      else
-      {
-         IndexType j = rowEnd - step;
-         while( j > elementPtr )
-         {
-            this->columnIndexes[ j ] = this->columnIndexes[ j - step ];
-            this->values[ j ] = this->values[ j - step ];
-            j -= step;
-         }
-         this->columnIndexes[ elementPtr ] = column;
-         this->values[ elementPtr ] = value;
-         return true;
-      }
-   return false;
+   if( col == this->getPaddingIndex() )
+   {
+      this->columnIndexes[ elementPtr ] = column;
+      this->values[ elementPtr ] = value;
+      return true;
+   }
+   IndexType j = rowEnd - step;
+   while( j > elementPtr )
+   {
+      this->columnIndexes[ j ] = this->columnIndexes[ j - step ];
+      this->values[ j ] = this->values[ j - step ];
+      j -= step;
+   }
+   this->columnIndexes[ elementPtr ] = column;
+   this->values[ elementPtr ] = value;
+   return true;
 }
 
 template< typename Real,
@@ -264,27 +259,22 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const
       this->values.setElement( elementPtr, thisElementMultiplicator * this->values.getElement( elementPtr ) + value );
       return true;
    }
-   else
-      if( col == this->getPaddingIndex() )
-      {
-         this->columnIndexes.setElement( elementPtr, column );
-         this->values.setElement( elementPtr, value );
-         return true;
-      }
-      else
-      {
-         IndexType j = rowEnd - step;
-         while( j > elementPtr )
-         {
-            this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - step ) );
-            this->values.setElement( j, this->values.getElement( j - step ) );
-            j -= step;
-         }
-         this->columnIndexes.setElement( elementPtr, column );
-         this->values.setElement( elementPtr, value );
-         return true;
-      }
-   return false;
+   if( col == this->getPaddingIndex() )
+   {
+      this->columnIndexes.setElement( elementPtr, column );
+      this->values.setElement( elementPtr, value );
+      return true;
+   }
+   IndexType j = rowEnd - step;
+   while( j > elementPtr )
+   {
+      this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - step ) );
+      this->values.setElement( j, this->values.getElement( j - step ) );
+      j -= step;
+   }
+   this->columnIndexes.setElement( elementPtr, column );
+   this->values.setElement( elementPtr, value );
+   return true;
 }
 
 template< typename Real,
@@ -592,6 +582,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& fi
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
        ! this->slicePointers.save( file ) ||
        ! this->sliceRowLengths.save( file ) )
+      return false;
    return true;
 }
 
@@ -604,6 +595,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& fi
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
        ! this->slicePointers.load( file ) ||
        ! this->sliceRowLengths.load( file ) )
+      return false;
    return true;
 }
 
