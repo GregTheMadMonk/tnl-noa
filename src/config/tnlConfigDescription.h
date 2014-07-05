@@ -97,6 +97,12 @@ class tnlConfigDescription
       ( ( tnlConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
    }
 
+   void addEntryEnum( const char* entryEnum )
+   {
+      tnlAssert( this->currentEntry,);
+      ( ( tnlConfigEntry< tnlString >* ) currentEntry )->getEnumValues().Append( tnlString( entryEnum ) );
+   }
+
    void addDelimiter( const char* delimiter )
    {
       entries.Append( new tnlConfigDelimiter( delimiter ) );

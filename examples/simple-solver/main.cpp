@@ -18,24 +18,25 @@
 #include "simple-solver-conf.h"
 #include "simpleProblemSetter.h"
 #include <solvers/tnlSolver.h>
+#include <config/tnlConfigDescription.h>
 
-void configSetup( tnlConfigDecsription& config )
+void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter( "Simple solver settings:" );
-   config.addEntry< tnlString > ( "problem-name", "This defines particular problem.", "simpl" );
-   config.addEntry< tnlString >( "mesh", "A file containing the numerical mesh.", "mesh.tnl" );
+   config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "simpl" );
+   config.addEntry        < tnlString >( "mesh", "A file containing the numerical mesh.", "mesh.tnl" );
    config.addRequiredEntry< tnlString >( "time-discretisation", "Time discretisation for the time dependent problems." );
       config.addEntryEnum( "explicit" );
       config.addEntryEnum( "semi-implicit" );
       config.addEntryEnum( "fully-implicit" );
-   config.addEntry< tnlString >( "real-type", "Precision of the floating point arithmetics.", "double" );
+   config.addEntry        < tnlString >( "real-type", "Precision of the floating point arithmetics.", "double" );
       config.addEntryEnum( "float" );
       config.addEntryEnum( "double" );
       config.addEntryEnum( "long-double" );
-   config.addEntry< tnlString >( "index-type", "Indexing type for arrays, vectors, matrices etc.", "int" );
-      config.addEnum( "int" );
-      config.addEnum( "long-int" );
-   config.addEntry< tnlString >( "device", "Device to use for the computations.", "host" );
+   config.addEntry        < tnlString >( "index-type", "Indexing type for arrays, vectors, matrices etc.", "int" );
+      config.addEntryEnum( "int" );
+      config.addEntryEnum( "long-int" );
+   config.addEntry        < tnlString >( "device", "Device to use for the computations.", "host" );
       config.addEntryEnum( "host" );
       config.addEntryEnum( "cuda" );
    config.addRequiredEntry< tnlString >( "discrete-solver", "The main solver for the discretised problem." );

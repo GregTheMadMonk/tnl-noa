@@ -1,4 +1,5 @@
 SET( headers tnlArray_impl.h
+             tnlArrayIO.h
              tnlArrayOperationsHost_impl.h
              tnlArrayOperationsCuda_impl.h
              tnlMultiArray1D_impl.h
