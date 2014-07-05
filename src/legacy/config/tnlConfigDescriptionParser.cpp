@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <config/tnlConfigDescriptionParser.h>
-#include <config/tnlConfigDescriptionScanner.h>
+#include <legacy/config/tnlConfigDescriptionParser.h>
+#include <legacy/config/tnlConfigDescriptionScanner.h>
 #include <assert.h>
 
 tnlConfigDescriptionParser* tnlConfigDescriptionParser :: current_parser;

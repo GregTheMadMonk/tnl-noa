@@ -36,12 +36,12 @@ void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
    config.addEntry        < tnlString >           ( "mesh", "Mesh file.", "mesh.tnl" );
-   config.addRequiredEntry< tnlList< tnlString > >( "input-files", "Input files." );
-   config.addEntry        < tnlList< tnlString > >( "output-files", "Output files." );
+   config.addRequiredList < tnlString >           ( "input-files", "Input files." );
+   config.addList         < tnlString >           ( "output-files", "Output files." );
    config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", "false" );
 
    config.addDelimiter( "Grid settings:");
-   config.addEntry        < tnlList< double > >   ( "level-lines", "List of level sets which will be drawn." );
+   config.addList         < double >              ( "level-lines", "List of level sets which will be drawn." );
    config.addEntry        < int >                 ( "output-x-size", "X size of the output." );
    config.addEntry        < int >                 ( "output-y-size", "Y size of the output." );
    config.addEntry        < int >                 ( "output-z-size", "Z size of the output." );

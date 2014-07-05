@@ -21,179 +21,13 @@
 #include <core/tnlString.h>
 #include <core/tnlList.h>
 #include <core/param-types.h>
+#include <config/tnlConfigEntryType.h>
+#include <config/tnlConfigEntry.h>
+#include <config/tnlConfigEntryList.h>
+#include <config/tnlConfigDelimiter.h>
 
 class tnlParameterContainer;
 
-template< typename EntryType >
-inline tnlString getUIEntryType() { return "Unknown type."; };
-
-template<> inline tnlString getUIEntryType< tnlString >() { return "string"; };
-template<> inline tnlString getUIEntryType< bool >()      { return "bool"; };
-template<> inline tnlString getUIEntryType< int >()       { return "integer"; };
-template<> inline tnlString getUIEntryType< double >()    { return "real"; };
-
-template<> inline tnlString getUIEntryType< tnlList< tnlString > >() { return "list of string"; };
-template<> inline tnlString getUIEntryType< tnlList< bool > >()      { return "list of bool"; };
-template<> inline tnlString getUIEntryType< tnlList< int > >()       { return "list of integer"; };
-template<> inline tnlString getUIEntryType< tnlList< double > >()    { return "list of real"; };
-
-struct tnlConfigEntryType
-{
-   tnlString basic_type;
-
-   bool list_entry;
-
-   tnlConfigEntryType(){};
-   
-   tnlConfigEntryType( const tnlString& _basic_type,
-                     const bool _list_entry )
-   : basic_type( _basic_type ),
-     list_entry( _list_entry ){}
-
-   void Reset()
-   {
-      basic_type. setString( 0 );
-      list_entry = false;
-   };
-};
-
-struct tnlConfigEntryBase
-{
-   tnlString name;
-
-   tnlString description;
-
-   bool required;
-
-   bool hasDefaultValue;
-
-   tnlConfigEntryBase( const char* name,
-                       const char* description,
-                       bool required )
-      : name( name ),
-        description( description ),
-        required( required ),
-        hasDefaultValue( false ){}
-
-   virtual tnlString getEntryType() const = 0;
-
-   virtual tnlString getUIEntryType() const = 0;
-
-   virtual bool isDelimiter() const { return false; };
-
-   virtual tnlString printDefaultValue() const { return "";};
-
-   virtual bool hasEnumValues() const { return false; };
-
-   virtual void printEnumValues() const{};
-};
-
-template< class EntryType >
-struct tnlConfigEntry : public tnlConfigEntryBase
-{
-   EntryType defaultValue;
-
-   tnlList< EntryType > enumValues;
-
-   public:
-
-   tnlConfigEntry( const char* name,
-                   const char* description,
-                   bool required )
-      : tnlConfigEntryBase( name,
-                            description,
-                            required ) 
-      {
-         hasDefaultValue = false;
-      }
-
-   tnlConfigEntry( const char* name,
-                   const char* description,
-                   bool required,
-                   const EntryType& defaultValue)
-      : tnlConfigEntryBase( name,
-                            description,
-                            required ),
-         defaultValue( defaultValue )
-      {
-         hasDefaultValue = true;
-
-      }
-
-   tnlString getEntryType() const
-   {
-      return ::getParameterType< EntryType >();
-   }
-
-   tnlString getUIEntryType() const
-   {
-      return ::getUIEntryType< EntryType >();
-   }
-
-   tnlString printDefaultValue() const
-   {
-      return convertToString( defaultValue );
-   };
-
-   tnlList< EntryType >& getEnumValues()
-   {
-      return this->enumValues;
-   }
-
-   bool hasEnumValues() const
-   {
-      if( enumValues.getSize() != 0 )
-         return true;
-      return false;
-   }
-
-   void printEnumValues() const
-   {
-      cout << "- Can be:           ";
-      int i;
-      for( i = 0; i < enumValues.getSize() - 1; i++ )
-         cout << enumValues[ i ] << ", ";
-      cout << enumValues[ i ];
-      cout << " ";
-   }
-
-   bool checkValue( const EntryType& value ) const
-   {
-      if( this->enumValues.getSize() != 0 )
-      {
-         bool found( false );
-         for( int i = 0; i < this->enumValues.getSize(); i++ )
-            if( value == this->enumValues[ i ] )
-            {
-               found = true;
-               break;
-            }
-         if( ! found )
-         {
-            cerr << "The value " << value << " is not allowed for the config entry " << this->name << "." << endl;
-            this->printEnumValues();
-            return false;
-         }
-      }
-      return true;
-   };
-};
-
-struct tnlConfigDelimiter : public tnlConfigEntryBase
-{
-   tnlConfigDelimiter( const char* delimiter )
-   : tnlConfigEntryBase( "", delimiter, false )
-   {
-   };
-
-   bool isDelimiter() const { return true; };
-   
-   tnlString getEntryType() const { return ""; };
-
-   tnlString getUIEntryType() const { return ""; };
-};
-
-//! Class containing description of the configuration parameters
 class tnlConfigDescription
 {
    public:
@@ -225,6 +59,34 @@ class tnlConfigDescription
                                                       description,
                                                       false,
                                                       defaultValue );
+      entries. Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addList( const char* name,
+                 const char* description )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name, description, false );
+      entries.Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addRequiredList( const char* name,
+                         const char* description )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name, description, true );
+      entries.Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addList( const char* name,
+                 const char* description,
+                 const EntryType& defaultValue )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name,
+                                                          description,
+                                                          false,
+                                                          defaultValue );
       entries. Append( currentEntry );
    }
 
@@ -304,7 +166,6 @@ class tnlConfigDescription
    tnlList< tnlConfigEntryBase* > entries;
 
    tnlConfigEntryBase* currentEntry;
-
 
 };
 

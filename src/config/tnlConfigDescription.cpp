@@ -17,7 +17,7 @@
 
 #include <fstream>
 #include <iomanip>
-#include <config/tnlConfigDescriptionParser.h>
+#include <legacy/config/tnlConfigDescriptionParser.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/mfuncs.h>
@@ -32,16 +32,6 @@ tnlConfigDescription :: ~tnlConfigDescription()
 {
    entries. DeepEraseAll();
 }
-
-/*const tnlString tnlConfigDescription :: getEntryType( const char* name ) const
-{
-   int i;
-   const int size = entries.getSize();
-   for( i = 0; i < size; i ++ )
-      if( entries[ i ]->name == name )
-         return entries[ i ]->getEntryType();
-   return tnlString( "" );
-}*/
 
 void tnlConfigDescription::printUsage( const char* program_name )
 {

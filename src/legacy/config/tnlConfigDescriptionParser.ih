@@ -1,7 +1,7 @@
     // Include this file in the sources of the class tnlConfigDescriptionParser.
 
 // $insert class.h
-#include <config/tnlConfigDescriptionParser.h>
+#include <legacy/config/tnlConfigDescriptionParser.h>
 
     // Add below here any includes etc. that are only 
     // required for the compilation of tnlConfigDescriptionParser's sources.
