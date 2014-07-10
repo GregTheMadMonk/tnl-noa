@@ -21,7 +21,9 @@
 #include <fstream>
 #include <iomanip>
 #include <unistd.h>
+#ifdef HAVE_CUDA
 #include <cusparse.h>
+#endif
 
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>

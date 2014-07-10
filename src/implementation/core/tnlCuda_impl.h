@@ -18,7 +18,7 @@
 #ifndef TNLCUDA_IMPL_H_
 #define TNLCUDA_IMPL_H_
 
-#ifdef HAVE_CUDA
+
 
 #ifdef HAVE_CUDA
 __host__ __device__
@@ -73,6 +73,8 @@ inline int tnlCuda::getNumberOfSharedMemoryBanks()
    return 32;
 }
 
+#ifdef HAVE_CUDA
+
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 {
@@ -98,6 +100,7 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 template< typename ObjectType >
 ObjectType tnlCuda::passFromDevice( const ObjectType& object )
 {
+
    ObjectType aux;
    cudaMemcpy( ( void* ) &aux,
                ( void* ) &object,
@@ -150,7 +153,6 @@ __device__ inline getSharedMemory< long int >::operator long int*()
    return ( long int* ) __sharedMemoryLongInt;
 };
 
-
-#endif
+#endif /* HAVE_CUDA */
 
 #endif /* TNLCUDA_IMPL_H_ */

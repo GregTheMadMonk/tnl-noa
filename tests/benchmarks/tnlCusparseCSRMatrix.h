@@ -15,9 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <cusparse.h>
 #include <core/tnlAssert.h>
 #include <core/tnlCuda.h>
+#ifdef HAVE_CUDA
+#include <cusparse.h>
+#endif
 
 template< typename Real >
 class tnlCusparseCSRMatrix
@@ -36,6 +38,7 @@ class tnlCusparseCSRMatrixBase
       {
       };
 
+#ifdef HAVE_CUDA
       void init( const MatrixType& matrix,
                  cusparseHandle_t* cusparseHandle )
       {
@@ -43,6 +46,7 @@ class tnlCusparseCSRMatrixBase
          this->cusparseHandle = cusparseHandle;
          cusparseCreateMatDescr( & this->matrixDescriptor );
       };
+#endif      
 
       int getRows() const
       {
@@ -66,6 +70,7 @@ class tnlCusparseCSRMatrixBase
                           OutVector& outVector ) const
       {
          tnlAssert( matrix, );
+#ifdef HAVE_CUDA         
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
@@ -79,16 +84,17 @@ class tnlCusparseCSRMatrixBase
                          inVector.getData(),
                          1.0,
                          outVector.getData() );
+#endif      
       }
 
    protected:
 
       const MatrixType* matrix;
-
+#ifdef HAVE_CUDA
       cusparseHandle_t* cusparseHandle;
 
       cusparseMatDescr_t matrixDescriptor;
-
+#endif
 };
 
 
@@ -103,6 +109,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
                           OutVector& outVector ) const
       {
          tnlAssert( matrix, );
+#ifdef HAVE_CUDA         
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
@@ -115,6 +122,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
                          inVector.getData(),
                          1.0,
                          outVector.getData() );
+#endif         
       }
 };
 
@@ -129,6 +137,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
                           OutVector& outVector ) const
       {
          tnlAssert( matrix, );
+#ifdef HAVE_CUDA         
          cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
@@ -141,6 +150,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
                          inVector.getData(),
                          0,
                          outVector.getData() );
+#endif         
       }
 };
 

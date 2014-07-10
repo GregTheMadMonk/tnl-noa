@@ -37,6 +37,7 @@ class tnlCuda
 #endif
    static inline tnlDeviceEnum getDevice();
 
+
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
@@ -52,8 +53,8 @@ class tnlCuda
 #endif
    static inline int getWarpSize();
 
-   template< typename Index >
 #ifdef HAVE_CUDA
+   template< typename Index >
    __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
 #endif
 
@@ -64,6 +65,7 @@ class tnlCuda
 
    static int getGPUTransferBufferSize();
 
+#ifdef HAVE_CUDA
    static size_t getFreeMemory();
 
    template< typename ObjectType >
@@ -84,8 +86,10 @@ class tnlCuda
    static __device__ Index getInterleaving( const Index index );
 #endif
 
+#endif /* HAVE_CUDA */
 
    static bool checkDevice( const char* file_name, int line );
+
 };
 
 #define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )

@@ -60,7 +60,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
               cerr << "rows = " << rows
                    << " columns = " << columns << endl );
    this->rows = rows;
-   this->columns = columns;
+   this->columns = columns;   
    if( Device::DeviceType == tnlCudaDevice )
       this->alignedRows = roundToMultiple( columns, tnlCuda::getWarpSize() );
    else this->alignedRows = rows;
