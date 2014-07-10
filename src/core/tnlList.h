@@ -354,7 +354,7 @@ template< class T > class tnlList
    bool Load( tnlFile& file )
    {
 #ifdef HAVE_NOT_CXX11
-      EraseAll();
+      reset();
       int _size;
       file. read< int, tnlHost >( &_size );
       if( _size < 0 )
@@ -394,7 +394,7 @@ template< class T > class tnlList
    bool DeepLoad( tnlFile& file )
    {
 #ifdef HAVE_NOT_CXX11
-      EraseAll();
+      reset();
       int _size;
       file. read< int, tnlHost >( &_size );
       if( _size < 0 )
