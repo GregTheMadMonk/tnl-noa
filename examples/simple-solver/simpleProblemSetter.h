@@ -22,15 +22,16 @@
 #include <mesh/tnlGrid.h>
 #include "simpleProblemSolver.h"
 
-template< typename MeshType,
+template< typename RealType,
+          typename DeviceType,
+          typename IndexType,
+          typename MeshType,
+          typename ConfigTag,
           typename SolverStarter >
 class simpleProblemSetter
 {
    public:
 
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
    static bool run( const tnlParameterContainer& parameters );
 };
 

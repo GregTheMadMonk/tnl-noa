@@ -4,6 +4,7 @@ INSTALL( FILES Makefile
                simpleProblemSolver_impl.h
                simpleProblemSetter.h
                simpleProblemSetter_impl.h
+               simpleProblemConfig.h
                simple-solver.cfg.desc
                run-simple-solver
          DESTINATION share/tnl-${tnlVersion}/examples/simple-solver )

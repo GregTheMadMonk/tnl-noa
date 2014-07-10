@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlDefaultSolverConrfig.h  -  description
+                          tnlDummyProblem.h  -  description
                              -------------------
-    begin                : Nov 29, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jul 10, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,17 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDEFAULTSOLVERCONFIG_H_
-#define TNLDEFAULTSOLVERCONFIG_H_
+#ifndef TNLDUMMYPROBLEM_H_
+#define TNLDUMMYPROBLEM_H_
 
-template< bool resolveMesh = true >
-class tnlDefaultSolverConfig
+#include <core/tnlHost.h>
+#include <core/vectors/tnlVector.h>
+
+template< typename Real = double,
+          typename Device = tnlHost,
+          typename Index = int >
+class tnlDummyProblem
 {
    public:
 
-   enum { ResolveMesh = resolveMesh };
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlVector< Real, Device, Index > DofVectorType;
 };
 
 
 
-#endif /* TNLDEFAULTSOLVERCONFIG_H_ */
+#endif /* TNLDUMMYPROBLEM_H_ */

@@ -20,13 +20,25 @@
 
 #include <solvers/tnlSolverInitiator.h>
 #include <solvers/tnlSolverStarter.h>
+#include <solvers/tnlSolverConfig.h>
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig >
-bool tnlSolver< ProblemSetter, SolverConfig > :: run( const char* configFileName, int argc, char* argv[] )
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          template< typename ConfTag > class ProblemConfig,
+          typename ConfigTag >
+bool tnlSolver< ProblemSetter, ProblemConfig, ConfigTag > :: run( int argc, char* argv[] )
 {
-   tnlSolverInitiator< ProblemSetter, SolverConfig > solverInitiator;
-   if( ! solverInitiator. run( configFileName, argc, argv ) )
+   tnlParameterContainer parameters;
+   tnlConfigDescription configDescription;
+   ProblemConfig< ConfigTag >::configSetup( configDescription );
+   tnlSolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
+   if( ! ParseCommandLine( argc, argv, configDescription, parameters ) )
+   {
+      configDescription.printUsage( argv[ 0 ] );
+      return false;
+   }
+
+   tnlSolverInitiator< ProblemSetter, ConfigTag > solverInitiator;
+   if( ! solverInitiator. run( parameters ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 

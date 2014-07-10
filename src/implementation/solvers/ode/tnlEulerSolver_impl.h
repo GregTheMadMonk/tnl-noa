@@ -22,7 +22,7 @@
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
 : k1( "tnlEulerSolver:k1" ),
-  cflCondition( 0.0 )
+  cflCondition( 1.0 )
 {
 };
 
@@ -33,6 +33,21 @@ tnlString tnlEulerSolver< Problem > :: getType() const
           Problem :: getTypeStatic() +
           tnlString( " >" );
 };
+
+template< typename Problem >
+void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
+                                               const tnlString& prefix )
+{
+   config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 1.0 );
+};
+
+template< typename Problem >
+bool tnlEulerSolver< Problem > :: init( const tnlParameterContainer& parameters,
+                                        const tnlString& prefix )
+{
+   if( parameters.CheckParameter( prefix + "euler-cfl" ) )
+      this->setCFLCondition( parameters.GetParameter< double >( prefix + "euler-cfl" ) );
+}
 
 template< typename Problem >
 void tnlEulerSolver< Problem > :: setCFLCondition( const RealType& cfl )

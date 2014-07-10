@@ -1,8 +1,8 @@
 /***************************************************************************
-                          simpleProblemSetter_impl.h  -  description
+                          tnlSolverConfig.h  -  description
                              -------------------
-    begin                : Mar 10, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jul 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,20 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMPLEPROBLEMSETTER_IMPL_H_
-#define SIMPLEPROBLEMSETTER_IMPL_H_
+#ifndef TNLSOLVERCONFIG_H_
+#define TNLSOLVERCONFIG_H_
 
-template< typename RealType,
-          typename DeviceType,
-          typename IndexType,
-          typename MeshType,
-          typename ConfigTag,
-          typename SolverStarter >
-bool simpleProblemSetter< RealType, DeviceType, IndexType, MeshType, ConfigTag, SolverStarter > :: run( const tnlParameterContainer& parameters )
+#include <config/tnlConfigDescription.h>
+
+template< typename ConfigTag,
+          typename ProblemConfig >
+class tnlSolverConfig
 {
-   SolverStarter solverStarter;
-   return solverStarter. template run< simpleProblemSolver< MeshType > >( parameters );
-}
+   public:
+      static bool configSetup( tnlConfigDescription& configDescription );
+};
 
+#include <implementation/solvers/tnlSolverConfig_impl.h>
 
-#endif /* SIMPLEPROBLEMSETTER_IMPL_H_ */
+#endif /* TNLSOLVERCONFIGSETUP_H_ */

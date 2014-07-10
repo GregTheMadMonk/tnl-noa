@@ -23,21 +23,37 @@
 #include <mesh/tnlDummyMesh.h>
 #include <solvers/tnlSolverStarter.h>
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-bool tnlMeshTypeResolver< false, Real, Device, Index, ProblemSetter >::run( const tnlParameterContainer& parameters )
-{
-   return ProblemSetter< tnlDummyMesh< Real, Device, Index >,
-                         tnlSolverStarter >::template run< Real, Device, Index >( parameters );
-}
+          typename MeshType,
+          typename ConfigTag,
+          bool MeshTypeSupported = tnlConfigTagMesh< ConfigTag, MeshType >::enabled >
+class tnlMeshResolverTerminator{};
 
-template< typename Real,
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::run( const tnlParameterContainer& parameters )
+          typename ConfigTag >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false  >::run( const tnlParameterContainer& parameters )
+{
+   return ProblemSetter< Real,
+                         Device,
+                         Index,
+                         tnlDummyMesh< Real, Device, Index >,
+                         ConfigTag,
+                         tnlSolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const tnlParameterContainer& parameters )
 {
    const tnlString& meshFileName = parameters.GetParameter< tnlString >( "mesh" );
 
@@ -57,119 +73,106 @@ bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::run( const
    return resolveMeshDimensions( parameters, parsedMeshType );
 }
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::resolveMeshDimensions( const tnlParameterContainer& parameters,
-                                                                                             const tnlList< tnlString >& parsedMeshType )
+          typename ConfigTag >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshDimensions( const tnlParameterContainer& parameters,
+                                                                                                        const tnlList< tnlString >& parsedMeshType )
 {
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
 
    if( dimensions == 1 )
-      return tnlMeshTypeResolverDimensionsSupportChecker< 1,
-                                                          true, //ProblemConfig::SupportDimensions1,
-                                                          tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter > >::
-                                                          checkDimensions( parameters, parsedMeshType );
-
+      return resolveMeshRealType< 1 >( parameters, parsedMeshType );
    if( dimensions == 2 )
-      return tnlMeshTypeResolverDimensionsSupportChecker< 2,
-                                                          true, //ProblemConfig::SupportDimensions2,
-                                                          tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter > >::
-                                                          checkDimensions( parameters, parsedMeshType );
+      return resolveMeshRealType< 2 >( parameters, parsedMeshType );
    if( dimensions == 3 )
-      return tnlMeshTypeResolverDimensionsSupportChecker< 3,
-                                                          true, //ProblemConfig::SupportDimensions3,
-                                                          tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter > >::
-                                                          checkDimensions( parameters, parsedMeshType );
+      return resolveMeshRealType< 3 >( parameters, parsedMeshType );
 }
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
+          typename ConfigTag >
    template< int MeshDimensions >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::resolveMeshRealType( const tnlParameterContainer& parameters,
-                                                                                           const tnlList< tnlString >& parsedMeshType )
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const tnlParameterContainer& parameters,
+                                                                                                      const tnlList< tnlString >& parsedMeshType )
 {
    if( parsedMeshType[ 2 ] == "float" )
       return resolveMeshIndexType< MeshDimensions, float >( parameters, parsedMeshType );
-
    if( parsedMeshType[ 2 ] == "double" )
       return resolveMeshIndexType< MeshDimensions, double >( parameters, parsedMeshType );
-
    if( parsedMeshType[ 2 ] == "long-double" )
       return resolveMeshIndexType< MeshDimensions, long double >( parameters, parsedMeshType );
 }
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
+          typename ConfigTag >
    template< int MeshDimensions,
              typename MeshRealType >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::resolveMeshIndexType( const tnlParameterContainer& parameters,
-                                                                                            const tnlList< tnlString >& parsedMeshType )
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, 1 >::resolveMeshIndexType( const tnlParameterContainer& parameters,
+                                                                                                    const tnlList< tnlString >& parsedMeshType )
 {
+   if( parsedMeshType[ 4 ] == "short int" )
+      return resolveMeshType< MeshDimensions, MeshRealType, short int >( parameters, parsedMeshType );
    if( parsedMeshType[ 4 ] == "int" )
       return resolveMeshType< MeshDimensions, MeshRealType, int >( parameters, parsedMeshType );
-
    if( parsedMeshType[ 4 ] == "long int" )
       return resolveMeshType< MeshDimensions, MeshRealType, long int >( parameters, parsedMeshType );
 }
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
+          typename ConfigTag >
    template< int MeshDimensions,
              typename MeshRealType,
              typename MeshIndexType >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::resolveMeshType( const tnlParameterContainer& parameters,
-                                                                                       const tnlList< tnlString >& parsedMeshType )
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const tnlParameterContainer& parameters,
+                                                                                                  const tnlList< tnlString >& parsedMeshType )
 {
    if( parsedMeshType[ 0 ] == "tnlGrid" )
-      return resolveGridGeometryType< MeshDimensions, MeshRealType, MeshIndexType >( parameters, parsedMeshType );
+   {
+      typedef tnlGrid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
+      return tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
+   }
 }
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-   template< int MeshDimensions,
-             typename MeshRealType,
-             typename MeshIndexType >
-bool tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >::resolveGridGeometryType( const tnlParameterContainer& parameters,
-                                                                                               const tnlList< tnlString >& parsedMeshType )
+          typename MeshType,
+          typename ConfigTag >
+class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, false >
 {
-   tnlList< tnlString > parsedGeometryType;
-   if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
-   {
-      cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
-      return false;
-   }
-   if( parsedGeometryType[ 0 ] == "tnlIdenticalGridGeometry" )
-   {
-      typedef tnlGrid< MeshDimensions, MeshRealType, Device, MeshIndexType, tnlIdenticalGridGeometry > MeshType;
-      return ProblemSetter< MeshType, tnlSolverStarter >::template run< Real, Device, Index >( parameters );
-   }
-}
-
-template< int Dimensions, typename MeshTypeResolver >
-bool tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeResolver >::checkDimensions( const tnlParameterContainer& parameters,
-                                                                                                        const tnlList< tnlString >& parsedMeshType)
-{
-   return MeshTypeResolver::template resolveMeshRealType< Dimensions >( parameters, parsedMeshType );
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         cerr << "The mesh type " << getParameterType< MeshType >() << " is not supported." << endl;
+         return false;
+      };
 };
 
-template< int Dimensions, typename MeshTypeResolver >
-bool tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeResolver >::checkDimensions( const tnlParameterContainer& parameters,
-                                                                                            const tnlList< tnlString >& parsedMeshType )
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag >
+class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, true >
 {
-   cerr << Dimensions << " are not supported  by the solver." << endl;
-   return false;
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         return ProblemSetter< Real, Device, Index, MeshType, ConfigTag, tnlSolverStarter< ConfigTag > >::run( parameters );
+      }
 };
-
-
 
 #endif /* TNLMESHTYPERESOLVER_IMPL_H_ */

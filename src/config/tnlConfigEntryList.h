@@ -107,6 +107,7 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
             {
                cerr << "The value " << value << " is not allowed for the config entry " << this->name << "." << endl;
                this->printEnumValues();
+               cerr << endl;
                return false;
             }
          }

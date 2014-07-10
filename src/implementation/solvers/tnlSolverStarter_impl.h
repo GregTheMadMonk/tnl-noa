@@ -18,7 +18,6 @@
 #ifndef TNLSOLVERSTARTER_IMPL_H_
 #define TNLSOLVERSTARTER_IMPL_H_
 
-
 #include <tnlConfig.h>
 #include <core/tnlLogger.h>
 #include <core/tnlString.h>
@@ -33,16 +32,34 @@
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
 
-tnlSolverStarter :: tnlSolverStarter()
+template< typename Problem,
+          typename TimeDiscretisation,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagTimeDiscretisation< ConfigTag, TimeDiscretisation >::enabled >
+class tnlSolverStarterTimeDiscretisationSetter{};
+
+template< typename Problem,
+          typename ExplicitSolver,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagExplicitSolver< ConfigTag, ExplicitSolver >::enabled >
+class tnlSolverStarterExplicitSolverSetter{};
+
+template< typename Problem,
+          typename ExplicitSolver,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterExplicitTimeStepperSetter;
+
+template< typename ConfigTag >
+tnlSolverStarter< ConfigTag > :: tnlSolverStarter()
 : logWidth( 72 )
 {
 }
 
-template< typename Problem >
-bool tnlSolverStarter :: run( const tnlParameterContainer& parameters )
+template< typename ConfigTag >
+   template< typename Problem >
+bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& parameters )
 {
-   this -> verbose = parameters. GetParameter< int >( "verbose" );
-
    /****
     * Create and set-up the problem
     */
@@ -50,31 +67,183 @@ bool tnlSolverStarter :: run( const tnlParameterContainer& parameters )
    if( ! problem. init( parameters ) )
       return false;
 
-   return setDiscreteSolver< Problem >( problem, parameters );
+   /****
+    * Set-up the time discretisation
+    */
+   const tnlString& timeDiscretisation = parameters. GetParameter< tnlString>( "time-discretisation" );
+   if( timeDiscretisation == "explicit" )
+      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+   if( timeDiscretisation == "semi-implicit" )
+      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+   if( timeDiscretisation == "implicit" )
+      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+   cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
+   return false;
 }
 
-template< typename Problem >
-bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
-                                            const tnlParameterContainer& parameters )
+template< typename Problem,
+          typename TimeDiscretisation,
+          typename ConfigTag >
+class tnlSolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisation, ConfigTag, false >
 {
-   const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
-   const tnlString& timeDiscretisation = parameters. GetParameter< tnlString>( "time-discretisation" );
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         cerr << "The time discretisation " << parameters.GetParameter< tnlString >( "time-discretisation" ) << " is not supported." << endl;
+         return false;
+      }
+};
 
-   if( timeDiscretisation != "explicit" &&
-       timeDiscretisation != "semi-implicit" &&
-       timeDiscretisation != "fully-implicit" )
-   {
-      cerr << "Unknown time discretisation '" << timeDiscretisation << "'." << endl;
-      return false;
-   }
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         if( discreteSolver != "euler" &&
+             discreteSolver != "merson" )
+         {
+            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: euler or merson." << endl;
+            return false;
+         }
+         if( discreteSolver == "euler" )
+            return tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "merson" )
+            return tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag, ConfigTag >::run( problem, parameters );
+         return false;
+      }
+};
 
-   if( ( discreteSolver == "euler" || discreteSolver == "merson" ) &&
-        timeDiscretisation != "explicit" )
-   {
-      cerr << "The '" << discreteSolver << "' solver can be used only with the explicit time discretisation but not with the "
-           <<  timeDiscretisation << " one." << endl;
-      return false;
-   }
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename ExplicitSolver,
+          typename ConfigTag >
+class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, ConfigTag, false >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         cerr << "The explicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef tnlEulerSolver< Problem > ExplicitSolver;
+         ExplicitSolver solver;
+         solver. setName( "euler-solver" );
+         typedef tnlExplicitTimeStepper< Problem, tnlEulerSolver > TimeStepper;
+         return tnlSolverStarterExplicitTimeStepperSetter< Problem,
+                                                           ExplicitSolver,
+                                                           TimeStepper,
+                                                           ConfigTag >::run( problem, solver, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef tnlMersonSolver< Problem > ExplicitSolver;
+         ExplicitSolver solver;
+         solver. setName( "merson-solver" );
+         typedef tnlExplicitTimeStepper< Problem, tnlMersonSolver > TimeStepper;
+         return tnlSolverStarterExplicitTimeStepperSetter< Problem,
+                                                           ExplicitSolver,
+                                                           TimeStepper,
+                                                           ConfigTag >::run( problem, solver, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ExplicitSolver,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterExplicitTimeStepperSetter
+{
+   public:
+
+      static bool run( Problem& problem,
+                       ExplicitSolver& explicitSolver,
+                       const tnlParameterContainer& parameters)
+      {
+         explicitSolver.init( parameters );
+         // TODO: prenest do metody solveru
+         int maxSolverIterations( 0 );
+         if( parameters.GetParameter< int >( "max-solver-iterations", maxSolverIterations ) )
+            explicitSolver. setMaxIterationsNumber( maxSolverIterations );
+
+         int verbose = parameters.GetParameter< int >( "verbose" );
+         explicitSolver.setVerbose( verbose );
+         tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
+         if( ! problem.getSolverMonitor() )
+            explicitSolver.setSolverMonitor( odeSolverMonitor );
+         else
+            explicitSolver.setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+
+         TimeStepper timeStepper;
+         timeStepper.setSolver( explicitSolver );
+         timeStepper.setTau( parameters. GetParameter< double >( "initial-tau" ) );
+
+         tnlSolverStarter< ConfigTag > solverStarter;
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+      };
+};
+
+
+
+
+
+
+
+
+#ifdef UNDEF
+template< typename ConfigTag >
+   template< typename Problem >
+bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
+                                                         const tnlParameterContainer& parameters )
+{
 
    if( discreteSolver == "euler" )
    {
@@ -164,46 +333,14 @@ bool tnlSolverStarter :: setDiscreteSolver( Problem& problem,
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
-
    cerr << "Unknown discrete solver " << discreteSolver << "." << endl;
    return false;
 }
+#endif
 
-template< typename IterativeSolver >
-bool tnlSolverStarter :: setIterativeSolver( IterativeSolver& solver,
-                                             const tnlParameterContainer& parameters ) const
-{
-   int maxSolverIterations( 0 );
-   if( parameters.GetParameter< int >( "max-solver-iterations", maxSolverIterations ) )
-      solver. setMaxIterationsNumber( maxSolverIterations );
-   return true;
-}
-
-
-template< typename Problem,
-          template < typename > class DiscreteSolver >
-bool tnlSolverStarter :: setExplicitTimeDiscretisation( Problem& problem,
-                                                        const tnlParameterContainer& parameters,
-                                                        DiscreteSolver< Problem >& discreteSolver )
-{
-   typedef tnlExplicitTimeStepper< Problem, DiscreteSolver > TimeStepperType;
-   TimeStepperType timeStepper;
-   timeStepper. setSolver( discreteSolver );
-   timeStepper. setTau( parameters. GetParameter< double >( "initial-tau" ) );
-   return runPDESolver< Problem, TimeStepperType >( problem, parameters, timeStepper );
-}
-
-template< typename Problem,
-          typename DiscreteSolver >
-bool tnlSolverStarter :: setSemiImplicitTimeDiscretisation( Problem& problem,
-                                                            const tnlParameterContainer& parameters,
-                                                            DiscreteSolver& discreteSolver )
-{
-
-}
-
-template< typename Problem >
-bool tnlSolverStarter :: writeProlog( ostream& str,
+template< typename ConfigTag >
+   template< typename Problem >
+bool tnlSolverStarter< ConfigTag > :: writeProlog( ostream& str,
                                       const tnlParameterContainer& parameters,
                                       const Problem& problem )
 {
@@ -235,9 +372,10 @@ bool tnlSolverStarter :: writeProlog( ostream& str,
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
-bool tnlSolverStarter :: runPDESolver( Problem& problem,
+template< typename ConfigTag >
+   template< typename Problem,
+             typename TimeStepper >
+bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                        const tnlParameterContainer& parameters,
                                        TimeStepper& timeStepper )
 {
@@ -351,7 +489,8 @@ bool tnlSolverStarter :: runPDESolver( Problem& problem,
    return returnCode;
 }
 
-bool tnlSolverStarter :: writeEpilog( ostream& str )
+template< typename ConfigTag >
+bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
 {
    tnlLogger logger( logWidth, str );
    logger. writeCurrentTime( "Finished at:" );

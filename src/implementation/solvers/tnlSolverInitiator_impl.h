@@ -17,110 +17,145 @@
 
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlMeshTypeResolver.h>
+#include <solvers/tnlConfigTags.h>
+#include <core/tnlHost.h>
+#include <core/tnlCuda.h>
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: run( const char* configFileName, int argc, char* argv[] )
-{
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   if( conf_desc.parseConfigDescription( configFileName ) != 0 )
-      return false;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
-      return false;
-   }
-   this -> verbose = parameters. GetParameter< int >( "verbose" );
-   return setRealType( parameters );
-};
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagReal< ConfigTag, Real >::enabled >
+class tnlSolverInitiatorRealResolver{};
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedRealTypes( const tnlString& realType,
-                                                                     const tnlParameterContainer& parameters ) const
-{
-   return true;
-}
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagDevice< ConfigTag, Device >::enabled >
+class tnlSolverInitiatorDeviceResolver{};
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedIndexTypes( const tnlString& indexType,
-                                                                      const tnlParameterContainer& parameters ) const
-{
-   return true;
-}
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagIndex< ConfigTag, Index >::enabled >
+class tnlSolverInitiatorIndexResolver{};
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: checkSupportedDevices( const tnlString& device,
-                                                                   const tnlParameterContainer& parameters ) const
-{
-   return true;
-}
-
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setRealType( const tnlParameterContainer& parameters ) const
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename ConfigTag  >
+bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const tnlParameterContainer& parameters )
 {
    const tnlString& realType = parameters. GetParameter< tnlString >( "real-type" );
-   if( ! this -> checkSupportedRealTypes( realType, parameters ) )
-   {
-      cerr << "The real type '" << realType << "' is not supported." << endl;
-      return false;
-   }
-   if( this -> verbose )
+   if( parameters. GetParameter< int >( "verbose" ) )
       cout << "Setting RealType to   ... " << realType << endl;
    if( realType == "float" )
-      return setIndexType< float >( parameters );
+      return tnlSolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
    if( realType == "double" )
-      return setIndexType< double >( parameters );
+      return tnlSolverInitiatorRealResolver< ProblemSetter, double, ConfigTag >::run( parameters );
    if( realType == "long-double" )
-      return setIndexType< long double >( parameters );
+      return tnlSolverInitiatorRealResolver< ProblemSetter, long double, ConfigTag >::run( parameters );
    cerr << "The real type '" << realType << "' is not defined. " << endl;
-   return false;
-}
+};
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-   template< typename RealType >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setIndexType( const tnlParameterContainer& parameters ) const
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename ConfigTag >
+class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
 {
-   const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
-   if( ! this -> checkSupportedIndexTypes( indexType, parameters ) )
-   {
-      cerr << "The index type '" << indexType << "' is not supported." << endl;
-      return false;
-   }
-   if( this -> verbose )
-      cout << "Setting IndexType to  ... " << indexType << endl;
-   if( indexType == "int" )
-      return setDeviceType< RealType, int >( parameters );
-   if( indexType == "long int" )
-      return setDeviceType< RealType, long int >( parameters );
-   cerr << "The index type '" << indexType << "' is not defined. " << endl;
-   return false;
-}
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         const tnlString& device = parameters. GetParameter< tnlString >( "device" );
+         if( parameters. GetParameter< int >( "verbose" ) )
+            cout << "Setting DeviceType to ... " << device << endl;
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig  >
-   template< typename RealType,
-             typename IndexType >
-bool tnlSolverInitiator< ProblemSetter, SolverConfig > :: setDeviceType( const tnlParameterContainer& parameters ) const
+         if( device == "host" )
+            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlHost, ConfigTag >::run( parameters );
+         if( device == "cuda" )
+            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlCuda, ConfigTag >::run( parameters );
+         cerr << "The device '" << device << "' is not defined. " << endl;
+         return false;
+      }
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename ConfigTag >
+class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
 {
-   const tnlString& device = parameters. GetParameter< tnlString >( "device" );
-   if( ! this -> checkSupportedDevices( device, parameters ) )
-   {
-      cerr << "The device '" << device << "' is not supported." << endl;
-      return false;
-   }
-   if( this -> verbose )
-      cout << "Setting DeviceType to ... " << device << endl;
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         cerr << "The real type " << parameters.GetParameter< tnlString >( "real-type" ) << " is not supported." << endl;
+         return false;
+      }
+};
 
-   if( device == "host" )
-      return tnlMeshTypeResolver< SolverConfig::ResolveMesh, RealType, tnlHost, IndexType, ProblemSetter >::run( parameters );
-   if( device == "cuda" )
-      return tnlMeshTypeResolver< SolverConfig::ResolveMesh, RealType, tnlCuda, IndexType, ProblemSetter >::run( parameters );
-   cerr << "The device '" << device << "' is not defined. " << endl;
-   return false;
-}
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename ConfigTag >
+class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, true >
+{
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
+         if( parameters. GetParameter< int >( "verbose" ) )
+            cout << "Setting IndexType to  ... " << indexType << endl;
+         if( indexType == "short-int" )
+            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
+         if( indexType == "int" )
+            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, int, ConfigTag >::run( parameters );
+         if( indexType == "long int" )
+            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, long int, ConfigTag >::run( parameters );
+         cerr << "The index type '" << indexType << "' is not defined. " << endl;
+         return false;
+      }
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename ConfigTag >
+class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, false >
+{
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         cerr << "The device " << parameters.GetParameter< tnlString >( "device" ) << " is not supported." << endl;
+         return false;
+      }
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag >
+class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
+{
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         cerr << "The index " << parameters.GetParameter< tnlString >( "index-type" ) << " is not supported." << endl;
+         return false;
+      }
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag >
+class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+{
+   public:
+      static bool run( const tnlParameterContainer& parameters )
+      {
+         return tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
+      }
+};
+
+
