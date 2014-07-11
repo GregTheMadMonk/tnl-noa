@@ -27,6 +27,7 @@
 #include <matrices/tnlMultidiagonalMatrix.h>
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
+#include <core/vectors/tnlSharedVector.h>
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
@@ -52,9 +53,11 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "setValueTest", &TesterType::setValueTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addRowTest", &TesterType::addRowTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addRowFastTest", &TesterType::addRowFastTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
-      /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );*/
+      suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
+      //suiteOfTests -> addTest( new TestCallerType( "addMatrixTest", &TesterType::addMatrixTest ) );
 
       return suiteOfTests;
    }
@@ -71,8 +74,8 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m1, m2;
       m1.setDimensions( 10, 10 );
-      IndexType diagonalsShift[] = {-2, -1, 0, 1, 2 };
-      m1.setDiagonals( 5, diagonalsShift );
+      IndexType diagonalsShift[] {-2, -1, 0, 1, 2 };
+      m1.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 5 ) );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -83,7 +86,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( size, size );
       IndexType diagonalsShift[] = { -5, -2, -1, 0, 1, 2, 5 };
-      m.setDiagonals( 7, diagonalsShift );
+      m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 7 ) );
       m.setValue( 1.0 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
@@ -98,7 +101,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -5, -2, -1, 0, 1, 2, 5 };
-      m.setDiagonals( 7, diagonalsShift );
+      m.setDiagonals( tnlSharedVector< IndexType>( diagonalsShift, 7 ) );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -115,7 +118,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-      m.setDiagonals( 7, diagonalsShift );
+      m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 7 ) );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -134,6 +137,60 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
+   void addRowTest()
+   {
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
+      m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 7 ) );
+      for( int i = 0; i < 10; i++ )
+         m.setElement( i, i, i );
+      RealType rowValues[] = { 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0 };
+      for( int i = 0; i < 10; i++ )
+         m.addRow( i, 0, rowValues, 7 );
+
+      for( int i = 0; i < 10; i++ )
+         for( int j = 0; j < 10; j++ )
+         {
+            if( i == j )
+               CPPUNIT_ASSERT( m.getElement( i, i ) == i );
+            else
+               if( abs( i - j ) == 4 || abs( i - j ) < 3 )
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+               else
+                  CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+         }
+   }
+
+   void addRowFastTest()
+   {
+      if( Device::getDevice() == tnlHostDevice )
+      {
+         MatrixType m;
+         m.setDimensions( 10, 10 );
+         IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
+         m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 7 ) );
+         for( int i = 0; i < 10; i++ )
+            m.setElement( i, i, i );
+         RealType rowValues[] = { 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0 };
+         for( int i = 0; i < 10; i++ )
+            m.addRowFast( i, 0, rowValues, 7 );
+
+         for( int i = 0; i < 10; i++ )
+            for( int j = 0; j < 10; j++ )
+            {
+               if( i == j )
+                  CPPUNIT_ASSERT( m.getElement( i, i ) == i );
+               else
+                  if( abs( i - j ) == 4 || abs( i - j ) < 3 )
+                     CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
+                  else
+                     CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
+            }
+      }
+   }
+
+
    void vectorProductTest()
    {
       const int size = 10;
@@ -143,7 +200,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( size, size );
       IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-      m.setDiagonals( 7, diagonalsShift );
+      m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 7 ) );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );
@@ -152,7 +209,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       m.vectorProduct( v, w );
 
       for( int i = 0; i < size; i++ )
-         CPPUNIT_ASSERT( w[ i ] == i*i );
+         CPPUNIT_ASSERT( w.getElement( i ) == i*i );
    }
 
    void addMatrixTest()
@@ -161,6 +218,27 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
 
    void matrixTranspositionTest()
    {
+      const int size = 10;
+      MatrixType m;
+      m.setDimensions( 10, 10 );
+      IndexType diagonalsShift[] = { -2, -1, 0, 1, 2, 3 };
+      m.setDiagonals( tnlSharedVector< IndexType >( diagonalsShift, 6 ) );
+
+      for( int row = 0; row < size; row++ )
+         for( int diagonal = 0; diagonal < 6; diagonal++ )
+         {
+            const int column = row + diagonalsShift[ diagonal ];
+            if( column >= 0 && column < 10 )
+               m.setElement( row, column, row - column );
+         }
+
+      MatrixType mTransposed;
+      mTransposed.template getTransposition< typename MatrixType::RealType,
+                                             typename MatrixType::IndexType >( m );
+
+      for( int i = 0; i < size; i++ )
+         for( int j = 0; j < size; j++ )
+            CPPUNIT_ASSERT( m.getElement( i, j ) == mTransposed.getElement( j, i ) );
    }
 };
 

@@ -25,6 +25,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/tnlArrayOperationsHost_impl.cu
         ${CURRENT_DIR}/tnlArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/tnlArray_impl.cu
+        ${CURRENT_DIR}/tnlSharedArray_impl.cu
         ${CURRENT_DIR}/tnlMultiArray_impl.cu
         ${CURRENT_DIR}/tnlStaticArray_impl.cu
         PARENT_SCOPE )

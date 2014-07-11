@@ -5,11 +5,11 @@ set( headers tnlVectorTester.h
 
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnlVectorOperationsTest-cuda${mpiExt}${debugExt} ${headers} tnlVectorOperationsTest.cu
-                         OPTIONS -arch sm_20 )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     TARGET_LINK_LIBRARIES( tnlVectorOperationsTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
     CUDA_ADD_EXECUTABLE( tnlVectorTest-cuda${mpiExt}${debugExt} ${headers} tnlVectorTest.cu
-                         OPTIONS -arch sm_20 )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     TARGET_LINK_LIBRARIES( tnlVectorTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )                                                                
                                                                                                                               

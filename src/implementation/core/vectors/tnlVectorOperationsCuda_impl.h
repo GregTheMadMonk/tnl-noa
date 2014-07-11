@@ -359,25 +359,35 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index >
-__global__ void vectorAlphaXPlusYCudaKernel( Real* y,
-                                             const Real* x,
-                                             const Index size,
-                                             const Real alpha )
+__global__ void vectorAddVectorCudaKernel( Real* y,
+                                           const Real* x,
+                                           const Index size,
+                                           const Real alpha,
+                                           const Real thisMultiplicator )
 {
    Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
    const Index maxGridSize = blockDim. x * gridDim. x;
-   while( elementIdx < size )
-   {
-      y[ elementIdx ] += alpha * x[ elementIdx ];
-      elementIdx += maxGridSize;
-   }
+   if( thisMultiplicator == 1.0 )
+      while( elementIdx < size )
+      {
+         y[ elementIdx ] += alpha * x[ elementIdx ];
+         elementIdx += maxGridSize;
+      }
+   else
+      while( elementIdx < size )
+      {
+         y[ elementIdx ] = thisMultiplicator * y[ elementIdx ] + alpha * x[ elementIdx ];
+         elementIdx += maxGridSize;
+      }
+
 }
 #endif
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlCuda > :: alphaXPlusY( Vector1& y,
-                                                    const Vector2& x,
-                                                    const typename Vector1 :: RealType& alpha )
+void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
+                                                  const Vector2& x,
+                                                  const typename Vector2::RealType& alpha,
+                                                  const typename Vector1::RealType& thisMultiplicator )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -393,10 +403,11 @@ void tnlVectorOperations< tnlCuda > :: alphaXPlusY( Vector1& y,
       blockSize. x = 256;
       Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
       gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
-      vectorAlphaXPlusYCudaKernel<<< gridSize, blockSize >>>( y.getData(),
-                                                              x.getData(), 
-                                                              size,
-                                                              alpha );
+      vectorAddVectorCudaKernel<<< gridSize, blockSize >>>( y.getData(),
+                                                            x.getData(),
+                                                            size,
+                                                            alpha,
+                                                            thisMultiplicator);
       checkCudaDevice;
    #else
       tnlCudaSupportMissingMessage;;
@@ -584,6 +595,7 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
+#ifdef HAVE_CUDA
    typedef tnlParallelReductionSum< typename Vector::RealType,
                                     typename Vector::IndexType > OperationType;
 
@@ -597,6 +609,7 @@ void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                 &v.getData()[ begin ],
                                                 operation,
                                                 exclusivePrefixSum );
+#endif
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

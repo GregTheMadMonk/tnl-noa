@@ -19,6 +19,7 @@
 #define TNLSHAREDVECTOR_H_
 
 #include <core/arrays/tnlSharedArray.h>
+#include <core/vectors/tnlVector.h>
 
 class tnlHost;
 
@@ -32,6 +33,15 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+
+   tnlSharedVector();
+
+   tnlSharedVector( Real* data,
+                    const Index size );
+
+   tnlSharedVector( tnlVector< Real, Device, Index >& vector );
+
+   tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
    tnlString getType() const;
 
@@ -103,8 +113,9 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    //! Computes Y = alpha * X + Y.
    template< typename Vector >
-   void alphaXPlusY( const Real& alpha,
-                     const Vector& x );
+   void addVector( const Vector& x,
+                   const Real& alpha = 1.0,
+                   const Real& thisMultiplicator = 1.0 );
 
    //! Computes Y = alpha * X + beta * Y.
    template< typename Vector >
@@ -137,21 +148,5 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 };
 
 #include <implementation/core/vectors/tnlSharedVector_impl.h>
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-extern template class tnlSharedVector< float, tnlHost, int >;
-extern template class tnlSharedVector< double, tnlHost, int >;
-extern template class tnlSharedVector< float, tnlHost, long int >;
-extern template class tnlSharedVector< double, tnlHost, long int >;
-
-#ifdef HAVE_CUDA
-extern template class tnlSharedVector< float, tnlCuda, int >;
-extern template class tnlSharedVector< double, tnlCuda, int >;
-extern template class tnlSharedVector< float, tnlCuda, long int >;
-extern template class tnlSharedVector< double, tnlCuda, long int >;
-#endif
-
-#endif
 
 #endif /* TNLSHAREDVECTOR_H_ */

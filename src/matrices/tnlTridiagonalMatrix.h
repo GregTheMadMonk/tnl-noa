@@ -21,6 +21,9 @@
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlTridiagonalMatrixDeviceDependentCode;
+
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
@@ -32,6 +35,10 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef tnlTridiagonalMatrix< Real, Device, Index > ThisType;
+   typedef tnlTridiagonalMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlTridiagonalMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlTridiagonalMatrix();
 
@@ -82,6 +89,11 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                         const RealType& value,
                         const RealType& thisElementMultiplicator = 1.0 );
 
+   bool addElement( const IndexType row,
+                    const IndexType column,
+                    const RealType& value,
+                    const RealType& thisElementMultiplicator = 1.0 );
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -89,6 +101,11 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     const IndexType* columns,
                     const RealType* values,
                     const IndexType elements );
+
+   bool setRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements );
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -98,6 +115,12 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     const RealType* values,
                     const IndexType elements,
                     const RealType& thisRowMultiplicator = 1.0 );
+
+   bool addRow( const IndexType row,
+                const IndexType* columns,
+                const RealType* values,
+                const IndexType elements,
+                const RealType& thisRowMultiplicator = 1.0 );
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -115,19 +138,21 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   RealType& operator()( const IndexType row,
-                         const IndexType column );
-
-   const RealType& operator()( const IndexType row,
-                               const IndexType column ) const;
+   void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
@@ -135,11 +160,11 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
 #ifdef HAVE_NOT_CXX11
-   template< typename Real2, typename Index2, int tileDim >
+   template< typename Real2, typename Index2 >
    void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 #else
-   template< typename Real2, typename Index2, int tileDim = 32 >
+   template< typename Real2, typename Index2 >
    void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 #endif   
@@ -162,10 +187,16 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    protected:
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
    tnlVector< RealType, DeviceType, IndexType > values;
+
+   typedef tnlTridiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;
 };
 
 #include <implementation/matrices/tnlTridiagonalMatrix_impl.h>

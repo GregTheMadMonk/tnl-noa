@@ -21,6 +21,9 @@
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlMultidiagonalMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
@@ -30,6 +33,10 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
+   typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlMultidiagonalMatrix();
 
@@ -44,8 +51,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getRowLength( const IndexType row ) const;
 
-   bool setDiagonals( const IndexType diagonalsNumber,
-                      const IndexType* diagonalsShift );
+   template< typename Vector >
+   bool setDiagonals( const Vector& diagonals );
 
    const tnlVector< Index, Device, Index >& getDiagonals() const;
 
@@ -141,8 +148,16 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                 RealType* values ) const;
 
    template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   typename Vector::RealType rowVectorProduct( const IndexType row,
+                                               const Vector& vector ) const;
+
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
@@ -175,9 +190,20 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                          const IndexType column,
                          IndexType& index ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool getElementIndexFast( const IndexType row,
+                             const IndexType column,
+                             IndexType& index ) const;
+
    tnlVector< Real, Device, Index > values;
 
    tnlVector< Index, Device, Index > diagonalsShift;
+
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlMultidiagonalMatrixDeviceDependentCode< DeviceType >;
+
 
 };
 

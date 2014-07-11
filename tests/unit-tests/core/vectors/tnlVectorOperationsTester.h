@@ -61,7 +61,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "getVectorDifferenceSumTest", &tnlVectorOperationsTester::getVectorDifferenceSumTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorScalarMultiplicationTest", &tnlVectorOperationsTester::vectorScalarMultiplicationTest ) );
       suiteOfTests -> addTest( new TestCallerType( "getSclaraProductTest", &tnlVectorOperationsTester::getVectorScalarProductTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusYTest", &tnlVectorOperationsTester::alphaXPlusYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "addVectorTest", &tnlVectorOperationsTester::addVectorTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaYTest", &tnlVectorOperationsTester::alphaXPlusBetaYTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZTest", &tnlVectorOperationsTester::alphaXPlusBetaZTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZPlusYTest", &tnlVectorOperationsTester::alphaXPlusBetaZPlusYTest ) );
@@ -149,7 +149,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
@@ -159,7 +159,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
@@ -169,7 +169,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorAbsMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
@@ -179,7 +179,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorAbsMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
@@ -189,7 +189,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorLpNormTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
@@ -199,7 +199,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorSumTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
@@ -213,7 +213,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -225,7 +225,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -233,12 +233,12 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       setOnesSequence( v );
 
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( u, v ) == -1 );
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -1234565 );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -123454 );
    }
 
    void getVectorDifferenceAbsMaxTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -250,7 +250,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void getVectorDifferenceAbsMinTest()
    {
-      const int size( 1234567 );
+      const int size( 123456 );
       tnlVector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
@@ -311,15 +311,15 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getScalarProduct( u, v ) == 1.0 );
    }
 
-   void alphaXPlusYTest()
+   void addVectorTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y;
       x.setSize( size );
       y.setSize( size );
       setLinearSequence( x );
       setOnesSequence( y );
-      tnlVectorOperations< Device >:: alphaXPlusY( y, x, 3.0 );
+      tnlVectorOperations< Device >::addVector( y, x, 3.0 );
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );
@@ -327,7 +327,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaYTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y;
       x.setSize( size );
       y.setSize( size );
@@ -341,7 +341,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaZTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y, z;
       x.setSize( size );
       y.setSize( size );
@@ -356,7 +356,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void alphaXPlusBetaZPlusYTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > x, y, z;
       x.setSize( size );
       y.setSize( size );
@@ -372,7 +372,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void prefixSumTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
       v.setName( "prefixSumTest::v" );
@@ -396,7 +396,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
    void exclusivePrefixSumTest()
    {
-      const int size( 65536 );
+      const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
       v.setName( "exclusivePrefixSumTest::v" );

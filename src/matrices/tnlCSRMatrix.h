@@ -21,6 +21,12 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Real >
+class tnlCusparseCSRMatrix;
+
+template< typename Device >
+class tnlCSRMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -30,6 +36,12 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef tnlCSRMatrix< Real, Device, Index > ThisType;
+   typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
+
+
+   enum SPMVCudaKernel { scalar, vector, hybrid };
 
    tnlCSRMatrix();
 
@@ -48,12 +60,6 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setLike( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix );
 
    void reset();
-
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
-
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlCSRMatrix< Real2, Device2, Index2 >& matrix ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -131,10 +137,14 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename InVector, typename OutVector >
+   template< typename InVector,
+             typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
 
@@ -163,9 +173,56 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void print( ostream& str ) const;
 
+   void setCudaKernelType( const SPMVCudaKernel kernel );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   SPMVCudaKernel getCudaKernelType() const;
+
+   void setCudaWarpSize( const int warpSize );
+
+   int getCudaWarpSize() const;
+
+   void setHybridModeSplit( const IndexType hybridModeSplit );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getHybridModeSplit() const;
+
+#ifdef HAVE_CUDA
+
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+   __device__
+   void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
+                                                                 OutVector& outVector,
+                                                                 const IndexType warpStart,
+                                                                 const IndexType warpEnd,
+                                                                 const IndexType inWarpIdx ) const;
+
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+   __device__
+   void vectorProductCuda( const InVector& inVector,
+                           OutVector& outVector,
+                           int gridIdx ) const;
+#endif
+
    protected:
 
    tnlVector< Index, Device, Index > rowPointers;
+
+   SPMVCudaKernel spmvCudaKernel;
+
+   int cudaWarpSize, hybridModeSplit;
+
+   typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;
+   friend class tnlCusparseCSRMatrix< RealType >;
 
 };
 

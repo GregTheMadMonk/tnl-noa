@@ -65,7 +65,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
-   this -> setResidue( this -> getMaxResidue() + 1.0 );
+   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
 
    RealType tau, theta, eta, rho, alpha;
    const RealType bNorm = b. lpNorm( 2.0 );
@@ -92,7 +92,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
 
    while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getMaxResidue() )
+          this -> getResidue() > this -> getConvergenceResidue() )
    {
       //dbgCout( "Starting TFQMR iteration " << iter + 1 );
 
@@ -101,10 +101,10 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          //cerr << "rho = " << rho << endl;
          alpha = rho / v. scalarProduct( this -> r_ast );
          //cerr << "new alpha = " << alpha << endl;
-         u_new. alphaXPlusY( -alpha, v );
+         u_new.addVector( v, -alpha );
       }
       matrix -> vectorProduct( u, Au );
-      w. alphaXPlusY( -alpha, Au );
+      w.addVector( Au, -alpha );
       //cerr << "alpha = " << alpha << endl;
       //cerr << "theta * theta / alpha * eta = " << theta * theta / alpha * eta << endl;
       d. alphaXPlusBetaY( 1.0, u, theta * theta / alpha * eta );
@@ -113,17 +113,17 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       tau = tau * theta * c;
       eta = c * c  * alpha;
       //cerr << "eta = " << eta << endl;
-      x. alphaXPlusY( eta, d );
+      x.addVector( d, eta );
       if( this -> getIterations() % 2 == 1 )
       {
          const RealType rho_new  = w. scalarProduct( this -> r_ast );
          const RealType beta = rho_new / rho;
          rho = rho_new;
          matrix -> vectorProduct( u, Au );
-         Au. alphaXPlusY( beta, v );
-         u. alphaXPlusBetaY( 1.0, w, beta );
+         Au.addVector( v, beta );
+         u.addVector( w, 1.0, beta );
          matrix -> vectorProduct( u, Au_new );
-         v. alphaXPlusBetaZ( 1.0, Au_new, beta, Au );
+         v.alphaXPlusBetaZ( 1.0, Au_new, beta, Au );
       }
       
       //this -> setResidue( residue );
@@ -135,7 +135,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getMaxResidue() ) return false;
+      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 

@@ -42,6 +42,13 @@ class tnlSharedArray : public tnlObject
 
    tnlSharedArray();
 
+   tnlSharedArray( Element* _data,
+                   const Index _size );
+
+   tnlSharedArray( tnlArray< Element, Device, Index >& array );
+
+   tnlSharedArray( tnlSharedArray< Element, Device, Index >& array );
+
    tnlString getType() const;
 
    void bind( Element* _data,

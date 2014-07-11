@@ -28,12 +28,15 @@ class tnlCuda
 {
    public:
 
+   enum { DeviceType = tnlCudaDevice };
+
    static tnlString getDeviceType();
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
    static inline tnlDeviceEnum getDevice();
+
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -48,8 +51,12 @@ class tnlCuda
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-static inline int getWarpSize();
+   static inline int getWarpSize();
 
+#ifdef HAVE_CUDA
+   template< typename Index >
+   __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
+#endif
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -58,10 +65,18 @@ static inline int getWarpSize();
 
    static int getGPUTransferBufferSize();
 
+#ifdef HAVE_CUDA
    static size_t getFreeMemory();
 
    template< typename ObjectType >
    static ObjectType* passToDevice( const ObjectType& object );
+
+   template< typename ObjectType >
+   static ObjectType passFromDevice( const ObjectType& object );
+
+   template< typename ObjectType >
+   static void passFromDevice( const ObjectType& deviceObject,
+                               ObjectType& hostObject );
 
    template< typename ObjectType >
    static void freeFromDevice( ObjectType* object );
@@ -71,8 +86,10 @@ static inline int getWarpSize();
    static __device__ Index getInterleaving( const Index index );
 #endif
 
+#endif /* HAVE_CUDA */
 
    static bool checkDevice( const char* file_name, int line );
+
 };
 
 #define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )

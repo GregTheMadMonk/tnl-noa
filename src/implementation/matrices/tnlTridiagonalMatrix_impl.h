@@ -21,6 +21,9 @@
 #include <core/tnlAssert.h>
 #include <matrices/tnlTridiagonalMatrix.h>
 
+template< typename Device >
+class tnlTridiagonalMatrixDeviceDependentCode;
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -58,6 +61,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType
    if( ! values.setSize( 3*Min( rows, columns ) ) )
       return false;
    this->values.setValue( 0.0 );
+   return true;
 }
 
 template< typename Real,
@@ -174,7 +178,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setElementFast( const IndexTyp
                                                                   const IndexType column,
                                                                   const RealType& value )
 {
-   this->values.setElement( this->getElementIndex( row, column ), value );
+   this->values[ this->getElementIndex( row, column ) ] = value;
    return true;
 }
 
@@ -189,7 +193,6 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setElement( const IndexType ro
    return true;
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -201,7 +204,8 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addElementFast( const IndexTyp
                                                                   const RealType& value,
                                                                   const RealType& thisElementMultiplicator )
 {
-   this->values.addElement( this->getElementIndex( row, column ), value, thisElementMultiplicator );
+   const Index i = this->getElementIndex( row, column );
+   this->values[ i ] = thisElementMultiplicator*this->values[ i ] + value;
 }
 
 template< typename Real,
@@ -212,9 +216,9 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addElement( const IndexType ro
                                                               const RealType& value,
                                                               const RealType& thisElementMultiplicator )
 {
-   //this->values.addElement( this->getElementIndex( row, column ), value, thisElementMultiplicator );
+   const Index i = this->getElementIndex( row, column );
+   this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value );
 }
-
 
 template< typename Real,
           typename Device,
@@ -231,7 +235,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType ro
             cerr << " elements = " << elements
                  << " this->columns = " << this->columns
                  << " this->getName() = " << this->getName() );
-   return this->addRow( row, columns, values, elements, 0.0 );
+   return this->addRowFast( row, columns, values, elements, 0.0 );
 }
 
 template< typename Real,
@@ -246,9 +250,8 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
             cerr << " elements = " << elements
                  << " this->columns = " << this->columns
                  << " this->getName() = " << this->getName() );
-   //return this->addRow( row, columns, values, elements, 0.0 );
+   return this->addRow( row, columns, values, elements, 0.0 );
 }
-
 
 template< typename Real,
           typename Device,
@@ -273,7 +276,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType ro
       const IndexType& column = columns[ i ];
       if( column < row - 1 || column > row + 1 )
          return false;
-      addElement( row, column, values[ i ], thisRowMultiplicator );
+      addElementFast( row, column, values[ i ], thisRowMultiplicator );
    }
    return true;
 }
@@ -291,16 +294,16 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
             cerr << " elements = " << elements
                  << " this->columns = " << this->columns
                  << " this->getName() = " << this->getName() );
-   /*if( elements > 3 )
+   if( elements > 3 )
       return false;
    for( IndexType i = 0; i < elements; i++ )
    {
-      const IndexType& column = columns[ i ];
+      const IndexType column = columns[ i ];
       if( column < row - 1 || column > row + 1 )
          return false;
       addElement( row, column, values[ i ], thisRowMultiplicator );
    }
-   return true;*/
+   return true;
 }
 
 template< typename Real,
@@ -314,7 +317,7 @@ Real tnlTridiagonalMatrix< Real, Device, Index >::getElementFast( const IndexTyp
 {
    if( abs( column - row ) > 1 )
       return 0.0;
-   return this->values.getElement( this->getElementIndex( row, column ) );
+   return this->values[ this->getElementIndex( row, column ) ];
 }
 
 template< typename Real,
@@ -323,9 +326,10 @@ template< typename Real,
 Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                               const IndexType column ) const
 {
-   return this->getElementFast( row, column );
+   if( abs( column - row ) > 1 )
+      return 0.0;
+   return this->values.getElement( this->getElementIndex( row, column ) );
 }
-
 
 template< typename Real,
           typename Device,
@@ -357,63 +361,43 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
 {
-   /*IndexType elementPointer( 0 );
+   IndexType elementPointer( 0 );
    for( IndexType i = -1; i <= 1; i++ )
    {
       const IndexType column = row + 1;
       if( column >= 0 && column < this->getColumns() )
       {
          columns[ elementPointer ] = column;
-         values[ elementPointer ] = this->values[ this->getElementIndex( row, column ) ];
+         values[ elementPointer ] = this->values.getElement( this->getElementIndex( row, column ) );
          elementPointer++;
       }
-   }*/
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real& tnlTridiagonalMatrix< Real, Device, Index >::operator()( const IndexType row,
-                                                               const IndexType column )
-{
-   return this->values[ this->getElementIndex( row, column ) ];
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-const Real& tnlTridiagonalMatrix< Real, Device, Index >::operator()( const IndexType row,
-                                                                     const IndexType column ) const
-{
-   return this->values[ this->getElementIndex( row, column ) ];
+   }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 typename Vector::RealType tnlTridiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                          const Vector& vector ) const
 {
-   if( row == 0 )
-      return vector[ 0 ] * this->values[ 0 ] +
-             vector[ 1 ] * this->values[ 1 ];
-   IndexType i = 3 * row - 1;
-   if( row == this->rows - 1 )
-      return vector[ row - 1 ] * this->values[ i++ ] +
-             vector[ row ] * this->values[ i ];
-   return vector[ row - 1 ] * this->values[ i++ ] +
-          vector[ row ] * this->values[ i++ ] +
-          vector[ row + 1 ] * this->values[ i ];
+   return tnlTridiagonalMatrixDeviceDependentCode< Device >::
+             rowVectorProduct( this->rows,
+                               this->values,
+                               row,
+                               vector );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                 Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                                 OutVector& outVector ) const
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
             cerr << "Matrix columns: " << this->getColumns() << endl
@@ -426,8 +410,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& i
                     << "Vector size: " << outVector.getSize() << endl
                     << "Vector name: " << outVector.getName() << endl );
 
-   for( IndexType row = 0; row < this->getRows(); row++ )
-      outVector[ row ] = this->rowVectorProduct( row, inVector );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -443,38 +426,84 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
                  << "This matrix rows: " << this->getRows() << endl
                  << "This matrix name: " << this->getName() << endl );
 
-   const IndexType lastI = this->values.getSize();
    if( thisMatrixMultiplicator == 1.0 )
-   {
-      for( IndexType i = 0; i < lastI; i++ )
-         this->values[ i ] += matrixMultiplicator*matrix.values[ i ];
-   }
+      this->values.addVector( matrix.values, matrixMultiplicator );
    else
+      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
+}
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Real2,
+          typename Index,
+          typename Index2 >          
+__global__ void tnlTridiagonalMatrixTranspositionCudaKernel( const tnlTridiagonalMatrix< Real2, tnlCuda, Index2 >* inMatrix,
+                                                             tnlTridiagonalMatrix< Real, tnlCuda, Index >* outMatrix,
+                                                             const Real matrixMultiplicator,
+                                                             const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx < inMatrix->getRows() )
    {
-      for( IndexType i = 0; i < lastI; i++ )
-         this->values[ i ] = thisMatrixMultiplicator * this->values[ i ] +
-            matrixMultiplicator*matrix.values[ i ];
+      if( rowIdx > 0 )
+        outMatrix->setElementFast( rowIdx-1,
+                                   rowIdx,
+                                   matrixMultiplicator * inMatrix->getElementFast( rowIdx, rowIdx-1 ) );
+      outMatrix->setElementFast( rowIdx,
+                                 rowIdx,
+                                 matrixMultiplicator * inMatrix->getElementFast( rowIdx, rowIdx ) );
+      if( rowIdx < inMatrix->getRows()-1 )
+         outMatrix->setElementFast( rowIdx+1,
+                                    rowIdx,
+                                    matrixMultiplicator * inMatrix->getElementFast( rowIdx, rowIdx+1 ) );
    }
 }
+#endif
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Real2, typename Index2, int tileDim >
+   template< typename Real2, typename Index2 >
 void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
    tnlAssert( this->getRows() == matrix.getRows(),
                cerr << "This matrix rows: " << this->getRows() << endl
                     << "That matrix rows: " << matrix.getRows() << endl );
-
-   const IndexType& rows = matrix.getRows();
-   for( IndexType i = 1; i < rows; i++ )
+   if( Device::getDevice() == tnlHostDevice )
    {
-      RealType aux = matrix. getElement( i, i - 1 );
-      this->setElement( i, i - 1, matrix.getElement( i - 1, i ) );
-      this->setElement( i, i, matrix.getElement( i, i ) );
-      this->setElement( i - 1, i, aux );
+      const IndexType& rows = matrix.getRows();
+      for( IndexType i = 1; i < rows; i++ )
+      {
+         RealType aux = matrix. getElement( i, i - 1 );
+         this->setElement( i, i - 1, matrix.getElement( i - 1, i ) );
+         this->setElement( i, i, matrix.getElement( i, i ) );
+         this->setElement( i - 1, i, aux );
+      }
+   }
+   if( Device::getDevice() == tnlCudaDevice )
+   {
+#ifdef HAVE_CUDA
+      ThisType* kernel_this = tnlCuda::passToDevice( *this );
+      typedef  tnlTridiagonalMatrix< Real2, Device, Index2 > InMatrixType;
+      InMatrixType* kernel_inMatrix = tnlCuda::passToDevice( matrix );
+      dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+      const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+      const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+      {
+         if( gridIdx == cudaGrids - 1 )
+            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+         tnlTridiagonalMatrixTranspositionCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                                    ( kernel_inMatrix,
+                                                      kernel_this,
+                                                      matrixMultiplicator,
+                                                      gridIdx );
+      }
+      tnlCuda::freeFromDevice( kernel_this );
+      tnlCuda::freeFromDevice( kernel_inMatrix );
+      checkCudaDevice;
+#endif
    }
 }
 
@@ -547,7 +576,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
       str <<"Row: " << row << " -> ";
       for( IndexType column = row - 1; column < row + 2; column++ )
          if( column >= 0 && column < this->columns )
-            str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
+            str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
       str << endl;
    }
 }
@@ -555,17 +584,123 @@ void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                     const IndexType column ) const
 {
+   // TODO: remove the #ifndef when CUDA supports std:cerr
+#ifndef HAVE_CUDA   
    tnlAssert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
               cerr << " this->rows = " << this->rows
                    << " row = " << row << " column = " << column );
    tnlAssert( abs( row - column ) < 2,
               cerr << "row = " << row << " column = " << column << endl );
-   return 3*row + column - row;
+#endif   
+   return tnlTridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }
 
+template<>
+class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Index >
+      static Index getElementIndex( const Index rows,
+                                    const Index row,
+                                    const Index column )
+      {
+         return 3*row + column - row;
+      }
+
+      template< typename Vector,
+                typename Index,
+                typename ValuesType  >
+      static typename Vector::RealType rowVectorProduct( const Index rows,
+                                                         const ValuesType& values,
+                                                         const Index row,
+                                                         const Vector& vector )
+      {
+         if( row == 0 )
+            return vector[ 0 ] * values[ 0 ] +
+                   vector[ 1 ] * values[ 1 ];
+         Index i = 3 * row - 1;
+         if( row == rows - 1 )
+            return vector[ row - 1 ] * values[ i++ ] +
+                   vector[ row ] * values[ i ];
+         return vector[ row - 1 ] * values[ i++ ] +
+                vector[ row ] * values[ i++ ] +
+                vector[ row + 1 ] * values[ i ];
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlTridiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
+};
+
+template<>
+class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+      
+      typedef tnlCuda Device;
+
+      template< typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getElementIndex( const Index rows,
+                                    const Index row,
+                                    const Index column )
+      {
+         return ( column - row + 1 )*rows + row - 1;
+      }
+
+      template< typename Vector,
+                typename Index,
+                typename ValuesType >
+#ifdef HAVE_CUDA
+      __device__
+#endif
+      static typename Vector::RealType rowVectorProduct( const Index rows,
+                                                         const ValuesType& values,
+                                                         const Index row,
+                                                         const Vector& vector )
+      {
+         if( row == 0 )
+            return vector[ 0 ] * values[ 0 ] +
+                   vector[ 1 ] * values[ rows - 1 ];
+         Index i = row - 1;
+         if( row == rows - 1 )
+            return vector[ row - 1 ] * values[ i ] +
+                   vector[ row ] * values[ i + rows ];
+         return vector[ row - 1 ] * values[ i ] +
+                vector[ row ] * values[ i + rows ] +
+                vector[ row + 1 ] * values[ i + 2*rows ];
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlTridiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+      }
+};
 
 
 

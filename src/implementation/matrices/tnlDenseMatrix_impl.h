@@ -352,27 +352,13 @@ typename Vector::RealType tnlDenseMatrix< Real, Device, Index >::rowVectorProduc
    return sum;
 }
 
-#ifdef HAVE_CUDA
-template< typename Real,
-          typename Index,
-          typename Vector >
-__global__ void tnlDenseMatrixVectorProductCudaKernel( tnlDenseMatrix< Real, tnlCuda, Index >* matrix,
-                                                       const Vector* inVector,
-                                                       Vector* outVector,
-                                                       const Index gridIdx )
-{
-   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( rowIdx < matrix->getRows() )
-      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
-}
-#endif
-
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                           Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                           OutVector& outVector ) const
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
             cerr << "Matrix columns: " << this->getColumns() << endl
@@ -385,31 +371,7 @@ void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const Vector& inVecto
                     << "Vector size: " << outVector.getSize() << endl
                     << "Vector name: " << outVector.getName() << endl );
 
-   if( Device::getDevice() == tnlHostDevice )
-      for( IndexType row = 0; row < this->getRows(); row++ )
-         outVector[ row ] = rowVectorProduct( row, inVector );
-   if( Device::getDevice() == tnlCudaDevice )
-   {
-#ifdef HAVE_CUDA
-      ThisType* kernel_this = tnlCuda::passToDevice( *this );
-      Vector* kernel_inVector = tnlCuda::passToDevice( inVector );
-      Vector* kernel_outVector = tnlCuda::passToDevice( outVector );
-      dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
-      const IndexType cudaBlocks = roundUpDivision( this->getRows(), cudaBlockSize.x );
-      const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
-      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-      {
-         if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-         tnlDenseMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
-                                                 ( kernel_this, kernel_inVector, kernel_outVector, gridIdx );
-      }
-      tnlCuda::freeFromDevice( kernel_this );
-      tnlCuda::freeFromDevice( kernel_inVector );
-      tnlCuda::freeFromDevice( kernel_outVector );
-      checkCudaDevice;
-#endif
-   }
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -430,9 +392,9 @@ void tnlDenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
                  << "That matrix name: " << matrix.getName() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-      this->values.alphaXPlusY( matrixMultiplicator, matrix.values );
+      this->values.addVector( matrix.values, matrixMultiplicator );
    else
-      this->values.alphaXPlusBetaY( matrixMultiplicator, matrix.values, thisMatrixMultiplicator );
+      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
 }
 
 #ifdef HAVE_CUDA
@@ -948,5 +910,43 @@ Index tnlDenseMatrix< Real, Device, Index >::getElementIndex( const IndexType ro
       return column * this->rows + row;
 }
 
+template<>
+class tnlDenseMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlDenseMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
+};
+
+template<>
+class tnlDenseMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlDenseMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+      }
+};
 
 #endif /* TNLDENSEMATRIX_IMPL_H_ */

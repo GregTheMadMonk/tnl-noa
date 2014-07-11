@@ -21,6 +21,9 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlEllpackMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlHost, typename Index = int >
 class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -29,7 +32,13 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef tnlEllpackMatrix< Real, Device, Index > ThisType;
+   typedef tnlEllpackMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlEllpackMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlEllpackMatrix();
 
@@ -56,6 +65,10 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+
+   /*template< typename Matrix >
+   bool copyFrom( const Matrix& matrix,
+                  const RowLengthsVector& rowLengths );*/
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -131,9 +144,17 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   typename Vector::RealType rowVectorProduct( const IndexType row,
+                                               const Vector& vector ) const;
+
+   template< typename InVector,
+             typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlEllpackMatrix< Real2, Device, Index2 >& matrix,
@@ -164,7 +185,10 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    bool allocateElements();
 
-   IndexType rowLengths;
+   IndexType rowLengths, alignedRows;
+
+   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlEllpackMatrixDeviceDependentCode< DeviceType >;
 };
 
 #include <implementation/matrices/tnlEllpackMatrix_impl.h>

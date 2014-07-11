@@ -122,10 +122,11 @@ extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, l
 
 
 #ifdef HAVE_CUDA
-extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
+// TODO: fix this - does not work with CUDA 5.5
+/*extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;*/
 
 /*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;

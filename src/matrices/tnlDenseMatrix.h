@@ -22,6 +22,9 @@
 #include <matrices/tnlMatrix.h>
 #include <core/arrays/tnlArray.h>
 
+template< typename Device >
+class tnlDenseMatrixDeviceDependentCode;
+
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
@@ -34,6 +37,9 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
+   typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
+
 
    tnlDenseMatrix();
 
@@ -145,9 +151,9 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector, typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Matrix >
    void addMatrix( const Matrix& matrix,
@@ -202,6 +208,8 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
+   typedef tnlDenseMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlDenseMatrixDeviceDependentCode< DeviceType >;
 
 };
 

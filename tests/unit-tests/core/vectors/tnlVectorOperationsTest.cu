@@ -20,7 +20,11 @@
  
 int main( int argc, char* argv[] )
 {
+#ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlVectorOperationsTester< double, tnlCuda > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
 }

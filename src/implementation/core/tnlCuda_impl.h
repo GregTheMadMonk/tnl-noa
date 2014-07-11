@@ -54,6 +54,15 @@ inline int tnlCuda::getWarpSize()
 }
 
 #ifdef HAVE_CUDA
+template< typename Index >
+__device__ Index tnlCuda::getGlobalThreadIdx( const Index gridIdx )
+{
+   return ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+}
+#endif
+
+
+#ifdef HAVE_CUDA
 __host__ __device__
 #endif
 inline int tnlCuda::getNumberOfSharedMemoryBanks()
@@ -62,6 +71,7 @@ inline int tnlCuda::getNumberOfSharedMemoryBanks()
    return 32;
 }
 
+#ifdef HAVE_CUDA
 
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
@@ -88,15 +98,35 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 }
 
 template< typename ObjectType >
-void tnlCuda::freeFromDevice( ObjectType* deviceObject )
+ObjectType tnlCuda::passFromDevice( const ObjectType& object )
 {
-#ifdef HAVE_CUDA
-   cudaFree( deviceObject );
+
+   ObjectType aux;
+   cudaMemcpy( ( void* ) &aux,
+               ( void* ) &object,
+               sizeof( ObjectType ),
+               cudaMemcpyDeviceToHost );
    checkCudaDevice;
-#endif
+   return aux;
 }
 
-#ifdef HAVE_CUDA
+template< typename ObjectType >
+void tnlCuda::passFromDevice( const ObjectType& deviceObject,
+                              ObjectType& hostObject )
+{
+   cudaMemcpy( ( void* ) &hostObject,
+               ( void* ) &deviceObject,
+               sizeof( ObjectType ),
+               cudaMemcpyDeviceToHost );
+   checkCudaDevice;
+}
+
+template< typename ObjectType >
+void tnlCuda::freeFromDevice( ObjectType* deviceObject )
+{
+   cudaFree( deviceObject );
+   checkCudaDevice;
+}
 
 template< typename Index >
 __device__ Index tnlCuda::getInterleaving( const Index index )
@@ -122,7 +152,9 @@ __device__ inline getSharedMemory< long int >::operator long int*()
    extern __shared__ long int __sharedMemoryLongInt[];
    return ( long int* ) __sharedMemoryLongInt;
 };
-#endif
+
+#endif /* HAVE_CUDA */
+
 
 
 #endif /* TNLCUDA_IMPL_H_ */

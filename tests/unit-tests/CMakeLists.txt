@@ -19,7 +19,7 @@ set( headers tnlUnitTestStarter.h
              
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-unit-tests${mpiExt}${debugExt} ${headers} tnl-unit-tests.cu
-                         OPTIONS -arch sm_20 -shared )
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
 else()
@@ -72,7 +72,26 @@ if( BUILD_CUDA )
    SET_TESTS_PROPERTIES ( core/vectors/tnlVectorTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorOperationsTest-cuda${mpiExt}${debugExt} )
    
    ADD_TEST( matrices/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} )
-   SET_TESTS_PROPERTIES ( matrices/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorTest-cuda${mpiExt}${debugExt} )         
+   SET_TESTS_PROPERTIES ( matrices/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlVectorTest-cuda${mpiExt}${debugExt} )
+   
+   ADD_TEST( matrices/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlDenseMatrixTest-cuda${mpiExt}${debugExt} )         
+            
+   ADD_TEST( matrices/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlTridiagonalMatrixTest-cuda${mpiExt}${debugExt} )         
+            
+   ADD_TEST( matrices/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlMultidiagonalMatrixTest-cuda${mpiExt}${debugExt} )
+   
+   ADD_TEST( matrices/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlEllpackMatrixTest-cuda${mpiExt}${debugExt} )         
+   
+   ADD_TEST( matrices/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlSlicedEllpackMatrixTest-cuda${mpiExt}${debugExt} )
+   
+   ADD_TEST( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} )                     
+                        
             
 endif()
 
