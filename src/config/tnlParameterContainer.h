@@ -130,7 +130,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == GetParameterType( value ) )
+         if( parameters[ i ] -> type == getParameterType< T >() )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -139,7 +139,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
          {
             cerr << "Parameter " << name << " already exists with different type " 
                  << parameters[ i ] -> type << " not "
-                 << GetParameterType( value ) << endl;
+                 << getParameterType< T >() << endl;
             abort( ); 
             return false;
          }
