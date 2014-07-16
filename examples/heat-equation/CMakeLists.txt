@@ -1,4 +1,4 @@
-INSTALL( FILES Makefile
+set( tnl_heat_equation_SOURCES
                tnlZeroRightHandSide_impl.h
                tnlZeroRightHandSide.h
                tnlTimeFunction_impl.h
@@ -13,15 +13,24 @@ INSTALL( FILES Makefile
                tnlDirichletBoundaryConditions.h
                tnlAnalyticSolution_impl.h
                tnlAnalyticSolution.h
-               run-init-mesh
-               run-heat-equation-testy-laplace-konvergence
-               run-heat-equation-testy-konvergence
-               run-heat-equation
                main.cpp
                heatEquationSolver_impl.h
                heatEquationSolver.h
                heatEquationSetter_impl.h
-               heatEquationSetter.h
+               heatEquationSetter.h )
+               
+ADD_EXECUTABLE(tnl-heat-equation${debugExt} ${tnl_heat_equation_SOURCES})
+target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+
+INSTALL( TARGETS tnl-heat-equation${debugExt}
+         RUNTIME DESTINATION bin
+         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+        
+INSTALL( FILES #Makefile
+               run-init-mesh
+               run-heat-equation-testy-laplace-konvergence
+               run-heat-equation-testy-konvergence
+               run-heat-equation
                heat-equation.cfg.desc
 					debugging_parameters
 					EOCtest
