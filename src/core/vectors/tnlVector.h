@@ -56,10 +56,16 @@ class tnlVector : public tnlArray< Real, Device, Index >
    tnlVector< Real, Device, Index >& operator = ( const Vector& vector );
 
    template< typename Vector >
-   bool operator == ( const Vector& array ) const;
+   bool operator == ( const Vector& vector ) const;
 
    template< typename Vector >
-   bool operator != ( const Vector& array ) const;
+   bool operator != ( const Vector& vector ) const;
+
+   template< typename Vector >
+   tnlVector< Real, Device, Index >& operator -= ( const Vector& vector );
+
+   template< typename Vector >
+   tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
 
    Real max() const;
 

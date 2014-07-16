@@ -20,133 +20,116 @@
 
 #include <core/tnlString.h>
 #include <core/tnlList.h>
+#include <core/param-types.h>
+#include <config/tnlConfigEntryType.h>
+#include <config/tnlConfigEntry.h>
+#include <config/tnlConfigEntryList.h>
+#include <config/tnlConfigDelimiter.h>
 
 class tnlParameterContainer;
 
-struct tnlConfigGroup
-{
-   tnlString name;
-
-   tnlString comment;
-
-   tnlConfigGroup( const char* _name, 
-                 const char* _comment )
-      : name( _name ),
-        comment( _comment ){};
-};
-
-struct tnlConfigEntryType
-{
-   tnlString basic_type;
-
-   bool list_entry;
-
-   tnlConfigEntryType(){};
-   
-   tnlConfigEntryType( const tnlString& _basic_type,
-                     const bool _list_entry )
-   : basic_type( _basic_type ),
-     list_entry( _list_entry ){}
-
-   void Reset()
-   {
-      basic_type. setString( 0 );
-      list_entry = false;
-   };
-};
-
-struct tnlConfigEntryBase
-{
-   tnlString name;
-
-   tnlConfigEntryType type;
-
-   tnlString group;
-
-   tnlString comment;
-
-   bool required;
-
-   bool has_default_value;
-
-   tnlConfigEntryBase( const char* _name,
-                     const tnlConfigEntryType& _type,
-                     const char* _group,
-                     const char* _comment,
-                     bool _required )
-      : name( _name ),
-        type( _type ),
-        group( _group ),
-        comment( _comment ),
-        required( _required ),
-        has_default_value( false ){}
-
-};
-
-template< class T > struct tnlConfigEntry : public tnlConfigEntryBase
-{
-   T default_value;
-
-   public:
-   tnlConfigEntry( const char* _name,
-                 const tnlConfigEntryType& _type,
-                 const char* _group,
-                 const char* _description,
-                 const T& _default_value )
-      : tnlConfigEntryBase( _name,
-                          _type,
-                          _group,
-                          _description,
-                          false ),
-        default_value( _default_value ) 
-      {
-         has_default_value = true;
-      }
-
-};
-
-//! Class containing description of the configuration parameters
 class tnlConfigDescription
 {
    public:
 
    tnlConfigDescription();
 
-   void AddGroup( const char* name,
-                  const char* description );
-
-   void AddEntry( const char* name,
-                  const tnlConfigEntryType& type,
-                  const char* group,
-                  const char* comment,
-                  bool required );
-   
-   template< class T > void AddEntryWithDefaultValue( const char* name,
-                                                      const tnlConfigEntryType& type,
-                                                      const char* group,
-                                                      const char* comment,
-                                                      const T& default_value )
+   template< typename EntryType >
+   void addEntry( const char* name,
+                  const char* description )
    {
-      entries. Append( new tnlConfigEntry< T >( name,
-                                              type,
-                                              group,
-                                              comment,
-                                              default_value ) );
+      currentEntry = new tnlConfigEntry< EntryType >( name, description, false );
+      entries.Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addRequiredEntry( const char* name,
+                          const char* description )
+   {
+      currentEntry = new tnlConfigEntry< EntryType >( name, description, true );
+      entries.Append( currentEntry );
+   }
+   
+   template< typename EntryType >
+   void addEntry( const char* name,
+                  const char* description,
+                  const EntryType& defaultValue )
+   {
+      currentEntry = new tnlConfigEntry< EntryType >( name,
+                                                      description,
+                                                      false,
+                                                      defaultValue );
+      entries. Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addList( const char* name,
+                 const char* description )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name, description, false );
+      entries.Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addRequiredList( const char* name,
+                         const char* description )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name, description, true );
+      entries.Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addList( const char* name,
+                 const char* description,
+                 const EntryType& defaultValue )
+   {
+      currentEntry = new tnlConfigEntryList< EntryType >( name,
+                                                          description,
+                                                          false,
+                                                          defaultValue );
+      entries. Append( currentEntry );
+   }
+
+   template< typename EntryType >
+   void addEntryEnum( const EntryType& entryEnum )
+   {
+      tnlAssert( this->currentEntry,);
+      ( ( tnlConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
+   }
+
+   void addEntryEnum( const char* entryEnum )
+   {
+      tnlAssert( this->currentEntry,);
+      ( ( tnlConfigEntry< tnlString >* ) currentEntry )->getEnumValues().Append( tnlString( entryEnum ) );
+   }
+
+   void addDelimiter( const char* delimiter )
+   {
+      entries.Append( new tnlConfigDelimiter( delimiter ) );
+      currentEntry = 0;
+   }
+
+   const tnlConfigEntryBase* getEntry( const char* name ) const
+   {
+      for( int i = 0; i < entries.getSize(); i++ )
+         if( entries[ i ]->name == name )
+            return entries[ i ];
+      return NULL;
    }
 
    
-   //! Returns zero if given entry does not exist
-   const tnlConfigEntryType* GetEntryType( const char* name ) const;
+   //! Returns empty string if given entry does not exist
+   //const tnlString getEntryType( const char* name ) const;
 
    //! Returns zero pointer if there is no default value
-   template< class T > const T* GetDefaultValue( const char* name ) const
+   template< class T > const T* getDefaultValue( const char* name ) const
    {
       int i;
       const int entries_num = entries. getSize();
       for( i = 0; i < entries_num; i ++ )
          if( entries[ i ] -> name == name )
          {
-            if( entries[ i ] -> has_default_value )
+            if( entries[ i ] -> hasDefaultValue )
                return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
@@ -155,14 +138,14 @@ class tnlConfigDescription
    }
    
    //! Returns zero pointer if there is no default value
-   template< class T > T* GetDefaultValue( const char* name )
+   template< class T > T* getDefaultValue( const char* name )
    {
       int i;
       const int entries_num = entries. getSize();
       for( i = 0; i < entries_num; i ++ )
          if( entries[ i ] -> name == name )
          {
-            if( entries[ i ] -> has_default_value )
+            if( entries[ i ] -> hasDefaultValue )
                return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
@@ -171,25 +154,24 @@ class tnlConfigDescription
    }
 
    //! If there is missing entry with defined default value in the tnlParameterContainer it is going to be added
-   void AddMissingEntries( tnlParameterContainer& parameter_container ) const;
+   void addMissingEntries( tnlParameterContainer& parameter_container ) const;
 
    //! Check for all entries with the flag 'required'.
    /*! Returns false if any parameter is missing.
     */
-   bool CheckMissingEntries( tnlParameterContainer& parameter_container ) const;
+   bool checkMissingEntries( tnlParameterContainer& parameter_container ) const;
 
-   void PrintUsage( const char* program_name );
+   void printUsage( const char* program_name );
 
-   bool ParseConfigDescription( const char* file_name );
+   bool parseConfigDescription( const char* file_name );
 
    ~tnlConfigDescription();
 
    protected:
 
-   tnlList< tnlConfigGroup* > groups;
-
    tnlList< tnlConfigEntryBase* > entries;
 
+   tnlConfigEntryBase* currentEntry;
 
 };
 

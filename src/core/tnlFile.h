@@ -142,6 +142,10 @@ template< typename Type, typename Device, typename Index >
 bool tnlFile :: read( Type* buffer,
                       const Index& elements )
 {
+   tnlAssert( elements >= 0,
+              cerr << " elements = " << elements << endl; );
+   if( ! elements )
+      return true;
    if( ! fileOK )
    {
       cerr << "File " << fileName << " was not properly opened. " << endl;
@@ -230,6 +234,10 @@ template< class Type, typename Device, typename Index >
 bool tnlFile ::  write( const Type* buffer,
                         const Index elements )
 {
+   tnlAssert( elements >= 0,
+              cerr << " elements = " << elements << endl; );
+   if( ! elements )
+      return true;
    if( ! fileOK )
    {
       cerr << "File " << fileName << " was not properly opened. " << endl;

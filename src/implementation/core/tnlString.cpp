@@ -50,31 +50,27 @@ tnlString :: tnlString( const tnlString& str )
 }
 
 tnlString :: tnlString( int number )
+: string( 0 ), length( 0 )
 {
-   string = new char[ STRING_PAGE ];
-   length = STRING_PAGE;
-   sprintf( string, "%d", number );
+   this->setString( convertToString( number ).getString() );
 }
 
 tnlString :: tnlString( long int number )
+: string( 0 ), length( 0 )
 {
-   string = new char[ STRING_PAGE ];
-   length = STRING_PAGE;
-   sprintf( string, "%l", number );
+   this->setString( convertToString( number ).getString() );
 }
 
 tnlString :: tnlString( float number )
+: string( 0 ), length( 0 )
 {
-   string = new char[ STRING_PAGE ];
-   length = STRING_PAGE;
-   sprintf( string, "%f", number );
+   this->setString( convertToString( number ).getString() );
 }
 
 tnlString :: tnlString( double number )
+: string( 0 ), length( 0 )
 {
-   string = new char[ STRING_PAGE ];
-   length = STRING_PAGE;
-   sprintf( string, "%f", number );
+   this->setString( convertToString( number ).getString() );
 }
 
 tnlString tnlString :: getType()

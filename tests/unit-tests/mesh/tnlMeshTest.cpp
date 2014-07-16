@@ -26,7 +26,7 @@ int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
    //tnlMeshTester< double, tnlHost, long int > t;
-   //t.twoTrianglesTest();
+   //t.regularMeshOfHexahedronsTest();
    if( ! tnlUnitTestStarter :: run< tnlMeshTester< double, tnlHost, long int > >()
        )
      return EXIT_FAILURE;

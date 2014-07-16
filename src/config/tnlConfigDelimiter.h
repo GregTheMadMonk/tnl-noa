@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlDefaultSolverConrfig.h  -  description
+                          tnlConfigDelimiter.h  -  description
                              -------------------
-    begin                : Nov 29, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jul 5, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,17 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDEFAULTSOLVERCONFIG_H_
-#define TNLDEFAULTSOLVERCONFIG_H_
+#ifndef TNLCONFIGDELIMITER_H_
+#define TNLCONFIGDELIMITER_H_
 
-template< bool resolveMesh = true >
-class tnlDefaultSolverConfig
+struct tnlConfigDelimiter : public tnlConfigEntryBase
 {
-   public:
+   tnlConfigDelimiter( const char* delimiter )
+   : tnlConfigEntryBase( "", delimiter, false )
+   {
+   };
 
-   enum { ResolveMesh = resolveMesh };
+   bool isDelimiter() const { return true; };
+
+   tnlString getEntryType() const { return ""; };
+
+   tnlString getUIEntryType() const { return ""; };
 };
 
-
-
-#endif /* TNLDEFAULTSOLVERCONFIG_H_ */
+#endif /* TNLCONFIGDELIMITER_H_ */

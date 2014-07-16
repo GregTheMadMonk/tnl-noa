@@ -18,7 +18,7 @@
 #ifndef TNLMESHHEXAHEDRONTAG_H_
 #define TNLMESHHEXAHEDRONTAG_H_
 
-#include <>mesh/topology/tnlMeshQuadrilateralTag.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
 
 struct tnlMeshHexahedronTag
 {
@@ -26,7 +26,7 @@ struct tnlMeshHexahedronTag
 };
 
 template<>
-struct tnlSubentities< tnlMeshHexahedronTag, 0>
+struct tnlSubentities< tnlMeshHexahedronTag, 0 >
 {
    typedef tnlMeshVertexTag Tag;
 
@@ -34,7 +34,7 @@ struct tnlSubentities< tnlMeshHexahedronTag, 0>
 };
 
 template<>
-struct tnlSubentities< tnlMeshHexahedronTag, 1>
+struct tnlSubentities< tnlMeshHexahedronTag, 1 >
 {
    typedef tnlMeshEdgeTag Tag;
 
@@ -42,12 +42,69 @@ struct tnlSubentities< tnlMeshHexahedronTag, 1>
 };
 
 template<>
-struct tnlSubentities< tnlMeshHexahedronTag, 2>
+struct tnlSubentities< tnlMeshHexahedronTag, 2 >
 {
    typedef tnlMeshQuadrilateralTag Tag;
 
    enum { count = 6 };
 };
+
+/****
+ * Indexing of the vertices follows the VTK file format
+ *
+ *        7+---------------------------+6
+ *        /|                          /|
+ *       / |                         / |
+ *      /  |                        /  |
+ *     /   |                       /   |
+ *   4+---------------------------+5   |
+ *    |    |                      |    |
+ *    |    |                      |    |
+ *    |   3+----------------------|----+2
+ *    |   /                       |   /
+ *    |  /                        |  /
+ *    | /                         | /
+ *    |/                          |/
+ *   0+---------------------------+1
+ *
+ *
+ * The edges are indexed as follows:
+ *
+ *         +---------------------------+
+ *        /|           10             /|
+ *     11/ |                         / |
+ *      /  |                        /9 |
+ *     /  7|                       /   |6
+ *    +---------------------------+    |
+ *    |    |        8             |    |
+ *    |    |                      |    |
+ *    |    +----------------------|----+
+ *   4|   /           2           |5  /
+ *    | 3/                        |  /
+ *    | /                         | /1
+ *    |/                          |/
+ *    +---------------------------+
+ *                 0
+ *
+ * The faces are indexed as follows (the indexed are positioned to
+ * the opposite corners of given face):
+ *
+ *         +---------------------------+
+ *        /|5                        3/|
+ *       /4|                         /2|
+ *      /  |                        /  |
+ *     /   |                     5 /   |
+ *    +---------------------------+    |
+ *    |1   |                      |    |
+ *    |    |3                     |    |
+ *    |    +----------------------|----+
+ *    |   /                       |  0/
+ *    |  /                        |  /
+ *    |4/                         |2/
+ *    |/0                        1|/
+ *    +---------------------------+
+ *
+ */
 
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTag, tnlMeshEdgeTag,  0, 0> { enum { index = 0 }; };
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTag, tnlMeshEdgeTag,  0, 1> { enum { index = 1 }; };

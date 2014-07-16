@@ -36,6 +36,11 @@ class tnlMesh : public tnlObject,
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
+   /*~tnlMesh()
+   {
+      cerr << "Destroying mesh " << this->getName() << endl;
+   }*/
+
    static tnlString getType()
    {
       return tnlString( "tnlMesh< ") + ConfigTag::getType() + " >";
@@ -53,7 +58,10 @@ class tnlMesh : public tnlObject,
    {
       if( ! tnlObject::save( file ) ||
           ! BaseType::save( file ) )
+      {
+         cerr << "Mesh saving failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -61,7 +69,10 @@ class tnlMesh : public tnlObject,
    {
       if( ! tnlObject::load( file ) ||
           ! BaseType::load( file ) )
+      {
+         cerr << "Mesh loading failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -77,6 +88,11 @@ class tnlMesh : public tnlObject,
       typedef typename ContainerType::ElementType                     EntityType;
       enum { available = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
    };
+
+   using BaseType::setNumberOfVertices;
+   using BaseType::getNumberOfVertices;
+   using BaseType::setVertex;
+   using BaseType::getVertex;
 
    template< int Dimensions >
    bool entitiesAvalable() const
@@ -162,23 +178,13 @@ class tnlMesh : public tnlObject,
       BaseType::print( str );
    }
 
-   using BaseType::setNumberOfVertices;
-   using BaseType::getNumberOfVertices;
-   using BaseType::setVertex;
-   using BaseType::getVertex;
+   bool operator==( const tnlMesh& mesh ) const
+   {
+      return BaseType::operator==( mesh );
+   }
 
+   private:
 
-   void load(const char *filename);
-   void write(const char *filename) const;
-
-   //void load(IOReader<ConfigTag> &reader);
-   //void write(IOWriter<ConfigTag> &writer) const;
-
-   //using BaseType::entities;
-   //template< int Dimensions >
-   //typename EntitiesArray<dim>::Type entities() const { return this->entities(DimTag<dim>()); }
-
-private:
    void init();
 
    tnlStaticAssert( dimensions > 0, "The mesh dimesnions must be greater than 0." );

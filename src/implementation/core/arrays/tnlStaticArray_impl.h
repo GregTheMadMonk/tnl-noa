@@ -152,15 +152,24 @@ bool tnlStaticArray< Size, Element >::operator != ( const Array& array ) const
 }
 
 template< int Size, typename Element >
+void tnlStaticArray< Size, Element >::setValue( const ElementType& val )
+{
+   for( int i = 0; i < Size; i++ )
+      data[ i ] = val;
+}
+
+template< int Size, typename Element >
 bool tnlStaticArray< Size, Element >::save( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< Element, tnlHost, int >( data, size ) )
-      cerr << "Unable to write " << getType() << "." << endl;
 #else
    if( ! file. write( data, size ) )
-      cerr << "Unable to write " << getType() << "." << endl;
 #endif
+   {
+      cerr << "Unable to write " << getType() << "." << endl;
+      return false;
+   }
    return true;
 }
 

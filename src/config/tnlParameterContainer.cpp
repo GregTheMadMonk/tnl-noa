@@ -44,11 +44,11 @@ tnlParameterContainer :: tnlParameterContainer()
 bool tnlParameterContainer :: AddParameter( const char* name,
                                             const char* value )
 {
-   return parameters. Append( new tnlParameter< tnlString >( name, GetParameterType( tnlString() ). getString(), tnlString( value ) ) );
+   return parameters. Append( new tnlParameter< tnlString >( name, getParameterType< tnlString >().getString(), tnlString( value ) ) );
 }
 //--------------------------------------------------------------------------
 bool tnlParameterContainer :: SetParameter( const char* name,
-                                                  const char* value )
+                                            const char* value )
 {
    int i;
    for( i = 0; i < parameters. getSize(); i ++ )
@@ -64,7 +64,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
          {
             cerr << "Parameter " << name << " already exists with different type " 
                  << parameters[ i ] -> type << " not " 
-                 << GetParameterType( value ) << endl;
+                 << getParameterType< tnlString>() << endl;
             abort();
             return false;
          }
@@ -173,41 +173,55 @@ bool ParseCommandLine( int argc, char* argv[],
       }
       
       const char* option = _option + 2;
-      const tnlConfigEntryType* entry_type;
-      if( ! ( entry_type = config_description. GetEntryType( option ) ) )
+      const tnlConfigEntryBase* entry;
+      if( ( entry = config_description.getEntry( option ) ) == NULL )
       {
          cerr << "Unknown parameter " << option << "." << endl;
          parse_error = true;
       }
       else 
       {
+         const tnlString& entryType = entry->getEntryType();
          const char* value = argv[ ++ i ];
          if( ! value )
          {
             cerr << "Missing value for the parameter " << option << "." << endl;
             return false;
          }
-         const tnlString& basic_type_name = entry_type -> basic_type;
-         if( entry_type -> list_entry )
+         tnlList< tnlString > parsedEntryType;
+         if( ! parseObjectType( entryType, parsedEntryType ) )
+         {
+            cerr << "Internal error: Uknown config entry type " << entryType << "." << endl;
+            return false;
+         }
+         if( parsedEntryType[ 0 ] == "tnlList" )
          {
             tnlList< tnlString >* string_list( 0 );
             tnlList< bool >* bool_list( 0 );
             tnlList< int >* integer_list( 0 );
             tnlList< double >* real_list( 0 );
 
-            if( basic_type_name == "string" )
+            if( parsedEntryType[ 1 ] == "tnlString" )
                string_list = new tnlList< tnlString >;
-            if( basic_type_name == "bool" )
+            if( parsedEntryType[ 1 ] == "bool" )
                bool_list = new tnlList< bool >;
-            if( basic_type_name == "integer" )
+            if( parsedEntryType[ 1 ] == "int" )
                integer_list = new tnlList< int >;
-            if( basic_type_name == "real" )
+            if( parsedEntryType[ 1 ] == "double" )
                real_list = new tnlList< double >;
             
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
                const char* value = argv[ i ++ ];
-               if( string_list ) string_list -> Append( tnlString( value ) );
+               if( string_list )
+               {
+                  /*if( ! ( ( tnlConfigEntry< tnlList< tnlString > >* )  entry )->checkValue( tnlString( value ) ) )
+                  {
+                     delete string_list;
+                     return false;
+                  }*/
+                  string_list -> Append( tnlString( value ) );
+               }
                if( bool_list )
                {
                   bool bool_val;
@@ -218,8 +232,24 @@ bool ParseCommandLine( int argc, char* argv[],
                   }
                   else bool_list -> Append( bool_val );
                }
-               if( integer_list ) integer_list -> Append( atoi( value ) );
-               if( real_list ) real_list -> Append( atof( value ) );
+               if( integer_list )
+               {
+                  /*if( ! ( tnlConfigEntry< tnlList< int > >* ) entry->checkValue( atoi( value ) ) )
+                  {
+                     delete integer_list;
+                     return false;
+                  }*/
+                  integer_list -> Append( atoi( value ) );
+               }
+               if( real_list )
+               {
+                  /*if( ! ( tnlConfigEntry< tnlList< double > >* ) entry->checkValue( atof( value ) ) )
+                  {
+                     delete real_list;
+                     return false;
+                  }*/
+                  real_list -> Append( atof( value ) );
+               }
             }
             if( string_list )
             {
@@ -246,12 +276,14 @@ bool ParseCommandLine( int argc, char* argv[],
          }
          else
          {
-            if( basic_type_name == "string" )
+            if( parsedEntryType[ 0 ] == "tnlString" )
             {
+               if( ! ( ( tnlConfigEntry< tnlString >* ) entry )->checkValue( value ) )
+                  return false;
                 parameters. AddParameter< tnlString >( option, value );
                 continue;
             }
-            if( basic_type_name == "bool" )
+            if( parsedEntryType[ 0 ] == "bool" )
             {
                bool bool_val;
                if( ! matob( value, bool_val ) )
@@ -262,7 +294,7 @@ bool ParseCommandLine( int argc, char* argv[],
                else parameters. AddParameter< bool >( option, bool_val );
                continue;
             }
-            if( basic_type_name == "integer" )
+            if( parsedEntryType[ 0 ] == "int" )
             {
                /*if( ! isdigit( value ) )
                {
@@ -270,9 +302,11 @@ bool ParseCommandLine( int argc, char* argv[],
                   parse_error = true;
                   continue;
                }*/
+               if( ! ( ( tnlConfigEntry< int >* ) entry )->checkValue( atoi( value ) ) )
+                  return false;
                parameters. AddParameter< int >( option, atoi( value ) );
             }
-            if( basic_type_name == "real" )
+            if( parsedEntryType[ 0 ] == "double" )
             {
                /*if( ! isdigit( value ) )
                {
@@ -280,13 +314,15 @@ bool ParseCommandLine( int argc, char* argv[],
                   parse_error = true;
                   continue;
                }*/
+               if( ! ( ( tnlConfigEntry< double >* ) entry )->checkValue( atof( value ) ) )
+                  return false;
                parameters. AddParameter< double >( option, atof( value ) );
             }
          }
       }
    }
-   config_description. AddMissingEntries( parameters );
-   if( ! config_description. CheckMissingEntries( parameters ) )
+   config_description.addMissingEntries( parameters );
+   if( ! config_description.checkMissingEntries( parameters ) )
       return false;
    return ! parse_error;
 }

@@ -19,6 +19,7 @@
 #define TNLMATRIXREADER_IMPL_H_
 
 #include <iomanip>
+#include <core/tnlList.h>
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
 #include <core/tnlTimerRT.h>
@@ -147,7 +148,7 @@ bool tnlMatrixReader< Matrix >::checkMtxHeader( const tnlString& header,
 {
    tnlList< tnlString > parsedLine;
    header.parse( parsedLine );
-   if( parsedLine. getSize() < 5 )
+   if( parsedLine.getSize() < 5 )
       return false;
    if( parsedLine[ 0 ] != "%%MatrixMarket" )
       return false;

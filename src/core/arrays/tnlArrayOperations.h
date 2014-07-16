@@ -69,6 +69,7 @@ class tnlArrayOperations< tnlHost >
    static bool compareMemory( const Element1* destination,
                               const Element2* source,
                               const Index size );
+
 };
 
 template<>
@@ -157,20 +158,18 @@ class tnlArrayOperations< tnlHost, tnlCuda >
 };
 
 template< typename Type1, typename Type2 >
-class tnlFastArrayOperations
+struct tnlFastArrayOperations
 {
-   public:
-
-      enum{ enabled = false };
+   enum{ enabled = false };
 };
 
-template< typename Type >
-class tnlFastArrayOperations< Type, Type >
-{
-   public:
-
-      enum{ enabled = true };
-};
+template<> struct tnlFastArrayOperations< char,              char >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< int,               int  >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< unsigned int,      unsigned int  >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< long int,          long int  >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< long unsigned int, long unsigned int  >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< float,             float  >{ enum{ enabled = true }; };
+template<> struct tnlFastArrayOperations< double,            double  >{ enum{ enabled = true }; };
 
 
 #include <implementation/core/arrays/tnlArrayOperationsHost_impl.h>

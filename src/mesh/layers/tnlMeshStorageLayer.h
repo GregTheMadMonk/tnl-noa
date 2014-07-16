@@ -74,6 +74,11 @@ class tnlMeshStorageLayer< ConfigTag,
       this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
    }
 
+   /*~tnlMeshStorageLayer()
+   {
+      cout << "Destroying mesh storage layer with " << DimensionsTraits::value << " dimensions and " << this->entities.getSize() << " entities." << endl;
+   }*/
+
    bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
    {
       if( ! this->entities.setSize( size ) )
@@ -120,15 +125,22 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       if( ! BaseType::save( file ) ||
           ! this->entities.save( file ) )
+      {
+         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       return true;
    }
 
    bool load( tnlFile& file )
    {
+      //cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
       if( ! BaseType::load( file ) ||
           ! this->entities.load( file ) )
+      {
+         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       this->sharedEntities.bind( this->entities );
       return true;
    }
@@ -144,6 +156,12 @@ class tnlMeshStorageLayer< ConfigTag,
          str << endl;
       }
    }
+
+   bool operator==( const tnlMeshStorageLayer& meshLayer ) const
+   {
+      return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
+   }
+
 
    protected:
    ContainerType entities;
@@ -183,6 +201,11 @@ class tnlMeshStorageLayer< ConfigTag,
       this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
       this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
    }
+
+   /*~tnlMeshStorageLayer()
+   {
+        cout << "mesh storage layer: dimensions = " << DimensionsTraits::value << " entities = " << this->vertices.getSize() << endl;
+   }*/
 
 
    bool setNumberOfVertices( const GlobalIndexType size )
@@ -262,14 +285,20 @@ class tnlMeshStorageLayer< ConfigTag,
    bool save( tnlFile& file ) const
    {
       if( ! this->vertices.save( file ) )
+      {
+         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       return true;
    }
 
    bool load( tnlFile& file )
    {
       if( ! this->vertices.load( file ) )
+      {
+         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
          return false;
+      }
       this->sharedVertices.bind( this->vertices );
       return true;
    }
@@ -279,10 +308,13 @@ class tnlMeshStorageLayer< ConfigTag,
       str << "The mesh vertices are: " << endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
       {
-         str << i << " \t ( ";
-         vertices[ i ].print( str );
-         str << " ) " << endl;
+         str << i << vertices[ i ] << endl;
       }
+   }
+
+   bool operator==( const tnlMeshStorageLayer& meshLayer ) const
+   {
+      return ( vertices == meshLayer.vertices );
    }
 
    private:

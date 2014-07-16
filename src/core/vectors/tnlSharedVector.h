@@ -55,6 +55,12 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    template< typename Vector >
    bool operator != ( const Vector& array ) const;
 
+   template< typename Vector >
+   tnlSharedVector< Real, Device, Index >& operator -= ( const Vector& vector );
+
+   template< typename Vector >
+   tnlSharedVector< Real, Device, Index >& operator += ( const Vector& vector );
+
    //bool save( tnlFile& file ) const;
 
    //bool save( const tnlString& fileName ) const;

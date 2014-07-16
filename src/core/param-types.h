@@ -19,13 +19,13 @@
 #define param_typesH
 
 #include <core/tnlReal.h>
-#include <core/tnlList.h>
 #include <core/tnlString.h>
 
 template< typename T >
 tnlString getParameterType() { return T :: getType(); };
 
 template<> inline tnlString getParameterType< bool >() { return tnlString( "bool" ); };
+template<> inline tnlString getParameterType< short int >() { return tnlString( "short int" ); };
 template<> inline tnlString getParameterType< int >() { return tnlString( "int" ); };
 template<> inline tnlString getParameterType< long int >() { return tnlString( "long int" ); };
 template<> inline tnlString getParameterType< char >() { return tnlString( "char" ); };

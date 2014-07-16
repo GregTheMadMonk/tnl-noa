@@ -19,6 +19,7 @@
 #define tnlMersonSolverH
 
 #include <math.h>
+#include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 
 template< class Problem >
@@ -35,6 +36,12 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    tnlMersonSolver();
 
    tnlString getType() const;
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setAdaptivity( const RealType& a );
 

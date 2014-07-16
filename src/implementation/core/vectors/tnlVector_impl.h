@@ -126,6 +126,24 @@ bool tnlVector< Real, Device, Index > :: operator != ( const Vector& vector ) co
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vector >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator -= ( const Vector& vector )
+{
+   alphaXPlusBetaY( -1.0, vector, 1.0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator += ( const Vector& vector )
+{
+   alphaXPlusBetaY( 1.0, vector, 1.0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real tnlVector< Real, Device, Index > :: max() const
 {
    return tnlVectorOperations< Device > :: getVectorMax( *this );

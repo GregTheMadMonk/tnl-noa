@@ -15,14 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "heat-equation-conf.h"
 #include "heatEquationSetter.h"
+#include "simpleProblemConfig.h"
 #include <solvers/tnlSolver.h>
+#include <solvers/tnlFastBuildConfig.h>
+#include <solvers/tnlConfigTags.h>
+
+//typedef tnlDefaultConfigTag BuildConfig;
+typedef tnlFastBuildConfig BuildConfig;
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< heatEquationSetter > solver;
-   if( ! solver. run( CONFIG_FILE, argc, argv ) )
+   tnlSolver< simpleProblemSetter, simpleProblemConfig, BuildConfig > solver;
+   if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

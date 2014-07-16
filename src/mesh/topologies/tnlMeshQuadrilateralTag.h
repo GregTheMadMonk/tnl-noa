@@ -18,7 +18,7 @@
 #ifndef TNLMESHQUADRILATERALTAG_H_
 #define TNLMESHQUADRILATERALTAG_H_
 
-#include <mesh/topology/tnlMeshEdgeTag.h>
+#include <mesh/topologies/tnlMeshEdgeTag.h>
 
 struct tnlMeshQuadrilateralTag
 {
@@ -42,6 +42,33 @@ struct tnlSubentities< tnlMeshQuadrilateralTag, 1>
    enum { count = 4 };
 };
 
+
+/****
+ * Indexing of the vertices follows the VTK file format
+ *
+ *   3                     2
+ *    +-------------------+
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    |                   |
+ *    +-------------------+
+ *   0                     1
+ *
+ * The edges are indexed as follows:
+ *
+ *              2
+ *    +-------------------+
+ *    |                   |
+ *    |                   |
+ *  3 |                   | 1
+ *    |                   |
+ *    |                   |
+ *    +-------------------+
+ *              0
+ *
+ */
 
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTag, tnlMeshEdgeTag, 0, 0> { enum { index = 0 }; };
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTag, tnlMeshEdgeTag, 0, 1> { enum { index = 1 }; };

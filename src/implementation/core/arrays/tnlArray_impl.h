@@ -24,6 +24,7 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 #include <core/arrays/tnlArrayOperations.h>
+#include <implementation/core/arrays/tnlArrayIO.h>
 
 using namespace std;
 
@@ -50,8 +51,8 @@ template< typename Element,
 tnlString tnlArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlArray< " ) +
-                     getParameterType< Element >() +
-                     Device :: getDeviceType() +
+                     getParameterType< Element >() + ", " +
+                     Device :: getDeviceType() + ", " +
                      getParameterType< Index >() +
                      " >";
 };
@@ -271,8 +272,6 @@ template< typename Element,
           typename Index >
 void tnlArray< Element, Device, Index > :: setValue( const Element& e )
 {
-   tnlAssert( this -> size != 0,
-              cerr << "Array name is " << this -> getName() );
    tnlArrayOperations< Device > :: setMemory( this -> getData(), e, this -> getSize() );
 }
 
@@ -321,8 +320,6 @@ template< typename Element,
           typename Index >
 bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
-   tnlAssert( this -> size != 0,
-              cerr << "You try to save empty vector. Its name is " << this -> getName() );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -332,7 +329,7 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( ! file. write( &this -> size ) )
       return false;
 #endif      
-   if( this -> size != 0 && ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   if( this -> size != 0 && ! tnlArrayIO< Element, Device, Index >::save( file, this -> data, this -> size ) )
    {
       cerr << "I was not able to save " << this->getType()
            << " " << this -> getName()
@@ -362,10 +359,10 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
       cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
       return false;
    }
+   setSize( _size );
    if( _size )
    {
-      setSize( _size );
-      if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+      if( ! tnlArrayIO< Element, Device, Index >::load( file, this -> data, this -> size ) )
       {
          cerr << "I was not able to load " << this->getType()
                     << " " << this -> getName()
@@ -391,7 +388,6 @@ bool tnlArray< Element, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }
-
 
 template< typename Element,
           typename Device,

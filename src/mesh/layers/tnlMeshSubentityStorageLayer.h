@@ -71,11 +71,20 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    tnlMeshSubentityStorageLayer()
    {
+      this->subentitiesIndices.setValue( -1 );
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
+      this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
+      //this->subentitiesIndices.setName( "subentitiesIndices" );
    }
+
+   /*~tnlMeshSubentityStorageLayer()
+   {
+      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
+   }*/
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
+      BaseType::operator=( layer );
       this->subentitiesIndices = layer.subentitiesIndices;
       return *this;
    }
@@ -84,7 +93,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
+      {
+         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       return true;
    }
 
@@ -92,7 +104,10 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
+      {
+         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
       return true;
    }
@@ -102,6 +117,12 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       BaseType::print( str );
       str << endl;
       str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << subentitiesIndices << ".";
+   }
+
+   bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
+   {
+      return ( BaseType::operator==( layer ) &&
+               subentitiesIndices == layer.subentitiesIndices );
    }
 
    /****
@@ -183,8 +204,15 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    tnlMeshSubentityStorageLayer()
    {
+      this->verticesIndices.setValue( -1 );
       this->sharedVerticesIndices.bind( this->verticesIndices );
    }
+
+   /*~tnlMeshSubentityStorageLayer()
+   {
+      cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
+   }*/
+
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
@@ -194,15 +222,21 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    bool save( tnlFile& file ) const
    {
-      if( ! this->subentitiesVertices.save( file ) )
+      if( ! this->verticesIndices.save( file ) )
+      {
+         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! this->subentitiesVertices.load( file ) )
+      if( ! this->verticesIndices.load( file ) )
+      {
+         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
          return false;
+      }
       this->sharedVerticesIndices.bind( this->verticesIndices );
       return true;
    }
@@ -210,6 +244,11 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    void print( ostream& str ) const
    {
       str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->verticesIndices << ".";
+   }
+
+   bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
+   {
+      return ( verticesIndices == layer.verticesIndices );
    }
 
    GlobalIndexType getSubentityIndex( DimensionsTraits,
@@ -250,6 +289,18 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
                                     tnlDimensionsTraits< 0 >,
                                     tnlStorageTraits< false > >
 {
+   public:
+
+   bool save( tnlFile& file ) const
+   {
+      return true;
+   }
+
+   bool load( tnlFile& file )
+   {
+      return true;
+   }
+
 };
 
 

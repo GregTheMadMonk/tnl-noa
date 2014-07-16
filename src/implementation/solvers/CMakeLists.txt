@@ -7,6 +7,7 @@ SET( headers tnlIterativeSolver_impl.h
              tnlIterativeSolverMonitor_impl.h
              tnlMeshTypeResolver_impl.h
              tnlSolver_impl.h
+             tnlSolverConfig_impl.h
              tnlSolverStarter_impl.h
              tnlSolverInitiator_impl.h )
 

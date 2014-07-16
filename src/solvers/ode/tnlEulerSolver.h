@@ -19,7 +19,9 @@
 #define tnlEulerSolverH
 
 #include <math.h>
+#include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
+#include <config/tnlParameterContainer.h>
 
 template< typename Problem >
 class tnlEulerSolver : public tnlExplicitSolver< Problem >
@@ -36,6 +38,12 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    tnlEulerSolver();
 
    tnlString getType() const;
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setCFLCondition( const RealType& cfl );
 

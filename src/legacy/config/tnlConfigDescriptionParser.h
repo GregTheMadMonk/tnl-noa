@@ -6,7 +6,7 @@
 
 // $insert baseclass
 #include "tnlConfigDescriptionParserbase.h"
-#include "tnlConfigDescription.h"
+#include <config/tnlConfigDescription.h>
 
 #undef tnlConfigDescriptionParser
 

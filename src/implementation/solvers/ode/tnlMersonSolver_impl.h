@@ -21,6 +21,7 @@
 #include <cmath>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+#include <config/tnlParameterContainer.h>
 
 using namespace std;
 
@@ -106,6 +107,21 @@ tnlString tnlMersonSolver< Problem > :: getType() const
           Problem :: getTypeStatic() +
           tnlString( " >" );
 };
+
+template< typename Problem >
+void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
+                                                const tnlString& prefix )
+{
+   config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
+};
+
+template< typename Problem >
+bool tnlMersonSolver< Problem > :: init( const tnlParameterContainer& parameters,
+                                         const tnlString& prefix )
+{
+   if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
+      this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
+}
 
 template< typename Problem >
 void tnlMersonSolver< Problem > :: setAdaptivity( const RealType& a )

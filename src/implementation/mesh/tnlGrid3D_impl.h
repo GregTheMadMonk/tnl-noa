@@ -70,7 +70,8 @@ bool tnlGrid< 3, Real, Device, Index, Geometry > :: setDimensions( const Index x
    this -> dimensions.y() = ySize;
    this -> dimensions.z() = zSize;
    dofs = zSize * ySize * xSize;
-	VertexType parametricStep;
+   
+   VertexType parametricStep;
    parametricStep. x() = geometry. getProportions(). x() / xSize;
    parametricStep. y() = geometry. getProportions(). y() / ySize;
 	parametricStep. z() = geometry. getProportions(). z() / zSize;

@@ -33,11 +33,11 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
-   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+   if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
    tnlString input_file = parameters. GetParameter< tnlString >( "input-file" );
