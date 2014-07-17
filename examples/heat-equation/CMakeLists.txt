@@ -17,7 +17,8 @@ set( tnl_heat_equation_SOURCES
                heatEquationSolver_impl.h
                heatEquationSolver.h
                heatEquationSetter_impl.h
-               heatEquationSetter.h )
+               heatEquationSetter.h 
+               heatEquationConfig.h )
                
 ADD_EXECUTABLE(tnl-heat-equation${debugExt} ${tnl_heat_equation_SOURCES})
 target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )

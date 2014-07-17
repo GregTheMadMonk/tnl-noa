@@ -1,8 +1,8 @@
 /***************************************************************************
-                          main.cpp  -  description
+                          heatEquationConfig.h  -  description
                              -------------------
-    begin                : Jan 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jul 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,21 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "heatEquationSetter.h"
-#include "heatEquationConfig.h"
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
-#include <solvers/tnlConfigTags.h>
+#ifndef HEATEQUATIONCONFIG_H_
+#define HEATEQUATIONCONFIG_H_
 
-//typedef tnlDefaultConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+#include <config/tnlConfigDescription.h>
 
-int main( int argc, char* argv[] )
+template< typename ConfigTag >
+class heatEquationConfig
 {
-   tnlSolver< heatEquationSetter, heatEquationConfig, BuildConfig > solver;
-   if( ! solver. run( argc, argv ) )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-}
+   public:
+      static void configSetup( tnlConfigDescription& config )
+      {
+         return;
+         config.addDelimiter( "Heat equation settings:" );
+         config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "simpl" );
+      }
+};
 
-
+#endif /* HEATEQUATIONCONFIG_H_ */
