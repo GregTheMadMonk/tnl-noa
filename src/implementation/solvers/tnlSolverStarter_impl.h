@@ -65,7 +65,10 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
     */
    Problem problem;
    if( ! problem. init( parameters ) )
+   {
+      cerr << "The problem initiation failed!" << endl;
       return false;
+   }
 
    /****
     * Set-up the time discretisation
@@ -215,7 +218,10 @@ class tnlSolverStarterExplicitTimeStepperSetter
 
          TimeStepper timeStepper;
          if( ! timeStepper.init( parameters ) )
+         {
+            cerr << "The time stepper initiation failed!" << endl;
             return false;
+         }
          timeStepper.setSolver( explicitSolver );
 
          tnlSolverStarter< ConfigTag > solverStarter;
@@ -307,7 +313,7 @@ bool tnlSolverStarter< ConfigTag > :: writeProlog( ostream& str,
    problem. writeProlog( logger, parameters );
    logger. WriteSeparator();
    logger. WriteParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger. WriteParameter< double >( "Initial tau:", "initial-tau", parameters );
+   logger. WriteParameter< double >( "Initial tau:", "tau", parameters );
    logger. WriteParameter< double >( "Final time:", "final-time", parameters );
    logger. WriteParameter< double >( "Snapshot period:", "snapshot-period", parameters );
    const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
@@ -342,7 +348,6 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   cerr << "************************" << endl;
    tnlPDESolver< Problem, TimeStepper > solver;
    if( ! solver.init( parameters ) )
       return false;

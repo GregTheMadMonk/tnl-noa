@@ -28,7 +28,12 @@
 #include "tnlAnalyticSolution.h"
 
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, typename TimeFunction, typename AnalyticSpaceFunction>
+template< typename Mesh,
+          typename Diffusion,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename TimeFunction,
+          typename AnalyticSpaceFunction>
 class heatEquationSolver
 {
    public:
@@ -54,10 +59,16 @@ class heatEquationSolver
 
    bool makeSnapshot( const RealType& time, const IndexType& step );
 
+   IndexType getDofs( const MeshType& mesh ) const;
+
+   void bindDofs( const MeshType& mesh,
+                  DofVectorType& dofs );
+
    DofVectorType& getDofVector();
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,
+                        const MeshType& mesh,
                         DofVectorType& _u,
                         DofVectorType& _fu );
 

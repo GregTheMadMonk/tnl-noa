@@ -40,6 +40,7 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver >::init( const tnlParameterConta
                                                          const tnlString& prefix )
 {
    this->setTau( parameters.GetParameter< double >( "tau") );
+   return true;
 }
 
 
@@ -80,14 +81,16 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTau( const RealType& tau
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
-                                                          const RealType& stopTime )
+                                                          const RealType& stopTime,
+                                                          const MeshType& mesh,
+                                                          DofVectorType& dofVector )
 {
-   this -> odeSolver -> setTau( this -> tau );
-   this -> odeSolver -> setProblem( * this );
-   DofVectorType& u = problem -> getDofVector();
-   this -> odeSolver -> setTime( time );
-   this -> odeSolver -> setStopTime( stopTime );
-   return this -> odeSolver -> solve( u );
+   this->odeSolver->setTau( this -> tau );
+   this->odeSolver->setProblem( * this );
+   this->odeSolver->setTime( time );
+   this->odeSolver->setStopTime( stopTime );
+   this->mesh = &mesh;
+   return this -> odeSolver -> solve( dofVector );
 }
 
 template< typename Problem,
@@ -97,7 +100,7 @@ void tnlExplicitTimeStepper< Problem, OdeSolver >::GetExplicitRHS( const RealTyp
                                                                    DofVectorType& _u,
                                                                    DofVectorType& _fu )
 {
-   return this->problem->GetExplicitRHS( time, tau, _u, _fu );
+   return this->problem->GetExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

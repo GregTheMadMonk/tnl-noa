@@ -70,8 +70,7 @@ bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& pa
    this->setFinalTime( parameters.GetParameter< double >( "final-time" ) );
    this->setSnapshotTau( parameters.GetParameter< double >( "snapshot-period" ) );
 
-
-
+   return true;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -160,8 +159,9 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    RealType t( 0.0 );
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
-   this -> timeStepper -> setProblem( * ( this -> problem ) );
-   if( ! this -> problem -> makeSnapshot( t, step ) )
+   this->timeStepper->setProblem( * ( this->problem ) );
+   this->problem->bindDofs( mesh, dofs );
+   if( ! this->problem->makeSnapshot( t, step, mesh ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
@@ -171,26 +171,26 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
       RealType tau = Min( this -> snapshotTau,
                           this -> finalTime - t );
       //this -> timeStepper -> setTau( tau );
-      if( ! this -> timeStepper -> solve( t, t + tau ) )
+      if( ! this->timeStepper->solve( t, t + tau, mesh, dofs ) )
          return false;
       step ++;
       t += tau;
 
-      this -> ioRtTimer -> Continue();
-      this -> ioCpuTimer -> Continue();
-      this -> computeRtTimer -> Stop();
-      this -> computeCpuTimer -> Stop();
+      this->ioRtTimer->Continue();
+      this->ioCpuTimer->Continue();
+      this->computeRtTimer->Stop();
+      this->computeCpuTimer->Stop();
 
-      if( ! this -> problem -> makeSnapshot( t, step ) )
+      if( ! this->problem->makeSnapshot( t, step, mesh ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;
       }
 
-      this -> ioRtTimer -> Stop();
-      this -> ioCpuTimer -> Stop();
-      this -> computeRtTimer -> Continue();
-      this -> computeCpuTimer -> Continue();
+      this-> ioRtTimer->Stop();
+      this-> ioCpuTimer->Stop();
+      this-> computeRtTimer->Continue();
+      this-> computeCpuTimer->Continue();
 
    }
    return true;

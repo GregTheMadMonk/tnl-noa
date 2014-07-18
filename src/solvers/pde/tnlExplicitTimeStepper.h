@@ -34,6 +34,7 @@ class tnlExplicitTimeStepper
    typedef typename Problem::RealType RealType;
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
+   typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
 
    tnlExplicitTimeStepper();
@@ -55,7 +56,9 @@ class tnlExplicitTimeStepper
    const RealType& getTau() const;
 
    bool solve( const RealType& time,
-               const RealType& stopTime );
+               const RealType& stopTime,
+               const MeshType& mesh,
+               DofVectorType& dofVector );
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -67,6 +70,8 @@ class tnlExplicitTimeStepper
    OdeSolverType* odeSolver;
 
    Problem* problem;
+
+   const MeshType* mesh;
 
    RealType tau;
 };

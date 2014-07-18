@@ -19,10 +19,22 @@
 #define HEATEQUATIONSETTER_IMPL_H_
 
 #include "heatEquationSetter.h"
+#include "heatEquationSolver.h"
+#include <generators/functions/tnlSinWaveFunction.h>
+#include <generators/functions/tnlSinBumpsFunction.h>
+#include <generators/functions/tnlExpBumpFunction.h>
+#include "tnlLinearDiffusion.h"
+#include "tnlDirichletBoundaryConditions.h"
+#include "tnlRightHandSide.h"
 
-template< typename MeshType, typename SolverStarter >
-template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
-bool heatEquationSetter< MeshType, SolverStarter > ::setAnalyticSpaceFunction (const tnlParameterContainer& parameters)
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
+          typename SolverStarter >
+   template< typename TimeFunction >          
+bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter > ::setAnalyticSpaceFunction (const tnlParameterContainer& parameters)
 {
    SolverStarter solverStarter;
    
@@ -30,51 +42,65 @@ bool heatEquationSetter< MeshType, SolverStarter > ::setAnalyticSpaceFunction (c
   
    const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("analytic-space-function");
    
+   typedef tnlLinearDiffusion< MeshType > Scheme;
+   typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditions;
+   typedef tnlRightHandSide< MeshType > RightHandSide;
    if (analyticSpaceFunctionParameter == "sin-wave")
-      return solverStarter.run< heatEquationSolver< MeshType,tnlLinearDiffusion<MeshType>,
-                                 tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
-                                 TimeFunction,tnlSinWaveFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   {
+      typedef tnlSinWaveFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      return solverStarter.template run< Solver >( parameters );
+   }
    if (analyticSpaceFunctionParameter == "sin-bumps")
-     return solverStarter.run< heatEquationSolver< MeshType,tnlLinearDiffusion<MeshType>,
-                               tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
-                               TimeFunction, tnlSinBumpsFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   {
+      typedef tnlSinBumpsFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      return solverStarter.template run< Solver >( parameters );
+   }
    if (analyticSpaceFunctionParameter == "exp-bump")
-      return solverStarter.run< heatEquationSolver< MeshType,tnlLinearDiffusion<MeshType>,
-                                tnlDirichletBoundaryConditions<MeshType>,tnlRightHandSide<MeshType>,
-                                TimeFunction, tnlExpBumpFunction<MeshType::Dimensions,Vertex,DeviceType>>>(parameters);
+   {
+      typedef tnlExpBumpFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      return solverStarter.template run< Solver >( parameters );
+   }
    
    cerr<<"Unknown analytic-space-function parameter: "<<analyticSpaceFunctionParameter<<". ";
    return 0;
 }
 
-template< typename MeshType, typename SolverStarter >
-template< typename RealType, typename DeviceType, typename IndexType>
-bool heatEquationSetter< MeshType, SolverStarter > ::setTimeFunction (const tnlParameterContainer& parameters)
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
+          typename SolverStarter >
+bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter > ::setTimeFunction (const tnlParameterContainer& parameters)
 {
    const tnlString& timeFunctionParameter = parameters.GetParameter<tnlString>("time-function");
    
    if (timeFunctionParameter == "time-independent")
-      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, TimeIndependent>(parameters);
+      return setAnalyticSpaceFunction< TimeIndependent >(parameters);
    if (timeFunctionParameter == "linear")
-      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Linear>(parameters);
+      return setAnalyticSpaceFunction< Linear >(parameters);
    if (timeFunctionParameter == "quadratic")
-      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Quadratic>(parameters);
+      return setAnalyticSpaceFunction< Quadratic >(parameters);
    if (timeFunctionParameter == "cosinus")
-      return setAnalyticSpaceFunction<RealType, DeviceType, IndexType, Cosinus>(parameters);
+      return setAnalyticSpaceFunction< Cosinus >(parameters);
    
    cerr<<"Unknown time-function parameter: "<<timeFunctionParameter<<". ";
    return 0;
 }
 
 
-template< typename MeshType,
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
           typename SolverStarter >
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
-bool heatEquationSetter< MeshType, SolverStarter > :: run( const tnlParameterContainer& parameters )
+bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter >::run( const tnlParameterContainer& parameters )
 {
-   return setTimeFunction<RealType, DeviceType, IndexType>(parameters);
+   return setTimeFunction(parameters);
 }
 
 

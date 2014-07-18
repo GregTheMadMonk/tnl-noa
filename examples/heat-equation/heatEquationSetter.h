@@ -32,7 +32,11 @@
 #include "tnlRightHandSide.h"
 
    
-template< typename MeshType,
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
           typename SolverStarter >
 class heatEquationSetter
 {
@@ -42,19 +46,19 @@ class heatEquationSetter
    typedef TimeFunction<MeshType,TimeFunctionBase::Linear> Linear;
    typedef TimeFunction<MeshType,TimeFunctionBase::Quadratic> Quadratic;
    typedef TimeFunction<MeshType,TimeFunctionBase::Cosinus> Cosinus;
-   typedef typename MeshType::RealType RealType;
-   typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
+   //typedef typename MeshType::RealType RealType;
 
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
       
-   template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
+   template< typename TimeFunction >
    static bool setAnalyticSpaceFunction (const tnlParameterContainer& parameters);  
     
-   template< typename RealType, typename DeviceType, typename IndexType>
    static bool setTimeFunction (const tnlParameterContainer& parameters);
       
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
    static bool run( const tnlParameterContainer& parameters );
 };
 

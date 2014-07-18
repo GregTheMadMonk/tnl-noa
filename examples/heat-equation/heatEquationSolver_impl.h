@@ -84,6 +84,21 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
    return true;
 }
 
+template< typename Mesh >
+typename heatEquationSolver< Mesh >::IndexType heatEquationSolver< Mesh>::getDofs( const Mesh& mesh ) const
+{
+   /****
+    * Set-up DOFs and supporting grid functions
+    */
+   return mesh.getDofs();
+}
+
+template< typename Mesh >
+void heatEquationSolver< Mesh >::bindDofs( const MeshType& mesh,
+                                           DofVectorType& dofVector )
+{
+}
+
 template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
           typename TimeFunction, typename AnalyticSpaceFunction>
 bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>
