@@ -38,6 +38,10 @@ template< typename Element >
 class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
 {
    public:
+
+      typedef tnlArrayOperationsTester< Element, tnlHost > ArrayOperationsTester;
+      typedef CppUnit :: TestCaller< ArrayOperationsTester > TestCaller;
+
    tnlArrayOperationsTester(){};
 
    virtual
@@ -48,27 +52,12 @@ class tnlArrayOperationsTester< Element, tnlHost > : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayOperationsTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "allocationTest",
-                                 &tnlArrayOperationsTester :: allocationTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "memorySetTest",
-                                 &tnlArrayOperationsTester :: memorySetTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryTest",
-                                 &tnlArrayOperationsTester :: copyMemoryTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "compareMemoryTest",
-                                 &tnlArrayOperationsTester :: compareMemoryTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryWithConversionTest",
-                                 &tnlArrayOperationsTester :: copyMemoryWithConversionTest )
-                                );
-       return suiteOfTests;
+      suiteOfTests->addTest( new TestCaller( "allocationTest", &ArrayOperationsTester::allocationTest ) );
+      suiteOfTests->addTest( new TestCaller( "memorySetTest", &ArrayOperationsTester::memorySetTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryTest", &ArrayOperationsTester::copyMemoryTest ) );
+      suiteOfTests->addTest( new TestCaller( "compareMemoryTest", &ArrayOperationsTester::compareMemoryTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryWithConversionTest", &ArrayOperationsTester::copyMemoryWithConversionTest ) );
+      return suiteOfTests;
     };
 
     int getTestSize()
@@ -160,6 +149,9 @@ template< typename Element >
 class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
 {
    public:
+      typedef tnlArrayOperationsTester< Element, tnlCuda > ArrayOperationsTester;
+      typedef CppUnit :: TestCaller< ArrayOperationsTester > TestCaller;
+
    tnlArrayOperationsTester(){};
 
    virtual
@@ -170,57 +162,23 @@ class tnlArrayOperationsTester< Element, tnlCuda > : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayOperationsTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "allocationTest",
-                                 &tnlArrayOperationsTester :: allocationTest )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "setMemoryElementTest",
-                                 &tnlArrayOperationsTester :: setMemoryElementTest )
-                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "getMemoryElementTest",
-                                 &tnlArrayOperationsTester :: getMemoryElementTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "smallMemorySetTest",
-                                 &tnlArrayOperationsTester :: smallMemorySetTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "bigMemorySetTest",
-                                 &tnlArrayOperationsTester :: bigMemorySetTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryTest",
-                                 &tnlArrayOperationsTester :: copyMemoryTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryWithConversionHostToCudaTest",
-                                 &tnlArrayOperationsTester :: copyMemoryWithConversionHostToCudaTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryWithConversionCudaToHostTest",
-                                 &tnlArrayOperationsTester :: copyMemoryWithConversionCudaToHostTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "copyMemoryWithConversionCudaToCudaTest",
-                                 &tnlArrayOperationsTester :: copyMemoryWithConversionCudaToCudaTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "compareMemoryHostCudaTest",
-                                 &tnlArrayOperationsTester :: compareMemoryHostCudaTest )
-                                );
-       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlArrayOperationsTester >(
-                                 "compareMemoryWithConevrsionHostCudaTest",
-                                 &tnlArrayOperationsTester :: compareMemoryWithConversionHostCudaTest )
-                                );
-
-       return suiteOfTests;
-    }
+      suiteOfTests->addTest( new TestCaller( "allocationTest", &ArrayOperationsTester::allocationTest ) );
+      suiteOfTests->addTest( new TestCaller( "setMemoryElementTest", &ArrayOperationsTester::setMemoryElementTest ) );
+      suiteOfTests->addTest( new TestCaller( "getMemoryElementTest", &ArrayOperationsTester ::getMemoryElementTest ) );
+      suiteOfTests->addTest( new TestCaller( "smallMemorySetTest", &ArrayOperationsTester::smallMemorySetTest ) );
+      suiteOfTests->addTest( new TestCaller( "bigMemorySetTest", &ArrayOperationsTester::bigMemorySetTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryTest", &ArrayOperationsTester::copyMemoryTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryWithConversionHostToCudaTest", &ArrayOperationsTester::copyMemoryWithConversionHostToCudaTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryWithConversionCudaToHostTest", &ArrayOperationsTester::copyMemoryWithConversionCudaToHostTest ) );
+      suiteOfTests->addTest( new TestCaller( "copyMemoryWithConversionCudaToCudaTest", &ArrayOperationsTester::copyMemoryWithConversionCudaToCudaTest ) );
+      suiteOfTests->addTest( new TestCaller( "compareMemoryHostCudaTest", &ArrayOperationsTester::compareMemoryHostCudaTest ) );
+      suiteOfTests->addTest( new TestCaller( "compareMemoryWithConevrsionHostCudaTest", &ArrayOperationsTester::compareMemoryWithConversionHostCudaTest ) );
+      return suiteOfTests;
+   }
 
     int getTestSize()
     {
-       return 1 << 18;
+       return 10000; //1 << 18;
        //const int cudaGridSize = 256;
        //return 1.5 * cudaGridSize * maxCudaBlockSize;
        //return  1 << 22;

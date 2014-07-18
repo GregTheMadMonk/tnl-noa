@@ -20,6 +20,7 @@
 
 #include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
+#include <mesh/tnlGrid.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -32,6 +33,7 @@ class tnlDummyProblem
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlVector< Real, Device, Index > DofVectorType;
+      typedef tnlGrid< 1, Real, Device, Index > MeshType;
 };
 
 

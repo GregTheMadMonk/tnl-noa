@@ -272,10 +272,11 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlVector< Real, Device, Index > :: alphaXPlusY( const Real& alpha,
-                                                      const Vector& x )
+void tnlVector< Real, Device, Index > :: addVector( const Vector& x,
+                                                    const Real& multiplicator,
+                                                    const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
+   tnlVectorOperations< Device > :: addVector( *this, x, multiplicator, thisMultiplicator );
 }
 
 template< typename Real,

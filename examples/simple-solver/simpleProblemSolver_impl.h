@@ -67,36 +67,30 @@ bool simpleProblemSolver< Mesh>::init( const tnlParameterContainer& parameters )
     * 1. Read input parameters and model coefficients like these
     */
    const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
+}
 
+template< typename Mesh >
+typename simpleProblemSolver< Mesh >::IndexType getDofs( const Mesh& mesh )
+{
    /****
-    * 2. Set-up geometry of the problem domain using some mesh like tnlGrid.
-    * Implement additional template specializations of the method initMesh
-    * if necessary.
+    * Set-up DOFs and supporting grid functions
     */
-   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
-   if( ! this->mesh.load( meshFile ) )
-   {
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
-      return false;
-   }
+   return 2*mesh.getDofs();
+}
 
-   /****
-    * 3. Set-up DOFs and supporting grid functions
-    */
-   const IndexType& dofs = this->mesh.getDofs();
-   dofVector. setSize( 2*dofs );
-
+template< typename Mesh >
+void simpleProblemSolver< Mesh >::bindDofs( const MeshType& mesh,
+                                            DofVectorType& dofs )
    /****
     * You may use tnlSharedVector if you need to split the dofVector into more
     * grid functions like the following example:
     */
+   const IndexType dofs = this->getDofs( mesh );
    this -> u. bind( & dofVector. getData()[ 0 * dofs ], dofs );
    this -> v. bind( & dofVector. getData()[ 1 * dofs ], dofs );
    /****
     * You may now treat u and v as usual vectors and indirectly work with this->dofVector.
     */
-
-   return true;
 }
 
 template< typename Mesh >
@@ -137,15 +131,6 @@ bool simpleProblemSolver< Mesh>::makeSnapshot( const RealType& time, const Index
       return false;
 
    return true;
-}
-
-template< typename Mesh >
-typename simpleProblemSolver< Mesh>::DofVectorType& simpleProblemSolver< Mesh >::getDofVector()
-{
-   /****
-    * You do not need to change this usually.
-    */
-   return dofVector;
 }
 
 template< typename Mesh >

@@ -251,5 +251,4 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-
 #endif /* TNLMULTIARRAYTESTER_H_ */

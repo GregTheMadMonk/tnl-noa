@@ -19,6 +19,9 @@
 #define TNLEXPLICITTIMESTEPPER_H_
 
 #include <solvers/ode/tnlODESolverMonitor.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
+
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -27,13 +30,19 @@ class tnlExplicitTimeStepper
    public:
 
    typedef Problem ProblemType;
-   typedef OdeSolver< ProblemType > OdeSolverType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
-   typedef typename ProblemType :: DofVectorType DofVectorType;
+   typedef OdeSolver< tnlExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
+   typedef typename Problem::RealType RealType;
+   typedef typename Problem::DeviceType DeviceType;
+   typedef typename Problem::IndexType IndexType;
+   typedef typename ProblemType::DofVectorType DofVectorType;
 
    tnlExplicitTimeStepper();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setSolver( OdeSolverType& odeSolver );
 
@@ -47,6 +56,11 @@ class tnlExplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime );
+
+   void GetExplicitRHS( const RealType& time,
+                        const RealType& tau,
+                        DofVectorType& _u,
+                        DofVectorType& _fu );
 
    protected:
 

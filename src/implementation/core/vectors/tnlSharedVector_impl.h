@@ -23,6 +23,38 @@
 template< typename Real,
           typename Device,
           typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector()
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
+                                                         const Index size )
+: tnlSharedArray< Real, Device, Index >( data, size )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device, Index >& vector )
+: tnlSharedArray< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector )
+: tnlSharedArray< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 tnlString tnlSharedVector< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlVector< " ) +
@@ -283,10 +315,11 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: alphaXPlusY( const Real& alpha,
-                                                            const Vector& x )
+void tnlSharedVector< Real, Device, Index > :: addVector( const Vector& x,
+                                                          const Real& alpha,
+                                                          const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device > :: alphaXPlusY( *this, x, alpha );
+   tnlVectorOperations< Device > :: addVector( *this, x, alpha, thisMultiplicator );
 }
 
 template< typename Real,
@@ -356,5 +389,23 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const 
 {
    tnlVectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
+
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlSharedVector< float, tnlHost, int >;
+extern template class tnlSharedVector< double, tnlHost, int >;
+extern template class tnlSharedVector< float, tnlHost, long int >;
+extern template class tnlSharedVector< double, tnlHost, long int >;
+
+#ifdef HAVE_CUDA
+// TODO: fix this - it does not work with CUDA 5.5
+/*extern template class tnlSharedVector< float, tnlCuda, int >;
+extern template class tnlSharedVector< double, tnlCuda, int >;
+extern template class tnlSharedVector< float, tnlCuda, long int >;
+extern template class tnlSharedVector< double, tnlCuda, long int >;*/
+#endif
+
+#endif
 
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */

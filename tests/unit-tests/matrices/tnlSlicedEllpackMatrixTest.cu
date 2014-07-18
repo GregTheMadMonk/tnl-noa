@@ -16,23 +16,20 @@
  ***************************************************************************/
 
 #include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <core/tnlCuda.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
 #include <cstdlib>
 
-#include "tnlSlicedEllpackMatrixTester.h"
+#include "tnlSparseMatrixTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, int, 32 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, int, 32 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, long int, 32 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, long int, 32 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, int, 4 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, int, 4 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< float, tnlHost, long int, 4 > >() ||
-       ! tnlUnitTestStarter :: run< tnlSlicedEllpackMatrixTester< double, tnlHost, long int, 4 > >()
+  if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, tnlCuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, tnlCuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, tnlCuda, int, 4 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, tnlCuda, int, 4 > > >() 
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

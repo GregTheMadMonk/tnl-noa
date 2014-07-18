@@ -19,6 +19,8 @@
 #define TNLPDESOLVER_H_
 
 #include <core/tnlObject.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <solvers/tnlSolverMonitor.h>
 
 template< typename Problem,
@@ -27,12 +29,20 @@ class tnlPDESolver : public tnlObject
 {
    public:
 
-   typedef typename TimeStepper :: RealType RealType;
-   typedef typename TimeStepper :: DeviceType DeviceType;
-   typedef typename TimeStepper :: IndexType IndexType;
-   typedef typename TimeStepper :: ProblemType ProblemType;
+   typedef typename TimeStepper::RealType RealType;
+   typedef typename TimeStepper::DeviceType DeviceType;
+   typedef typename TimeStepper::IndexType IndexType;
+   typedef Problem ProblemType;
+   typedef typename ProblemType::MeshType MeshType;
+   typedef typename ProblemType::DofVectorType DofVectorType;
    
    tnlPDESolver();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setTimeStepper( TimeStepper& timeStepper );
 
@@ -57,6 +67,10 @@ class tnlPDESolver : public tnlObject
    bool solve();
 
    protected:
+
+   MeshType mesh;
+
+   DofVectorType dofs;
 
    TimeStepper* timeStepper;
 

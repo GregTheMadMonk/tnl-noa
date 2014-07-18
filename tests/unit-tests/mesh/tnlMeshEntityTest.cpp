@@ -19,11 +19,14 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
+#ifndef HAVE_NOT_CXX11
 #include "tnlMeshEntityTester.h"
+#endif
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
+#ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< tnlMeshEntityTester< double, tnlHost, long int > >()
        )
@@ -31,6 +34,7 @@ int main( int argc, char* argv[] )
    return EXIT_SUCCESS;
 #else
    return EXIT_FAILURE;
+#endif
 #endif
 }
 

@@ -99,9 +99,9 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( m.getElement( i, i ) == i );
 
       for( int i = 0; i < 10; i++ )
-         m( i, i ) = i;
+         m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
-         CPPUNIT_ASSERT( m( i, i ) == i );
+         CPPUNIT_ASSERT( m.getElement( i, i ) == i );
    }
 
    void addElementTest()
@@ -134,14 +134,14 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, Device, IndexType > columns;
-      VectorType values;
+      tnlVector< IndexType, tnlHost, IndexType > columns;
+      tnlVector< RealType, tnlHost, IndexType > values;
       columns.setSize( 3 );
       values.setSize( 3 );
       for( IndexType i = 4; i <= 6; i++ )
       {
-         columns[ i - 4 ] = i;
-         values[ i - 4 ] = i;
+         columns.setElement( i - 4, i );
+         values.setElement( i - 4, i );
       }
       m.setRow( 5, columns.getData(), values.getData(), 3 );
 
@@ -172,9 +172,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       }
       m.vectorProduct( v, w );
-
       for( int i = 0; i < size; i++ )
-         CPPUNIT_ASSERT( w[ i ] == i*i );
+         CPPUNIT_ASSERT( w.getElement( i ) == i*i );
    }
 
    void addMatrixTest()
@@ -185,7 +184,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
             if( abs( i - j ) <= 1 )
-               m( i, j ) = i*size + j;
+               m.setElement( i, j, i*size + j );
 
       MatrixType m2;
       m2.setLike( m );
@@ -222,8 +221,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       MatrixType mTransposed;
       mTransposed.setLike( m );
       mTransposed.template getTransposition< typename MatrixType::RealType,
-                                             typename MatrixType::IndexType,
-                                             32 >( m );
+                                             typename MatrixType::IndexType >( m );
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )

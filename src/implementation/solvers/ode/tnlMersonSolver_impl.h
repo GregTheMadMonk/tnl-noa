@@ -97,7 +97,7 @@ tnlMersonSolver< Problem > :: tnlMersonSolver()
   kAux( "tnlMersonSolver:kAux" ),
   adaptivity( 0.00001 )
 {
-   this -> tau = 1.0;
+   this->setName( "MersonSolver" );
 };
 
 template< typename Problem >
@@ -112,6 +112,7 @@ template< typename Problem >
 void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
                                                 const tnlString& prefix )
 {
+   tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
@@ -119,6 +120,7 @@ template< typename Problem >
 bool tnlMersonSolver< Problem > :: init( const tnlParameterContainer& parameters,
                                          const tnlString& prefix )
 {
+   tnlExplicitSolver< Problem >::init( parameters, prefix );
    if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
 }

@@ -31,10 +31,35 @@ using namespace std;
 template< typename Element,
           typename Device,
           typename Index >
-tnlSharedArray< Element, Device, Index > :: tnlSharedArray()
+tnlSharedArray< Element, Device, Index >::tnlSharedArray()
 : size( 0 ), data( 0 )
 {
 };
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( Element* _data,
+                                                          const Index _size )
+{
+   this->bind( _data, _size );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlArray< Element, Device, Index >& array )
+{
+   this->bind( array );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlSharedArray< Element, Device, Index >& array )
+{
+   this->bind( array );
+}
 
 template< typename Element,
           typename Device,
@@ -392,16 +417,18 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-extern template class tnlSharedArray< float, tnlHost, int >;
+// TODO: this does not work with CUDA 5.5 - fix it later
+
+/*extern template class tnlSharedArray< float, tnlHost, int >;
 extern template class tnlSharedArray< double, tnlHost, int >;
 extern template class tnlSharedArray< float, tnlHost, long int >;
-extern template class tnlSharedArray< double, tnlHost, long int >;
+extern template class tnlSharedArray< double, tnlHost, long int >;*/
 
 #ifdef HAVE_CUDA
-extern template class tnlSharedArray< float, tnlCuda, int >;
+/*extern template class tnlSharedArray< float, tnlCuda, int >;
 extern template class tnlSharedArray< double, tnlCuda, int >;
 extern template class tnlSharedArray< float, tnlCuda, long int >;
-extern template class tnlSharedArray< double, tnlCuda, long int >;
+extern template class tnlSharedArray< double, tnlCuda, long int >;*/
 #endif
 
 #endif

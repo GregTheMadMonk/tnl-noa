@@ -27,17 +27,41 @@
 using namespace std;
 
 template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
+                                             Matrix& matrix,
+                                             bool verbose )
+{
+   fstream file;
+   file.open( fileName.getString(), ios::in );
+   if( ! file )
+   {
+      cerr << "I am not able to open the file " << fileName << "." << endl;
+      return false;
+   }
+   return readMtxFile( file, matrix, verbose );
+}
+
+template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              Matrix& matrix,
                                              bool verbose )
 {
+   return tnlMatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
+}
+
+template< typename Matrix >
+bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
+                                                       Matrix& matrix,
+                                                       typename Matrix::RowLengthsVector& rowLengths,
+                                                       bool verbose )
+{
    IndexType rows, columns;
-   bool symmetricMatrix;
+   bool symmetricMatrix( false );
 
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
       return false;
 
-   tnlVector< int, tnlHost, int > rowLengths;
+
    if( ! matrix.setDimensions( rows, columns ) ||
        ! rowLengths.setSize( rows ) )
    {
@@ -45,7 +69,7 @@ bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
       return false;
    }
 
-   if( ! computeRowLengthsFromMtxFile( file, rowLengths, symmetricMatrix, verbose ) )
+   if( ! computeRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
    if( ! matrix.setRowLengths( rowLengths ) )
@@ -198,13 +222,12 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
       line.getLine( file );
       if( ! headerParsed )
       {
-           headerParsed = checkMtxHeader( line, symmetric );
-           if( headerParsed && verbose )
-           {
-               if( symmetric )
-                  cout << "The matrix is SYMMETRIC ... ";
-           }
-           continue;
+         headerParsed = checkMtxHeader( line, symmetric );
+         if( ! headerParsed )
+            return false;
+         if( verbose && symmetric )
+            cout << "The matrix is SYMMETRIC ... ";
+         continue;
       }
       if( line[ 0 ] == '%' ) continue;
       if( ! headerParsed )
@@ -239,6 +262,8 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file,
                                                               tnlVector< int, tnlHost, int >& rowLengths,
+                                                              const int columns,
+                                                              const int rows,
                                                               bool symmetricMatrix,
                                                               bool verbose )
 {
@@ -262,11 +287,28 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
       numberOfElements++;
+      if( column > columns || row > rows )
+      {
+         cerr << "There is an element at position " << row << ", " << column << " out of the matrix dimensions " << rows << " x " << columns << "." << endl;
+         return false;
+      }
       if( verbose )
          cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
       rowLengths[ row - 1 ]++;
+      if( rowLengths[ row - 1 ] >= columns )
+      {
+         cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
+         return false;
+      }
       if( symmetricMatrix && row != column )
+      {
          rowLengths[ column - 1 ]++;
+         if( rowLengths[ column - 1 ] >= columns )
+         {
+            cerr << "There are more elements than the matrix columns at the row " << column << " ." << endl;
+            return false;
+         }
+      }
    }
    file.clear();
    long int fileSize = file.tellg();
@@ -338,6 +380,48 @@ bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const tnlString& line,
    value = ( RealType ) atof( parsedLine[ 2 ].getString() );
    return true;
 }
+
+template<>
+class tnlMatrixReaderDeviceDependentCode< tnlHost >
+{
+   public:
+
+   template< typename Matrix >
+   static bool readMtxFile( std::istream& file,
+                            Matrix& matrix,
+                            bool verbose )
+   {
+      typename Matrix::RowLengthsVector rowLengths;
+      return tnlMatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
+   }
+};
+
+template<>
+class tnlMatrixReaderDeviceDependentCode< tnlCuda >
+{
+   public:
+
+   template< typename Matrix >
+   static bool readMtxFile( std::istream& file,
+                            Matrix& matrix,
+                            bool verbose )
+   {
+      typedef typename Matrix::HostType HostMatrixType;
+      typedef typename HostMatrixType::RowLengthsVector RowLengthsVector;
+
+      HostMatrixType hostMatrix;
+      RowLengthsVector rowLengthsVector;
+      if( ! tnlMatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
+         return false;
+
+      typename Matrix::RowLengthsVector cudaRowLengthsVector;
+      cudaRowLengthsVector.setLike( rowLengthsVector );
+      cudaRowLengthsVector = rowLengthsVector;
+      if( ! matrix.copyFrom( hostMatrix, cudaRowLengthsVector ) )
+         return false;
+      return true;
+   }
+};
 
 
 #endif /* TNLMATRIXREADER_IMPL_H_ */

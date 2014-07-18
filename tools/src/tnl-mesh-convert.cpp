@@ -15,7 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef HAVE_NOT_CXX11
 #include "tnl-mesh-convert.h"
+#endif
 #include "tnlConfig.h"
 #include <config/tnlParameterContainer.h>
 
@@ -32,8 +34,10 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
+#ifndef HAVE_NOT_CXX11
    if( ! convertMesh( parameters ) )
       return EXIT_FAILURE;
+#endif
    return EXIT_SUCCESS;
 }
 

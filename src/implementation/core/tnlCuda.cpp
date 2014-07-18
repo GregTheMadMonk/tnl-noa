@@ -387,13 +387,13 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
 
    }
    return false;
-#else
+#else  /* HAVE_CUDA */
    return true;
-#endif
+#endif /* HAVE_CUDA */
 }
 
-size_t tnlCuda::getFreeMemory()
+/*size_t tnlCuda::getFreeMemory()
 {
 
-}
+}*/
 

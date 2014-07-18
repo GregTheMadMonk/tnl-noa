@@ -32,19 +32,62 @@ tnlPDESolver< Problem, TimeStepper > :: tnlPDESolver()
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setTimeStepper( TimeStepper& timeStepper )
+void tnlPDESolver< Problem, TimeStepper >::configSetup( tnlConfigDescription& config,
+                                                        const tnlString& prefix )
+{
+   config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
+   config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
+}
+
+template< typename Problem, typename TimeStepper >
+bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& parameters,
+                                                 const tnlString& prefix )
+{
+   /****
+    * Load the mesh from the mesh file
+    */
+   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   if( ! this->mesh.load( meshFile ) )
+   {
+      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+      cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << endl;
+      return false;
+   }
+
+   /****
+    * Set DOFs (degrees of freedom)
+    */
+   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
+   {
+      cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
+      return false;
+   }
+
+
+   /****
+    * Initialize the time discretisation
+    */
+   this->setFinalTime( parameters.GetParameter< double >( "final-time" ) );
+   this->setSnapshotTau( parameters.GetParameter< double >( "snapshot-period" ) );
+
+
+
+}
+
+template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper >::setTimeStepper( TimeStepper& timeStepper )
 {
    this -> timeStepper = &timeStepper;
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setProblem( ProblemType& problem )
+void tnlPDESolver< Problem, TimeStepper >::setProblem( ProblemType& problem )
 {
    this -> problem = &problem;
 }
 
 template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper > :: setFinalTime( const RealType& finalT )
+bool tnlPDESolver< Problem, TimeStepper >::setFinalTime( const RealType& finalT )
 {
    if( finalT <= 0 )
    {

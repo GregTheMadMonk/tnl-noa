@@ -1,0 +1,11 @@
+group benchmarkSetup
+{
+   string test(!)                                       [Can be tridiagonal, multidiagonal, multidiagonal-with-long-rows, mtx, tnl.];
+   string input-file(!)                                 [Input binary file name.];
+   string log-file("tnl-benchmark-linear-solvers.log")  [Log file name.];
+   string precision("double")                           [Precision of the arithmetics.];
+   string matrix-format( "csr" )                        [Matrix format can be dense, tridiagonal, multidiagonal, ellpack, sliced-ellpack, chunked-ellpack, csr.];
+   string solver( "gmres" )                             [Solver can be sor, cg, gmres, ... ];
+   string device( "host" )                              [Device cen host or cuda.]; 
+   integer verbose(1)                                   [Verbose mode.];
+},[Arguments to set-up the benchmark.];

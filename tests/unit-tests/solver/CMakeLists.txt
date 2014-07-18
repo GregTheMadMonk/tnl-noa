@@ -5,7 +5,7 @@ set( headers tnlSolverTest.h
 
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnlSolverTest${mpiExt}${debugExt} ${headers} tnlSolverTest.cu
-                          OPTIONS -arch sm_20 -shared )
+                          OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
     TARGET_LINK_LIBRARIES( tnlSolverTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-0.1 )
 else()

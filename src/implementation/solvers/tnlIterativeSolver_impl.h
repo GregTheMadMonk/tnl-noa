@@ -22,15 +22,38 @@
 
 template< typename Real, typename Index >
 tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
-: maxIterations( 0 ),
+: maxIterations( 100000 ),
+  minIterations( 0 ),
   currentIteration( 0 ),
-  maxResidue( 0 ),
-  minResidue( DBL_MAX ),
+  convergenceResidue( 1.0e-6 ),
+  divergenceResidue( DBL_MAX ),
   currentResidue( 0 ),
   solverMonitor( 0 ),
   refreshRate( 1 )
 {
 };
+
+template< typename Real, typename Index >
+void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& config,
+                                                      const tnlString& prefix )
+{
+   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000 );
+   config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
+   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
+   config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
+   config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
+}
+
+template< typename Real, typename Index >
+bool tnlIterativeSolver< Real, Index> :: init( const tnlParameterContainer& parameters,
+                                               const tnlString& prefix )
+{
+   this->setMaxIterations( parameters.GetParameter< int >( "max-iterations" ) );
+   this->setMinIterations( parameters.GetParameter< int >( "min-iterations" ) );
+   this->setConvergenceResidue( parameters.GetParameter< double >( "convergence-residue" ) );
+   this->setDivergenceResidue( parameters.GetParameter< double >( "divergence-residue" ) );
+   this->setRefreshRate( parameters.GetParameter< int >( "refresh-rate" ) );
+}
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
@@ -45,6 +68,18 @@ const Index& tnlIterativeSolver< Real, Index> :: getMaxIterations() const
 }
 
 template< typename Real, typename Index >
+void tnlIterativeSolver< Real, Index> :: setMinIterations( const Index& minIterations )
+{
+   this -> minIterations = minIterations;
+}
+
+template< typename Real, typename Index >
+const Index& tnlIterativeSolver< Real, Index> :: getMinIterations() const
+{
+   return this -> minIterations;
+}
+
+template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: resetIterations()
 {
    this -> currentIteration = 0;
@@ -53,11 +88,13 @@ void tnlIterativeSolver< Real, Index> :: resetIterations()
 template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
-   if( this -> solverMonitor &&
-       this -> currentIteration % this -> refreshRate == 0 )
-      solverMonitor -> refresh();
-   this -> currentIteration ++;
-   if( this -> getResidue() > this -> getMinResidue() && this -> currentIteration > 10 )
+   if( this->solverMonitor &&
+       this->currentIteration % this->refreshRate == 0 )
+      solverMonitor->refresh();
+   this->currentIteration ++;
+   if( ( this->getResidue() > this->getDivergenceResidue() && 
+         this->getIterations() > this->minIterations ) ||
+         this->getIterations() > this->getMaxIterations() )
       return false;
    return true;
 }
@@ -69,27 +106,27 @@ const Index& tnlIterativeSolver< Real, Index> :: getIterations() const
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMaxResidue( const Real& maxResidue )
+void tnlIterativeSolver< Real, Index> :: setConvergenceResidue( const Real& convergenceResidue )
 {
-   this -> maxResidue = maxResidue;
+   this->convergenceResidue = convergenceResidue;
 }
 
 template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getMaxResidue() const
+const Real& tnlIterativeSolver< Real, Index> :: getConvergenceResidue() const
 {
-   return this -> maxResidue;
+   return this->convergenceResidue;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMinResidue( const Real& minResidue )
+void tnlIterativeSolver< Real, Index> :: setDivergenceResidue( const Real& divergenceResidue )
 {
-   this -> minResidue = minResidue;
+   this->divergenceResidue = divergenceResidue;
 }
 
 template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getMinResidue() const
+const Real& tnlIterativeSolver< Real, Index> :: getDivergenceResidue() const
 {
-   return this -> minResidue;
+   return this->divergenceResidue;
 }
 
 

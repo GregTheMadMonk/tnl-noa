@@ -22,6 +22,10 @@
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
 
+template< typename Device >
+class tnlMatrixReaderDeviceDependentCode
+{};
+
 template< typename Matrix >
 class tnlMatrixReader
 {
@@ -30,9 +34,19 @@ class tnlMatrixReader
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
+   static bool readMtxFile( const tnlString& fileName,
+                            Matrix& matrix,
+                            bool verbose = false );
+
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
                             bool verbose = false );
+
+   static bool readMtxFileHostMatrix( std::istream& file,
+                                      Matrix& matrix,
+                                      typename Matrix::RowLengthsVector& rowLengths,
+                                      bool verbose );
+
 
    static bool verifyMtxFile( std::istream& file,
                               const Matrix& matrix,
@@ -56,6 +70,8 @@ class tnlMatrixReader
 
    static bool computeRowLengthsFromMtxFile( std::istream& file,
                                              tnlVector< int, tnlHost, int >& rowLengths,
+                                             const int columns,
+                                             const int rows,
                                              bool symmetricMatrix,
                                              bool verbose );
 
@@ -68,8 +84,8 @@ class tnlMatrixReader
                                         IndexType& row,
                                         IndexType& column,
                                         RealType& value );
-
 };
+
 
 
 #include <implementation/matrices/tnlMatrixReader_impl.h>

@@ -24,9 +24,11 @@
 #include <core/tnlFlopsCounter.h>
 #include <core/tnlObject.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 
 template< class Problem >
-class tnlExplicitSolver : public tnlObject
+class tnlExplicitSolver : public tnlObject // TODO: derive it from tnlIterativeSolver
 {
    public:
    
@@ -37,6 +39,12 @@ class tnlExplicitSolver : public tnlObject
    typedef typename Problem :: IndexType IndexType;
 
    tnlExplicitSolver();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setProblem( Problem& problem );
 
@@ -122,7 +130,7 @@ protected:
    tnlODESolverMonitor< RealType, IndexType >* solverMonitor;
 };
 
-template< class Problem >
+template< typename Problem >
 tnlExplicitSolver < Problem > :: tnlExplicitSolver()
 :  iteration( 0 ),
    time( 0.0 ),
@@ -140,6 +148,23 @@ tnlExplicitSolver < Problem > :: tnlExplicitSolver()
    solverMonitor( 0 )
    {
    };
+
+template< typename Problem >
+void tnlExplicitSolver < Problem > :: configSetup( tnlConfigDescription& config,
+                                                   const tnlString& prefix )
+{
+   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000 );
+   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
+}
+
+template< typename Problem >
+bool tnlExplicitSolver < Problem >::init( const tnlParameterContainer& parameters,
+                                          const tnlString& prefix )
+{
+   this->setMaxIterationsNumber( parameters.GetParameter< int >( "max-iterations" ) );
+   this->setMaxResidue( parameters.GetParameter< double >( "convergence-residue" ) );
+}
+
 
 template< typename Problem >
 void tnlExplicitSolver< Problem > :: setProblem( Problem& problem )

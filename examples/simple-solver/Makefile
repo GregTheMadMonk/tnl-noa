@@ -17,8 +17,7 @@ DIST = $(SOURCES) Makefile
 
 all: $(TARGET)
 clean: 
-	rm -f $(OBJECTS)
-	rm -f $(TARGET)-conf.h	
+	rm -f $(OBJECTS)	
 
 dist: $(DIST)
 	tar zcvf $(TARGET).tgz $(DIST) 
@@ -31,12 +30,8 @@ uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
 	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share
 
-$(TARGET): $(TARGET)-conf.h $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
 %.o: %.cpp $(HEADERS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
-
-$(TARGET)-conf.h:
-	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
-

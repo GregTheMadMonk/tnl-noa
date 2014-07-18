@@ -22,6 +22,9 @@
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
 
+template< typename Device >
+class tnlMultidiagonalMatrixDeviceDependentCode;
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -99,14 +102,13 @@ Index tnlMultidiagonalMatrix< Real, Device, Index >::getRowLength( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const IndexType diagonalsNumber,
-                                                                     const IndexType* diagonalsShift )
+   template< typename Vector >
+bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
 {
-   tnlAssert( diagonalsNumber > 0,
-            cerr << "New number of diagonals = " << diagonalsNumber << endl );
-   this->diagonalsShift.setSize( diagonalsNumber );
-   for( IndexType i = 0; i < diagonalsNumber; i++ )
-      this->diagonalsShift.setElement( i, diagonalsShift[ i ] );
+   tnlAssert( diagonals.getSize() > 0,
+              cerr << "New number of diagonals = " << diagonals.getSize() << endl );
+   this->diagonalsShift.setLike( diagonals );
+   this->diagonalsShift = diagonals;
    if( this->rows != 0 && this->columns != 0 )
    {
       if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
@@ -132,9 +134,9 @@ template< typename Real,
              typename Index2 >
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix )
 {
-   setDimensions( matrix.getRows(), matrix.getColumns() );
-   if( ! setDiagonals( matrix.getDiagonals().getSize(),
-                       matrix.getDiagonals().getData() ) )
+   if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) )
+      return false;
+   if( ! setDiagonals( matrix.getDiagonals() ) )
       return false;
 }
 
@@ -231,7 +233,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexTyp
                                                                   const IndexType column,
                                                                   const Real& value )
 {
-   return this->setElementFast( row, column, value );
+   IndexType index;
+   if( ! this->getElementIndex( row, column, index  ) )
+      return false;
+   this->values.setElement( index, value );
+   return true;
 }
 
 
@@ -249,7 +255,8 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElementFast( const Inde
    Index index;
    if( ! this->getElementIndex( row, column, index  ) )
       return false;
-   this->values.addElement( index, value, thisElementMultiplicator );
+   RealType& aux = this->values[ index ];
+   aux = thisElementMultiplicator * aux + value;
    return true;
 }
 
@@ -261,7 +268,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexTyp
                                                                   const RealType& value,
                                                                   const RealType& thisElementMultiplicator )
 {
-   return this->addElementFast( row, column, value, thisElementMultiplicator );
+   Index index;
+   if( ! this->getElementIndex( row, column, index  ) )
+      return false;
+   this->values.setElement( index, thisElementMultiplicator * this->values.getElement( index ) + value );
+   return true;
 }
 
 template< typename Real,
@@ -275,18 +286,18 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexTyp
                                                                   const RealType* values,
                                                                   const IndexType numberOfElements )
 {
-   // TODO: implement
+   return this->addRowFast( row, columns, values, 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType row,
-                                                              const IndexType* columns,
-                                                              const RealType* values,
-                                                              const IndexType numberOfElements )
+                                                              const Index* columns,
+                                                              const Real* values,
+                                                              const Index numberOfElements )
 {
-   // TODO: implement
+   return this->addRow( row, columns, values, numberOfElements, 0.0 );
 }
 
 
@@ -302,19 +313,58 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexTyp
                                                                   const IndexType numberOfElements,
                                                                   const RealType& thisElementMultiplicator )
 {
-   // TODO: implement
+   if( this->diagonalsShift.getSize() < numberOfElements )
+      return false;
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   const IndexType elements = Min( this->diagonalsShift.getSize(), numberOfElements );
+   IndexType i( 0 );
+   while( i < elements )
+   {
+      const IndexType index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
+      RealType& aux = this->values[ index ];
+      aux = thisElementMultiplicator * aux + values[ i ];
+      i++;
+   }
+   while( i < this->diagonalsShift.getSize() )
+   {
+      const IndexType index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
+      this->values[ index ] = 0;
+      i++;
+   }
+   return true;
+
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
-                                                              const IndexType* columns,
-                                                              const RealType* values,
-                                                              const IndexType numberOfElements,
+                                                              const Index* columns,
+                                                              const Real* values,
+                                                              const Index numberOfElements,
                                                               const RealType& thisElementMultiplicator )
 {
-   // TODO: implement
+   if( this->diagonalsShift.getSize() < numberOfElements )
+      return false;
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   const IndexType elements = Min( this->diagonalsShift.getSize(), numberOfElements );
+   IndexType i( 0 );
+   while( i < elements )
+   {
+      const IndexType index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
+      if( thisElementMultiplicator == 0.0 )
+         this->values.setElement( index, values[ i ] );
+      else
+         this->values.setElement( index, thisElementMultiplicator * this->values.getElement( index ) + values[ i ] );
+      i++;
+   }
+   while( i < this->diagonalsShift.getSize() )
+   {
+      const IndexType index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
+      this->values.setElement( index, 0 );
+      i++;
+   }
+   return true;
 }
 
 template< typename Real,
@@ -338,7 +388,10 @@ template< typename Real,
 Real tnlMultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                                 const IndexType column ) const
 {
-   return this->getElementFast( row, column );
+   Index index;
+   if( ! this->getElementIndex( row, column, index  ) )
+      return 0.0;
+   return this->values.getElement( index );
 }
 
 
@@ -351,6 +404,26 @@ template< typename Real,
 void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                                 IndexType* columns,
                                                                 RealType* values ) const
+{
+   IndexType pointer( 0 );
+   for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
+   {
+      const IndexType column = row + diagonalsShift[ i ];
+      if( column >= 0 && column < this->getColumns() )
+      {
+         columns[ pointer ] = column;
+         values[ pointer ] = this->getElementFast( row, column );
+         pointer++;
+      }
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
+                                                            Index* columns,
+                                                            Real* values ) const
 {
    IndexType pointer( 0 );
    for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
@@ -368,35 +441,50 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                            IndexType* columns,
-                                                            RealType* values ) const
+   template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename Vector::RealType tnlMultidiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+                                                                                           const Vector& vector ) const
 {
-   return this->getRowFast( row, columns, values );
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   Real result = 0.0;
+   for( Index i = 0;
+        i < this->diagonalsShift.getSize();
+        i ++ )
+   {
+      const Index column = row + this->diagonalsShift[ i ];
+      if( column >= 0 && column < this->getColumns() )
+         result += this->values[
+                      DDCType::getElementIndex( this->getRows(),
+                                                this->diagonalsShift.getSize(),
+                                                row,
+                                                i ) ] * vector[ column ];
+   }
+   return result;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const Vector& inVector,
-                                                                   Vector& outVector ) const
+   template< typename InVector,
+             typename OutVector >
+void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+                                                                   OutVector& outVector ) const
 {
+   tnlAssert( this->getColumns() == inVector.getSize(),
+            cerr << "Matrix columns: " << this->getColumns() << endl
+                 << "Matrix name: " << this->getName() << endl
+                 << "Vector size: " << inVector.getSize() << endl
+                 << "Vector name: " << inVector.getName() << endl );
+   tnlAssert( this->getRows() == outVector.getSize(),
+               cerr << "Matrix rows: " << this->getRows() << endl
+                    << "Matrix name: " << this->getName() << endl
+                    << "Vector size: " << outVector.getSize() << endl
+                    << "Vector name: " << outVector.getName() << endl );
 
-   for( Index row = 0; row < this->getRows(); row ++ )
-   {
-      Real result = 0.0;
-      for( Index i = 0;
-           i < this->diagonalsShift.getSize();
-           i ++ )
-      {
-         const Index column = row + this->diagonalsShift.getElement( i );
-         if( column >= 0 && column < this->getColumns() )
-            result += this->values.getElement( row * this->diagonalsShift.getSize() + i ) *
-                      inVector.getElement( column );
-      }
-      outVector.setElement( row, result );
-   }
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
 template< typename Real,
@@ -419,7 +507,21 @@ template< typename Real,
 void tnlMultidiagonalMatrix< Real, Device, Index >::getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlVector< Index > auxDiagonals;
+   auxDiagonals.setLike( matrix.getDiagonals() );
+   const Index numberOfDiagonals = matrix.getDiagonals().getSize();
+   for( Index i = 0; i < numberOfDiagonals; i++ )
+      auxDiagonals[ i ] = -1.0 * matrix.getDiagonals().getElement( numberOfDiagonals - i - 1 );
+   this->setDimensions( matrix.getColumns(),
+                        matrix.getRows() );
+   this->setDiagonals( auxDiagonals );
+   for( Index row = 0; row < matrix.getRows(); row++ )
+      for( Index diagonal = 0; diagonal < numberOfDiagonals; diagonal++ )
+      {
+         const Index column = row + matrix.getDiagonals().getElement( diagonal );
+         if( column >= 0 && column < matrix.getColumns() )
+            this->setElement( column, row, matrixMultiplicator * matrix.getElement( row, column ) );
+      }
 }
 
 template< typename Real,
@@ -508,9 +610,9 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
       str <<"Row: " << row << " -> ";
       for( IndexType i = 0; i < this->diagonalsShift.getSize(); i++ )
       {
-         const IndexType column = row + diagonalsShift[ i ];
+         const IndexType column = row + diagonalsShift.getElement( i );
          if( column >=0 && column < this->columns )
-            str << " Col:" << column << "->" << this->operator()( row, column ) << "\t";
+            str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
       }
       str << endl;
    }
@@ -532,17 +634,112 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
                  << " this->columns = " << this->columns
                  << " this->getName() = " << this->getName() << endl );
 
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );
    while( i < this->diagonalsShift.getSize() )
    {
-      if( diagonalsShift[ i ] == column - row )
+      if( diagonalsShift.getElement( i ) == column - row )
       {
-         index = row*this->diagonalsShift.getSize() + i;
+         index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
          return true;
       }
       i++;
    }
    return false;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const IndexType row,
+                                                                         const IndexType column,
+                                                                         Index& index ) const
+{
+   tnlAssert( row >=0 && row < this->rows,
+            cerr << "row = " << row
+                 << " this->rows = " << this->rows
+                 << " this->getName() = " << this->getName() << endl );
+   tnlAssert( column >=0 && column < this->columns,
+            cerr << "column = " << column
+                 << " this->columns = " << this->columns
+                 << " this->getName() = " << this->getName() << endl );
+
+   typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   IndexType i( 0 );
+   while( i < this->diagonalsShift.getSize() )
+   {
+      if( diagonalsShift[ i ] == column - row )
+      {
+         index = DDCType::getElementIndex( this->getRows(), this->diagonalsShift.getSize(), row, i );
+         return true;
+      }
+      i++;
+   }
+   return false;
+}
+
+template<>
+class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
+{
+   public:
+
+      typedef tnlHost Device;
+
+      template< typename Index >
+      static Index getElementIndex( const Index rows,
+                                    const Index diagonals,
+                                    const Index row,
+                                    const Index diagonal )
+      {
+         return row*diagonals + diagonal;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlMultidiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+      }
+};
+
+template<>
+class tnlMultidiagonalMatrixDeviceDependentCode< tnlCuda >
+{
+   public:
+
+      typedef tnlCuda Device;
+
+      template< typename Index >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      static Index getElementIndex( const Index rows,
+                                    const Index diagonals,
+                                    const Index row,
+                                    const Index diagonal )
+      {
+         return diagonal*rows + row;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const tnlMultidiagonalMatrix< Real, Device, Index >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+      }
+};
+
 
 #endif /* TNLMULTIDIAGONALMATRIX_IMPL_H_ */

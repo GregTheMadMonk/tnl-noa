@@ -66,7 +66,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
    this -> resetIterations();
-   this -> setResidue( this -> getMaxResidue() + 1.0 );
+   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, omega, s1, s2, rho( 0.0 ), bNorm( 0.0 );
    // r_0 = b - A x_0, p_0 = r_0
@@ -95,14 +95,14 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    }
    else*/
    {
-      r. alphaXPlusBetaY( 1.0, b, -1.0 );
+      r. addVector( b, 1.0, -1.0 );
       p = r_ast = r;
       rho = r. scalarProduct( r_ast );
       bNorm = b. lpNorm( 2.0 );
    }
 
    while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getMaxResidue() )
+          this -> getResidue() > this -> getConvergenceResidue() )
    {
       //dbgCout( "Starting BiCGStab iteration " << iter + 1 );
 
@@ -165,7 +165,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getMaxResidue() ) return false;
+      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 

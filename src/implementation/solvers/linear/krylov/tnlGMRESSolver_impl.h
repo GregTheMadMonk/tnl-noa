@@ -31,7 +31,7 @@ tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
   _sn( "tnlGMRESSolver::_sn" ),
   _H( "tnlGMRESSolver:_H" ),
   size( 0 ),
-  restarting( 0 ),
+  restarting( 10 ),
   matrix( 0 ),
   preconditioner( 0 )
 {
@@ -133,7 +133,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    tnlSharedVector< RealType, DeviceType, IndexType > vk;
    vk. setName( "tnlGMRESSolver::vk" );
    while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getMaxResidue() )
+          this -> getResidue() > this -> getConvergenceResidue() )
    {
       const IndexType m = restarting;
       for( i = 0; i < m + 1; i ++ )
@@ -148,7 +148,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
        * v_0 = r / | r | =  1.0 / beta * r
        */
       vi. bind( _v. getData(), size );
-      vi. alphaXPlusY( ( RealType ) 1.0 / beta, _r );
+      vi. addVector( _r, ( RealType ) 1.0 / beta );
 
       _s. setValue( ( RealType ) 0.0 );
       _s[ 0 ] = beta;
@@ -164,7 +164,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
           */
          if( preconditioner )
          {
-            matrix -> vectorProduct( vi, _M_tmp );
+            matrix->vectorProduct( vi, _M_tmp );
             this->preconditioner->solve( _M_tmp, _w );
          }
          else
@@ -182,7 +182,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
             /****
              * w = w - H_{k,i} v_k
              */
-            _w. alphaXPlusY( -H_k_i, vk );
+            _w. addVector( vk, -H_k_i );
          }
          /***
           * H_{i+1,i} = |w|
@@ -194,7 +194,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         vi. alphaXPlusY( ( RealType ) 1.0 / normw, _w );
+         vi. addVector( _w, ( RealType ) 1.0 / normw );
 
 
          //dbgCout( "Applying rotations" );
@@ -219,7 +219,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
 
          this -> setResidue( fabs( s[ i + 1 ] ) / normb );
 
-         if( this -> getResidue() < this -> getMaxResidue() )
+         if( this -> getResidue() < this -> getConvergenceResidue() )
          {
             update( i, m, _H, _s, _v, x );
             //if( this -> verbosity > 0 )
@@ -257,7 +257,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          return false;
    }
    this -> refreshSolverMonitor();
-   if( this -> getResidue() >this -> getMaxResidue() ) return false;
+   if( this -> getResidue() >this -> getConvergenceResidue() ) return false;
    return true;
 };
 
@@ -300,7 +300,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
-      x. alphaXPlusY( y[ i ], vi );
+      x. addVector( vi, y[ i ] );
    }
 };
 

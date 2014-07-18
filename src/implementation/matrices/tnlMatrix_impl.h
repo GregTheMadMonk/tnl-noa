@@ -19,6 +19,7 @@
 #define TNLMATRIX_IMPL_H_
 
 #include <matrices/tnlMatrix.h>
+#include <core/tnlAssert.h>
 
 template< typename Real,
           typename Device,
@@ -97,6 +98,32 @@ void tnlMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
+                                                 const RowLengthsVector& rowLengths )
+{
+   /*tnlStaticAssert( DeviceType::DeviceType == tnlHostDevice, );
+   tnlStaticAssert( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
+
+   this->setLike( matrix );
+   if( ! this->setRowLengths( rowLengths ) )
+      return false;
+   tnlVector< RealType, tnlHost, IndexType > values;
+   tnlVector< IndexType, tnlHost, IndexType > columns;
+   if( ! values.setSize( this->getColumns() ) ||
+       ! columns.setSize( this->getColumns() ) )
+      return false;
+   for( IndexType row = 0; row < this->getRows(); row++ )
+   {
+      matrix.getRow( row, columns.getData(), values.getData() );
+      this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
+   }
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& m )
 {
    this->setLike( m );
@@ -113,13 +140,38 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       m.getRow( row,
-                    rowColumns.getData(),
-                    rowValues.getData() );
+                rowColumns.getData(),
+                rowValues.getData() );
       this->setRow( row,
                     rowColumns.getData(),
                     rowValues.getData(),
-                    rowLengths.getElement( row ) );
+                    m.getRowLength( row ) );
    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::operator == ( const Matrix& matrix ) const
+{
+   if( this->getRows() != matrix.getRows() ||
+       this->getColumns() != matrix.getColumns() )
+      return false;
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      for( IndexType column = 0; column < this->getColumns(); column++ )
+         if( this->getElement( row, column ) != matrix.getElement( row, column ) )
+            return false;
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Matrix >
+bool tnlMatrix< Real, Device, Index >::operator != ( const Matrix& matrix ) const
+{
+   return ! operator == ( matrix );
 }
 
 template< typename Real,
@@ -169,6 +221,54 @@ template< typename Real,
           typename Index >
 void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
 {
+}
+
+#ifdef HAVE_CUDA
+template< typename Matrix,
+          typename InVector,
+          typename OutVector >
+__global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
+                                                  const InVector* inVector,
+                                                  OutVector* outVector,
+                                                  int gridIdx )
+{
+   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
+   const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx < matrix->getRows() )
+      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
+}
+#endif
+
+template< typename Matrix,
+          typename InVector,
+          typename OutVector >
+void tnlMatrixVectorProductCuda( const Matrix& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+{
+#ifdef HAVE_CUDA
+   typedef typename Matrix::IndexType IndexType;
+   Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+   InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+   OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+   {
+      if( gridIdx == cudaGrids - 1 )
+         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+      tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                     ( kernel_this,
+                                       kernel_inVector,
+                                       kernel_outVector,
+                                       gridIdx );
+   }
+   tnlCuda::freeFromDevice( kernel_this );
+   tnlCuda::freeFromDevice( kernel_inVector );
+   tnlCuda::freeFromDevice( kernel_outVector );
+   checkCudaDevice;
+#endif
 }
 
 #endif /* TNLMATRIX_IMPL_H_ */

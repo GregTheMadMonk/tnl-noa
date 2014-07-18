@@ -34,6 +34,7 @@ endif()
 
 if( WITH_CUDA STREQUAL "yes" )
    AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
+   set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" ) # TODO: fix this in the rest of cmake files
 else()
    AddCompilerFlag( "-std=gnu++0x" )
 endif()      
@@ -48,24 +49,15 @@ if( NOT WITH_CUDA STREQUAL "no" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
+        set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this      
         
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
-        if( CUDA_ARCHITECTURE STREQUAL "2.0" )
-            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DCUDA_ARCH=20)            
-        endif()    
-        if( CUDA_ARCHITECTURE STREQUAL "2.1" )
-            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=compute_20;-code=sm_21;-DCUDA_ARCH=21)
-        endif()    
-        if( CUDA_ARCHITECTURE STREQUAL "2.2" )
-            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_22;-DCUDA_ARCH=22)
-        endif()    
-        if( CUDA_ARCHITECTURE STREQUAL "2.3" )
-            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_23;-DCUDA_ARCH=23)
-        endif()    
-        if( CUDA_ARCHITECTURE STREQUAL "3.0" )
-            set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=compute_30;-code=sm_30;-DCUDA_ARCH=30)
-        endif()    
-    
+            
+       #set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" )
+       #set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" -shared )
+       set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
+       set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
+       
         ####
         # Check for CUSP
         #
@@ -84,6 +76,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
+        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
@@ -95,18 +88,7 @@ if( NOT WITH_CUDA STREQUAL "no" )
                message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
                set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-           endif() 
-           
-           string( REPLACE "/include" "" CUSPARSE_LINK_DIR_HINT ${CUSPARSE_INCLUDE_DIR} )           
-           find_library( CUSPARSE_LIBRARY
-                         NAME cusparse 
-                         HINTS ${CUSPARSE_LINK_DIR_HINT}/lib
-                         DOC "CUSPARSE library" )                                                                  
-           if( ${CUSPARSE_LIBRARY} STREQUAL "CUSPARSE_LIBRARY-NOTFOUND" )
-               message( "Cannot find CUSPARSE library." )
-           endif()    
-           string( REPLACE "/libcusparse.so" "" CUSPARSE_LINK_DIRECTORY ${CUSPARSE_LIBRARY} )
-           link_directories( ${CUSPARSE_LINK_DIRECTORY} )
+           endif()            
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
             
     endif( CUDA_FOUND )

@@ -95,9 +95,10 @@ class tnlVectorOperations< tnlHost >
                                                          const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void alphaXPlusY( Vector1& y,
-                            const Vector2& x,
-                            const typename Vector1::RealType& alpha );
+   static void addVector( Vector1& y,
+                          const Vector2& v,
+                          const typename Vector2::RealType& multiplicator,
+                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
    static void alphaXPlusBetaY( Vector1& y,
@@ -199,9 +200,10 @@ class tnlVectorOperations< tnlCuda >
                                                          const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void alphaXPlusY( Vector1& y,
-                            const Vector2& x,
-                            const typename Vector1::RealType& alpha );
+   static void addVector( Vector1& y,
+                          const Vector2& x,
+                          const typename Vector2::RealType& alpha,
+                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
    static void alphaXPlusBetaY( Vector1& y,

@@ -19,11 +19,14 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
+#ifndef HAVE_NOT_CXX11
 #include "tnlMeshTester.h"
+#endif
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
+#ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
    //tnlMeshTester< double, tnlHost, long int > t;
    //t.regularMeshOfHexahedronsTest();
@@ -33,6 +36,7 @@ int main( int argc, char* argv[] )
    return EXIT_SUCCESS;
 #else
    return EXIT_FAILURE;
+#endif
 #endif
 }
 
