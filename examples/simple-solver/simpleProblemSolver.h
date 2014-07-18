@@ -47,11 +47,16 @@ class simpleProblemSolver
 
    bool init( const tnlParameterContainer& parameters );
 
+   IndexType getDofs( const MeshType& mesh );
+
+   void bindDofs( const MeshType& mesh,
+                  DofVectorType& dofs );
+
    bool setInitialCondition( const tnlParameterContainer& parameters );
 
    bool makeSnapshot( const RealType& time, const IndexType& step );
 
-   DofVectorType& getDofVector();
+
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,

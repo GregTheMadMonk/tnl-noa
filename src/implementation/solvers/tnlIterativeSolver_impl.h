@@ -25,13 +25,35 @@ tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
 : maxIterations( 100000 ),
   minIterations( 0 ),
   currentIteration( 0 ),
-  convergenceResidue( 1.0e-12 ),
+  convergenceResidue( 1.0e-6 ),
   divergenceResidue( DBL_MAX ),
   currentResidue( 0 ),
   solverMonitor( 0 ),
   refreshRate( 1 )
 {
 };
+
+template< typename Real, typename Index >
+void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& config,
+                                                      const tnlString& prefix )
+{
+   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000 );
+   config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
+   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
+   config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
+   config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
+}
+
+template< typename Real, typename Index >
+bool tnlIterativeSolver< Real, Index> :: init( const tnlParameterContainer& parameters,
+                                               const tnlString& prefix )
+{
+   this->setMaxIterations( parameters.GetParameter< int >( "max-iterations" ) );
+   this->setMinIterations( parameters.GetParameter< int >( "min-iterations" ) );
+   this->setConvergenceResidue( parameters.GetParameter< double >( "convergence-residue" ) );
+   this->setDivergenceResidue( parameters.GetParameter< double >( "divergence-residue" ) );
+   this->setRefreshRate( parameters.GetParameter< int >( "refresh-rate" ) );
+}
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )

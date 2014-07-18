@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "simple-solver-conf.h"
 #include "simpleProblemSetter.h"
 #include "simpleProblemConfig.h"
 #include <solvers/tnlSolver.h>
