@@ -42,17 +42,17 @@ class heatEquationSetter
 {
    public:
  
-   typedef TimeFunction<MeshType,TimeFunctionBase::TimeIndependent> TimeIndependent;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Linear> Linear;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Quadratic> Quadratic;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Cosinus> Cosinus;
+   typedef TimeFunction< MeshType, TimeFunctionBase::TimeIndependent, Real, Index > TimeIndependent;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Linear, Real, Index > Linear;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Quadratic, Real, Index > Quadratic;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Cosinus, Real, Index > Cosinus;
    //typedef typename MeshType::RealType RealType;
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
+   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
       
    template< typename TimeFunction >
    static bool setAnalyticSpaceFunction (const tnlParameterContainer& parameters);  

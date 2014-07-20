@@ -373,8 +373,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+   template< typename Vertex >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
-                                                                      VertexType& center ) const
+                                                                      Vertex& center ) const
 {
       geometry. getElementCenter( origin, coordinates, center );
 }
@@ -424,9 +425,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-   template< int dx, int dy >
+   template< int dx, int dy, typename Vertex >
 void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
-                                                               VertexType& vertex ) const
+                                                               Vertex& vertex ) const
 {
    tnlAssert( elementCoordinates. x() >= 0 &&
               elementCoordinates. x() < this -> dimensions. x() &&

@@ -83,9 +83,10 @@ const typename tnlIdenticalGridGeometry< 1, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vertex >
 void tnlIdenticalGridGeometry< 1, Real, Device, Index > :: getElementCenter( const VertexType& origin,
                                                                              const CoordinatesType& coordinates,
-                                                                             VertexType& center ) const
+                                                                             Vertex& center ) const
 {
    center. x() = origin.x() + ( coordinates. x() + 0.5 ) * parametricStep. x();
 }
@@ -222,9 +223,10 @@ const typename tnlIdenticalGridGeometry< 2, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vertex >
 void tnlIdenticalGridGeometry< 2, Real, Device, Index > :: getElementCenter( const VertexType& origin,
                                                                              const CoordinatesType& coordinates,
-                                                                             VertexType& center ) const
+                                                                             Vertex& center ) const
 {
    center. x() = origin.x() + ( coordinates. x() + 0.5 ) * parametricStep. x();
    center. y() = origin.y() + ( coordinates. y() + 0.5 ) * parametricStep. y();
@@ -359,9 +361,10 @@ const typename tnlIdenticalGridGeometry< 3, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vertex >
 void tnlIdenticalGridGeometry< 3, Real, Device, Index > :: getElementCenter( const VertexType& origin,
                                                                              const CoordinatesType& coordinates,
-                                                                             VertexType& center ) const
+                                                                             Vertex& center ) const
 {
    center.x() = origin.x() + ( coordinates.x() + 0.5 ) * parametricStep.x();
    center.y() = origin.y() + ( coordinates.y() + 0.5 ) * parametricStep.y();

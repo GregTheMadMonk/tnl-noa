@@ -55,9 +55,10 @@ class tnlIdenticalGridGeometry< 1, Real, Device, Index >
 
    const VertexType& getProportions() const;
 
+   template< typename Vertex >
    void getElementCenter( const VertexType& origin,
                           const CoordinatesType& coordinates,
-                          VertexType& center ) const;
+                          Vertex& center ) const;
 
    Real getElementMeasure( const CoordinatesType& i ) const;
 
@@ -123,9 +124,10 @@ class tnlIdenticalGridGeometry< 2, Real, Device, Index >
 
    const VertexType& getProportions() const;
 
+   template< typename Vertex >
    void getElementCenter( const VertexType& origin,
                           const CoordinatesType& coordinates,
-                          VertexType& center ) const;
+                          Vertex& center ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
@@ -184,9 +186,10 @@ class tnlIdenticalGridGeometry< 3, Real, Device, Index >
 
    const VertexType& getProportions() const;
 
+   template< typename Vertex >
    void getElementCenter( const VertexType& origin,
                           const CoordinatesType& coordinates,
-                          VertexType& center ) const;
+                          Vertex& center ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 

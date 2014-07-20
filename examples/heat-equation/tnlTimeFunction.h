@@ -8,22 +8,31 @@ class TimeFunctionBase
    enum TimeFunctionSet {TimeIndependent, Linear, Quadratic, Cosinus}; 
 };
 
-template<typename Mesh, TimeFunctionBase::TimeFunctionSet timefunction>
+template< typename Mesh,
+          TimeFunctionBase::TimeFunctionSet timefunction,
+          typename Real,
+          typename Index >
 class TimeFunction
 {
    
 };
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::TimeIndependent>: public TimeFunctionBase
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+                    TimeFunctionBase::TimeIndependent,
+                    Real, Index >: public TimeFunctionBase
 {
    public:
-   enum setTimeFunction{TimeIndependent};
-   typedef tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
-   typedef typename MeshType::RealType RealType;
+   enum setTimeFunction{ TimeIndependent };
+   typedef tnlGrid< Dim, MeshReal, Device, MeshIndex > MeshType;
+   typedef Real RealType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename MeshType::IndexType IndexType;
+   typedef Index IndexType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVectorType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    
@@ -32,16 +41,22 @@ class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeF
    void applyInitTimeValues(SharedVectorType& u) const;
 };
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Linear>: public TimeFunctionBase
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+                    TimeFunctionBase::Linear,
+                    Real, Index >: public TimeFunctionBase
 {
    public:
-   enum setTimeFunction{Linear};
-   typedef tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
-   typedef typename MeshType::RealType RealType;
+   enum setTimeFunction{ Linear };
+   typedef tnlGrid< Dim, MeshReal, Device, MeshIndex > MeshType;
+   typedef Real RealType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename MeshType::IndexType IndexType;
+   typedef Index IndexType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVectorType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType; 
    
@@ -50,16 +65,22 @@ class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeF
    void applyInitTimeValues(SharedVectorType& u) const;
 };
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Quadratic>: public TimeFunctionBase
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+                    TimeFunctionBase::Quadratic,
+                    Real, Index >: public TimeFunctionBase
 {
    public:
-   enum setTimeFunction{Quadratic};
-   typedef tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
-   typedef typename MeshType::RealType RealType;
+   enum setTimeFunction{ Quadratic };
+   typedef tnlGrid< Dim, MeshReal, Device, MeshIndex > MeshType;
+   typedef Real RealType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename MeshType::IndexType IndexType;
+   typedef Index IndexType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVectorType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    
@@ -69,15 +90,22 @@ class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeF
 };
 
 template<>
-template<int dim, typename Real, typename Device, typename Index>
-class TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Cosinus>: public TimeFunctionBase
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+                    TimeFunctionBase::Cosinus,
+                    Real, Index >: public TimeFunctionBase
 {
    public:
-   enum setTimeFunction{Cosinus};
-   typedef tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
-   typedef typename MeshType::RealType RealType;
+   enum setTimeFunction{ Cosinus };
+   typedef tnlGrid< Dim, MeshReal, Device, MeshIndex > MeshType;
+   typedef Real RealType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename MeshType::IndexType IndexType;
+   typedef Index IndexType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVectorType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    

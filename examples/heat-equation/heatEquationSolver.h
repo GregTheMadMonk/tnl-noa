@@ -38,9 +38,9 @@ class heatEquationSolver
 {
    public:
 
-   typedef typename Mesh :: RealType RealType;
-   typedef typename Mesh :: DeviceType DeviceType;
-   typedef typename Mesh :: IndexType IndexType;
+   typedef typename Diffusion::RealType RealType;
+   typedef typename Mesh::DeviceType DeviceType;
+   typedef typename Diffusion::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
@@ -57,7 +57,9 @@ class heatEquationSolver
 
    bool setInitialCondition( const tnlParameterContainer& parameters );
 
-   bool makeSnapshot( const RealType& time, const IndexType& step );
+   bool makeSnapshot( const RealType& time,
+                      const IndexType& step,
+                      const MeshType& mesh );
 
    IndexType getDofs( const MeshType& mesh ) const;
 
@@ -81,7 +83,7 @@ class heatEquationSolver
    MeshType mesh;
    AnalyticSpaceFunction analyticSpaceFunction;
    TimeFunction timeFunction;
-   AnalyticSolution<MeshType> analyticSolution;
+   AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;
    BoundaryCondition boundaryCondition;
    Diffusion diffusion;
    RightHandSide RHS;

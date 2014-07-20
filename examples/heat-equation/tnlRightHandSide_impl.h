@@ -3,11 +3,19 @@
 
 #include "tnlRightHandSide.h"
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlRightHandSide<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
-               TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction >
+void tnlRightHandSide< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+applyRHSValues( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& _fu,
+                TimeFunction& timeFunction,
+                AnalyticSpaceFunction& analyticSpaceFunction )
 {        
       RealType timeFunctionValue = timeFunction.getTimeValue(time);
       RealType timeFunctionDerivationValue = timeFunction.getDerivation(time);   
@@ -23,16 +31,24 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
          mesh.getElementCoordinates(i,coordinates);
          mesh.getElementCenter(coordinates,vertex);
 
-      _fu[i] += timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex) -
+      _fu[i] += timeFunctionDerivationValue*analyticSpaceFunction.getF< 0,0,0 >(vertex) -
                 timeFunctionValue*analyticSpaceFunction.template getF<2,0,0>(vertex);
    }  
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlRightHandSide<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
-               TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction >
+void tnlRightHandSide< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+applyRHSValues( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& _fu,
+                TimeFunction& timeFunction,
+                AnalyticSpaceFunction& analyticSpaceFunction )
 {   
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    RealType timeFunctionDerivationValue = timeFunction.getDerivation(time);    
@@ -60,11 +76,19 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
    }
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlRightHandSide<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu, 
-               TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction >
+void tnlRightHandSide< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+applyRHSValues( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& _fu,
+                TimeFunction& timeFunction,
+                AnalyticSpaceFunction& analyticSpaceFunction )
 { 
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    RealType timeFunctionDerivationValue = timeFunction.getDerivation(time); 
@@ -89,7 +113,7 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
             mesh.getElementCenter(coordinates,vertex);
          
             _fu[mesh.getElementIndex(i,j,k)] += 
-                       timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex)-
+                       timeFunctionDerivationValue*analyticSpaceFunction.getF< 0,0,0 >(vertex)-
                        timeFunctionValue*(analyticSpaceFunction.template getF<2,0,0>(vertex)+
                        analyticSpaceFunction.template getF<0,2,0>(vertex)+
                        analyticSpaceFunction.template getF<0,0,2>(vertex));

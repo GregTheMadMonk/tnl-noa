@@ -79,14 +79,18 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
    void getElementCoordinates( const Index i,
                                CoordinatesType& coordinates ) const;
 
+   /****
+    * The type Vertex can have different Real type.
+    */
+   template< typename Vertex >
    void getElementCenter( const CoordinatesType& coordinates,
-                          VertexType& v ) const;
+                          Vertex& v ) const;
 
    Index getDofs() const;
 
-   template< int dx >
+   template< int dx, typename Vertex >
    void getVertex( const CoordinatesType& elementCoordinates,
-                   VertexType& vertex ) const;
+                   Vertex& vertex ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
@@ -200,8 +204,12 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    const GeometryType& getGeometry() const;
 
+   /****
+    * The type Vertex can have different Real type.
+    */
+   template< typename Vertex >
    void getElementCenter( const CoordinatesType& coordinates,
-                          VertexType& center ) const;
+                          Vertex& center ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 
@@ -212,9 +220,9 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    void getEdgeNormal( const CoordinatesType& elementCoordinates,
                        VertexType& normal ) const;
 
-   template< int dx, int dy >
+   template< int dx, int dy, typename Vertex >
    void getVertex( const CoordinatesType& elementCoordinates,
-                   VertexType& vertex ) const;
+                   Vertex& vertex ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
@@ -310,10 +318,18 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    void getElementCoordinates( const Index i,
                                CoordinatesType& coordinates ) const;
 
+   /****
+    * The type Vertex can have different Real type.
+    */
+   template< typename Vertex >
    void getElementCenter( const CoordinatesType& coordinates,
-                          VertexType& center ) const;
+                          Vertex& center ) const;
 
    Index getDofs() const;
+
+   template< int dx, int dy, int dz, typename Vertex >
+   void getVertex( const CoordinatesType& elementCoordinates,
+                   Vertex& vertex ) const;
 
    Real getElementMeasure( const CoordinatesType& coordinates ) const;
 

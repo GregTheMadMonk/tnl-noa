@@ -3,11 +3,20 @@
 
 #include "tnlAnalyticSolution.h"
 
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output, 
-        const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+computeAnalyticSolution( const MeshType& mesh,
+                         const RealType& time,
+                         SharedVector& output,
+                         const TimeFunction timeFunction,
+                         const AnalyticSpaceFunction analyticSpaceFunction )
 {  
       RealType timeFunctionValue = timeFunction.getTimeValue(time);
       
@@ -23,11 +32,20 @@ computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector
       }
 }
 
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
-                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+computeLaplace( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& output,
+                const TimeFunction timeFunction,
+                const AnalyticSpaceFunction analyticSpaceFunction )
 {        
       RealType timeFunctionValue = timeFunction.getTimeValue(time);   
    
@@ -46,11 +64,20 @@ computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output
    }  
 }
 
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output, 
-        const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+computeAnalyticSolution( const MeshType& mesh,
+                         const RealType& time,
+                         SharedVector& output,
+                         const TimeFunction timeFunction,
+                         const AnalyticSpaceFunction analyticSpaceFunction )
 { 
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    
@@ -70,11 +97,20 @@ computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector
    
 }
 
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
-                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+computeLaplace( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& output,
+                const TimeFunction timeFunction,
+                const AnalyticSpaceFunction analyticSpaceFunction )
 {
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    
@@ -101,11 +137,20 @@ computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output
    }
 }
    
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector& output,
-        const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+computeAnalyticSolution( const MeshType& mesh,
+                         const RealType& time,
+                         SharedVector& output,
+                         const TimeFunction timeFunction,
+                         const AnalyticSpaceFunction analyticSpaceFunction )
 {
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    
@@ -124,11 +169,20 @@ computeAnalyticSolution(const MeshType& mesh, const RealType& time, SharedVector
    }   
 }
 
-template<typename Real, typename Device, typename Index>
-template< typename TimeFunction, typename AnalyticSpaceFunction>
-void AnalyticSolution<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
-computeLaplace(const MeshType& mesh, const RealType& time, DofVectorType& output,
-                const TimeFunction timeFunction, const AnalyticSpaceFunction analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename TimeFunction,
+          typename AnalyticSpaceFunction >
+void
+AnalyticSolution< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+computeLaplace( const MeshType& mesh,
+                const RealType& time,
+                DofVectorType& output,
+                const TimeFunction timeFunction,
+                const AnalyticSpaceFunction analyticSpaceFunction )
 { 
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
       

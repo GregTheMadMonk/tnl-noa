@@ -185,8 +185,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+   template< typename Vertex >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
-                                                                      VertexType& v ) const
+                                                                      Vertex& v ) const
 {
    tnlAssert( coordinates.x() >= 0 && coordinates.x() < dofs,
               cerr << " element = " << coordinates.x() << " dofs = " << dofs
@@ -207,9 +208,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
-   template< int dx >
+   template< int dx, typename Vertex >
 void tnlGrid< 1, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
-                                                               VertexType& vertex ) const
+                                                               Vertex& vertex ) const
 {
    tnlAssert( elementCoordinates.x() >= 0 &&
               elementCoordinates.x() < this -> dimensions.x(),

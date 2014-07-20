@@ -3,90 +3,152 @@
 
 #include "tnlTimeFunction.h"
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::TimeIndependent>::
-getTimeValue(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::TimeIndependent,
+              Real, Index >::
+getTimeValue( const RealType& time ) const
 {
-      return 1.0;
+   return 1.0;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Linear>::
-getTimeValue(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Linear,
+              Real, Index >::
+getTimeValue( const RealType& time ) const
 {
-      return time;
+   return time;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Quadratic>::
-getTimeValue(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Quadratic,
+              Real, Index >::
+getTimeValue( const RealType& time ) const
 {
-      return time*time;
+   return time*time;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Cosinus>::
-getTimeValue(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Cosinus,
+              Real, Index >::
+getTimeValue( const RealType& time ) const
 {
-      return cos(time);
+   return cos( time );
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::TimeIndependent>::
-getDerivation(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::TimeIndependent,
+              Real, Index >::
+getDerivation( const RealType& time ) const
 {
-      return 0.0;
+   return 0.0;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Linear>::
-getDerivation(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Linear,
+              Real, Index >::
+getDerivation( const RealType& time ) const
 {
-      return 1.0;
+   return 1.0;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Quadratic>::
-getDerivation(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Quadratic,
+              Real, Index >::
+getDerivation( const RealType& time ) const
 {
-      return 2.0*time;
+   return 2.0*time;
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-typename tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>::RealType 
-TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Cosinus>::
-getDerivation(const RealType& time) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+Real
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Cosinus,
+              Real, Index >::
+getDerivation( const RealType& time ) const
 {
-      return -sin(time);
+   return -sin(time);
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-void TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::TimeIndependent>::
-applyInitTimeValues(SharedVectorType& u) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::TimeIndependent,
+              Real, Index >::
+applyInitTimeValues( SharedVectorType& u ) const
 {
    
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-void TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Linear>::
-applyInitTimeValues(SharedVectorType& u) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Linear,
+              Real, Index >::
+applyInitTimeValues( SharedVectorType& u ) const
 {
    #ifdef HAVE_OPENMP
       #pragma omp parallel for
@@ -97,10 +159,17 @@ applyInitTimeValues(SharedVectorType& u) const
    }
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-void TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Quadratic>::
-applyInitTimeValues(SharedVectorType& u) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Quadratic,
+              Real, Index >::
+applyInitTimeValues( SharedVectorType& u ) const
 {
    #ifdef HAVE_OPENMP
       #pragma omp parallel for
@@ -111,10 +180,17 @@ applyInitTimeValues(SharedVectorType& u) const
    }
 }
 
-template<>
-template<int dim, typename Real, typename Device, typename Index>
-void TimeFunction<tnlGrid<dim,Real,Device,Index,tnlIdenticalGridGeometry>,TimeFunctionBase::Cosinus>::
-applyInitTimeValues(SharedVectorType& u) const
+template< int Dim,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+TimeFunction< tnlGrid< Dim, MeshReal, Device, MeshIndex >,
+              TimeFunctionBase::Cosinus,
+              Real, Index >::
+applyInitTimeValues( SharedVectorType& u ) const
 {
 
 }

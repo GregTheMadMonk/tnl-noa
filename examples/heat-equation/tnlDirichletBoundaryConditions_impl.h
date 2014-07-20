@@ -3,11 +3,20 @@
 
 #include "tnlDirichletBoundaryConditions.h"
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>
-::applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time,
-                          TimeFunction& timeFunction,AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryConditions( const MeshType& mesh,
+                         Vector& u,
+                         const RealType& time,
+                         TimeFunction& timeFunction,
+                         AnalyticSpaceFunction& analyticSpaceFunction )
 {
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    
@@ -25,11 +34,20 @@ void tnlDirichletBoundaryConditions<tnlGrid<1,Real,Device,Index,tnlIdenticalGrid
    u[u.getSize()-1] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& time,
-                            TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryTimeDerivation( const MeshType& mesh,
+                             Vector& u,
+                             const RealType& time,
+                             TimeFunction& timeFunction,
+                             AnalyticSpaceFunction& analyticSpaceFunction )
 {
    RealType timeFunctionDerivationValue = timeFunction.getDerivation(time);
    
@@ -47,11 +65,20 @@ applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& tim
    u[u.getSize()-1] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time,
-                        TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryConditions( const MeshType& mesh,
+                         Vector& u,
+                         const RealType& time,
+                         TimeFunction& timeFunction,
+                         AnalyticSpaceFunction& analyticSpaceFunction )
 {  
    RealType timeFunctionValue = timeFunction.getTimeValue(time);   
    
@@ -94,11 +121,20 @@ applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time,
    }
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& time,
-                            TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryTimeDerivation( const MeshType& mesh,
+                             Vector& u,
+                             const RealType& time,
+                             TimeFunction& timeFunction,
+                             AnalyticSpaceFunction& analyticSpaceFunction )
 {
    RealType timeFunctionDerivationValue = timeFunction.getDerivation(time);
    
@@ -141,11 +177,20 @@ applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& tim
    }
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time, 
-                        TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryConditions( const MeshType& mesh,
+                         Vector& u,
+                         const RealType& time,
+                         TimeFunction& timeFunction,
+                         AnalyticSpaceFunction& analyticSpaceFunction )
 {
    RealType timeFunctionValue = timeFunction.getTimeValue(time);
    
@@ -214,11 +259,20 @@ applyBoundaryConditions(const MeshType& mesh, Vector& u, const RealType& time,
    } 
 }
 
-template<typename Real, typename Device, typename Index>
-template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>
-void tnlDirichletBoundaryConditions<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
-applyBoundaryTimeDerivation(const MeshType& mesh, Vector& u, const RealType& time, 
-                            TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename AnalyticSpaceFunction,
+             typename TimeFunction,
+             typename Vector >
+void tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+applyBoundaryTimeDerivation( const MeshType& mesh,
+                             Vector& u,
+                             const RealType& time,
+                             TimeFunction& timeFunction,
+                             AnalyticSpaceFunction& analyticSpaceFunction )
 {
    RealType timeFunctionDerivationValue = timeFunction.getDerivation(time);
    

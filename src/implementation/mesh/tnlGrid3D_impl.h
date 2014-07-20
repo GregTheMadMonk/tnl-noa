@@ -206,8 +206,9 @@ template< typename Real,
           typename Device,
           typename Index,
           template< int, typename, typename, typename > class Geometry >
+   template< typename Vertex >
 void tnlGrid< 3, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
-                                                                      VertexType& center ) const
+                                                                      Vertex& center ) const
 {
       geometry. getElementCenter( origin, coordinates, center );
 }

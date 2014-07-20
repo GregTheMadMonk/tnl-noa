@@ -40,14 +40,14 @@ bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter
    
    //DODELAT NACTENI Z PRIKAZOVY RADKY: RHS, Diffusion, BoundaryConditions !!!!!
   
-   const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("analytic-space-function");
+   const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("test-function");
    
-   typedef tnlLinearDiffusion< MeshType > Scheme;
-   typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditions;
-   typedef tnlRightHandSide< MeshType > RightHandSide;
+   typedef tnlLinearDiffusion< MeshType, Real, Index > Scheme;
+   typedef tnlDirichletBoundaryConditions< MeshType, Real, Index > BoundaryConditions;
+   typedef tnlRightHandSide< MeshType, Real, Index > RightHandSide;
    if (analyticSpaceFunctionParameter == "sin-wave")
    {
-      typedef tnlSinWaveFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
+      typedef tnlSinWaveFunction< MeshType::Dimensions, Vertex, DeviceType > TestFunction;
       typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
       return solverStarter.template run< Solver >( parameters );
    }
@@ -64,7 +64,7 @@ bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter
       return solverStarter.template run< Solver >( parameters );
    }
    
-   cerr<<"Unknown analytic-space-function parameter: "<<analyticSpaceFunctionParameter<<". ";
+   cerr<<"Unknown test-function parameter: "<<analyticSpaceFunctionParameter<<". ";
    return 0;
 }
 
@@ -76,9 +76,9 @@ template< typename Real,
           typename SolverStarter >
 bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter > ::setTimeFunction (const tnlParameterContainer& parameters)
 {
-   const tnlString& timeFunctionParameter = parameters.GetParameter<tnlString>("time-function");
+   const tnlString& timeFunctionParameter = parameters.GetParameter<tnlString>("test-function-time-dependence");
    
-   if (timeFunctionParameter == "time-independent")
+   if (timeFunctionParameter == "none")
       return setAnalyticSpaceFunction< TimeIndependent >(parameters);
    if (timeFunctionParameter == "linear")
       return setAnalyticSpaceFunction< Linear >(parameters);
