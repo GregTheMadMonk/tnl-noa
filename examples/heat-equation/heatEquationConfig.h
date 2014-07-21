@@ -34,6 +34,17 @@ class heatEquationConfig
             config.addEntryEnum( "sin-wave" );
             config.addEntryEnum( "sin-bumps" );
             config.addEntryEnum( "exp-bump" );
+         config.addEntry     < double >( "wave-length", "Wave length of the sine based test functions.", 1.0 );
+         config.addEntry     < double >( "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
+         config.addEntry     < double >( "wave-length-y", "Wave length of the sine based test functions.", 1.0 );
+         config.addEntry     < double >( "wave-length-z", "Wave length of the sine based test functions.", 1.0 );
+         config.addEntry     < double >( "phase", "Phase of the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "phase-x", "Phase of the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "phase-y", "Phase of the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "phase-z", "Phase of the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "amplitude", "Amplitude length of the sine based test functions.", 1.0 );
+         config.addEntry     < double >( "waves-number", "Cut-off for the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "sigma", "Sigma for the exp based test functions.", 1.0 );
          config.addEntry     < tnlString >( "test-function-time-dependence", "Time dependence of the test function.", "none" );
             config.addEntryEnum( "none" );
             config.addEntryEnum( "linear" );

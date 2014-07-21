@@ -80,8 +80,19 @@ typename simpleProblemSolver< Mesh >::IndexType simpleProblemSolver< Mesh>::getD
 }
 
 template< typename Mesh >
+typename simpleProblemSolver< Mesh >::IndexType simpleProblemSolver< Mesh>::getAuxiliaryDofs( const Mesh& mesh ) const
+{
+   /****
+    * Set-up DOFs and supporting grid functions
+    */
+   return 2*mesh.getDofs();
+}
+
+
+template< typename Mesh >
 void simpleProblemSolver< Mesh >::bindDofs( const MeshType& mesh,
-                                            DofVectorType& dofVector )
+                                            DofVectorType& dofVector,
+                                            DofVectorType& auxiliaryDofVector )
 {
    /****
     * You may use tnlSharedVector if you need to split the dofVector into more

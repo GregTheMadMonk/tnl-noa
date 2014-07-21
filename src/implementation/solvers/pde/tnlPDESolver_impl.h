@@ -57,7 +57,8 @@ bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& pa
    /****
     * Set DOFs (degrees of freedom)
     */
-   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
+   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) ||
+       ! this->auxiliaryDofs.setSize( problem->getAuxiliaryDofs( this->mesh ) ) )
    {
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
@@ -160,7 +161,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
    this->timeStepper->setProblem( * ( this->problem ) );
-   this->problem->bindDofs( mesh, dofs );
+   this->problem->bindDofs( mesh, this->dofs, this->auxiliaryDofs );
    if( ! this->problem->makeSnapshot( t, step, mesh ) )
    {
       cerr << "Making the snapshot failed." << endl;

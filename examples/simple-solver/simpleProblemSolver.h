@@ -49,8 +49,11 @@ class simpleProblemSolver
 
    IndexType getDofs( const MeshType& mesh ) const;
 
+   IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
+
    void bindDofs( const MeshType& mesh,
-                  DofVectorType& dofs );
+                  DofVectorType& dofs,
+                  DofVectorType& auxiliaryDofs );
 
    bool setInitialCondition( const tnlParameterContainer& parameters );
 

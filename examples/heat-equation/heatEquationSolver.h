@@ -55,7 +55,8 @@ class heatEquationSolver
 
    bool init( const tnlParameterContainer& parameters );
 
-   bool setInitialCondition( const tnlParameterContainer& parameters );
+   bool setInitialCondition( const tnlParameterContainer& parameters,
+                             const MeshType& mesh );
 
    bool makeSnapshot( const RealType& time,
                       const IndexType& step,
@@ -63,8 +64,11 @@ class heatEquationSolver
 
    IndexType getDofs( const MeshType& mesh ) const;
 
+   IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
+
    void bindDofs( const MeshType& mesh,
-                  DofVectorType& dofs );
+                  DofVectorType& dofs,
+                  DofVectorType& auxiliaryDofs );
 
    DofVectorType& getDofVector();
 
@@ -78,9 +82,11 @@ class heatEquationSolver
    
    protected:
 
-   DofVectorType dofVectorAnalyticSolution,dofVectorNumericalSolution,analyticLaplace,numericalLaplace;
-   tnlSharedVector< RealType, DeviceType, IndexType > sharedVectorNumericalSolution,sharedVectorAnalyticSolution;
-   MeshType mesh;
+   tnlSharedVector< RealType, DeviceType, IndexType > numericalSolution,
+                                                      exactSolution,
+                                                      analyticLaplace,
+                                                      numericalLaplace;
+   //MeshType mesh;
    AnalyticSpaceFunction analyticSpaceFunction;
    TimeFunction timeFunction;
    AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;

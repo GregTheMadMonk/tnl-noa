@@ -72,6 +72,8 @@ class tnlPDESolver : public tnlObject
 
    DofVectorType dofs;
 
+   DofVectorType auxiliaryDofs;
+
    TimeStepper* timeStepper;
 
    RealType finalTime, snapshotTau;
