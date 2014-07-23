@@ -44,6 +44,9 @@ class heatEquationConfig
          config.addEntry     < double >( "phase-z", "Phase of the sine based test functions.", 0.0 );
          config.addEntry     < double >( "amplitude", "Amplitude length of the sine based test functions.", 1.0 );
          config.addEntry     < double >( "waves-number", "Cut-off for the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "waves-number-x", "Cut-off for the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
+         config.addEntry     < double >( "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
          config.addEntry     < double >( "sigma", "Sigma for the exp based test functions.", 1.0 );
          config.addEntry     < tnlString >( "test-function-time-dependence", "Time dependence of the test function.", "none" );
             config.addEntryEnum( "none" );

@@ -9,12 +9,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 computeAnalyticSolution( const MeshType& mesh,
                          const RealType& time,
-                         SharedVector& output,
+                         Vector& output,
                          const TimeFunction timeFunction,
                          const AnalyticSpaceFunction analyticSpaceFunction )
 {  
@@ -38,12 +39,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 computeLaplace( const MeshType& mesh,
                 const RealType& time,
-                DofVectorType& output,
+                Vector& output,
                 const TimeFunction timeFunction,
                 const AnalyticSpaceFunction analyticSpaceFunction )
 {        
@@ -70,12 +72,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 computeAnalyticSolution( const MeshType& mesh,
                          const RealType& time,
-                         SharedVector& output,
+                         Vector& output,
                          const TimeFunction timeFunction,
                          const AnalyticSpaceFunction analyticSpaceFunction )
 { 
@@ -103,12 +106,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 computeLaplace( const MeshType& mesh,
                 const RealType& time,
-                DofVectorType& output,
+                Vector& output,
                 const TimeFunction timeFunction,
                 const AnalyticSpaceFunction analyticSpaceFunction )
 {
@@ -143,12 +147,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 computeAnalyticSolution( const MeshType& mesh,
                          const RealType& time,
-                         SharedVector& output,
+                         Vector& output,
                          const TimeFunction timeFunction,
                          const AnalyticSpaceFunction analyticSpaceFunction )
 {
@@ -175,12 +180,13 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename AnalyticSpaceFunction,
+          typename Vector >
 void
 AnalyticSolution< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 computeLaplace( const MeshType& mesh,
                 const RealType& time,
-                DofVectorType& output,
+                Vector& output,
                 const TimeFunction timeFunction,
                 const AnalyticSpaceFunction analyticSpaceFunction )
 { 

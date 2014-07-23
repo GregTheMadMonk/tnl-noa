@@ -51,10 +51,7 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
    configSetup( conf_desc );
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
-   }
    if( ! resolveRealType( parameters ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -18,7 +18,6 @@
 #ifndef tnlMersonSolver_implH
 #define tnlMersonSolver_implH
 
-#include <cmath>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 #include <config/tnlParameterContainer.h>
@@ -97,7 +96,6 @@ tnlMersonSolver< Problem > :: tnlMersonSolver()
   kAux( "tnlMersonSolver:kAux" ),
   adaptivity( 0.00001 )
 {
-   this->setName( "MersonSolver" );
 };
 
 template< typename Problem >
@@ -163,13 +161,12 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
    /****
     * Set necessary parameters
     */
-   RealType& time = this -> time;
-   RealType currentTau = this -> tau;
-   RealType& residue = this -> residue;
-   IndexType& iteration = this -> iteration;
+   RealType& time = this->time;
+   RealType currentTau = this->tau;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
-   iteration = 0;
+   this->resetIterations();
+   this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    this -> refreshSolverMonitor();
 
@@ -194,15 +191,20 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
 
       if( adaptivity == 0.0 || eps < adaptivity )
       {
-         RealType lastResidue = residue;
-         computeNewTimeLevel( u, currentTau, residue );
+         RealType lastResidue = this->getResidue();
+         RealType newResidue( 0.0 );
+         computeNewTimeLevel( u, currentTau, newResidue );
+         this->setResidue( newResidue );
+         
          /****
           * When time is close to stopTime the new residue
           * may be inaccurate significantly.
           */
-         if( currentTau + time == this -> stopTime ) residue = lastResidue;
+         if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
          time += currentTau;
-         iteration ++;
+
+         if( ! this->nextIteration() )
+            return false;
       }
       this -> refreshSolverMonitor();
 
@@ -222,15 +224,14 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Check stop conditions.
        */
-      if( time >= this -> getStopTime() ||
-          ( this -> getMaxResidue() != 0.0 && residue < this -> getMaxResidue() ) )
+      //cerr << "residue = " << residue << endl;
+      //cerr << "this -> getConvergenceResidue() = " << this -> getConvergenceResidue() << endl;
+      if( time >= this->getStopTime() ||
+          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
        {
          this -> refreshSolverMonitor();
          return true;
        }
-      if( iteration == this -> getMaxIterationsNumber() ||
-          std::isnan( residue ) )
-         return false;
    }
 };
 

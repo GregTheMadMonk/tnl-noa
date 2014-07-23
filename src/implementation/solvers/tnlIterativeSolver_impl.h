@@ -18,6 +18,7 @@
 #ifndef TNLITERATIVESOLVER_IMPL_H_
 #define TNLITERATIVESOLVER_IMPL_H_
 
+#include <cmath>
 #include <float.h>
 
 template< typename Real, typename Index >
@@ -92,9 +93,10 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
        this->currentIteration % this->refreshRate == 0 )
       solverMonitor->refresh();
    this->currentIteration ++;
-   if( ( this->getResidue() > this->getDivergenceResidue() && 
+   if( std::isnan( this->getResidue() ) ||
+       ( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) ||
-         this->getIterations() > this->getMaxIterations() )
+       this->getIterations() > this->getMaxIterations() )
       return false;
    return true;
 }

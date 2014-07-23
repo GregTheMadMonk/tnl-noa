@@ -69,10 +69,8 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
    setupConfig( conf_desc );
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
-      return 1;
-   }
+      return EXIT_FAILURE;
+
 
    int verbose = parameters. GetParameter< int >( "verbose" );
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );

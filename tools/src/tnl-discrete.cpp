@@ -36,10 +36,7 @@ int main( int argc, char* argv[] )
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
-      return 1;
-   }
+      return EXIT_FAILURE;
 
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
    tnlString meshType;

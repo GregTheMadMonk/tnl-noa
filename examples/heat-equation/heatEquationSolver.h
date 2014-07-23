@@ -67,10 +67,10 @@ class heatEquationSolver
    IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
 
    void bindDofs( const MeshType& mesh,
-                  DofVectorType& dofs,
-                  DofVectorType& auxiliaryDofs );
+                  DofVectorType& dofs );
 
-   DofVectorType& getDofVector();
+   void bindAuxiliaryDofs( const MeshType& mesh,
+                           DofVectorType& auxiliaryDofs );
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,

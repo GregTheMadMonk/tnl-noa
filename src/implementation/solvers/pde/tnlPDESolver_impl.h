@@ -35,6 +35,7 @@ template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper >::configSetup( tnlConfigDescription& config,
                                                         const tnlString& prefix )
 {
+   config.addEntry< tnlString >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
 }
@@ -57,13 +58,22 @@ bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& pa
    /****
     * Set DOFs (degrees of freedom)
     */
+   tnlAssert( problem->getDofs( this->mesh ) != 0, );
    if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) ||
        ! this->auxiliaryDofs.setSize( problem->getAuxiliaryDofs( this->mesh ) ) )
    {
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
    }
-
+   this->problem->bindDofs( mesh, this->dofs );
+   this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
+   
+   /***
+    * Set-up the initial condition
+    */
+   typedef typename Problem :: DofVectorType DofVectorType;
+   if( ! this->problem->setInitialCondition( parameters, mesh ) )
+      return false;
 
    /****
     * Initialize the time discretisation
@@ -161,7 +171,9 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
    this->timeStepper->setProblem( * ( this->problem ) );
-   this->problem->bindDofs( mesh, this->dofs, this->auxiliaryDofs );
+   this->problem->bindDofs( mesh, this->dofs );
+   this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
+
    if( ! this->problem->makeSnapshot( t, step, mesh ) )
    {
       cerr << "Making the snapshot failed." << endl;

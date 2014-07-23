@@ -159,9 +159,11 @@ class tnlConfigDescription
    //! Check for all entries with the flag 'required'.
    /*! Returns false if any parameter is missing.
     */
-   bool checkMissingEntries( tnlParameterContainer& parameter_container ) const;
+   bool checkMissingEntries( tnlParameterContainer& parameter_container,
+                             bool printUsage,
+                             const char* programName ) const;
 
-   void printUsage( const char* program_name );
+   void printUsage( const char* program_name ) const;
 
    bool parseConfigDescription( const char* file_name );
 

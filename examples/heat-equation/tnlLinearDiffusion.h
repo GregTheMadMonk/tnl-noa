@@ -26,16 +26,18 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   //typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
                         const CoordinatesType& coordinates,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        Vector& _u,
+                        Vector& _fu );
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        Vector& _u,
+                        Vector& _fu );
    
 };
 
@@ -54,16 +56,18 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType > DofVectorType;
+   //typedef tnlVector< RealType, DeviceType, IndexType > DofVectorType;
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
                         const CoordinatesType& coordinates,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        Vector& _u,
+                        Vector& _fu );
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
-                        DofVectorType& _u,
-                        DofVectorType& _fu);
+                        Vector& _u,
+                        Vector& _fu);
    
 };
 
@@ -82,16 +86,18 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   //typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
                         const CoordinatesType& coordinates,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        Vector& _u,
+                        Vector& _fu );
 
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        Vector& _u,
+                        Vector& _fu );
    
 };
 

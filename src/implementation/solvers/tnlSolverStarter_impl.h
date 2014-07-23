@@ -349,17 +349,10 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     * Set-up the PDE solver
     */
    tnlPDESolver< Problem, TimeStepper > solver;
+   solver.setProblem( problem );
    if( ! solver.init( parameters ) )
       return false;
-   solver.setProblem( problem );
    solver.setTimeStepper( timeStepper );
-
-   /***
-    * Set-up the initial condition
-    */
-   typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! problem. setInitialCondition( parameters ) )
-      return false;
 
    /****
     * Write a prolog

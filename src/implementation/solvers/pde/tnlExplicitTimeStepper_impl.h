@@ -100,7 +100,7 @@ void tnlExplicitTimeStepper< Problem, OdeSolver >::GetExplicitRHS( const RealTyp
                                                                    DofVectorType& _u,
                                                                    DofVectorType& _fu )
 {
-   return this->problem->GetExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
+   this->problem->GetExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

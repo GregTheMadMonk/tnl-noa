@@ -114,7 +114,8 @@ class tnlParameterContainer
 
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       tnlParameterContainer& parameters );
+                       tnlParameterContainer& parameters,
+                       bool printUsage = true );
 
 template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
                                                                 const T& value )

@@ -84,7 +84,7 @@ bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter
       return setAnalyticSpaceFunction< Linear >(parameters);
    if (timeFunctionParameter == "quadratic")
       return setAnalyticSpaceFunction< Quadratic >(parameters);
-   if (timeFunctionParameter == "cosinus")
+   if (timeFunctionParameter == "cosine")
       return setAnalyticSpaceFunction< Cosinus >(parameters);
    
    cerr<<"Unknown time-function parameter: "<<timeFunctionParameter<<". ";

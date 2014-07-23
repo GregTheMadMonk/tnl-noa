@@ -158,7 +158,8 @@ void tnlParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 //--------------------------------------------------------------------------
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       tnlParameterContainer& parameters )
+                       tnlParameterContainer& parameters,
+                       bool printUsage )
 {
    int i;
    bool parse_error( false );
@@ -322,7 +323,7 @@ bool ParseCommandLine( int argc, char* argv[],
       }
    }
    config_description.addMissingEntries( parameters );
-   if( ! config_description.checkMissingEntries( parameters ) )
+   if( ! config_description.checkMissingEntries( parameters, printUsage, argv[ 0 ] ) )
       return false;
    return ! parse_error;
 }
