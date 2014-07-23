@@ -22,29 +22,25 @@
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
 
 template< int Dimensions,
           typename Real = double,
           typename Device = tnlHost,
-          typename Index = int,
-          template< int, typename, typename, typename > class Geometry = tnlIdenticalGridGeometry >
+          typename Index = int >
 class tnlGrid : public tnlObject
 {
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
+          typename Index >
+class tnlGrid< 1, Real, Device, Index > : public tnlObject
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Geometry< 1, Real, Device, Index > GeometryType;
    typedef tnlStaticVector< 1, Real > VertexType;
    typedef tnlStaticVector< 1, Index > CoordinatesType;
 
@@ -129,22 +125,18 @@ class tnlGrid< 1, Real, Device, Index, Geometry > : public tnlObject
 
    IndexType dofs;
 
-   GeometryType geometry;
-
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
+          typename Index >
+class tnlGrid< 2, Real, Device, Index > : public tnlObject
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Geometry< 2, Real, Device, Index > GeometryType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
    enum { Dimensions = 2};
@@ -199,10 +191,6 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
    Index getNumberOfEdges() const;
 
    Index getNumberOfVertices() const;
-
-   GeometryType& getGeometry();
-
-   const GeometryType& getGeometry() const;
 
    /****
     * The type Vertex can have different Real type.
@@ -264,8 +252,6 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
    VertexType origin;
 
-   GeometryType geometry;
-
    IndexType dofs;
 
    tnlVector< Real, Device, Index > elementsMeasure, dualElementsMeasure;
@@ -275,16 +261,14 @@ class tnlGrid< 2, Real, Device, Index, Geometry > : public tnlObject
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
+          typename Index >
+class tnlGrid< 3, Real, Device, Index > : public tnlObject
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Geometry< 3, Real, Device, Index > GeometryType;
    typedef tnlStaticVector< 3, Real > VertexType;
    typedef tnlStaticVector< 3, Index > CoordinatesType;
    enum { Dimensions = 3};
@@ -368,8 +352,6 @@ class tnlGrid< 3, Real, Device, Index, Geometry > : public tnlObject
    tnlStaticVector< 3, IndexType > dimensions;
 
    tnlStaticVector< 3, RealType > origin, proportions;
-
-	GeometryType geometry;
 
    IndexType dofs;
 

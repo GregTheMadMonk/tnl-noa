@@ -27,18 +27,16 @@ using namespace std;
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry  >
-tnlGrid< 2, Real, Device, Index, Geometry > :: tnlGrid()
+          typename Index >
+tnlGrid< 2, Real, Device, Index > :: tnlGrid()
 : dofs( 0 )
 {
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry  >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType()
+          typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
@@ -50,18 +48,16 @@ tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType()
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getTypeVirtual() const
+           typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this -> getType();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize )
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
    tnlAssert( xSize > 0,
               cerr << "The number of Elements along x-axis must be larger than 0." );
@@ -93,47 +89,42 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index x
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
    return this -> setDimensions( dimensions. x(), dimensions. y() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: CoordinatesType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getDimensions() const
+          typename Index >
+const typename tnlGrid< 2, Real, Device, Index > :: CoordinatesType&
+   tnlGrid< 2, Real, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setOrigin( const VertexType& origin )
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setOrigin( const VertexType& origin )
 {
    this -> origin = origin;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getOrigin() const
+          typename Index >
+const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
+   tnlGrid< 2, Real, Device, Index > :: getOrigin() const
 {
    return this -> origin;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setProportions( const VertexType& proportions )
 {
    geometry. setProportions( proportions );
    VertexType parametricStep;
@@ -144,19 +135,17 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const Vertex
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getProportions() const
+          typename Index >
+const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
+   tnlGrid< 2, Real, Device, Index > :: getProportions() const
 {
    return geometry. getProportions();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& spaceStep )
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setParametricStep( const VertexType& spaceStep )
 {
       geometry. setProportions(
          VertexType(
@@ -166,19 +155,17 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const Ver
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
+          typename Index >
+const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
+   tnlGrid< 2, Real, Device, Index > :: getParametricStep() const
 {
    return geometry. getParametricStep();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Index i, const Index j ) const
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getElementIndex( const Index i, const Index j ) const
 {
    tnlAssert( i < dimensions. x(),
               cerr << "Index i ( " << i
@@ -194,9 +181,8 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Inde
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeIndex( const Index i,
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getEdgeIndex( const Index i,
                                                                    const Index j,
                                                                    const Index dx,
                                                                    const Index dy ) const
@@ -220,10 +206,9 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeIndex( const Index i
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< int dx, int dy >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getVertexIndex( const Index i,
+Index tnlGrid< 2, Real, Device, Index > :: getVertexIndex( const Index i,
                                                                      const Index j ) const
 {
    tnlAssert( i < dimensions. x(),
@@ -242,9 +227,8 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getVertexIndex( const Index
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: refresh()
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: refresh()
 {
    if( GeometryType :: ElementsMeasureStorage :: enabled )
       for( IndexType j = 0; j < dimensions. y(); j ++ )
@@ -292,9 +276,8 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: refresh()
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: getElementCoordinates( const Index element,
                                                                            CoordinatesType& coordinates ) const
 {
    tnlAssert( element >= 0 && element < dofs,
@@ -307,9 +290,8 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const Index Element,
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getElementNeighbour( const Index Element,
                                                                           const Index dx,
                                                                           const Index dy ) const
 {
@@ -323,18 +305,16 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const 
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getDofs() const
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getDofs() const
 {
    return this -> dofs;
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfEdges() const
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getNumberOfEdges() const
 {
    return 2 * this -> dimensions. x() * this -> dimensions. y() +
           this -> dimensions. x() + this -> dimensions. y();
@@ -342,39 +322,35 @@ Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfEdges() const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfVertices() const
+          typename Index >
+Index tnlGrid< 2, Real, Device, Index > :: getNumberOfVertices() const
 {
    return ( this -> dimensions. x() + 1 ) * ( this -> dimensions. y() + 1 );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-typename tnlGrid< 2, Real, Device, Index, Geometry > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getGeometry()
+          typename Index >
+typename tnlGrid< 2, Real, Device, Index > :: GeometryType&
+   tnlGrid< 2, Real, Device, Index > :: getGeometry()
 {
    return this -> geometry;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getGeometry() const
+          typename Index >
+const typename tnlGrid< 2, Real, Device, Index > :: GeometryType&
+   tnlGrid< 2, Real, Device, Index > :: getGeometry() const
 {
    return this -> geometry;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename Vertex >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
+void tnlGrid< 2, Real, Device, Index > :: getElementCenter( const CoordinatesType& coordinates,
                                                                       Vertex& center ) const
 {
       geometry. getElementCenter( origin, coordinates, center );
@@ -382,9 +358,8 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const Coor
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const CoordinatesType& coordinates ) const
+          typename Index >
+Real tnlGrid< 2, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
    if( GeometryType :: ElementsMeasureStorage :: enabled )
       return elementsMeasure[ getElementIndex( coordinates. x(), coordinates. y() ) ];
@@ -393,10 +368,9 @@ Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const Coo
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< int dx, int dy >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
+Real tnlGrid< 2, Real, Device, Index > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
 {
    if( GeometryType :: DualElementsMeasureStorage :: enabled )
       return dualElementsMeasure[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
@@ -405,10 +379,9 @@ Real tnlGrid< 2, Real, Device, Index, Geometry > :: getDualElementMeasure( const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
 template< int dx, int dy >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const CoordinatesType& coordinates,
+void tnlGrid< 2, Real, Device, Index > :: getEdgeNormal( const CoordinatesType& coordinates,
                                                                    VertexType& normal ) const
 {
    if( GeometryType :: EdgeNormalsStorage :: enabled )
@@ -423,10 +396,9 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const Coordin
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< int dx, int dy, typename Vertex >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
+void tnlGrid< 2, Real, Device, Index > :: getVertex( const CoordinatesType& elementCoordinates,
                                                                Vertex& vertex ) const
 {
    tnlAssert( elementCoordinates. x() >= 0 &&
@@ -449,22 +421,20 @@ void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const Coordinates
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getAbsMax( const GridFunction& f ) const
+         tnlGrid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
 {
    return f.absMax();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getLpNorm( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
@@ -480,11 +450,10 @@ template< typename Real,
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                                            const GridFunction& f2 ) const
 {
    return f1.differenceAbsMax( f2 );
@@ -492,11 +461,10 @@ template< typename Real,
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceLpNorm( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
                                                                            const GridFunction& f2,
                                                                            const typename GridFunction::RealType& p ) const
 {
@@ -513,9 +481,8 @@ template< typename Real,
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlObject :: save( file ) )
       return false;
@@ -536,9 +503,8 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( tnlFile& file )
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
@@ -566,27 +532,24 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( tnlFile& file )
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( const tnlString& fileName ) const
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( const tnlString& fileName )
+           typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 };
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& fileName,
+           typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                                                                const tnlString& format ) const
 {
    fstream file;
@@ -692,10 +655,9 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
+           typename Index >
    template< typename MeshFunction >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& function,
+bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
                                                            const tnlString& fileName,
                                                            const tnlString& format ) const
 {
