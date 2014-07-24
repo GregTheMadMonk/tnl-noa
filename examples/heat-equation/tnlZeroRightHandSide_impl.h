@@ -6,7 +6,7 @@
 
 template<typename Real, typename Device, typename Index>
 template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlZeroRightHandSide<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>::
+void tnlZeroRightHandSide<tnlGrid<1,Real,Device,Index>>::
 applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
                TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
 {           
@@ -15,7 +15,7 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
 
 template<typename Real, typename Device, typename Index>
 template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlZeroRightHandSide<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>::
+void tnlZeroRightHandSide<tnlGrid<2,Real,Device,Index>>::
 applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
                TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
 {           
@@ -24,7 +24,7 @@ applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
 
 template<typename Real, typename Device, typename Index>
 template<typename AnalyticSpaceFunction, typename TimeFunction>
-void tnlZeroRightHandSide<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>::
+void tnlZeroRightHandSide<tnlGrid<3,Real,Device,Index>>::
 applyRHSValues(const MeshType& mesh, const RealType& time, DofVectorType& _fu,
                TimeFunction& timeFunction, AnalyticSpaceFunction& analyticSpaceFunction)
 {           

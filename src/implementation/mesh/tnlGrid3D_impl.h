@@ -38,8 +38,7 @@ tnlString tnlGrid< 3, Real, Device, Index > :: getType()
           tnlString( Dimensions ) + ", " +
           tnlString( getParameterType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + ", " +
-          Geometry< 3, Real, Device, Index > :: getType() + " >";
+          tnlString( getParameterType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -68,10 +67,10 @@ bool tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, cons
    dofs = zSize * ySize * xSize;
    
    VertexType parametricStep;
-   parametricStep. x() = geometry. getProportions(). x() / xSize;
+   /*parametricStep. x() = geometry. getProportions(). x() / xSize;
    parametricStep. y() = geometry. getProportions(). y() / ySize;
 	parametricStep. z() = geometry. getProportions(). z() / zSize;
-   geometry. setParametricStep( parametricStep );
+   geometry. setParametricStep( parametricStep );*/
    return true;
 }
 
@@ -114,12 +113,12 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index > :: setProportions( const VertexType& proportions )
 {
-   geometry. setProportions( proportions );
+   //geometry. setProportions( proportions );
    VertexType parametricStep;
    parametricStep. x() = proportions. x() / ( this -> dimensions. x() );
    parametricStep. y() = proportions. y() / ( this -> dimensions. y() );
 	parametricStep. z() = proportions. z() / ( this -> dimensions. z() );
-   geometry. setParametricStep( parametricStep );
+   //geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -128,7 +127,7 @@ template< typename Real,
 const typename tnlGrid< 3, Real, Device, Index > :: VertexType&
    tnlGrid< 3, Real, Device, Index > :: getProportions() const
 {
-	return geometry. getProportions();
+	//return geometry. getProportions();
 }
 
 template< typename Real,
@@ -136,11 +135,11 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index > :: setParametricStep( const VertexType& spaceStep )
 {
-      geometry. setProportions(
+     /* geometry. setProportions(
          VertexType(
             this -> dimensions. x() * geometry. getParametricStep(). x(),
             this -> dimensions. y() * geometry. getParametricStep(). y(),
-				this -> dimensions. z() * geometry. getParametricStep(). z() ) );
+				this -> dimensions. z() * geometry. getParametricStep(). z() ) );*/
 }
 
 template< typename Real,
@@ -149,7 +148,7 @@ template< typename Real,
 const typename tnlGrid< 3, Real, Device, Index > :: VertexType&
    tnlGrid< 3, Real, Device, Index > :: getParametricStep() const
 {
-   return geometry. getParametricStep();
+   //return geometry. getParametricStep();
 }
 
 template< typename Real,
@@ -195,7 +194,7 @@ template< typename Real,
 void tnlGrid< 3, Real, Device, Index > :: getElementCenter( const CoordinatesType& coordinates,
                                                                       Vertex& center ) const
 {
-      geometry. getElementCenter( origin, coordinates, center );
+     // geometry. getElementCenter( origin, coordinates, center );
 }
 
 template< typename Real,
@@ -211,7 +210,7 @@ template< typename Real,
           typename Index >
 Real tnlGrid< 3, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
-   return geometry. getElementMeasure( coordinates );
+   //return geometry. getElementMeasure( coordinates );
 }
 
 template< typename Real,
@@ -277,11 +276,6 @@ bool tnlGrid< 3, Real, Device, Index > :: save( tnlFile& file ) const
            << this -> getName() << endl;
       return false;
    }
-   if( ! geometry. save( file ) )
-   {
-      cerr << "I was not able to save the mesh." << endl;
-      return false;
-   }
    return true;
 };
 
@@ -298,11 +292,6 @@ bool tnlGrid< 3, Real, Device, Index > :: load( tnlFile& file )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "
            << this -> getName() << endl;
-      return false;
-   }
-   if( ! geometry. load( file ) )
-   {
-      cerr << "I am not able to load the grid geometry." << endl;
       return false;
    }
    if( ! this -> setDimensions( dim ) )

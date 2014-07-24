@@ -42,8 +42,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getType()
           tnlString( Dimensions ) + ", " +
           tnlString( getParameterType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + ", " +
-          Geometry< 2, Real, Device, Index > :: getType() + " >";
+          tnlString( getParameterType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -68,7 +67,7 @@ bool tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, cons
    this -> dimensions. y() = ySize;
    dofs = ySize * xSize;
    VertexType parametricStep;
-   parametricStep. x() = geometry. getProportions(). x() / xSize;
+   /*parametricStep. x() = geometry. getProportions(). x() / xSize;
    parametricStep. y() = geometry. getProportions(). y() / ySize;
    geometry. setParametricStep( parametricStep );
    if( GeometryType :: ElementsMeasureStorage :: enabled &&
@@ -83,7 +82,7 @@ bool tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, cons
    if( GeometryType :: VerticesStorage :: enabled &&
        ( ! vertices. setSize( this -> getNumberOfVertices() ) ||
          ! elementCenters. setSize( this -> getNumberOfVertices() ) ) )
-      return false;
+      return false;*/
    return true;
 }
 
@@ -126,11 +125,11 @@ template< typename Real,
           typename Index >
 void tnlGrid< 2, Real, Device, Index > :: setProportions( const VertexType& proportions )
 {
-   geometry. setProportions( proportions );
+   /*geometry. setProportions( proportions );
    VertexType parametricStep;
    parametricStep. x() = proportions. x() / ( this -> dimensions. x() );
    parametricStep. y() = proportions. y() / ( this -> dimensions. y() );
-   geometry. setParametricStep( parametricStep );
+   geometry. setParametricStep( parametricStep );*/
 }
 
 template< typename Real,
@@ -139,7 +138,7 @@ template< typename Real,
 const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
    tnlGrid< 2, Real, Device, Index > :: getProportions() const
 {
-   return geometry. getProportions();
+   //return geometry. getProportions();
 }
 
 template< typename Real,
@@ -147,10 +146,10 @@ template< typename Real,
           typename Index >
 void tnlGrid< 2, Real, Device, Index > :: setParametricStep( const VertexType& spaceStep )
 {
-      geometry. setProportions(
+      /*geometry. setProportions(
          VertexType(
             this -> dimensions. x() * geometry. getParametricStep(). x(),
-            this -> dimensions. y() * geometry. getParametricStep(). y() ) );
+            this -> dimensions. y() * geometry. getParametricStep(). y() ) );*/
 }
 
 template< typename Real,
@@ -159,7 +158,7 @@ template< typename Real,
 const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
    tnlGrid< 2, Real, Device, Index > :: getParametricStep() const
 {
-   return geometry. getParametricStep();
+   //return geometry. getParametricStep();
 }
 
 template< typename Real,
@@ -230,7 +229,7 @@ template< typename Real,
           typename Index >
 void tnlGrid< 2, Real, Device, Index > :: refresh()
 {
-   if( GeometryType :: ElementsMeasureStorage :: enabled )
+   /*if( GeometryType :: ElementsMeasureStorage :: enabled )
       for( IndexType j = 0; j < dimensions. y(); j ++ )
          for( IndexType i = 0; i < dimensions. x(); i ++ )
             elementsMeasure[ getElementIndex( i, j ) ] = geometry. getElementMeasure( CoordinatesType( i, j ) );
@@ -271,7 +270,7 @@ void tnlGrid< 2, Real, Device, Index > :: refresh()
             //cout << "( " << elementCenters[ getElementIndex( i, j ) ] << " ), ";
          }
          //cout << endl;
-      }
+      }*/
 }
 
 template< typename Real,
@@ -331,29 +330,11 @@ Index tnlGrid< 2, Real, Device, Index > :: getNumberOfVertices() const
 template< typename Real,
           typename Device,
           typename Index >
-typename tnlGrid< 2, Real, Device, Index > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index > :: getGeometry()
-{
-   return this -> geometry;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-const typename tnlGrid< 2, Real, Device, Index > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index > :: getGeometry() const
-{
-   return this -> geometry;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename Vertex >
 void tnlGrid< 2, Real, Device, Index > :: getElementCenter( const CoordinatesType& coordinates,
                                                                       Vertex& center ) const
 {
-      geometry. getElementCenter( origin, coordinates, center );
+      //geometry. getElementCenter( origin, coordinates, center );
 }
 
 template< typename Real,
@@ -361,9 +342,9 @@ template< typename Real,
           typename Index >
 Real tnlGrid< 2, Real, Device, Index > :: getElementMeasure( const CoordinatesType& coordinates ) const
 {
-   if( GeometryType :: ElementsMeasureStorage :: enabled )
+   /*if( GeometryType :: ElementsMeasureStorage :: enabled )
       return elementsMeasure[ getElementIndex( coordinates. x(), coordinates. y() ) ];
-   return geometry. getElementMeasure( coordinates );
+   return geometry. getElementMeasure( coordinates );*/
 }
 
 template< typename Real,
@@ -372,9 +353,9 @@ template< typename Real,
    template< int dx, int dy >
 Real tnlGrid< 2, Real, Device, Index > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
 {
-   if( GeometryType :: DualElementsMeasureStorage :: enabled )
+   /*if( GeometryType :: DualElementsMeasureStorage :: enabled )
       return dualElementsMeasure[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
-   return geometry. getDualElementMeasure< dx, dy >( coordinates );
+   return geometry. getDualElementMeasure< dx, dy >( coordinates );*/
 }
 
 template< typename Real,
@@ -384,14 +365,14 @@ template< int dx, int dy >
 void tnlGrid< 2, Real, Device, Index > :: getEdgeNormal( const CoordinatesType& coordinates,
                                                                    VertexType& normal ) const
 {
-   if( GeometryType :: EdgeNormalsStorage :: enabled )
+   /*if( GeometryType :: EdgeNormalsStorage :: enabled )
    {
       normal = edgeNormals[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
       if( dx == -1 || dy == -1 )
          normal *= ( RealType ) -1.0;
    }
    else
-      return geometry. getEdgeNormal< dx, dy >( coordinates, normal );
+      return geometry. getEdgeNormal< dx, dy >( coordinates, normal );*/
 }
 
 template< typename Real,
@@ -401,7 +382,7 @@ template< typename Real,
 void tnlGrid< 2, Real, Device, Index > :: getVertex( const CoordinatesType& elementCoordinates,
                                                                Vertex& vertex ) const
 {
-   tnlAssert( elementCoordinates. x() >= 0 &&
+   /*tnlAssert( elementCoordinates. x() >= 0 &&
               elementCoordinates. x() < this -> dimensions. x() &&
               elementCoordinates. y() >= 0 &&
               elementCoordinates. y() < this -> dimensions. y(),
@@ -416,7 +397,7 @@ void tnlGrid< 2, Real, Device, Index > :: getVertex( const CoordinatesType& elem
    else
       return geometry. getVertex< dx, dy >( elementCoordinates,
                                             this -> origin,
-                                            vertex );
+                                            vertex );*/
 }
 
 template< typename Real,
@@ -493,11 +474,6 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
            << this -> getName() << endl;
       return false;
    }
-   if( ! geometry. save( file ) )
-   {
-      cerr << "I was not able to save the mesh." << endl;
-      return false;
-   }
    return true;
 };
 
@@ -514,11 +490,6 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "
            << this -> getName() << endl;
-      return false;
-   }
-   if( ! geometry. load( file ) )
-   {
-      cerr << "I am not able to load the grid geometry." << endl;
       return false;
    }
    if( ! this -> setDimensions( dim ) )

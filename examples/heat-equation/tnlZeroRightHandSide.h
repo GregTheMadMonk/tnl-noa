@@ -9,11 +9,11 @@ class tnlZeroRightHandSide
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlZeroRightHandSide<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>> {
+class tnlZeroRightHandSide<tnlGrid<1,Real,Device,Index>> {
    
    public:
    
-   typedef tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<1,Real,Device,Index> MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::RealType RealType;
    typedef typename MeshType::DeviceType DeviceType;
@@ -27,11 +27,11 @@ class tnlZeroRightHandSide<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlZeroRightHandSide<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>> {
+class tnlZeroRightHandSide<tnlGrid<2,Real,Device,Index>> {
    
    public:
    
-   typedef tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<2,Real,Device,Index> MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::RealType RealType;
    typedef typename MeshType::DeviceType DeviceType;
@@ -45,11 +45,11 @@ class tnlZeroRightHandSide<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlZeroRightHandSide<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>> {
+class tnlZeroRightHandSide<tnlGrid<3,Real,Device,Index>> {
    
    public:
    
-   typedef tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<3,Real,Device,Index> MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::RealType RealType;
    typedef typename MeshType::DeviceType DeviceType;

@@ -66,29 +66,34 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    const VertexType& getProportions() const;
 
-   void setParametricStep( const VertexType& spaceStep );
+   //void setParametricStep( const VertexType& spaceStep );
 
-   const VertexType& getParametricStep() const;
+   const VertexType& getCellSize() const;
 
-   Index getElementIndex( const Index i ) const;
+   Index getCellIndex( const Index i ) const;
 
-   void getElementCoordinates( const Index i,
-                               CoordinatesType& coordinates ) const;
+   void getCellCoordinates( const Index i,
+                            CoordinatesType& coordinates ) const;
+
+   Index getVertexIndex( const Index i ) const;
+
+   void getVertexCoordinates( const Index i,
+                              CoordinatesType& coordinates ) const;
 
    /****
     * The type Vertex can have different Real type.
     */
    template< typename Vertex >
-   void getElementCenter( const CoordinatesType& coordinates,
-                          Vertex& v ) const;
+   void getCellCenter( const CoordinatesType& coordinates,
+                       Vertex& v ) const;
 
-   Index getDofs() const;
-
-   template< int dx, typename Vertex >
+   template< typename Vertex >
    void getVertex( const CoordinatesType& elementCoordinates,
                    Vertex& vertex ) const;
 
-   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+   Index getNumberOfCells() const;
+
+   Index getNumberOfVertices() const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,

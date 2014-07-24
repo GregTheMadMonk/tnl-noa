@@ -65,8 +65,8 @@ bool tnlGrid< 1, Real, Device, Index > :: setDimensions( const Index xSize )
    dofs = xSize;
 
    VertexType parametricStep;
-   parametricStep. x() = geometry. getProportions(). x() / xSize;
-   geometry. setParametricStep( parametricStep );
+   //parametricStep. x() = geometry. getProportions(). x() / xSize;
+   //geometry. setParametricStep( parametricStep );
    return true;
 }
 
@@ -109,7 +109,7 @@ template< typename Real,
           typename Index  >
 void tnlGrid< 1, Real, Device, Index > :: setProportions( const VertexType& proportions )
 {
-   this->geometry.setProportions( proportions );
+   //this->geometry.setProportions( proportions );
    this -> setDimensions( this -> dimensions );
 }
 
@@ -119,7 +119,7 @@ template< typename Real,
 const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
    tnlGrid< 1, Real, Device, Index > :: getProportions() const
 {
-   return this -> geometry.getProportions();
+   //return this -> geometry.getProportions();
 }
 
 template< typename Real,
@@ -129,8 +129,8 @@ void tnlGrid< 1, Real, Device, Index > :: setParametricStep( const VertexType& p
 {
    VertexType v;
    v.x() = this -> dimensions. x() * parametricStep. x();
-   this->geometry.setProportions( v );
-   geometry. setParametricStep( parametricStep );
+   //this->geometry.setProportions( v );
+   //geometry. setParametricStep( parametricStep );
 }
 
 template< typename Real,
@@ -139,7 +139,7 @@ template< typename Real,
 const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
    tnlGrid< 1, Real, Device, Index > :: getParametricStep() const
 {
-   return geometry. getParametricStep();
+   //return geometry. getParametricStep();
 }
 
 template< typename Real,

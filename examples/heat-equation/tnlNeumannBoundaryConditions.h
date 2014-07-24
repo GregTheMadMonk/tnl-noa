@@ -8,11 +8,11 @@ class tnlNeumannBoundaryConditions
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlNeumannBoundaryConditions<tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry>>
+class tnlNeumannBoundaryConditions<tnlGrid<1,Real,Device,Index > >
 {
    public:
    
-   typedef tnlGrid<1,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<1,Real,Device,Index> MeshType;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename MeshType::IndexType IndexType;
    typedef typename MeshType::RealType RealType;
@@ -32,11 +32,11 @@ class tnlNeumannBoundaryConditions<tnlGrid<1,Real,Device,Index,tnlIdenticalGridG
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlNeumannBoundaryConditions<tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry>>
+class tnlNeumannBoundaryConditions<tnlGrid<2,Real,Device,Index > >
 {
    public:
    
-   typedef tnlGrid<2,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<2,Real,Device,Index> MeshType;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename MeshType::IndexType IndexType;
    typedef typename MeshType::RealType RealType;
@@ -56,11 +56,11 @@ class tnlNeumannBoundaryConditions<tnlGrid<2,Real,Device,Index,tnlIdenticalGridG
 };
 
 template<typename Real, typename Device, typename Index>
-class tnlNeumannBoundaryConditions<tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry>>
+class tnlNeumannBoundaryConditions<tnlGrid<3,Real,Device,Index>>
 {
    public:
    
-   typedef tnlGrid<3,Real,Device,Index,tnlIdenticalGridGeometry> MeshType;
+   typedef tnlGrid<3,Real,Device,Index> MeshType;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename MeshType::IndexType IndexType;
    typedef typename MeshType::RealType RealType;

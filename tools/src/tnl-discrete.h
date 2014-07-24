@@ -21,7 +21,6 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
 #include <generators/functions/tnlFunctionDiscretizer.h>
 #include <generators/functions/tnlSinWaveFunction.h>
 #include <generators/functions/tnlSinBumpsFunction.h>
@@ -197,11 +196,8 @@ bool resolveMesh( const tnlList< tnlString >& parsedMeshType,
          cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
          return false;
       }
-      if( parsedGeometryType[ 0 ] == "tnlIdenticalGridGeometry" )
-      {
-         typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType, tnlIdenticalGridGeometry > MeshType;
-         return resolveFunction< MeshType >( parameters );
-      }
+      typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType > MeshType;
+      return resolveFunction< MeshType >( parameters );
    }
    cerr << "Unknown mesh type." << endl;
    return false;

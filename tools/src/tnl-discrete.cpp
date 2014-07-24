@@ -23,8 +23,6 @@
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
-#include <mesh/tnlLinearGridGeometry.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-discrete.cfg.desc";

@@ -19,7 +19,6 @@
 #define TNLFINITEDIFFERENCES_H_
 
 #include <mesh/tnlGrid.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
 
 template< typename Grid >
 class tnlFiniteDifferences
@@ -27,14 +26,14 @@ class tnlFiniteDifferences
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > >
+class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef tnlGrid< 1, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_NOT_CXX11
@@ -88,14 +87,14 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index, tnlIdenticalGridGeo
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > >
+class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
 
 
@@ -150,14 +149,14 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeo
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > >
+class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 3, Real, Device, Index, tnlIdenticalGridGeometry > GridType;
+   typedef tnlGrid< 3, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_NOT_CXX11
