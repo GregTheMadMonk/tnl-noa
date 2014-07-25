@@ -52,47 +52,76 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const Index xSize );
+   void setDimensions( const Index xSize );
 
-   bool setDimensions( const CoordinatesType& );
+   void setDimensions( const CoordinatesType& dimensions );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const VertexType& origin );
+   void setDomain( const VertexType& origin,
+                   const VertexType& proportions );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getOrigin() const;
 
-   void setProportions( const VertexType& proportions );
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getProportions() const;
 
-   //void setParametricStep( const VertexType& spaceStep );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const VertexType& getCellProportions() const;
 
-   const VertexType& getCellSize() const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getCellIndex( const CoordinatesType& coordinates ) const;
 
-   Index getCellIndex( const Index i ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getCellCoordinates( const Index i ) const;
 
-   void getCellCoordinates( const Index i,
-                            CoordinatesType& coordinates ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getVertexIndex( const CoordinatesType& coordinates ) const;
 
-   Index getVertexIndex( const Index i ) const;
-
-   void getVertexCoordinates( const Index i,
-                              CoordinatesType& coordinates ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getVertexCoordinates( const Index i ) const;
 
    /****
     * The type Vertex can have different Real type.
     */
    template< typename Vertex >
-   void getCellCenter( const CoordinatesType& coordinates,
-                       Vertex& v ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
 
    template< typename Vertex >
-   void getVertex( const CoordinatesType& elementCoordinates,
-                   Vertex& vertex ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getNumberOfCells() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getNumberOfVertices() const;
 
    template< typename GridFunction >
@@ -104,10 +133,14 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
 
-   //! Method for saving the object to a file as a binary data
+   /****
+    *  Method for saving the object to a file as a binary data
+    */
    bool save( tnlFile& file ) const;
 
-   //! Method for restoring the object from a file
+   /****
+    *  Method for restoring the object from a file
+    */
    bool load( tnlFile& file );
 
    bool save( const tnlString& fileName ) const;
@@ -124,11 +157,11 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    protected:
 
-   tnlStaticVector< 1, IndexType > dimensions;
+   CoordinatesType dimensions;
 
-   tnlStaticVector< 1, RealType > origin;
+   VertexType origin, proportions, cellProportions;
 
-   IndexType dofs;
+   IndexType numberOfCells, numberOfVertices;
 
 };
 
@@ -152,70 +185,97 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const Index xSize, const Index ySize );
+   void setDimensions( const Index xSize, const Index ySize );
 
-   bool setDimensions( const CoordinatesType& );
+   void setDimensions( const CoordinatesType& dimensions );
 
    const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const VertexType& origin );
-
+   void setDomain( const VertexType& origin,
+                   const VertexType& proportions );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getOrigin() const;
 
-   void setProportions( const VertexType& proportions );
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getProportions() const;
 
-   void setParametricStep( const VertexType& spaceStep );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const VertexType& getCellProportions() const;
 
-   const VertexType& getParametricStep() const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getCellIndex( const CoordinatesType& coordinates ) const;
 
-   Index getElementIndex( const Index i,
-                          const Index j ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getCellCoordinates( const Index i ) const;
 
-   Index getEdgeIndex( const Index i,
-                       const Index j,
-                       const Index dx,
-                       const Index dy ) const;
+   template< int nx, int ny >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getFaceIndex( const CoordinatesType& coordinates ) const;
 
-   template< int dx, int dy >
-   Index getVertexIndex( const Index i,
-                         const Index j ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getFaceCoordinates( const Index i, int& nx, int& ny ) const;
 
-   void refresh();
 
-   void getElementCoordinates( const Index i,
-                               CoordinatesType& coordinates ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getVertexIndex( const CoordinatesType& coordinates ) const;
 
-   Index getElementNeighbour( const Index Element,
-                              const Index dx,
-                              const Index dy ) const;
-
-   Index getDofs() const;
-
-   Index getNumberOfEdges() const;
-
-   Index getNumberOfVertices() const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getVertexCoordinates( const Index i ) const;
 
    /****
     * The type Vertex can have different Real type.
     */
    template< typename Vertex >
-   void getElementCenter( const CoordinatesType& coordinates,
-                          Vertex& center ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
 
-   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+template< int nx, int ny >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getFaceCenter( const Index i,
+                        CoordinatesType& coordinates ) const;
 
-   template< int dx, int dy >
-   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
 
-   template< int dx, int dy >
-   void getEdgeNormal( const CoordinatesType& elementCoordinates,
-                       VertexType& normal ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfCells() const;
 
-   template< int dx, int dy, typename Vertex >
-   void getVertex( const CoordinatesType& elementCoordinates,
-                   Vertex& vertex ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfFaces() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfVertices() const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
@@ -255,12 +315,10 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    CoordinatesType dimensions;
 
-   VertexType origin;
+   VertexType origin, proportions, cellProportions;
 
-   IndexType dofs;
+   IndexType numberOfCells, numberOfNxFaces, numberOfFaces, numberOfVertices;
 
-   tnlVector< Real, Device, Index > elementsMeasure, dualElementsMeasure;
-   tnlVector< VertexType, Device, Index > edgeNormals, vertices, elementCenters;
 
 };
 
@@ -284,46 +342,115 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    tnlString getTypeVirtual() const;
 
-   bool setDimensions( const Index xSize, const Index ySize, const Index zSize );
+   void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
-   bool setDimensions( const CoordinatesType& );
+   void setDimensions( const CoordinatesType& );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const CoordinatesType& getDimensions() const;
 
-   void setOrigin( const VertexType& origin );
-
+   void setDomain( const VertexType& origin,
+                   const VertexType& proportions );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getOrigin() const;
 
-   void setProportions( const VertexType& proportions );
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const VertexType& getProportions() const;
 
-   void setParametricStep( const VertexType& spaceStep );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const VertexType& getCellProportions() const;
 
-   const VertexType& getParametricStep() const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getCellIndex( const CoordinatesType& coordinates ) const;
 
-   Index getElementIndex( const Index i, const Index j, const Index k ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getCellCoordinates( const Index i ) const;
 
-   void getElementCoordinates( const Index i,
-                               CoordinatesType& coordinates ) const;
+   template< int nx, int ny, int nz >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getFaceIndex( const CoordinatesType& coordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getFaceCoordinates( const Index i, int& nx, int& ny, int& nz ) const;
+
+   template< int dx, int dy, int dz >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getEdgeIndex( const CoordinatesType& coordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getEdgeCoordinates( const Index i, int& dx, int& dy, int& dz ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getVertexIndex( const CoordinatesType& coordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   CoordinatesType getVertexCoordinates( const Index i ) const;
 
    /****
     * The type Vertex can have different Real type.
     */
    template< typename Vertex >
-   void getElementCenter( const CoordinatesType& coordinates,
-                          Vertex& center ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
 
-   Index getDofs() const;
+template< int nx, int ny >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getFaceCenter( const Index i,
+                        CoordinatesType& coordinates ) const;
 
-   template< int dx, int dy, int dz, typename Vertex >
-   void getVertex( const CoordinatesType& elementCoordinates,
-                   Vertex& vertex ) const;
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
 
-   Real getElementMeasure( const CoordinatesType& coordinates ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfCells() const;
 
-   template< int dx, int dy >
-   Real getDualElementMeasure( const CoordinatesType& coordinates ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfFaces() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfEdges() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getNumberOfVertices() const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
@@ -354,11 +481,11 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    protected:
 
-   tnlStaticVector< 3, IndexType > dimensions;
+   CoordinatesType dimensions;
 
-   tnlStaticVector< 3, RealType > origin, proportions;
+   VertexType origin, proportions, cellProportions;
 
-   IndexType dofs;
+   IndexType numberOfCells, numberOfFaces, numberOfEdges, numberOfVertices;
 
 };
 
