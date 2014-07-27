@@ -82,22 +82,22 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getCellIndex( const CoordinatesType& coordinates ) const;
+   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getCellCoordinates( const Index i ) const;
+   CoordinatesType getCellCoordinates( const Index cellIndex ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getVertexIndex( const CoordinatesType& coordinates ) const;
+   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getVertexCoordinates( const Index i ) const;
+   CoordinatesType getVertexCoordinates( const Index vertexCoordinates ) const;
 
    /****
     * The type Vertex can have different Real type.
@@ -106,13 +106,13 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
+   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
    template< typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
+   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -211,34 +211,34 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getCellIndex( const CoordinatesType& coordinates ) const;
+   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getCellCoordinates( const Index i ) const;
+   CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
 
    template< int nx, int ny >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getFaceIndex( const CoordinatesType& coordinates ) const;
+   Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getFaceCoordinates( const Index i, int& nx, int& ny ) const;
+   CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const;
 
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getVertexIndex( const CoordinatesType& coordinates ) const;
+   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getVertexCoordinates( const Index i ) const;
+   CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
 
    /****
     * The type Vertex can have different Real type.
@@ -247,20 +247,19 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
+   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
-template< int nx, int ny >
+template< int nx, int ny, typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getFaceCenter( const Index i,
-                        CoordinatesType& coordinates ) const;
+   Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
    template< typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
+   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -317,7 +316,7 @@ template< int nx, int ny >
 
    VertexType origin, proportions, cellProportions;
 
-   IndexType numberOfCells, numberOfNxFaces, numberOfFaces, numberOfVertices;
+   IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
 
 };
@@ -371,18 +370,18 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getCellIndex( const CoordinatesType& coordinates ) const;
+   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getCellCoordinates( const Index i ) const;
+   CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
 
    template< int nx, int ny, int nz >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getFaceIndex( const CoordinatesType& coordinates ) const;
+   Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -485,7 +484,10 @@ template< int nx, int ny >
 
    VertexType origin, proportions, cellProportions;
 
-   IndexType numberOfCells, numberOfFaces, numberOfEdges, numberOfVertices;
+   IndexType numberOfCells,
+             numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
+             numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
+             numberOfVertices;
 
 };
 

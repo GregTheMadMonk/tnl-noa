@@ -1,8 +1,6 @@
 SET( headers tnlGrid1D_impl.h
              tnlGrid2D_impl.h
-             tnlGrid3D_impl.h
-             tnlIdenticalGridGeometry_impl.h
-             tnlLinearGridGeometry_impl.h )
+             tnlGrid3D_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/mesh )    
 SET( tnl_implementation_mesh_SOURCES

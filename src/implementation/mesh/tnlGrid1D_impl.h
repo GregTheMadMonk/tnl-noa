@@ -30,7 +30,8 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlGrid< 1, Real, Device, Index > :: tnlGrid()
-: dofs( 0 )
+: numberOfCells( 0 ),
+  numberOfVertices( 0 )
 {
 }
 
@@ -59,8 +60,7 @@ template< typename Real,
           typename Index  >
 void tnlGrid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 {
-   tnlAssert( xSize > 0,
-              cerr << "xSize = " << xSize );
+   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
    this->dimensions.x() = xSize;
    this->numberOfCells = xSize;
    this->numberOfVertices = xSize + 1;
@@ -70,7 +70,7 @@ void tnlGrid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 template< typename Real,
           typename Device,
           typename Index  >
-bool tnlGrid< 1, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
+void tnlGrid< 1, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
    this -> setDimensions( dimensions. x() );
 }
@@ -176,7 +176,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getVertexIndex( const CoordinatesType
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions.x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                    << " this->getName() = " << this->getName(); );
    return vertexCoordinates.x();
 }
@@ -204,7 +204,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-void tnlGrid< 1, Real, Device, Index >::getCellCenter( const CoordinatesType& cellCoordinates ) const
+Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const CoordinatesType& cellCoordinates ) const
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions.x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
@@ -370,7 +370,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
       return false;
    }
    file << setprecision( 12 );
-   const RealType hx = getParametricStep(). x();
+   const RealType hx = getCellProportions(). x();
    if( format == "gnuplot" )
    {
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
