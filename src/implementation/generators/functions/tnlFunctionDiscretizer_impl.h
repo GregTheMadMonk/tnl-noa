@@ -26,13 +26,13 @@ void tnlFunctionDiscretizer< Mesh, Function, DiscreteFunction >::discretize( con
 {
    //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
    typename Mesh::IndexType i = 0;
-   discreteFunction.setSize( mesh.getDofs() );
-   while( i < mesh.getDofs() )
+   discreteFunction.setSize( mesh.getNumberOfCells() );
+   while( i < mesh.getNumberOfCells() )
    {
       typename Mesh::VertexType v;
       typename Mesh::CoordinatesType c;
-      mesh.getElementCoordinates( i, c );
-      mesh.getElementCenter( c, v );
+      c = mesh.getCellCoordinates( i );
+      v = mesh.getCellCenter( c );
       discreteFunction[ i ] = function.template getF< XDiffOrder, YDiffOrder, ZDiffOrder >( v );
       i++;
    }

@@ -45,7 +45,7 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( c
    CoordinatesType c;
    for( c.x() = iBegin; c.x() < iEnd; c.x()++ )
    {
-      outFunction[ grid.getElementIndex( c.x() ) ] =
+      outFunction[ grid.getCellIndex( c.x() ) ] =
                getDifference< GridFunction,
                               XDifferenceOrder,
                               YDifferenceOrder,
@@ -71,21 +71,21 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( c
 
    if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
       return 0.0;
-   const RealType hx = grid.getParametricStep().x();
+   const RealType hx = grid.getCellProportions().x();
    if( XDifferenceOrder == 1 )
    {
       if( XDifferenceDirection == 0 )
-         return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
-                  function[ grid.getElementIndex( c.x() - 1 ) ] ) / ( 2.0 * hx );
+         return ( function[ grid.getCellIndex( c.x() + 1 ) ] -
+                  function[ grid.getCellIndex( c.x() - 1 ) ] ) / ( 2.0 * hx );
       else
-         return ( function[ grid.getElementIndex( c.x() + XDifferenceDirection ) ] -
-                  function[ grid.getElementIndex( c.x() ) ] ) / ( XDifferenceDirection * hx );
+         return ( function[ grid.getCellIndex( c.x() + XDifferenceDirection ) ] -
+                  function[ grid.getCellIndex( c.x() ) ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
-      return ( function[ grid.getElementIndex( c.x() + 1 ) ] -
-               2.0 * function[ grid.getElementIndex( c.x() ) ] +
-               function[ grid.getElementIndex( c.x() - 1 ) ] ) / (  hx * hx );
+      return ( function[ grid.getCellIndex( c.x() + 1 ) ] -
+               2.0 * function[ grid.getCellIndex( c.x() ) ] +
+               function[ grid.getCellIndex( c.x() - 1 ) ] ) / (  hx * hx );
    }
 }
 

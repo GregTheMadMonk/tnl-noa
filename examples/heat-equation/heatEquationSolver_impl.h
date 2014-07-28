@@ -79,7 +79,7 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,Time
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return mesh.getDofs();
+   return mesh.getNumberOfCells();
 }
 
 template< typename Mesh,
@@ -94,7 +94,7 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,Time
    /****
     * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
     */
-   return 3*mesh.getDofs();
+   return 3*mesh.getNumberOfCells();
 }
 
 template< typename Mesh,
@@ -108,7 +108,7 @@ heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
-   const IndexType dofs = mesh.getDofs();
+   const IndexType dofs = mesh.getNumberOfCells();
    this->numericalSolution.bind( dofVector.getData(), dofs );
 }
 
@@ -123,7 +123,7 @@ heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,
 bindAuxiliaryDofs( const MeshType& mesh,
                    DofVectorType& auxiliaryDofVector )
 {
-   const IndexType dofs = mesh.getDofs();
+   const IndexType dofs = mesh.getNumberOfCells();
    this->exactSolution.bind( auxiliaryDofVector.getData(), dofs );
    this->analyticLaplace.bind( &auxiliaryDofVector.getData()[ dofs ], dofs );
    this->numericalLaplace.bind( &auxiliaryDofVector.getData()[ 2*dofs ], dofs );

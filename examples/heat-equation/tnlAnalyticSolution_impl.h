@@ -26,10 +26,10 @@ computeAnalyticSolution( const MeshType& mesh,
 
       for(IndexType i=0; i<output.getSize(); i++)
       {
-         mesh.getElementCoordinates(i,coordinates);
-         mesh.getElementCenter(coordinates,vertex);
+         coordinates = mesh.getCellCoordinates( i );
+         vertex = mesh.getCellCenter( coordinates );
          
-         output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         output[i] = timeFunctionValue*analyticSpaceFunction.getF( vertex );
       }
 }
 
@@ -59,8 +59,8 @@ computeLaplace( const MeshType& mesh,
       #endif
       for(IndexType i=1; i<(output.getSize()-1); i++)
       {         
-         mesh.getElementCoordinates(i,coordinates);
-         mesh.getElementCenter(coordinates,vertex);
+         coordinates = mesh.getCellCoordinates( i );
+         vertex = mesh.getCellCenter( coordinates );
 
       output[i] = timeFunctionValue*analyticSpaceFunction.template getF<2,0,0>(vertex);
    }  
@@ -92,8 +92,8 @@ computeAnalyticSolution( const MeshType& mesh,
    #endif
    for(IndexType i=0; i<output.getSize(); i++)
    {      
-      mesh.getElementCoordinates(i,coordinates);
-      mesh.getElementCenter(coordinates,vertex);
+      coordinates = mesh.getCellCoordinates( i );
+      vertex = mesh.getCellCenter( coordinates );
       
       output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }   
@@ -132,7 +132,7 @@ computeLaplace( const MeshType& mesh,
          coordinates.x()=i;
          coordinates.y()=j;
          
-         mesh.getElementCenter(coordinates,vertex);
+         vertex = mesh.getCellCenter( coordinates );
          
          output[j*mesh.getDimensions().x()+i] = 
                     timeFunctionValue*(analyticSpaceFunction.template getF<2,0,0>(vertex)+
@@ -167,8 +167,8 @@ computeAnalyticSolution( const MeshType& mesh,
    #endif
    for(IndexType i=0; i<output.getSize(); i++)
    {      
-      mesh.getElementCoordinates(i,coordinates);
-      mesh.getElementCenter(coordinates,vertex);
+      coordinates = mesh.getCellCoordinates( i );
+      vertex = mesh.getCellCenter( coordinates );
       
       output[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }   
@@ -209,9 +209,9 @@ computeLaplace( const MeshType& mesh,
             coordinates.y()=j;
             coordinates.z()=k;
             
-            mesh.getElementCenter(coordinates,vertex);
+            vertex = mesh.getCellCenter( coordinates );
          
-            output[mesh.getElementIndex(i,j,k)] = 
+            output[mesh.getCellIndex( CoordinatesType( i,j,k ) ) ] = 
                        timeFunctionValue*(analyticSpaceFunction.template getF<2,0,0>(vertex)+
                        analyticSpaceFunction.template getF<0,2,0>(vertex)+
                        analyticSpaceFunction.template getF<0,0,2>(vertex));

@@ -40,7 +40,7 @@ getExplicitRHS( const MeshType& mesh,
                 Vector& _u,
                 Vector& _fu )
 {
-   RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
+   RealType stepXSquare = mesh.getCellProportions().x()*mesh.getCellProportions().x();
    
    CoordinatesType dimensions = mesh.getDimensions();
 
@@ -93,8 +93,8 @@ getExplicitRHS( const MeshType& mesh,
                 Vector& _u,
                 Vector& _fu )
 {
-   RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
-   RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y(); 
+   RealType stepXSquare = mesh.getCellProportions().x()*mesh.getCellProportions().x();
+   RealType stepYSquare = mesh.getCellProportions().y()*mesh.getCellProportions().y(); 
    
    CoordinatesType dimensions = mesh.getDimensions();
 
@@ -163,9 +163,9 @@ getExplicitRHS( const MeshType& mesh,
                 Vector& _u,
                 Vector& _fu )
 {
-   RealType stepXSquare = mesh.getParametricStep().x()*mesh.getParametricStep().x();
-   RealType stepYSquare = mesh.getParametricStep().y()*mesh.getParametricStep().y();   
-   RealType stepZSquare = mesh.getParametricStep().z()*mesh.getParametricStep().z();  
+   RealType stepXSquare = mesh.getCellProportions().x()*mesh.getCellProportions().x();
+   RealType stepYSquare = mesh.getCellProportions().y()*mesh.getCellProportions().y();   
+   RealType stepZSquare = mesh.getCellProportions().z()*mesh.getCellProportions().z();  
    
    CoordinatesType dimensions = mesh.getDimensions();
 
@@ -178,12 +178,12 @@ getExplicitRHS( const MeshType& mesh,
       {
          for(IndexType k=1;k<(dimensions.z()-1);k++)
          {
-            _fu[mesh.getElementIndex(i,j,k)]=(_u[mesh.getElementIndex(i-1,j,k)]-
-                    2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i+1,j,k)])/
-                    (stepXSquare) + (_u[mesh.getElementIndex(i,j-1,k)]-
-                    2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i,j+1,k)])/
-                    (stepYSquare) + (_u[mesh.getElementIndex(i,j,k-1)]-
-                    2*_u[mesh.getElementIndex(i,j,k)]+_u[mesh.getElementIndex(i,j,k+1)])/
+            _fu[ mesh.getCellIndex( CoordinatesType( i,j,k ) ) ] = (_u[mesh.getCellIndex( CoordinatesType( i-1,j,k) ) ]-
+                    2*_u[mesh.getCellIndex( CoordinatesType( i,j,k) ) ]+_u[mesh.getCellIndex( CoordinatesType( i+1,j,k) )])/
+                    (stepXSquare) + (_u[mesh.getCellIndex( CoordinatesType( i,j-1,k) ) ]-
+                    2*_u[mesh.getCellIndex( CoordinatesType( i,j,k) ) ]+_u[mesh.getCellIndex( CoordinatesType( i,j+1,k) )])/
+                    (stepYSquare) + (_u[mesh.getCellIndex( CoordinatesType( i,j,k-1) )]-
+                    2*_u[mesh.getCellIndex( CoordinatesType( i,j,k) )]+_u[mesh.getCellIndex( CoordinatesType( i,j,k+1) )])/
                     (stepZSquare);
          }
       }

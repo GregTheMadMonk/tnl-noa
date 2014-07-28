@@ -102,13 +102,13 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
-   template< typename Vertex >
+   template< typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
-   template< typename Vertex >
+   template< typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -243,19 +243,19 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
-   template< typename Vertex >
+   template< typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
-template< int nx, int ny, typename Vertex >
+template< int nx, int ny, typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
-   template< typename Vertex >
+   template< typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -386,50 +386,55 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getFaceCoordinates( const Index i, int& nx, int& ny, int& nz ) const;
+   CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny, int& nz ) const;
 
    template< int dx, int dy, int dz >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getEdgeIndex( const CoordinatesType& coordinates ) const;
+   Index getEdgeIndex( const CoordinatesType& edgeCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getEdgeCoordinates( const Index i, int& dx, int& dy, int& dz ) const;
+   CoordinatesType getEdgeCoordinates( const Index edgeIndex, int& dx, int& dy, int& dz ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getVertexIndex( const CoordinatesType& coordinates ) const;
+   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   CoordinatesType getVertexCoordinates( const Index i ) const;
+   CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
 
    /****
     * The type Vertex can have different Real type.
     */
-   template< typename Vertex >
+   template< typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getCellCenter( const CoordinatesType& coordinates ) const;
+   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
-template< int nx, int ny >
+template< int nx, int ny, int nz, typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getFaceCenter( const Index i,
-                        CoordinatesType& coordinates ) const;
+   Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
-   template< typename Vertex >
+template< int dx, int dy, int dz, typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Vertex getVertex( const CoordinatesType& elementCoordinates ) const;
+   Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
+
+   template< typename Vertex = VertexType >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -450,6 +455,13 @@ template< int nx, int ny >
    __device__ __host__
 #endif
    Index getNumberOfVertices() const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
+
+   template< typename GridFunction >
+   typename GridFunction::RealType getLpNorm( const GridFunction& f,
+                                              const typename GridFunction::RealType& p ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,

@@ -45,7 +45,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       return false;
    typedef tnlVector< typename MeshType::RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
-   if( ! discreteFunction.setSize( mesh.getDofs() ) )
+   if( ! discreteFunction.setSize( mesh.getNumberOfCells() ) )
       return false;
 
    bool approximateDerivatives = parameters.GetParameter< bool >( "approximate-derivatives" );
@@ -53,7 +53,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
    {
       cout << "+ -> Computing the finite differences ... " << endl;
       DiscreteFunctionType auxDiscreteFunction;
-      if( ! auxDiscreteFunction.setSize( mesh.getDofs() ) )
+      if( ! auxDiscreteFunction.setSize( mesh.getNumberOfCells() ) )
          return false;
       tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction );
       tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );

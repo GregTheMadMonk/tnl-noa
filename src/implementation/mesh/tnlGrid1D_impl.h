@@ -96,7 +96,7 @@ void tnlGrid< 1, Real, Device, Index > :: setDomain( const VertexType& origin,
    this->origin = origin;
    this->proportions = proportions;
    if( this->dimensions.x() != 0 )
-      this->cellSize.x() = this->proportions.x() / ( Real ) this->dimensions.x();
+      this->cellProportions.x() = this->proportions.x() / ( Real ) this->dimensions.x();
 }
 
 template< typename Real,
@@ -143,7 +143,7 @@ template< typename Real,
 #endif
 Index tnlGrid< 1, Real, Device, Index > :: getCellIndex( const CoordinatesType& cellCoordinates ) const
 {
-   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions.x(),
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
                    << " this->getDimensions().x() = " << this->getDimensions().x()
                    << " this->getName() = " << this->getName(); )
@@ -174,7 +174,7 @@ template< typename Real,
 #endif
 Index tnlGrid< 1, Real, Device, Index > :: getVertexIndex( const CoordinatesType& vertexCoordinates ) const
 {
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions.x() + 1,
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
                    << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                    << " this->getName() = " << this->getName(); );
@@ -206,7 +206,7 @@ template< typename Real,
 #endif
 Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const CoordinatesType& cellCoordinates ) const
 {
-   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions.x(),
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
                    << " this->getDimensions().x() = " << this->getDimensions().x()
                    << " this->getName() = " << this->getName(); )
@@ -359,7 +359,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    if( this->getNumberOfCells() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize() << " ) of the mesh function " << function. getName()
-           << " does not agree with the DOFs ( " << this -> getDofs() << " ) of the mesh " << this -> getName() << "." << endl;
+           << " does not agree with the DOFs ( " << this -> getNumberOfCells() << " ) of the mesh " << this -> getName() << "." << endl;
       return false;
    }
    fstream file;
@@ -375,10 +375,9 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    {
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         VertexType v;
-         this -> getVertex< 0 >( CoordinatesType( i ), v );
+         VertexType v = this->getCellCenter( CoordinatesType( i ) );
          tnlGnuplotWriter::write( file,  v );
-         tnlGnuplotWriter::write( file,  function[ this -> getElementIndex( i ) ] );
+         tnlGnuplotWriter::write( file,  function[ this->getCellIndex( i ) ] );
          file << endl;
       }
    }

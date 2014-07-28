@@ -23,13 +23,13 @@ applyBoundaryConditions( const MeshType& mesh,
    CoordinatesType coordinates;
    VertexType vertex;
    
-   mesh.getElementCoordinates(0,coordinates);
-   mesh.getElementCenter(coordinates,vertex);
+   coordinates = mesh.getCellCoordinates( 0 );
+   vertex = mesh.getCellCenter( coordinates );
    
    u[0] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    
-   mesh.getElementCoordinates(u.getSize()-1,coordinates);
-   mesh.getElementCenter(coordinates,vertex);
+   coordinates = mesh.getCellCoordinates( u.getSize() - 1 );
+   vertex = mesh.getCellCenter( coordinates );
 
    u[u.getSize()-1] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
 }
@@ -54,13 +54,13 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
    CoordinatesType coordinates;
    VertexType vertex;
    
-   mesh.getElementCoordinates(0,coordinates);
-   mesh.getElementCenter(coordinates,vertex);
+   coordinates = mesh.getCellCoordinates( 0 );
+   vertex = mesh.getCellCenter( coordinates );
    
    u[0] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
    
-   mesh.getElementCoordinates(u.getSize()-1,coordinates);
-   mesh.getElementCenter(coordinates,vertex);
+   coordinates = mesh.getCellCoordinates( u.getSize()-1 );
+   vertex = mesh.getCellCenter( coordinates );
 
    u[u.getSize()-1] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
 }
@@ -96,10 +96,10 @@ applyBoundaryConditions( const MeshType& mesh,
    for(IndexType i=0; i<dimensions.x(); i++)
    {
       coordinates1.x()=coordinates2.x()=i;
-      mesh.getElementCenter(coordinates1,vertex);
+      vertex = mesh.getCellCenter( coordinates1 );
       u[i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       
-      mesh.getElementCenter(coordinates2,vertex);
+      vertex = mesh.getCellCenter( coordinates2 );
       u[(dimensions.y()-1)*mesh.getDimensions().x()+i] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
    
@@ -113,10 +113,10 @@ applyBoundaryConditions( const MeshType& mesh,
    {
       coordinates1.y()=coordinates2.y()=i;
            
-      mesh.getElementCenter(coordinates1,vertex);
+      vertex = mesh.getCellCenter( coordinates1 );
       u[i*mesh.getDimensions().x()] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       
-      mesh.getElementCenter(coordinates2,vertex);
+      vertex = mesh.getCellCenter( coordinates2 );
       u[i*mesh.getDimensions().x()+dimensions.x()-1] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
    }
 }
@@ -152,11 +152,11 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
    for(IndexType i=0; i<dimensions.x(); i++)
    {
       coordinates1.x()=coordinates2.x()=i;
-      mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(i,0)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+      vertex = mesh.getCellCenter( coordinates1 );
+      u[mesh.getCellIndex( CoordinatesType( i,0) )] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
       
-      mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(i,dimensions.y()-1)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+      vertex = mesh.getCellCenter( coordinates2 );
+      u[mesh.getCellIndex( CoordinatesType( i,dimensions.y()-1) )] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
    }
    
    coordinates1.x()=0;
@@ -169,11 +169,11 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
    {
       coordinates1.y()=coordinates2.y()=i;
            
-      mesh.getElementCenter(coordinates1,vertex);
-      u[mesh.getElementIndex(0,i)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+      vertex = mesh.getCellCenter( coordinates1 );
+      u[mesh.getCellIndex( CoordinatesType( 0,i) )] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
 
-      mesh.getElementCenter(coordinates2,vertex);
-      u[mesh.getElementIndex(dimensions.x()-1,i)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+      vertex = mesh.getCellCenter( coordinates2 );
+      u[mesh.getCellIndex( CoordinatesType( dimensions.x()-1,i) )] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
    }
 }
 
@@ -209,12 +209,12 @@ applyBoundaryConditions( const MeshType& mesh,
          coordinates.y()=j;
          
          coordinates.z()=0;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(i,j,0)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( i,j,0 ) )] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.z()=dimensions.z()-1;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(i,j,dimensions.z()-1)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( i,j,dimensions.z()-1) ) ] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       }
    }
 
@@ -229,12 +229,12 @@ applyBoundaryConditions( const MeshType& mesh,
          coordinates.z()=j;
          
          coordinates.x()=0;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(0,i,j)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( 0,i,j ) ) ] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.x()=dimensions.x()-1;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(dimensions.x()-1,i,j)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( dimensions.x()-1,i,j ) ) ] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       }
    }
 
@@ -249,12 +249,12 @@ applyBoundaryConditions( const MeshType& mesh,
          coordinates.z()=j;
          
          coordinates.y()=0;
-         mesh.getElementCenter(coordinates,vertex);         
-         u[mesh.getElementIndex(i,0,j)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );         
+         u[ mesh.getCellIndex( CoordinatesType( i,0,j ) ) ] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.y()=dimensions.y()-1;
-         mesh.getElementCenter(coordinates,vertex);   
-         u[mesh.getElementIndex(i,dimensions.y()-1,j)] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );   
+         u[mesh.getCellIndex( CoordinatesType( i,dimensions.y()-1,j ) ) ] = timeFunctionValue*analyticSpaceFunction.getF(vertex);
       }
    } 
 }
@@ -291,12 +291,12 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
          coordinates.y()=j;
          
          coordinates.z()=0;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(i,j,0)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( i,j,0 ) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.z()=dimensions.z()-1;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(i,j,dimensions.z()-1)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( i,j,dimensions.z()-1) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
       }
    }
 
@@ -311,12 +311,12 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
          coordinates.z()=j;
          
          coordinates.x()=0;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(0,i,j)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( 0,i,j) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.x()=dimensions.x()-1;
-         mesh.getElementCenter(coordinates,vertex);
-         u[mesh.getElementIndex(dimensions.x()-1,i,j)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );
+         u[mesh.getCellIndex( CoordinatesType( dimensions.x()-1,i,j ) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
       }
    }
 
@@ -331,12 +331,12 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
          coordinates.z()=j;
          
          coordinates.y()=0;
-         mesh.getElementCenter(coordinates,vertex);         
-         u[mesh.getElementIndex(i,0,j)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );         
+         u[mesh.getCellIndex( CoordinatesType( i,0,j) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
          
          coordinates.y()=dimensions.y()-1;
-         mesh.getElementCenter(coordinates,vertex);   
-         u[mesh.getElementIndex(i,dimensions.y()-1,j)] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+         vertex = mesh.getCellCenter( coordinates );   
+         u[mesh.getCellIndex( CoordinatesType( i,dimensions.y()-1,j) ) ] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
       }
    } 
 }

@@ -37,11 +37,13 @@ bool setupGrid( const tnlParameterContainer& parameters )
       cout << "Setting dimensions to  ... " << sizeX << endl;
       cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 1, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 1, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 1, RealType >( originX ) );
-      grid.setProportions( tnlStaticVector< 1, RealType >( proportionsX ) );
-      grid.setDimensions( tnlStaticVector< 1, IndexType >( sizeX ) );
+      grid.setDomain( VertexType( originX ), VertexType( proportionsX ) );
+      grid.setDimensions( CoordinatesType( sizeX ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -59,11 +61,13 @@ bool setupGrid( const tnlParameterContainer& parameters )
       cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << endl;
       cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 2, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 2, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 2, RealType >( originX, originY ) );
-      grid.setProportions( tnlStaticVector< 2, RealType >( proportionsX, proportionsY ) );
-      grid.setDimensions( tnlStaticVector< 2, IndexType >( sizeX, sizeY ) );
+      grid.setDomain( VertexType( originX, originY ), VertexType( proportionsX, proportionsY ) );
+      grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -84,11 +88,13 @@ bool setupGrid( const tnlParameterContainer& parameters )
       cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << "x" << sizeZ << endl;
       cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 3, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 3, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 3, RealType >( originX, originY, originZ ) );
-      grid.setProportions( tnlStaticVector< 3, RealType >( proportionsX, proportionsY, proportionsZ ) );
-      grid.setDimensions( tnlStaticVector< 3, IndexType >( sizeX, sizeY, sizeZ ) );
+      grid.setDomain( VertexType( originX, originY, originZ ), VertexType( proportionsX, proportionsY, proportionsZ ) );
+      grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
