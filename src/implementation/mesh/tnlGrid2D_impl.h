@@ -192,31 +192,28 @@ __device__ __host__
 #endif
 Index tnlGrid< 2, Real, Device, Index >::getFaceIndex( const CoordinatesType& faceCoordinates ) const
 {
-   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny = 1, "Wrong template parameters nx or ny." );
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
    if( nx )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
       return faceCoordinates.y() * ( this->getDimensions().x() + 1 ) + faceCoordinates.x();
    }
-   if( ny )
-   {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x(),
-                 cerr << "faceCoordinates.x() = " << faceCoordinates.x()
-                      << " this->getDimensions().x() = " << this->getDimensions().x()
-                      << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y() + 1,
-                 cerr << "faceCoordinates.y() = " << faceCoordinates.y()
-                      << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
-                      << " this->getName() = " << this->getName(); );
-      return this->numberOfNxFaces + faceCoordinates.y() * this->getDimensions().x() + faceCoordinates.x();
-   }
+   tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
+              cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                   << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                   << " this->getName() = " << this->getName(); );
+   return this->numberOfNxFaces + faceCoordinates.y() * this->getDimensions().x() + faceCoordinates.x();
 }
 
 template< typename Real,
