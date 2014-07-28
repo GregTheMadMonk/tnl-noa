@@ -18,7 +18,9 @@
 #ifndef TNLTRAVERSAL_H_
 #define TNLTRAVERSAL_H_
 
-
+template< typename Mesh,
+          typename UserData >
+class tnlTraversal{};
 
 
 #endif /* TNLTRAVERSAL_H_ */
