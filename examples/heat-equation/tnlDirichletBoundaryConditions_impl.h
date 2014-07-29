@@ -8,6 +8,26 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+void
+tnlDirichletBoundaryConditions< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >::
+setBoundaryConditions( const RealType& time,
+                       const RealType& tau,
+                       const MeshType& mesh,
+                       const IndexType index,
+                       const CoordinatesType& coordinates,
+                       DofVectorType& u,
+                       DofVectorType& fu )
+{
+   fu[ index ] = 0;
+   u[ index ] = 0;
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
    template< typename AnalyticSpaceFunction,
              typename TimeFunction,
              typename Vector >
@@ -63,6 +83,26 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
    vertex = mesh.getCellCenter( coordinates );
 
    u[u.getSize()-1] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+setBoundaryConditions( const RealType& time,
+                       const RealType& tau,
+                       const MeshType& mesh,
+                       const IndexType index,
+                       const CoordinatesType& coordinates,
+                       DofVectorType& u,
+                       DofVectorType& fu )
+{
+   fu[ index ] = 0;
+   u[ index ] = 0;
 }
 
 template< typename MeshReal,
@@ -175,6 +215,25 @@ applyBoundaryTimeDerivation( const MeshType& mesh,
       vertex = mesh.getCellCenter( coordinates2 );
       u[mesh.getCellIndex( CoordinatesType( dimensions.x()-1,i) )] = timeFunctionDerivationValue*analyticSpaceFunction.getF(vertex);
    }
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void
+tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+setBoundaryConditions( const RealType& time,
+                       const RealType& tau,
+                       const MeshType& mesh,
+                       const IndexType index,
+                       const CoordinatesType& coordinates,
+                       DofVectorType& u,
+                       DofVectorType& fu )
+{
+   fu[ index ] = 0;
+   u[ index ] = 0;
 }
 
 template< typename MeshReal,

@@ -24,6 +24,7 @@
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
+#include <solvers/pde/tnlExplicitUpdater.h>
 #include "heatEquationSolver.h"
 #include "tnlAnalyticSolution.h"
 
@@ -86,7 +87,9 @@ class heatEquationSolver
                                                       exactSolution,
                                                       analyticLaplace,
                                                       numericalLaplace;
-   //MeshType mesh;
+
+   tnlExplicitUpdater< Mesh, DofVectorType, BoundaryCondition, Diffusion > explicitUpdater;
+
    AnalyticSpaceFunction analyticSpaceFunction;
    TimeFunction timeFunction;
    AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;

@@ -11,6 +11,26 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Vector >
+void
+tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+update( const RealType& time,
+        const RealType& tau,
+        const MeshType& mesh,
+        const IndexType index,
+        const CoordinatesType& coordinates,
+        Vector& u,
+        Vector& fu )
+{
+
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename Vector >
 void tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getExplicitRHS( const MeshType& mesh,
                 const CoordinatesType& coordinates,
@@ -52,6 +72,27 @@ getExplicitRHS( const MeshType& mesh,
       _fu[i]=(_u[i-1]-2.0*_u[i]+_u[i+1])/(stepXSquare);
    }
 }
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename Vector >
+void
+tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+update( const RealType& time,
+        const RealType& tau,
+        const MeshType& mesh,
+        const IndexType index,
+        const CoordinatesType& coordinates,
+        Vector& u,
+        Vector& fu )
+{
+
+}
+
 
 template< typename MeshReal,
           typename Device,
@@ -111,6 +152,26 @@ getExplicitRHS( const MeshType& mesh,
       }
    }
 }
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename Vector >
+void
+tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+update( const RealType& time,
+        const RealType& tau,
+        const MeshType& mesh,
+        const IndexType index,
+        const CoordinatesType& coordinates,
+        Vector& u,
+        Vector& fu )
+{
+
+}
+
 
 
 template< typename MeshReal,

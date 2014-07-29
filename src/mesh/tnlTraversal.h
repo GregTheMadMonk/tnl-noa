@@ -19,7 +19,7 @@
 #define TNLTRAVERSAL_H_
 
 template< typename Mesh,
-          typename UserData >
+          int EntitiesDimensions = Mesh::Dimensions >
 class tnlTraversal{};
 
 

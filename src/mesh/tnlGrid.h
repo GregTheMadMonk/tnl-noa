@@ -124,6 +124,16 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #endif
    Index getNumberOfVertices() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
+
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const;
@@ -275,6 +285,22 @@ template< int nx, int ny, typename Vertex = VertexType >
    __device__ __host__
 #endif
    Index getNumberOfVertices() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+   template< int nx, int ny >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
@@ -455,6 +481,28 @@ template< int dx, int dy, int dz, typename Vertex = VertexType >
    __device__ __host__
 #endif
    Index getNumberOfVertices() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+   template< int nx, int ny, int nz >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
+
+   template< int dx, int dy, int dz >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;

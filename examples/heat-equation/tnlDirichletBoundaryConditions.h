@@ -30,6 +30,16 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
             
+   void setBoundaryConditions( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType index,
+                               const CoordinatesType& coordinates,
+                               DofVectorType& u,
+                               DofVectorType& fu );
+
+   //--------------------------------
+
    template< typename AnalyticSpaceFunction,
              typename TimeFunction,
              typename Vector >
@@ -47,6 +57,8 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                      const RealType& time,
                                      TimeFunction& timeFunction,
                                      AnalyticSpaceFunction& analyticSpaceFunction );
+   //-----------------------------------
+
 };
 
 template< typename MeshReal,
@@ -67,7 +79,17 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-            
+
+   void setBoundaryConditions( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType index,
+                               const CoordinatesType& coordinates,
+                               DofVectorType& u,
+                               DofVectorType& fu );
+
+
+   //----------------------------------------
    template< typename AnalyticSpaceFunction,
              typename TimeFunction,
              typename Vector >
@@ -85,6 +107,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
                                      const RealType& time,
                                      TimeFunction& timeFunction,
                                      AnalyticSpaceFunction& analyticSpaceFunction );
+   //----------------------------------
 };
 
 template< typename MeshReal,
@@ -105,7 +128,16 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-            
+
+   void setBoundaryConditions( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType index,
+                               const CoordinatesType& coordinates,
+                               DofVectorType& u,
+                               DofVectorType& fu );
+
+   //--------------------------------------------------
    template< typename AnalyticSpaceFunction,
              typename TimeFunction,
              typename Vector >
@@ -123,6 +155,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
                                      const RealType& time,
                                      TimeFunction& timeFunction,
                                      AnalyticSpaceFunction& analyticSpaceFunction );
+   //--------------------------
 };
 
 #include "tnlDirichletBoundaryConditions_impl.h"

@@ -21,6 +21,7 @@
 #include <core/mfilename.h>
 #include "heatEquationSolver.h"
 
+
 template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, 
           typename TimeFunction, typename AnalyticSpaceFunction>
 tnlString heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> 
@@ -219,25 +220,13 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
     */
 
    this->bindDofs( mesh, _u );
-   if( DeviceType :: getDevice() == tnlHostDevice )
-   {
-      boundaryCondition.applyBoundaryTimeDerivation(mesh, _fu, time, timeFunction, analyticSpaceFunction);
-      
-      boundaryCondition.applyBoundaryConditions(mesh, _u, time, timeFunction, analyticSpaceFunction);
-      
-      diffusion.getExplicitRHS(mesh,_u,_fu);  
-      
-      //RHS.applyRHSValues(mesh, time, _fu, timeFunction, analyticSpaceFunction);
-      
-   }
-#ifdef HAVE_CUDA
-   if( DeviceType :: getDevice() == tnlCudaDevice )
-   {
-      /****
-       * Write the CUDA solver here.
-       */
-   }
-#endif
+   explicitUpdater.template update< Mesh::Dimensions >( time,
+                                                        tau,
+                                                        mesh,
+                                                        this->boundaryCondition,
+                                                        this->diffusion,
+                                                        _u,
+                                                        _fu );
 }
 
 template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, 

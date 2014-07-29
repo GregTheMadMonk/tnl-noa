@@ -146,7 +146,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getCellIndex( const CoordinatesType& 
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
                    << " this->getDimensions().x() = " << this->getDimensions().x()
-                   << " this->getName() = " << this->getName(); )
+                   << " this->getName() = " << this->getName(); );
    return cellCoordinates.x();
 }
 
@@ -232,6 +232,9 @@ Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vert
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlGrid< 1, Real, Device, Index > :: getNumberOfCells() const
 {
    return this->numberOfCells;
@@ -240,10 +243,47 @@ Index tnlGrid< 1, Real, Device, Index > :: getNumberOfCells() const
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlGrid< 1, Real, Device, Index > :: getNumberOfVertices() const
 {
    return this->numberOfVertices;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool tnlGrid< 1, Real, Device, Index > :: isBoundaryCell( const CoordinatesType& cellCoordinates ) const
+{
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
+              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   if( cellCoordinates.x() == 0 || cellCoordinates.x() == this->getDimensions().x() - 1 )
+      return true;
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool tnlGrid< 1, Real, Device, Index > :: isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const
+{
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
+              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                   << " this->getName() = " << this->getName(); );
+   if( vertexCoordinates.x() == 0 || vertexCoordinates.x() == this->getDimensions().x() )
+      return true;
+   return false;
+}
 
 template< typename Real,
           typename Device,

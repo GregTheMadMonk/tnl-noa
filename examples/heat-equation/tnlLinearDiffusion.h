@@ -29,6 +29,15 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
    //typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 
    template< typename Vector >
+   void update( const RealType& time,
+                const RealType& tau,
+                const MeshType& mesh,
+                const IndexType index,
+                const CoordinatesType& coordinates,
+                Vector& u,
+                Vector& fu );
+
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
                         const CoordinatesType& coordinates,
                         Vector& _u,
@@ -59,6 +68,16 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
    //typedef tnlVector< RealType, DeviceType, IndexType > DofVectorType;
 
    template< typename Vector >
+   void update( const RealType& time,
+                const RealType& tau,
+                const MeshType& mesh,
+                const IndexType index,
+                const CoordinatesType& coordinates,
+                Vector& u,
+                Vector& fu );
+
+
+   template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
                         const CoordinatesType& coordinates,
                         Vector& _u,
@@ -87,6 +106,16 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
    typedef Device DeviceType;
    typedef Index IndexType;
    //typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+
+   template< typename Vector >
+   void update( const RealType& time,
+                const RealType& tau,
+                const MeshType& mesh,
+                const IndexType index,
+                const CoordinatesType& coordinates,
+                Vector& u,
+                Vector& fu );
+
 
    template< typename Vector >
    void getExplicitRHS( const MeshType& mesh,
