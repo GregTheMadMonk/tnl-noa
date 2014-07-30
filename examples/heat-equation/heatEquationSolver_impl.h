@@ -144,7 +144,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
       return false;
    }
    
-   boundaryCondition.applyBoundaryConditions(mesh,numericalSolution,0.0,timeFunction,analyticSpaceFunction);
+   //boundaryCondition.applyBoundaryConditions(mesh,numericalSolution,0.0,timeFunction,analyticSpaceFunction);
    timeFunction.applyInitTimeValues( numericalSolution);
    
    return true;
@@ -184,7 +184,7 @@ makeSnapshot( const RealType& time,
    if(ifLaplaceCompare == 1)
    {
       analyticSolution.computeLaplace( mesh, time, analyticLaplace, timeFunction, analyticSpaceFunction );
-      diffusion.getExplicitRHS( mesh, numericalSolution, numericalLaplace );
+      //diffusion.getExplicitRHS( mesh, numericalSolution, numericalLaplace );
       
       tnlString fileName;
       FileNameBaseNumberEnding( "analyticLaplace", 0, 1, ".tnl", fileName );

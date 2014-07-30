@@ -177,13 +177,13 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                 const IndexType index,
                                 const CoordinatesType& coordinates )
             {
-               userData.interiorUpdater.update( userData.time,
-                                                userData.tau,
-                                                mesh,
-                                                index,
-                                                coordinates,
-                                                userData.u,
-                                                userData.fu );
+               userData.interiorUpdater.explicitUpdate( userData.time,
+                                                        userData.tau,
+                                                        mesh,
+                                                        index,
+                                                        coordinates,
+                                                        userData.u,
+                                                        userData.fu );
             }
 
       };

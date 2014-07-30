@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnl-discrete.h  -  description
+                          tnl-init.h  -  description
                              -------------------
     begin                : Nov 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNL_DISCRETE_H_
-#define TNL_DISCRETE_H_
+#ifndef TNL_INIT_H_
+#define TNL_INIT_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
@@ -190,12 +190,6 @@ bool resolveMesh( const tnlList< tnlString >& parsedMeshType,
    cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << endl;
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
-      tnlList< tnlString > parsedGeometryType;
-      if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
-      {
-         cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
-         return false;
-      }
       typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType > MeshType;
       return resolveFunction< MeshType >( parameters );
    }
@@ -247,4 +241,4 @@ bool resolveMeshType( const tnlList< tnlString >& parsedMeshType,
       return resolveRealType< 3 >( parsedMeshType, parameters );
 
 }
-#endif /* TNL_DISCRETE_H_ */
+#endif /* TNL_INIT_H_ */

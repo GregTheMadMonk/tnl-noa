@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnl-discrete.cpp  -  description
+                          tnl-init.cpp  -  description
                              -------------------
     begin                : Nov 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnl-discrete.h"
+#include "tnl-init.h"
 
 #include <core/tnlFile.h>
 #include <debug/tnlDebug.h>

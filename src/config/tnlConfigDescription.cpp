@@ -167,6 +167,7 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
       cerr << "Add the following missing  parameters to the command line: " << endl << "   ";
       for( int i = 0; i < missingParameters.getSize(); i++ )
          cerr << "--" << missingParameters[ i ] << " ... ";
+      cerr << endl;
       return false;
    }
    return true;

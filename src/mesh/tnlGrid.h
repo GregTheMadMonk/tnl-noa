@@ -99,6 +99,36 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #endif
    CoordinatesType getVertexCoordinates( const Index vertexCoordinates ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHx() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquareInverse() const;
+
    /****
     * The type Vertex can have different Real type.
     */
@@ -167,11 +197,15 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    protected:
 
+   void computeSpaceSteps();
+
    CoordinatesType dimensions;
 
    VertexType origin, proportions, cellProportions;
 
    IndexType numberOfCells, numberOfVertices;
+
+   RealType hx, hxSquare, hxInverse, hxSquareInverse;
 
 };
 
@@ -249,6 +283,76 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __device__ __host__
 #endif
    CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellYPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellYSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHx() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquareInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHy() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHySquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHyInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHySquareInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHy() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHyInverse() const;
 
    /****
     * The type Vertex can have different Real type.
@@ -338,11 +442,17 @@ template< int nx, int ny, typename Vertex = VertexType >
 
    protected:
 
+   void computeSpaceSteps();
+
    CoordinatesType dimensions;
 
    VertexType origin, proportions, cellProportions;
 
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
+
+   RealType hx, hxSquare, hxInverse, hxSquareInverse,
+            hy, hySquare, hyInverse, hySquareInverse,
+            hxhy, hxhyInverse;
 
 
 };
@@ -434,6 +544,126 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __device__ __host__
 #endif
    CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellXSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellYPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellYSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellZPredecessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   IndexType getCellZSuccessor( const IndexType& cellIndex ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHx() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxSquareInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHy() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHySquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHyInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHySquareInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHz() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHzSquare() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHzInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHzSquareInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHy() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHz() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHyHz() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHyInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHxHzInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const RealType& getHyHzInverse() const;
 
    /****
     * The type Vertex can have different Real type.
@@ -540,6 +770,8 @@ template< int dx, int dy, int dz, typename Vertex = VertexType >
 
    protected:
 
+   void computeSpaceSteps();
+
    CoordinatesType dimensions;
 
    VertexType origin, proportions, cellProportions;
@@ -548,6 +780,15 @@ template< int dx, int dy, int dz, typename Vertex = VertexType >
              numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
              numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
              numberOfVertices;
+   IndexType cellZNeighboursStep;
+
+   RealType hx, hxSquare, hxInverse, hxSquareInverse,
+            hy, hySquare, hyInverse, hySquareInverse,
+            hz, hzSquare, hzInverse, hzSquareInverse,
+            hxhy, hxhz, hyhz,
+            hxhyInverse, hxhzInverse, hyhzInverse;
+
+
 
 };
 

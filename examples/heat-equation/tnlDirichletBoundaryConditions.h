@@ -37,28 +37,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& fu );
-
-   //--------------------------------
-
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryConditions( const MeshType& mesh,
-                                 Vector& u,
-                                 const RealType& time,
-                                 TimeFunction& timeFunction,
-                                 AnalyticSpaceFunction& analyticSpaceFunction );
-   
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryTimeDerivation( const MeshType& mesh,
-                                     Vector& u,
-                                     const RealType& time,
-                                     TimeFunction& timeFunction,
-                                     AnalyticSpaceFunction& analyticSpaceFunction );
-   //-----------------------------------
-
 };
 
 template< typename MeshReal,
@@ -87,27 +65,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& fu );
-
-
-   //----------------------------------------
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryConditions( const MeshType& mesh,
-                                 Vector& u,
-                                 const RealType& time,
-                                 TimeFunction& timeFunction,
-                                 AnalyticSpaceFunction& analyticSpaceFunction );
-
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryTimeDerivation( const MeshType& mesh,
-                                     Vector& u,
-                                     const RealType& time,
-                                     TimeFunction& timeFunction,
-                                     AnalyticSpaceFunction& analyticSpaceFunction );
-   //----------------------------------
 };
 
 template< typename MeshReal,
@@ -137,25 +94,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
                                DofVectorType& u,
                                DofVectorType& fu );
 
-   //--------------------------------------------------
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryConditions( const MeshType& mesh,
-                                 Vector& u,
-                                 const RealType& time,
-                                 TimeFunction& timeFunction,
-                                 AnalyticSpaceFunction& analyticSpaceFunction );
-   
-   template< typename AnalyticSpaceFunction,
-             typename TimeFunction,
-             typename Vector >
-   void applyBoundaryTimeDerivation( const MeshType& mesh,
-                                     Vector& u,
-                                     const RealType& time,
-                                     TimeFunction& timeFunction,
-                                     AnalyticSpaceFunction& analyticSpaceFunction );
-   //--------------------------
 };
 
 #include "tnlDirichletBoundaryConditions_impl.h"

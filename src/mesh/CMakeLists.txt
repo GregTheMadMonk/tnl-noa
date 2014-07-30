@@ -4,7 +4,6 @@ ADD_SUBDIRECTORY( traits )
 ADD_SUBDIRECTORY( topologies )
 
 SET( headers tnlGrid.h
-             tnlGridCellNeighbours.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h
              tnlMesh.h

@@ -36,7 +36,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry        < tnlString >           ( "mesh", "Mesh file.", "mesh.tnl" );
    config.addRequiredList < tnlString >           ( "input-files", "Input files." );
    config.addList         < tnlString >           ( "output-files", "Output files." );
-   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", "false" );
+   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", false );
 
    config.addDelimiter( "Grid settings:");
    config.addList         < double >              ( "level-lines", "List of level sets which will be drawn." );
@@ -93,13 +93,7 @@ int main( int argc, char* argv[] )
    }
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
-      tnlList< tnlString > parsedGeometryType;
-      if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
-      {
-         cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
-         return false;
-      }
-      int dimensions = atoi( parsedGeometryType[ 1 ].getString() );
+      int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
          typedef tnlGrid< 1, double, tnlHost, int > MeshType;

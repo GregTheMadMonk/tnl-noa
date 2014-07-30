@@ -60,6 +60,28 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
+{
+   if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
+   {
+      this->cellProportions.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->cellProportions.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->hx = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->hxSquare = this->hx * this->hx;
+      this->hxInverse = 1.0 / this->hx;
+      this->hxSquareInverse = this->hxInverse * this->hxInverse;
+      this->hy = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->hySquare = this->hy * this->hy;
+      this->hyInverse = 1.0 / this->hy;
+      this->hySquareInverse = this->hyInverse * this->hyInverse;
+      this->hxhy = this->hx * this->hy;
+      this->hxhyInverse = 1.0 / this->hxhy;
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
    tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
@@ -72,8 +94,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, cons
    this->numberOfNyFaces = xSize * ( ySize + 1 );
    this->numberOfFaces = this->numberOfNxFaces + this->numberOfNyFaces;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
-   this->cellProportions.x() = this->proportions.x() / ( Real ) xSize;
-   this->cellProportions.y() = this->proportions.y() / ( Real ) ySize;
+   computeSpaceSteps();
 }
 
 template< typename Real,
@@ -104,11 +125,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
 {
    this->origin = origin;
    this->proportions = proportions;
-   if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
-   {
-      this->cellProportions.x() = proportions.x() / ( Real ) this->getDimensions().x();
-      this->cellProportions.y() = proportions.y() / ( Real ) this->getDimensions().y();
-   }
+   computeSpaceSteps();
 }
 
 template< typename Real,
@@ -277,6 +294,176 @@ tnlGrid< 2, Real, Device, Index > :: getVertexCoordinates( const Index vertexInd
                    << " this->getName() " << this->getName(); );
    const IndexType aux = this->dimensions.x() + 1;
    return CoordinatesType( vertexIndex % aux, vertexIndex / aux );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellXPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex > 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - 1;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellXSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - 1,
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - 1 = " << this->getNumberOfCells() - 1
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + 1;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellYPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= this->getDimensions().x() && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellYSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->getDimensions().x(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - this->getDimensions().x() = " << this->getNumberOfCells() - this->getDimensions().x()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHx() const
+{
+   return this->hx;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquare() const
+{
+   return this->hxSquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxInverse() const
+{
+   return this->hxInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquareInverse() const
+{
+   return this->hxSquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHy() const
+{
+   return this->hy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHySquare() const
+{
+   return this->hySquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHyInverse() const
+{
+   return this->hyInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHySquareInverse() const
+{
+   return this->hySquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxHy() const
+{
+   return this->hxhy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxHyInverse() const
+{
+   return this->hxhyInverse;
 }
 
 template< typename Real,

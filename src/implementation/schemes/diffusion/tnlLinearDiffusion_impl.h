@@ -18,6 +18,7 @@
 #ifndef TNLLINEARDIFFUSION_IMPL_H_
 #define TNLLINEARDIFFUSION_IMPL_H_
 
+#ifdef UNDEF
 template< typename Real,
           typename Device,
           typename Index,
@@ -241,6 +242,8 @@ Real tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: ge
             f_y_s * sNormal. y()
             );
 }
+
+#endif /* UNDEF */
 
 /****
  * Specialization for the grids with no deformations (Identical grid geometry)

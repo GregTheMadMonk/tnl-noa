@@ -63,6 +63,39 @@ tnlString tnlGrid< 3, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+void tnlGrid< 3, Real, Device, Index > :: computeSpaceSteps()
+{
+   if( this->getDimensions().x() > 0 &&
+       this->getDimensions().y() > 0 &&
+       this->getDimensions().z() > 0 )
+   {
+      this->cellProportions.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->cellProportions.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->cellProportions.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
+      this->hx = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->hxSquare = this->hx * this->hx;
+      this->hxInverse = 1.0 / this->hx;
+      this->hxSquareInverse = this->hxInverse * this->hxInverse;
+      this->hy = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->hySquare = this->hy * this->hy;
+      this->hyInverse = 1.0 / this->hy;
+      this->hySquareInverse = this->hyInverse * this->hyInverse;
+      this->hz = this->proportions.z() / ( Real ) this->getDimensions().z();
+      this->hzSquare = this->hz * this->hz;
+      this->hzInverse = 1.0 / this->hz;
+      this->hzSquareInverse = this->hzInverse * this->hzInverse;
+      this->hxhy = this->hx * this->hy;
+      this->hxhz = this->hx * this->hz;
+      this->hyhz = this->hy * this->hz;
+      this->hxhyInverse = 1.0 / this->hxhy;
+      this->hxhzInverse = 1.0 / this->hxhz;
+      this->hyhzInverse = 1.0 / this->hyhz;
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
    tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
@@ -89,9 +122,9 @@ void tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, cons
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
    
-   this->cellProportions.x() = this->proportions.x() / ( Real ) xSize;
-   this->cellProportions.y() = this->proportions.y() / ( Real ) ySize;
-   this->cellProportions.z() = this->proportions.z() / ( Real ) zSize;
+   this->cellZNeighboursStep = xSize * ySize;
+
+   computeSpaceSteps();
 }
 
 template< typename Real,
@@ -122,14 +155,7 @@ void tnlGrid< 3, Real, Device, Index > :: setDomain( const VertexType& origin,
 {
    this->origin = origin;
    this->proportions = proportions;
-   if( this->getDimensions().x() > 0 &&
-       this->getDimensions().y() > 0 &&
-       this->getDimensions().z() > 0 )
-   {
-      this->cellProportions.x() = proportions.x() / ( Real ) this->getDimensions().x();
-      this->cellProportions.y() = proportions.y() / ( Real ) this->getDimensions().y();
-      this->cellProportions.z() = proportions.z() / ( Real ) this->getDimensions().z();
-   }
+   computeSpaceSteps();
 }
 
 template< typename Real,
@@ -461,6 +487,294 @@ tnlGrid< 3, Real, Device, Index > :: getVertexCoordinates( const Index vertexInd
    return CoordinatesType( vertexIndex % auxX,
                            ( vertexIndex / auxX ) % auxY,
                            vertexIndex / ( auxX * auxY ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellXPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex > 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - 1;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellXSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - 1,
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - 1 = " << this->getNumberOfCells() - 1
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + 1;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellYPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= this->getDimensions().x() && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellYSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->getDimensions().x(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - this->getDimensions().x() = " << this->getNumberOfCells() - this->getDimensions().x()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellZPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= this->cellZNeighboursStep && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - this->cellZNeighboursStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 3, Real, Device, Index > :: getCellZSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->cellZNeighboursStep,
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - this->cellZNeighboursStep = " << this->getNumberOfCells() - this->cellZNeighboursStep
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + this->cellZNeighboursStep;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHx() const
+{
+   return this->hx;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxSquare() const
+{
+   return this->hxSquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxInverse() const
+{
+   return this->hxInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxSquareInverse() const
+{
+   return this->hxSquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHy() const
+{
+   return this->hy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHySquare() const
+{
+   return this->hySquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHyInverse() const
+{
+   return this->hyInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHySquareInverse() const
+{
+   return this->hySquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHz() const
+{
+   return this->hz;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHzSquare() const
+{
+   return this->hzSquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHzInverse() const
+{
+   return this->hzInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHzSquareInverse() const
+{
+   return this->hzSquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxHy() const
+{
+   return this->hxhy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxHz() const
+{
+   return this->hxhz;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHyHz() const
+{
+   return this->hyhz;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxHyInverse() const
+{
+   return this->hxhyInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHxHzInverse() const
+{
+   return this->hxhzInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 3, Real, Device, Index > :: getHyHzInverse() const
+{
+   return this->hyhzInverse;
 }
 
 template< typename Real,

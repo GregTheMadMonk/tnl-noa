@@ -29,12 +29,23 @@ tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >::
 processEntities( const GridType& grid,
                  UserData& userData,
                  BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 InteriorEntitiesProcessor& interiorEntitiesProcessor ) const
 {
    /****
     * Traversing cells
     */
-
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+   for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+      for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+      {
+         const IndexType index = grid.getCellIndex( coordinates );
+         if( grid.isBoundaryCell( coordinates ) )
+            boundaryEntitiesProcessor.template processEntity< 2 >( grid, userData, index, coordinates );
+         else
+            interiorEntitiesProcessor.template processEntity< 2 >( grid, userData, index, coordinates );
+      }
 }
 
 template< typename Real,
