@@ -32,9 +32,7 @@
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction>
+          typename RightHandSide >
 class heatEquationSolver
 {
    public:
@@ -44,8 +42,6 @@ class heatEquationSolver
    typedef typename Diffusion::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    static tnlString getTypeStatic();
 
@@ -90,13 +86,16 @@ class heatEquationSolver
 
    tnlExplicitUpdater< Mesh, DofVectorType, BoundaryCondition, Diffusion > explicitUpdater;
 
-   AnalyticSpaceFunction analyticSpaceFunction;
-   TimeFunction timeFunction;
-   AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;
+   //AnalyticSpaceFunction analyticSpaceFunction;
+   //TimeFunction timeFunction;
+   //AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;
+
    BoundaryCondition boundaryCondition;
+
    Diffusion diffusion;
+
    RightHandSide RHS;
-   IndexType ifLaplaceCompare, ifSolutionCompare;
+   //IndexType ifLaplaceCompare, ifSolutionCompare;
 };
 
 #include "heatEquationSolver_impl.h"

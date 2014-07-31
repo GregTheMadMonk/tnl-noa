@@ -22,34 +22,30 @@
 #include "heatEquationSolver.h"
 
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, 
-          typename TimeFunction, typename AnalyticSpaceFunction>
-tnlString heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> 
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+tnlString heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide > 
 ::getTypeStatic()
 {
    return tnlString( "heatEquationSolver< " ) + Mesh :: getTypeStatic() + " >";
 }
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
-          typename TimeFunction, typename AnalyticSpaceFunction>
-tnlString heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+tnlString heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: getPrologHeader() const
 {
    return tnlString( "Heat equation" );
 }
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
-          typename TimeFunction, typename AnalyticSpaceFunction>
-void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
 {
    //logger. WriteParameter< tnlString >( "Problem name:", "problem-name", parameters );
    //logger. WriteParameter< int >( "Simple parameter:", 1 );
 }
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
-          typename TimeFunction, typename AnalyticSpaceFunction>
-bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: init( const tnlParameterContainer& parameters )
 {
    analyticSpaceFunction.init(parameters);
@@ -71,11 +67,9 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction >
-typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::IndexType 
-   heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::getDofs( const Mesh& mesh ) const
+          typename RightHandSide >
+typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::IndexType 
+   heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::getDofs( const Mesh& mesh ) const
 {
    /****
     * Set-up DOFs and supporting grid functions
@@ -86,11 +80,9 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,Time
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction >
-typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::IndexType
-   heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::getAuxiliaryDofs( const Mesh& mesh ) const
+          typename RightHandSide >
+typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::IndexType
+   heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::getAuxiliaryDofs( const Mesh& mesh ) const
 {
    /****
     * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
@@ -101,11 +93,9 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,Time
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename RightHandSide >
 void
-heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::
+heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
