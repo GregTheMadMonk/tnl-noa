@@ -23,7 +23,7 @@
 #include <generators/functions/tnlSinWaveFunction.h>
 #include <generators/functions/tnlSinBumpsFunction.h>
 #include <generators/functions/tnlExpBumpFunction.h>
-#include "tnlLinearDiffusion.h"
+#include <schemes/diffusion/tnlLinearDiffusion.h>
 #include "tnlDirichletBoundaryConditions.h"
 #include "tnlRightHandSide.h"
 
@@ -48,19 +48,19 @@ bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter
    if (analyticSpaceFunctionParameter == "sin-wave")
    {
       typedef tnlSinWaveFunction< MeshType::Dimensions, Vertex, DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
       return solverStarter.template run< Solver >( parameters );
    }
    if (analyticSpaceFunctionParameter == "sin-bumps")
    {
       typedef tnlSinBumpsFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
       return solverStarter.template run< Solver >( parameters );
    }
    if (analyticSpaceFunctionParameter == "exp-bump")
    {
       typedef tnlExpBumpFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide, TimeFunction, TestFunction > Solver;
+      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
       return solverStarter.template run< Solver >( parameters );
    }
    

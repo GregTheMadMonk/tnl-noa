@@ -25,7 +25,7 @@ class tnlMPIMesh
 {
 };
 
-#include <diff/tnlMPIMesh2D.h>
-#include <diff/tnlMPIMesh3D.h>
+#include <legacy/diff/tnlMPIMesh2D.h>
+#include <legacy/diff/tnlMPIMesh3D.h>
 
 #endif /* TNLMPIMESH_H_ */

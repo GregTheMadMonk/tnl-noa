@@ -48,7 +48,7 @@ template< typename Mesh, typename Diffusion, typename BoundaryCondition, typenam
 bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: init( const tnlParameterContainer& parameters )
 {
-   analyticSpaceFunction.init(parameters);
+   /*analyticSpaceFunction.init(parameters);
    ifLaplaceCompare = parameters.GetParameter< IndexType >( "approximation-test" );
    if((ifLaplaceCompare != 0) && (ifLaplaceCompare != 1))
    {
@@ -60,7 +60,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
    {
       cerr << "Unknown value of solution-convergence-test parameter. Valid values are 0 or 1. You set " << ifSolutionCompare << ". ";
       return false;
-   }
+   }*/
    return true;
 }
 
@@ -106,11 +106,9 @@ bindDofs( const MeshType& mesh,
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename RightHandSide >
 void
-heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction >::
+heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::
 bindAuxiliaryDofs( const MeshType& mesh,
                    DofVectorType& auxiliaryDofVector )
 {
@@ -121,9 +119,8 @@ bindAuxiliaryDofs( const MeshType& mesh,
 }
 
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
-          typename TimeFunction, typename AnalyticSpaceFunction>
-bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: setInitialCondition( const tnlParameterContainer& parameters,
                         const MeshType& mesh )
 {
@@ -135,7 +132,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
    }
    
    //boundaryCondition.applyBoundaryConditions(mesh,numericalSolution,0.0,timeFunction,analyticSpaceFunction);
-   timeFunction.applyInitTimeValues( numericalSolution);
+   //timeFunction.applyInitTimeValues( numericalSolution);
    
    return true;
 }
@@ -143,15 +140,11 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
 template< typename Mesh,
           typename Diffusion,
           typename BoundaryCondition,
-          typename RightHandSide,
-          typename TimeFunction,
-          typename AnalyticSpaceFunction >
+          typename RightHandSide >
 bool heatEquationSolver< Mesh,
                          Diffusion,
                          BoundaryCondition,
-                         RightHandSide,
-                         TimeFunction,
-                         AnalyticSpaceFunction >::
+                         RightHandSide >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh )
@@ -163,7 +156,7 @@ makeSnapshot( const RealType& time,
    if( ! this->numericalSolution.save( fileName ) )
       return false;
  
-   if( ifSolutionCompare == 1)
+   /*if( ifSolutionCompare == 1)
    {
       analyticSolution.computeAnalyticSolution( mesh, time, exactSolution, timeFunction, analyticSpaceFunction );
       FileNameBaseNumberEnding( "analyticSolution-", step, 5, ".tnl", fileName );
@@ -186,14 +179,13 @@ makeSnapshot( const RealType& time,
          return false;
       
       exit(0);
-   }
+   }*/
    
    return true;
 }
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide,
-          typename TimeFunction, typename AnalyticSpaceFunction>
-void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> 
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide > 
 :: GetExplicitRHS( const RealType& time,
                    const RealType& tau,
                    const Mesh& mesh,
@@ -219,11 +211,10 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunc
                                                         _fu );
 }
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, 
-          typename TimeFunction, typename AnalyticSpaceFunction>
-tnlSolverMonitor< typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction>:: RealType,
-                  typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> :: IndexType >*
-                  heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide,TimeFunction,AnalyticSpaceFunction> 
+template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
+tnlSolverMonitor< typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::RealType,
+                  typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::IndexType >*
+                  heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide > 
 ::  getSolverMonitor()
 {
    return 0;

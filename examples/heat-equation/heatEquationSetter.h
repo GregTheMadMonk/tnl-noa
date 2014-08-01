@@ -26,7 +26,7 @@
 #include <generators/functions/tnlSinBumpsFunction.h>
 #include "tnlTimeFunction.h"
 #include "tnlDirichletBoundaryConditions.h"
-#include "tnlLinearDiffusion.h"
+#include <schemes/diffusion/tnlLinearDiffusion.h>
 #include "tnlNeumannBoundaryConditions.h"
 #include "tnlZeroRightHandSide.h"
 #include "tnlRightHandSide.h"

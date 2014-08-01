@@ -7,8 +7,6 @@ set( tnl_heat_equation_SOURCES
                tnlRightHandSide.h
                tnlNeumannBoundaryConditions_impl.h
                tnlNeumannBoundaryConditions.h
-               tnlLinearDiffusion.h
-               tnlLinearDiffusion_impl.h
                tnlDirichletBoundaryConditions_impl.h
                tnlDirichletBoundaryConditions.h
                tnlAnalyticSolution_impl.h

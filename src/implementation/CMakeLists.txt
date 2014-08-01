@@ -2,7 +2,7 @@ ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
-ADD_SUBDIRECTORY( generators )
+ADD_SUBDIRECTORY( functions )
 ADD_SUBDIRECTORY( schemes )
 ADD_SUBDIRECTORY( solvers )
 
