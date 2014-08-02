@@ -48,6 +48,8 @@ template< typename Mesh, typename Diffusion, typename BoundaryCondition, typenam
 bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: init( const tnlParameterContainer& parameters )
 {
+   if( ! boundaryCondition.init( parameters ) )
+      return false;
    /*analyticSpaceFunction.init(parameters);
    ifLaplaceCompare = parameters.GetParameter< IndexType >( "approximation-test" );
    if((ifLaplaceCompare != 0) && (ifLaplaceCompare != 1))

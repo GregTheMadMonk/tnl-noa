@@ -119,6 +119,6 @@ class tnlSinWaveFunction< 3, Vertex, Device > : public tnlSinWaveFunctionBase< t
 #endif   
 };
 
-#include <implementation/generators/functions/tnlSinWaveFunction_impl.h>
+#include <implementation/functions/tnlSinWaveFunction_impl.h>
 
 #endif /* TNLSINWAVEFUNCTION_H_ */

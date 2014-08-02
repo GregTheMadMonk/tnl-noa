@@ -131,7 +131,7 @@ class tnlSinBumpsFunction< 3, Vertex, Device > : public tnlSinBumpsFunctionBase<
 #endif   
 };
 
-#include <implementation/generators/functions/tnlSinBumpsFunction_impl.h>
+#include <implementation/functions/tnlSinBumpsFunction_impl.h>
 
 
 #endif /* TNLSINBUMPSFUNCTION_H_ */

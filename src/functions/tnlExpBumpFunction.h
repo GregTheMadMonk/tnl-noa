@@ -121,7 +121,7 @@ class tnlExpBumpFunction< 3, Vertex, Device > : public tnlExpBumpFunctionBase< t
 #endif   
 };
 
-#include <implementation/generators/functions/tnlExpBumpFunction_impl.h>
+#include <implementation/functions/tnlExpBumpFunction_impl.h>
 
 
 #endif /* TNLEXPBUMPFUNCTION_H_ */

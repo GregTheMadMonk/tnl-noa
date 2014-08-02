@@ -21,10 +21,10 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
-#include <generators/functions/tnlFunctionDiscretizer.h>
-#include <generators/functions/tnlSinWaveFunction.h>
-#include <generators/functions/tnlSinBumpsFunction.h>
-#include <generators/functions/tnlExpBumpFunction.h>
+#include <functions/tnlFunctionDiscretizer.h>
+#include <functions/tnlSinWaveFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
+#include <functions/tnlExpBumpFunction.h>
 #include <schemes/tnlFiniteDifferences.h>
 
 template< typename MeshType,

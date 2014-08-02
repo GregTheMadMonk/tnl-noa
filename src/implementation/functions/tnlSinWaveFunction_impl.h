@@ -18,7 +18,7 @@
 #ifndef TNLSINWAVEFUNCTION_IMPL_H_
 #define TNLSINWAVEFUNCTION_IMPL_H_
 
-#include <generators/functions/tnlSinWaveFunction.h>
+#include <functions/tnlSinWaveFunction.h>
 
 template< typename Real >
 tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()

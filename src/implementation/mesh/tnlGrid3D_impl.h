@@ -947,15 +947,15 @@ __device__ __host__
 #endif
 Vertex tnlGrid< 3, Real, Device, Index >::getVertex( const CoordinatesType& vertexCoordinates ) const
 {
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions.x() + 1,
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
                    << " this->getDimensions().x() = " << this->getDimensions().x()
                    << " this->getName() = " << this->getName(); );
-   tnlAssert( vertexCoordinates.y() >= 0 && vertexCoordinates.y() < this->getDimensions.y() + 1,
+   tnlAssert( vertexCoordinates.y() >= 0 && vertexCoordinates.y() < this->getDimensions().y() + 1,
               cerr << "vertexCoordinates.y() = " << vertexCoordinates.y()
                    << " this->getDimensions().y() = " << this->getDimensions().y()
                    << " this->getName() = " << this->getName(); );
-   tnlAssert( vertexCoordinates.z() >= 0 && vertexCoordinates.z() < this->getDimensions.z() + 1,
+   tnlAssert( vertexCoordinates.z() >= 0 && vertexCoordinates.z() < this->getDimensions().z() + 1,
               cerr << "vertexCoordinates.z() = " << vertexCoordinates.z()
                    << " this->getDimensions().z() = " << this->getDimensions().z()
                    << " this->getName() = " << this->getName(); );

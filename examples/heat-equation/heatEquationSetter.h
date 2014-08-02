@@ -21,9 +21,9 @@
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlGrid.h>
 #include "heatEquationSolver.h"
-#include <generators/functions/tnlSinWaveFunction.h>
-#include <generators/functions/tnlExpBumpFunction.h>
-#include <generators/functions/tnlSinBumpsFunction.h>
+#include <functions/tnlSinWaveFunction.h>
+#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
 #include "tnlTimeFunction.h"
 #include "tnlDirichletBoundaryConditions.h"
 #include <schemes/diffusion/tnlLinearDiffusion.h>

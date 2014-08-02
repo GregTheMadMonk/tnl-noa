@@ -20,9 +20,9 @@
 
 #include "heatEquationSetter.h"
 #include "heatEquationSolver.h"
-#include <generators/functions/tnlSinWaveFunction.h>
-#include <generators/functions/tnlSinBumpsFunction.h>
-#include <generators/functions/tnlExpBumpFunction.h>
+#include <functions/tnlSinWaveFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
+#include <functions/tnlExpBumpFunction.h>
 #include <schemes/diffusion/tnlLinearDiffusion.h>
 #include "tnlDirichletBoundaryConditions.h"
 #include "tnlRightHandSide.h"
@@ -43,7 +43,9 @@ bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter
    const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("test-function");
    
    typedef tnlLinearDiffusion< MeshType, Real, Index > Scheme;
-   typedef tnlDirichletBoundaryConditions< MeshType, Real, Index > BoundaryConditions;
+   typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
+   typedef tnlConstantFunction< MeshType::Dimensions, Vertex, Device > BCFunction;
+   typedef tnlDirichletBoundaryConditions< MeshType, BCFunction, Real, Index > BoundaryConditions;
    typedef tnlRightHandSide< MeshType, Real, Index > RightHandSide;
    if (analyticSpaceFunctionParameter == "sin-wave")
    {

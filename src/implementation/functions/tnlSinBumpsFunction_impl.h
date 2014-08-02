@@ -18,7 +18,7 @@
 #ifndef TNLSINBUMPSFUNCTION_IMPL_H_
 #define TNLSINBUMPSFUNCTION_IMPL_H_
 
-#include <generators/functions/tnlSinBumpsFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
 
 template< int Dimensions, typename Vertex, typename Device >
 void tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::setWaveLength( const Vertex& waveLength )

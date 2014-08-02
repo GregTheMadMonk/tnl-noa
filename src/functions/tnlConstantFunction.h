@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlFunctionDiscretizer.h  -  description
+                          tnlConstantFunction.h  -  description
                              -------------------
-    begin                : Nov 24, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Aug 2, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,32 +15,47 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLFUNCTIONDISCRETIZER_H_
-#define TNLFUNCTIONDISCRETIZER_H_
+#ifndef TNLCONSTANTFUNCTION_H_
+#define TNLCONSTANTFUNCTION_H_
 
-template< typename Mesh, typename Function, typename DiscreteFunction >
-class tnlFunctionDiscretizer
+#include <core/vectors/tnlStaticVector.h>
+
+template< int FunctionDimensions,
+          typename Vertex = tnlStaticVector< FunctionDimensions, double >,
+          typename Device = tnlHost >
+class tnlConstantFunction
 {
    public:
+
+   enum { Dimensions = FunctionDimensions };
+   typedef Vertex VertexType;
+   typedef typename VertexType::RealType RealType;
+
+   tnlConstantFunction();
+
+   bool init( const tnlParameterContainer& parameters );
+
+   void setValue( const RealType& value );
+
+   const RealType& getValue() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
-   static void discretize( const Mesh& mesh,
-                           const Function& function,
-                           DiscreteFunction& discreteFunction );
+   RealType getValue( const VertexType& v ) const;
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
-   static void discretize( const Mesh& mesh,
-                           const Function& function,
-                           DiscreteFunction& discreteFunction );
-#endif   
-   
+   RealType getValue( const VertexType& v ) const;
+#endif
+
+   protected:
+
+   RealType value;
 };
 
-#include <implementation/functions/tnlFunctionDiscretizer_impl.h>
+#include <implementation/functions/tnlConstantFunction_impl.h>
 
-#endif /* TNLFUNCTIONDISCRETIZER_H_ */
+#endif /* TNLCONSTANTFUNCTION_H_ */

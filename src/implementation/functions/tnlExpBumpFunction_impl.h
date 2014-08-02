@@ -18,7 +18,7 @@
 #ifndef TNLEXPBUMPFUNCTION_IMPL_H_
 #define TNLEXPBUMPFUNCTION_IMPL_H_
 
-#include <generators/functions/tnlExpBumpFunction.h>
+#include <functions/tnlExpBumpFunction.h>
 
 template< typename Real >
 bool tnlExpBumpFunctionBase< Real >::init( const tnlParameterContainer& parameters )

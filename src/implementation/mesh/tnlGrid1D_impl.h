@@ -310,7 +310,7 @@ __device__ __host__
 #endif
 Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vertexCoordinates ) const
 {
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions.x() + 1,
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
                    << " this->getDimensions().x() = " << this->getDimensions().x()
                    << " this->getName() = " << this->getName(); );
