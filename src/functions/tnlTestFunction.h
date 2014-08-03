@@ -19,6 +19,43 @@
 #define TNLTESTFUNCTION_H_
 
 
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+class tnlTestingFunction
+{
+   protected:
 
+   enum TestFunctions{ none,
+                       constant,
+                       expBump,
+                       sinBumps,
+                       sinWaves };
+
+   public:
+
+   enum{ Dimensions = FunctionDimensions };
+   typedef Real RealType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
+
+   tnlTestingFunction();
+
+   bool init( const tnlParameterContainer& parameters );
+
+   template< typename Vertex,
+             typename Real = typename Vertex::RealType >
+   Real getValue( const Vertex& vertex ) const;
+
+   ~tnlTestingFunction();
+
+   protected:
+
+   void* function;
+
+   TestFunction functionType;
+
+};
+
+#include <implementation/functions/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */

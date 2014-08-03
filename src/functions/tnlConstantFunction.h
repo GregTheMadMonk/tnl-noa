@@ -21,15 +21,14 @@
 #include <core/vectors/tnlStaticVector.h>
 
 template< int FunctionDimensions,
-          typename Vertex = tnlStaticVector< FunctionDimensions, double >,
-          typename Device = tnlHost >
+          typename Real >
 class tnlConstantFunction
 {
    public:
 
    enum { Dimensions = FunctionDimensions };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+   typedef Real RealType;
+   typedef tnlStaticVector< Dimensions, Real > VertexType;
 
    tnlConstantFunction();
 
