@@ -65,7 +65,6 @@ class tnlCuda
 
    static int getGPUTransferBufferSize();
 
-#ifdef HAVE_CUDA
    static size_t getFreeMemory();
 
    template< typename ObjectType >
@@ -86,7 +85,6 @@ class tnlCuda
    static __device__ Index getInterleaving( const Index index );
 #endif
 
-#endif /* HAVE_CUDA */
 
    static bool checkDevice( const char* file_name, int line );
 

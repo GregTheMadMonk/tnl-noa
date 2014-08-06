@@ -26,98 +26,100 @@ class tnlExpBumpFunctionBase
 {
    public:
 
-   typedef Real RealType;
+      typedef Real RealType;
 
-   bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters );
 
-   void setAmplitude( const RealType& amplitude );
+      void setAmplitude( const RealType& amplitude );
 
-   const RealType& getAmplitude() const;
+      const RealType& getAmplitude() const;
 
-   void setSigma( const RealType& sigma );
+      void setSigma( const RealType& sigma );
 
-   const RealType& getSigma() const;
-
+      const RealType& getSigma() const;
 
    protected:
 
-   RealType amplitude, sigma;
+      RealType amplitude, sigma;
 };
 
-template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions,
+          typename Real >
 class tnlExpBumpFunction
 {
 };
 
-template< typename Vertex, typename Device >
-class tnlExpBumpFunction< 1, Vertex, Device > : public tnlExpBumpFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 1 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 1 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
 
-   tnlExpBumpFunction();
+
+      tnlExpBumpFunction();
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getF( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getF( const VertexType& v ) const;
 #endif   
 };
 
-template< typename Vertex, typename Device >
-class tnlExpBumpFunction< 2, Vertex, Device > : public tnlExpBumpFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 2 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 2 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
 
-   tnlExpBumpFunction();
+      tnlExpBumpFunction();
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getF( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getF( const VertexType& v ) const;
 #endif   
 };
 
-template< typename Vertex, typename Device >
-class tnlExpBumpFunction< 3, Vertex, Device > : public tnlExpBumpFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 3 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 3 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
 
-   tnlExpBumpFunction();
+
+      tnlExpBumpFunction();
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getF( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getF( const VertexType& v ) const;
 #endif   
 };
 

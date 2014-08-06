@@ -19,52 +19,47 @@
 #define TNLCONSTANTFUNCTION_IMPL_H_
 
 template< int Dimensions,
-          typename Vertex,
-          typename Device >
-tnlConstantFunction< Dimensions, Vertex, Device >::
+          typename Real >
+tnlConstantFunction< Dimensions, Real >::
 tnlConstantFunction()
 : value( 0.0 )
 {
 }
 
 template< int Dimensions,
-          typename Vertex,
-          typename Device >
+          typename Real >
 void
-tnlConstantFunction< Dimensions, Vertex, Device >::
+tnlConstantFunction< Dimensions, Real >::
 setValue( const RealType& value )
 {
    this->value = value;
 }
 
 template< int Dimensions,
-          typename Vertex,
-          typename Device >
-const typename Vertex::RealType&
-tnlConstantFunction< Dimensions, Vertex, Device >::
+          typename Real >
+const Real&
+tnlConstantFunction< Dimensions, Real >::
 getValue() const
 {
    return this->value;
 }
 
 template< int Dimensions,
-          typename Vertex,
-          typename Device >
+          typename Real >
 bool
-tnlConstantFunction< Dimensions, Vertex, Device >::
+tnlConstantFunction< Dimensions, Real >::
 init( const tnlParameterContainer& parameters )
 {
 
 }
 
 template< int Dimensions,
-          typename Vertex,
-          typename Device >
+          typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
-typename Vertex::RealType
-tnlConstantFunction< Dimensions, Vertex, Device >::
+Real
+tnlConstantFunction< Dimensions, Real >::
 getValue( const VertexType& v ) const
 {
    return value;

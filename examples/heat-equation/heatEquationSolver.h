@@ -1,5 +1,5 @@
 /***************************************************************************
-                          simpleProblemSolver.h  -  description
+                          heatEquationSolver.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -26,22 +26,24 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include "heatEquationSolver.h"
+#include "heatEquationScheme.h"
 #include "tnlAnalyticSolution.h"
 
 
 template< typename Mesh,
-          typename Diffusion,
+          typename DifferentialOperator,
           typename BoundaryCondition,
           typename RightHandSide >
 class heatEquationSolver
 {
    public:
 
-   typedef typename Diffusion::RealType RealType;
+   typedef typename DifferentialOperator::RealType RealType;
    typedef typename Mesh::DeviceType DeviceType;
-   typedef typename Diffusion::IndexType IndexType;
+   typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef heatEquationScheme< Mesh, DifferentialOperator, RightHandSide > Scheme;
 
    static tnlString getTypeStatic();
 
@@ -84,18 +86,11 @@ class heatEquationSolver
                                                       analyticLaplace,
                                                       numericalLaplace;
 
-   tnlExplicitUpdater< Mesh, DofVectorType, BoundaryCondition, Diffusion > explicitUpdater;
-
-   //AnalyticSpaceFunction analyticSpaceFunction;
-   //TimeFunction timeFunction;
-   //AnalyticSolution< MeshType, RealType, IndexType > analyticSolution;
+   tnlExplicitUpdater< Mesh, DofVectorType, BoundaryCondition, Scheme > explicitUpdater;
 
    BoundaryCondition boundaryCondition;
 
-   Diffusion diffusion;
-
-   RightHandSide RHS;
-   //IndexType ifLaplaceCompare, ifSolutionCompare;
+   Scheme scheme;
 };
 
 #include "heatEquationSolver_impl.h"

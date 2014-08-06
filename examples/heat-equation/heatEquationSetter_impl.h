@@ -20,9 +20,7 @@
 
 #include "heatEquationSetter.h"
 #include "heatEquationSolver.h"
-#include <functions/tnlSinWaveFunction.h>
-#include <functions/tnlSinBumpsFunction.h>
-#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlTestFunction.h>
 #include <schemes/diffusion/tnlLinearDiffusion.h>
 #include "tnlDirichletBoundaryConditions.h"
 #include "tnlRightHandSide.h"
@@ -36,38 +34,14 @@ template< typename Real,
    template< typename TimeFunction >          
 bool heatEquationSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter > ::setAnalyticSpaceFunction (const tnlParameterContainer& parameters)
 {
-   SolverStarter solverStarter;
-   
-   //DODELAT NACTENI Z PRIKAZOVY RADKY: RHS, Diffusion, BoundaryConditions !!!!!
-  
-   const tnlString& analyticSpaceFunctionParameter = parameters.GetParameter<tnlString>("test-function");
-   
-   typedef tnlLinearDiffusion< MeshType, Real, Index > Scheme;
+   typedef tnlLinearDiffusion< MeshType, Real, Index > Diffusion;
+   typedef tnlTestFunction< MeshType::Dimensions, Real, Device > RightHandSide;
    typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
-   typedef tnlConstantFunction< MeshType::Dimensions, Vertex, Device > BCFunction;
+   typedef tnlConstantFunction< MeshType::Dimensions, Real > BCFunction;
    typedef tnlDirichletBoundaryConditions< MeshType, BCFunction, Real, Index > BoundaryConditions;
-   typedef tnlRightHandSide< MeshType, Real, Index > RightHandSide;
-   if (analyticSpaceFunctionParameter == "sin-wave")
-   {
-      typedef tnlSinWaveFunction< MeshType::Dimensions, Vertex, DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
-      return solverStarter.template run< Solver >( parameters );
-   }
-   if (analyticSpaceFunctionParameter == "sin-bumps")
-   {
-      typedef tnlSinBumpsFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
-      return solverStarter.template run< Solver >( parameters );
-   }
-   if (analyticSpaceFunctionParameter == "exp-bump")
-   {
-      typedef tnlExpBumpFunction<MeshType::Dimensions,Vertex,DeviceType > TestFunction;
-      typedef heatEquationSolver< MeshType, Scheme, BoundaryConditions, RightHandSide > Solver;
-      return solverStarter.template run< Solver >( parameters );
-   }
-   
-   cerr<<"Unknown test-function parameter: "<<analyticSpaceFunctionParameter<<". ";
-   return 0;
+   typedef heatEquationSolver< MeshType, Diffusion, BoundaryConditions, RightHandSide > Solver;
+   SolverStarter solverStarter;
+   return solverStarter.template run< Solver >( parameters );
 }
 
 template< typename Real,

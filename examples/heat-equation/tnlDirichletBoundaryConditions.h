@@ -7,8 +7,7 @@
 
 template< typename Mesh,
           typename Function = tnlConstantFunction< Mesh::Dimensions,
-                                                   typename Mesh::VertexType,
-                                                   typename Mesh::DeviceType >,
+                                                   typename Mesh::RealType >,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions

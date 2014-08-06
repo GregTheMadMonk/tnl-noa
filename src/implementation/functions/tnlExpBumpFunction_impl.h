@@ -56,14 +56,14 @@ const Real& tnlExpBumpFunctionBase< Real >::getSigma() const
  * 1D
  */
 
-template< typename Vertex, typename Device >
-tnlExpBumpFunction< 1, Vertex, Device >::tnlExpBumpFunction()
+template< typename Real >
+tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 {
 }
 
-template< typename Vertex, typename Device >
+template< typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlExpBumpFunction< 1, Vertex, Device >::getF( const Vertex& v ) const
+      Real tnlExpBumpFunction< 1, Real >::getF( const Vertex& v ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -81,14 +81,16 @@ template< typename Vertex, typename Device >
  * 2D
  */
 
-template< typename Vertex, typename Device >
-tnlExpBumpFunction< 2, Vertex, Device >::tnlExpBumpFunction()
+template< typename Real >
+tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
 {
 }
 
-template< typename Vertex, typename Device >
+template< typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlExpBumpFunction< 2, Vertex, Device >::getF( const Vertex& v ) const
+Real
+tnlExpBumpFunction< 2, Real >::
+getF( const Vertex& v ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -111,14 +113,16 @@ template< typename Vertex, typename Device >
  * 3D
  */
 
-template< typename Vertex, typename Device >
-tnlExpBumpFunction< 3, Vertex, Device >::tnlExpBumpFunction()
+template< typename Real >
+tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 {
 }
 
 template< typename Vertex, typename Device >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlExpBumpFunction< 3, Vertex, Device >::getF( const Vertex& v ) const
+Real
+tnlExpBumpFunction< 3, Real >::
+getF( const Vertex& v ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

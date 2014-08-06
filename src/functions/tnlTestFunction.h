@@ -22,7 +22,7 @@
 template< int FunctionDimensions,
           typename Real,
           typename Device >
-class tnlTestingFunction
+class tnlTestFunction
 {
    protected:
 
@@ -30,7 +30,7 @@ class tnlTestingFunction
                        constant,
                        expBump,
                        sinBumps,
-                       sinWaves };
+                       sinWave };
 
    public:
 
@@ -38,21 +38,29 @@ class tnlTestingFunction
    typedef Real RealType;
    typedef tnlStaticVector< Dimensions, Real > VertexType;
 
-   tnlTestingFunction();
+   tnlTestFunction();
 
    bool init( const tnlParameterContainer& parameters );
 
-   template< typename Vertex,
-             typename Real = typename Vertex::RealType >
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Real getValue( const Vertex& vertex ) const;
 
-   ~tnlTestingFunction();
+   ~tnlTestFunction();
 
    protected:
 
+   template< typename FunctionType >
+   bool initFunction( const tnlParameterContainer& parameters );
+
+   template< typename FunctionType >
+   void deleteFunction();
+
    void* function;
 
-   TestFunction functionType;
+   TestFunctions functionType;
 
 };
 

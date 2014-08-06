@@ -208,7 +208,7 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
                                                         tau,
                                                         mesh,
                                                         this->boundaryCondition,
-                                                        this->diffusion,
+                                                        this->scheme,
                                                         _u,
                                                         _fu );
 }
