@@ -12,7 +12,7 @@ bool
 tnlDirichletBoundaryConditions< tnlGrid< 1,MeshReal, Device, MeshIndex >, Function, Real, Index >::
 init( const tnlParameterContainer& parameters )
 {
-   return function.init( parameters );
+   return function.init( parameters, "boundary-conditions-" );
 }
 
 template< typename MeshReal,
@@ -45,7 +45,7 @@ bool
 tnlDirichletBoundaryConditions< tnlGrid< 2,MeshReal, Device, MeshIndex >, Function, Real, Index >::
 init( const tnlParameterContainer& parameters )
 {
-   return function.init( parameters );
+   return function.init( parameters, "boundary-conditions-" );
 }
 
 
@@ -79,7 +79,7 @@ bool
 tnlDirichletBoundaryConditions< tnlGrid< 3,MeshReal, Device, MeshIndex >, Function, Real, Index >::
 init( const tnlParameterContainer& parameters )
 {
-   return function.init( parameters );
+   return function.init( parameters, "boundary-conditions-" );
 }
 
 template< typename MeshReal,

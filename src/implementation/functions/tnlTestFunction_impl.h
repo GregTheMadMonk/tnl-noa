@@ -36,6 +36,28 @@ tnlTestFunction()
 template< int FunctionDimensions,
           typename Real,
           typename Device >
+void
+tnlTestFunction< FunctionDimensions, Real, Device >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
+{
+   config.addEntry< double >( prefix + "value", "Value of the constant function.", 0.0 );
+   config.addEntry< double >( prefix + "amplitude", "Amplitude of the sine and exp functions.", 1.0 );
+   config.addEntry< double >( prefix + "sigma", "Sigma parameter of the exp-bump function.", 1.0 );
+   config.addEntry< double >( prefix + "waves-number", "Number of waves of the sine functions.", 0.0 );
+   config.addEntry< double >( prefix + "wave-length", "Wave length of the sine functions.", 1.0 );
+   config.addEntry< double >( prefix + "wave-length-x", "Wave length of the sin-bumps function.", 1.0 );
+   config.addEntry< double >( prefix + "wave-length-y", "Wave length of the sin-bumps functions.", 1.0 );
+   config.addEntry< double >( prefix + "wave-length-z", "Wave length of the sin-bumps functions.", 1.0 );
+   config.addEntry< double >( prefix + "phase", "Phase of the sine functions.", 0.0 );
+   config.addEntry< double >( prefix + "phase-x", "Phase of the sin-bumps function.", 0.0 );
+   config.addEntry< double >( prefix + "phase-y", "Phase of the sin-bumps function.", 0.0 );
+   config.addEntry< double >( prefix + "phase-z", "Phase of the sin-bumps function.", 0.0 );
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
    template< typename FunctionType >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
@@ -56,7 +78,10 @@ initFunction( const tnlParameterContainer& parameters )
    {
       function = passToDevice( *auxFunction );
       delete auxFunction;
+      if( ! checkCudaDevice )
+         return false;
    }
+   return true;
 }
 
 template< int FunctionDimensions,

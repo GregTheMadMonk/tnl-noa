@@ -28,7 +28,8 @@ class tnlExpBumpFunctionBase
 
       typedef Real RealType;
 
-      bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters,
+                 const tnlString& prefix );
 
       void setAmplitude( const RealType& amplitude );
 
@@ -65,12 +66,12 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 
@@ -89,12 +90,12 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 
@@ -114,12 +115,12 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-      RealType getF( const VertexType& v ) const;
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 

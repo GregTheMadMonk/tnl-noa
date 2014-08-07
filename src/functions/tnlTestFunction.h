@@ -40,6 +40,9 @@ class tnlTestFunction
 
    tnlTestFunction();
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix );
+
    bool init( const tnlParameterContainer& parameters );
 
    template< typename Vertex >

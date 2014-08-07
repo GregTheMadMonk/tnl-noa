@@ -50,19 +50,6 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 {
    if( ! boundaryCondition.init( parameters ) )
       return false;
-   /*analyticSpaceFunction.init(parameters);
-   ifLaplaceCompare = parameters.GetParameter< IndexType >( "approximation-test" );
-   if((ifLaplaceCompare != 0) && (ifLaplaceCompare != 1))
-   {
-      cerr << "Unknown value of laplace-convergence-test parameter. Valid values are 0 or 1. You set " << ifLaplaceCompare << ". ";
-      return false;
-   }
-   ifSolutionCompare = parameters.GetParameter< IndexType >("eoc-test");
-   if((ifSolutionCompare != 0) && (ifSolutionCompare != 1))
-   {
-      cerr << "Unknown value of solution-convergence-test parameter. Valid values are 0 or 1. You set " << ifSolutionCompare << ". ";
-      return false;
-   }*/
    return true;
 }
 

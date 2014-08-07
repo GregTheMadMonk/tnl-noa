@@ -28,7 +28,8 @@ class tnlSinWaveFunctionBase
 
    tnlSinWaveFunctionBase();
 
-   bool init( const tnlParameterContainer& parameters );
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix );
 
    void setWaveLength( const Real& waveLength );
 
@@ -47,75 +48,76 @@ class tnlSinWaveFunctionBase
    Real waveLength, amplitude, phase, wavesNumber;
 };
 
-template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Real >
 class tnlSinWaveFunction
 {
 };
 
-template< typename Vertex, typename Device >
-class tnlSinWaveFunction< 1, Vertex, Device > : public tnlSinWaveFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 1 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 1 };
+      typedef tnlStaticVector< 1, Real > VertexType;
+      typedef Real RealType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
 #endif   
 
 };
 
-template< typename Vertex, typename Device >
-class tnlSinWaveFunction< 2, Vertex, Device > : public tnlSinWaveFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 2 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+         enum { Dimensions = 2 };
+         typedef tnlStaticVector< 2, Real > VertexType;
+         typedef Real RealType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 
-template< typename Vertex, typename Device >
-class tnlSinWaveFunction< 3, Vertex, Device > : public tnlSinWaveFunctionBase< typename Vertex::RealType >
+template< typename Real >
+class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
-   enum { Dimensions = 3 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 3 };
+      typedef tnlStaticVector< 3, Real > VertexType;
+      typedef Real RealType;
+
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 

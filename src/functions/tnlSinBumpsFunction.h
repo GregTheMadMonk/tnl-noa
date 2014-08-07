@@ -21,113 +21,120 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 
-template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
+template< typename Vertex >
 class tnlSinBumpsFunctionBase
 {
    public:
 
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      typedef Vertex VertexType;
+      typedef typename Vertex::RealType RealType;
+      enum { Dimensions = VertexType::size };
 
-   void setWaveLength( const VertexType& waveLength );
+      void setWaveLength( const VertexType& waveLength );
 
-   const VertexType& getWaveLength() const;
+      const VertexType& getWaveLength() const;
 
-   void setAmplitude( const RealType& amplitude );
+      void setAmplitude( const RealType& amplitude );
 
-   const RealType& getAmplitude() const;
+      const RealType& getAmplitude() const;
 
-   void setPhase( const VertexType& phase );
+      void setPhase( const VertexType& phase );
 
-   const VertexType& getPhase() const;
+      const VertexType& getPhase() const;
 
    protected:
 
-   RealType amplitude;
+      RealType amplitude;
 
-   VertexType waveLength, phase;
+      VertexType waveLength, phase;
 };
 
-template< int Dimensions, typename Vertex = tnlStaticVector< Dimensions, double >, typename Device = tnlHost >
+template< int Dimensions, typename Real >
 class tnlSinBumpsFunction
 {
 };
 
-template< typename Vertex, typename Device >
-class tnlSinBumpsFunction< 1, Vertex, Device > : public tnlSinBumpsFunctionBase< 1, Vertex, Device >
+template< typename Real >
+class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
 
-   enum { Dimensions = 1 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 1 };
+      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > > BaseType;
+      typedef typename BaseType::VertexType VertexType;
+      typedef Real RealType;
 
-   tnlSinBumpsFunction();
+      tnlSinBumpsFunction();
 
-   bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters,
+                const tnlString& prefix );
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
-#endif   
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
+#endif
 };
 
-template< typename Vertex, typename Device >
-class tnlSinBumpsFunction< 2, Vertex, Device > : public tnlSinBumpsFunctionBase< 2, Vertex, Device >
+template< typename Real >
+class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > >
 {
    public:
 
-   enum { Dimensions = 2 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 2 };
+      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > > BaseType;
+      typedef typename BaseType::VertexType VertexType;
+      typedef Real RealType;
 
-   tnlSinBumpsFunction();
+      tnlSinBumpsFunction();
 
-   bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters,
+                 const tnlString& prefix );
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
-#endif   
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
+#endif
 };
 
-template< typename Vertex, typename Device >
-class tnlSinBumpsFunction< 3, Vertex, Device > : public tnlSinBumpsFunctionBase< 3, Vertex, Device >
+template< typename Real >
+class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > >
 {
    public:
 
-   enum { Dimensions = 3 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+      enum { Dimensions = 3 };
+      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > > BaseType;
+      typedef typename BaseType::VertexType VertexType;
+      typedef Real RealType;
 
-   tnlSinBumpsFunction();
+      tnlSinBumpsFunction();
 
-   bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters,
+                 const tnlString& prefix );
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+      RealType getValue( const VertexType& v ) const;
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getF( const VertexType& v ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      RealType getValue( const VertexType& v ) const;
 #endif   
 };
 

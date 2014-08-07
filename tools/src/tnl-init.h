@@ -41,7 +41,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       return false;
 
    FunctionType function;
-   if( ! function.init( parameters ) )
+   if( ! function.init( parameters, "" ) )
       return false;
    typedef tnlVector< typename MeshType::RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
@@ -166,17 +166,17 @@ bool resolveFunction( const tnlParameterContainer& parameters )
    cout << "+ -> Generating function " << functionName << " ... " << endl;
    if( functionName == "sin-wave" )
    {
-      typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    if( functionName == "sin-bumps" )
    {
-      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    if( functionName == "exp-bump" )
    {
-      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    cerr << "Unknown function " << functionName << "." << endl;

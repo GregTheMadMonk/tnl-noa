@@ -21,10 +21,13 @@
 #include <functions/tnlExpBumpFunction.h>
 
 template< typename Real >
-bool tnlExpBumpFunctionBase< Real >::init( const tnlParameterContainer& parameters )
+bool
+tnlExpBumpFunctionBase< Real >::
+init( const tnlParameterContainer& parameters,
+      const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->sigma = parameters.GetParameter< double >( "sigma" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->sigma = parameters.GetParameter< double >( prefix + "sigma" );
    return true;
 }
 
@@ -63,7 +66,7 @@ tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 
 template< typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      Real tnlExpBumpFunction< 1, Real >::getF( const Vertex& v ) const
+      Real tnlExpBumpFunction< 1, Real >::getValue( const VertexType& v ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -90,7 +93,7 @@ template< typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 Real
 tnlExpBumpFunction< 2, Real >::
-getF( const Vertex& v ) const
+getValue( const VertexType& v ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -118,11 +121,11 @@ tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 {
 }
 
-template< typename Vertex, typename Device >
+template< typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 Real
 tnlExpBumpFunction< 3, Real >::
-getF( const Vertex& v ) const
+getValue( const VertexType& v ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

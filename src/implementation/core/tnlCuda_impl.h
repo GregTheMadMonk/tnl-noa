@@ -130,8 +130,12 @@ void tnlCuda::passFromDevice( const ObjectType& deviceObject,
 template< typename ObjectType >
 void tnlCuda::freeFromDevice( ObjectType* deviceObject )
 {
+#ifdef HAVE_CUDA   
    cudaFree( deviceObject );
    checkCudaDevice;
+#else
+   tnlAssert( false, cerr << "CUDA support is missing." );
+#endif      
 }
 
 #ifdef HAVE_CUDA
