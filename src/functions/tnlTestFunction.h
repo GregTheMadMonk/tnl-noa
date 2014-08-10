@@ -18,10 +18,11 @@
 #ifndef TNLTESTFUNCTION_H_
 #define TNLTESTFUNCTION_H_
 
+#include <core/tnlHost.h>
 
 template< int FunctionDimensions,
           typename Real,
-          typename Device >
+          typename Device = tnlHost >
 class tnlTestFunction
 {
    protected:
@@ -41,7 +42,7 @@ class tnlTestFunction
    tnlTestFunction();
 
    static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix );
+                            const tnlString& prefix = "" );
 
    bool init( const tnlParameterContainer& parameters );
 

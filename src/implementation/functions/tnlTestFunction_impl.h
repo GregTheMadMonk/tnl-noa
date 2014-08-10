@@ -41,18 +41,31 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry< double >( prefix + "value", "Value of the constant function.", 0.0 );
-   config.addEntry< double >( prefix + "amplitude", "Amplitude of the sine and exp functions.", 1.0 );
-   config.addEntry< double >( prefix + "sigma", "Sigma parameter of the exp-bump function.", 1.0 );
-   config.addEntry< double >( prefix + "waves-number", "Number of waves of the sine functions.", 0.0 );
-   config.addEntry< double >( prefix + "wave-length", "Wave length of the sine functions.", 1.0 );
-   config.addEntry< double >( prefix + "wave-length-x", "Wave length of the sin-bumps function.", 1.0 );
-   config.addEntry< double >( prefix + "wave-length-y", "Wave length of the sin-bumps functions.", 1.0 );
-   config.addEntry< double >( prefix + "wave-length-z", "Wave length of the sin-bumps functions.", 1.0 );
-   config.addEntry< double >( prefix + "phase", "Phase of the sine functions.", 0.0 );
-   config.addEntry< double >( prefix + "phase-x", "Phase of the sin-bumps function.", 0.0 );
-   config.addEntry< double >( prefix + "phase-y", "Phase of the sin-bumps function.", 0.0 );
-   config.addEntry< double >( prefix + "phase-z", "Phase of the sin-bumps function.", 0.0 );
+   config.addEntry     < tnlString >( "test-function", "Testing function.", "sin-wave" );
+      config.addEntryEnum( "sin-wave" );
+      config.addEntryEnum( "sin-bumps" );
+      config.addEntryEnum( "exp-bump" );
+   config.addEntry     < double >( prefix + "value", "Value of the constant function.", 0.0 );
+   config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "wave-length-y", "Wave length of the sine based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "wave-length-z", "Wave length of the sine based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "phase", "Phase of the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "phase-x", "Phase of the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "phase-y", "Phase of the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "phase-z", "Phase of the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "amplitude", "Amplitude length of the sine based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "waves-number", "Cut-off for the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "waves-number-x", "Cut-off for the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
+   config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
+   config.addEntry     < tnlString >( "test-function-time-dependence", "Time dependence of the test function.", "none" );
+      config.addEntryEnum( "none" );
+      config.addEntryEnum( "linear" );
+      config.addEntryEnum( "quadratic" );
+      config.addEntryEnum( "cosine" );
+
 }
 
 template< int FunctionDimensions,
@@ -70,11 +83,11 @@ initFunction( const tnlParameterContainer& parameters )
       return false;
    }
 
-   if( Device::DeviceType == tnlHostDevice )
+   if( Device::DeviceType == ( int ) tnlHostDevice )
    {
       function = auxFunction;
    }
-   if( Device::DeviceType == tnlCudaDevice )
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
       function = passToDevice( *auxFunction );
       delete auxFunction;
@@ -158,9 +171,9 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 deleteFunction()
 {
-   if( Device::DeviceType == tnlHostDevice )
+   if( Device::DeviceType == ( int ) tnlHostDevice )
       delete ( FunctionType * ) function;
-   if( Device::DeviceType == tnlCudaDevice )
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
       tnlCuda::freeFromDevice( ( FunctionType * ) function );
 }
 
