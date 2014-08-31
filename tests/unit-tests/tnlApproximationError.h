@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlApproximationTest.h  -  description
+                          tnlApproximationError.h  -  description
                              -------------------
     begin                : Aug 7, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,14 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLAPPROXIMATIONTEST_H_
-#define TNLAPPROXIMATIONTEST_H_
+#ifndef TNLAPPROXIMATIONERROR_H_
+#define TNLAPPROXIMATIONERROR_H_
 
 template< typename Mesh,
           typename ExactOperator,
           typename ApproximateOperator,
           typename Function >
-class tnlApproximationTest
+class tnlApproximationError
 {
    public:
 
@@ -32,17 +32,15 @@ class tnlApproximationTest
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef typename MeshType::VertexType VertexType;
 
-      static void getEoc( const Mesh& coarserMesh,
-                          const Mesh& finerMesh,
-                          const RealType& refinement,
-                          const ExactOperator& exactOperator,
-                          const ApproximateOperator& approximateOperator,
-                          const Function& function,
-                          RealType& l1Eoc,
-                          RealType& l2Eoc,
-                          RealType& maxEoc );
+      static void getError( const Mesh& mesh,
+                            const ExactOperator& exactOperator,
+                            const ApproximateOperator& approximateOperator,
+                            const Function& function,
+                            RealType& l1Err,
+                            RealType& l2Err,
+                            RealType& maxErr );
 };
 
-#include <tests/approximation-tests/tnlApproximationTest_impl.h>
+#include <tests/tnlApproximationError_impl.h>
 
-#endif /* TNLAPPROXIMATIONTEST_H_ */
+#endif /* TNLAPPROXIMATIONERROR_H_ */
