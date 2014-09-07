@@ -21,7 +21,7 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
-#include <schemes/gradient/tnlCentralFDMGradient.h>
+#include <operators/gradient/tnlCentralFDMGradient.h>
 
 template< typename Mesh,
           typename PressureGradient = tnlCentralFDMGradient< Mesh > >
@@ -168,6 +168,6 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, energy, p;
 };
 
-#include <implementation/schemes/euler/fvm/tnlLaxFridrichs_impl.h>
+#include <implementation/operators/euler/fvm/tnlLaxFridrichs_impl.h>
 
 #endif

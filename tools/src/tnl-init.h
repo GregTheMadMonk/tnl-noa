@@ -25,7 +25,7 @@
 #include <functions/tnlSinWaveFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
 #include <functions/tnlExpBumpFunction.h>
-#include <schemes/tnlFiniteDifferences.h>
+#include <operators/tnlFiniteDifferences.h>
 
 template< typename MeshType,
           typename FunctionType,

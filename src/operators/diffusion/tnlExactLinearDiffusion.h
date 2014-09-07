@@ -67,6 +67,6 @@ class tnlExactLinearDiffusion< 3 >
 
 };
 
-#include <implementation/schemes/diffusion/tnlExactLinearDiffusion_impl.h>
+#include <implementation/operators/diffusion/tnlExactLinearDiffusion_impl.h>
 
 #endif /* TNLEXACTLINEARDIFFUSION_H_ */

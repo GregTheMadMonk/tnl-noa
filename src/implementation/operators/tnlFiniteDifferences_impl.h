@@ -18,7 +18,7 @@
 #ifndef TNLFINITEDIFFERENCES_IMPL_H_
 #define TNLFINITEDIFFERENCES_IMPL_H_
 
-#include <schemes/tnlFiniteDifferences.h>
+#include <operators/tnlFiniteDifferences.h>
 
 template< typename Real, typename Device, typename Index >
    template< typename GridFunction,
@@ -186,7 +186,7 @@ Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( c
 }
 
 
-#include <implementation/schemes/tnlFiniteDifferences_impl.h>
+#include <implementation/operators/tnlFiniteDifferences_impl.h>
 
 
 

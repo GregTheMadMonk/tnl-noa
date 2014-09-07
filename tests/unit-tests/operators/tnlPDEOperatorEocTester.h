@@ -25,8 +25,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <unit-tests/tnlApproximationError.h>
-#include <unit-tests/schemes/tnlPDEOperatorEocTestSetter.h>
-#include <unit-tests/schemes/tnlPDEOperatorEocTestResult.h>
+#include <unit-tests/operators/tnlPDEOperatorEocTestSetter.h>
+#include <unit-tests/operators/tnlPDEOperatorEocTestResult.h>
 
 template< typename ApproximateOperator,
           typename ExactOperator,

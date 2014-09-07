@@ -100,6 +100,6 @@ class tnlLinearDiffusion< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeome
 };
 
 
-#include <implementation/schemes/diffusion/tnlLinearDiffusion_impl.h>
+#include <implementation/operators/diffusion/tnlLinearDiffusion_impl.h>
 
 #endif

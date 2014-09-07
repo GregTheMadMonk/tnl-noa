@@ -2,7 +2,7 @@
 #ifndef TNLLINEARDIFFUSION_IMP_H
 #define	TNLLINEARDIFFUSION_IMP_H
 
-#include <schemes/diffusion/tnlLinearDiffusion.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlGrid.h>
 
 template< typename MeshReal,

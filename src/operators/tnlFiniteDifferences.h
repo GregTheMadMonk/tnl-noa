@@ -209,7 +209,7 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
 
 };
 
-#include <implementation/schemes/tnlFiniteDifferences_impl.h>
+#include <implementation/operators/tnlFiniteDifferences_impl.h>
 
 
 

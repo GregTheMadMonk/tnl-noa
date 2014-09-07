@@ -91,6 +91,6 @@ class tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGe
 };
 
 
-#include <implementation/schemes/gradient/tnlCentralFDMGradient_impl.h>
+#include <implementation/operators/gradient/tnlCentralFDMGradient_impl.h>
 
 #endif

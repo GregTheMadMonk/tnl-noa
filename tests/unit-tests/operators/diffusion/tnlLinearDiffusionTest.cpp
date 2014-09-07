@@ -22,8 +22,8 @@
 #include "../tnlPDEOperatorEocTester.h"
 #include "../../tnlUnitTestStarter.h"
 #include <mesh/tnlGrid.h>
-#include <schemes/diffusion/tnlLinearDiffusion.h>
-#include <schemes/diffusion/tnlExactLinearDiffusion.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
+#include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include "../tnlPDEOperatorEocTestResult.h"
 #include <functions/tnlExpBumpFunction.h>
 

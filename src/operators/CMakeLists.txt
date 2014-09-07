@@ -4,7 +4,7 @@ ADD_SUBDIRECTORY( euler )
 
 SET( headers tnlFiniteDifferences.h  )
 
-#SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/schemes )
+#SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/operators )
 #SET( libtnlmeshinclude_HEADERS ${headers} )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/schemes )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/operators )
