@@ -29,7 +29,7 @@ tnlString tnlStaticContainer< Size, Element >::getType()
    return tnlString( "tnlStaticContainer< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          getParameterType< Element >() +
+          ::getType< Element >() +
           tnlString( " >" );
 }
 

@@ -60,6 +60,13 @@ const Real& tnlExpBumpFunctionBase< Real >::getSigma() const
  */
 
 template< typename Real >
+tnlString
+tnlExpBumpFunction< 1, Real >::getType()
+{
+   return "tnlExpBumpFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+}
+
+template< typename Real >
 tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 {
 }
@@ -83,6 +90,13 @@ template< typename Real >
 /****
  * 2D
  */
+
+template< typename Real >
+tnlString
+tnlExpBumpFunction< 2, Real >::getType()
+{
+   return tnlString( "tnlExpBumpFunction< 2, " ) + ::getType< Real >() + " >";
+}
 
 template< typename Real >
 tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
@@ -115,6 +129,13 @@ getValue( const VertexType& v ) const
 /****
  * 3D
  */
+
+template< typename Real >
+tnlString
+tnlExpBumpFunction< 3, Real >::getType()
+{
+   return tnlString( "tnlExpBumpFunction< 3, " ) + ::getType< Real >() + " >";
+}
 
 template< typename Real >
 tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()

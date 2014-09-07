@@ -54,7 +54,7 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
 
    tnlString getEntryType() const
    {
-      return ::getParameterType< tnlList< EntryType > >();
+      return ::getType< tnlList< EntryType > >();
    }
 
    tnlString getUIEntryType() const

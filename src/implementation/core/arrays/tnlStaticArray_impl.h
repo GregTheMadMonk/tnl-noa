@@ -64,7 +64,7 @@ tnlString tnlStaticArray< Size, Element >::getType()
    return tnlString( "tnlStaticArray< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          getParameterType< Element >() +
+          ::getType< Element >() +
           tnlString( " >" );
 }
 

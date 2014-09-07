@@ -18,23 +18,30 @@
 #ifndef TNLFUNCTIONDISCRETIZER_IMPL_H_
 #define TNLFUNCTIONDISCRETIZER_IMPL_H_
 
-template< typename Mesh, typename Function, typename DiscreteFunction >
+template< typename Mesh, typename Function, typename Vector >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-void tnlFunctionDiscretizer< Mesh, Function, DiscreteFunction >::discretize( const Mesh& mesh,
-                                                                             const Function& function,
-                                                                             DiscreteFunction& discreteFunction )
+void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& mesh,
+                                                                   const Function& function,
+                                                                   Vector& discreteFunction )
 {
    //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
    typename Mesh::IndexType i = 0;
    discreteFunction.setSize( mesh.getNumberOfCells() );
-   while( i < mesh.getNumberOfCells() )
+   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
-      typename Mesh::VertexType v;
-      typename Mesh::CoordinatesType c;
-      c = mesh.getCellCoordinates( i );
-      v = mesh.getCellCenter( c );
-      discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v );
-      i++;
+      while( i < mesh.getNumberOfCells() )
+      {
+         typename Mesh::VertexType v;
+         typename Mesh::CoordinatesType c;
+         c = mesh.getCellCoordinates( i );
+         v = mesh.getCellCenter( c );
+         discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v );
+         i++;
+      }
+   }
+   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+   {
+      // TODO: implement
    }
 }
 

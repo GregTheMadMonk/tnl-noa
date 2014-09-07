@@ -20,6 +20,7 @@
 
 #include <mesh/tnlTraversal.h>
 #include <core/vectors/tnlVector.h>
+#include <functions/tnlFunctionDiscretizer.h>
 
 template< typename Mesh,
           typename ExactOperator,
@@ -27,41 +28,45 @@ template< typename Mesh,
           typename Function >
 void
 tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function >::
-getErrc( const Mesh& mesh,
-         const ExactOperator& exactOperator,
-         const ApproximateOperator& approximateOperator,
-         const Function& function,
-         RealType& l1Err,
-         RealType& l2Err,
-         RealType& maxErr )
+getError( const Mesh& mesh,
+          const ExactOperator& exactOperator,
+          const ApproximateOperator& approximateOperator,
+          const Function& function,
+          RealType& l1Err,
+          RealType& l2Err,
+          RealType& maxErr )
 {
-   tnlVector< RealType, DeviceType, IndexType > exactOperator, approximateOperator;
+   typedef tnlVector< RealType, DeviceType, IndexType > Vector;
+   Vector functionData, exactData, approximateData;
    const IndexType entities = mesh.getNumberOfCells();
 
-   if( ! exactOperator.setSize( entities ) ||
-       ! approximateOperator.setSize( entities )  )
-      return false;
+   if( ! functionData.setSize( entities ) ||
+       ! exactData.setSize( entities ) ||
+       ! approximateData.setSize( entities )  )
+      return;
+
+   tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
    if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
-      for( IndexType i = 0; i < coarserEntities; i++ )
+      for( IndexType i = 0; i < entities; i++ )
       {
          if( ! mesh.isBoundaryCell( i ) )
          {
             VertexType v = mesh.getCellCenter( i );
-            coarserExactOperator[ i ] = exactOperator.getValue( function, v );
-            coarserApproximateOperator[ i ] = approximateOperator.getValue( mesh, function, i );
+            exactData[ i ] = exactOperator.getValue( function, v );
+            approximateData[ i ] = approximateOperator.getValue( mesh, i, functionData );
          }
-         else exactOperator[ i ] = approximateOperator[ i ];
+         else exactData[ i ] = approximateData[ i ];
       }
    }
    if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
    {
       // TODO
    }
-   L1Err = mesh.getDifferenceLpNorm( exactOperator, approximateOperator, ( RealType ) 1.0 );
-   L2Errr = mesh.getDifferenceLpNorm( exactOperator, approximateOperator, ( RealType ) 2.0 );
-   MaxErrr = mesh.getDifferenceAbsMax( exactOperator, approximateOperator );
+   l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
+   l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
+   maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
 }
 
 #endif /* TNLAPPROXIMATIONERROR_IMPL_H_ */

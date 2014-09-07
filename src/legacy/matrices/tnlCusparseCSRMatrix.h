@@ -199,7 +199,7 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlCusparseCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlCusparseCSRMatrix< ") +
-          tnlString( GetParameterType( Real( 0.0 ) ) ) +
+          tnlString( getType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );

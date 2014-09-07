@@ -195,7 +195,7 @@ const tnlString& tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getMatrixClass() 
 template< typename Real, typename Index >
 tnlString tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getType() const
 {
-   return tnlString( "tnlFastRgCSRMatrix< ") + tnlString( GetParameterType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
+   return tnlString( "tnlFastRgCSRMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
 };
 
 template< typename Real, typename Index >

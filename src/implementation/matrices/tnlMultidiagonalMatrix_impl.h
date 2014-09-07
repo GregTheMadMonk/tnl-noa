@@ -38,7 +38,7 @@ template< typename Real,
 tnlString tnlMultidiagonalMatrix< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlMultidiagonalMatrix< ") +
-          tnlString( getParameterType< Real >() ) +
+          tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );

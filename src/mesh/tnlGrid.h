@@ -142,6 +142,12 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
+   Vertex getCellCenter( const IndexType& cellIndex ) const;
+
+   template< typename Vertex = VertexType >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
 
 #ifdef HAVE_CUDA
@@ -158,6 +164,11 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __device__ __host__
 #endif
    bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const IndexType& cellIndex ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -363,6 +374,12 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+   template< typename Vertex = VertexType >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getCellCenter( const IndexType& cellIndex ) const;
+
 template< int nx, int ny, typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -394,6 +411,11 @@ template< int nx, int ny, typename Vertex = VertexType >
    __device__ __host__
 #endif
    bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny >
 #ifdef HAVE_CUDA
@@ -674,6 +696,12 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+   template< typename Vertex = VertexType >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Vertex getCellCenter( const IndexType& cellIndex ) const;
+
 template< int nx, int ny, int nz, typename Vertex = VertexType >
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -716,6 +744,11 @@ template< int dx, int dy, int dz, typename Vertex = VertexType >
    __device__ __host__
 #endif
    bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   bool isBoundaryCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
 #ifdef HAVE_CUDA

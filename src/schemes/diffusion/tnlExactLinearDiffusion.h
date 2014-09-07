@@ -28,10 +28,10 @@ class tnlExactLinearDiffusion< 1 >
    public:
 
       enum { Dimensions = 1 };
-      typedef typename Function::RealType RealType;
-      typedef typename Function::VertexType VertexType;
 
-      template< typename Function, typename Vertex, typename Real = Vertex::RealType >
+      static tnlString getType();
+
+      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
                             const Vertex& v );
 
@@ -43,10 +43,10 @@ class tnlExactLinearDiffusion< 2 >
    public:
 
       enum { Dimensions = 2 };
-      typedef typename Function::RealType RealType;
-      typedef typename Function::VertexType VertexType;
 
-      template< typename Function, typename Vertex, typename Real = Vertex::RealType >
+      static tnlString getType();
+
+      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
                             const Vertex& v );
 
@@ -58,15 +58,15 @@ class tnlExactLinearDiffusion< 3 >
    public:
 
       enum { Dimensions = 3 };
-      typedef typename Function::RealType RealType;
-      typedef typename Function::VertexType VertexType;
 
-      template< typename Function, typename Vertex, typename Real = Vertex::RealType >
+      static tnlString getType();
+
+      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
                             const Vertex& v );
 
 };
 
-
+#include <implementation/schemes/diffusion/tnlExactLinearDiffusion_impl.h>
 
 #endif /* TNLEXACTLINEARDIFFUSION_H_ */

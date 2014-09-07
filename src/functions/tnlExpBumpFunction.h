@@ -59,6 +59,7 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
       typedef Real RealType;
       typedef tnlStaticVector< Dimensions, Real > VertexType;
 
+      static tnlString getType();
 
       tnlExpBumpFunction();
 
@@ -84,6 +85,8 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
       typedef Real RealType;
       typedef tnlStaticVector< Dimensions, Real > VertexType;
 
+      static tnlString getType();
+
       tnlExpBumpFunction();
 
 #ifdef HAVE_NOT_CXX11
@@ -108,6 +111,7 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
       typedef Real RealType;
       typedef tnlStaticVector< Dimensions, Real > VertexType;
 
+      static tnlString getType();
 
       tnlExpBumpFunction();
 

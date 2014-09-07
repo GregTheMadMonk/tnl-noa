@@ -92,7 +92,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
 
    tnlString getType() const
    {
-      return tnlString( "tnlCurve< " ) + tnlString( getParameterType< T >() ) + tnlString( " >" );
+      return tnlString( "tnlCurve< " ) + tnlString( ::getType< T >() ) + tnlString( " >" );
    };
 
    //! Append new point

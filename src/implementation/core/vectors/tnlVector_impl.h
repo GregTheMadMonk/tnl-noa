@@ -52,9 +52,9 @@ template< typename Real,
 tnlString tnlVector< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlVector< " ) +
-                     getParameterType< Real >() + ", " +
+                     ::getType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
-                     getParameterType< Index >() + " >";
+                     ::getType< Index >() + " >";
 };
 
 template< typename Real,

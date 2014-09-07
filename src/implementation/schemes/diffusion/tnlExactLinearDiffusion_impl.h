@@ -18,9 +18,15 @@
 #ifndef TNLEXACTLINEARDIFFUSION_IMPL_H_
 #define TNLEXACTLINEARDIFFUSION_IMPL_H_
 
-template<>
-   template< typename Function, typename Vertex >
-typename Function::RealType
+tnlString
+tnlExactLinearDiffusion< 1 >::
+getType()
+{
+   return "tnlExactLinearDiffusion< 1 >";
+}
+
+template< typename Function, typename Vertex, typename Real >
+Real
 tnlExactLinearDiffusion< 1 >::
 getValue( const Function& function,
           const Vertex& v )
@@ -28,9 +34,15 @@ getValue( const Function& function,
    return function.template getValue< 2 >( v );
 }
 
-template<>
-   template< typename Function, typename Vertex >
-typename Function::RealType
+tnlString
+tnlExactLinearDiffusion< 2 >::
+getType()
+{
+   return "tnlExactLinearDiffusion< 2 >";
+}
+
+template< typename Function, typename Vertex, typename Real >
+Real
 tnlExactLinearDiffusion< 2 >::
 getValue( const Function& function,
           const Vertex& v )
@@ -39,9 +51,15 @@ getValue( const Function& function,
           function.template getValue< 0, 2 >( v );
 }
 
-template<>
-   template< typename Function, typename Vertex >
-typename Function::RealType
+tnlString
+tnlExactLinearDiffusion< 3 >::
+getType()
+{
+   return "tnlExactLinearDiffusion< 3 >";
+}
+
+template< typename Function, typename Vertex, typename Real >
+Real
 tnlExactLinearDiffusion< 3 >::
 getValue( const Function& function,
           const Vertex& v )

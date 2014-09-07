@@ -155,7 +155,7 @@ class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, C
    public:
       static bool run( const tnlParameterContainer& parameters )
       {
-         cerr << "The mesh type " << getParameterType< MeshType >() << " is not supported." << endl;
+         cerr << "The mesh type " << ::getType< MeshType >() << " is not supported." << endl;
          return false;
       };
 };

@@ -26,7 +26,8 @@ class tnlApproximationError
 {
    public:
 
-      typedef typename ExactOperator::RealType RealType;
+      typedef typename ApproximateOperator::RealType RealType;
+      typedef Mesh MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -41,6 +42,6 @@ class tnlApproximationError
                             RealType& maxErr );
 };
 
-#include <tests/tnlApproximationError_impl.h>
+#include "tnlApproximationError_impl.h"
 
 #endif /* TNLAPPROXIMATIONERROR_H_ */

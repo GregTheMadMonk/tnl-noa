@@ -18,10 +18,12 @@
 #ifndef TNLFUNCTIONDISCRETIZER_H_
 #define TNLFUNCTIONDISCRETIZER_H_
 
-template< typename Mesh, typename Function, typename DiscreteFunction >
+template< typename Mesh, typename Function, typename Vector >
 class tnlFunctionDiscretizer
 {
    public:
+
+      typedef typename Vector::DeviceType DeviceType;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -29,14 +31,14 @@ class tnlFunctionDiscretizer
              int ZDiffOrder >
    static void discretize( const Mesh& mesh,
                            const Function& function,
-                           DiscreteFunction& discreteFunction );
+                           Vector& discreteFunction );
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    static void discretize( const Mesh& mesh,
                            const Function& function,
-                           DiscreteFunction& discreteFunction );
+                           Vector& discreteFunction );
 #endif   
    
 };

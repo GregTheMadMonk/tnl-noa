@@ -68,7 +68,7 @@ tnlString tnlStaticVector< 3, Real >::getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( 3 ) +
           tnlString( ", " ) +
-          getParameterType< Real >() +
+          ::getType< Real >() +
           tnlString( " >" );
 }
 

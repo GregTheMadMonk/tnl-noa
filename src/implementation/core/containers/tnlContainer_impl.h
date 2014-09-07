@@ -33,9 +33,9 @@ template< typename Element, typename Device, typename Index >
 tnlString tnlContainer< Element, Device, Index >::getType()
 {
    return tnlString( "tnlContainer< " ) +
-                     getParameterType< Element >() +
+                     ::getType< Element >() +
                      Device :: getDeviceType() +
-                     getParameterType< Index >() +
+                     ::getType< Index >() +
                      " >";
 }
 
