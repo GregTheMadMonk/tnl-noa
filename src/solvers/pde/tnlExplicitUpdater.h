@@ -20,38 +20,83 @@
 
 template< typename Real,
           typename DofVector,
+          typename DifferentialOperator,
           typename BoundaryConditions,
-          typename InteriorUpdater >
+          typename RightHandSide >
 class tnlExplicitUpdaterTraversalUserData
 {
    public:
+
+      template< typename DifferentialOperator,
+                typename RightHandSide >
+      class tnlInteriorUpdater
+      {
+         public:
+
+         tnlInteriorUpdater( DifferentialOperator& differentialOperator,
+                             RightHandSide& rightHandSide )
+         : differentialOperator( differentialOperator ),
+           rightHandSide( rightHandSide )
+         {
+         }
+
+         template< typename Mesh,
+                   typename Index,
+                   typename Coordinates,
+                   typename DofVector >
+         void explicitUpdate( const Real& time,
+                              const Real& tau,
+                              const Mesh& mesh,
+                              const Index index,
+                              const Coordinates& coordinates,
+                              DofVector& u,
+                              DofVector& fu )
+         {
+            ;
+         }
+
+         DifferentialOperator& differentialOperator;
+
+         RightHandSide& rightHandSide;
+      };
+
       const Real &time, &tau;
+
+      DifferentialOperator& differentialOperator;
 
       BoundaryConditions& boundaryConditions;
 
-      InteriorUpdater& interiorUpdater;
+      RightHandSide& rightHandSide;
 
       DofVector &u, &fu;
 
       tnlExplicitUpdaterTraversalUserData( const Real& time,
                                            const Real& tau,
+                                           DifferentialOperator& differentialOperator,
                                            BoundaryConditions& boundaryConditions,
-                                           InteriorUpdater& interiorUpdater,
+                                           RightHandSide& rightHandSide,
                                            DofVector& u,
                                            DofVector& fu )
       : time( time ),
         tau( tau ),
+        differentialOperator( differentialOperator ),
         boundaryConditions( boundaryConditions ),
-        interiorUpdater( interiorUpdater ),
+        rightHandSide( rightHandSide ),
         u( u ),
         fu( fu )
       {};
+
+   protected:
+
+
+
 };
 
 template< typename Mesh,
           typename DofVector,
+          typename DifferentialOperator,
           typename BoundaryConditions,
-          typename InteriorUpdater >
+          typename RightHandSide >
 class tnlExplicitUpdater
 {
    public:
@@ -61,15 +106,17 @@ class tnlExplicitUpdater
       typedef typename DofVector::IndexType IndexType;
       typedef tnlExplicitUpdaterTraversalUserData< RealType,
                                                    DofVector,
+                                                   DifferentialOperator,
                                                    BoundaryConditions,
-                                                   InteriorUpdater > TraversalUserData;
+                                                   RightHandSide > TraversalUserData;
 
       template< int EntityDimensions >
       void update( const RealType& time,
                    const RealType& tau,
                    const MeshType& mesh,
+                   DifferentialOperator& differentialOperator,
                    BoundaryConditions& boundaryConditions,
-                   InteriorUpdater& interiorUpdater,
+                   RightHandSide& rightHandSide,
                    DofVector& u,
                    DofVector& fu ) const;
 
@@ -101,12 +148,14 @@ class tnlExplicitUpdater
                                 TraversalUserData& userData,
                                 const IndexType index )
             {
-               userData.boundaryConditions.update( userData.time,
-                                                   userData.tau,
-                                                   mesh,
-                                                   index,
-                                                   userData.u,
-                                                   userData.fu );
+               userData.differentialOperator.update( userData.time,
+                                                     userData.tau,
+                                                     mesh,
+                                                     index,
+                                                     userData.u,
+                                                     userData.fu );
+               userData.fu += rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
+                                                      time );
             }
 
       };
@@ -118,12 +167,14 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename DofVector,
+          typename DifferentialOperator,
           typename BoundaryConditions,
-          typename InteriorUpdater >
+          typename RightHandSide >
 class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                           DofVector,
+                          DifferentialOperator,
                           BoundaryConditions,
-                          InteriorUpdater >
+                          RightHandSide >
 {
    public:
 
@@ -134,15 +185,17 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef tnlExplicitUpdaterTraversalUserData< RealType,
                                                    DofVector,
+                                                   DifferentialOperator,
                                                    BoundaryConditions,
-                                                   InteriorUpdater > TraversalUserData;
+                                                   RightHandSide > TraversalUserData;
       
       template< int EntityDimensions >
       void update( const RealType& time,
                    const RealType& tau,
                    const MeshType& mesh,
+                   DifferentialOperator& differentialOperator,
                    BoundaryConditions& boundaryConditions,
-                   InteriorUpdater& interiorUpdater,
+                   RightHandSide& rightHandSide,
                    DofVector& u,
                    DofVector& fu ) const;
 
@@ -171,19 +224,22 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
-            template< int EntityDimension >
+            template< int EntityDimensions >
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index,
                                 const CoordinatesType& coordinates )
             {
-               userData.interiorUpdater.explicitUpdate( userData.time,
-                                                        userData.tau,
-                                                        mesh,
-                                                        index,
-                                                        coordinates,
-                                                        userData.u,
-                                                        userData.fu );
+               userData.differentialOperator.explicitUpdate( userData.time,
+                                                             userData.tau,
+                                                             mesh,
+                                                             index,
+                                                             coordinates,
+                                                             userData.u,
+                                                             userData.fu );
+
+               userData.fu += rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( coordinates ),
+                                                      time );
             }
 
       };

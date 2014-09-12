@@ -1,38 +1,28 @@
 set( tnl_heat_equation_SOURCES
-               tnlZeroRightHandSide_impl.h
-               tnlZeroRightHandSide.h
-               tnlTimeFunction_impl.h
-               tnlTimeFunction.h
+     tnlHeatEquationEocRhs.h
                tnlRightHandSide_impl.h
                tnlRightHandSide.h
-               tnlNeumannBoundaryConditions_impl.h
-               tnlNeumannBoundaryConditions.h
-               tnlDirichletBoundaryConditions_impl.h
-               tnlDirichletBoundaryConditions.h
                tnlAnalyticSolution_impl.h
                tnlAnalyticSolution.h
-               main.cpp
+               tnl-heat-equation.cpp
+               tnl-heat-equation-eoc.cpp
                heatEquationSolver_impl.h
                heatEquationSolver.h
                heatEquationSetter_impl.h
-               heatEquationSetter.h 
-               heatEquationConfig.h )
+               heatEquationSetter.h
+               heatEquationEocRhs.h )
                
-ADD_EXECUTABLE(tnl-heat-equation${debugExt} ${tnl_heat_equation_SOURCES})
-target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+#ADD_EXECUTABLE(tnl-heat-equation${debugExt} tnl-heat-equation.cpp)
+#target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
 
-INSTALL( TARGETS tnl-heat-equation${debugExt}
+ADD_EXECUTABLE(tnl-heat-equation-eoc-test${debugExt} tnl-heat-equation-eoc.cpp)
+target_link_libraries (tnl-heat-equation-eoc-test${debugExt} tnl${debugExt}-${tnlVersion} )
+
+INSTALL( TARGETS #tnl-heat-equation${debugExt}
+                 tnl-heat-equation-eoc-test${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
-INSTALL( FILES #Makefile
-               run-init-mesh
-               run-heat-equation-testy-laplace-konvergence
-               run-heat-equation-testy-konvergence
-               run-heat-equation
-               heat-equation.cfg.desc
-					debugging_parameters
-					EOCtest
-					EOCtest-adaptivity-cycle
-
+INSTALL( FILES tnl-run-heat-equation-eoc-test
+               tnl-run-heat-equation
          DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )

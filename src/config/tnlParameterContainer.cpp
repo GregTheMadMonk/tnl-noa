@@ -177,7 +177,7 @@ bool ParseCommandLine( int argc, char* argv[],
       const tnlConfigEntryBase* entry;
       if( ( entry = config_description.getEntry( option ) ) == NULL )
       {
-         cerr << "Unknown parameter " << option << "." << endl;
+         cerr << "Unknown parameter " << _option << "." << endl;
          parse_error = true;
       }
       else 

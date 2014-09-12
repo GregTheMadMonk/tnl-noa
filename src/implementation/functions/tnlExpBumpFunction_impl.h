@@ -72,8 +72,13 @@ tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      Real tnlExpBumpFunction< 1, Real >::getValue( const VertexType& v ) const
+   template< int XDiffOrder, 
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
+                                         const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -104,10 +109,14 @@ tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlExpBumpFunction< 2, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -143,10 +152,14 @@ tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlExpBumpFunction< 3, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

@@ -16,13 +16,23 @@
  ***************************************************************************/
 
 #include "heatEquationSetter.h"
-#include "heatEquationConfig.h"
 #include <solvers/tnlSolver.h>
 #include <solvers/tnlFastBuildConfig.h>
 #include <solvers/tnlConfigTags.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
+
+template< typename ConfigTag >
+class heatEquationConfig
+{
+   public:
+      static void configSetup( tnlConfigDescription& config )
+      {
+         config.addDelimiter( "Heat equation settings:" );
+         config.addDelimiter( "Tests setting::" );
+      }
+};
 
 int main( int argc, char* argv[] )
 {

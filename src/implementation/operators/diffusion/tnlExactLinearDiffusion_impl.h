@@ -29,9 +29,10 @@ template< typename Function, typename Vertex, typename Real >
 Real
 tnlExactLinearDiffusion< 1 >::
 getValue( const Function& function,
-          const Vertex& v )
+          const Vertex& v,
+          const Real& time )
 {
-   return function.template getValue< 2 >( v );
+   return function.template getValue< 2 >( v, time );
 }
 
 tnlString
@@ -45,10 +46,11 @@ template< typename Function, typename Vertex, typename Real >
 Real
 tnlExactLinearDiffusion< 2 >::
 getValue( const Function& function,
-          const Vertex& v )
+          const Vertex& v,
+          const Real& time )
 {
-   return function.template getValue< 2, 0 >( v ) +
-          function.template getValue< 0, 2 >( v );
+   return function.template getValue< 2, 0 >( v, time ) +
+          function.template getValue< 0, 2 >( v, time );
 }
 
 tnlString
@@ -62,11 +64,12 @@ template< typename Function, typename Vertex, typename Real >
 Real
 tnlExactLinearDiffusion< 3 >::
 getValue( const Function& function,
-          const Vertex& v )
+          const Vertex& v,
+          const Real& time )
 {
-   return function.template getValue< 2, 0, 0 >( v ) +
-          function.template getValue< 0, 2, 0 >( v ) +
-          function.template getValue< 0, 0, 2 >( v );
+   return function.template getValue< 2, 0, 0 >( v, time ) +
+          function.template getValue< 0, 2, 0 >( v, time ) +
+          function.template getValue< 0, 0, 2 >( v, time );
 
 }
 

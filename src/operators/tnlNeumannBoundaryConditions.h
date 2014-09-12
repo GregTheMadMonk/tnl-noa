@@ -79,7 +79,7 @@ class tnlNeumannBoundaryConditions<tnlGrid<3,Real,Device,Index>>
            AnalyticSpaceFunction& analyticSpaceFunction);
 };
 
-#include "tnlNeumannBoundaryConditions_impl.h"
+#include <implementation/operators/tnlNeumannBoundaryConditions_impl.h>
 
 #endif	/* TNLNEUMANNBOUNDARYCONDITIONS_H */
 

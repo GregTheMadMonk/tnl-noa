@@ -65,14 +65,16 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif   
+      RealType getValue( const Vertex& v,
+                         const Real& time = 0.0 ) const;
 
 };
 
@@ -88,14 +90,16 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif   
+      RealType getValue( const Vertex& v,
+                         const Real& time = 0.0 ) const;
 };
 
 template< typename Real >
@@ -111,14 +115,16 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      RealType getValue( const VertexType& v ) const;
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif   
+      RealType getValue( const Vertex& v,
+                         const Real& time = 0.0 ) const;
 };
 
 #include <implementation/functions/tnlSinWaveFunction_impl.h>

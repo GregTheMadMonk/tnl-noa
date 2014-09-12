@@ -18,6 +18,7 @@
 #ifndef TNLTESTFUNCTION_IMPL_H_
 #define TNLTESTFUNCTION_IMPL_H_
 
+#include <core/tnlCuda.h>
 #include <functions/tnlConstantFunction.h>
 #include <functions/tnlExpBumpFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
@@ -29,7 +30,8 @@ template< int FunctionDimensions,
 tnlTestFunction< FunctionDimensions, Real, Device >::
 tnlTestFunction()
 : function( 0 ),
-  functionType( none )
+  timeDependence( none ),
+  timeScale( 1.0 )
 {
 }
 
@@ -41,7 +43,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry     < tnlString >( "test-function", "Testing function.", "sin-wave" );
+   config.addEntry     < tnlString >( "test-function", "Testing function.", "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
       config.addEntryEnum( "exp-bump" );
@@ -65,6 +67,7 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "linear" );
       config.addEntryEnum( "quadratic" );
       config.addEntryEnum( "cosine" );
+   config.addEntry     < double >( prefix + "time-scale", "Time scaling for the time dependenc of the test function.", 1.0 );
 
 }
 
@@ -74,10 +77,11 @@ template< int FunctionDimensions,
    template< typename FunctionType >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-initFunction( const tnlParameterContainer& parameters )
+initFunction( const tnlParameterContainer& parameters,
+              const tnlString& prefix )
 {
    FunctionType* auxFunction = new FunctionType;
-   if( ! auxFunction->init( parameters ) )
+   if( ! auxFunction->init( parameters, prefix ) )
    {
       delete auxFunction;
       return false;
@@ -89,7 +93,7 @@ initFunction( const tnlParameterContainer& parameters )
    }
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
-      function = passToDevice( *auxFunction );
+      function = tnlCuda::passToDevice( *auxFunction );
       delete auxFunction;
       if( ! checkCudaDevice )
          return false;
@@ -102,7 +106,8 @@ template< int FunctionDimensions,
           typename Device >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-init( const tnlParameterContainer& parameters )
+init( const tnlParameterContainer& parameters,
+      const tnlString& prefix )
 {
    const tnlString& testFunction = parameters.GetParameter< tnlString >( "test-function" );
 
@@ -130,32 +135,123 @@ init( const tnlParameterContainer& parameters )
       functionType = sinWave;
       return initFunction< FunctionType >( parameters );
    }
+
+   const tnlString& timeDependence = parameters.GetParameter< tnlString >( "test-function-time-dependence" );
+   if( timeDependence == "none" )
+      this->timeDependence = none;
+   if( timeDependence == "linear" )
+      this->timeDependence = linear;
+   if( timeDependence == "quadratic" )
+      this->timeDependence = quadratic;
+   if( timeDependence == "sine" )
+      this->timeDependence = sine;
+
+   this->timeScale = parameters.GetParameter< tnlString >( "time-scale" );
 }
 
 template< int FunctionDimensions,
           typename Real,
           typename Device >
-   template< typename Vertex >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
-getValue( const Vertex& vertex ) const
+getValue( const Vertex& vertex,
+          const Real& time ) const
 {
+   Real scale( 1.0 );
+   switch( timeDependence )
+   {
+      case none:
+         break;
+      case linear:
+         scale = 1.0 - this->timeScale * time;
+         break;
+      case quadratic:
+         scale = this->timeScale * time;
+         scale *= scale;
+         scale = 1.0 - scale;
+         break;
+      case sine:
+         scale = 1.0 - sin( this->timeScale * time );
+         break;
+   }
    switch( functionType )
    {
       case constant:
-         return ( ( tnlConstantFunction< Dimensions, Real >* ) function )->getValue( vertex );
+         return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
+                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
       case expBump:
-         return ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->getValue( vertex );
+         return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
       case sinBumps:
-         return ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->getValue( vertex );
+         return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
       case sinWave:
-         return ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->getValue( vertex );
+         return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      default:
+         return 0.0;
+         break;
+   }
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Real
+tnlTestFunction< FunctionDimensions, Real, Device >::
+getTimeDerivative( const Vertex& vertex,
+                   const Real& time ) const
+{
+   Real scale( 0.0 );
+   switch( timeDependence )
+   {
+      case none:
+         break;
+      case linear:
+         scale = -this->timeScale;
+         break;
+      case quadratic:
+         scale = -2.0 * this->timeScale * this->timeScale * time;
+         break;
+      case sine:
+         scale = -this->timeScale * cos( this->timeScale * time );
+         break;
+   }
+   switch( functionType )
+   {
+      case constant:
+         return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case expBump:
+         return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case sinBumps:
+         return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case sinWave:
+         return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
       default:
          return 0.0;
@@ -197,11 +293,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
       case sinWave:
          deleteFunction< tnlSinWaveFunction< Dimensions, Real> >();
          break;
-
-
    }
-
-
 }
 
 

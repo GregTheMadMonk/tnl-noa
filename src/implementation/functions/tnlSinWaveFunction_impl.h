@@ -77,10 +77,14 @@ Real tnlSinWaveFunctionBase< Real >::getPhase() const
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinWaveFunction< 1, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -104,10 +108,14 @@ getValue( const VertexType& v ) const
 
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinWaveFunction< 2, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -129,10 +137,14 @@ getValue( const VertexType& v ) const
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinWaveFunction< 3, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

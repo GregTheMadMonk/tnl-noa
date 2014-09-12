@@ -77,10 +77,14 @@ bool tnlSinBumpsFunction< 1, Real >::init( const tnlParameterContainer& paramete
 
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinBumpsFunction< 1, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -117,10 +121,14 @@ bool tnlSinBumpsFunction< 2, Real >::init( const tnlParameterContainer& paramete
 
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinBumpsFunction< 2, Real>::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -166,10 +174,14 @@ bool tnlSinBumpsFunction< 3, Real >::init( const tnlParameterContainer& paramete
 
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlSinBumpsFunction< 3, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

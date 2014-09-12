@@ -24,20 +24,22 @@
 
 template< typename Mesh,
           typename DofVector,
+          typename DifferentialOperator,
           typename BoundaryConditions,
-          typename InteriorUpdater >
+          typename RightHandSide >
    template< int EntityDimensions >
 void
-tnlExplicitUpdater< Mesh, DofVector, BoundaryConditions, InteriorUpdater >::
+tnlExplicitUpdater< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const RealType& tau,
         const Mesh& mesh,
+        DifferentialOperator& differentialOperator,
         BoundaryConditions& boundaryConditions,
-        InteriorUpdater& interiorUpdater,
+        RightHandSide& rightHandSide,
         DofVector& u,
         DofVector& fu ) const
 {
-   TraversalUserData userData( time, tau, boundaryConditions, interiorUpdater, u, fu );
+   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
@@ -55,20 +57,22 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename DofVector,
+          typename DifferentialOperator,
           typename BoundaryConditions,
-          typename InteriorUpdater >
+          typename RightHandSide >
    template< int EntityDimensions >
 void
-tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >, DofVector, BoundaryConditions, InteriorUpdater >::
+tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const RealType& tau,
         const tnlGrid< Dimensions, Real, Device, Index >& mesh,
+        DifferentialOperator& differentialOperator,
         BoundaryConditions& boundaryConditions,
-        InteriorUpdater& interiorUpdater,
+        RightHandSide& rightHandSide,
         DofVector& u,
         DofVector& fu ) const
 {
-   TraversalUserData userData( time, tau, boundaryConditions, interiorUpdater, u, fu );
+   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;

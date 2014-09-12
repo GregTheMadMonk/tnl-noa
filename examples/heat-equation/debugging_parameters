@@ -1,7 +1,0 @@
-heat-equation --dimensions 3 --time-discretisation explicit --discrete-solver merson --time-function cosinus --analytic-space-function sin-wave --amplitude 1 --wave-length 1 --wave-length-x 1 --wave-length-y 1 --wave-length-z 1 --waves-number 0 --waves-number-x 0 --waves-number-y 0 --waves-number-z 0 --phase 0 --phase-x 0 --phase-y 0 --phase-z 0 --sigma 1 --snapshot-period 0.05 --final-time 1.0 --solution-convergence-test 1
-
-tnl-discrete --mesh mesh.tnl --function sin-wave --output-file u-ini.tnl  --amplitude 1 --wave-length 1 --wave-length-x 1 --wave-length-y 1 --wave-length-z 1 --waves-number 0 --waves-number-x 0 --waves-number-y 0 --waves-number-z 0 --phase 0 --phase-x 0 --phase-y 0 --phase-z 0 --sigma 1
-
-tnl-grid-setup --dimensions 3 --proportions-x 1 --proportions-y 1 --proportions-z 1 --origin-x 0 --origin-y 0 --origin-z 0 --size-x 2 --size-y 2 --size-z 2
-
-

@@ -32,7 +32,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ) );
+   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
 }
 
 template< typename MeshReal,
@@ -66,7 +66,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ) );;
+   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );;
 }
 
 template< typename MeshReal,
@@ -99,7 +99,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ) );;
+   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );;
 }
 
 

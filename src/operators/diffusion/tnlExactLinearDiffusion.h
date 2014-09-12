@@ -33,8 +33,8 @@ class tnlExactLinearDiffusion< 1 >
 
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
-                            const Vertex& v );
-
+                            const Vertex& v,
+                            const Real& time = 0.0 );
 };
 
 template<>
@@ -48,8 +48,8 @@ class tnlExactLinearDiffusion< 2 >
 
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
-                            const Vertex& v );
-
+                            const Vertex& v,
+                            const Real& time = 0.0 );
 };
 
 template<>
@@ -63,8 +63,8 @@ class tnlExactLinearDiffusion< 3 >
 
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
       static Real getValue( const Function& function,
-                            const Vertex& v );
-
+                            const Vertex& v,
+                            const Real& time = 0.0 );
 };
 
 #include <implementation/operators/diffusion/tnlExactLinearDiffusion_impl.h>

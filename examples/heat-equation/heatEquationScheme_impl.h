@@ -37,7 +37,7 @@ explicitUpdate( const RealType& time,
 {
    this->differentialOperator.explicitUpdate( time, tau, mesh, cellIndex, coordinates, u, fu );
    VertexType vertex = mesh.getCellCenter( coordinates );
-   fu[ cellIndex ] += this->rightHandSide.getValue( vertex );
+   fu[ cellIndex ] += this->rightHandSide.getValue( time, vertex );
 }
 
 #endif /* HEATEQUATIONSCHEME_IMPL_H_ */

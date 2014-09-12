@@ -1,8 +1,6 @@
 #ifndef TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 #define	TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 
-#include "tnlNeumannBoundaryConditions.h"
-
 
 template<typename Real, typename Device, typename Index>
 template<typename AnalyticSpaceFunction, typename TimeFunction, typename Vector>

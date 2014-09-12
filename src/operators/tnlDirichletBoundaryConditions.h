@@ -121,6 +121,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
    Function function;
 };
 
-#include "tnlDirichletBoundaryConditions_impl.h"
+#include <implementation/operators/tnlDirichletBoundaryConditions_impl.h>
 
 #endif	/* TNLDIRICHLETBOUNDARYCONDITIONS_H */

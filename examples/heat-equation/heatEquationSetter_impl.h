@@ -22,7 +22,7 @@
 #include "heatEquationSolver.h"
 #include <functions/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
-#include "tnlDirichletBoundaryConditions.h"
+#include <operators/tnlDirichletBoundaryConditions.h>
 #include "tnlRightHandSide.h"
 
 template< typename Real,
