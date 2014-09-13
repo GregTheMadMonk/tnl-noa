@@ -90,7 +90,7 @@ bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
    const IndexType dofs = mesh.getNumberOfCells();
-   this->numericalSolution.bind( dofVector.getData(), dofs );
+   this->solution.bind( dofVector.getData(), dofs );
 }
 
 template< typename Mesh,
@@ -111,7 +111,7 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
                         const MeshType& mesh )
 {
    const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
-   if( ! this->numericalSolution.load( initialConditionFile ) )
+   if( ! this->solution.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
@@ -135,7 +135,7 @@ makeSnapshot( const RealType& time,
 
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->numericalSolution.save( fileName ) )
+   if( ! this->solution.save( fileName ) )
       return false;
    return true;
 }
@@ -161,8 +161,8 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
    explicitUpdater.template update< Mesh::Dimensions >( time,
                                                         tau,
                                                         mesh,
+                                                        this->differentialOperator,
                                                         this->boundaryCondition,
-                                                        this->operator,
                                                         this->rightHandSide,
                                                         _u,
                                                         _fu );

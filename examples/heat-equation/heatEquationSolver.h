@@ -80,10 +80,7 @@ class heatEquationSolver
    
    protected:
 
-   /*tnlSharedVector< RealType, DeviceType, IndexType > numericalSolution,
-                                                      exactSolution,
-                                                      analyticLaplace,
-                                                      numericalLaplace;*/
+   tnlSharedVector< RealType, DeviceType, IndexType > solution;
 
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
 

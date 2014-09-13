@@ -27,39 +27,6 @@ class tnlExplicitUpdaterTraversalUserData
 {
    public:
 
-      template< typename DifferentialOperator,
-                typename RightHandSide >
-      class tnlInteriorUpdater
-      {
-         public:
-
-         tnlInteriorUpdater( DifferentialOperator& differentialOperator,
-                             RightHandSide& rightHandSide )
-         : differentialOperator( differentialOperator ),
-           rightHandSide( rightHandSide )
-         {
-         }
-
-         template< typename Mesh,
-                   typename Index,
-                   typename Coordinates,
-                   typename DofVector >
-         void explicitUpdate( const Real& time,
-                              const Real& tau,
-                              const Mesh& mesh,
-                              const Index index,
-                              const Coordinates& coordinates,
-                              DofVector& u,
-                              DofVector& fu )
-         {
-            ;
-         }
-
-         DifferentialOperator& differentialOperator;
-
-         RightHandSide& rightHandSide;
-      };
-
       const Real &time, &tau;
 
       DifferentialOperator& differentialOperator;
@@ -143,7 +110,7 @@ class tnlExplicitUpdater
       {
          public:
 
-            template< int EntityDimension >
+            template< int EntityDimensions >
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index )
@@ -154,8 +121,8 @@ class tnlExplicitUpdater
                                                      index,
                                                      userData.u,
                                                      userData.fu );
-               userData.fu += rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
-                                                      time );
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
+                                                                        userData.time );
             }
 
       };
@@ -203,6 +170,10 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
+            /****
+             * TODO: This must be specialized for entities with different dimensions
+             * otherwise 'coordinates' would not make sense without knowing the orientation.
+             */
             template< int EntityDimension >
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
@@ -238,8 +209,8 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                              userData.u,
                                                              userData.fu );
 
-               userData.fu += rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( coordinates ),
-                                                      time );
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getCellCenter( coordinates ),
+                                                                        userData.time );
             }
 
       };
