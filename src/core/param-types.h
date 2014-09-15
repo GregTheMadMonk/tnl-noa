@@ -22,17 +22,17 @@
 #include <core/tnlString.h>
 
 template< typename T >
-tnlString getParameterType() { return T :: getType(); };
+tnlString getType() { return T :: getType(); };
 
-template<> inline tnlString getParameterType< bool >() { return tnlString( "bool" ); };
-template<> inline tnlString getParameterType< short int >() { return tnlString( "short int" ); };
-template<> inline tnlString getParameterType< int >() { return tnlString( "int" ); };
-template<> inline tnlString getParameterType< long int >() { return tnlString( "long int" ); };
-template<> inline tnlString getParameterType< char >() { return tnlString( "char" ); };
-template<> inline tnlString getParameterType< float >() { return tnlString( "float" ); };
-template<> inline tnlString getParameterType< double >() { return tnlString( "double" ); };
-template<> inline tnlString getParameterType< long double >() { return tnlString( "long double" ); };
-template<> inline tnlString getParameterType< tnlFloat >() { return tnlString( "tnlFloat" ); };
-template<> inline tnlString getParameterType< tnlDouble> () { return tnlString( "tnlDouble" ); };
+template<> inline tnlString getType< bool >() { return tnlString( "bool" ); };
+template<> inline tnlString getType< short int >() { return tnlString( "short int" ); };
+template<> inline tnlString getType< int >() { return tnlString( "int" ); };
+template<> inline tnlString getType< long int >() { return tnlString( "long int" ); };
+template<> inline tnlString getType< char >() { return tnlString( "char" ); };
+template<> inline tnlString getType< float >() { return tnlString( "float" ); };
+template<> inline tnlString getType< double >() { return tnlString( "double" ); };
+template<> inline tnlString getType< long double >() { return tnlString( "long double" ); };
+template<> inline tnlString getType< tnlFloat >() { return tnlString( "tnlFloat" ); };
+template<> inline tnlString getType< tnlDouble> () { return tnlString( "tnlDouble" ); };
 
 #endif

@@ -18,19 +18,24 @@
 #ifndef TNLTESTFUNCTION_H_
 #define TNLTESTFUNCTION_H_
 
+#include <core/tnlHost.h>
 
 template< int FunctionDimensions,
           typename Real,
-          typename Device >
+          typename Device = tnlHost >
 class tnlTestFunction
 {
    protected:
 
-   enum TestFunctions{ none,
-                       constant,
+   enum TestFunctions{ constant,
                        expBump,
                        sinBumps,
                        sinWave };
+
+   enum TimeDependence { none,
+                         linear,
+                         quadratic,
+                         sine };
 
    public:
 
@@ -40,20 +45,53 @@ class tnlTestFunction
 
    tnlTestFunction();
 
-   bool init( const tnlParameterContainer& parameters );
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
 
-   template< typename Vertex >
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+#else
+   template< int XDiffOrder = 0,
+             int YDiffOrder = 0,
+             int ZDiffOrder = 0,
+             typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Real getValue( const Vertex& vertex ) const;
+   Real getValue( const Vertex& vertex,
+                  const Real& time ) const;
+
+#ifdef HAVE_NOT_CXX11
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+#else
+   template< int XDiffOrder = 0,
+             int YDiffOrder = 0,
+             int ZDiffOrder = 0,
+             typename Vertex = VertexType >
+#endif
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Real getTimeDerivative( const Vertex& vertex,
+                           const Real& time ) const;
 
    ~tnlTestFunction();
 
    protected:
 
    template< typename FunctionType >
-   bool initFunction( const tnlParameterContainer& parameters );
+   bool initFunction( const tnlParameterContainer& parameters,
+                      const tnlString& prefix = "" );
 
    template< typename FunctionType >
    void deleteFunction();
@@ -61,6 +99,10 @@ class tnlTestFunction
    void* function;
 
    TestFunctions functionType;
+
+   TimeDependence timeDependence;
+
+   Real timeScale;
 
 };
 

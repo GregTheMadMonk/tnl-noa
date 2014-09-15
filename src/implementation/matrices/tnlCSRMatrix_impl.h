@@ -39,7 +39,7 @@ template< typename Real,
 tnlString tnlCSRMatrix< Real, Device, Index >::getType()
 {
    return tnlString( "tnlCSRMatrix< ") +
-          tnlString( getParameterType< Real>() ) +
+          tnlString( ::getType< Real>() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );

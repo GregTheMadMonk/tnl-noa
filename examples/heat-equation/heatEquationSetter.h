@@ -25,9 +25,9 @@
 #include <functions/tnlExpBumpFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
 #include "tnlTimeFunction.h"
-#include "tnlDirichletBoundaryConditions.h"
-#include <schemes/diffusion/tnlLinearDiffusion.h>
-#include "tnlNeumannBoundaryConditions.h"
+#include <operators/tnlDirichletBoundaryConditions.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
+#include <operators/tnlNeumannBoundaryConditions.h>
 #include "tnlZeroRightHandSide.h"
 #include "tnlRightHandSide.h"
 

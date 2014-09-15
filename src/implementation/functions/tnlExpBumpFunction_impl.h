@@ -21,10 +21,13 @@
 #include <functions/tnlExpBumpFunction.h>
 
 template< typename Real >
-bool tnlExpBumpFunctionBase< Real >::init( const tnlParameterContainer& parameters )
+bool
+tnlExpBumpFunctionBase< Real >::
+init( const tnlParameterContainer& parameters,
+      const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->sigma = parameters.GetParameter< double >( "sigma" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->sigma = parameters.GetParameter< double >( prefix + "sigma" );
    return true;
 }
 
@@ -57,13 +60,25 @@ const Real& tnlExpBumpFunctionBase< Real >::getSigma() const
  */
 
 template< typename Real >
+tnlString
+tnlExpBumpFunction< 1, Real >::getType()
+{
+   return "tnlExpBumpFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+}
+
+template< typename Real >
 tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 {
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      Real tnlExpBumpFunction< 1, Real >::getF( const VertexType& v ) const
+   template< int XDiffOrder, 
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
+                                         const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -82,15 +97,26 @@ template< typename Real >
  */
 
 template< typename Real >
+tnlString
+tnlExpBumpFunction< 2, Real >::getType()
+{
+   return tnlString( "tnlExpBumpFunction< 2, " ) + ::getType< Real >() + " >";
+}
+
+template< typename Real >
 tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
 {
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlExpBumpFunction< 2, Real >::
-getF( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -114,15 +140,26 @@ getF( const VertexType& v ) const
  */
 
 template< typename Real >
+tnlString
+tnlExpBumpFunction< 3, Real >::getType()
+{
+   return tnlString( "tnlExpBumpFunction< 3, " ) + ::getType< Real >() + " >";
+}
+
+template< typename Real >
 tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 {
 }
 
 template< typename Real >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlExpBumpFunction< 3, Real >::
-getF( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

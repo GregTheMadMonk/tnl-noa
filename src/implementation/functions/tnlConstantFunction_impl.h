@@ -48,20 +48,26 @@ template< int Dimensions,
           typename Real >
 bool
 tnlConstantFunction< Dimensions, Real >::
-init( const tnlParameterContainer& parameters )
+init( const tnlParameterContainer& parameters,
+      const tnlString& prefix )
 {
-
+   this->setValue( parameters.GetParameter< double >( prefix + "-value") );
+   return true;
 }
 
 template< int Dimensions,
           typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder >
+             int ZDiffOrder,
+             typename Vertex >
 Real
 tnlConstantFunction< Dimensions, Real >::
-getValue( const VertexType& v ) const
+getValue( const Vertex& v,
+          const Real& time ) const
 {
+   if( XDiffOrder || YDiffOrder || ZDiffOrder )
+      return 0.0;
    return value;
 }
 

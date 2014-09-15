@@ -25,7 +25,7 @@
 #include <functions/tnlSinWaveFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
 #include <functions/tnlExpBumpFunction.h>
-#include <schemes/tnlFiniteDifferences.h>
+#include <operators/tnlFiniteDifferences.h>
 
 template< typename MeshType,
           typename FunctionType,
@@ -41,7 +41,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       return false;
 
    FunctionType function;
-   if( ! function.init( parameters ) )
+   if( ! function.init( parameters, "" ) )
       return false;
    typedef tnlVector< typename MeshType::RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
@@ -166,12 +166,12 @@ bool resolveFunction( const tnlParameterContainer& parameters )
    cout << "+ -> Generating function " << functionName << " ... " << endl;
    if( functionName == "sin-wave" )
    {
-      typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    if( functionName == "sin-bumps" )
    {
-      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    if( functionName == "exp-bump" )

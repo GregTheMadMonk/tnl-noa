@@ -43,5 +43,5 @@ class tnlTimerRT
    bool stop_state;
 };
 
-extern tnlTimerRT default_mcore_rt_timer;
+extern tnlTimerRT defaultRTTimer;
 #endif

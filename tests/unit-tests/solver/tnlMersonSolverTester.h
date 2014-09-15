@@ -83,11 +83,11 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    tnlString getType() const
    {
       return tnlString( "tnlMersonSolverTester< " ) +
-             GetParameterType( Real( 0 ) ) +
+             getType( Real( 0 ) ) +
              tnlString( ", ") +
              Device :: getDeviceType() +
              tnlString( ", ") +
-             GetParameterType( Index( 0 ) ) +
+             getType( Index( 0 ) ) +
              tnlString( " >" );
    };
 
@@ -97,7 +97,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       Real param;
-      tnlString test_name = tnlString( "testUpdateU< " ) + GetParameterType( param ) + tnlString( " >" );
+      tnlString test_name = tnlString( "testUpdateU< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMersonSolverTester< Real, Device, Index > >(
                test_name. getString(),
                & tnlMersonSolverTester< Real, Device, Index > :: testUpdateU )

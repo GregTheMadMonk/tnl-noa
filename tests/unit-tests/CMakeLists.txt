@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
+ADD_SUBDIRECTORY( operators )
 ADD_SUBDIRECTORY( solver )
 
 set( headers tnlUnitTestStarter.h
@@ -50,6 +51,8 @@ ADD_TEST( matrices/tnlCSRMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH
 ADD_TEST( mesh/tnlGridTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlGridTest${mpiExt}${debugExt} )
 ADD_TEST( mesh/tnlMeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshEntityTest${mpiExt}${debugExt} )
 ADD_TEST( mesh/tnlMeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshTest${mpiExt}${debugExt} )
+
+ADD_TEST( operators/diffusion/tnlLinearDiffusionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlLinearDiffusionTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )

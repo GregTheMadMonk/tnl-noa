@@ -49,32 +49,32 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       T param;
-      tnlString test_name = tnlString( "testSimpleReduction1< " ) + GetParameterType( param ) + tnlString( " >" );
+      tnlString test_name = tnlString( "testSimpleReduction1< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
     		               test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction1 )
                              );
-      test_name = tnlString( "testSimpleReduction2< " ) + GetParameterType( param ) + tnlString( " >" );
+      test_name = tnlString( "testSimpleReduction2< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction2 )
                               );
-      test_name = tnlString( "testSimpleReduction3< " ) + GetParameterType( param ) + tnlString( " >" );
+      test_name = tnlString( "testSimpleReduction3< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction3 )
                               );
-      test_name = tnlString( "testSimpleReduction4< " ) + GetParameterType( param ) + tnlString( " >" );
+      test_name = tnlString( "testSimpleReduction4< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction4 )
                               );
-      test_name = tnlString( "testSimpleReduction5< " ) + GetParameterType( param ) + tnlString( " >" );
+      test_name = tnlString( "testSimpleReduction5< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction5 )
                               );
-      test_name = tnlString( "testReduction< " ) + GetParameterType( param ) + tnlString( " >" );
+      test_name = tnlString( "testReduction< " ) + getType( param ) + tnlString( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testReduction )
@@ -170,8 +170,8 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;*/
 
       T param;
-      if( GetParameterType( param ) == "float" ||
-               GetParameterType( param ) == "double" )
+      if( getType( param ) == "float" ||
+               getType( param ) == "double" )
       {
          if( min != seq_min )
             cout << "Diff. min = " << min << " seq. min = " << seq_min;
@@ -188,7 +188,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
             double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
             if( fabs( diff > 1.0e-5 ) )
             {
-               cout << "Diff is " << diff << " for " << GetParameterType( param ) << endl;
+               cout << "Diff is " << diff << " for " << getType( param ) << endl;
                abort();
             }
             CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );

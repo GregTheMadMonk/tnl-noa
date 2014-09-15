@@ -32,7 +32,11 @@ class tnlConstantFunction
 
    tnlConstantFunction();
 
-   bool init( const tnlParameterContainer& parameters );
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix );
 
    void setValue( const RealType& value );
 
@@ -41,14 +45,16 @@ class tnlConstantFunction
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder >
-   RealType getValue( const VertexType& v ) const;
+             int ZDiffOrder,
+             typename Vertex >
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getValue( const VertexType& v ) const;
+             int ZDiffOrder = 0,
+             typename Vertex = VertexType >
 #endif
+   RealType getValue( const Vertex& v,
+                      const Real& time = 0.0 ) const;
 
    protected:
 

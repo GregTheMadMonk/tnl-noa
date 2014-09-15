@@ -105,11 +105,11 @@ endif()
 ####
 # Check for MPI
 #
-find_package( MPI )
-if( MPI_CXX_FOUND )
-    set( BUILD_MPI TRUE )
-    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-endif()
+#find_package( MPI )
+#if( MPI_CXX_FOUND )
+#    set( BUILD_MPI TRUE )
+#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+#endif()
 
 ####
 # Check for some system header
@@ -227,6 +227,7 @@ INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVe
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
+INCLUDE_DIRECTORIES( tests )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 

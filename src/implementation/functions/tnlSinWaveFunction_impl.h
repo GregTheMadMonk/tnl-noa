@@ -30,12 +30,13 @@ tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
 }
 
 template< typename Real >
-bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& parameters )
+bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& parameters,
+                                           const tnlString& prefix )
 {
-   this->waveLength = parameters.GetParameter< double >( "wave-length" );
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->phase = parameters.GetParameter< double >( "phase" );
-   parameters.GetParameter< double >( "waves-number" );
+   this->waveLength = parameters.GetParameter< double >( prefix + "wave-length" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->phase = parameters.GetParameter< double >( prefix + "phase" );
+   parameters.GetParameter< double >( prefix + "waves-number" );
    return true;
 }
 
@@ -75,9 +76,15 @@ Real tnlSinWaveFunctionBase< Real >::getPhase() const
    return this->phase;
 }
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinWaveFunction< 1, Vertex, Device >::getF( const Vertex& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinWaveFunction< 1, Real >::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -100,9 +107,15 @@ template< typename Vertex, typename Device >
 }
 
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinWaveFunction< 2, Vertex, Device >::getF( const VertexType& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinWaveFunction< 2, Real >::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -123,9 +136,15 @@ template< typename Vertex, typename Device >
    return 0.0;
 }
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinWaveFunction< 3, Vertex, Device >::getF( const VertexType& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinWaveFunction< 3, Real >::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

@@ -47,9 +47,9 @@ tnlString tnlGrid< 3, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
-          tnlString( getParameterType< RealType >() ) + ", " +
+          tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + " >";
+          tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -808,6 +808,22 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getCellCenter( const CoordinatesType
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Vertex tnlGrid< 3, Real, Device, Index >::getCellCenter( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return this->getCellCenter( this->getCellCoordinates( cellIndex ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 template< int nx, int ny, int nz, typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -1036,6 +1052,23 @@ bool tnlGrid< 3, Real, Device, Index > :: isBoundaryCell( const CoordinatesType&
        cellCoordinates.z() == 0 || cellCoordinates.z() == this->getDimensions().z() - 1 )
       return true;
    return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool
+tnlGrid< 3, Real, Device, Index >::
+isBoundaryCell( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return this->isBoundaryCell( this->getCellCoordinates( cellIndex ) );
 }
 
 template< typename Real,

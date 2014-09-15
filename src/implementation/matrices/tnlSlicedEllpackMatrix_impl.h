@@ -37,7 +37,7 @@ template< typename Real,
 tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
 {
    return tnlString( "tnlSlicedEllpackMatrix< ") +
-          tnlString( getParameterType< Real >() ) +
+          tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );

@@ -120,7 +120,7 @@ tnlExplicitSolver < Problem > :: tnlExplicitSolver()
    solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
    cpu_timer( &default_mcore_cpu_timer ),
-   rt_timer( &default_mcore_rt_timer ),
+   rt_timer( &defaultRTTimer ),
    testingMode( false ),
    problem( 0 ),
    solverMonitor( 0 )

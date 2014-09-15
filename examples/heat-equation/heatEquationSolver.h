@@ -27,7 +27,6 @@
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include "heatEquationSolver.h"
 #include "heatEquationScheme.h"
-#include "tnlAnalyticSolution.h"
 
 
 template< typename Mesh,
@@ -81,16 +80,15 @@ class heatEquationSolver
    
    protected:
 
-   tnlSharedVector< RealType, DeviceType, IndexType > numericalSolution,
-                                                      exactSolution,
-                                                      analyticLaplace,
-                                                      numericalLaplace;
+   tnlSharedVector< RealType, DeviceType, IndexType > solution;
 
-   tnlExplicitUpdater< Mesh, DofVectorType, BoundaryCondition, Scheme > explicitUpdater;
+   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
+
+   DifferentialOperator differentialOperator;
 
    BoundaryCondition boundaryCondition;
 
-   Scheme scheme;
+   RightHandSide rightHandSide;
 };
 
 #include "heatEquationSolver_impl.h"

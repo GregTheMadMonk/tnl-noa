@@ -45,7 +45,7 @@ struct tnlARGCSRGroupProperties
 
 ostream& operator << ( ostream& str, const tnlARGCSRGroupProperties& p ){};
 
-inline tnlString GetParameterType( const tnlARGCSRGroupProperties& a )
+inline tnlString getType( const tnlARGCSRGroupProperties& a )
 {
    return tnlString( "tnlARGCSRGroupProperties" );
 }
@@ -226,11 +226,11 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlAdaptiveRgCSRMatrix< ") +
-          tnlString( GetParameterType( Real( 0.0 ) ) ) +
+          tnlString( getType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          GetParameterType( Index( 0 ) ) +
+          getType( Index( 0 ) ) +
           tnlString( " >" );
 };
 

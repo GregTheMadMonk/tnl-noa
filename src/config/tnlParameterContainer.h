@@ -42,7 +42,7 @@ template< class T > struct tnlParameter : public tnlParameterBase
    T value;
 };
 
-//template< class T > const char* GetParameterType( const T& val );
+//template< class T > const char* getType( const T& val );
 
 class tnlParameterContainer
 {
@@ -120,7 +120,7 @@ bool ParseCommandLine( int argc, char* argv[],
 template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
                                                                 const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, ::getParameterType< T >(). getString(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, ::getType< T >(). getString(), value ) );
 };
 
 template< class T > bool tnlParameterContainer :: SetParameter( const char* name,
@@ -131,7 +131,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == GetParameterType( value ) )
+         if( parameters[ i ] -> type == getType( value ) )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -140,7 +140,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
          {
             cerr << "Parameter " << name << " already exists with different type " 
                  << parameters[ i ] -> type << " not "
-                 << GetParameterType( value ) << endl;
+                 << getType( value ) << endl;
             abort( ); 
             return false;
          }

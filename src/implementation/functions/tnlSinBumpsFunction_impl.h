@@ -20,38 +20,38 @@
 
 #include <functions/tnlSinBumpsFunction.h>
 
-template< int Dimensions, typename Vertex, typename Device >
-void tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::setWaveLength( const Vertex& waveLength )
+template< typename Vertex >
+void tnlSinBumpsFunctionBase< Vertex >::setWaveLength( const Vertex& waveLength )
 {
    this->waveLength = waveLength;
 }
 
-template< int Dimensions, typename Vertex, typename Device >
-const Vertex& tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::getWaveLength() const
+template< typename Vertex >
+const Vertex& tnlSinBumpsFunctionBase< Vertex >::getWaveLength() const
 {
    return this->waveLength;
 }
 
-template< int Dimensions, typename Vertex, typename Device >
-void tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::setAmplitude( const typename Vertex::RealType& amplitude )
+template< typename Vertex >
+void tnlSinBumpsFunctionBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
 {
    this->amplitude = amplitude;
 }
 
-template< int Dimensions, typename Vertex, typename Device >
-const typename Vertex::RealType& tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::getAmplitude() const
+template< typename Vertex >
+const typename Vertex::RealType& tnlSinBumpsFunctionBase< Vertex >::getAmplitude() const
 {
    return this->amplitude;
 }
 
-template< int Dimensions, typename Vertex, typename Device >
-void tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::setPhase( const Vertex& phase )
+template< typename Vertex >
+void tnlSinBumpsFunctionBase< Vertex >::setPhase( const Vertex& phase )
 {
    this->phase = phase;
 }
 
-template< int Dimensions, typename Vertex, typename Device >
-const Vertex& tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::getPhase() const
+template< typename Vertex >
+const Vertex& tnlSinBumpsFunctionBase< Vertex >::getPhase() const
 {
    return this->phase;
 }
@@ -60,24 +60,31 @@ const Vertex& tnlSinBumpsFunctionBase< Dimensions, Vertex, Device >::getPhase() 
  * 1D
  */
 
-template< typename Vertex, typename Device >
-tnlSinBumpsFunction< 1, Vertex, Device >::tnlSinBumpsFunction()
+template< typename Real >
+tnlSinBumpsFunction< 1, Real >::tnlSinBumpsFunction()
 {
 }
 
-template< typename Vertex, typename Device >
-bool tnlSinBumpsFunction< 1, Vertex, Device >::init( const tnlParameterContainer& parameters )
+template< typename Real >
+bool tnlSinBumpsFunction< 1, Real >::init( const tnlParameterContainer& parameters,
+                                           const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( "wave-length-x" );
-   this->phase.x() = parameters.GetParameter< double >( "phase-x" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
+   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
    return true;
 }
 
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinBumpsFunction< 1, Vertex, Device >::getF( const Vertex& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinBumpsFunction< 1, Real >::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -95,26 +102,33 @@ template< typename Vertex, typename Device >
  * 2D
  */
 
-template< typename Vertex, typename Device >
-tnlSinBumpsFunction< 2, Vertex, Device >::tnlSinBumpsFunction()
+template< typename Real >
+tnlSinBumpsFunction< 2, Real >::tnlSinBumpsFunction()
 {
 }
 
-template< typename Vertex, typename Device >
-bool tnlSinBumpsFunction< 2, Vertex, Device >::init( const tnlParameterContainer& parameters )
+template< typename Real >
+bool tnlSinBumpsFunction< 2, Real >::init( const tnlParameterContainer& parameters,
+                                           const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( "wave-length-x" );
-   this->waveLength.y() = parameters.GetParameter< double >( "wave-length-y" );
-   this->phase.x() = parameters.GetParameter< double >( "phase-x" );
-   this->phase.y() = parameters.GetParameter< double >( "phase-y" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
+   this->waveLength.y() = parameters.GetParameter< double >( prefix + "wave-length-y" );
+   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
+   this->phase.y() = parameters.GetParameter< double >( prefix + "phase-y" );
    return true;
 }
 
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinBumpsFunction< 2, Vertex, Device >::getF( const Vertex& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinBumpsFunction< 2, Real>::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -139,28 +153,35 @@ template< typename Vertex, typename Device >
  * 3D
  */
 
-template< typename Vertex, typename Device >
-tnlSinBumpsFunction< 3, Vertex, Device >::tnlSinBumpsFunction()
+template< typename Real >
+tnlSinBumpsFunction< 3, Real >::tnlSinBumpsFunction()
 {
 }
 
-template< typename Vertex, typename Device >
-bool tnlSinBumpsFunction< 3, Vertex, Device >::init( const tnlParameterContainer& parameters )
+template< typename Real >
+bool tnlSinBumpsFunction< 3, Real >::init( const tnlParameterContainer& parameters,
+                                           const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( "wave-length-x" );
-   this->waveLength.y() = parameters.GetParameter< double >( "wave-length-y" );
-   this->waveLength.z() = parameters.GetParameter< double >( "wave-length-z" );
-   this->phase.x() = parameters.GetParameter< double >( "phase-x" );
-   this->phase.y() = parameters.GetParameter< double >( "phase-y" );
-   this->phase.z() = parameters.GetParameter< double >( "phase-z" );
+   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
+   this->waveLength.y() = parameters.GetParameter< double >( prefix + "wave-length-y" );
+   this->waveLength.z() = parameters.GetParameter< double >( prefix + "wave-length-z" );
+   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
+   this->phase.y() = parameters.GetParameter< double >( prefix + "phase-y" );
+   this->phase.z() = parameters.GetParameter< double >( prefix + "phase-z" );
    return true;
 }
 
 
-template< typename Vertex, typename Device >
-   template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-      typename Vertex::RealType tnlSinBumpsFunction< 3, Vertex, Device >::getF( const Vertex& v ) const
+template< typename Real >
+   template< int XDiffOrder,
+             int YDiffOrder,
+             int ZDiffOrder,
+             typename Vertex >
+Real
+tnlSinBumpsFunction< 3, Real >::
+getValue( const Vertex& v,
+          const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
