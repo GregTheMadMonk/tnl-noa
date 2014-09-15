@@ -176,7 +176,7 @@ bool resolveFunction( const tnlParameterContainer& parameters )
    }
    if( functionName == "exp-bump" )
    {
-      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::VertexType, typename MeshType::DeviceType > FunctionType;
+      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
       return resolveDerivatives< MeshType, FunctionType >( parameters );
    }
    cerr << "Unknown function " << functionName << "." << endl;
