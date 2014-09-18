@@ -38,8 +38,8 @@ else( BUILD_CUDA )
 endif( BUILD_CUDA )                                    
                
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 
-                          SOVERSION 0 
-                          VERSION ${tnlVersion} )
+                       SOVERSION 0 
+                       VERSION ${tnlVersion} )
 
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 
@@ -54,12 +54,11 @@ IF( BUILD_MPI )
    endif( BUILD_CUDA )                        
    
    SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} PROPERTIES
-                            SOVERSION 0 
-                            VERSION ${tnlVersion} ) 
+                          SOVERSION 0 
+                          VERSION ${tnlVersion} ) 
    
    TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} 
-                            ${MPI_LIBRARIES} 
-                            ${BZIP2_LIBRARIES} )
+                            ${MPI_LIBRARIES} )
    
    INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )
                                                                 

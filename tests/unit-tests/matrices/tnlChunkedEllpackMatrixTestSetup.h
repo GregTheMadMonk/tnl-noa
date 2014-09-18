@@ -18,6 +18,8 @@
 #ifndef TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_
 #define TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_
 
+#include "tnlSparseMatrixTester.h"
+
 template< int SliceSize, int ChunkSize >
 class tnlChunkedEllpackMatrixTestSetup
 {

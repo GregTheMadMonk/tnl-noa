@@ -31,9 +31,20 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
 
-#include "tnlConfig.h"
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-test-matrix-formats.cfg.desc";
-
+void setupConfig( tnlConfigDescription& config )
+{
+    config.addDelimiter                            ( "General settings:" );
+    config.addEntry< tnlString >( "input-file", "Input file name." );
+    config.addEntry< tnlString >( "matrix-format", "Matrix format." );
+       config.addEntryEnum< tnlString >( "dense" );
+       config.addEntryEnum< tnlString >( "ellpack" );
+       config.addEntryEnum< tnlString >( "sliced-ellpack" );
+       config.addEntryEnum< tnlString >( "chunked-ellpack" );
+       config.addEntryEnum< tnlString >( "csr" );
+   config.addEntry< bool >( "hard-test", "Comparison against the dense matrix.", false );
+   config.addEntry< bool >( "multiplication-test", "Matrix-vector multiplication test.", false );
+   config.addEntry< bool >( "verbose", "Verbose mode." );  
+}
 
 
 template< typename Matrix >
@@ -120,8 +131,9 @@ int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc.parseConfigDescription( configFile ) != 0 )
-      return EXIT_FAILURE;
+
+   setupConfig( conf_desc );
+   
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );

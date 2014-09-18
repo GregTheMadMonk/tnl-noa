@@ -22,13 +22,22 @@
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
 
+void setupConfig( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addRequiredList< tnlString >(  "input-files", "Input files." );
+   config.addList< tnlString >( "output-files", "Output files." );
+   config.addEntry< int >( "output-step", "Decrease number of the output curve nodes." );
+   config.addEntry< tnlString >( "output-file-format", "Output file format. Can be gnuplot.", "gnuplot" );
+}
+
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc.parseConfigDescription( configFile ) != 0 )
-      return 1;
+   
+   setupConfig( conf_desc );
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );

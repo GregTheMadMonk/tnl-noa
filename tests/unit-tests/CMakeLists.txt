@@ -4,31 +4,6 @@ ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( operators )
 ADD_SUBDIRECTORY( solver )
 
-set( headers tnlUnitTestStarter.h
-             core/tnl-cuda-kernels.h  
-             core/tnlCUDAKernelsTester.h 
-             core/tnlCommunicatorTester.h 
-             core/tnlFileTester.h 
-             core/tnlGridOldTester.h
-             core/tnlObjectTester.h   
-             core/tnlRealTester.h 
-             core/tnlSharedMemoryTester.h
-             core/tnlStringTester.h  
-             diff/tnlMPIMeshTester.h 
-             diff/tnlMersonSolverCUDATester.cu.h
-             solver/tnlMersonSolverTester.h )
-             
-if( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-unit-tests${mpiExt}${debugExt} ${headers} tnl-unit-tests.cu
-                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-    TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
-else()
-    ADD_EXECUTABLE( tnl-unit-tests${mpiExt}${debugExt} ${headers} tnl-unit-tests.cpp )
-    TARGET_LINK_LIBRARIES( tnl-unit-tests${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
-endif()
-
 ADD_TEST( core/tnlStringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStringTest${mpiExt}${debugExt} )
 ADD_TEST( core/tnlListTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlListTest${mpiExt}${debugExt} )
 ADD_TEST( core/tnlObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlObjectTest${mpiExt}${debugExt} )
@@ -95,9 +70,7 @@ if( BUILD_CUDA )
    
    ADD_TEST( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} )
    SET_TESTS_PROPERTIES ( matrices/tnlCSRMatrixTest-cuda${mpiExt}${debugExt} PROPERTIES DEPENDS core/cuda/tnlChunkedEllpackMatrixTest-cuda${mpiExt}${debugExt} )                     
-                        
-            
+                                    
 endif()
-
-ADD_TEST( tnl-unit-tests${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnl-unit-tests${mpiExt}${debugExt}  )                                                                       
+                                                                       
                                                                        

@@ -222,7 +222,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
 
    IndexType elementsToAllocation( 0 );
 
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
       DeviceDependentCode::resolveSliceSizes( *this, rowLengths );
       this->rowPointers.setElement( 0, 0 );
@@ -230,7 +230,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
       this->rowPointers.computePrefixSum();
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
    {
       tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );

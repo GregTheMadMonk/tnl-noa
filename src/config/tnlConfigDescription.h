@@ -165,7 +165,7 @@ class tnlConfigDescription
 
    void printUsage( const char* program_name ) const;
 
-   bool parseConfigDescription( const char* file_name );
+   //bool parseConfigDescription( const char* file_name );
 
    ~tnlConfigDescription();
 

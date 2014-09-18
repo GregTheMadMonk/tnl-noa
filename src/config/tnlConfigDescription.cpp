@@ -17,7 +17,7 @@
 
 #include <fstream>
 #include <iomanip>
-#include <legacy/config/tnlConfigDescriptionParser.h>
+//#include <legacy/config/tnlConfigDescriptionParser.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/mfuncs.h>
@@ -88,7 +88,7 @@ void tnlConfigDescription::printUsage( const char* program_name ) const
    cout << endl;
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription::parseConfigDescription( const char* file_name )
+/*bool tnlConfigDescription::parseConfigDescription( const char* file_name )
 {
    tnlConfigDescriptionParser parser;
    fstream in_file;
@@ -101,7 +101,7 @@ bool tnlConfigDescription::parseConfigDescription( const char* file_name )
    parser. setScanner( &in_file );
    if( ! parser. runParsing( this ) ) return false;
    return true;
-}
+}*/
 //--------------------------------------------------------------------------
 void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter_container ) const
 {

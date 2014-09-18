@@ -18,6 +18,18 @@
 #ifndef TNLSPARSEMATRIXTESTER_H_
 #define TNLSPARSEMATRIXTESTER_H_
 
+template< typename Matrix,
+          typename TestSetup >
+class tnlSparseMatrixTesterMatrixSetter
+{
+   public:
+
+   static bool setup( Matrix& matrix )
+   {
+      return true;
+   }
+};
+
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
@@ -71,18 +83,6 @@ __global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaK
 
 class tnlSparseMatrixTestDefaultSetup
 {};
-
-template< typename Matrix,
-          typename TestSetup >
-class tnlSparseMatrixTesterMatrixSetter
-{
-   public:
-
-   static bool setup( Matrix& matrix )
-   {
-      return true;
-   }
-};
 
 template< typename Matrix,
           typename MatrixSetup = tnlSparseMatrixTestDefaultSetup >

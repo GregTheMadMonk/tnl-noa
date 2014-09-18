@@ -21,7 +21,7 @@
 #include <core/tnlHost.h>
 
 template< int FunctionDimensions,
-          typename Real,
+          typename Real = double,
           typename Device = tnlHost >
 class tnlTestFunction
 {
