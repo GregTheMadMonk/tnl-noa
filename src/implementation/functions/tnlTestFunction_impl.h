@@ -299,5 +299,35 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
    }
 }
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+extern template class tnlTestFunction< 1, float, tnlHost >;
+extern template class tnlTestFunction< 2, float, tnlHost >;
+extern template class tnlTestFunction< 3, float, tnlHost >;
+
+extern template class tnlTestFunction< 1, double, tnlHost >;
+extern template class tnlTestFunction< 2, double, tnlHost >;
+extern template class tnlTestFunction< 3, double, tnlHost >;
+
+extern template class tnlTestFunction< 1, long double, tnlHost >;
+extern template class tnlTestFunction< 2, long double, tnlHost >;
+extern template class tnlTestFunction< 3, long double, tnlHost >;
+
+#ifdef HAVE_CUDA
+extern template class tnlTestFunction< 1, float, tnlCuda>;
+extern template class tnlTestFunction< 2, float, tnlCuda >;
+extern template class tnlTestFunction< 3, float, tnlCuda >;
+
+extern template class tnlTestFunction< 1, double, tnlCuda >;
+extern template class tnlTestFunction< 2, double, tnlCuda >;
+extern template class tnlTestFunction< 3, double, tnlCuda >;
+
+extern template class tnlTestFunction< 1, long double, tnlCuda >;
+extern template class tnlTestFunction< 2, long double, tnlCuda >;
+extern template class tnlTestFunction< 3, long double, tnlCuda >;
+#endif
+
+#endif
+
 
 #endif /* TNLTESTFUNCTION_IMPL_H_ */

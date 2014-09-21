@@ -13,7 +13,7 @@ IF( BUILD_CUDA )
         ${tnl_implementation_core_CUDA__SOURCES}
         ${tnl_implementation_matrices_CUDA__SOURCES}
         ${tnl_implementation_mesh_CUDA__SOURCES}
-        ${tnl_implementation_generators_CUDA__SOURCES}
+        ${tnl_implementation_functions_CUDA__SOURCES}
         ${tnl_implementation_operators_CUDA__SOURCES}
         ${tnl_implementation_solvers_CUDA__SOURCES}         
         PARENT_SCOPE )
@@ -22,7 +22,7 @@ ENDIF()
 set( tnl_implementation_SOURCES 
      ${tnl_implementation_config_SOURCES}
      ${tnl_implementation_core_SOURCES}
-     ${tnl_implementation_generators_SOURCES}
+     ${tnl_implementation_functions_SOURCES}
      ${tnl_implementation_matrices_SOURCES}
      ${tnl_implementation_mesh_SOURCES}
      ${tnl_implementation_operators_SOURCES}

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 device="host"
-dimensions="1D" # 2D 3D"
-sizes1D="16" # 32 64 128 256 512"
+dimensions="1D 2D 3D"
+sizes1D="16 32 64 128 256 512"
 sizes2D="16 32 64 128 256 512"
 sizes3D="16 32 64 128"
 testFunctions="exp-bump"
@@ -80,7 +80,7 @@ solve()
    timeDiscretisation=$1
    discreteSolver=$2
    ${solverName} --mesh mesh.tnl \
-                 --initial-condition exact-u-0000.tnl \
+                 --initial-condition exact-u-00000.tnl \
                  --time-discretisation ${timeDiscretisation} \
                  --discrete-solver ${discreteSolver} \
                  --test-function ${testFunction}\
@@ -107,9 +107,10 @@ computeError()
 {
 
    tnl-diff --mesh mesh.tnl \
-            --input-files numericalSolution-*.tnl analyticSolution-*.tnl \
+            --input-files exact-u-*.tnl u-*.tnl \
             --mode halves \
-            --output-file ${dofSize}-dofs 
+            --snapshot-period ${snapshotPeriod} \
+            --output-file errors.txt 
 }
 
 runTest()
@@ -149,6 +150,7 @@ runTest()
                   solve explicit merson
                   mv computation-in-progress computation-done
                fi
+               computeError
             cd ..
          done
 

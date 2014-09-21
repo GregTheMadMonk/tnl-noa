@@ -19,6 +19,9 @@
 #define TNLTESTFUNCTION_H_
 
 #include <core/tnlHost.h>
+#include <core/vectors/tnlStaticVector.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 
 template< int FunctionDimensions,
           typename Real = double,

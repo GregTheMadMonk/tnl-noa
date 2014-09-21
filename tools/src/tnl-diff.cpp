@@ -33,7 +33,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry< int >( "edges-skip", "Width of the edges that will be skipped - not included into the error norms.", 0 );
    config.addEntry< bool >( "write-graph", "Draws a graph in the Gnuplot format of the dependence of the error norm on t.", true );
    config.addEntry< bool >( "write-log-graph", "Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.", true );
-   config.addEntry< double >( "tau", "Time period between the subsequent solutions.", 0.0 );
+   config.addEntry< double >( "snapshot-period", "The period between consecutive snapshots.", 0.0 );
    config.addEntry< int >( "verbose", "Sets verbosity.", 1 );
 }
 
@@ -71,13 +71,7 @@ int main( int argc, char* argv[] )
    }
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
-      tnlList< tnlString > parsedGeometryType;
-      if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
-      {
-         cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
-         return false;
-      }
-      int dimensions = atoi( parsedGeometryType[ 1 ].getString() );
+      int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
          typedef tnlGrid< 1, double, tnlHost, int > MeshType;
