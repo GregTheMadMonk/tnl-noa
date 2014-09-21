@@ -43,7 +43,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry     < tnlString >( "test-function", "Testing function.", "exp-bump" );
+   config.addEntry     < tnlString >( prefix + "test-function", "Testing function.", "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
       config.addEntryEnum( "exp-bump" );
@@ -62,12 +62,12 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
-   config.addEntry     < tnlString >( "test-function-time-dependence", "Time dependence of the test function.", "none" );
+   config.addEntry     < tnlString >( prefix + "test-function-time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
       config.addEntryEnum( "quadratic" );
       config.addEntryEnum( "cosine" );
-   config.addEntry     < double >( prefix + "time-scale", "Time scaling for the time dependenc of the test function.", 1.0 );
+   config.addEntry     < double >( prefix + "time-scale", "Time scaling for the time dependency of the test function.", 1.0 );
 
 }
 
@@ -89,11 +89,11 @@ initFunction( const tnlParameterContainer& parameters,
 
    if( Device::DeviceType == ( int ) tnlHostDevice )
    {
-      function = auxFunction;
+      this->function = auxFunction;
    }
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
-      function = tnlCuda::passToDevice( *auxFunction );
+      this->function = tnlCuda::passToDevice( *auxFunction );
       delete auxFunction;
       if( ! checkCudaDevice )
          return false;
@@ -109,8 +109,22 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 init( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   const tnlString& testFunction = parameters.GetParameter< tnlString >( "test-function" );
+   const tnlString& timeDependence =
+            parameters.GetParameter< tnlString >(
+                     prefix +
+                     "test-function-time-dependence" );
+   if( timeDependence == "none" )
+      this->timeDependence = none;
+   if( timeDependence == "linear" )
+      this->timeDependence = linear;
+   if( timeDependence == "quadratic" )
+      this->timeDependence = quadratic;
+   if( timeDependence == "sine" )
+      this->timeDependence = sine;
 
+   this->timeScale = parameters.GetParameter< double >( prefix + "time-scale" );
+
+   const tnlString& testFunction = parameters.GetParameter< tnlString >( prefix + "test-function" );
    if( testFunction == "constant" )
    {
       typedef tnlConstantFunction< Dimensions, Real > FunctionType;
@@ -135,18 +149,6 @@ init( const tnlParameterContainer& parameters,
       functionType = sinWave;
       return initFunction< FunctionType >( parameters );
    }
-
-   const tnlString& timeDependence = parameters.GetParameter< tnlString >( "test-function-time-dependence" );
-   if( timeDependence == "none" )
-      this->timeDependence = none;
-   if( timeDependence == "linear" )
-      this->timeDependence = linear;
-   if( timeDependence == "quadratic" )
-      this->timeDependence = quadratic;
-   if( timeDependence == "sine" )
-      this->timeDependence = sine;
-
-   this->timeScale = parameters.GetParameter< tnlString >( "time-scale" );
 }
 
 template< int FunctionDimensions,
@@ -165,7 +167,7 @@ getValue( const Vertex& vertex,
           const Real& time ) const
 {
    Real scale( 1.0 );
-   switch( timeDependence )
+   switch( this->timeDependence )
    {
       case none:
          break;
@@ -181,6 +183,7 @@ getValue( const Vertex& vertex,
          scale = 1.0 - sin( this->timeScale * time );
          break;
    }
+   //cout << "scale = " << scale << " time= " << time << " timeScale = " << timeScale << " timeDependence = " << ( int ) timeDependence << endl;
    switch( functionType )
    {
       case constant:

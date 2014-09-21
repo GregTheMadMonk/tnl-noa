@@ -41,14 +41,14 @@ tnlParameterContainer :: tnlParameterContainer()
 {
 }
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: AddParameter( const char* name,
-                                            const char* value )
+bool tnlParameterContainer :: AddParameter( const tnlString& name,
+                                            const tnlString& value )
 {
    return parameters. Append( new tnlParameter< tnlString >( name, ::getType< tnlString >().getString(), tnlString( value ) ) );
 }
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: SetParameter( const char* name,
-                                            const char* value )
+bool tnlParameterContainer :: SetParameter( const tnlString& name,
+                                            const tnlString& value )
 {
    int i;
    for( i = 0; i < parameters. getSize(); i ++ )
@@ -57,7 +57,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
       {
          if( parameters[ i ] -> type == ::getType< tnlString >() )
          {
-            ( ( tnlParameter< tnlString > * ) parameters[ i ] ) -> value. setString( value );
+            ( ( tnlParameter< tnlString > * ) parameters[ i ] )->value = value;
             return true;
          }
          else
@@ -73,7 +73,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
    return AddParameter( name, value );
 };
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: CheckParameter( const char* name ) const
+bool tnlParameterContainer :: CheckParameter( const tnlString& name ) const
 {
    int i;
    const int parameters_num = parameters. getSize();

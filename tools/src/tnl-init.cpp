@@ -30,6 +30,17 @@ void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
    config.addEntry< tnlString >( "mesh", "Mesh file. If none is given, a regular rectangular mesh is assumed.", "mesh.tnl" );
+   config.addEntry< tnlString >( "real-type", "Precision of the function evaluation.", "mesh-real-type" );
+      config.addEntryEnum< tnlString >( "mesh-real-type" );
+      config.addEntryEnum< tnlString >( "float" );
+      config.addEntryEnum< tnlString >( "double" );
+      config.addEntryEnum< tnlString >( "long-double" );
+   config.addEntry< double >( "final-time", "Final time for a serie of snapshots of the time-dependent function.", 0.0 );
+   config.addEntry< double >( "snapshot-period", "Period between snapshots in a serie of the time-dependent function.", 0.0 );
+   config.addEntry< int >( "x-derivative", "Order of the partial derivative w.r.t x.", 0 );
+   config.addEntry< int >( "y-derivative", "Order of the partial derivative w.r.t y.", 0 );
+   config.addEntry< int >( "z-derivative", "Order of the partial derivative w.r.t <.", 0 );
+   config.addEntry< bool >( "numerical-differentiation", "The partial derivatives will be computed numerically.", false );
    config.addRequiredEntry< tnlString >( "function", "Function name." );
       config.addEntryEnum< tnlString >( "exp-bump" );
       config.addEntryEnum< tnlString >( "sin-bumps" );

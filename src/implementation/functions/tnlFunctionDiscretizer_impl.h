@@ -22,7 +22,8 @@ template< typename Mesh, typename Function, typename Vector >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& mesh,
                                                                    const Function& function,
-                                                                   Vector& discreteFunction )
+                                                                   Vector& discreteFunction,
+                                                                   const typename Vector::RealType& time )
 {
    //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
    typename Mesh::IndexType i = 0;
@@ -35,7 +36,7 @@ void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& m
          typename Mesh::CoordinatesType c;
          c = mesh.getCellCoordinates( i );
          v = mesh.getCellCenter( c );
-         discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v );
+         discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v, time );
          i++;
       }
    }

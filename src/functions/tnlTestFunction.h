@@ -66,7 +66,7 @@ class tnlTestFunction
    __device__ __host__
 #endif
    Real getValue( const Vertex& vertex,
-                  const Real& time ) const;
+                  const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -83,7 +83,7 @@ class tnlTestFunction
    __device__ __host__
 #endif
    Real getTimeDerivative( const Vertex& vertex,
-                           const Real& time ) const;
+                           const Real& time = 0 ) const;
 
    ~tnlTestFunction();
 

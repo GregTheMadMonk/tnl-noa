@@ -35,24 +35,24 @@ class tnlConfigDescription
    tnlConfigDescription();
 
    template< typename EntryType >
-   void addEntry( const char* name,
-                  const char* description )
+   void addEntry( const tnlString& name,
+                  const tnlString& description )
    {
       currentEntry = new tnlConfigEntry< EntryType >( name, description, false );
       entries.Append( currentEntry );
    }
 
    template< typename EntryType >
-   void addRequiredEntry( const char* name,
-                          const char* description )
+   void addRequiredEntry( const tnlString& name,
+                          const tnlString& description )
    {
       currentEntry = new tnlConfigEntry< EntryType >( name, description, true );
       entries.Append( currentEntry );
    }
    
    template< typename EntryType >
-   void addEntry( const char* name,
-                  const char* description,
+   void addEntry( const tnlString& name,
+                  const tnlString& description,
                   const EntryType& defaultValue )
    {
       currentEntry = new tnlConfigEntry< EntryType >( name,
@@ -63,24 +63,24 @@ class tnlConfigDescription
    }
 
    template< typename EntryType >
-   void addList( const char* name,
-                 const char* description )
+   void addList( const tnlString& name,
+                 const tnlString& description )
    {
       currentEntry = new tnlConfigEntryList< EntryType >( name, description, false );
       entries.Append( currentEntry );
    }
 
    template< typename EntryType >
-   void addRequiredList( const char* name,
-                         const char* description )
+   void addRequiredList( const tnlString& name,
+                         const tnlString& description )
    {
       currentEntry = new tnlConfigEntryList< EntryType >( name, description, true );
       entries.Append( currentEntry );
    }
 
    template< typename EntryType >
-   void addList( const char* name,
-                 const char* description,
+   void addList( const tnlString& name,
+                 const tnlString& description,
                  const EntryType& defaultValue )
    {
       currentEntry = new tnlConfigEntryList< EntryType >( name,
@@ -103,13 +103,13 @@ class tnlConfigDescription
       ( ( tnlConfigEntry< tnlString >* ) currentEntry )->getEnumValues().Append( tnlString( entryEnum ) );
    }
 
-   void addDelimiter( const char* delimiter )
+   void addDelimiter( const tnlString& delimiter )
    {
       entries.Append( new tnlConfigDelimiter( delimiter ) );
       currentEntry = 0;
    }
 
-   const tnlConfigEntryBase* getEntry( const char* name ) const
+   const tnlConfigEntryBase* getEntry( const tnlString& name ) const
    {
       for( int i = 0; i < entries.getSize(); i++ )
          if( entries[ i ]->name == name )
@@ -122,7 +122,7 @@ class tnlConfigDescription
    //const tnlString getEntryType( const char* name ) const;
 
    //! Returns zero pointer if there is no default value
-   template< class T > const T* getDefaultValue( const char* name ) const
+   template< class T > const T* getDefaultValue( const tnlString& name ) const
    {
       int i;
       const int entries_num = entries. getSize();
@@ -138,7 +138,7 @@ class tnlConfigDescription
    }
    
    //! Returns zero pointer if there is no default value
-   template< class T > T* getDefaultValue( const char* name )
+   template< class T > T* getDefaultValue( const tnlString& name )
    {
       int i;
       const int entries_num = entries. getSize();

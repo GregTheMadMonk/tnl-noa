@@ -28,8 +28,8 @@ struct tnlConfigEntryBase
 
    bool hasDefaultValue;
 
-   tnlConfigEntryBase( const char* name,
-                       const char* description,
+   tnlConfigEntryBase( const tnlString& name,
+                       const tnlString& description,
                        bool required )
       : name( name ),
         description( description ),

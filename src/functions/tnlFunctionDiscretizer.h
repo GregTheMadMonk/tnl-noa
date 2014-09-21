@@ -31,14 +31,16 @@ class tnlFunctionDiscretizer
              int ZDiffOrder >
    static void discretize( const Mesh& mesh,
                            const Function& function,
-                           Vector& discreteFunction );
+                           Vector& discreteFunction,
+                           const typename Vector::RealType& time = 0 );
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
    static void discretize( const Mesh& mesh,
                            const Function& function,
-                           Vector& discreteFunction );
+                           Vector& discreteFunction,
+                           const typename Vector::RealType& time = 0 );
 #endif   
    
 };

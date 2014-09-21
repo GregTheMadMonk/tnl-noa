@@ -20,7 +20,7 @@
 
 struct tnlConfigDelimiter : public tnlConfigEntryBase
 {
-   tnlConfigDelimiter( const char* delimiter )
+   tnlConfigDelimiter( const tnlString& delimiter )
    : tnlConfigEntryBase( "", delimiter, false )
    {
    };

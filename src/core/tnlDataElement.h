@@ -38,8 +38,8 @@ template< class T > class tnlDataElement
 
    //! Constructor with given data and possibly pointer to next element
    tnlDataElement( const T& dt, 
-                  tnlDataElement< T >* prv = 0,
-                  tnlDataElement< T >* nxt = 0 )
+                   tnlDataElement< T >* prv = 0,
+                   tnlDataElement< T >* nxt = 0 )
       : data( dt ), 
         next( nxt ),
         previous( prv ){};

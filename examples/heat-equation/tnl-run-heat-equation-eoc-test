@@ -1,14 +1,15 @@
 #!/bin/bash
 
-solverName="tnl-heat-equation-eoc-test"
 device="host"
-dimensions="1D 2D 3D"
-sizes1D="16 32 64 128 256 512"
+dimensions="1D" # 2D 3D"
+sizes1D="16" # 32 64 128 256 512"
 sizes2D="16 32 64 128 256 512"
 sizes3D="16 32 64 128"
 testFunctions="exp-bump"
 snapshotPeriod=0.1
 finalTime=1
+timeDependence="linear"
+solverName="tnl-heat-equation-eoc-test"
 
 setupTestFunction()
 {
@@ -54,7 +55,7 @@ setInitialCondition()
 {
    testFunction=$1
    tnl-init --function ${testFunction} \
-            --output-file init.tnl \
+            --output-file exact-u.tnl \
             --amplitude ${amplitude} \
             --wave-length ${waveLength} \
             --wave-length-x ${waveLengthX} \
@@ -68,7 +69,10 @@ setInitialCondition()
             --phase-x ${phaseX} \
             --phase-y ${phaseY} \
             --phase-z ${phaseZ} \
-            --sigma ${sigma}           
+            --sigma ${sigma} \
+            --test-function-time-dependence ${timeDependence} \
+            --snapshot-period ${snapshotPeriod} \
+            --final-time ${finalTime}
 }
 
 solve()
@@ -76,6 +80,7 @@ solve()
    timeDiscretisation=$1
    discreteSolver=$2
    ${solverName} --mesh mesh.tnl \
+                 --initial-condition exact-u-0000.tnl \
                  --time-discretisation ${timeDiscretisation} \
                  --discrete-solver ${discreteSolver} \
                  --test-function ${testFunction}\
@@ -93,6 +98,7 @@ solve()
                  --phase-y ${phaseY} \
                  --phase-z ${phaseZ} \
                  --sigma ${sigma} \
+                 --test-function-time-dependence ${timeDependence} \
                  --snapshot-period ${snapshotPeriod} \
                  --final-time ${finalTime}
 }
@@ -135,9 +141,14 @@ runTest()
          do
             mkdir -p $size
             cd $size
-               setupGrid $dim $size 
-               setInitialCondition $testFunction
-               solve explicit merson
+               if test ! -f computation-done;
+               then
+                  touch computation-in-progress
+                  setupGrid $dim $size 
+                  setInitialCondition $testFunction
+                  solve explicit merson
+                  mv computation-in-progress computation-done
+               fi
             cd ..
          done
 

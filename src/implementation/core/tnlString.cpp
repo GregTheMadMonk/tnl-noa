@@ -175,12 +175,12 @@ tnlString& tnlString :: operator += ( const tnlString& str )
    return operator += ( str. getString() );
 }
 
-tnlString tnlString :: operator + ( const tnlString& str )
+tnlString tnlString :: operator + ( const tnlString& str ) const
 {
    return tnlString( *this ) += str;
 }
 
-tnlString tnlString :: operator + ( const char* str )
+tnlString tnlString :: operator + ( const char* str ) const
 {
    return tnlString( *this ) += str;
 }

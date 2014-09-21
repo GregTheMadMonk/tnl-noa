@@ -22,13 +22,12 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 #include <functions/tnlFunctionDiscretizer.h>
-#include <functions/tnlSinWaveFunction.h>
-#include <functions/tnlSinBumpsFunction.h>
-#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlTestFunction.h>
 #include <operators/tnlFiniteDifferences.h>
+#include <core/mfilename.h>
 
 template< typename MeshType,
-          typename FunctionType,
+          typename RealType,
           int xDiff,
           int yDiff,
           int zDiff >
@@ -40,37 +39,63 @@ bool renderFunction( const tnlParameterContainer& parameters )
    if( ! mesh.load( meshFile ) )
       return false;
 
+   typedef tnlTestFunction< MeshType::Dimensions, RealType > FunctionType;
    FunctionType function;
    if( ! function.init( parameters, "" ) )
       return false;
-   typedef tnlVector< typename MeshType::RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
+   typedef tnlVector< RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
    if( ! discreteFunction.setSize( mesh.getNumberOfCells() ) )
       return false;
 
-   bool approximateDerivatives = parameters.GetParameter< bool >( "approximate-derivatives" );
-   if( approximateDerivatives )
-   {
-      cout << "+ -> Computing the finite differences ... " << endl;
-      DiscreteFunctionType auxDiscreteFunction;
-      if( ! auxDiscreteFunction.setSize( mesh.getNumberOfCells() ) )
-         return false;
-      tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction );
-      tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
-   }
-   else
-   {
-      tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction );
-   }
+   double time( 0.0 );
+   double finalTime = parameters.GetParameter< double >( "final-time" );
+   double tau = parameters.GetParameter< double >( "snapshot-period" );
+   bool numericalDifferentiation = parameters.GetParameter< bool >( "numerical-differentiation" );
+   int step( 0 );
 
-   tnlString outputFile = parameters.GetParameter< tnlString >( "output-file" );
-   cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
-   if( ! discreteFunction.save( outputFile) )
-      return false;
+   while( time <= finalTime )
+   {
+
+      if( numericalDifferentiation )
+      {
+         cout << "+ -> Computing the finite differences ... " << endl;
+         DiscreteFunctionType auxDiscreteFunction;
+         if( ! auxDiscreteFunction.setSize( mesh.getNumberOfCells() ) )
+            return false;
+         tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
+         tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
+      }
+      else
+      {
+         tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction, time );
+      }
+
+      tnlString outputFile = parameters.GetParameter< tnlString >( "output-file" );
+      if( finalTime > 0.0 )
+      {
+         tnlString extension = tnlString( "." ) + getFileExtension( outputFile );
+         RemoveFileExtension( outputFile );
+         outputFile += "-";
+         tnlString aux;
+         FileNameBaseNumberEnding( outputFile.getString(),
+                                   step,
+                                   5,
+                                   extension.getString(),
+                                   aux );
+         outputFile = aux;
+      }
+      cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
+      if( ! discreteFunction.save( outputFile) )
+         return false;
+      time += tau;
+      step ++;
+   }
    return true;
 }
 
-template< typename MeshType, typename FunctionType >
+template< typename MeshType,
+          typename RealType >
 bool resolveDerivatives( const tnlParameterContainer& parameters )
 {
 
@@ -86,102 +111,92 @@ bool resolveDerivatives( const tnlParameterContainer& parameters )
       return false;
    }
    if( xDiff == 0 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 0, 0, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 0, 0 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 0, 0, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 0, 1 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 0, 0, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 0, 2 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 3 )
-      return renderFunction< MeshType, FunctionType, 0, 0, 3 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 0, 3 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 4 )
-      return renderFunction< MeshType, FunctionType, 0, 0, 4 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 0, 4 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 0, 1, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 1, 0 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 0, 1, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 1, 1 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 0, 1, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 1, 2 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 3 )
-      return renderFunction< MeshType, FunctionType, 0, 1, 3 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 1, 3 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 0, 2, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 2, 0 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 0, 2, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 2, 1 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 0, 2, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 2, 2 >( parameters );
    if( xDiff == 0 && yDiff == 3 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 0, 3, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 3, 0 >( parameters );
    if( xDiff == 0 && yDiff == 3 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 0, 3, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 3, 1 >( parameters );
    if( xDiff == 0 && yDiff == 4 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 0, 4, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 0, 4, 0 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 1, 0, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 0, 0 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 1, 0, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 0, 1 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 1, 0, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 0, 2 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 3 )
-      return renderFunction< MeshType, FunctionType, 1, 0, 3 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 0, 3 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 1, 1, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 1, 0 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 1, 1, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 1, 1 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 1, 1, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 1, 2 >( parameters );
    if( xDiff == 1 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 1, 2, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 2, 0 >( parameters );
    if( xDiff == 1 && yDiff == 2 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 1, 2, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 2, 1 >( parameters );
    if( xDiff == 1 && yDiff == 3 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 1, 3, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 1, 3, 0 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 2, 0, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 0, 0 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 2, 0, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 0, 1 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, FunctionType, 2, 0, 2 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 0, 2 >( parameters );
    if( xDiff == 2 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 2, 1, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 1, 0 >( parameters );
    if( xDiff == 2 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 2, 1, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 1, 1 >( parameters );
    if( xDiff == 2 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 2, 2, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 2, 2, 0 >( parameters );
    if( xDiff == 3 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 3, 0, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 3, 0, 0 >( parameters );
    if( xDiff == 3 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, FunctionType, 3, 0, 1 >( parameters );
+      return renderFunction< MeshType, RealType, 3, 0, 1 >( parameters );
    if( xDiff == 3 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 3, 1, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 3, 1, 0 >( parameters );
    if( xDiff == 4 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, FunctionType, 4, 0, 0 >( parameters );
+      return renderFunction< MeshType, RealType, 4, 0, 0 >( parameters );
    return false;
 }
-
 
 template< typename MeshType >
-bool resolveFunction( const tnlParameterContainer& parameters )
+bool resolveRealType( const tnlParameterContainer& parameters )
 {
-   tnlString functionName = parameters.GetParameter< tnlString >( "function" );
-   cout << "+ -> Generating function " << functionName << " ... " << endl;
-   if( functionName == "sin-wave" )
-   {
-      typedef tnlSinWaveFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
-      return resolveDerivatives< MeshType, FunctionType >( parameters );
-   }
-   if( functionName == "sin-bumps" )
-   {
-      typedef tnlSinBumpsFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
-      return resolveDerivatives< MeshType, FunctionType >( parameters );
-   }
-   if( functionName == "exp-bump" )
-   {
-      typedef tnlExpBumpFunction< MeshType::Dimensions, typename MeshType::RealType > FunctionType;
-      return resolveDerivatives< MeshType, FunctionType >( parameters );
-   }
-   cerr << "Unknown function " << functionName << "." << endl;
-   return false;
+   tnlString realType = parameters.GetParameter< tnlString >( "real-type" );
+   if( realType == "mesh-real-type" )
+      return resolveDerivatives< MeshType, typename MeshType::RealType >( parameters );
+   if( realType == "float" )
+      return resolveDerivatives< MeshType, float >( parameters );
+   if( realType == "double" )
+      return resolveDerivatives< MeshType, double >( parameters );
+   if( realType == "long-double" )
+      return resolveDerivatives< MeshType, long double >( parameters );
 }
+
 
 template< int Dimensions, typename RealType, typename IndexType >
 bool resolveMesh( const tnlList< tnlString >& parsedMeshType,
@@ -191,7 +206,7 @@ bool resolveMesh( const tnlList< tnlString >& parsedMeshType,
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
       typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType > MeshType;
-      return resolveFunction< MeshType >( parameters );
+      return resolveRealType< MeshType >( parameters );
    }
    cerr << "Unknown mesh type." << endl;
    return false;
