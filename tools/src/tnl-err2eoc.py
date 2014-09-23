@@ -7,9 +7,14 @@ format = "txt"
 output_file_name = "eoc-table.txt"
 input_files = []
 verbose = 1
+refinement = 2
 
 i = 0
 while i < len( arguments ):
+   if arguments[ i ] == "--refinement":
+      refinement = arguments[ i + 1 ]
+      i = i + 2
+      continue
    if arguments[ i ] == "--format":
       format = arguments[ i + 1 ]
       i = i + 2
@@ -17,38 +22,38 @@ while i < len( arguments ):
    if arguments[ i ] == "--output-file":
       output_file_name = arguments[ i + 1 ]
       i = i + 2
-      continue
+      continue      
    if arguments[ i ] == "--verbose":
        verbose = float( arguments[ i + 1 ] )
        i = i +2
-       continue
+       continue       
    input_files. append( arguments[ i ] )
    i = i + 1
 
 if not verbose == 0:
    print "Writing to " + output_file_name + " in " + format + "."
 
-h_list = []
-l1_norm_list = []
-l2_norm_list = []
-max_norm_list = []
-items = 0
+errors = {}
+snapshots = []
+fileIdx = 1
 
 for file_name in input_files:
    if not verbose == 0:
        print "Processing file " + file_name
    file = open( file_name, "r" )
+   snapshotIdx = 1
    
-   l1_max = 0.0
-   l_max_max = 0.0
    for line in file. readlines():
-      if line[ 0:8 ] == "  Total:":
+      if line[ 0:1 ] != "#":
          data = string. split( line )
-         h_list. append( float( data[ 1 ] ) )
-         l1_norm_list. append( float( data[ 2 ] ) )
-         l2_norm_list. append( float( data[ 3 ] ) )
-         max_norm_list. append( float( data[ 4 ] ) )
-         items = items + 1
+         if fileIdx == 1:
+             snapshots.append( float( data[ 1 ] ) )
+         errors[ fileIdx, snapshotIdx, "L1" ] = float( data[ 2 ] ) 
+         errors[ fileIdx, snapshotIdx, "L2" ] =  float( data[ 3 ] )
+         errors[ fileIdx, snapshotIdx, "max" ] =  float( data[ 4 ] )
+
+
+         snapshotIdx = snapshotIdx + 1;
          if not verbose == 0:
             print line
    file. close()

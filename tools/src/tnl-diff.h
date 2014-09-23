@@ -42,11 +42,14 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
       return false;
    }
    outputFile << "#";
-   //if( tau != 0 )
-   outputFile << std::setw( 5 ) << "Time";
-   outputFile << std::setw( 16 ) << "L1 diff."
-              << std::setw( 16 ) << "L2 diff."
-              << std::setw( 16 ) << "Max. diff." << endl;
+   outputFile << std::setw( 6 ) << "Time";
+   outputFile << std::setw( 18 ) << "L1 diff."
+              << std::setw( 18 ) << "L2 diff."
+              << std::setw( 18 ) << "Max. diff."
+              << std::setw( 18 ) << "Total L1 diff."
+              << std::setw( 18 ) << "Total L2 diff."
+              << std::setw( 18 ) << "Total Max. diff."
+              << endl;
    if( verbose )
       cout << endl;
 
@@ -71,7 +74,6 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
             outputFile.close();
             return false;
          }
-         //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
@@ -96,7 +98,6 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
             outputFile.close();
             return false;
          }
-         //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
@@ -119,15 +120,24 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
       Real l1Diff = mesh.getDifferenceLpNorm( v1, v2, 1.0 );
       Real l2Diff = mesh.getDifferenceLpNorm( v1, v2, 2.0 );
       Real maxDiff = mesh.getDifferenceAbsMax( v1, v2 );
-      outputFile << std::setw( 16 ) << l1Diff
-                 << std::setw( 16 ) << l2Diff
-                 << std::setw( 16 ) << maxDiff << endl;
       if( snapshotPeriod != 0.0 )
       {
          totalL1Diff += snapshotPeriod * l1Diff;
          totalL2Diff += snapshotPeriod * l2Diff * l2Diff;
-         totalMaxDiff = Max( totalMaxDiff, maxDiff );
       }
+      else
+      {
+         totalL1Diff += l1Diff;
+         totalL2Diff += l2Diff * l2Diff;
+      }
+      totalMaxDiff = Max( totalMaxDiff, maxDiff );
+      outputFile << std::setw( 18 ) << l1Diff
+                 << std::setw( 18 ) << l2Diff
+                 << std::setw( 18 ) << maxDiff
+                 << std::setw( 18 ) << totalL1Diff
+                 << std::setw( 18 ) << sqrt( totalL2Diff )
+                 << std::setw( 18 ) << totalMaxDiff << endl;
+
       if( writeDifference )
       {
          tnlString differenceFileName;
@@ -140,14 +150,6 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
          diff -= v2;
          diff.save( differenceFileName );
       }
-   }
-   if( snapshotPeriod != 0 )
-   {
-      outputFile << "----------------------------------------------------------" << endl;
-      outputFile << std::setw( 8 ) << " "
-                 << std::setw( 16 ) << totalL1Diff
-                 << std::setw( 16 ) << sqrt( totalL2Diff )
-                 << std::setw( 16 ) << totalMaxDiff << endl;
    }
    outputFile.close();
 
