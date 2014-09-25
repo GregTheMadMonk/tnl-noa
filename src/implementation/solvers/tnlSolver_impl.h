@@ -32,10 +32,7 @@ bool tnlSolver< ProblemSetter, ProblemConfig, ConfigTag > :: run( int argc, char
    ProblemConfig< ConfigTag >::configSetup( configDescription );
    tnlSolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
    if( ! ParseCommandLine( argc, argv, configDescription, parameters ) )
-   {
-      configDescription.printUsage( argv[ 0 ] );
       return false;
-   }
 
    tnlSolverInitiator< ProblemSetter, ConfigTag > solverInitiator;
    if( ! solverInitiator. run( parameters ) )

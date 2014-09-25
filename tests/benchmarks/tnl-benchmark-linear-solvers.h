@@ -45,6 +45,36 @@ using namespace std;
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-benchmark-linear-solvers.cfg.desc";
 
+void configSetup( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
+      config.addEntryEnum< tnlString >( "tridiagonal" );
+      config.addEntryEnum< tnlString >( "multidiagonal" );
+      config.addEntryEnum< tnlString >( "multidiagonal-with-long-rows" );
+      config.addEntryEnum< tnlString >( "mtx" );
+      config.addEntryEnum< tnlString >( "tnl" );
+   config.addRequiredEntry< tnlString >( "input-file" , "Input binary file name." );
+   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
+   config.addEntry< tnlString >( "precison", "Precision of the arithmetics.", "double" );
+   config.addEntry< tnlString >( "matrix-format", "Matrix format.", "csr" );
+      config.addEntryEnum< tnlString >( "dense" );
+      config.addEntryEnum< tnlString >( "tridiagonal" );
+      config.addEntryEnum< tnlString >( "multidiagonal" );
+      config.addEntryEnum< tnlString >( "ellpack" );
+      config.addEntryEnum< tnlString >( "sliced-ellpack" );
+      config.addEntryEnum< tnlString >( "chunked-ellpack" );
+      config.addEntryEnum< tnlString >( "csr" );
+   config.addEntry< tnlString >( "solver", "Linear solver.", "gmres" );
+      config.addEntryEnum< tnlString >( "sor" );
+      config.addEntryEnum< tnlString >( "cg" );
+      config.addEntryEnum< tnlString >( "gmres" );
+   config.addEntry< tnlString >( "device", "Device.", "host" );
+      config.addEntryEnum< tnlString >( "host" );
+      config.addEntryEnum< tnlString >( "cuda" );
+   config.addEntry< int >( "verbose", "Verbose mode.", 1 );
+}
+
 template< typename Solver >
 bool benchmarkSolver( const tnlParameterContainer& parameters,
                       const typename Solver::MatrixType& matrix)
@@ -80,11 +110,11 @@ bool readMatrix( const tnlParameterContainer& parameters,
    const tnlString fileName = parameters.GetParameter< tnlString >( "input-file" );
 
    Matrix* hostMatrix;
-   if( Matrix::DeviceType::DeviceType == tnlCudaDevice )
+   if( Matrix::DeviceType::DeviceType == ( int ) tnlCudaDevice )
    {
 
    }
-   if( Matrix::DeviceType::DeviceType == tnlHostDevice )
+   if( Matrix::DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
       hostMatrix = &matrix;
       try
@@ -186,8 +216,8 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
-   if( conf_desc.parseConfigDescription( configFile ) != 0 )
-      return 1;
+   configSetup( conf_desc );
+   
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );

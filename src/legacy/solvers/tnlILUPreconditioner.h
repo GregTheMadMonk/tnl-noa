@@ -44,7 +44,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    tnlString getType() const
    {
       T t;
-      return tnlString( "tnlILUPreconditioner< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+      return tnlString( "tnlILUPreconditioner< " ) + tnlString( getType( t ) ) + tnlString( " >" );
    };
 
 

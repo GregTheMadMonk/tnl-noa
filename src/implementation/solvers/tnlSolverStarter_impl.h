@@ -65,7 +65,10 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
     */
    Problem problem;
    if( ! problem. init( parameters ) )
+   {
+      cerr << "The problem initiation failed!" << endl;
       return false;
+   }
 
    /****
     * Set-up the time discretisation
@@ -166,14 +169,12 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, 
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         typedef tnlEulerSolver< Problem > ExplicitSolver;
-         ExplicitSolver solver;
-         solver. setName( "euler-solver" );
          typedef tnlExplicitTimeStepper< Problem, tnlEulerSolver > TimeStepper;
+         typedef tnlEulerSolver< TimeStepper > ExplicitSolver;
          return tnlSolverStarterExplicitTimeStepperSetter< Problem,
                                                            ExplicitSolver,
                                                            TimeStepper,
-                                                           ConfigTag >::run( problem, solver, parameters );
+                                                           ConfigTag >::run( problem, parameters );
       }
 };
 
@@ -185,14 +186,12 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag,
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         typedef tnlMersonSolver< Problem > ExplicitSolver;
-         ExplicitSolver solver;
-         solver. setName( "merson-solver" );
          typedef tnlExplicitTimeStepper< Problem, tnlMersonSolver > TimeStepper;
+         typedef tnlMersonSolver< TimeStepper > ExplicitSolver;
          return tnlSolverStarterExplicitTimeStepperSetter< Problem,
                                                            ExplicitSolver,
                                                            TimeStepper,
-                                                           ConfigTag >::run( problem, solver, parameters );
+                                                           ConfigTag >::run( problem, parameters );
       }
 };
 
@@ -205,15 +204,10 @@ class tnlSolverStarterExplicitTimeStepperSetter
    public:
 
       static bool run( Problem& problem,
-                       ExplicitSolver& explicitSolver,
                        const tnlParameterContainer& parameters)
       {
+         ExplicitSolver explicitSolver;
          explicitSolver.init( parameters );
-         // TODO: prenest do metody solveru
-         int maxSolverIterations( 0 );
-         if( parameters.GetParameter< int >( "max-solver-iterations", maxSolverIterations ) )
-            explicitSolver. setMaxIterationsNumber( maxSolverIterations );
-
          int verbose = parameters.GetParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
          tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
@@ -223,8 +217,12 @@ class tnlSolverStarterExplicitTimeStepperSetter
             explicitSolver.setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
 
          TimeStepper timeStepper;
+         if( ! timeStepper.init( parameters ) )
+         {
+            cerr << "The time stepper initiation failed!" << endl;
+            return false;
+         }
          timeStepper.setSolver( explicitSolver );
-         timeStepper.setTau( parameters. GetParameter< double >( "initial-tau" ) );
 
          tnlSolverStarter< ConfigTag > solverStarter;
          return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
@@ -244,41 +242,6 @@ template< typename ConfigTag >
 bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
                                                          const tnlParameterContainer& parameters )
 {
-
-   if( discreteSolver == "euler" )
-   {
-      typedef tnlEulerSolver< Problem > DiscreteSolver;
-      DiscreteSolver solver;
-      solver. setName( "euler-solver" );
-      solver. setVerbose( this -> verbose );
-      tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
-      if( ! problem. getSolverMonitor() )
-         solver. setSolverMonitor( odeSolverMonitor );
-      else
-         solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
-      if( ! setIterativeSolver( solver, parameters ) )
-         return false;
-      return setExplicitTimeDiscretisation( problem, parameters, solver );
-   }
-
-   if( discreteSolver == "merson" )
-   {
-      typedef tnlMersonSolver< Problem > DiscreteSolver;
-      DiscreteSolver solver;
-      double adaptivity = parameters. GetParameter< double >( "merson-adaptivity" );
-      solver. setName( "merson-solver" );
-      solver. setAdaptivity( adaptivity );
-      solver. setVerbose( this -> verbose );
-      tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
-      if( ! problem. getSolverMonitor() )
-         solver. setSolverMonitor( odeSolverMonitor );
-      else
-         solver. setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
-      if( ! setIterativeSolver( solver, parameters ) )
-         return false;
-      return setExplicitTimeDiscretisation( problem, parameters, solver );
-   }
-
    if( ( discreteSolver == "sor" ||
          discreteSolver == "cg" ||
          discreteSolver == "bicg-stab" ||
@@ -350,7 +313,7 @@ bool tnlSolverStarter< ConfigTag > :: writeProlog( ostream& str,
    problem. writeProlog( logger, parameters );
    logger. WriteSeparator();
    logger. WriteParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger. WriteParameter< double >( "Initial tau:", "initial-tau", parameters );
+   logger. WriteParameter< double >( "Initial tau:", "tau", parameters );
    logger. WriteParameter< double >( "Final time:", "final-time", parameters );
    logger. WriteParameter< double >( "Snapshot period:", "snapshot-period", parameters );
    const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
@@ -376,27 +339,20 @@ template< typename ConfigTag >
    template< typename Problem,
              typename TimeStepper >
 bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
-                                       const tnlParameterContainer& parameters,
-                                       TimeStepper& timeStepper )
+                                                    const tnlParameterContainer& parameters,
+                                                    TimeStepper& timeStepper )
 {
-   this -> totalCpuTimer. Reset();
-   this -> totalRtTimer. Reset();
-
-   /***
-    * Set-up the initial condition
-    */
-   typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! problem. setInitialCondition( parameters ) )
-      return false;
+   this->totalCpuTimer. Reset();
+   this->totalRtTimer. Reset();
 
    /****
     * Set-up the PDE solver
     */
    tnlPDESolver< Problem, TimeStepper > solver;
-   solver. setProblem( problem );
-   solver. setTimeStepper( timeStepper );
-   solver. setSnapshotTau( parameters. GetParameter< double >( "snapshot-period" ) );
-   solver. setFinalTime( parameters. GetParameter< double >( "final-time" ) );
+   solver.setProblem( problem );
+   if( ! solver.init( parameters ) )
+      return false;
+   solver.setTimeStepper( timeStepper );
 
    /****
     * Write a prolog
@@ -404,11 +360,11 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    if( verbose )
       writeProlog( cout, parameters, problem );
    tnlString logFileName;
-   bool haveLogFile = parameters. GetParameter< tnlString >( "log-file", logFileName );
+   bool haveLogFile = parameters.GetParameter< tnlString >( "log-file", logFileName );
    if( haveLogFile )
    {
       fstream logFile;
-      logFile. open( logFileName. getString(), ios :: out );
+      logFile.open( logFileName.getString(), ios :: out );
       if( ! logFile )
       {
          cerr << "Unable to open the log file " << logFileName << "." << endl;
@@ -417,35 +373,35 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       else
       {
          writeProlog( logFile, parameters, problem  );
-         logFile. close();
+         logFile.close();
       }
    }
 
    /****
     * Set-up timers
     */
-   this -> computeRtTimer. Reset();
-   this -> computeCpuTimer. Reset();
-   this -> ioRtTimer. Reset();
-   this -> ioRtTimer. Stop();
-   this -> ioCpuTimer. Reset();
-   this -> ioCpuTimer. Stop();
-   solver. setComputeRtTimer( this -> computeRtTimer );
-   solver. setComputeCpuTimer( this -> computeCpuTimer );
-   solver. setIoRtTimer( this -> ioRtTimer );
-   solver. setIoCpuTimer( this -> ioCpuTimer );
+   this->computeRtTimer. Reset();
+   this->computeCpuTimer. Reset();
+   this->ioRtTimer. Reset();
+   this->ioRtTimer. Stop();
+   this->ioCpuTimer. Reset();
+   this->ioCpuTimer. Stop();
+   solver.setComputeRtTimer( this -> computeRtTimer );
+   solver.setComputeCpuTimer( this -> computeCpuTimer );
+   solver.setIoRtTimer( this -> ioRtTimer );
+   solver.setIoCpuTimer( this -> ioCpuTimer );
 
    /****
     * Start the solver
     */
    bool returnCode( true );
-   if( ! solver. solve() )
+   if( ! solver.solve() )
    {
       returnCode = false;
       if( verbose )
          cerr << endl << "The solver did not converge. " << endl;
       fstream logFile;
-      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      logFile.open( logFileName.getString(), ios::out | ios::app );
       if( ! logFile )
       {
          cerr << "Unable to open the log file " << logFileName << "." << endl;
@@ -454,17 +410,17 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       else
       {
          logFile << "The solver did not converge. " << endl;
-         logFile. close();
+         logFile.close();
       }
    }
 
    /****
     * Stop timers
     */
-   this -> computeRtTimer. Stop();
-   this -> computeCpuTimer. Stop();
-   this -> totalCpuTimer. Stop();
-   this -> totalRtTimer. Stop();
+   this->computeRtTimer.Stop();
+   this->computeCpuTimer.Stop();
+   this->totalCpuTimer.Stop();
+   this->totalRtTimer.Stop();
 
    /****
     * Write an epilog
@@ -474,7 +430,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    if( haveLogFile )
    {
       fstream logFile;
-      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      logFile.open( logFileName.getString(), ios::out | ios::app );
       if( ! logFile )
       {
          cerr << "Unable to open the log file " << logFileName << "." << endl;
@@ -483,7 +439,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       else
       {
          writeEpilog( logFile );
-         logFile. close();
+         logFile.close();
       }
    }
    return returnCode;

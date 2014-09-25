@@ -2,7 +2,6 @@ set( ENABLE_CODECOVERAGE )
 
 ADD_SUBDIRECTORY( data )
 ADD_SUBDIRECTORY( benchmarks )
-ADD_SUBDIRECTORY( approximation-tests )
 ADD_SUBDIRECTORY( unit-tests )
 ADD_SUBDIRECTORY( long-time-unit-tests )
 

@@ -41,9 +41,9 @@ template< typename Element,
 tnlString tnlConstSharedArray< Element, Device, Index > :: getType() const
 {
    return tnlString( "tnlConstSharedArray< " ) + ", " +
-                     getParameterType< Element >() + ", " +
+                     ::getType< Element >() + ", " +
                      Device::getDeviceType() + ", " +
-                     getParameterType< Index >() + " >";
+                     ::getType< Index >() + " >";
 };
 
 template< typename Element,

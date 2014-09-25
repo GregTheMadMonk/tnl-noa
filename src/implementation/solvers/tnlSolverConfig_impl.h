@@ -21,11 +21,15 @@
 #include <tnlConfig.h>
 #include <solvers/tnlConfigTags.h>
 #include <solvers/tnlDummyProblem.h>
+#include <solvers/pde/tnlExplicitTimeStepper.h>
+#include <solvers/pde/tnlPDESolver.h>
 
 template< typename ConfigTag,
           typename ProblemConfig >
 bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescription& config )
 {
+   typedef tnlDummyProblem< double, tnlHost, int > DummyProblem;
+
    config.addDelimiter( " === General parameters ==== " );
    /****
     * Setup real type
@@ -69,13 +73,19 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
       config.addEntryEnum( "long-int" );
 
    /****
-    * Mesh setup
+    * Mesh file parameter
     */
-   config.addEntry< tnlString >( "mesh", "A file which contains the numerical mesh.", "mesh.tnl" );
+   config.addDelimiter( " === Space discretisation parameters ==== " );
+   config.addEntry< tnlString >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.tnl" );
+
 
    /****
     * Time discretisation
     */
+   config.addDelimiter( " === Time discretisation parameters ==== " );
+   typedef tnlExplicitTimeStepper< DummyProblem, tnlEulerSolver > ExplicitTimeStepper;
+   tnlPDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
+   ExplicitTimeStepper::configSetup( config );
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
@@ -88,15 +98,27 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
       if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "implicit" );
    }
+   config.addRequiredEntry< tnlString >( "discrete-solver", "The solver of the discretised problem:" );
+   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
+   {
+      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
+         config.addEntryEnum( "euler" );
+      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
+         config.addEntryEnum( "merson" );
+   }
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
-      tnlEulerSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
+         tnlEulerSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
 
-      tnlMersonSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
+         tnlMersonSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
    }
 
+   config.addDelimiter( " === Logs and messages ===" );
    config.addEntry< int >( "verbose", "Set the verbose mode. The higher number the more messages are generated.", 1 );
+   config.addEntry< tnlString >( "log-file", "Log file for the computation." );
    return true;
 
 }

@@ -28,7 +28,26 @@ tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver > :: setSolver( OdeSolver< Problem >& odeSolver )
+void tnlExplicitTimeStepper< Problem, OdeSolver >::configSetup( tnlConfigDescription& config,
+                                                                const tnlString& prefix )
+{
+   config.addEntry< double >( "tau", "Time step for the time discretisation.", 1.0 );
+}
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+bool tnlExplicitTimeStepper< Problem, OdeSolver >::init( const tnlParameterContainer& parameters,
+                                                         const tnlString& prefix )
+{
+   this->setTau( parameters.GetParameter< double >( "tau") );
+   return true;
+}
+
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+void tnlExplicitTimeStepper< Problem, OdeSolver >::setSolver(
+      typename tnlExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& odeSolver )
 {
    this -> odeSolver = &odeSolver;
 };
@@ -61,15 +80,27 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTau( const RealType& tau
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-bool tnlExplicitTimeStepper< Problem, OdeSolver > :: solve( const RealType& time,
-                                                            const RealType& stopTime )
+bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
+                                                          const RealType& stopTime,
+                                                          const MeshType& mesh,
+                                                          DofVectorType& dofVector )
 {
-   this -> odeSolver -> setTau( this -> tau );
-   this -> odeSolver -> setProblem( * this -> problem );
-   DofVectorType& u = problem -> getDofVector();
-   this -> odeSolver -> setTime( time );
-   this -> odeSolver -> setStopTime( stopTime );
-   return this -> odeSolver -> solve( u );
+   this->odeSolver->setTau( this -> tau );
+   this->odeSolver->setProblem( * this );
+   this->odeSolver->setTime( time );
+   this->odeSolver->setStopTime( stopTime );
+   this->mesh = &mesh;
+   return this -> odeSolver -> solve( dofVector );
+}
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+void tnlExplicitTimeStepper< Problem, OdeSolver >::GetExplicitRHS( const RealType& time,
+                                                                   const RealType& tau,
+                                                                   DofVectorType& _u,
+                                                                   DofVectorType& _fu )
+{
+   this->problem->GetExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

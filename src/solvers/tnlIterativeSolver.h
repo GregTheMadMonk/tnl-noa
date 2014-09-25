@@ -18,6 +18,8 @@
 #ifndef TNLITERATIVESOLVER_H_
 #define TNLITERATIVESOLVER_H_
 
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 
 template< typename Real, typename Index >
@@ -26,6 +28,12 @@ class tnlIterativeSolver
    public:
 
    tnlIterativeSolver();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setMaxIterations( const Index& maxIterations );
 

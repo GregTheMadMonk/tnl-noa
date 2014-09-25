@@ -71,8 +71,6 @@ inline int tnlCuda::getNumberOfSharedMemoryBanks()
    return 32;
 }
 
-#ifdef HAVE_CUDA
-
 template< typename ObjectType >
 ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 {
@@ -100,7 +98,7 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 template< typename ObjectType >
 ObjectType tnlCuda::passFromDevice( const ObjectType& object )
 {
-
+#ifdef HAVE_CUDA
    ObjectType aux;
    cudaMemcpy( ( void* ) &aux,
                ( void* ) &object,
@@ -108,26 +106,39 @@ ObjectType tnlCuda::passFromDevice( const ObjectType& object )
                cudaMemcpyDeviceToHost );
    checkCudaDevice;
    return aux;
+#else
+   tnlAssert( false, cerr << "CUDA support is missing." );
+   return 0;
+#endif      
 }
 
 template< typename ObjectType >
 void tnlCuda::passFromDevice( const ObjectType& deviceObject,
                               ObjectType& hostObject )
 {
+#ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &hostObject,
                ( void* ) &deviceObject,
                sizeof( ObjectType ),
                cudaMemcpyDeviceToHost );
    checkCudaDevice;
+#else
+   tnlAssert( false, cerr << "CUDA support is missing." );
+#endif      
 }
 
 template< typename ObjectType >
 void tnlCuda::freeFromDevice( ObjectType* deviceObject )
 {
+#ifdef HAVE_CUDA   
    cudaFree( deviceObject );
    checkCudaDevice;
+#else
+   tnlAssert( false, cerr << "CUDA support is missing." );
+#endif      
 }
 
+#ifdef HAVE_CUDA
 template< typename Index >
 __device__ Index tnlCuda::getInterleaving( const Index index )
 {

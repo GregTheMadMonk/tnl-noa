@@ -27,443 +27,696 @@ using namespace std;
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry  >
-tnlGrid< 2, Real, Device, Index, Geometry > :: tnlGrid()
-: dofs( 0 )
+          typename Index >
+tnlGrid< 2, Real, Device, Index > :: tnlGrid()
+: numberOfCells( 0 ),
+  numberOfNxFaces( 0 ),
+  numberOfNyFaces( 0 ),
+  numberOfFaces( 0 ),
+  numberOfVertices( 0 )
 {
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry  >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getType()
+          typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( Dimensions ) + ", " +
-          tnlString( getParameterType< RealType >() ) + ", " +
+          tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + ", " +
-          Geometry< 2, Real, Device, Index > :: getType() + " >";
+          tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-tnlString tnlGrid< 2, Real, Device, Index, Geometry > :: getTypeVirtual() const
+           typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this -> getType();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const Index xSize, const Index ySize )
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
-   tnlAssert( xSize > 0,
-              cerr << "The number of Elements along x-axis must be larger than 0." );
-   tnlAssert( ySize > 0,
-              cerr << "The number of Elements along y-axis must be larger than 0." );
-
-   this -> dimensions. x() = xSize;
-   this -> dimensions. y() = ySize;
-   dofs = ySize * xSize;
-   VertexType parametricStep;
-   parametricStep. x() = geometry. getProportions(). x() / xSize;
-   parametricStep. y() = geometry. getProportions(). y() / ySize;
-   geometry. setParametricStep( parametricStep );
-   if( GeometryType :: ElementsMeasureStorage :: enabled &&
-       ! elementsMeasure. setSize( this -> getDofs() ) )
-       return false;
-   if( GeometryType :: DualElementsMeasureStorage :: enabled &&
-       ! dualElementsMeasure. setSize( this -> getNumberOfEdges() ) )
-      return false;
-   if( GeometryType :: EdgeNormalsStorage :: enabled &&
-       ! edgeNormals. setSize( this -> getNumberOfEdges() ) )
-      return false;
-   if( GeometryType :: VerticesStorage :: enabled &&
-       ( ! vertices. setSize( this -> getNumberOfVertices() ) ||
-         ! elementCenters. setSize( this -> getNumberOfVertices() ) ) )
-      return false;
-   return true;
+   if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
+   {
+      this->cellProportions.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->cellProportions.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->hx = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->hxSquare = this->hx * this->hx;
+      this->hxInverse = 1.0 / this->hx;
+      this->hxSquareInverse = this->hxInverse * this->hxInverse;
+      this->hy = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->hySquare = this->hy * this->hy;
+      this->hyInverse = 1.0 / this->hy;
+      this->hySquareInverse = this->hyInverse * this->hyInverse;
+      this->hxhy = this->hx * this->hy;
+      this->hxhyInverse = 1.0 / this->hxhy;
+   }
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: setDimensions( const CoordinatesType& dimensions )
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   return this -> setDimensions( dimensions. x(), dimensions. y() );
+   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
+   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
+
+   this->dimensions.x() = xSize;
+   this->dimensions.y() = ySize;
+   this->numberOfCells = xSize * ySize;
+   this->numberOfNxFaces = ySize * ( xSize + 1 );
+   this->numberOfNyFaces = xSize * ( ySize + 1 );
+   this->numberOfFaces = this->numberOfNxFaces + this->numberOfNyFaces;
+   this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
+   computeSpaceSteps();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: CoordinatesType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getDimensions() const
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
-   return this -> dimensions;
+   return this->setDimensions( dimensions. x(), dimensions. y() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setOrigin( const VertexType& origin )
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlGrid< 2, Real, Device, Index >::CoordinatesType&
+tnlGrid< 2, Real, Device, Index > :: getDimensions() const
 {
-   this -> origin = origin;
+   return this->dimensions;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getOrigin() const
+          typename Index >
+void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
+                                                     const VertexType& proportions )
 {
-   return this -> origin;
+   this->origin = origin;
+   this->proportions = proportions;
+   computeSpaceSteps();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setProportions( const VertexType& proportions )
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlGrid< 2, Real, Device, Index >::VertexType&
+tnlGrid< 2, Real, Device, Index >::getOrigin() const
 {
-   geometry. setProportions( proportions );
-   VertexType parametricStep;
-   parametricStep. x() = proportions. x() / ( this -> dimensions. x() );
-   parametricStep. y() = proportions. y() / ( this -> dimensions. y() );
-   geometry. setParametricStep( parametricStep );
+   return this->origin;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getProportions() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
+   tnlGrid< 2, Real, Device, Index > :: getProportions() const
 {
-   return geometry. getProportions();
+   return this->proportions;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: setParametricStep( const VertexType& spaceStep )
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
+tnlGrid< 2, Real, Device, Index > :: getCellProportions() const
 {
-      geometry. setProportions(
-         VertexType(
-            this -> dimensions. x() * geometry. getParametricStep(). x(),
-            this -> dimensions. y() * geometry. getParametricStep(). y() ) );
+   return this->cellProportions;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: VertexType& 
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getParametricStep() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellIndex( const CoordinatesType& cellCoordinates ) const
 {
-   return geometry. getParametricStep();
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
+              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( cellCoordinates.y() >= 0 && cellCoordinates.y() < this->getDimensions().y(),
+              cerr << "cellCoordinates.y() = " << cellCoordinates.y()
+                   << " this->getDimensions().y() = " << this->getDimensions().y()
+                   << " this->getName() = " << this->getName(); )
+
+   return cellCoordinates.y() * this->dimensions.x() + cellCoordinates.x();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementIndex( const Index i, const Index j ) const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlGrid< 2, Real, Device, Index >::CoordinatesType
+tnlGrid< 2, Real, Device, Index >::getCellCoordinates( const Index cellIndex ) const
 {
-   tnlAssert( i < dimensions. x(),
-              cerr << "Index i ( " << i
-                   << " ) is out of range ( " << dimensions. x()
-                   << " ) in tnlGrid " << this -> getName(); );
-   tnlAssert( j < dimensions. y(),
-              cerr << "Index j ( " << j
-                   << " ) is out of range ( " << dimensions. y()
-                   << " ) in tnlGrid " << this -> getName(); );
-
-   return j * this -> dimensions. x() + i;
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return CoordinatesType( cellIndex % this->getDimensions().x(), cellIndex / this->getDimensions().x() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeIndex( const Index i,
-                                                                   const Index j,
-                                                                   const Index dx,
-                                                                   const Index dy ) const
+          typename Index >
+template< int nx, int ny >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index >::getFaceIndex( const CoordinatesType& faceCoordinates ) const
 {
-   tnlAssert( i < dimensions. x(),
-              cerr << "Index i ( " << i
-                   << " ) is out of range ( " << dimensions. x()
-                   << " ) in tnlGrid " << this -> getName(); );
-   tnlAssert( j < dimensions. y(),
-              cerr << "Index j ( " << j
-                   << " ) is out of range ( " << dimensions. y()
-                   << " ) in tnlGrid " << this -> getName(); );
-   tnlAssert( dx == 0 && ( dy == 1 || dy == -1 ) ||
-              dy == 0 && ( dx == 1 || dx == -1 ),
-              cerr << "dx = " << dx << ", dy = " << dy << endl;);
-   if( dy == 0 )
-      return j * ( this -> dimensions. x() + 1 ) + i + ( 1 + dx ) / 2;
-   return this -> dimensions. y() * ( this -> dimensions. x() + 1 ) +
-            ( j + ( 1 + dy ) / 2 ) * this -> dimensions. x() + i;
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
+   if( nx )
+   {
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
+                 cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                      << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                      << " this->getName() = " << this->getName(); );
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
+                 cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                      << " this->getDimensions().y() = " << this->getDimensions().y()
+                      << " this->getName() = " << this->getName(); );
+      return faceCoordinates.y() * ( this->getDimensions().x() + 1 ) + faceCoordinates.x();
+   }
+   tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
+              cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                   << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                   << " this->getName() = " << this->getName(); );
+   return this->numberOfNxFaces + faceCoordinates.y() * this->getDimensions().x() + faceCoordinates.x();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-   template< int dx, int dy >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getVertexIndex( const Index i,
-                                                                     const Index j ) const
+          typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+typename tnlGrid< 2, Real, Device, Index >::CoordinatesType
+tnlGrid< 2, Real, Device, Index >::getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const
 {
-   tnlAssert( i < dimensions. x(),
-              cerr << "Index i ( " << i
-                   << " ) is out of range ( " << dimensions. x()
-                   << " ) in tnlGrid " << this -> getName(); );
-   tnlAssert( j < dimensions. y(),
-              cerr << "Index j ( " << j
-                   << " ) is out of range ( " << dimensions. y()
-                   << " ) in tnlGrid " << this -> getName(); );
-   tnlAssert( ( dy == 1 || dy == -1 ) ||
-              ( dx == 1 || dx == -1 ),
-              cerr << "dx = " << dx << ", dy = " << dy << endl;);
-   return ( j + ( 1 + dy ) / 2 ) * ( this -> dimensions. x() + 1 ) + i + ( 1 + dx ) / 2;
+   tnlAssert( faceIndex >= 0 && faceIndex < this->getNumberOfFaces(),
+              cerr << " faceIndex = " << faceIndex
+                   << " this->getNumberOfFaces() = " << this->getNumberOfFaces()
+                   << " this->getName() " << this->getName(); );
+   if( faceIndex < this->numberOfNxFaces )
+   {
+      nx = 1;
+      ny = 0;
+      const IndexType aux = this->getDimensions().x() + 1;
+      return CoordinatesType( faceIndex % aux, faceIndex / aux );
+   }
+   nx = 0;
+   ny = 1;
+   const IndexType i = faceIndex - this->numberOfNxFaces;
+   const IndexType& aux = this->getDimensions().x();
+   return CoordinatesType( i % aux, i / aux );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: refresh()
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getVertexIndex( const CoordinatesType& vertexCoordinates ) const
 {
-   if( GeometryType :: ElementsMeasureStorage :: enabled )
-      for( IndexType j = 0; j < dimensions. y(); j ++ )
-         for( IndexType i = 0; i < dimensions. x(); i ++ )
-            elementsMeasure[ getElementIndex( i, j ) ] = geometry. getElementMeasure( CoordinatesType( i, j ) );
-
-   if( GeometryType :: DualElementsMeasureStorage :: enabled )
-      for( IndexType j = 1; j < dimensions. y() - 1; j ++ )
-         for( IndexType i = 1; i < dimensions. x() - 1; i ++ )
-         {
-            dualElementsMeasure[ getEdgeIndex( i, j,  1,  0 ) ] = geometry. getDualElementMeasure<  1,  0 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getEdgeIndex( i, j, -1,  0 ) ] = geometry. getDualElementMeasure< -1,  0 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getEdgeIndex( i, j,  0,  1 ) ] = geometry. getDualElementMeasure<  0,  1 >( CoordinatesType( i, j ) );
-            dualElementsMeasure[ getEdgeIndex( i, j,  0, -1 ) ] = geometry. getDualElementMeasure<  0, -1 >( CoordinatesType( i, j ) );
-         }
-
-   if( GeometryType :: EdgeNormalsStorage :: enabled )
-      for( IndexType j = 0; j < dimensions. y(); j ++ )
-         for( IndexType i = 0; i < dimensions. x(); i ++ )
-         {
-            geometry. getEdgeNormal<  1,  0 >( CoordinatesType( i, j ), edgeNormals[ getEdgeIndex( i, j,  1,  0 ) ] );
-            geometry. getEdgeNormal< -1,  0 >( CoordinatesType( i, j ), edgeNormals[ getEdgeIndex( i, j, -1,  0 ) ] );
-            geometry. getEdgeNormal<  0,  1 >( CoordinatesType( i, j ), edgeNormals[ getEdgeIndex( i, j,  0,  1 ) ] );
-            geometry. getEdgeNormal<  0, -1 >( CoordinatesType( i, j ), edgeNormals[ getEdgeIndex( i, j,  0, -1 ) ] );
-            edgeNormals[ getEdgeIndex( i, j, -1, 0 ) ] *= ( RealType ) -1.0;
-            edgeNormals[ getEdgeIndex( i, j, 0, -1 ) ] *= ( RealType ) -1.0;
-         }
-
-   if( GeometryType :: VerticesStorage :: enabled )
-      for( IndexType j = 0; j < dimensions. y(); j ++ )
-      {
-         for( IndexType i = 0; i < dimensions. x(); i ++ )
-         {
-            const CoordinatesType c( i, j );
-            geometry. template getVertex<  1,  1 >( c, origin, vertices[ getVertexIndex<  1,  1 >( i, j ) ] );
-            geometry. template getVertex< -1,  1 >( c, origin, vertices[ getVertexIndex< -1,  1 >( i, j ) ] );
-            geometry. template getVertex< -1, -1 >( c, origin, vertices[ getVertexIndex< -1, -1 >( i, j ) ] );
-            geometry. template getVertex<  1, -1 >( c, origin, vertices[ getVertexIndex<  1, -1 >( i, j ) ] );
-            geometry. template getVertex<  0,  0 >( c, origin, elementCenters[ getElementIndex( i, j ) ] );
-            //cout << "( " << elementCenters[ getElementIndex( i, j ) ] << " ), ";
-         }
-         //cout << endl;
-      }
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
+              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( vertexCoordinates.y() >= 0 && vertexCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "vertexCoordinates.y() = " << vertexCoordinates.y()
+                   << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                   << " this->getName() = " << this->getName(); );
+   return vertexCoordinates.y() * ( this->dimensions.x() +1 ) + vertexCoordinates.x();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCoordinates( const Index element,
-                                                                           CoordinatesType& coordinates ) const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlGrid< 2, Real, Device, Index > :: CoordinatesType
+tnlGrid< 2, Real, Device, Index > :: getVertexCoordinates( const Index vertexIndex ) const
 {
-   tnlAssert( element >= 0 && element < dofs,
-              cerr << " element = " << element << " dofs = " << dofs
-                   << " in tnlGrid " << this -> getName(); );
-
-   coordinates. x() = element % this -> dimensions. x();
-   coordinates. y() = element / this -> dimensions. x();
+   tnlAssert( vertexIndex >= 0 && vertexIndex < this->getNumberOfVertices(),
+              cerr << " vertexIndex = " << vertexIndex
+                   << " this->getNumberOfVertices() = " << this->getNumberOfVertices()
+                   << " this->getName() " << this->getName(); );
+   const IndexType aux = this->dimensions.x() + 1;
+   return CoordinatesType( vertexIndex % aux, vertexIndex / aux );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getElementNeighbour( const Index Element,
-                                                                          const Index dx,
-                                                                          const Index dy ) const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellXPredecessor( const IndexType& cellIndex ) const
 {
-   tnlAssert( Element + dy * this -> dimensions. x() + dx < getDofs(),
-              cerr << "Index of neighbour with dx = " << dx
-                   << " and dy = " << dy
-                   << " is out of range ( " << dimensions. x()
-                   << " ) in tnlGrid " << this -> getName(); )
-   return Element + dy * this -> dimensions. x() + dx;
+   tnlAssert( cellIndex > 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - 1;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getDofs() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellXSuccessor( const IndexType& cellIndex ) const
 {
-   return this -> dofs;
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - 1,
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - 1 = " << this->getNumberOfCells() - 1
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + 1;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellYPredecessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= this->getDimensions().x() && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex - this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getCellYSuccessor( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->getDimensions().x(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() - this->getDimensions().x() = " << this->getNumberOfCells() - this->getDimensions().x()
+                   << " this->getName() " << this->getName(); );
+   return cellIndex + this->getDimensions().x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHx() const
+{
+   return this->hx;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquare() const
+{
+   return this->hxSquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxInverse() const
+{
+   return this->hxInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquareInverse() const
+{
+   return this->hxSquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHy() const
+{
+   return this->hy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHySquare() const
+{
+   return this->hySquare;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHyInverse() const
+{
+   return this->hyInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHySquareInverse() const
+{
+   return this->hySquareInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxHy() const
+{
+   return this->hxhy;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const Real& tnlGrid< 2, Real, Device, Index > :: getHxHyInverse() const
+{
+   return this->hxhyInverse;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Vertex tnlGrid< 2, Real, Device, Index > :: getCellCenter( const CoordinatesType& cellCoordinates ) const
+{
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
+              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( cellCoordinates.y() >= 0 && cellCoordinates.y() < this->getDimensions().y(),
+              cerr << "cellCoordinates.y() = " << cellCoordinates.y()
+                   << " this->getDimensions().y() = " << this->getDimensions().y()
+                   << " this->getName() = " << this->getName(); );
+
+   return Vertex( this->origin.x() + ( cellCoordinates.x() + 0.5 ) * this->cellProportions.x(),
+                  this->origin.y() + ( cellCoordinates.y() + 0.5 ) * this->cellProportions.y() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Vertex tnlGrid< 2, Real, Device, Index >::getCellCenter( const IndexType& cellIndex ) const
+{
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return this->getCellCenter( this->getCellCoordinates( cellIndex ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< int nx, int ny, typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType& faceCoordinates ) const
+{
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny = 1, "Wrong template parameters nx or ny." );
+   if( nx )
+   {
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x() + 1,
+                 cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                      << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                      << " this->getName() = " << this->getName(); );
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+                 cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                      << " this->getDimensions().y() = " << this->getDimensions().y()
+                      << " this->getName() = " << this->getName(); );
+      return Vertex( this->origin.x() + faceCoordinates.x() * this->cellProportions().x(),
+                     this->origin.y() + ( faceCoordinates.y() + 0.5 ) * this->cellProportions().y() );
+   }
+   if( ny )
+   {
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
+                 cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                      << " this->getDimensions().x() = " << this->getDimensions().x()
+                      << " this->getName() = " << this->getName(); );
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y() + 1,
+                 cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                      << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                      << " this->getName() = " << this->getName(); );
+      return Vertex( this->origin.x() + ( faceCoordinates.x() + 0.5 ) * this->cellProportions().x(),
+                     this->origin.y() + faceCoordinates.y() * this->cellProportions().y() );
+   }
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Vertex tnlGrid< 2, Real, Device, Index >::getVertex( const CoordinatesType& vertexCoordinates ) const
+{
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
+              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( vertexCoordinates.y() >= 0 && vertexCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "vertexCoordinates.y() = " << vertexCoordinates.y()
+                   << " this->getDimensions().y() = " << this->getDimensions().y()
+                   << " this->getName() = " << this->getName(); );
+
+   return Vertex( this->origin.x() + vertexCoordinates.x() * this->cellProportions.x(),
+                  this->origin.y() + vertexCoordinates.y() * this->cellProportions.y() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getNumberOfCells() const
+{
+   return this->numberOfCells;
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfEdges() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getNumberOfFaces() const
 {
-   return 2 * this -> dimensions. x() * this -> dimensions. y() +
-          this -> dimensions. x() + this -> dimensions. y();
+   return this->numberOfFaces;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Index tnlGrid< 2, Real, Device, Index, Geometry > :: getNumberOfVertices() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Index tnlGrid< 2, Real, Device, Index > :: getNumberOfVertices() const
 {
-   return ( this -> dimensions. x() + 1 ) * ( this -> dimensions. y() + 1 );
+   return this->numberOfVertices;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-typename tnlGrid< 2, Real, Device, Index, Geometry > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getGeometry()
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool tnlGrid< 2, Real, Device, Index > :: isBoundaryCell( const CoordinatesType& cellCoordinates ) const
 {
-   return this -> geometry;
+   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
+              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( cellCoordinates.y() >= 0 && cellCoordinates.y() < this->getDimensions().y(),
+              cerr << "cellCoordinates.y() = " << cellCoordinates.y()
+                   << " this->getDimensions().y() = " << this->getDimensions().y()
+                   << " this->getName() = " << this->getName(); );
+
+   if( cellCoordinates.x() == 0 || cellCoordinates.x() == this->getDimensions().x() - 1 ||
+       cellCoordinates.y() == 0 || cellCoordinates.y() == this->getDimensions().y() - 1 )
+      return true;
+   return false;
 }
+
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-const typename tnlGrid< 2, Real, Device, Index, Geometry > :: GeometryType&
-   tnlGrid< 2, Real, Device, Index, Geometry > :: getGeometry() const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool
+tnlGrid< 2, Real, Device, Index >::
+isBoundaryCell( const IndexType& cellIndex ) const
 {
-   return this -> geometry;
+   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+              cerr << " cellIndex = " << cellIndex
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return this->isBoundaryCell( this->getCellCoordinates( cellIndex ) );
 }
+
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getElementCenter( const CoordinatesType& coordinates,
-                                                                      VertexType& center ) const
+          typename Index >
+   template< int nx, int ny >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+bool tnlGrid< 2, Real, Device, Index > :: isBoundaryFace( const CoordinatesType& faceCoordinates ) const
 {
-      geometry. getElementCenter( origin, coordinates, center );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getElementMeasure( const CoordinatesType& coordinates ) const
-{
-   if( GeometryType :: ElementsMeasureStorage :: enabled )
-      return elementsMeasure[ getElementIndex( coordinates. x(), coordinates. y() ) ];
-   return geometry. getElementMeasure( coordinates );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-   template< int dx, int dy >
-Real tnlGrid< 2, Real, Device, Index, Geometry > :: getDualElementMeasure( const CoordinatesType& coordinates ) const
-{
-   if( GeometryType :: DualElementsMeasureStorage :: enabled )
-      return dualElementsMeasure[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
-   return geometry. getDualElementMeasure< dx, dy >( coordinates );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-template< int dx, int dy >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getEdgeNormal( const CoordinatesType& coordinates,
-                                                                   VertexType& normal ) const
-{
-   if( GeometryType :: EdgeNormalsStorage :: enabled )
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
+   if( nx )
    {
-      normal = edgeNormals[ getEdgeIndex( coordinates. x(), coordinates. y(), dx, dy ) ];
-      if( dx == -1 || dy == -1 )
-         normal *= ( RealType ) -1.0;
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
+                 cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                      << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                      << " this->getName() = " << this->getName(); );
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
+                 cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                      << " this->getDimensions().y() = " << this->getDimensions().y()
+                      << " this->getName() = " << this->getName(); );
+      if( faceCoordinates.x() == 0 || faceCoordinates.x() == this->getDimensions().x() )
+         return true;
+      return false;
    }
-   else
-      return geometry. getEdgeNormal< dx, dy >( coordinates, normal );
+   tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
+              cerr << "faceCoordinates.x() = " << faceCoordinates.x()
+                   << " this->getDimensions().x() = " << this->getDimensions().x()
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "faceCoordinates.y() = " << faceCoordinates.y()
+                   << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                   << " this->getName() = " << this->getName(); );
+   if( faceCoordinates.y() == 0 || faceCoordinates.y() == this->getDimensions().y() )
+      return true;
+   return false;
 }
+
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-   template< int dx, int dy >
-void tnlGrid< 2, Real, Device, Index, Geometry > :: getVertex( const CoordinatesType& elementCoordinates,
-                                                               VertexType& vertex ) const
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+bool tnlGrid< 2, Real, Device, Index > :: isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const
 {
-   tnlAssert( elementCoordinates. x() >= 0 &&
-              elementCoordinates. x() < this -> dimensions. x() &&
-              elementCoordinates. y() >= 0 &&
-              elementCoordinates. y() < this -> dimensions. y(),
-              cerr << "elementCoordinates = " << elementCoordinates << endl; );
-   if( GeometryType :: VerticesStorage :: enabled )
-      if( dx == 0 && dy == 0 )
-         vertex = this -> elementCenters[ this -> getElementIndex( elementCoordinates. x(),
-                                                                   elementCoordinates. y() ) ];
-      else
-         vertex = this -> vertices[ this -> getVertexIndex< dx, dy >( elementCoordinates. x(),
-                                                                      elementCoordinates. y() )];
-   else
-      return geometry. getVertex< dx, dy >( elementCoordinates,
-                                            this -> origin,
-                                            vertex );
+   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
+              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
+                   << " this->getName() = " << this->getName(); );
+   tnlAssert( vertexCoordinates.y() >= 0 && vertexCoordinates.y() < this->getDimensions().y() + 1,
+              cerr << "vertexCoordinates.y() = " << vertexCoordinates.y()
+                   << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
+                   << " this->getName() = " << this->getName(); );
+
+   if( vertexCoordinates.x() == 0 || vertexCoordinates.x() == this->getDimensions().x() ||
+       vertexCoordinates.y() == 0 || vertexCoordinates.y() == this->getDimensions().y() )
+      return true;
+   return false;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getAbsMax( const GridFunction& f ) const
+         tnlGrid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
 {
    return f.absMax();
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getLpNorm( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
@@ -479,11 +732,10 @@ template< typename Real,
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceAbsMax( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                                            const GridFunction& f2 ) const
 {
    return f1.differenceAbsMax( f2 );
@@ -491,11 +743,10 @@ template< typename Real,
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
+          typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index, Geometry >::getDifferenceLpNorm( const GridFunction& f1,
+         tnlGrid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
                                                                            const GridFunction& f2,
                                                                            const typename GridFunction::RealType& p ) const
 {
@@ -503,90 +754,72 @@ template< typename Real,
    for( IndexType j = 0; j < getDimensions(). y(); j++ )
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         IndexType c = this->getElementIndex( i, j );
-         lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p ) *
-            this->getElementMeasure( CoordinatesType( i, j ) );
+         IndexType c = this->getCellIndex( CoordinatesType( i, j ) );
+         lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
       }
-   return pow( lpNorm, 1.0/p );
+   lpNorm *= this->cellProportions.x() * this->cellProportions.y();
+   return pow( lpNorm, 1.0 / p );
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( tnlFile& file ) const
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
-   if( ! tnlObject :: save( file ) )
+   if( ! tnlObject::save( file ) )
       return false;
-   if( ! this -> origin. save( file ) ||
-       ! this -> dimensions. save( file ) )
+   if( ! this->origin.save( file ) ||
+       ! this->proportions.save( file ) ||
+       ! this -> dimensions.save( file ) )
    {
       cerr << "I was not able to save the domain description of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
-   if( ! geometry. save( file ) )
-   {
-      cerr << "I was not able to save the mesh." << endl;
-      return false;
-   }
    return true;
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( tnlFile& file )
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
 {
-   if( ! tnlObject :: load( file ) )
+   if( ! tnlObject::load( file ) )
       return false;
-   CoordinatesType dim;
-   if( ! this -> origin. load( file ) ||
-       ! dim. load( file ) )
+   CoordinatesType dimensions;
+   if( ! this->origin.load( file ) ||
+       ! this->proportions.load( file ) ||
+       ! dimensions.load( file ) )
    {
       cerr << "I was not able to load the domain description of the tnlGrid "
            << this -> getName() << endl;
       return false;
    }
-   if( ! geometry. load( file ) )
-   {
-      cerr << "I am not able to load the grid geometry." << endl;
-      return false;
-   }
-   if( ! this -> setDimensions( dim ) )
-   {
-      cerr << "I am not able to allocate the loaded grid." << endl;
-      return false;
-   }
-   this -> refresh();
+   this -> setDimensions( dimensions );
    return true;
 };
 
 template< typename Real,
           typename Device,
-          typename Index,
-          template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: save( const tnlString& fileName ) const
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: load( const tnlString& fileName )
+           typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 };
 
 template< typename Real,
-           typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& fileName,
-                                                               const tnlString& format ) const
+          typename Device,
+          typename Index >
+bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
+                                                     const tnlString& format ) const
 {
    fstream file;
    file. open( fileName. getString(), ios :: out );
@@ -605,11 +838,11 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
       for( Index j = 0; j < this -> dimensions. y(); j ++ )
       {
          file << "draw( ";
-         this -> getVertex< -1, -1 >( CoordinatesType( 0, j ), v );
+         v = this -> getVertex( CoordinatesType( 0, j ) );
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index i = 0; i < this -> dimensions. x(); i ++ )
          {
-            this -> getVertex< 1, -1 >( CoordinatesType( i, j ), v );
+            v = this -> getVertex( CoordinatesType( i + 1, j ) );
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
@@ -618,21 +851,22 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
       {
          file << "draw( ";
-         this -> getVertex< -1, -1 >( CoordinatesType( i, 0 ), v );
+         v = this -> getVertex( CoordinatesType( i, 0 ) );
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
-            this -> getVertex< -1, 1 >( CoordinatesType( i, j ), v );
+            v = this -> getVertex( CoordinatesType( i, j + 1 ) );
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
       }
       file << endl;
+      const RealType cellMeasure = this->cellProportions.x() * this->cellProportions.y();
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
-            this -> getVertex< 0, 0 >( CoordinatesType( i, j ), v );
-            file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << this -> getElementMeasure( CoordinatesType( i, j ) ) << setprecision( 8 )
+            v = this -> getCellCenter( CoordinatesType( i, j ) );
+            file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
                  << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
          }
 
@@ -644,46 +878,47 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
             /****
              * East edge normal
              */
-            this -> getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this -> getVertex< 1, 1 >( CoordinatesType( i, j ), v2 );
+            /*v1 = this -> getVertex( CoordinatesType( i + 1, j ), v1 );
+            v2 = this -> getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this -> getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
-
+            */
             /****
              * West edge normal
              */
-            this -> getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
+            /*this -> getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
             this -> getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this -> getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
-
+            */
             /****
              * North edge normal
              */
-            this -> getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
+            /*this -> getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
             this -> getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this -> getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
-
+            */
             /****
              * South edge normal
              */
-            this -> getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
+            /*this -> getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
             this -> getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this -> getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+            */
          }
 
    }
@@ -691,17 +926,16 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: writeMesh( const tnlString& 
 
 template< typename Real,
            typename Device,
-           typename Index,
-           template< int, typename, typename, typename > class Geometry >
+           typename Index >
    template< typename MeshFunction >
-bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& function,
-                                                           const tnlString& fileName,
-                                                           const tnlString& format ) const
+bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
+                                                 const tnlString& fileName,
+                                                 const tnlString& format ) const
 {
-   if( this -> getDofs() != function. getSize() )
+   if( this->getNumberOfCells() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize() << " ) of the mesh function " << function. getName()
-           << " does not agree with the DOFs ( " << this -> getDofs() << " ) of the mesh " << this -> getName() << "." << endl;
+           << " does not agree with the DOFs ( " << this->getNumberOfCells() << " ) of the mesh " << this -> getName() << "." << endl;
       return false;
    }
    fstream file;
@@ -717,10 +951,9 @@ bool tnlGrid< 2, Real, Device, Index, Geometry > :: write( const MeshFunction& f
       {
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
-            VertexType v;
-            this -> getVertex< 0, 0 >( CoordinatesType( i, j ), v );
+            VertexType v = this->getCellCenter( CoordinatesType( i, j ) );
             tnlGnuplotWriter::write( file,  v );
-            tnlGnuplotWriter::write( file,  function[ this -> getElementIndex( i, j ) ] );
+            tnlGnuplotWriter::write( file,  function[ this->getCellIndex( CoordinatesType( i, j ) ) ] );
             file << endl;
          }
          file << endl;

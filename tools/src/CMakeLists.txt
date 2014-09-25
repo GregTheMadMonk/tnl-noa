@@ -13,8 +13,8 @@ set( tnl_mesh_convert_SOURCES tnl-mesh-convert.cpp
                             tnl-mesh-convert.h )
                             
                             
-set( tnl_discrete_SOURCES tnl-discrete.cpp
-                          tnl-discrete.h )
+set( tnl_init_SOURCES tnl-init.cpp
+                      tnl-init.h )
 
 set( tnl_view_SOURCES tnl-view.cpp
                       tnl-view.h )
@@ -28,8 +28,8 @@ target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
 ADD_EXECUTABLE(tnl-mesh-convert${debugExt} ${tnl_mesh_convert_SOURCES})
 target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-discrete${debugExt} ${tnl_discrete_SOURCES})
-target_link_libraries (tnl-discrete${debugExt} tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-init${debugExt} ${tnl_init_SOURCES})
+target_link_libraries (tnl-init${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-view${debugExt} ${tnl_view_SOURCES})
 target_link_libraries (tnl-view${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -46,7 +46,7 @@ target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion}
 #ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
 #target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
-INSTALL( TARGETS tnl-discrete${debugExt}
+INSTALL( TARGETS tnl-init${debugExt}
                  tnl-view${debugExt}
                  tnl-diff${debugExt}
                  tnl-grid-setup${debugExt}
@@ -56,6 +56,6 @@ INSTALL( TARGETS tnl-discrete${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
          
-INSTALL( FILES tnl-err2eoc.py
+INSTALL( FILES tnl-err2eoc
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )         

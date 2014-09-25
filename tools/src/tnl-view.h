@@ -79,12 +79,13 @@ bool convertObject( const Mesh& mesh,
       tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      tnlGrid< Dimensions, Real, tnlHost, Index > grid;
-      grid. setDimensions( multiVector. getDimensions() );
-      grid. setOrigin( tnlStaticVector< Dimensions, Real >( 0.0 ) );
-      grid. setProportions( tnlStaticVector< Dimensions, Real >( 1.0 ) );
-      const Real spaceStep = grid. getParametricStep(). x();
-      grid. setParametricStep( tnlStaticVector< Dimensions, Real >( spaceStep ) );
+      typedef tnlGrid< Dimensions, Real, tnlHost, Index > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
+      grid. setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
+      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
+      const Real spaceStep = grid. getCellProportions(). x();
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }

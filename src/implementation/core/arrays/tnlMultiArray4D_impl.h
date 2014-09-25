@@ -40,11 +40,11 @@ tnlString tnlMultiArray< 4, Element, Device, Index > :: getType() const
    return tnlString( "tnlMultiArray< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( getParameterType< Element >() ) +
+          tnlString( ::getType< Element >() ) +
           tnlString( ", " ) +
           tnlString( Device :: getDeviceType() ) +
           tnlString( ", " ) +
-          tnlString( getParameterType< Index >() ) +
+          tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
 

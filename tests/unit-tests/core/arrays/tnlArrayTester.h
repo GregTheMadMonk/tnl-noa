@@ -42,7 +42,7 @@ class testingClassForArrayTester
       };
 };
 
-tnlString GetParameterType( const testingClassForArrayTester& c )
+tnlString getType( const testingClassForArrayTester& c )
 {
    return tnlString( "testingClassForArrayTester" );
 };

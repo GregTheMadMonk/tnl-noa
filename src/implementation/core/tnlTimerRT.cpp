@@ -25,13 +25,13 @@
 #endif
 
 
-tnlTimerRT default_mcore_rt_timer;
-//--------------------------------------------------------------------------
+tnlTimerRT defaultRTTimer;
+
 tnlTimerRT :: tnlTimerRT()
 {
    Reset();
 }
-//--------------------------------------------------------------------------
+
 void tnlTimerRT :: Reset()
 {
 #ifdef HAVE_TIME
@@ -45,7 +45,7 @@ void tnlTimerRT :: Reset()
 #endif
 
 }
-//--------------------------------------------------------------------------
+
 void tnlTimerRT :: Stop()
 {
 #ifdef HAVE_TIME
@@ -58,7 +58,7 @@ void tnlTimerRT :: Stop()
    }
 #endif
 }
-//--------------------------------------------------------------------------
+
 void tnlTimerRT :: Continue()
 {
 #ifdef HAVE_TIME
@@ -68,7 +68,7 @@ void tnlTimerRT :: Continue()
    stop_state = false;
 #endif
 }
-//--------------------------------------------------------------------------
+
 double tnlTimerRT :: GetTime()
 {
 #ifdef HAVE_TIME

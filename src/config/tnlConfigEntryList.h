@@ -29,8 +29,8 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
 
    public:
 
-   tnlConfigEntryList( const char* name,
-                       const char* description,
+   tnlConfigEntryList( const tnlString& name,
+                       const tnlString& description,
                        bool required )
       : tnlConfigEntryBase( name,
                             description,
@@ -39,8 +39,8 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
          hasDefaultValue = false;
       }
 
-   tnlConfigEntryList( const char* name,
-                       const char* description,
+   tnlConfigEntryList( const tnlString& name,
+                       const tnlString& description,
                        bool required,
                        const EntryType& defaultValue)
       : tnlConfigEntryBase( name,
@@ -54,7 +54,7 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
 
    tnlString getEntryType() const
    {
-      return ::getParameterType< tnlList< EntryType > >();
+      return ::getType< tnlList< EntryType > >();
    }
 
    tnlString getUIEntryType() const

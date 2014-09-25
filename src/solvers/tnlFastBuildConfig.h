@@ -40,6 +40,16 @@ template<> struct tnlConfigTagIndex< tnlFastBuildConfig, short int >{ enum { ena
 template<> struct tnlConfigTagIndex< tnlFastBuildConfig, long int >{ enum { enabled = false }; };
 
 /****
+ * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ */
+template< int Dimensions, typename Real, typename Device, typename Index >
+   struct tnlConfigTagMesh< tnlFastBuildConfig, tnlGrid< Dimensions, Real, Device, Index > >
+      { enum { enabled = tnlConfigTagDimensions< tnlFastBuildConfig, Dimensions >::enabled  &&
+                         tnlConfigTagReal< tnlFastBuildConfig, Real >::enabled &&
+                         tnlConfigTagDevice< tnlFastBuildConfig, Device >::enabled &&
+                         tnlConfigTagIndex< tnlFastBuildConfig, Index >::enabled }; };
+
+/****
  * Please, chose your preferred time discretisation  here.
  */
 template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };

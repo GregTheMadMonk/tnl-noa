@@ -25,7 +25,8 @@
 
 struct tnlParameterBase
 {
-   tnlParameterBase( const char* _name, const char* _type )
+   tnlParameterBase( const tnlString& _name,
+                     const tnlString& _type )
    : name( _name ), type( _type ){};
  
    tnlString name, type;
@@ -34,15 +35,15 @@ struct tnlParameterBase
 
 template< class T > struct tnlParameter : public tnlParameterBase
 {
-   tnlParameter( const char* _name,
-               const char* _type,
-               const T& val )
+   tnlParameter( const tnlString& _name,
+                 const tnlString& _type,
+                 const T& val )
    : tnlParameterBase( _name, _type ), value( val ){};
 
    T value;
 };
 
-//template< class T > const char* GetParameterType( const T& val );
+//template< class T > const char* getType( const T& val );
 
 class tnlParameterContainer
 {
@@ -50,21 +51,23 @@ class tnlParameterContainer
 
    tnlParameterContainer();
 
-   template< class T > bool AddParameter( const char* name,
+   template< class T > bool AddParameter( const tnlString& name,
                                           const T& value );
 
-   bool AddParameter( const char* name, 
-                      const char* value );
+   bool AddParameter( const tnlString& name, 
+                      const tnlString& value );
 
-   bool CheckParameter( const char* name ) const;
+   bool CheckParameter( const tnlString& name ) const;
 
-   template< class T > bool SetParameter( const char* name,
+   template< class T > bool SetParameter( const tnlString& name,
                                           const T& value );
 
-   bool SetParameter( const char* name,
-                      const char* value );
+   bool SetParameter( const tnlString& name,
+                      const tnlString& value );
 
-   template< class T > bool GetParameter( const char* name, T& value, bool verbose = false ) const
+   template< class T > bool GetParameter( const tnlString& name,
+                                          T& value,
+                                          bool verbose = false ) const
    {
       int i;
       const int size = parameters. getSize();
@@ -79,18 +82,7 @@ class tnlParameterContainer
       return false;
    }
 
-   template< class T > const T& GetParameter( const char* name ) const
-   {
-      int i;
-      const int size = parameters. getSize();
-      for( i = 0; i < size; i ++ )
-         if( parameters[ i ] -> name == name )
-            return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
-      cerr << "Unknown parameter " << name << endl;
-      abort();
-   }
-   
-   template< class T > T& GetParameter( const char* name )
+   template< class T > const T& GetParameter( const tnlString& name ) const
    {
       int i;
       const int size = parameters. getSize();
@@ -114,15 +106,16 @@ class tnlParameterContainer
 
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       tnlParameterContainer& parameters );
+                       tnlParameterContainer& parameters,
+                       bool printUsage = true );
 
-template< class T > bool tnlParameterContainer :: AddParameter( const char* name,
+template< class T > bool tnlParameterContainer :: AddParameter( const tnlString& name,
                                                                 const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, ::getParameterType< T >(). getString(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, ::getType< T >(). getString(), value ) );
 };
 
-template< class T > bool tnlParameterContainer :: SetParameter( const char* name,
+template< class T > bool tnlParameterContainer :: SetParameter( const tnlString& name,
                                                                 const T& value )
 {
    int i;
@@ -130,7 +123,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == getParameterType< T >() )
+         if( parameters[ i ] -> type == getType( value ) )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -139,7 +132,7 @@ template< class T > bool tnlParameterContainer :: SetParameter( const char* name
          {
             cerr << "Parameter " << name << " already exists with different type " 
                  << parameters[ i ] -> type << " not "
-                 << getParameterType< T >() << endl;
+                 << getType( value ) << endl;
             abort( ); 
             return false;
          }

@@ -95,11 +95,11 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlGMRESSolverOld< " ) +
-          tnlString( GetParameterType( ( Real ) 0.0 ) ) +
+          tnlString( getType( ( Real ) 0.0 ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( GetParameterType( ( Index ) 0 ) ) +
+          tnlString( getType( ( Index ) 0 ) ) +
           tnlString( " >" );
 }
 

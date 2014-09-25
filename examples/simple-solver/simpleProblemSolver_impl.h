@@ -67,36 +67,43 @@ bool simpleProblemSolver< Mesh>::init( const tnlParameterContainer& parameters )
     * 1. Read input parameters and model coefficients like these
     */
    const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
+   return true;
+}
 
+template< typename Mesh >
+typename simpleProblemSolver< Mesh >::IndexType simpleProblemSolver< Mesh>::getDofs( const Mesh& mesh ) const
+{
    /****
-    * 2. Set-up geometry of the problem domain using some mesh like tnlGrid.
-    * Implement additional template specializations of the method initMesh
-    * if necessary.
+    * Set-up DOFs and supporting grid functions
     */
-   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
-   if( ! this->mesh.load( meshFile ) )
-   {
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
-      return false;
-   }
+   return 2*mesh.getDofs();
+}
 
+template< typename Mesh >
+typename simpleProblemSolver< Mesh >::IndexType simpleProblemSolver< Mesh>::getAuxiliaryDofs( const Mesh& mesh ) const
+{
    /****
-    * 3. Set-up DOFs and supporting grid functions
+    * Set-up DOFs and supporting grid functions
     */
-   const IndexType& dofs = this->mesh.getDofs();
-   dofVector. setSize( 2*dofs );
+   return 2*mesh.getDofs();
+}
 
+
+template< typename Mesh >
+void simpleProblemSolver< Mesh >::bindDofs( const MeshType& mesh,
+                                            DofVectorType& dofVector,
+                                            DofVectorType& auxiliaryDofVector )
+{
    /****
     * You may use tnlSharedVector if you need to split the dofVector into more
     * grid functions like the following example:
     */
+   const IndexType dofs = this->getDofs( mesh );
    this -> u. bind( & dofVector. getData()[ 0 * dofs ], dofs );
    this -> v. bind( & dofVector. getData()[ 1 * dofs ], dofs );
    /****
     * You may now treat u and v as usual vectors and indirectly work with this->dofVector.
     */
-
-   return true;
 }
 
 template< typename Mesh >
@@ -105,17 +112,19 @@ bool simpleProblemSolver< Mesh>::setInitialCondition( const tnlParameterContaine
    /****
     * Set the initial condition here. Manipulate only this -> dofVector.
     */
-   const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   /*const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
    if( ! this->u.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
-   }
+   }*/
    return true;
 }
 
 template< typename Mesh >
-bool simpleProblemSolver< Mesh>::makeSnapshot( const RealType& time, const IndexType& step )
+bool simpleProblemSolver< Mesh>::makeSnapshot( const RealType& time,
+                                               const IndexType& step,
+                                               const MeshType& mesh )
 {
    /****
     * Use this method to write state of the solver to file(s).
@@ -140,17 +149,9 @@ bool simpleProblemSolver< Mesh>::makeSnapshot( const RealType& time, const Index
 }
 
 template< typename Mesh >
-typename simpleProblemSolver< Mesh>::DofVectorType& simpleProblemSolver< Mesh >::getDofVector()
-{
-   /****
-    * You do not need to change this usually.
-    */
-   return dofVector;
-}
-
-template< typename Mesh >
 void simpleProblemSolver< Mesh>::GetExplicitRHS( const RealType& time,
                                                  const RealType& tau,
+                                                 const MeshType& mesh,
                                                  DofVectorType& _u,
                                                  DofVectorType& _fu )
 {
@@ -163,6 +164,7 @@ void simpleProblemSolver< Mesh>::GetExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
 
+   _fu.setValue( 1.0 );
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
       /****

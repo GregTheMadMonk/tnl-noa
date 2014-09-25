@@ -160,7 +160,7 @@ const tnlString& tnlEllpackMatrix< Real, tnlCuda, Index > :: getMatrixClass() co
 template< typename Real, typename Index >
 tnlString tnlEllpackMatrix< Real, tnlCuda, Index > :: getType() const
 {
-   return tnlString( "tnlEllpackMatrix< ") + tnlString( GetParameterType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
+   return tnlString( "tnlEllpackMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
 };
 
 template< typename Real, typename Index >

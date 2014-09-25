@@ -24,9 +24,13 @@
 #include <core/tnlFlopsCounter.h>
 #include <core/tnlObject.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
+#include <solvers/tnlIterativeSolver.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 
 template< class Problem >
-class tnlExplicitSolver : public tnlObject
+class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
+                                                     typename Problem::IndexType >
 {
    public:
    
@@ -37,6 +41,12 @@ class tnlExplicitSolver : public tnlObject
    typedef typename Problem :: IndexType IndexType;
 
    tnlExplicitSolver();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool init( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setProblem( Problem& problem );
 
@@ -51,18 +61,6 @@ class tnlExplicitSolver : public tnlObject
    void setTau( const RealType& t );
    
    const RealType& getTau() const;
-
-   const RealType& getResidue() const;
-
-   void setMaxResidue( const RealType& maxResidue );
-
-   RealType getMaxResidue() const;
-
-   IndexType getIterationsNumber() const;
-
-   void setMaxIterationsNumber( IndexType maxIterationsNumber );
-
-   IndexType getMaxIterationsNumber() const;
 
    void setMPIComm( MPI_Comm comm );
   
@@ -84,28 +82,20 @@ class tnlExplicitSolver : public tnlObject
 
 protected:
     
-   //! Current time of the parabolic problem.
+   /****
+    * Current time of the parabolic problem.
+    */
    RealType time;
 
-   //! The method solve will stop when reaching the stopTime.
+   /****
+    * The method solve will stop when reaching the stopTime.
+    */
    RealType stopTime;
 
-   //! Current time step.
-   RealType tau;
-
-   RealType residue;
-
-   //! The method solve will stop when the residue drops below tolerance given by maxResidue.
    /****
-    * This is useful for finding steady state solution.
+    * Current time step.
     */
-   RealType maxResidue;
-
-   //! Number of iterations.
-   IndexType iteration;
-
-   //! The method solve will stop when reaching the maximal number of iterations.
-   IndexType maxIterationsNumber;
+   RealType tau;
 
    MPI_Comm solver_comm;
 
@@ -122,24 +112,35 @@ protected:
    tnlODESolverMonitor< RealType, IndexType >* solverMonitor;
 };
 
-template< class Problem >
+template< typename Problem >
 tnlExplicitSolver < Problem > :: tnlExplicitSolver()
-:  iteration( 0 ),
-   time( 0.0 ),
+:  time( 0.0 ),
    tau( 0.0 ),
-   residue( 0.0 ),
    stopTime( 0.0 ),
-   maxResidue( 0.0 ),
-   maxIterationsNumber( -1 ),
    solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
    cpu_timer( &default_mcore_cpu_timer ),
-   rt_timer( &default_mcore_rt_timer ),
+   rt_timer( &defaultRTTimer ),
    testingMode( false ),
    problem( 0 ),
    solverMonitor( 0 )
    {
    };
+
+template< typename Problem >
+void tnlExplicitSolver < Problem > :: configSetup( tnlConfigDescription& config,
+                                                   const tnlString& prefix )
+{
+   tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
+}
+
+template< typename Problem >
+bool tnlExplicitSolver < Problem >::init( const tnlParameterContainer& parameters,
+                                          const tnlString& prefix )
+{   
+   return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::init( parameters, prefix );
+}
+
 
 template< typename Problem >
 void tnlExplicitSolver< Problem > :: setProblem( Problem& problem )
@@ -160,12 +161,6 @@ const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTime() c
 };
 
 template< class Problem >
-typename Problem :: IndexType tnlExplicitSolver < Problem > :: getIterationsNumber() const
-{
-   return iteration;
-};
-
-template< class Problem >
 void tnlExplicitSolver < Problem > :: setTau( const RealType& t )
 {
    tau = t;
@@ -178,39 +173,9 @@ const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTau() co
 };
 
 template< class Problem >
-const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getResidue() const
-{
-   return residue;
-};
-
-template< class Problem >
-typename Problem :: IndexType tnlExplicitSolver < Problem > :: getMaxIterationsNumber() const
-{
-    return maxIterationsNumber;
-}
-
-template< class Problem >
-typename Problem :: RealType tnlExplicitSolver < Problem > :: getMaxResidue() const
-{
-    return maxResidue;
-}
-
-template< class Problem >
 typename Problem :: RealType tnlExplicitSolver < Problem > :: getStopTime() const
 {
     return stopTime;
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setMaxIterationsNumber( typename Problem :: IndexType maxIterationsNumber )
-{
-    this -> maxIterationsNumber = maxIterationsNumber;
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setMaxResidue( const RealType& maxResidue )
-{
-    this -> maxResidue = maxResidue;
 }
 
 template< class Problem >
@@ -244,12 +209,6 @@ void tnlExplicitSolver < Problem > :: setTimerRT( tnlTimerRT* timer )
 };
 
 template< class Problem >
-void tnlExplicitSolver < Problem > :: setRefreshRate( const IndexType& refreshRate )
-{
-   //this -> refreshRate = refreshRate;
-}
-
-template< class Problem >
 void tnlExplicitSolver < Problem > :: setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor )
 {
    this -> solverMonitor = &solverMonitor;
@@ -260,7 +219,7 @@ void tnlExplicitSolver < Problem > :: refreshSolverMonitor()
 {
    if( this -> solverMonitor )
    {
-      this -> solverMonitor -> setIterations( this -> getIterationsNumber() );
+      this -> solverMonitor -> setIterations( this -> getIterations() );
       this -> solverMonitor -> setResidue( this -> getResidue() );
       this -> solverMonitor -> setTimeStep( this -> getTau() );
       this -> solverMonitor -> setTime( this -> getTime() );

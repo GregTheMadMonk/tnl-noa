@@ -17,7 +17,7 @@
 
 #include <fstream>
 #include <iomanip>
-#include <legacy/config/tnlConfigDescriptionParser.h>
+//#include <legacy/config/tnlConfigDescriptionParser.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/mfuncs.h>
@@ -33,7 +33,7 @@ tnlConfigDescription :: ~tnlConfigDescription()
    entries. DeepEraseAll();
 }
 
-void tnlConfigDescription::printUsage( const char* program_name )
+void tnlConfigDescription::printUsage( const char* program_name ) const
 {
    cout << "Usage of: " << program_name << endl << endl;
    int i, j;
@@ -88,7 +88,7 @@ void tnlConfigDescription::printUsage( const char* program_name )
    cout << endl;
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription::parseConfigDescription( const char* file_name )
+/*bool tnlConfigDescription::parseConfigDescription( const char* file_name )
 {
    tnlConfigDescriptionParser parser;
    fstream in_file;
@@ -101,7 +101,7 @@ bool tnlConfigDescription::parseConfigDescription( const char* file_name )
    parser. setScanner( &in_file );
    if( ! parser. runParsing( this ) ) return false;
    return true;
-}
+}*/
 //--------------------------------------------------------------------------
 void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter_container ) const
 {
@@ -145,21 +145,31 @@ void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter
    }
 }
 //--------------------------------------------------------------------------
-bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& parameter_container ) const
+bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& parameter_container,
+                                                  bool printUsage,
+                                                  const char* programName ) const
 {
    int i;
    const int size = entries. getSize();
-   bool missing_parameter( false );
+   tnlList< tnlString > missingParameters;
    for( i = 0; i < size; i ++ )
    {
       const char* entry_name = entries[ i ] -> name. getString();
       if( entries[ i ] -> required && 
           ! parameter_container. CheckParameter( entry_name ) )
-      {
-         cerr << "Missing parameter " << entry_name << "." << endl;
-         missing_parameter = true;
-      }
+         missingParameters.Append( entry_name );
    }
-   return ! missing_parameter;
+   if( missingParameters.getSize() != 0 )
+   {
+      cerr << "Some mandatory parameters are misssing. They are listed at the end. " << endl;
+      if( printUsage )
+         this->printUsage( programName );
+      cerr << "Add the following missing  parameters to the command line: " << endl << "   ";
+      for( int i = 0; i < missingParameters.getSize(); i++ )
+         cerr << "--" << missingParameters[ i ] << " ... ";
+      cerr << endl;
+      return false;
+   }
+   return true;
 }
 

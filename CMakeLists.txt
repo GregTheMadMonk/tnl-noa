@@ -34,7 +34,7 @@ endif()
 
 if( WITH_CUDA STREQUAL "yes" )
    AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
-   set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" ) # TODO: fix this in the rest of cmake files
+   set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
 else()
    AddCompilerFlag( "-std=gnu++0x" )
 endif()      
@@ -105,11 +105,11 @@ endif()
 ####
 # Check for MPI
 #
-find_package( MPI )
-if( MPI_CXX_FOUND )
-    set( BUILD_MPI TRUE )
-    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-endif()
+#find_package( MPI )
+#if( MPI_CXX_FOUND )
+#    set( BUILD_MPI TRUE )
+#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+#endif()
 
 ####
 # Check for some system header
@@ -227,6 +227,7 @@ INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVe
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
+INCLUDE_DIRECTORIES( tests )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 

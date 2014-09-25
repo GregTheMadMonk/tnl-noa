@@ -38,9 +38,9 @@ template< typename Real,
 tnlString tnlDenseMatrix< Real, Device, Index >::getType()
 {
    return tnlString( "tnlDenseMatrix< " ) +
-          tnlString( getParameterType< RealType >() ) + ", " +
+          tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( getParameterType< IndexType >() ) + " >";
+          tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,

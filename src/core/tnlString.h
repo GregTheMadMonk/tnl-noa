@@ -105,10 +105,10 @@ class tnlString
    tnlString& operator += ( const tnlString& str );
  
    //! Operator +
-   tnlString operator + ( const tnlString& str );
+   tnlString operator + ( const tnlString& str ) const;
 
    //! Operator +
-   tnlString operator + ( const char* str );
+   tnlString operator + ( const char* str ) const;
 
    //! Comparison operator 
    bool operator == ( const tnlString& str ) const;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          simpleProblemSolver.h  -  description
+                          heatEquationSolver.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -24,22 +24,25 @@
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
+#include <solvers/pde/tnlExplicitUpdater.h>
 #include "heatEquationSolver.h"
-#include "tnlAnalyticSolution.h"
+#include "heatEquationScheme.h"
 
 
-template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide, typename TimeFunction, typename AnalyticSpaceFunction>
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
 class heatEquationSolver
 {
    public:
 
-   typedef typename Mesh :: RealType RealType;
-   typedef typename Mesh :: DeviceType DeviceType;
-   typedef typename Mesh :: IndexType IndexType;
+   typedef typename DifferentialOperator::RealType RealType;
+   typedef typename Mesh::DeviceType DeviceType;
+   typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef heatEquationScheme< Mesh, DifferentialOperator, RightHandSide > Scheme;
 
    static tnlString getTypeStatic();
 
@@ -50,14 +53,26 @@ class heatEquationSolver
 
    bool init( const tnlParameterContainer& parameters );
 
-   bool setInitialCondition( const tnlParameterContainer& parameters );
+   bool setInitialCondition( const tnlParameterContainer& parameters,
+                             const MeshType& mesh );
 
-   bool makeSnapshot( const RealType& time, const IndexType& step );
+   bool makeSnapshot( const RealType& time,
+                      const IndexType& step,
+                      const MeshType& mesh );
 
-   DofVectorType& getDofVector();
+   IndexType getDofs( const MeshType& mesh ) const;
+
+   IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
+
+   void bindDofs( const MeshType& mesh,
+                  DofVectorType& dofs );
+
+   void bindAuxiliaryDofs( const MeshType& mesh,
+                           DofVectorType& auxiliaryDofs );
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,
+                        const MeshType& mesh,
                         DofVectorType& _u,
                         DofVectorType& _fu );
 
@@ -65,16 +80,15 @@ class heatEquationSolver
    
    protected:
 
-   DofVectorType dofVectorAnalyticSolution,dofVectorNumericalSolution,analyticLaplace,numericalLaplace;
-   tnlSharedVector< RealType, DeviceType, IndexType > sharedVectorNumericalSolution,sharedVectorAnalyticSolution;
-   MeshType mesh;
-   AnalyticSpaceFunction analyticSpaceFunction;
-   TimeFunction timeFunction;
-   AnalyticSolution<MeshType> analyticSolution;
+   tnlSharedVector< RealType, DeviceType, IndexType > solution;
+
+   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
+
+   DifferentialOperator differentialOperator;
+
    BoundaryCondition boundaryCondition;
-   Diffusion diffusion;
-   RightHandSide RHS;
-   IndexType ifLaplaceCompare, ifSolutionCompare;
+
+   RightHandSide rightHandSide;
 };
 
 #include "heatEquationSolver_impl.h"

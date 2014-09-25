@@ -92,7 +92,7 @@ template< class T > class tnlList
 
    static tnlString getType()
    {
-      return tnlString( "tnlList< " ) + ::getParameterType< T >() +  tnlString( " >" );
+      return tnlString( "tnlList< " ) + ::getType< T >() +  tnlString( " >" );
    };
 
    //! If the list is empty return 'true'

@@ -4,8 +4,6 @@ ADD_SUBDIRECTORY( traits )
 ADD_SUBDIRECTORY( topologies )
 
 SET( headers tnlGrid.h
-             tnlIdenticalGridGeometry.h
-             tnlLinearGridGeometry.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h
              tnlMesh.h
@@ -16,6 +14,10 @@ SET( headers tnlGrid.h
              tnlMeshWriterNetgen.h
              tnlMeshInitializer.h
              tnlMeshEntityInitializer.h
-             tnlMeshSuperentityInitializerLayer.h )
+             tnlMeshSuperentityInitializerLayer.h
+             tnlTraversal.h
+             tnlTraversal_Grid1D.h 
+             tnlTraversal_Grid2D.h 
+             tnlTraversal_Grid3D.h )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

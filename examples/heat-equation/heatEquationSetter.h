@@ -21,40 +21,44 @@
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlGrid.h>
 #include "heatEquationSolver.h"
-#include <generators/functions/tnlSinWaveFunction.h>
-#include <generators/functions/tnlExpBumpFunction.h>
-#include <generators/functions/tnlSinBumpsFunction.h>
+#include <functions/tnlSinWaveFunction.h>
+#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
 #include "tnlTimeFunction.h"
-#include "tnlDirichletBoundaryConditions.h"
-#include "tnlLinearDiffusion.h"
-#include "tnlNeumannBoundaryConditions.h"
+#include <operators/tnlDirichletBoundaryConditions.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
+#include <operators/tnlNeumannBoundaryConditions.h>
 #include "tnlZeroRightHandSide.h"
 #include "tnlRightHandSide.h"
 
    
-template< typename MeshType,
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
           typename SolverStarter >
 class heatEquationSetter
 {
    public:
  
-   typedef TimeFunction<MeshType,TimeFunctionBase::TimeIndependent> TimeIndependent;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Linear> Linear;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Quadratic> Quadratic;
-   typedef TimeFunction<MeshType,TimeFunctionBase::Cosinus> Cosinus;
-   typedef typename MeshType::RealType RealType;
-   typedef tnlStaticVector<MeshType::Dimensions, RealType> Vertex;
+   typedef TimeFunction< MeshType, TimeFunctionBase::TimeIndependent, Real, Index > TimeIndependent;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Linear, Real, Index > Linear;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Quadratic, Real, Index > Quadratic;
+   typedef TimeFunction< MeshType, TimeFunctionBase::Cosinus, Real, Index > Cosinus;
+   //typedef typename MeshType::RealType RealType;
 
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
       
-   template< typename RealType, typename DeviceType, typename IndexType, typename TimeFunction>
+   template< typename TimeFunction >
    static bool setAnalyticSpaceFunction (const tnlParameterContainer& parameters);  
     
-   template< typename RealType, typename DeviceType, typename IndexType>
    static bool setTimeFunction (const tnlParameterContainer& parameters);
       
-   template< typename RealType,
-             typename DeviceType,
-             typename IndexType >
    static bool run( const tnlParameterContainer& parameters );
 };
 

@@ -23,12 +23,24 @@
 
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-mesh-convert.cfg.desc";
 
+void configSetup( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addEntry< tnlString >( "output-file", "Output binary file in TNL format.", "mesh.tnl" );
+   config.addEntry< int >( "verbose", "Set the verbosity of the program.", 1 );
+   
+   config.addDelimiter                            ( "The mesh description:" );
+   config.addEntry< tnlString >( "input-mesh-file", "Input file with the mesh." );
+   config.addEntry< tnlString >( "mesh-name", "The mesh name.", "tnl-mesh" ); 
+}
+
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc.parseConfigDescription( configFile ) != 0 )
-      return EXIT_FAILURE;
+   
+   configSetup( conf_desc );
+
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );

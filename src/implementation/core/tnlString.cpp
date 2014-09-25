@@ -175,12 +175,12 @@ tnlString& tnlString :: operator += ( const tnlString& str )
    return operator += ( str. getString() );
 }
 
-tnlString tnlString :: operator + ( const tnlString& str )
+tnlString tnlString :: operator + ( const tnlString& str ) const
 {
    return tnlString( *this ) += str;
 }
 
-tnlString tnlString :: operator + ( const char* str )
+tnlString tnlString :: operator + ( const char* str ) const
 {
    return tnlString( *this ) += str;
 }
@@ -207,34 +207,34 @@ bool tnlString :: operator == ( const char* str ) const
    if( strcmp( string, str ) == 0 ) return true;
    return false;
 }
-//---------------------------------------------------------------------------
+
 tnlString :: operator bool () const
 {
    if( string[ 0 ] ) return true;
    return false;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: operator != ( const char* str ) const
 {
    return ! operator == ( str );
 }
-//---------------------------------------------------------------------------
+
 int tnlString :: getLength() const
 {
    return strlen( string );
 }
-//---------------------------------------------------------------------------
+
 const char* tnlString :: getString() const
 {
    return string;
 }
-//---------------------------------------------------------------------------
+
 char* tnlString :: getString()
 {
    return string;
 }
 
-//---------------------------------------------------------------------------
+
 bool tnlString :: save( ostream& file ) const
 {
    dbgFunctionName( "tnlString", "save" );
@@ -247,7 +247,7 @@ bool tnlString :: save( ostream& file ) const
    if( file. bad() ) return false;
    return true;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: load( istream& file )
 {
    int _length;
@@ -276,7 +276,7 @@ bool tnlString :: load( istream& file )
    string[ _length ] = 0;
    return true;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: save( tnlFile& file ) const
 {
    dbgFunctionName( "tnlString", "Write" );
@@ -299,7 +299,7 @@ bool tnlString :: save( tnlFile& file ) const
       return false;
    return true;
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: load( tnlFile& file )
 {
    int _length;
@@ -342,7 +342,7 @@ bool tnlString :: load( tnlFile& file )
    string[ _length ] = 0;
    return true;
 }
-//---------------------------------------------------------------------------
+
 void tnlString :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef HAVE_MPI
@@ -369,7 +369,7 @@ void tnlString :: MPIBcast( int root, MPI_Comm comm )
    dbgExpr( string );
 #endif
 }
-//---------------------------------------------------------------------------
+
 bool tnlString :: getLine( istream& stream )
 {
    std :: string str;
@@ -378,7 +378,7 @@ bool tnlString :: getLine( istream& stream )
    if( ! ( *this ) ) return false;
    return true;
 }
-//---------------------------------------------------------------------------
+
 int tnlString :: parse( tnlList< tnlString >& list, const char separator ) const
 {
    dbgFunctionName( "tnlString", "parse" );
@@ -399,7 +399,7 @@ int tnlString :: parse( tnlList< tnlString >& list, const char separator ) const
    }
    return list. getSize();
 }
-//---------------------------------------------------------------------------
+
 ostream& operator << ( ostream& stream, const tnlString& str )
 {
    stream << str. getString();

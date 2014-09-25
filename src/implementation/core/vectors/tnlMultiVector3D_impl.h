@@ -37,11 +37,11 @@ tnlString tnlMultiVector< 3, Element, Device, Index > :: getType() const
    return tnlString( "tnlMultiVector< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( getParameterType< Element >() ) +
+          tnlString( ::getType< Element >() ) +
           tnlString( ", " ) +
           tnlString( Device :: getDeviceType() ) +
           tnlString( ", " ) +
-          tnlString( getParameterType< Index >() ) +
+          tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
 

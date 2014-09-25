@@ -37,9 +37,9 @@ template< typename Matrix,
 tnlString tnlTFQMRSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlTFQMRSolver< " ) +
-          tnlString( GetParameterType( ( RealType ) 0.0 ) ) + ", " +
+          tnlString( getType( ( RealType ) 0.0 ) ) + ", " +
           Device :: getDeviceType() + ", " +
-          tnlString( GetParameterType( ( IndexType ) 0 ) ) + " >";
+          tnlString( getType( ( IndexType ) 0 ) ) + " >";
 }
 
 template< typename Matrix,

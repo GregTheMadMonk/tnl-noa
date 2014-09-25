@@ -41,30 +41,30 @@ tnlParameterContainer :: tnlParameterContainer()
 {
 }
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: AddParameter( const char* name,
-                                            const char* value )
+bool tnlParameterContainer :: AddParameter( const tnlString& name,
+                                            const tnlString& value )
 {
-   return parameters. Append( new tnlParameter< tnlString >( name, getParameterType< tnlString >().getString(), tnlString( value ) ) );
+   return parameters. Append( new tnlParameter< tnlString >( name, ::getType< tnlString >().getString(), tnlString( value ) ) );
 }
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: SetParameter( const char* name,
-                                            const char* value )
+bool tnlParameterContainer :: SetParameter( const tnlString& name,
+                                            const tnlString& value )
 {
    int i;
    for( i = 0; i < parameters. getSize(); i ++ )
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == getParameterType< tnlString >() )
+         if( parameters[ i ] -> type == ::getType< tnlString >() )
          {
-            ( ( tnlParameter< tnlString > * ) parameters[ i ] ) -> value. setString( value );
+            ( ( tnlParameter< tnlString > * ) parameters[ i ] )->value = value;
             return true;
          }
          else
          {
             cerr << "Parameter " << name << " already exists with different type " 
                  << parameters[ i ] -> type << " not " 
-                 << getParameterType< tnlString>() << endl;
+                 << ::getType< tnlString>() << endl;
             abort();
             return false;
          }
@@ -73,7 +73,7 @@ bool tnlParameterContainer :: SetParameter( const char* name,
    return AddParameter( name, value );
 };
 //--------------------------------------------------------------------------
-bool tnlParameterContainer :: CheckParameter( const char* name ) const
+bool tnlParameterContainer :: CheckParameter( const tnlString& name ) const
 {
    int i;
    const int parameters_num = parameters. getSize();
@@ -158,7 +158,8 @@ void tnlParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 //--------------------------------------------------------------------------
 bool ParseCommandLine( int argc, char* argv[], 
                        const tnlConfigDescription& config_description,
-                       tnlParameterContainer& parameters )
+                       tnlParameterContainer& parameters,
+                       bool printUsage )
 {
    int i;
    bool parse_error( false );
@@ -176,7 +177,7 @@ bool ParseCommandLine( int argc, char* argv[],
       const tnlConfigEntryBase* entry;
       if( ( entry = config_description.getEntry( option ) ) == NULL )
       {
-         cerr << "Unknown parameter " << option << "." << endl;
+         cerr << "Unknown parameter " << _option << "." << endl;
          parse_error = true;
       }
       else 
@@ -322,7 +323,7 @@ bool ParseCommandLine( int argc, char* argv[],
       }
    }
    config_description.addMissingEntries( parameters );
-   if( ! config_description.checkMissingEntries( parameters ) )
+   if( ! config_description.checkMissingEntries( parameters, printUsage, argv[ 0 ] ) )
       return false;
    return ! parse_error;
 }

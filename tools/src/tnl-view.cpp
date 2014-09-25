@@ -23,8 +23,6 @@
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
-#include <mesh/tnlIdenticalGridGeometry.h>
-#include <mesh/tnlLinearGridGeometry.h>
 
 // TODO: Remove
 /*#include <mesh/tnlMesh.h>
@@ -38,7 +36,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry        < tnlString >           ( "mesh", "Mesh file.", "mesh.tnl" );
    config.addRequiredList < tnlString >           ( "input-files", "Input files." );
    config.addList         < tnlString >           ( "output-files", "Output files." );
-   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", "false" );
+   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", false );
 
    config.addDelimiter( "Grid settings:");
    config.addList         < double >              ( "level-lines", "List of level sets which will be drawn." );
@@ -69,10 +67,8 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
    setupConfig( conf_desc );
    if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
-      return 1;
-   }
+      return EXIT_FAILURE;
+
 
    int verbose = parameters. GetParameter< int >( "verbose" );
    tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
@@ -97,58 +93,26 @@ int main( int argc, char* argv[] )
    }
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
-      tnlList< tnlString > parsedGeometryType;
-      if( ! parseObjectType( parsedMeshType[ 5 ], parsedGeometryType ) )
+      int dimensions = atoi( parsedMeshType[ 1 ].getString() );
+      if( dimensions == 1 )
       {
-         cerr << "Unable to parse the geometry type " << parsedMeshType[ 5 ] << "." << endl;
-         return false;
+         typedef tnlGrid< 1, double, tnlHost, int > MeshType;
+         if( ! processFiles< MeshType >( parameters ) )
+            return EXIT_FAILURE;
       }
-      if( parsedGeometryType[ 0 ] == "tnlIdenticalGridGeometry" )
+      if( dimensions == 2 )
       {
-         int dimensions = atoi( parsedGeometryType[ 1 ].getString() );
-         if( dimensions == 1 )
-         {
-            typedef tnlGrid< 1, double, tnlHost, int, tnlIdenticalGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         if( dimensions == 2 )
-         {
-            typedef tnlGrid< 2, double, tnlHost, int, tnlIdenticalGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         if( dimensions == 3 )
-         {
-            typedef tnlGrid< 3, double, tnlHost, int, tnlIdenticalGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         return EXIT_SUCCESS;
+         typedef tnlGrid< 2, double, tnlHost, int > MeshType;
+         if( ! processFiles< MeshType >( parameters ) )
+            return EXIT_FAILURE;
       }
-      if( parsedGeometryType[ 0 ] == "tnlLinearGridGeometry" )
+      if( dimensions == 3 )
       {
-         int dimensions = atoi( parsedGeometryType[ 1 ].getString() );
-         if( dimensions == 1 )
-         {
-            typedef tnlGrid< 1, double, tnlHost, int, tnlLinearGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         if( dimensions == 2 )
-         {
-            typedef tnlGrid< 2, double, tnlHost, int, tnlLinearGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         if( dimensions == 3 )
-         {
-            typedef tnlGrid< 3, double, tnlHost, int, tnlLinearGridGeometry > MeshType;
-            if( ! processFiles< MeshType >( parameters ) )
-               return EXIT_FAILURE;
-         }
-         return EXIT_SUCCESS;
+         typedef tnlGrid< 3, double, tnlHost, int > MeshType;
+         if( ! processFiles< MeshType >( parameters ) )
+            return EXIT_FAILURE;
       }
+      return EXIT_SUCCESS;
    }
    if( parsedMeshType[ 0 ] == "tnlMesh" )
    {
