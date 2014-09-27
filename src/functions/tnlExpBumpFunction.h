@@ -29,7 +29,7 @@ class tnlExpBumpFunctionBase
       typedef Real RealType;
 
       bool init( const tnlParameterContainer& parameters,
-                 const tnlString& prefix );
+                 const tnlString& prefix = "" );
 
       void setAmplitude( const RealType& amplitude );
 

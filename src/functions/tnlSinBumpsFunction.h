@@ -67,7 +67,7 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
       tnlSinBumpsFunction();
 
       bool init( const tnlParameterContainer& parameters,
-                const tnlString& prefix );
+                const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -97,7 +97,7 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
       tnlSinBumpsFunction();
 
       bool init( const tnlParameterContainer& parameters,
-                 const tnlString& prefix );
+                 const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -127,7 +127,7 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
       tnlSinBumpsFunction();
 
       bool init( const tnlParameterContainer& parameters,
-                 const tnlString& prefix );
+                 const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,

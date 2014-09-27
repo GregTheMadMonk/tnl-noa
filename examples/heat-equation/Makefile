@@ -2,7 +2,7 @@ TNL_VERSION=0.1
 TNL_INSTALL_DIR=${HOME}/local/lib
 TNL_INCLUDE_DIR=${HOME}/local/include/tnl-${TNL_VERSION}
 
-TARGET = heat-equation
+TARGET = tnl-heat-equation
 CONFIG_FILE = $(TARGET).cfg.desc
 INSTALL_DIR = ${HOME}/local
 CXX = g++
@@ -11,9 +11,10 @@ OMP_FLAGS = -DHAVE_OPENMP -fopenmp
 CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR) -O3 $(OMP_FLAGS)
 LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1 -lgomp
 
-SOURCES = main.cpp
+SOURCES = tnl-heat-equation.cpp
+CUDA_SOURCES = tnl-heat-equation.cu
 HEADERS = 
-OBJECTS = main.o
+OBJECTS = tnl-heat-equation.o
 DIST = $(SOURCES) Makefile
 
 all: $(TARGET)
@@ -32,12 +33,9 @@ uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
 	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/heat-equation
 
-$(TARGET): $(TARGET)-conf.h $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
 %.o: %.cpp $(HEADERS)
 	$(CXX) -c -o $@ $(CXX_FLAGS) $<
-
-$(TARGET)-conf.h:
-	echo "#define CONFIG_FILE \"${INSTALL_DIR}/share/tnl-0.1/examples/heat-equation/${CONFIG_FILE}\" " > $(TARGET)-conf.h 
 

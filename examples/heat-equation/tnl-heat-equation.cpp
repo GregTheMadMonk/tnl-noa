@@ -15,10 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "heatEquationSetter.h"
 #include <solvers/tnlSolver.h>
 #include <solvers/tnlFastBuildConfig.h>
 #include <solvers/tnlConfigTags.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
+#include <operators/tnlDirichletBoundaryConditions.h>
+#include <functions/tnlConstantFunction.h>
+#include "heatEquationSolver.h"
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -32,6 +35,35 @@ class heatEquationConfig
          config.addDelimiter( "Heat equation settings:" );
          config.addDelimiter( "Tests setting::" );
       }
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MeshType,
+          typename ConfigTag,
+          typename SolverStarter >
+class heatEquationSetter
+{
+   public:
+
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+
+   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
+
+   static bool run( const tnlParameterContainer& parameters )
+   {
+      enum { Dimensions = MeshType::Dimensions };
+      typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
+      typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
+      typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
+      typedef tnlDirichletBoundaryConditions< MeshType, RightHandSide, Real, Index > BoundaryConditions;
+      typedef heatEquationSolver< MeshType, ApproximateOperator, BoundaryConditions, RightHandSide > Solver;
+      SolverStarter solverStarter;
+      return solverStarter.template run< Solver >( parameters );
+   };
 };
 
 int main( int argc, char* argv[] )

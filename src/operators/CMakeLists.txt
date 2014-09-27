@@ -2,7 +2,9 @@ ADD_SUBDIRECTORY( gradient )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
 
-SET( headers tnlFiniteDifferences.h  )
+SET( headers tnlFiniteDifferences.h
+             tnlDirichletBoundaryConditions.h
+             tnlNeumannBoundaryConditions.h )
 
 #SET( libtnlmeshincludedir ${TNL_INCLUDE_DIR}/operators )
 #SET( libtnlmeshinclude_HEADERS ${headers} )

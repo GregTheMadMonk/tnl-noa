@@ -36,7 +36,7 @@ class tnlConstantFunction
                             const tnlString& prefix );
 
    bool init( const tnlParameterContainer& parameters,
-              const tnlString& prefix );
+              const tnlString& prefix = "" );
 
    void setValue( const RealType& value );
 

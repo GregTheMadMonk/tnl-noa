@@ -19,7 +19,7 @@ set( tnl_SOURCES ${tnl_functions_SOURCES}
                  ${tnl_matrices_SOURCES}
                  ${tnl_operators_SOURCES} )
 
-set( tnl_CUDA__SOURCES ${tnl_generators_CUDA__SOURCES}
+set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
                        ${tnl_config_CUDA__SOURCES}
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_implementation_CUDA__SOURCES}

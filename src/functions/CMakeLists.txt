@@ -2,9 +2,10 @@ SET( headers tnlFunctionDiscretizer.h
              tnlConstantFunction.h
              tnlExpBumpFunction.h
              tnlSinBumpsFunction.h
-             tnlSinWaveFunction.h )
+             tnlSinWaveFunction.h
+             tnlTestFunction.h )
                     
-SET( libtnlgeneratorsfunctionsincludedir ${TNL_INCLUDE_DIR}/generators/functions )
-SET( libtnlgeneratorsfunctionsinclude_HEADERS ${headers} )
+SET( libtnlfunctionsincludedir ${TNL_INCLUDE_DIR}/functions )
+SET( libtnlfunctionsinclude_HEADERS ${headers} )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/generators/functions )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functions )
