@@ -33,17 +33,12 @@ class tnlSolverStarter
    template< typename Problem >
    static bool run( const tnlParameterContainer& parameters );
 
-   template< typename Problem >
-   bool writeProlog( ostream& str,
-                     const tnlParameterContainer& parameters,
-                     const Problem& problem );
+   bool writeEpilog( ostream& str );
 
    template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,
                       const tnlParameterContainer& parameters,
                       TimeStepper& timeStepper );
-
-   bool writeEpilog( ostream& str );
 
    protected:
 

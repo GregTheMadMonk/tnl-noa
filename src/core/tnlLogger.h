@@ -30,23 +30,25 @@ class tnlLogger
    tnlLogger( int _width,
               ostream& _stream );
 
-   void WriteHeader( const tnlString& title );
+   void writeHeader( const tnlString& title );
 
-   void WriteSeparator();
+   void writeSeparator();
 
    bool writeSystemInformation();
 
    void writeCurrentTime( const char* label );
 
    // TODO: add units
-   template< typename T > void WriteParameter( const char* label,
-                                               const char* parameterName,
-                                               const tnlParameterContainer& parameters,
-                                               int parameterLevel = 0 );
-   
-   template< typename T > void WriteParameter( const char* label,
-                                               const T& value,
-                                               int parameterLevel = 0 );
+   template< typename T >
+   void writeParameter( const tnlString& label,
+                        const tnlString& parameterName,
+                        const tnlParameterContainer& parameters,
+                        int parameterLevel = 0 );
+
+   template< typename T >
+   void writeParameter( const tnlString& label,
+                        const T& value,
+                        int parameterLevel = 0 );
 
    protected:
 
@@ -58,29 +60,29 @@ class tnlLogger
 #include <implementation/core/tnlLogger_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-extern template void tnlLogger :: WriteParameter< char* >( const char*,
-                                                           const char*,
-                                                           const tnlParameterContainer&,
-                                                           int );
-extern template void tnlLogger :: WriteParameter< double >( const char*,
-                                                            const char*,
-                                                            const tnlParameterContainer&,
-                                                            int );
-extern template void tnlLogger :: WriteParameter< int >( const char*,
-                                                         const char*,
+extern template void tnlLogger::writeParameter< char* >( const tnlString&,
+                                                         const tnlString&,
                                                          const tnlParameterContainer&,
                                                          int );
+extern template void tnlLogger::writeParameter< double >( const tnlString&,
+                                                          const tnlString&,
+                                                          const tnlParameterContainer&,
+                                                          int );
+extern template void tnlLogger::writeParameter< int >( const tnlString&,
+                                                       const tnlString&,
+                                                       const tnlParameterContainer&,
+                                                       int );
 
 // TODO: fix this
 //extern template void tnlLogger :: WriteParameter< char* >( const char*,
 //                                                           const char*&,
 //                                                           int );
-extern template void tnlLogger :: WriteParameter< double >( const char*,
-                                                            const double&,
-                                                            int );
-extern template void tnlLogger :: WriteParameter< int >( const char*,
-                                                         const int&,
-                                                         int );
+extern template void tnlLogger::writeParameter< double >( const tnlString&,
+                                                          const double&,
+                                                          int );
+extern template void tnlLogger::writeParameter< int >( const tnlString&,
+                                                       const int&,
+                                                       int );
 #endif
 
 #endif

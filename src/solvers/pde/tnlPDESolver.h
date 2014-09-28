@@ -44,6 +44,9 @@ class tnlPDESolver : public tnlObject
    bool init( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+   bool writeProlog( tnlLogger& logger,
+                     const tnlParameterContainer& parameters );
+
    void setTimeStepper( TimeStepper& timeStepper );
 
    void setProblem( ProblemType& problem );

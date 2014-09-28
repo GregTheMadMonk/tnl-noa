@@ -1406,4 +1406,19 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
    return true;
 }
 
+template< typename Real,
+           typename Device,
+           typename Index >
+void
+tnlGrid< 3, Real, Device, Index >::
+writeProlog( tnlLogger& logger )
+{
+   logger.writeParameter( "Dimensions:", Dimensions );
+   logger.writeParameter( "Domain origin:", this->origin );
+   logger.writeParameter( "Domain proportions:", this->proportions );
+   logger.writeParameter( "Domain dimensions:", this->dimensions );
+   logger.writeParameter( "Cell proportions:", this->cellProportions );
+}
+
+
 #endif /* TNLGRID3D_IMPL_H_ */

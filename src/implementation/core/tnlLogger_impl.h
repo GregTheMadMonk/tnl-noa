@@ -18,30 +18,27 @@
 #ifndef TNLLOGGER_IMPL_H_
 #define TNLLOGGER_IMPL_H_
 
-tnlLogger :: tnlLogger( int _width,
-                       ostream& _stream )
-: width( _width ),
-  stream( _stream )
-{
-}
+#include <sstream>
 
 template< typename T >
-void tnlLogger :: WriteParameter( const char* label,
-                                  const char* parameterName,
-                                  const tnlParameterContainer& parameters,
-                                  int parameterLevel )
+void tnlLogger::writeParameter( const tnlString& label,
+                                const tnlString& parameterName,
+                                const tnlParameterContainer& parameters,
+                                int parameterLevel )
 {
    stream << "| ";
    int i;
    for( i = 0; i < parameterLevel; i ++ )
       stream << " ";
+   std::stringstream str;
+   str << parameters.GetParameter< T >( parameterName );
    stream  << label
-           << setw( width - strlen( label ) - 3 - parameterLevel )
-           << parameters. GetParameter< T >( parameterName ) << " |" << endl;
+           << setw( width - label.getLength() - parameterLevel - 3 )
+           << str.str() << " |" << endl;
 }
 
 template< typename T >
-void tnlLogger :: WriteParameter( const char* label,
+void tnlLogger :: writeParameter( const tnlString& label,
                                   const T& value,
                                   int parameterLevel )
 {
@@ -49,10 +46,11 @@ void tnlLogger :: WriteParameter( const char* label,
    int i;
    for( i = 0; i < parameterLevel; i ++ )
       stream << " ";
+   std::stringstream str;
+   str << value;
    stream  << label
-           << setw( width - strlen( label ) - 3 - parameterLevel )
-           << value << " |" << endl;
+           << setw( width - label.getLength() - parameterLevel - 3 )
+           << str.str() << " |" << endl;
 };
-
 
 #endif /* TNLLOGGER_IMPL_H_ */

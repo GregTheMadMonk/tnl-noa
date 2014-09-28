@@ -85,6 +85,40 @@ bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& pa
 }
 
 template< typename Problem, typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+writeProlog( tnlLogger& logger,
+             const tnlParameterContainer& parameters )
+{
+   logger.writeHeader( problem->getPrologHeader() );
+   problem->writeProlog( logger, parameters );
+   logger.writeSeparator();
+   mesh.writeProlog( logger );
+   logger.writeSeparator();
+   logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
+   logger.writeParameter< double >( "Initial tau:", "tau", parameters );
+   logger.writeParameter< double >( "Final time:", "final-time", parameters );
+   logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
+   const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
+   logger.writeParameter< tnlString >( "Discrete solver:", "discrete-solver", parameters );
+   if( solverName == "merson" )
+      logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
+   if( solverName == "sor" )
+      logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
+   if( solverName == "gmres" )
+      logger.writeParameter< int >( "Restarting:", "gmres-restarting", parameters, 1 );
+   logger.writeSeparator();
+   logger.writeParameter< tnlString >( "Real type:", "real-type", parameters, 0 );
+   logger.writeParameter< tnlString >( "Index type:", "index-type", parameters, 0 );
+   logger.writeParameter< tnlString >( "Device:", "device", parameters, 0 );
+   logger.writeSeparator();
+   logger.writeSystemInformation();
+   logger.writeSeparator();
+   logger.writeCurrentTime( "Started at:" );
+   return true;
+}
+
+template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper >::setTimeStepper( TimeStepper& timeStepper )
 {
    this -> timeStepper = &timeStepper;

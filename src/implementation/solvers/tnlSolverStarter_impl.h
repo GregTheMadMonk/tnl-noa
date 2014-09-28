@@ -302,40 +302,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
 #endif
 
 template< typename ConfigTag >
-   template< typename Problem >
-bool tnlSolverStarter< ConfigTag > :: writeProlog( ostream& str,
-                                      const tnlParameterContainer& parameters,
-                                      const Problem& problem )
-{
-   parameters. GetParameter< int >( "log-width", logWidth );
-   tnlLogger logger( logWidth, str );
-   logger. WriteHeader( problem. getPrologHeader() );
-   problem. writeProlog( logger, parameters );
-   logger. WriteSeparator();
-   logger. WriteParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger. WriteParameter< double >( "Initial tau:", "tau", parameters );
-   logger. WriteParameter< double >( "Final time:", "final-time", parameters );
-   logger. WriteParameter< double >( "Snapshot period:", "snapshot-period", parameters );
-   const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
-   logger. WriteParameter< tnlString >( "Discrete solver:", "discrete-solver", parameters );
-   if( solverName == "merson" )
-      logger. WriteParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
-   if( solverName == "sor" )
-      logger. WriteParameter< double >( "Omega:", "sor-omega", parameters, 1 );
-   if( solverName == "gmres" )
-      logger. WriteParameter< int >( "Restarting:", "gmres-restarting", parameters, 1 );
-   logger. WriteSeparator();
-   logger. WriteParameter< tnlString >( "Real type:", "real-type", parameters, 0 );
-   logger. WriteParameter< tnlString >( "Index type:", "index-type", parameters, 0 );
-   logger. WriteParameter< tnlString >( "Device:", "device", parameters, 0 );
-   logger. WriteSeparator();
-   logger. writeSystemInformation();
-   logger. WriteSeparator();
-   logger. writeCurrentTime( "Started at:" );
-   return true;
-}
-
-template< typename ConfigTag >
    template< typename Problem,
              typename TimeStepper >
 bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
@@ -357,8 +323,12 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Write a prolog
     */
+   parameters. GetParameter< int >( "log-width", logWidth );
    if( verbose )
-      writeProlog( cout, parameters, problem );
+   {
+      tnlLogger logger( logWidth, cout );
+      solver.writeProlog( logger, parameters );
+   }
    tnlString logFileName;
    bool haveLogFile = parameters.GetParameter< tnlString >( "log-file", logFileName );
    if( haveLogFile )
@@ -372,7 +342,8 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       }
       else
       {
-         writeProlog( logFile, parameters, problem  );
+         tnlLogger logger( logWidth, logFile );
+         solver.writeProlog( logger, parameters  );
          logFile.close();
       }
    }
@@ -449,17 +420,17 @@ template< typename ConfigTag >
 bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
 {
    tnlLogger logger( logWidth, str );
-   logger. writeCurrentTime( "Finished at:" );
-   logger. WriteParameter< double >( "IO Real Time:", this -> ioRtTimer. GetTime() );
-   logger. WriteParameter< double >( "IO CPU Time:", this -> ioCpuTimer. GetTime() );
-   logger. WriteParameter< double >( "Compute Real Time:", this -> computeRtTimer. GetTime() );
-   logger. WriteParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. GetTime() );
-   logger. WriteParameter< double >( "Total Real Time:", this -> totalRtTimer. GetTime() );
-   logger. WriteParameter< double >( "Total CPU Time:", this -> totalCpuTimer. GetTime() );
+   logger.writeCurrentTime( "Finished at:" );
+   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. GetTime() );
+   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. GetTime() );
+   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. GetTime() );
+   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. GetTime() );
+   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. GetTime() );
+   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. GetTime() );
    char buf[ 256 ];
    sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. GetTime() ) / this -> totalRtTimer. GetTime() );
-   logger. WriteParameter< char* >( "CPU usage:", buf );
-   logger. WriteSeparator();
+   logger.writeParameter< char* >( "CPU usage:", buf );
+   logger.writeSeparator();
 }
 
 #endif /* TNLSOLVERSTARTER_IMPL_H_ */

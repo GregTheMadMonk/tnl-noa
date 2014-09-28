@@ -218,6 +218,8 @@ endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
 
 ENABLE_TESTING()
 INCLUDE( Dart )
+set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
+set( LD_TEST_FLAGS "-lgcov -coverage" )
 
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )

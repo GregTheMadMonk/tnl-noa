@@ -23,7 +23,14 @@
 #include <core/tnlLogger.h>
 #include <tnlConfig.h>
 
-void tnlLogger :: WriteHeader( const tnlString& title )
+tnlLogger :: tnlLogger( int _width,
+                        ostream& _stream )
+: width( _width ),
+  stream( _stream )
+{
+}
+
+void tnlLogger :: writeHeader( const tnlString& title )
 {
    int fill = stream. fill(); 
    int titleLength = title. getLength();
@@ -36,7 +43,7 @@ void tnlLogger :: WriteHeader( const tnlString& title )
    stream. fill( fill );
 }
 
-void tnlLogger :: WriteSeparator()
+void tnlLogger :: writeSeparator()
 {
    int fill = stream. fill(); 
    stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
@@ -49,8 +56,8 @@ bool tnlLogger :: writeSystemInformation()
    struct utsname uts;
    gethostname( host_name, 255 );
    uname( &uts );
-   WriteParameter< char* >( "Host name:", host_name );
-   WriteParameter< char* >( "Architecture:", uts. machine );
+   writeParameter< char* >( "Host name:", host_name );
+   writeParameter< char* >( "Architecture:", uts. machine );
    fstream file;
    file. open( "/proc/cpuinfo", ios :: in );
    if( file )
@@ -69,7 +76,7 @@ bool tnlLogger :: writeSystemInformation()
             i = strlen( "processor" );
             while( line[ i ] != ':' && line[ i ] ) i ++;
             cpu_id = &line[ i + 1 ];
-            WriteParameter< char * >( "CPU Id.:", cpu_id );
+            writeParameter< char * >( "CPU Id.:", cpu_id );
             continue;
          }
          if( strncmp( line, "model name", strlen( "model name" ) ) == 0 )
@@ -77,7 +84,7 @@ bool tnlLogger :: writeSystemInformation()
             i = strlen( "model name" );
             while( line[ i ] != ':' && line[ i ] ) i ++;
             cpu_model_name = &line[ i + 1 ];
-            WriteParameter< char * >( "Model name:", cpu_model_name );
+            writeParameter< char * >( "Model name:", cpu_model_name );
             continue;
          }
          if( strncmp( line, "cpu MHz", strlen( "cpu MHz" ) ) == 0 )
@@ -85,7 +92,7 @@ bool tnlLogger :: writeSystemInformation()
             i = strlen( "cpu MHz" );
             while( line[ i ] != ':' && line[ i ] ) i ++;
             cpu_mhz = &line[ i + 1 ];
-            WriteParameter< char * >( "CPU MHz:", cpu_mhz );
+            writeParameter< char * >( "CPU MHz:", cpu_mhz );
             continue;
          }
          if( strncmp( line, "cache size", strlen( "cache size" ) ) == 0 )
@@ -93,7 +100,7 @@ bool tnlLogger :: writeSystemInformation()
             i = strlen( "cache size" );
             while( line[ i ] != ':' && line[ i ] ) i ++;
             cpu_cache = &line[ i + 1 ];
-            WriteParameter< char * >( "CPU cache:", cpu_cache );
+            writeParameter< char * >( "CPU cache:", cpu_cache );
             continue;
          }
       }
@@ -104,9 +111,9 @@ bool tnlLogger :: writeSystemInformation()
       return false;
    }
    file. close();
-   WriteParameter< char* >( "System:", uts. sysname );
-   WriteParameter< char* >( "Release:", uts. release );
-   WriteParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
+   writeParameter< char* >( "System:", uts. sysname );
+   writeParameter< char* >( "Release:", uts. release );
+   writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
    return true;
 }
 
@@ -117,32 +124,32 @@ void tnlLogger :: writeCurrentTime( const char* label )
    tm *tm_ptr = localtime( &timeval );
    char buf[ 256 ];
    strftime( buf, 256, "%a %b %d %H:%M:%S\0", tm_ptr );
-   WriteParameter< char* >( label, buf );
+   writeParameter< char* >( label, buf );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-template void tnlLogger :: WriteParameter< char* >( const char*,
-                                                    const char*,
-                                                    const tnlParameterContainer&,
-                                                    int );
-template void tnlLogger :: WriteParameter< double >( const char*,
-                                                     const char*,
-                                                     const tnlParameterContainer&,
-                                                     int );
-template void tnlLogger :: WriteParameter< int >( const char*,
-                                                  const char*,
+template void tnlLogger::writeParameter< char* >( const tnlString&,
+                                                  const tnlString&,
                                                   const tnlParameterContainer&,
                                                   int );
+template void tnlLogger::writeParameter< double >( const tnlString&,
+                                                   const tnlString&,
+                                                   const tnlParameterContainer&,
+                                                   int );
+template void tnlLogger::writeParameter< int >( const tnlString&,
+                                                const tnlString&,
+                                                const tnlParameterContainer&,
+                                                int );
 
 // TODO: fix this
 //template void tnlLogger :: WriteParameter< char* >( const char*,
 //                                                    const char*&,
 //                                                    int );
-template void tnlLogger :: WriteParameter< double >( const char*,
-                                                     const double&,
-                                                     int );
-template void tnlLogger :: WriteParameter< int >( const char*,
-                                                  const int&,
-                                                  int );
+template void tnlLogger::writeParameter< double >( const tnlString&,
+                                                   const double&,
+                                                   int );
+template void tnlLogger::writeParameter< int >( const tnlString&,
+                                                const int&,
+                                                int );
 
 #endif

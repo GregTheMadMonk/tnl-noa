@@ -22,6 +22,7 @@
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
+#include <core/tnlLogger.h>
 
 template< int Dimensions,
           typename Real = double,
@@ -205,6 +206,8 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    bool write( const MeshFunction& function,
                const tnlString& fileName,
                const tnlString& format ) const;
+
+   void writeProlog( tnlLogger& logger );
 
    protected:
 
@@ -461,6 +464,8 @@ template< int nx, int ny, typename Vertex = VertexType >
    bool write( const MeshFunction& function,
                const tnlString& fileName,
                const tnlString& format ) const;
+
+   void writeProlog( tnlLogger& logger );
 
    protected:
 
@@ -800,6 +805,8 @@ template< int dx, int dy, int dz, typename Vertex = VertexType >
    bool write( const MeshFunction& function,
                const tnlString& fileName,
                const tnlString& format ) const;
+
+   void writeProlog( tnlLogger& logger );
 
    protected:
 
