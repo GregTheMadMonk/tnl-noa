@@ -37,6 +37,9 @@ processEntities( const GridType& grid,
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
    const IndexType& zSize = grid.getDimensions().z();
+#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+#endif
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )

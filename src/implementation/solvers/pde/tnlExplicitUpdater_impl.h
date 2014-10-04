@@ -31,7 +31,6 @@ template< typename Mesh,
 void
 tnlExplicitUpdater< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
-        const RealType& tau,
         const Mesh& mesh,
         DifferentialOperator& differentialOperator,
         BoundaryConditions& boundaryConditions,
@@ -39,7 +38,7 @@ update( const RealType& time,
         DofVector& u,
         DofVector& fu ) const
 {
-   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, fu );
+   TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
@@ -64,7 +63,6 @@ template< int Dimensions,
 void
 tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
-        const RealType& tau,
         const tnlGrid< Dimensions, Real, Device, Index >& mesh,
         DifferentialOperator& differentialOperator,
         BoundaryConditions& boundaryConditions,
@@ -72,7 +70,7 @@ update( const RealType& time,
         DofVector& u,
         DofVector& fu ) const
 {
-   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, fu );
+   TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;

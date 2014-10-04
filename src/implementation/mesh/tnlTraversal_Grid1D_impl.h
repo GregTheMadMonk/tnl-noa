@@ -63,6 +63,9 @@ processEntities( const GridType& grid,
     */
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
+#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+#endif
    for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
    {
       const IndexType index = grid.getVertexIndex( coordinates );

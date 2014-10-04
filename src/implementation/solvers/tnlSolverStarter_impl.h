@@ -130,6 +130,8 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         //if( discreteSolver == "gmres" )
+         //   return tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };

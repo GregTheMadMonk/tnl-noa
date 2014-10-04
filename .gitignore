@@ -41,3 +41,4 @@
 # /tools/src/
 /tools/src/Makefile.in
 /Testing
+/CMakeLists.txt.user
