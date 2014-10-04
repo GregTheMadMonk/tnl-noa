@@ -45,6 +45,13 @@ template< typename Problem,
 class tnlSolverStarterExplicitSolverSetter{};
 
 template< typename Problem,
+          typename SemiImplicitSolver,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
+class tnlSolverStarterSemiImplicitSolverSetter{};
+
+
+template< typename Problem,
           typename ExplicitSolver,
           typename TimeStepper,
           typename ConfigTag >
@@ -83,6 +90,10 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
    return false;
 }
+
+/****
+ * Setting the time discretisation
+ */
 
 template< typename Problem,
           typename TimeDiscretisation,
@@ -130,8 +141,8 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
-         //if( discreteSolver == "gmres" )
-         //   return tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "gmres" )
+            return tnlSolverStarterExplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };
@@ -148,6 +159,10 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscreti
          return false;
       }
 };
+
+/****
+ * Setting the explicit solver
+ */
 
 template< typename Problem,
           typename ExplicitSolver,
@@ -197,6 +212,43 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag,
       }
 };
 
+/****
+ * Setting the semi-implicit solver
+ */
+
+template< typename Problem,
+          typename SemiImplicitSolver,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, ConfigTag, false >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         cerr << "The semi-implicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef tnlSemiImplicitTimeStepper< Problem, tnlGMRESSolver > TimeStepper;
+         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
+                                                               TimeStepper,
+                                                               ConfigTag >::run( problem, parameters );
+      }
+};
+
+/****
+ * Setting the explcicit time stepper
+ */
+
 template< typename Problem,
           typename ExplicitSolver,
           typename TimeStepper,
@@ -231,7 +283,9 @@ class tnlSolverStarterExplicitTimeStepperSetter
       };
 };
 
-
+/****
+ * Setting the semi-implicit time stepper
+ */
 
 
 

@@ -1,5 +1,6 @@
 SET( headers tnlPDESolver.h
              tnlExplicitTimeStepper.h
+             tnlSemiImplicitTimeStepper.h
              tnlExplicitUpdater.h
    )
    

@@ -84,5 +84,12 @@ class tnlExplicitMersonSolverTag{};
 
 template< typename ConfigTag, typename ExplicitSolver > struct tnlConfigTagExplicitSolver{ enum { enabled = true }; };
 
+/****
+ * All semi-implicit solvers are enabled by default
+ */
+
+class  tnlSemiImplicitGMRESSolverTag{};
+
+template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 
 #endif /* TNLCONFIGTAGS_H_ */
