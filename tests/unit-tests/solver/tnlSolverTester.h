@@ -47,7 +47,7 @@ class tnlSolverTesterProblem
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const { };
 
-   bool init( const tnlParameterContainer& parameters ) { this -> dofVector. setSize( 100 ); return true; };
+   bool setup( const tnlParameterContainer& parameters ) { this -> dofVector. setSize( 100 ); return true; };
 
    bool setInitialCondition( const tnlParameterContainer& parameters ) { return true; };
 

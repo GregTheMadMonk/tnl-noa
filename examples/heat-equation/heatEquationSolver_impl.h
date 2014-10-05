@@ -46,10 +46,10 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 
 template< typename Mesh, typename Diffusion, typename BoundaryCondition, typename RightHandSide >
 bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
-:: init( const tnlParameterContainer& parameters )
+::setup( const tnlParameterContainer& parameters )
 {
-   if( ! boundaryCondition.init( parameters ) ||
-       ! rightHandSide.init( parameters ) )
+   if( ! boundaryCondition.setup( parameters ) ||
+       ! rightHandSide.setup( parameters ) )
       return false;
    return true;
 }

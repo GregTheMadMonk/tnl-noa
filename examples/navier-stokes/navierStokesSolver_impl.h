@@ -115,7 +115,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 3, Real, Device
 }
 
 template< typename Mesh, typename EulerScheme >
-bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer& parameters )
+bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer& parameters )
 {
    cout << "Initiating solver ... " << endl;
 
@@ -169,7 +169,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::init( const tnlParameterContainer&
    nsSolver.setMu( parameters. GetParameter< double >( "mu") );
    nsSolver.setR( parameters. GetParameter< double >( "R") );
    nsSolver.setGravity( parameters. GetParameter< double >( "gravity") );
-   if( ! this->boundaryConditions.init( parameters ) )
+   if( ! this->boundaryConditions.setup( parameters ) )
       return false;
 
    /****

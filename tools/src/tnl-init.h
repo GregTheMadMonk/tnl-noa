@@ -41,7 +41,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
 
    typedef tnlTestFunction< MeshType::Dimensions, RealType > FunctionType;
    FunctionType function;
-   if( ! function.init( parameters, "" ) )
+   if( ! function.setup( parameters, "" ) )
       return false;
    typedef tnlVector< RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;

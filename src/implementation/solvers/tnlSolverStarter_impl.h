@@ -28,6 +28,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
+#include <solvers/pde/tnlSemiImplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
@@ -57,6 +58,11 @@ template< typename Problem,
           typename ConfigTag >
 class tnlSolverStarterExplicitTimeStepperSetter;
 
+template< typename Problem,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitTimeStepperSetter;
+
 template< typename ConfigTag >
 tnlSolverStarter< ConfigTag > :: tnlSolverStarter()
 : logWidth( 72 )
@@ -71,7 +77,7 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
     * Create and set-up the problem
     */
    Problem problem;
-   if( ! problem. init( parameters ) )
+   if( ! problem.setup( parameters ) )
    {
       cerr << "The problem initiation failed!" << endl;
       return false;
@@ -238,7 +244,9 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSol
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         typedef tnlSemiImplicitTimeStepper< Problem, tnlGMRESSolver > TimeStepper;
+         typedef typename Problem::MatrixType MatrixType;
+         typedef tnlGMRESSolver< MatrixType > LinearSystemSolver;
+         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
          return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
                                                                TimeStepper,
                                                                ConfigTag >::run( problem, parameters );
@@ -246,7 +254,7 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSol
 };
 
 /****
- * Setting the explcicit time stepper
+ * Setting the explicit time stepper
  */
 
 template< typename Problem,
@@ -260,18 +268,22 @@ class tnlSolverStarterExplicitTimeStepperSetter
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters)
       {
+         typedef typename Problem::RealType RealType;
+         typedef typename Problem::IndexType IndexType;
+         typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
+
          ExplicitSolver explicitSolver;
-         explicitSolver.init( parameters );
+         explicitSolver.setup( parameters );
          int verbose = parameters.GetParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
-         tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
+         SolverMonitorType odeSolverMonitor;
          if( ! problem.getSolverMonitor() )
             explicitSolver.setSolverMonitor( odeSolverMonitor );
          else
-            explicitSolver.setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+            explicitSolver.setSolverMonitor( * ( SolverMonitorType* ) problem. getSolverMonitor() );
 
          TimeStepper timeStepper;
-         if( ! timeStepper.init( parameters ) )
+         if( ! timeStepper.setup( parameters ) )
          {
             cerr << "The time stepper initiation failed!" << endl;
             return false;
@@ -286,6 +298,45 @@ class tnlSolverStarterExplicitTimeStepperSetter
 /****
  * Setting the semi-implicit time stepper
  */
+template< typename Problem,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitTimeStepperSetter
+{
+   public:
+
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters)
+      {
+         typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
+         typedef typename LinearSystemSolverType::MatrixType MatrixType;
+         typedef typename Problem::RealType RealType;
+         typedef typename Problem::IndexType IndexType;
+         typedef tnlIterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+
+         LinearSystemSolverType linearSystemSolver;
+         linearSystemSolver.setup( parameters );
+         int verbose = parameters.GetParameter< int >( "verbose" );
+         linearSystemSolver.setVerbose( verbose );
+
+         SolverMonitorType solverMonitor;
+         if( ! problem.getSolverMonitor() )
+            linearSystemSolver.setSolverMonitor( solverMonitor );
+         else
+            linearSystemSolver.setSolverMonitor( * ( SolverMonitorType* ) problem. getSolverMonitor() );
+
+         TimeStepper timeStepper;
+         if( ! timeStepper.setup( parameters ) )
+         {
+            cerr << "The time stepper initiation failed!" << endl;
+            return false;
+         }
+         timeStepper.setSolver( linearSystemSolver );
+
+         tnlSolverStarter< ConfigTag > solverStarter;
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+      };
+};
 
 
 
@@ -372,7 +423,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    tnlPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
-   if( ! solver.init( parameters ) )
+   if( ! solver.setup( parameters ) )
       return false;
    solver.setTimeStepper( timeStepper );
 

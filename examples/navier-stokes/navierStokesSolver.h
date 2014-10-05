@@ -82,7 +82,7 @@ class navierStokesSolver
    bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
                   const tnlParameterContainer& parameters ) const;
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    bool setInitialCondition( const tnlParameterContainer& parameters );
 

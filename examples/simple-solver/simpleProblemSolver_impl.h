@@ -60,7 +60,7 @@ void simpleProblemSolver< Mesh>::writeProlog( tnlLogger& logger,
 }
 
 template< typename Mesh >
-bool simpleProblemSolver< Mesh>::init( const tnlParameterContainer& parameters )
+bool simpleProblemSolver< Mesh>::setup( const tnlParameterContainer& parameters )
 {
    /****
     * Set-up your solver here. It means:

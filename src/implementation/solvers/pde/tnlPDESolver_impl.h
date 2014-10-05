@@ -41,8 +41,8 @@ void tnlPDESolver< Problem, TimeStepper >::configSetup( tnlConfigDescription& co
 }
 
 template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper >::init( const tnlParameterContainer& parameters,
-                                                 const tnlString& prefix )
+bool tnlPDESolver< Problem, TimeStepper >::setup( const tnlParameterContainer& parameters,
+                                                  const tnlString& prefix )
 {
    /****
     * Load the mesh from the mesh file
@@ -205,6 +205,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
    this->timeStepper->setProblem( * ( this->problem ) );
+   this->timeStepper->init( mesh );
    this->problem->bindDofs( mesh, this->dofs );
    this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
 
@@ -217,7 +218,6 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    {
       RealType tau = Min( this -> snapshotTau,
                           this -> finalTime - t );
-      //this -> timeStepper -> setTau( tau );
       if( ! this->timeStepper->solve( t, t + tau, mesh, dofs ) )
          return false;
       step ++;

@@ -44,10 +44,10 @@ void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
 };
 
 template< typename Problem >
-bool tnlEulerSolver< Problem > :: init( const tnlParameterContainer& parameters,
+bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters,
                                         const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::init( parameters, prefix );
+   tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.GetParameter< double >( prefix + "euler-cfl" ) );
 }

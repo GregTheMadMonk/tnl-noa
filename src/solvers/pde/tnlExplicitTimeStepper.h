@@ -42,8 +42,10 @@ class tnlExplicitTimeStepper
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
+
+   bool init( const MeshType& mesh );
 
    void setSolver( OdeSolverType& odeSolver );
 

@@ -19,7 +19,7 @@
 #define TNLSEMIIMPLICITTIMESTEPPER_H_
 
 template< typename Problem,
-          typename MatrixSolver >
+          typename LinearSystemSolver >
 class tnlSemiImplicitTimeStepper
 {
    public:
@@ -30,19 +30,26 @@ class tnlSemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef MatrixSolver MatrixSolverType;
+   typedef LinearSystemSolver LinearSystemSolverType;
+   typedef typename ProblemType::MatrixType MatrixType;
 
    tnlSemiImplicitTimeStepper();
 
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
+
+   bool init( const MeshType& mesh );
 
    void setProblem( ProblemType& problem );
 
    ProblemType* getProblem() const;
+
+   void setSolver( LinearSystemSolver& linearSystemSolver );
+
+   LinearSystemSolverType* getSolver() const;
 
    bool setTau( const RealType& tau );
 
@@ -55,9 +62,13 @@ class tnlSemiImplicitTimeStepper
 
    protected:
 
-   MatrixSolver matrixSolver;
-
    Problem* problem;
+
+   MatrixType matrix;
+
+   DofVectorType rightHandSide;
+
+   LinearSystemSolver* linearSystemSolver;
 
    RealType tau;
 };

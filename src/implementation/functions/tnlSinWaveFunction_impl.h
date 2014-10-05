@@ -30,7 +30,7 @@ tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
 }
 
 template< typename Real >
-bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& parameters,
+bool tnlSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->waveLength = parameters.GetParameter< double >( prefix + "wave-length" );

@@ -19,17 +19,18 @@
 #define TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
 
 template< typename Problem,
-          typename MatrixSolver >
-tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::
+          typename LinearSystemSolver >
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 tnlSemiImplicitTimeStepper()
-: problem( 0 )
+: problem( 0 ),
+  linearSystemSolver( 0 )
 {
 };
 
 template< typename Problem,
-          typename MatrixSolver >
+          typename LinearSystemSolver >
 void
-tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
@@ -37,10 +38,10 @@ configSetup( tnlConfigDescription& config,
 }
 
 template< typename Problem,
-          typename MatrixSolver >
+          typename LinearSystemSolver >
 bool
-tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::
-init( const tnlParameterContainer& parameters,
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
    this->setTau( parameters.GetParameter< double >( "tau") );
@@ -48,22 +49,54 @@ init( const tnlParameterContainer& parameters,
 }
 
 template< typename Problem,
-          typename MatrixSolver >
-void tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::setProblem( ProblemType& problem )
+          typename LinearSystemSolver >
+bool
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+init( const MeshType& mesh )
+{
+   return this->problem->init( mesh, this->matrix );
+}
+
+template< typename Problem,
+          typename LinearSystemSolver >
+void
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+setProblem( ProblemType& problem )
 {
    this -> problem = &problem;
 };
 
 template< typename Problem,
-          typename MatrixSolver >
-Problem* tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::getProblem() const
+          typename LinearSystemSolver >
+Problem*
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+getProblem() const
 {
     return this -> problem;
 };
 
 template< typename Problem,
-          typename MatrixSolver >
-bool tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::setTau( const RealType& tau )
+          typename LinearSystemSolver >
+void
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+setSolver( LinearSystemSolver& linearSystemSolver )
+{
+   this->linearSystemSolver = linearSystemSolver;
+}
+template< typename Problem,
+          typename LinearSystemSolver >
+LinearSystemSolver*
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+getSolver() const
+{
+   return this->linearSystemSolver;
+}
+
+template< typename Problem,
+          typename LinearSystemSolver >
+bool
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+setTau( const RealType& tau )
 {
    if( tau <= 0.0 )
    {
@@ -74,19 +107,26 @@ bool tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::setTau( const RealType
 };
 
 template< typename Problem,
-          typename MatrixSolver >
-bool tnlSemiImplicitTimeStepper< Problem, MatrixSolver >::solve( const RealType& time,
-                                                                 const RealType& stopTime,
-                                                                 const MeshType& mesh,
-                                                                 DofVectorType& dofVector )
+          typename LinearSystemSolver >
+bool
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+solve( const RealType& time,
+       const RealType& stopTime,
+       const MeshType& mesh,
+       DofVectorType& dofVector )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
    while( t < stopTime )
    {
-      Real currentTau = tnlMin( this->tau, stopTime - t );
-      this->problem->assemblyLinearSystem( t, tau, mesh, dofVector, matrix, b );
-
+      RealType currentTau = tnlMin( this->tau, stopTime - t );
+      this->problem->assemblyLinearSystem( t,
+                                           currentTau,
+                                           mesh,
+                                           dofVector,
+                                           this->matrix,
+                                           this->rightHandSide );
+      t += currentTau;
    }
 }
 

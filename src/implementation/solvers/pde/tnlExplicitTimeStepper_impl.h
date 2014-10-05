@@ -28,21 +28,33 @@ tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver >::configSetup( tnlConfigDescription& config,
-                                                                const tnlString& prefix )
+void
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
 {
    config.addEntry< double >( "tau", "Time step for the time discretisation.", 1.0 );
 }
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-bool tnlExplicitTimeStepper< Problem, OdeSolver >::init( const tnlParameterContainer& parameters,
-                                                         const tnlString& prefix )
+bool
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+setup( const tnlParameterContainer& parameters,
+       const tnlString& prefix )
 {
    this->setTau( parameters.GetParameter< double >( "tau") );
    return true;
 }
 
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+bool
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+init( const MeshType& mesh )
+{
+   return true;
+}
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >

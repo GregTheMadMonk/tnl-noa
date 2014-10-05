@@ -115,10 +115,10 @@ void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
 };
 
 template< typename Problem >
-bool tnlMersonSolver< Problem > :: init( const tnlParameterContainer& parameters,
+bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameters,
                                          const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::init( parameters, prefix );
+   tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
 }

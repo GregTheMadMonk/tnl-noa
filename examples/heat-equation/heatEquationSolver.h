@@ -51,7 +51,7 @@ class heatEquationSolver
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const;
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    bool setInitialCondition( const tnlParameterContainer& parameters,
                              const MeshType& mesh );

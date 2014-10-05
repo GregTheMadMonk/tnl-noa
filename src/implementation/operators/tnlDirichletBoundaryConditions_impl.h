@@ -10,10 +10,10 @@ template< typename MeshReal,
           typename Index >
 bool
 tnlDirichletBoundaryConditions< tnlGrid< 1,MeshReal, Device, MeshIndex >, Function, Real, Index >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   return function.init( parameters, prefix );
+   return function.setup( parameters, prefix );
 }
 
 template< typename MeshReal,
@@ -43,10 +43,10 @@ template< typename MeshReal,
           typename Index >
 bool
 tnlDirichletBoundaryConditions< tnlGrid< 2,MeshReal, Device, MeshIndex >, Function, Real, Index >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   return function.init( parameters, prefix );
+   return function.setup( parameters, prefix );
 }
 
 
@@ -77,10 +77,10 @@ template< typename MeshReal,
           typename Index >
 bool
 tnlDirichletBoundaryConditions< tnlGrid< 3,MeshReal, Device, MeshIndex >, Function, Real, Index >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   return function.init( parameters, prefix );
+   return function.setup( parameters, prefix );
 }
 
 template< typename MeshReal,

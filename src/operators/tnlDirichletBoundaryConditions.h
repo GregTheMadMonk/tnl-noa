@@ -35,7 +35,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
             
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,
@@ -70,7 +70,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,
@@ -106,7 +106,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,

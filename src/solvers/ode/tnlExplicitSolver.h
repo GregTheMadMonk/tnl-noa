@@ -45,7 +45,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setProblem( Problem& problem );
@@ -135,10 +135,10 @@ void tnlExplicitSolver < Problem > :: configSetup( tnlConfigDescription& config,
 }
 
 template< typename Problem >
-bool tnlExplicitSolver < Problem >::init( const tnlParameterContainer& parameters,
+bool tnlExplicitSolver < Problem >::setup( const tnlParameterContainer& parameters,
                                           const tnlString& prefix )
 {   
-   return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::init( parameters, prefix );
+   return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
 
 
