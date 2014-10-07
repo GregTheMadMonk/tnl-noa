@@ -25,7 +25,6 @@ template< typename MeshReal,
 void
 tnlDirichletBoundaryConditions< tnlGrid< 1,MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
-                       const RealType& tau,
                        const MeshType& mesh,
                        const IndexType index,
                        const CoordinatesType& coordinates,
@@ -60,7 +59,6 @@ template< typename MeshReal,
 void
 tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
-                       const RealType& tau,
                        const MeshType& mesh,
                        const IndexType index,
                        const CoordinatesType& coordinates,
@@ -94,7 +92,6 @@ template< typename MeshReal,
 void
 tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
-                       const RealType& tau,
                        const MeshType& mesh,
                        const IndexType index,
                        const CoordinatesType& coordinates,

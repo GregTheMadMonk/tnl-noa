@@ -39,7 +39,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,
-                               const RealType& tau,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,
@@ -75,7 +74,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,
-                               const RealType& tau,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,
@@ -112,7 +110,6 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
               const tnlString& prefix = "" );
 
    void setBoundaryConditions( const RealType& time,
-                               const RealType& tau,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,

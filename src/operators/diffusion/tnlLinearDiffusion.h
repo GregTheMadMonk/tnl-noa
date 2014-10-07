@@ -30,7 +30,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 
    static tnlString getType();
 
-   template< typename Vector >
+   /*template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -40,7 +40,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                         const IndexType cellIndex,
                         const CoordinatesType& coordinates,
                         Vector& u,
-                        Vector& fu ) const;
+                        Vector& fu ) const;*/
    
    template< typename Vector >
 #ifdef HAVE_CUDA
@@ -48,7 +48,9 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 #endif
    Real getValue( const MeshType& mesh,
                   const IndexType cellIndex,
-                  Vector& u ) const;
+                  const CoordinatesType& coordinates,
+                  const Vector& u,
+                  const RealType& time ) const;
 
 };
 
@@ -70,7 +72,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
 
    static tnlString getType();
 
-   template< typename Vector >
+   /*template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -80,7 +82,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                         const IndexType index,
                         const CoordinatesType& coordinates,
                         Vector& u,
-                        Vector& fu ) const;
+                        Vector& fu ) const;*/
    
    template< typename Vector >
 #ifdef HAVE_CUDA
@@ -88,7 +90,9 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
 #endif
    Real getValue( const MeshType& mesh,
                   const IndexType cellIndex,
-                  Vector& u ) const;
+                  const CoordinatesType& coordinates,
+                  const Vector& u,
+                  const Real& time ) const;
 
 };
 
@@ -110,7 +114,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
 
    static tnlString getType();
 
-   template< typename Vector >
+   /*template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -120,7 +124,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                         const IndexType index,
                         const CoordinatesType& coordinates,
                         Vector& u,
-                        Vector& fu ) const;
+                        Vector& fu ) const;*/
    
    template< typename Vector >
 #ifdef HAVE_CUDA
@@ -128,7 +132,9 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
 #endif
    Real getValue( const MeshType& mesh,
                   const IndexType cellIndex,
-                  Vector& u ) const;
+                  const CoordinatesType& coordinates,
+                  const Vector& u,
+                  const Real& time ) const;
 
 };
 

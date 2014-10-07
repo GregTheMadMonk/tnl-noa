@@ -158,7 +158,6 @@ void heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 
    this->bindDofs( mesh, _u );
    explicitUpdater.template update< Mesh::Dimensions >( time,
-                                                        tau,
                                                         mesh,
                                                         this->differentialOperator,
                                                         this->boundaryCondition,

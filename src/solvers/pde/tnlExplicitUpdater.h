@@ -27,7 +27,7 @@ class tnlExplicitUpdaterTraversalUserData
 {
    public:
 
-      const Real &time, &tau;
+      const Real &time;
 
       DifferentialOperator& differentialOperator;
 
@@ -38,14 +38,12 @@ class tnlExplicitUpdaterTraversalUserData
       DofVector &u, &fu;
 
       tnlExplicitUpdaterTraversalUserData( const Real& time,
-                                           const Real& tau,
                                            DifferentialOperator& differentialOperator,
                                            BoundaryConditions& boundaryConditions,
                                            RightHandSide& rightHandSide,
                                            DofVector& u,
                                            DofVector& fu )
       : time( time ),
-        tau( tau ),
         differentialOperator( differentialOperator ),
         boundaryConditions( boundaryConditions ),
         rightHandSide( rightHandSide ),
@@ -79,7 +77,6 @@ class tnlExplicitUpdater
 
       template< int EntityDimensions >
       void update( const RealType& time,
-                   const RealType& tau,
                    const MeshType& mesh,
                    DifferentialOperator& differentialOperator,
                    BoundaryConditions& boundaryConditions,
@@ -97,7 +94,6 @@ class tnlExplicitUpdater
                                 const IndexType index )
             {
                userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  userData.tau,
                                                                   mesh,
                                                                   index,
                                                                   userData.u,
@@ -115,12 +111,10 @@ class tnlExplicitUpdater
                                 TraversalUserData& userData,
                                 const IndexType index )
             {
-               userData.differentialOperator.update( userData.time,
-                                                     userData.tau,
-                                                     mesh,
-                                                     index,
-                                                     userData.u,
-                                                     userData.fu );
+               userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
+                                                                               index,
+                                                                               userData.u,
+                                                                               userData.time );
                userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
                                                                         userData.time );
             }
@@ -158,7 +152,6 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       
       template< int EntityDimensions >
       void update( const RealType& time,
-                   const RealType& tau,
                    const MeshType& mesh,
                    DifferentialOperator& differentialOperator,
                    BoundaryConditions& boundaryConditions,
@@ -181,7 +174,6 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                 const CoordinatesType& coordinates )
             {
                userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  userData.tau,
                                                                   mesh,
                                                                   index,
                                                                   coordinates,
@@ -201,13 +193,11 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                 const IndexType index,
                                 const CoordinatesType& coordinates )
             {
-               userData.differentialOperator.explicitUpdate( userData.time,
-                                                             userData.tau,
-                                                             mesh,
-                                                             index,
-                                                             coordinates,
-                                                             userData.u,
-                                                             userData.fu );
+               userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
+                                                                               index,
+                                                                               coordinates,
+                                                                               userData.u,
+                                                                               userData.time );
 
                userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getCellCenter( coordinates ),
                                                                         userData.time );

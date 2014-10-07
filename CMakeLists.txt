@@ -99,6 +99,7 @@ endif( NOT WITH_CUDA STREQUAL "no" )
 #
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
+   AddCompilerFlag( "-DHAVE_OPENMP -fopenmp" )
 # TODO: finish this
 endif()
 

@@ -20,7 +20,7 @@ getType()
           ::getType< Index >() + " >";
 }
 
-template< typename MeshReal,
+/*template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
@@ -42,7 +42,7 @@ explicitUpdate( const RealType& time,
    fu[ cellIndex ] = ( u[ mesh.getCellXPredecessor( cellIndex ) ]
                        - 2.0 * u[ cellIndex ]
                        + u[ mesh.getCellXSuccessor( cellIndex ) ] ) * mesh.getHxSquareInverse();
-}
+}*/
 
 template< typename MeshReal,
           typename Device,
@@ -57,7 +57,9 @@ Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          Vector& u ) const
+          const CoordinatesType& coordinates,
+          const Vector& u,
+          const Real& time ) const
 {
    return ( u[ mesh.getCellXPredecessor( cellIndex ) ]
             - 2.0 * u[ cellIndex ]
@@ -79,7 +81,7 @@ getType()
           ::getType< Index >() + " >";
 }
 
-template< typename MeshReal,
+/*template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
@@ -104,7 +106,7 @@ explicitUpdate( const RealType& time,
                      ( u[ mesh.getCellYPredecessor( cellIndex ) ]
                        - 2.0 * u[ cellIndex ]
                        + u[ mesh.getCellYSuccessor( cellIndex ) ] ) * mesh.getHySquareInverse();
-}
+}*/
 
 template< typename MeshReal,
           typename Device,
@@ -119,7 +121,9 @@ Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          Vector& u ) const
+          const CoordinatesType& coordinates,
+          const Vector& u,
+          const Real& time ) const
 {
    return ( u[ mesh.getCellXPredecessor( cellIndex ) ]
             - 2.0 * u[ cellIndex ]
@@ -144,7 +148,7 @@ getType()
           ::getType< Index >() + " >";
 }
 
-template< typename MeshReal,
+/*template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
@@ -172,7 +176,7 @@ explicitUpdate( const RealType& time,
                      ( u[ mesh.getCellZPredecessor( cellIndex ) ]
                        - 2.0 * u[ cellIndex ]
                        + u[ mesh.getCellZSuccessor( cellIndex ) ] ) * mesh.getHzSquareInverse();
-}
+}*/
 
 template< typename MeshReal,
           typename Device,
@@ -187,7 +191,9 @@ Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          Vector& u ) const
+          const CoordinatesType& coordinates,
+          const Vector& u,
+          const Real& time ) const
 {
    return ( u[ mesh.getCellXPredecessor( cellIndex ) ]
             - 2.0 * u[ cellIndex ]

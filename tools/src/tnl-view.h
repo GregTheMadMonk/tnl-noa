@@ -244,6 +244,7 @@ bool processFiles( const tnlParameterContainer& parameters )
 
    bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   bool error( false );
 #ifdef HAVE_OPENMP
 #pragma omp parallel for
 #endif
@@ -257,7 +258,10 @@ bool processFiles( const tnlParameterContainer& parameters )
       if( ! getOutputFileName( inputFiles[ i ],
                                outputFormat,
                                outputFileName ) )
-         return false;
+      {
+         error = true;
+         continue;
+      }
       if( checkOutputFile && fileExists( outputFileName ) )
       {
          if( verbose )
@@ -277,13 +281,15 @@ bool processFiles( const tnlParameterContainer& parameters )
          if( ! parseObjectType( objectType, parsedObjectType ) )
          {
             cerr << "Unable to parse object type " << objectType << "." << endl;
-            return false;
+            error = true;
+            continue;
          }
          setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
       }
    }
    if( verbose )
       cout << endl;
+   return ! error;
 }
 
 
