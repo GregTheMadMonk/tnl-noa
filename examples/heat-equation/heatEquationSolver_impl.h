@@ -77,7 +77,6 @@ typename heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >::I
    /****
     * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
     */
-   return 3*mesh.getNumberOfCells();
 }
 
 template< typename Mesh,

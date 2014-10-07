@@ -33,7 +33,7 @@ tnl-grid-setup --dimensions ${dimension} \
                --size-y ${dofSize} \
                --size-z ${dofSize} \
                
-tnl-discrete --mesh mesh.tnl \
+tnl-init --mesh mesh.tnl \
              --function ${analyticFunction} \
              --output-file u-ini.tnl \
              --amplitude ${amplitude} \
