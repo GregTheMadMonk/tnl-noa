@@ -109,12 +109,12 @@ bool heatEquationSolver< Mesh,Diffusion,BoundaryCondition,RightHandSide >
 :: setInitialCondition( const tnlParameterContainer& parameters,
                         const MeshType& mesh )
 {
-   const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   /*const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
-   }
+   }*/
    return true;
 }
 
