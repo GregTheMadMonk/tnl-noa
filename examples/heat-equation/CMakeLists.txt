@@ -6,8 +6,6 @@ set( tnl_heat_equation_SOURCES
      tnl-heat-equation-eoc.cpp
      heatEquationSolver_impl.h
      heatEquationSolver.h
-     heatEquationScheme_impl.h
-     heatEquationScheme.h     
      tnlHeatEquationEocRhs.h )
                
 ADD_EXECUTABLE(tnl-heat-equation${debugExt} tnl-heat-equation.cpp)

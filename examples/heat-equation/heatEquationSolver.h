@@ -26,7 +26,6 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include "heatEquationSolver.h"
-#include "heatEquationScheme.h"
 
 
 template< typename Mesh,
@@ -42,7 +41,6 @@ class heatEquationSolver
    typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef heatEquationScheme< Mesh, DifferentialOperator, RightHandSide > Scheme;
 
    static tnlString getTypeStatic();
 
