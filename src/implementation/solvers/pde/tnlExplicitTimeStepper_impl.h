@@ -107,12 +107,12 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver >::GetExplicitRHS( const RealType& time,
+void tnlExplicitTimeStepper< Problem, OdeSolver >::getExplicitRHS( const RealType& time,
                                                                    const RealType& tau,
                                                                    DofVectorType& _u,
                                                                    DofVectorType& _fu )
 {
-   this->problem->GetExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
+   this->problem->getExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */
