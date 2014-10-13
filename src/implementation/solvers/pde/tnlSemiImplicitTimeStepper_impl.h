@@ -18,6 +18,8 @@
 #ifndef TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
 #define TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
 
+#include <core/mfuncs.h>
+
 template< typename Problem,
           typename LinearSystemSolver >
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
@@ -54,7 +56,7 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshType& mesh )
 {
-   return this->problem->init( mesh, this->matrix );
+   return this->problem->setupLinearSystem( mesh, this->matrix );
 }
 
 template< typename Problem,
@@ -81,7 +83,7 @@ void
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setSolver( LinearSystemSolver& linearSystemSolver )
 {
-   this->linearSystemSolver = linearSystemSolver;
+   this->linearSystemSolver = &linearSystemSolver;
 }
 template< typename Problem,
           typename LinearSystemSolver >
@@ -119,7 +121,7 @@ solve( const RealType& time,
    RealType t = time;
    while( t < stopTime )
    {
-      RealType currentTau = tnlMin( this->tau, stopTime - t );
+      RealType currentTau = Min( this->tau, stopTime - t );
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
                                            mesh,

@@ -53,7 +53,7 @@ template< int Dimensions, typename Real, typename Device, typename Index >
  * Please, chose your preferred time discretisation  here.
  */
 template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
 template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****

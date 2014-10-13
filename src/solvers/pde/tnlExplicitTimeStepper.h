@@ -62,7 +62,7 @@ class tnlExplicitTimeStepper
                const MeshType& mesh,
                DofVectorType& dofVector );
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitRHS( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );

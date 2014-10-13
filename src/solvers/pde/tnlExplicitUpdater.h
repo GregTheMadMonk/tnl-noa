@@ -50,11 +50,6 @@ class tnlExplicitUpdaterTraversalUserData
         u( u ),
         fu( fu )
       {};
-
-   protected:
-
-
-
 };
 
 template< typename Mesh,
@@ -89,6 +84,9 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimension >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index )
@@ -107,6 +105,9 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimensions >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index )
@@ -168,6 +169,9 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
              * otherwise 'coordinates' would not make sense without knowing the orientation.
              */
             template< int EntityDimension >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index,
@@ -188,6 +192,9 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
          public:
 
             template< int EntityDimensions >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index,
@@ -199,8 +206,9 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                userData.u,
                                                                                userData.time );
 
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getCellCenter( coordinates ),
-                                                                        userData.time );
+               tnlAssert( false, ); // TODO: fix this
+               //userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( coordinates ),
+               //                                                         userData.time );
             }
 
       };

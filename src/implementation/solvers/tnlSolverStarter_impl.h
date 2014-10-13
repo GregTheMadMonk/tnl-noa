@@ -148,7 +148,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
          if( discreteSolver == "gmres" )
-            return tnlSolverStarterExplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };
@@ -316,8 +316,6 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
 
          LinearSystemSolverType linearSystemSolver;
          linearSystemSolver.setup( parameters );
-         int verbose = parameters.GetParameter< int >( "verbose" );
-         linearSystemSolver.setVerbose( verbose );
 
          SolverMonitorType solverMonitor;
          if( ! problem.getSolverMonitor() )
