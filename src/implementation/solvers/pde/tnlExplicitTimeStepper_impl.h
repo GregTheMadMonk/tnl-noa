@@ -22,7 +22,8 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
 : odeSolver( 0 ),
-  problem( 0 )
+  problem( 0 ),
+  timeStep( 0 )
 {
 };
 
@@ -33,7 +34,6 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry< double >( "tau", "Time step for the time discretisation.", 1.0 );
 }
 
 template< typename Problem,
@@ -43,7 +43,6 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   this->setTau( parameters.GetParameter< double >( "tau") );
    return true;
 }
 
@@ -80,14 +79,14 @@ Problem* tnlExplicitTimeStepper< Problem, OdeSolver > :: getProblem() const
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTau( const RealType& tau )
+bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTimeStep( const RealType& timeStep )
 {
-   if( tau <= 0.0 )
+   if( timeStep <= 0.0 )
    {
       cerr << "Tau for tnlExplicitTimeStepper must be positive. " << endl;
       return false;
    }
-   this -> tau = tau;
+   this -> timeStep = timeStep;
 };
 
 template< typename Problem,
@@ -97,7 +96,7 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
                                                           const MeshType& mesh,
                                                           DofVectorType& dofVector )
 {
-   this->odeSolver->setTau( this -> tau );
+   this->odeSolver->setTau( this -> timeStep );
    this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );

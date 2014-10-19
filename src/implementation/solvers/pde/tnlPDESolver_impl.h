@@ -18,11 +18,15 @@
 #ifndef TNLPDESOLVER_IMPL_H_
 #define TNLPDESOLVER_IMPL_H_
 
-template< typename Problem, typename TimeStepper >
-tnlPDESolver< Problem, TimeStepper > :: tnlPDESolver()
+template< typename Problem,
+          typename TimeStepper >
+tnlPDESolver< Problem, TimeStepper >::
+tnlPDESolver()
 : timeStepper( 0 ),
   finalTime( 0.0 ),
-  snapshotTau( 0.0 ),
+  snapshotPeriod( 0.0 ),
+  timeStep( 1.0 ),
+  timeStepOrder( 0.0 ),
   problem( 0 ),
   ioRtTimer( 0 ),
   computeRtTimer( 0 ),
@@ -31,18 +35,26 @@ tnlPDESolver< Problem, TimeStepper > :: tnlPDESolver()
 {
 }
 
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper >::configSetup( tnlConfigDescription& config,
-                                                        const tnlString& prefix )
+template< typename Problem,
+          typename TimeStepper >
+void
+tnlPDESolver< Problem, TimeStepper >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
 {
    config.addEntry< tnlString >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
+   config.addEntry< double >( "tau", "The time step for the time discretisation.", 1.0 );
+   config.addEntry< double >( "tau-order", "The time step is set to tau*pow( space-step, tau-order).", 0.0 );
 }
 
-template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper >::setup( const tnlParameterContainer& parameters,
-                                                  const tnlString& prefix )
+template< typename Problem,
+          typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+setup( const tnlParameterContainer& parameters,
+       const tnlString& prefix )
 {
    /****
     * Load the mesh from the mesh file
@@ -72,19 +84,21 @@ bool tnlPDESolver< Problem, TimeStepper >::setup( const tnlParameterContainer& p
     * Set-up the initial condition
     */
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, mesh ) )
+   if( ! this->problem->setInitialCondition( parameters, mesh, this->dofs ) )
       return false;
 
    /****
     * Initialize the time discretisation
     */
    this->setFinalTime( parameters.GetParameter< double >( "final-time" ) );
-   this->setSnapshotTau( parameters.GetParameter< double >( "snapshot-period" ) );
-
+   this->setSnapshotPeriod( parameters.GetParameter< double >( "snapshot-period" ) );
+   this->setTimeStep( parameters.GetParameter< double >( "time-step") );
+   this->setTimeStepOrder( parameters.GetParameter< double >( "time-step-order" ) );
    return true;
 }
 
-template< typename Problem, typename TimeStepper >
+template< typename Problem,
+          typename TimeStepper >
 bool
 tnlPDESolver< Problem, TimeStepper >::
 writeProlog( tnlLogger& logger,
@@ -96,7 +110,7 @@ writeProlog( tnlLogger& logger,
    mesh.writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial tau:", "tau", parameters );
+   logger.writeParameter< double >( "Initial time step:", "time-step", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
    const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
@@ -118,56 +132,123 @@ writeProlog( tnlLogger& logger,
    return true;
 }
 
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper >::setTimeStepper( TimeStepper& timeStepper )
+template< typename Problem,
+          typename TimeStepper >
+void
+tnlPDESolver< Problem, TimeStepper >::
+setTimeStepper( TimeStepper& timeStepper )
 {
-   this -> timeStepper = &timeStepper;
+   this->timeStepper = &timeStepper;
 }
 
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper >::setProblem( ProblemType& problem )
+template< typename Problem,
+          typename TimeStepper >
+void
+tnlPDESolver< Problem, TimeStepper >::
+setProblem( ProblemType& problem )
 {
-   this -> problem = &problem;
+   this->problem = &problem;
 }
 
-template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper >::setFinalTime( const RealType& finalT )
+template< typename Problem,
+          typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+setFinalTime( const RealType& finalTime )
 {
-   if( finalT <= 0 )
+   if( finalTime <= 0 )
    {
       cerr << "Final time for tnlPDESolver must be positive value." << endl;
       return false;
    }
-   this -> finalTime = finalT;
+   this->finalTime = finalTime;
 }
 
-template< typename Problem, typename TimeStepper >
-const typename TimeStepper :: RealType& tnlPDESolver< Problem, TimeStepper > :: getFinalTine() const
+template< typename Problem,
+          typename TimeStepper >
+const typename TimeStepper :: RealType&
+tnlPDESolver< Problem, TimeStepper >::
+getFinalTine() const
 {
-   return this -> finalTime;
+   return this->finalTime;
 }
 
-template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper > :: setSnapshotTau( const RealType& tau )
+template< typename Problem,
+          typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+setSnapshotPeriod( const RealType& period )
 {
-   if( tau <= 0 )
+   if( period <= 0 )
    {
       cerr << "Snapshot tau for tnlPDESolver must be positive value." << endl;
       return false;
    }
-   this -> snapshotTau = tau;
-}
-   
-template< typename Problem, typename TimeStepper >
-const typename TimeStepper :: RealType& tnlPDESolver< Problem, TimeStepper > :: getSnapshotTau() const
-{
-   return this -> snapshotTau;
+   this->snapshotPeriod = period;
 }
 
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer)
+template< typename Problem,
+          typename TimeStepper >
+const typename TimeStepper::RealType&
+tnlPDESolver< Problem, TimeStepper >::
+getSnapshotPeriod() const
 {
-   this -> ioRtTimer = &ioRtTimer;
+   return this->snapshotPeriod;
+}
+
+template< typename Problem,
+          typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+setTimeStep( const RealType& timeStep )
+{
+   if( timeStep <= 0 )
+   {
+      cerr << "The time step for tnlPDESolver must be positive value." << endl;
+      return false;
+   }
+   this->timeStep = timeStep;
+}
+   
+template< typename Problem,
+          typename TimeStepper >
+const typename TimeStepper::RealType&
+tnlPDESolver< Problem, TimeStepper >::
+getTimeStep() const
+{
+   return this->timeStep;
+}
+
+template< typename Problem,
+          typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+setTimeStepOrder( const RealType& timeStepOrder )
+{
+   if( timeStepOrder <= 0 )
+   {
+      cerr << "The time step order for tnlPDESolver must be positive value." << endl;
+      return false;
+   }
+   this->timeStepOrder = timeStepOrder;
+}
+
+template< typename Problem,
+          typename TimeStepper >
+const typename TimeStepper::RealType&
+tnlPDESolver< Problem, TimeStepper >::
+getTimeStepOrder() const
+{
+   return this->timeStepOrder;
+}
+
+template< typename Problem,
+         typename TimeStepper >
+void
+tnlPDESolver< Problem, TimeStepper >::
+setIoRtTimer( tnlTimerRT& ioRtTimer )
+{
+   this->ioRtTimer = &ioRtTimer;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -196,14 +277,14 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    tnlAssert( problem != 0,
               cerr << "No problem was set in tnlPDESolver with name " << this -> getName() );
 
-   if( snapshotTau == 0 )
+   if( snapshotPeriod == 0 )
    {
       cerr << "No snapshot tau was set in tnlPDESolver " << this -> getName() << "." << endl;
       return false;
    }
    RealType t( 0.0 );
    IndexType step( 0 );
-   IndexType allSteps = ceil( this -> finalTime / this -> snapshotTau );
+   IndexType allSteps = ceil( this->finalTime / this->snapshotPeriod );
    this->timeStepper->setProblem( * ( this->problem ) );
    this->timeStepper->init( mesh );
    this->problem->bindDofs( mesh, this->dofs );
@@ -214,9 +295,10 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
       cerr << "Making the snapshot failed." << endl;
       return false;
    }
+   timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {
-      RealType tau = Min( this -> snapshotTau,
+      RealType tau = Min( this -> snapshotPeriod,
                           this -> finalTime - t );
       if( ! this->timeStepper->solve( t, t + tau, mesh, dofs ) )
          return false;

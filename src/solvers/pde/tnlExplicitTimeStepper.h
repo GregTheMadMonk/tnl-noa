@@ -53,9 +53,9 @@ class tnlExplicitTimeStepper
 
    ProblemType* getProblem() const;
 
-   bool setTau( const RealType& tau );
+   bool setTimeStep( const RealType& tau );
 
-   const RealType& getTau() const;
+   const RealType& getTimeStep() const;
 
    bool solve( const RealType& time,
                const RealType& stopTime,
@@ -75,7 +75,7 @@ class tnlExplicitTimeStepper
 
    const MeshType* mesh;
 
-   RealType tau;
+   RealType timeStep;
 };
 
 #include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>

@@ -32,8 +32,7 @@ class heatEquationConfig
    public:
       static void configSetup( tnlConfigDescription& config )
       {
-         config.addDelimiter( "Heat equation settings:" );
-         config.addDelimiter( "Tests setting::" );
+         //config.addDelimiter( "Heat equation settings:" );
       }
 };
 

@@ -126,14 +126,16 @@ bindAuxiliaryDofs( const MeshType& mesh,
 template< typename Mesh, typename DifferentialOperator, typename BoundaryCondition, typename RightHandSide >
 bool heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >
 :: setInitialCondition( const tnlParameterContainer& parameters,
-                        const MeshType& mesh )
+                        const MeshType& mesh,
+                        DofVectorType& dofs )
 {
-   /*const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   this->bindDofs( mesh, dofs );
+   const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
-   }*/
+   }
    return true;
 }
 
@@ -204,6 +206,9 @@ getExplicitRHS( const RealType& time,
                                                         this->rightHandSide,
                                                         _u,
                                                         _fu );
+   //_u.save( "u.tnl" );
+   //_fu.save( "fu.tnl" );
+   //getchar();
 }
 
 template< typename Mesh,
@@ -219,15 +224,17 @@ assemblyLinearSystem( const RealType& time,
                       MatrixType& matrix,
                       DofVectorType& b )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > systemAssembler;
-   systemAssembler.template assembly< Mesh::Dimensions >( time,
+   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   /*systemAssembler.template assembly< Mesh::Dimensions >( time,
+                                                          tau,
                                                           mesh,
-                                                          differentialOperator,
-                                                          boundaryConditions,
-                                                          rightHandSide,
+                                                          this->differentialOperator,
+                                                          this->boundaryCondition,
+                                                          this->rightHandSide,
                                                           u,
                                                           matrix,
                                                           b );
+    */
 }
 
 template< typename Mesh,

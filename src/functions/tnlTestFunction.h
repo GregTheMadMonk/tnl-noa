@@ -38,7 +38,7 @@ class tnlTestFunction
    enum TimeDependence { none,
                          linear,
                          quadratic,
-                         sine };
+                         cosine };
 
    public:
 

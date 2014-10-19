@@ -43,6 +43,8 @@ class heatEquationSolver
    typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
 
    static tnlString getTypeStatic();
 
@@ -54,7 +56,8 @@ class heatEquationSolver
    bool setup( const tnlParameterContainer& parameters );
 
    bool setInitialCondition( const tnlParameterContainer& parameters,
-                             const MeshType& mesh );
+                             const MeshType& mesh,
+                             DofVectorType& dofs );
 
    bool setupLinearSystem( const MeshType& mesh,
                            MatrixType& matrix );

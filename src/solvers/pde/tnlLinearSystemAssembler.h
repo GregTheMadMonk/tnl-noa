@@ -20,10 +20,10 @@
 
 template< typename Real,
           typename DofVector,
-          typename Matrix,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename Matrix >
 class tnlLinearSystemAssemblerTraversalUserData
 {
    public:
@@ -48,8 +48,8 @@ class tnlLinearSystemAssemblerTraversalUserData
                                                  const BoundaryConditions& boundaryConditions,
                                                  const RightHandSide& rightHandSide,
                                                  DofVector& u,
-                                                 DofVector& b,
-                                                 Matrix& matrix )
+                                                 Matrix& matrix,
+                                                 DofVector& b )
       : time( time ),
         tau( tau ),
         differentialOperator( differentialOperator ),
@@ -83,10 +83,12 @@ class tnlLinearSystemAssembler
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
-                                                      RightHandSide > TraversalUserData;
+                                                      RightHandSide,
+                                                      MatrixType > TraversalUserData;
 
    template< int EntityDimensions >
    void assembly( const RealType& time,
+                  const RealType& tau,
                   const MeshType& mesh,
                   const DifferentialOperator& differentialOperator,
                   const BoundaryConditions& boundaryConditions,
@@ -169,10 +171,12 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
-                                                      RightHandSide > TraversalUserData;
+                                                      RightHandSide,
+                                                      MatrixType > TraversalUserData;
 
    template< int EntityDimensions >
    void assembly( const RealType& time,
+                  const RealType& tau,
                   const MeshType& mesh,
                   const DifferentialOperator& differentialOperator,
                   const BoundaryConditions& boundaryConditions,

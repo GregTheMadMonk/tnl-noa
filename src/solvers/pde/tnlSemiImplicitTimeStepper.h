@@ -51,9 +51,9 @@ class tnlSemiImplicitTimeStepper
 
    LinearSystemSolverType* getSolver() const;
 
-   bool setTau( const RealType& tau );
+   bool setTimeStep( const RealType& timeStep );
 
-   const RealType& getTau() const;
+   const RealType& getTimeStep() const;
 
    bool solve( const RealType& time,
                const RealType& stopTime,
@@ -70,7 +70,7 @@ class tnlSemiImplicitTimeStepper
 
    LinearSystemSolver* linearSystemSolver;
 
-   RealType tau;
+   RealType timeStep;
 };
 
 #include <implementation/solvers/pde/tnlSemiImplicitTimeStepper_impl.h>

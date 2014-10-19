@@ -25,7 +25,8 @@ template< typename Problem,
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 tnlSemiImplicitTimeStepper()
 : problem( 0 ),
-  linearSystemSolver( 0 )
+  linearSystemSolver( 0 ),
+  timeStep( 0 )
 {
 };
 
@@ -36,7 +37,6 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry< double >( "tau", "Time step for the time discretisation.", 1.0 );
 }
 
 template< typename Problem,
@@ -46,7 +46,6 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   this->setTau( parameters.GetParameter< double >( "tau") );
    return true;
 }
 
@@ -98,14 +97,14 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-setTau( const RealType& tau )
+setTimeStep( const RealType& timeStep )
 {
-   if( tau <= 0.0 )
+   if( timeStep <= 0.0 )
    {
-      cerr << "Tau for tnlSemiImplicitTimeStepper must be positive. " << endl;
+      cerr << "Time step for tnlSemiImplicitTimeStepper must be positive. " << endl;
       return false;
    }
-   this -> tau = tau;
+   this->timeStep = timeStep;
 };
 
 template< typename Problem,
@@ -121,7 +120,7 @@ solve( const RealType& time,
    RealType t = time;
    while( t < stopTime )
    {
-      RealType currentTau = Min( this->tau, stopTime - t );
+      RealType currentTau = Min( this->timeStep, stopTime - t );
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
                                            mesh,

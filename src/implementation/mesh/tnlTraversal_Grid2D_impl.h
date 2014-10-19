@@ -45,9 +45,9 @@ processEntities( const GridType& grid,
       {
          const IndexType index = grid.getCellIndex( coordinates );
          if( grid.isBoundaryCell( coordinates ) )
-            boundaryEntitiesProcessor.template processEntity< 2 >( grid, userData, index, coordinates );
+            boundaryEntitiesProcessor.template processCell( grid, userData, index, coordinates );
          else
-            interiorEntitiesProcessor.template processEntity< 2 >( grid, userData, index, coordinates );
+            interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
       }
 }
 
@@ -133,7 +133,7 @@ processEntities( const GridType& grid,
                  InteriorEntitiesProcessor& interiorEntitesProcessor ) const
 {
    /****
-    * Traversing edges
+    * Traversing vertices
     */
 }
 

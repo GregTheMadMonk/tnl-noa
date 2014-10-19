@@ -26,10 +26,11 @@ template< typename Mesh,
           typename DofVector,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename Matrix >
    template< int EntityDimensions >
 void
-tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
+tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
 assembly( const RealType& time,
           const RealType& tau,
           const Mesh& mesh,
@@ -60,10 +61,11 @@ template< int Dimensions,
           typename DofVector,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename Matrix >
    template< int EntityDimensions >
 void
-tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
+tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
 assembly( const RealType& time,
           const RealType& tau,
           const tnlGrid< Dimensions, Real, Device, Index >& mesh,
