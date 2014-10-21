@@ -428,6 +428,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Write a prolog
     */
+   int verbose = parameters.GetParameter< int >( "verbose" );
    parameters. GetParameter< int >( "log-width", logWidth );
    if( verbose )
    {
