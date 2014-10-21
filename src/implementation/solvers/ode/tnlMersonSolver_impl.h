@@ -228,10 +228,10 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       //cerr << "this -> getConvergenceResidue() = " << this -> getConvergenceResidue() << endl;
       if( time >= this->getStopTime() ||
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
-       {
+      {
          this -> refreshSolverMonitor();
          return true;
-       }
+      }
    }
 };
 

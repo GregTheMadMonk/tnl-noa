@@ -96,6 +96,7 @@ getAuxiliaryDofs( const Mesh& mesh ) const
    /****
     * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
     */
+   return 0;
 }
 
 template< typename Mesh,

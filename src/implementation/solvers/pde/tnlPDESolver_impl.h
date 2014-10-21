@@ -45,8 +45,8 @@ configSetup( tnlConfigDescription& config,
    config.addEntry< tnlString >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
-   config.addEntry< double >( "tau", "The time step for the time discretisation.", 1.0 );
-   config.addEntry< double >( "tau-order", "The time step is set to tau*pow( space-step, tau-order).", 0.0 );
+   config.addEntry< double >( "time-step", "The time step for the time discretisation.", 1.0 );
+   config.addEntry< double >( "time-step-order", "The time step is set to time-step*pow( space-step, time-step-order).", 0.0 );
 }
 
 template< typename Problem,
@@ -225,9 +225,9 @@ bool
 tnlPDESolver< Problem, TimeStepper >::
 setTimeStepOrder( const RealType& timeStepOrder )
 {
-   if( timeStepOrder <= 0 )
+   if( timeStepOrder < 0 )
    {
-      cerr << "The time step order for tnlPDESolver must be positive value." << endl;
+      cerr << "The time step order for tnlPDESolver must be zero or positive value." << endl;
       return false;
    }
    this->timeStepOrder = timeStepOrder;

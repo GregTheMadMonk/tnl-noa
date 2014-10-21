@@ -82,7 +82,7 @@ solve()
    ${solverName} --mesh mesh.tnl \
                  --initial-condition exact-u-00000.tnl \
                  --time-discretisation ${timeDiscretisation} \
-                 --tau 0.001 \
+                 --time-step 0.001 \
                  --discrete-solver ${discreteSolver} \
                  --merson-adaptivity 1.0e-5 \
                  --test-function ${testFunction}\
