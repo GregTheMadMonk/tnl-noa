@@ -43,7 +43,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry     < tnlString >( prefix + "test-function", "Testing function.", "exp-bump" );
+   config.addRequiredEntry< tnlString >( prefix + "test-function", "Testing function." );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
       config.addEntryEnum( "exp-bump" );
@@ -77,11 +77,11 @@ template< int FunctionDimensions,
    template< typename FunctionType >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-initFunction( const tnlParameterContainer& parameters,
+setupFunction( const tnlParameterContainer& parameters,
               const tnlString& prefix )
 {
    FunctionType* auxFunction = new FunctionType;
-   if( ! auxFunction->init( parameters, prefix ) )
+   if( ! auxFunction->setup( parameters, prefix ) )
    {
       delete auxFunction;
       return false;
@@ -106,49 +106,53 @@ template< int FunctionDimensions,
           typename Device >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
    const tnlString& timeDependence =
             parameters.GetParameter< tnlString >(
                      prefix +
                      "test-function-time-dependence" );
+   cout << "Time dependence ... " << timeDependence << endl;
    if( timeDependence == "none" )
       this->timeDependence = none;
    if( timeDependence == "linear" )
       this->timeDependence = linear;
    if( timeDependence == "quadratic" )
       this->timeDependence = quadratic;
-   if( timeDependence == "sine" )
-      this->timeDependence = sine;
+   if( timeDependence == "cosine" )
+      this->timeDependence = cosine;
 
    this->timeScale = parameters.GetParameter< double >( prefix + "time-scale" );
 
    const tnlString& testFunction = parameters.GetParameter< tnlString >( prefix + "test-function" );
+   cout << "Test function ... " << testFunction << endl;
    if( testFunction == "constant" )
    {
       typedef tnlConstantFunction< Dimensions, Real > FunctionType;
       functionType = constant;
-      return initFunction< FunctionType >( parameters );
+      return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "exp-bump" )
    {
       typedef tnlExpBumpFunction< Dimensions, Real > FunctionType;
       functionType = expBump;
-      return initFunction< FunctionType >( parameters );
+      return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "sin-bumps" )
    {
       typedef tnlSinBumpsFunction< Dimensions, Real > FunctionType;
       functionType = sinBumps;
-      return initFunction< FunctionType >( parameters );
+      return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "sin-wave" )
    {
       typedef tnlSinWaveFunction< Dimensions, Real > FunctionType;
       functionType = sinWave;
-      return initFunction< FunctionType >( parameters );
+      return setupFunction< FunctionType >( parameters );
    }
+   cerr << "Unknown function " << testFunction << endl;
+   return false;
 }
 
 template< int FunctionDimensions,
@@ -179,8 +183,8 @@ getValue( const Vertex& vertex,
          scale *= scale;
          scale = 1.0 - scale;
          break;
-      case sine:
-         scale = 1.0 - sin( this->timeScale * time );
+      case cosine:
+         scale = cos( this->timeScale * time );
          break;
    }
    //cout << "scale = " << scale << " time= " << time << " timeScale = " << timeScale << " timeDependence = " << ( int ) timeDependence << endl;
@@ -234,8 +238,8 @@ getTimeDerivative( const Vertex& vertex,
       case quadratic:
          scale = -2.0 * this->timeScale * this->timeScale * time;
          break;
-      case sine:
-         scale = -this->timeScale * cos( this->timeScale * time );
+      case cosine:
+         scale = -this->timeScale * sin( this->timeScale * time );
          break;
    }
    switch( functionType )

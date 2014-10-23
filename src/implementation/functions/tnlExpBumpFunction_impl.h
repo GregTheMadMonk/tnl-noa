@@ -23,7 +23,7 @@
 template< typename Real >
 bool
 tnlExpBumpFunctionBase< Real >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );

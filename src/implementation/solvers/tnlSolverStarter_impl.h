@@ -28,6 +28,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
+#include <solvers/pde/tnlSemiImplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
@@ -45,10 +46,22 @@ template< typename Problem,
 class tnlSolverStarterExplicitSolverSetter{};
 
 template< typename Problem,
+          typename SemiImplicitSolver,
+          typename ConfigTag,
+          bool enabled = tnlConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
+class tnlSolverStarterSemiImplicitSolverSetter{};
+
+
+template< typename Problem,
           typename ExplicitSolver,
           typename TimeStepper,
           typename ConfigTag >
 class tnlSolverStarterExplicitTimeStepperSetter;
+
+template< typename Problem,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitTimeStepperSetter;
 
 template< typename ConfigTag >
 tnlSolverStarter< ConfigTag > :: tnlSolverStarter()
@@ -64,7 +77,7 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
     * Create and set-up the problem
     */
    Problem problem;
-   if( ! problem. init( parameters ) )
+   if( ! problem.setup( parameters ) )
    {
       cerr << "The problem initiation failed!" << endl;
       return false;
@@ -83,6 +96,10 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
    return false;
 }
+
+/****
+ * Setting the time discretisation
+ */
 
 template< typename Problem,
           typename TimeDiscretisation,
@@ -130,8 +147,8 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
-         //if( discreteSolver == "gmres" )
-         //   return tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "gmres" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };
@@ -148,6 +165,10 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscreti
          return false;
       }
 };
+
+/****
+ * Setting the explicit solver
+ */
 
 template< typename Problem,
           typename ExplicitSolver,
@@ -197,6 +218,45 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag,
       }
 };
 
+/****
+ * Setting the semi-implicit solver
+ */
+
+template< typename Problem,
+          typename SemiImplicitSolver,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, ConfigTag, false >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         cerr << "The semi-implicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef typename Problem::MatrixType MatrixType;
+         typedef tnlGMRESSolver< MatrixType > LinearSystemSolver;
+         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
+         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
+                                                               TimeStepper,
+                                                               ConfigTag >::run( problem, parameters );
+      }
+};
+
+/****
+ * Setting the explicit time stepper
+ */
+
 template< typename Problem,
           typename ExplicitSolver,
           typename TimeStepper,
@@ -208,18 +268,22 @@ class tnlSolverStarterExplicitTimeStepperSetter
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters)
       {
+         typedef typename Problem::RealType RealType;
+         typedef typename Problem::IndexType IndexType;
+         typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
+
          ExplicitSolver explicitSolver;
-         explicitSolver.init( parameters );
+         explicitSolver.setup( parameters );
          int verbose = parameters.GetParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
-         tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType > odeSolverMonitor;
+         SolverMonitorType odeSolverMonitor;
          if( ! problem.getSolverMonitor() )
             explicitSolver.setSolverMonitor( odeSolverMonitor );
          else
-            explicitSolver.setSolverMonitor( * ( tnlODESolverMonitor< typename Problem :: RealType, typename Problem :: IndexType >* ) problem. getSolverMonitor() );
+            explicitSolver.setSolverMonitor( * ( SolverMonitorType* ) problem. getSolverMonitor() );
 
          TimeStepper timeStepper;
-         if( ! timeStepper.init( parameters ) )
+         if( ! timeStepper.setup( parameters ) )
          {
             cerr << "The time stepper initiation failed!" << endl;
             return false;
@@ -231,7 +295,46 @@ class tnlSolverStarterExplicitTimeStepperSetter
       };
 };
 
+/****
+ * Setting the semi-implicit time stepper
+ */
+template< typename Problem,
+          typename TimeStepper,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitTimeStepperSetter
+{
+   public:
 
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters)
+      {
+         typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
+         typedef typename LinearSystemSolverType::MatrixType MatrixType;
+         typedef typename Problem::RealType RealType;
+         typedef typename Problem::IndexType IndexType;
+         typedef tnlIterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+
+         LinearSystemSolverType linearSystemSolver;
+         linearSystemSolver.setup( parameters );
+
+         SolverMonitorType solverMonitor;
+         if( ! problem.getSolverMonitor() )
+            linearSystemSolver.setSolverMonitor( solverMonitor );
+         else
+            linearSystemSolver.setSolverMonitor( * ( SolverMonitorType* ) problem. getSolverMonitor() );
+
+         TimeStepper timeStepper;
+         if( ! timeStepper.setup( parameters ) )
+         {
+            cerr << "The time stepper initiation failed!" << endl;
+            return false;
+         }
+         timeStepper.setSolver( linearSystemSolver );
+
+         tnlSolverStarter< ConfigTag > solverStarter;
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+      };
+};
 
 
 
@@ -318,13 +421,14 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    tnlPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
-   if( ! solver.init( parameters ) )
+   if( ! solver.setup( parameters ) )
       return false;
    solver.setTimeStepper( timeStepper );
 
    /****
     * Write a prolog
     */
+   int verbose = parameters.GetParameter< int >( "verbose" );
    parameters. GetParameter< int >( "log-width", logWidth );
    if( verbose )
    {

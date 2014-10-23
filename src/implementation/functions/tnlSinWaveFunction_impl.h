@@ -22,15 +22,15 @@
 
 template< typename Real >
 tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
-: waveLength( 0 ),
-  amplitude( 0 ),
+: waveLength( 1.0 ),
+  amplitude( 1.0 ),
   phase( 0 ),
   wavesNumber( 0 )
 {
 }
 
 template< typename Real >
-bool tnlSinWaveFunctionBase< Real >::init( const tnlParameterContainer& parameters,
+bool tnlSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->waveLength = parameters.GetParameter< double >( prefix + "wave-length" );
@@ -97,6 +97,7 @@ getValue( const Vertex& v,
          if( tnlAbs( arg ) > this->wavesNumber )
             arg = Sign( x ) * this->wavesNumber;
       }
+      //cout << "arg = " << arg << " amplitude = " << this->amplitude << " -> " << this->amplitude * sin( this->phase + arg ) << endl;
       return this->amplitude * sin( this->phase + arg );
    }
    if( XDiffOrder == 1 )

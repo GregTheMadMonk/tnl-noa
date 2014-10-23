@@ -42,8 +42,6 @@ class tnlSolverStarter
 
    protected:
 
-   int verbose;
-
    int logWidth;
 
    tnlTimerRT ioRtTimer, computeRtTimer, totalRtTimer;

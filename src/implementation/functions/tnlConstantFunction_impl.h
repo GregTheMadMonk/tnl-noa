@@ -48,7 +48,7 @@ template< int Dimensions,
           typename Real >
 bool
 tnlConstantFunction< Dimensions, Real >::
-init( const tnlParameterContainer& parameters,
+setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
    this->setValue( parameters.GetParameter< double >( prefix + "-value") );

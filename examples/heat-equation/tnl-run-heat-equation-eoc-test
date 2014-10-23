@@ -5,17 +5,17 @@ dimensions="1D 2D 3D"
 sizes1D="16 32 64 128 256 512"
 sizes2D="16 32 64 128 256 512"
 sizes3D="16 32 64 128"
-testFunctions="exp-bump"
+testFunctions="sin-wave"
 snapshotPeriod=0.1
-finalTime=1
-timeDependence="linear"
+finalTime=1.5
+timeDependence="cosine"
 solverName="tnl-heat-equation-eoc-test"
 
 setupTestFunction()
 {
    testFunction=$1
-   if test x${testFunction} = "xexp-bump";
-   then
+#   if test x${testFunction} = "xexp-bump";
+#   then
       origin=-1.0
       proportions=2.0
       amplitude=1.0
@@ -32,7 +32,7 @@ setupTestFunction()
       phaseY=0.0
       phaseZ=0.0
       sigma=0.5
-   fi
+#   fi
 }
 
 setupGrid()
@@ -54,7 +54,7 @@ setupGrid()
 setInitialCondition()
 {
    testFunction=$1
-   tnl-init --function ${testFunction} \
+   tnl-init --test-function ${testFunction} \
             --output-file exact-u.tnl \
             --amplitude ${amplitude} \
             --wave-length ${waveLength} \
@@ -82,7 +82,9 @@ solve()
    ${solverName} --mesh mesh.tnl \
                  --initial-condition exact-u-00000.tnl \
                  --time-discretisation ${timeDiscretisation} \
+                 --time-step 0.001 \
                  --discrete-solver ${discreteSolver} \
+                 --merson-adaptivity 1.0e-5 \
                  --test-function ${testFunction}\
                  --amplitude ${amplitude} \
                  --wave-length ${waveLength} \
@@ -110,7 +112,8 @@ computeError()
             --input-files exact-u-*.tnl u-*.tnl \
             --mode halves \
             --snapshot-period ${snapshotPeriod} \
-            --output-file errors.txt 
+            --output-file errors.txt \
+            --write-difference yes
 }
 
 runTest()

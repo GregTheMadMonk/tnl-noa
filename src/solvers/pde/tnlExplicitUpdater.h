@@ -50,11 +50,6 @@ class tnlExplicitUpdaterTraversalUserData
         u( u ),
         fu( fu )
       {};
-
-   protected:
-
-
-
 };
 
 template< typename Mesh,
@@ -89,6 +84,9 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimension >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index )
@@ -107,6 +105,9 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimensions >
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
             void processEntity( const MeshType& mesh,
                                 TraversalUserData& userData,
                                 const IndexType index )
@@ -167,11 +168,13 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
              * TODO: This must be specialized for entities with different dimensions
              * otherwise 'coordinates' would not make sense without knowing the orientation.
              */
-            template< int EntityDimension >
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index,
-                                const CoordinatesType& coordinates )
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            void processCell( const MeshType& mesh,
+                               TraversalUserData& userData,
+                               const IndexType index,
+                               const CoordinatesType& coordinates )
             {
                userData.boundaryConditions.setBoundaryConditions( userData.time,
                                                                   mesh,
@@ -187,11 +190,13 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
-            template< int EntityDimensions >
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index,
-                                const CoordinatesType& coordinates )
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            void processCell( const MeshType& mesh,
+                              TraversalUserData& userData,
+                              const IndexType index,
+                              const CoordinatesType& coordinates )
             {
                userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
                                                                                index,

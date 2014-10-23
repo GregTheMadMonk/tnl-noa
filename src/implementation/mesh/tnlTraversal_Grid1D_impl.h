@@ -39,9 +39,9 @@ processEntities( const GridType& grid,
    {
       const IndexType index = grid.getCellIndex( coordinates );
       if( grid.isBoundaryCell( coordinates ) )
-         boundaryEntitiesProcessor.template processEntity< 1 >( grid, userData, index, coordinates );
+         boundaryEntitiesProcessor.template processCell( grid, userData, index, coordinates );
       else
-         interiorEntitiesProcessor.template processEntity< 1 >( grid, userData, index, coordinates );
+         interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
    }
 }
 
@@ -70,9 +70,9 @@ processEntities( const GridType& grid,
    {
       const IndexType index = grid.getVertexIndex( coordinates );
       if( grid.isBoundaryVertex( coordinates ) )
-         boundaryEntitiesProcessor.template processEntity< 0 >( grid, userData, index, coordinates );
+         boundaryEntitiesProcessor.template processVertices( grid, userData, index, coordinates );
       else
-         interiorEntitiesProcessor.template processEntity< 0 >( grid, userData, index, coordinates );
+         interiorEntitiesProcessor.template processVertices( grid, userData, index, coordinates );
    }
 }
 

@@ -22,9 +22,9 @@
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
 : k1( "tnlEulerSolver:k1" ),
-  cflCondition( 1.0 )
+  cflCondition( 0.0 )
 {
-   this->setName( "EulerSolver" );
+   //this->setName( "EulerSolver" );
 };
 
 template< typename Problem >
@@ -40,14 +40,14 @@ void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
                                                const tnlString& prefix )
 {
    tnlExplicitSolver< Problem >::configSetup( config, prefix );
-   config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 1.0 );
+   config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
 template< typename Problem >
-bool tnlEulerSolver< Problem > :: init( const tnlParameterContainer& parameters,
+bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters,
                                         const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::init( parameters, prefix );
+   tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.GetParameter< double >( prefix + "euler-cfl" ) );
 }
@@ -81,13 +81,12 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    /****
     * Set necessary parameters
     */
-   RealType& time = this -> time;
-   RealType currentTau = this -> tau;
-   RealType& residue = this -> residue;
-   IndexType& iteration = this -> iteration;
+   RealType& time = this->time;
+   RealType currentTau = this->tau;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
-   iteration = 0;
+   this->resetIterations();
+   this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    this -> refreshSolverMonitor();
 
@@ -99,9 +98,9 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Compute the RHS
        */
-      this -> problem -> GetExplicitRHS( time, currentTau, u, k1 );
+      this->problem->getExplicitRHS( time, currentTau, u, k1 );
 
-      RealType lastResidue = residue;
+      RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
       if( this -> cflCondition != 0.0 )
       {
@@ -112,15 +111,19 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
             continue;
          }
       }
-      computeNewTimeLevel( u, currentTau, residue );
+      RealType newResidue( 0.0 );
+      computeNewTimeLevel( u, currentTau, newResidue );
+      this->setResidue( newResidue );
 
       /****
        * When time is close to stopTime the new residue
        * may be inaccurate significantly.
        */
-      if( currentTau + time == this -> stopTime ) residue = lastResidue;
+      if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
       time += currentTau;
-      iteration ++;
+
+      if( ! this->nextIteration() )
+         return false;
 
       /****
        * Compute the new time step.
@@ -134,13 +137,12 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Check stop conditions.
        */
-      if( time >= this -> getStopTime() ||
-          ( this -> getMaxResidue() != 0.0 && residue < this -> getMaxResidue() ) )
-       {
+      if( time >= this->getStopTime() ||
+          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
+      {
          this -> refreshSolverMonitor();
          return true;
-       }
-      if( iteration == this -> getMaxIterationsNumber() ) return false;
+      }
 
       if( this -> cflCondition != 0.0 )
          currentTau /= 0.95;

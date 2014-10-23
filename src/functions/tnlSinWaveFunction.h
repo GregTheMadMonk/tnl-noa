@@ -28,7 +28,7 @@ class tnlSinWaveFunctionBase
 
    tnlSinWaveFunctionBase();
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setWaveLength( const Real& waveLength );

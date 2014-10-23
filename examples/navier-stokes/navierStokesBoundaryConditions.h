@@ -32,7 +32,7 @@ class navierStokesBoundaryConditions
 
    navierStokesBoundaryConditions();
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    void setMesh( const MeshType& mesh );
 

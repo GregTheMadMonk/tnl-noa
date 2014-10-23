@@ -35,15 +35,25 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
             
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& fu );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getLinearSystemRowLength( const MeshType& mesh,
+                                   const IndexType& index,
+                                   const CoordinatesType& coordinates ) const;
 
    protected:
 
@@ -70,15 +80,26 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& fu );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getLinearSystemRowLength( const MeshType& mesh,
+                                   const IndexType& index,
+                                   const CoordinatesType& coordinates ) const;
+
 
    protected:
 
@@ -106,15 +127,25 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& fu );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getLinearSystemRowLength( const MeshType& mesh,
+                                   const IndexType& index,
+                                   const CoordinatesType& coordinates ) const;
 
    protected:
 

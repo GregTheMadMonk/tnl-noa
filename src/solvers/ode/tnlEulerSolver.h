@@ -42,7 +42,7 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    void setCFLCondition( const RealType& cfl );

@@ -130,6 +130,11 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #endif
    const RealType& getHxSquareInverse() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   RealType getSmallestSpaceStep() const;   
+
    /****
     * The type Vertex can have different Real type.
     */
@@ -367,6 +372,12 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __device__ __host__
 #endif
    const RealType& getHxHyInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   RealType getSmallestSpaceStep() const;
+
 
    /****
     * The type Vertex can have different Real type.
@@ -691,6 +702,11 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __device__ __host__
 #endif
    const RealType& getHyHzInverse() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   RealType getSmallestSpaceStep() const;
 
    /****
     * The type Vertex can have different Real type.

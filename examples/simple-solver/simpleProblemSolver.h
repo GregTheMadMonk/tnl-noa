@@ -45,7 +45,7 @@ class simpleProblemSolver
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const;
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    IndexType getDofs( const MeshType& mesh ) const;
 

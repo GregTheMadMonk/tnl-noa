@@ -66,7 +66,7 @@ tnlSinBumpsFunction< 1, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 1, Real >::init( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
@@ -108,7 +108,7 @@ tnlSinBumpsFunction< 2, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 2, Real >::init( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
@@ -159,7 +159,7 @@ tnlSinBumpsFunction< 3, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 3, Real >::init( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );

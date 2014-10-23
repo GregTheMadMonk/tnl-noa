@@ -38,7 +38,7 @@ class tnlTestFunction
    enum TimeDependence { none,
                          linear,
                          quadratic,
-                         sine };
+                         cosine };
 
    public:
 
@@ -51,7 +51,7 @@ class tnlTestFunction
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
@@ -93,7 +93,7 @@ class tnlTestFunction
    protected:
 
    template< typename FunctionType >
-   bool initFunction( const tnlParameterContainer& parameters,
+   bool setupFunction( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
 
    template< typename FunctionType >

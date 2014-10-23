@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlExplicitTimeStepper.h  -  description
+                          tnlSemiImplicitTimeStepper.h  -  description
                              -------------------
-    begin                : Jan 15, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Oct 4, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,29 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLEXPLICITTIMESTEPPER_H_
-#define TNLEXPLICITTIMESTEPPER_H_
-
-#include <solvers/ode/tnlODESolverMonitor.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-
+#ifndef TNLSEMIIMPLICITTIMESTEPPER_H_
+#define TNLSEMIIMPLICITTIMESTEPPER_H_
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
-class tnlExplicitTimeStepper
+          typename LinearSystemSolver >
+class tnlSemiImplicitTimeStepper
 {
    public:
 
    typedef Problem ProblemType;
-   typedef OdeSolver< tnlExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
    typedef typename Problem::RealType RealType;
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef LinearSystemSolver LinearSystemSolverType;
+   typedef typename ProblemType::MatrixType MatrixType;
 
-   tnlExplicitTimeStepper();
+   tnlSemiImplicitTimeStepper();
 
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
@@ -47,13 +43,15 @@ class tnlExplicitTimeStepper
 
    bool init( const MeshType& mesh );
 
-   void setSolver( OdeSolverType& odeSolver );
-
    void setProblem( ProblemType& problem );
 
    ProblemType* getProblem() const;
 
-   bool setTimeStep( const RealType& tau );
+   void setSolver( LinearSystemSolver& linearSystemSolver );
+
+   LinearSystemSolverType* getSolver() const;
+
+   bool setTimeStep( const RealType& timeStep );
 
    const RealType& getTimeStep() const;
 
@@ -62,22 +60,19 @@ class tnlExplicitTimeStepper
                const MeshType& mesh,
                DofVectorType& dofVector );
 
-   void getExplicitRHS( const RealType& time,
-                        const RealType& tau,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
-
    protected:
-
-   OdeSolverType* odeSolver;
 
    Problem* problem;
 
-   const MeshType* mesh;
+   MatrixType matrix;
+
+   DofVectorType rightHandSide;
+
+   LinearSystemSolver* linearSystemSolver;
 
    RealType timeStep;
 };
 
-#include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
+#include <implementation/solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
 
-#endif /* TNLEXPLICITTIMESTEPPER_H_ */
+#endif /* TNLSEMIIMPLICITTIMESTEPPER_H_ */

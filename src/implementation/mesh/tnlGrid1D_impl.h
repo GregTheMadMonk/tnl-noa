@@ -288,6 +288,17 @@ const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquareInverse() const
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
+{
+   return this->hx;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Vertex >
 #ifdef HAVE_CUDA
    __device__ __host__

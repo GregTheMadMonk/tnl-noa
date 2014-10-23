@@ -41,7 +41,7 @@ class tnlPDESolver : public tnlObject
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
 
-   bool init( const tnlParameterContainer& parameters,
+   bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
    bool writeProlog( tnlLogger& logger,
@@ -55,9 +55,17 @@ class tnlPDESolver : public tnlObject
 
    const RealType& getFinalTine() const;
 
-   bool setSnapshotTau( const RealType& tau );
+   bool setTimeStep( const RealType& timeStep );
+
+   const RealType& getTimeStep() const;
+
+   bool setTimeStepOrder( const RealType& timeStepOrder );
+
+   const RealType& getTimeStepOrder() const;
+
+   bool setSnapshotPeriod( const RealType& period );
    
-   const RealType& getSnapshotTau() const;
+   const RealType& getSnapshotPeriod() const;
 
    void setIoRtTimer( tnlTimerRT& ioRtTimer);
 
@@ -79,7 +87,7 @@ class tnlPDESolver : public tnlObject
 
    TimeStepper* timeStepper;
 
-   RealType finalTime, snapshotTau;
+   RealType finalTime, snapshotPeriod, timeStep, timeStepOrder;
 
    ProblemType* problem;
 

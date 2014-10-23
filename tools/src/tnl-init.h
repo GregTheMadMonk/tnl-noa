@@ -41,8 +41,10 @@ bool renderFunction( const tnlParameterContainer& parameters )
 
    typedef tnlTestFunction< MeshType::Dimensions, RealType > FunctionType;
    FunctionType function;
-   if( ! function.init( parameters, "" ) )
+   cout << "Setting up the function ... " << endl;
+   if( ! function.setup( parameters, "" ) )
       return false;
+   cout << "done." << endl;
    typedef tnlVector< RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
    if( ! discreteFunction.setSize( mesh.getNumberOfCells() ) )
@@ -53,8 +55,9 @@ bool renderFunction( const tnlParameterContainer& parameters )
    double tau = parameters.GetParameter< double >( "snapshot-period" );
    bool numericalDifferentiation = parameters.GetParameter< bool >( "numerical-differentiation" );
    int step( 0 );
+   const int steps = ceil( finalTime / tau );
 
-   while( time <= finalTime )
+   while( step <= steps )
    {
 
       if( numericalDifferentiation )
@@ -84,8 +87,10 @@ bool renderFunction( const tnlParameterContainer& parameters )
                                    extension.getString(),
                                    aux );
          outputFile = aux;
+         cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << endl;
       }
-      cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
+      else
+         cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
       if( ! discreteFunction.save( outputFile) )
          return false;
       time += tau;

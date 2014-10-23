@@ -46,7 +46,7 @@ void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& conf
 }
 
 template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: init( const tnlParameterContainer& parameters,
+bool tnlIterativeSolver< Real, Index> :: setup( const tnlParameterContainer& parameters,
                                                const tnlString& prefix )
 {
    this->setMaxIterations( parameters.GetParameter< int >( "max-iterations" ) );

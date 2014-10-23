@@ -41,10 +41,6 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry< int >( "y-derivative", "Order of the partial derivative w.r.t y.", 0 );
    config.addEntry< int >( "z-derivative", "Order of the partial derivative w.r.t <.", 0 );
    config.addEntry< bool >( "numerical-differentiation", "The partial derivatives will be computed numerically.", false );
-   config.addRequiredEntry< tnlString >( "function", "Function name." );
-      config.addEntryEnum< tnlString >( "exp-bump" );
-      config.addEntryEnum< tnlString >( "sin-bumps" );
-      config.addEntryEnum< tnlString >( "sin-wave" );
    config.addRequiredEntry< tnlString >( "output-file", "Output file name." );
    config.addEntry< bool >( "check-output-file", "If the output file already exists, do not recreate it.", false );
    config.addEntry< tnlString >( "help", "Write help." );   

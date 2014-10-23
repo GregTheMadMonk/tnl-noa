@@ -25,6 +25,8 @@
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
+#include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <matrices/tnlCSRMatrix.h>
 #include "heatEquationSolver.h"
 
 
@@ -41,6 +43,8 @@ class heatEquationSolver
    typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
 
    static tnlString getTypeStatic();
 
@@ -49,10 +53,14 @@ class heatEquationSolver
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const;
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    bool setInitialCondition( const tnlParameterContainer& parameters,
-                             const MeshType& mesh );
+                             const MeshType& mesh,
+                             DofVectorType& dofs );
+
+   bool setupLinearSystem( const MeshType& mesh,
+                           MatrixType& matrix );
 
    bool makeSnapshot( const RealType& time,
                       const IndexType& step,
@@ -68,19 +76,24 @@ class heatEquationSolver
    void bindAuxiliaryDofs( const MeshType& mesh,
                            DofVectorType& auxiliaryDofs );
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitRHS( const RealType& time,
                         const RealType& tau,
                         const MeshType& mesh,
                         DofVectorType& _u,
                         DofVectorType& _fu );
+
+   void assemblyLinearSystem( const RealType& time,
+                              const RealType& tau,
+                              const MeshType& mesh,
+                              DofVectorType& u,
+                              MatrixType& matrix,
+                              DofVectorType& rightHandSide );
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
    
    protected:
 
    tnlSharedVector< RealType, DeviceType, IndexType > solution;
-
-   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
 
    DifferentialOperator differentialOperator;
 

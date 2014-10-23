@@ -27,9 +27,9 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
-      bool init( const tnlParameterContainer& parameters )
+      bool setup( const tnlParameterContainer& parameters )
       {
-         if( ! testFunction.init( parameters ) )
+         if( ! testFunction.setup( parameters ) )
             return false;
          return true;
       };
@@ -39,7 +39,8 @@ class tnlHeatEquationEocRhs
       Real getValue( const Vertex& vertex,
                      const Real& time )
       {
-         return testFunction.getTimeDerivative( vertex, time ) - exactOperator.getValue( testFunction, vertex, time );
+         return testFunction.getTimeDerivative( vertex, time )
+                - exactOperator.getValue( testFunction, vertex, time );
       };
 
    protected:

@@ -115,10 +115,10 @@ void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
 };
 
 template< typename Problem >
-bool tnlMersonSolver< Problem > :: init( const tnlParameterContainer& parameters,
+bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameters,
                                          const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::init( parameters, prefix );
+   tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
 }
@@ -228,10 +228,10 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       //cerr << "this -> getConvergenceResidue() = " << this -> getConvergenceResidue() << endl;
       if( time >= this->getStopTime() ||
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
-       {
+      {
          this -> refreshSolverMonitor();
          return true;
-       }
+      }
    }
 };
 
@@ -273,35 +273,35 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
 
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
-      this -> problem -> GetExplicitRHS( time, tau, u, k1 );
+      this->problem->getExplicitRHS( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
-      this -> problem -> GetExplicitRHS( time + tau_3, tau, kAux, k2 );
+      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
-      this -> problem -> GetExplicitRHS( time + tau_3, tau, kAux, k3 );
+      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
-      this -> problem -> GetExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
+      this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
-      this -> problem -> GetExplicitRHS( time + tau, tau, kAux, k5 );
+      this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
    }
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
@@ -309,27 +309,27 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       const int block_size = 512;
       const int grid_size = ( size - 1 ) / block_size + 1;
 
-      this -> problem -> GetExplicitRHS( time, tau, u, k1 );
+      this->problem->getExplicitRHS( time, tau, u, k1 );
       cudaThreadSynchronize();
 
       computeK2Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _kAux );
       cudaThreadSynchronize();
-      this -> problem -> GetExplicitRHS( time + tau_3, tau, kAux, k2 );
+      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
       cudaThreadSynchronize();
 
       computeK3Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k2, _kAux );
       cudaThreadSynchronize();
-      this -> problem -> GetExplicitRHS( time + tau_3, tau, kAux, k3 );
+      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
       cudaThreadSynchronize();
 
       computeK4Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k3, _kAux );
       cudaThreadSynchronize();
-      this -> problem -> GetExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
+      this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
       cudaThreadSynchronize();
 
       computeK5Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k3, _k4, _kAux );
       cudaThreadSynchronize();
-      this -> problem -> GetExplicitRHS( time + tau, tau, kAux, k5 );
+      this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
       cudaThreadSynchronize();
 #endif
    }
