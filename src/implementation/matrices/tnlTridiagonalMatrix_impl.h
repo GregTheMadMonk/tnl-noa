@@ -136,6 +136,16 @@ Index tnlTridiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixEle
 template< typename Real,
           typename Device,
           typename Index >
+Index
+tnlTridiagonalMatrix< Real, Device, Index >::
+getMaxRowlength() const
+{
+   return 3;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlTridiagonalMatrix< Real, Device, Index >::reset()
 {
    tnlMatrix< Real, Device, Index >::reset();

@@ -5,8 +5,8 @@
 #include <mesh/tnlGrid.h>
 
 template< typename Mesh,
-          typename Real,// = typename Mesh::RealType,
-          typename Index >// = typename Mesh::IndexType >
+          typename Real = typename Mesh::RealType,
+          typename Index = typename Mesh::IndexType >
 class tnlLinearDiffusion
 {
  
@@ -47,6 +47,21 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      void updateLinearSystem( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType& index,
+                               const CoordinatesType& coordinates,
+                               Vector& u,
+                               Vector& b,
+                               IndexType* columns,
+                               RealType* values,
+                               IndexType& rowLength ) const;
+
 };
 
 
@@ -84,6 +99,20 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      void updateLinearSystem( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType& index,
+                               const CoordinatesType& coordinates,
+                               Vector& u,
+                               Vector& b,
+                               IndexType* columns,
+                               RealType* values,
+                               IndexType& rowLength ) const;
 };
 
 
@@ -120,6 +149,21 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
+
+   template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      void updateLinearSystem( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType& index,
+                               const CoordinatesType& coordinates,
+                               Vector& u,
+                               Vector& b,
+                               IndexType* columns,
+                               RealType* values,
+                               IndexType& rowLength ) const;
 
 };
 

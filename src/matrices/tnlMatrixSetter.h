@@ -126,11 +126,10 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< int EntityDimension >
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index,
-                             const CoordinatesType& coordinates )
+         void processCell( const MeshType& mesh,
+                           TraversalUserData& userData,
+                           const IndexType index,
+                           const CoordinatesType& coordinates )
          {
             userData.rowLengths[ index ] =
                      userData.boundaryConditions.getLinearSystemRowLength( mesh, index, coordinates );
@@ -142,11 +141,10 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< int EntityDimensions >
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index,
-                             const CoordinatesType& coordinates )
+         void processCell( const MeshType& mesh,
+                           TraversalUserData& userData,
+                           const IndexType index,
+                           const CoordinatesType& coordinates )
          {
             userData.rowLengths[ index ] =
                      userData.differentialOperator.getLinearSystemRowLength( mesh, index, coordinates );

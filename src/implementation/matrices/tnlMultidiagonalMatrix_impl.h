@@ -163,6 +163,16 @@ Index tnlMultidiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixE
 template< typename Real,
           typename Device,
           typename Index >
+Index
+tnlMultidiagonalMatrix< Real, Device, Index >::
+getMaxRowlength() const
+{
+   return diagonalsShift.getSize();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlMultidiagonalMatrix< Real, Device, Index > :: reset()
 {
    this->rows = 0;

@@ -22,6 +22,7 @@ template< typename Real,
           typename Device,
           typename Index >
 tnlSparseMatrix< Real, Device, Index >::tnlSparseMatrix()
+: maxRowLength( 0 )
 {
 }
 
@@ -58,6 +59,16 @@ Index tnlSparseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements()
           this->values.getElement( i ) != 0.0 )
          nonzeroElements++;
    return nonzeroElements;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Index
+tnlSparseMatrix< Real, Device, Index >::
+getMaxRowLength() const
+{
+   return this->maxRowLength;
 }
 
 template< typename Real,

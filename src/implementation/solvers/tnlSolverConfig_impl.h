@@ -106,6 +106,17 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
          config.addEntryEnum( "merson" );
    }
+   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   {
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
+         config.addEntryEnum( "cg" );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
+         config.addEntryEnum( "bicgstab" );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
+         config.addEntryEnum( "gmres" );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
+         config.addEntryEnum( "sor" );
+   }
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
@@ -114,6 +125,19 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
 
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
          tnlMersonSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+   }
+   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   {
+      config.addDelimiter( " === Semi-implicit solvers parameters === " );
+      typedef tnlCSRMatrix< double, tnlHost, int > MatrixType;
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
+         tnlCGSolver< MatrixType >::configSetup( config );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
+         tnlBICGStabSolver< MatrixType >::configSetup( config );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
+         tnlGMRESSolver< MatrixType >::configSetup( config );
+      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
+         tnlSORSolver< MatrixType >::configSetup( config );
    }
 
    config.addDelimiter( " === Logs and messages ===" );

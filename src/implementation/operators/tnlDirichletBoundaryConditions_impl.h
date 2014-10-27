@@ -56,6 +56,33 @@ getLinearSystemRowLength( const MeshType& mesh,
    return 1;
 }
 
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    DofVectorType& u,
+                    DofVectorType& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = index;
+   values[ 0 ] = 1.0;
+   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   rowLength = 1;
+}
+
 
 template< typename MeshReal,
           typename Device,
@@ -112,6 +139,34 @@ getLinearSystemRowLength( const MeshType& mesh,
    return 1;
 }
 
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    DofVectorType& u,
+                    DofVectorType& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = index;
+   values[ 0 ] = 1.0;
+   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   rowLength = 1;
+}
+
+
 
 template< typename MeshReal,
           typename Device,
@@ -166,6 +221,34 @@ getLinearSystemRowLength( const MeshType& mesh,
 {
    return 1;
 }
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    DofVectorType& u,
+                    DofVectorType& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = index;
+   values[ 0 ] = 1.0;
+   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   rowLength = 1;
+}
+
 
 #endif	/* TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H */
 

@@ -33,6 +33,7 @@ class tnlSORSolver : public tnlObject,
                      public tnlIterativeSolver< typename Matrix :: RealType,
                                                 typename Matrix :: IndexType >
 {
+   public:
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
@@ -40,12 +41,16 @@ class tnlSORSolver : public tnlObject,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
-   public:
 
    tnlSORSolver();
 
    tnlString getType() const;
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setOmega( const RealType& omega );
 

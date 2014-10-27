@@ -74,12 +74,12 @@ template< typename Real,
           typename Index >
 bool tnlEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
 {
-   this->rowLengths = rowLengths.max();
+   tnlAssert( this->getRows() > 0, );
+   tnlAssert( this->getColumns() > 0, );
    tnlAssert( this->rowLengths > 0,
               cerr << "this->rowLengths = " << this->rowLengths );
-   if( this->rows > 0 )
-      return allocateElements();
-   return true;
+   this->rowLengths = this->maxRowLength = rowLengths.max();
+   return allocateElements();
 }
 
 template< typename Real,

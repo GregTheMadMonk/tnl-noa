@@ -89,10 +89,12 @@ void tnlIterativeSolver< Real, Index> :: resetIterations()
 template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
+   solverMonitor->setIterations( ++this->currentIteration );
+   solverMonitor->setResidue( this->getResidue() );
    if( this->solverMonitor &&
        this->currentIteration % this->refreshRate == 0 )
       solverMonitor->refresh();
-   this->currentIteration ++;
+
    if( std::isnan( this->getResidue() ) ||
        ( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) ||
