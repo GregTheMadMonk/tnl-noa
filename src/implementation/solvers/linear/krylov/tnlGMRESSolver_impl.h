@@ -38,12 +38,36 @@ tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
 };
 
 template< typename Matrix,
-           typename Preconditioner >
-tnlString tnlGMRESSolver< Matrix, Preconditioner > :: getType() const
+          typename Preconditioner >
+tnlString
+tnlGMRESSolver< Matrix, Preconditioner >::
+getType() const
 {
    return tnlString( "tnlGMRESSolver< " ) +
           this -> matrix -> getType() + ", " +
           this -> preconditioner -> getType() + " >";
+}
+
+template< typename Matrix,
+          typename Preconditioner >
+void
+tnlGMRESSolver< Matrix, Preconditioner >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );
+}
+
+template< typename Matrix,
+          typename Preconditioner >
+bool
+tnlGMRESSolver< Matrix, Preconditioner >::
+setup( const tnlParameterContainer& parameters,
+       const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   this->setRestarting( parameters.GetParameter< int >( "gmres-restarting" ) );
 }
 
 template< typename Matrix,
@@ -155,7 +179,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
 
 
 
-      //dbgCout( " ----------- Starting m-loop -----------------" );
+      /****
+       * Starting m-loop
+       */
       for( i = 0; i < m && this -> getIterations() <= this -> getMaxIterations(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
@@ -196,8 +222,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. addVector( _w, ( RealType ) 1.0 / normw );
 
-
-         //dbgCout( "Applying rotations" );
+         /****
+          * Applying the Givens rotations
+          */
          for( k = 0; k < i; k++ )
             applyPlaneRotation( H[ k + i * ( m + 1 )],
                                 H[ k + 1 + i * ( m + 1 ) ],
@@ -217,7 +244,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              cs[ i ],
                              sn[ i ] );
 
-         this -> setResidue( fabs( s[ i + 1 ] ) / normb );
+         this->setResidue( fabs( s[ i + 1 ] ) / normb );
+         this->refreshSolverMonitor();
 
          if( this -> getResidue() < this -> getConvergenceResidue() )
          {
@@ -226,15 +254,14 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
             //   this -> printOut();
             return true;
          }
-         //DBG_WAIT;
-         this -> refreshSolverMonitor();
          if( ! this -> nextIteration() )
             return false;
       }
       update( m - 1, m, _H, _s, _v, x );
-      //dbgCout_ARRAY( x, size );
 
-      // r = M.solve(b - A * x);
+      /****
+       * r = M.solve(b - A * x);
+       */
       beta = 0.0;
       if( preconditioner )
       {
@@ -257,7 +284,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          return false;
    }
    this -> refreshSolverMonitor();
-   if( this -> getResidue() >this -> getConvergenceResidue() ) return false;
+   if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 

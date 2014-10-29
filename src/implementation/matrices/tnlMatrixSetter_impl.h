@@ -62,13 +62,13 @@ getRowLengths( const MeshType& mesh,
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   /*meshTraversal.template processEntities< TraversalUserData,
+   meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
                                           ( mesh,
                                             userData,
                                             boundaryEntitiesProcessor,
-                                            interiorEntitiesProcessor );*/
+                                            interiorEntitiesProcessor );
 }
 
 

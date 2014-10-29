@@ -64,6 +64,37 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename Vector >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const RealType& tau,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    Vector& u,
+                    Vector& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = mesh.getCellXPredecessor( index );
+   columns[ 1 ] = index;
+   columns[ 2 ] = mesh.getCellXSuccessor( index );
+   values[ 0 ] = -tau;
+   values[ 1 ] = 1.0 + 2.0 * tau;
+   values[ 2 ] = -tau;
+   rowLength = 3;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
 tnlString
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
@@ -116,6 +147,42 @@ getValue( const MeshType& mesh,
              - 2.0 * u[ cellIndex ]
              + u[ mesh.getCellYSuccessor( cellIndex ) ] ) * mesh.getHySquareInverse();
 }
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename Vector >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const RealType& tau,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    Vector& u,
+                    Vector& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = mesh.getCellYPredecessor( index );
+   columns[ 1 ] = mesh.getCellXPredecessor( index );
+   columns[ 2 ] = index;
+   columns[ 3 ] = mesh.getCellXSuccessor( index );
+   columns[ 4 ] = mesh.getCellYSuccessor( index );
+   values[ 0 ] = -tau;
+   values[ 1 ] = -tau;
+   values[ 2 ] = 1.0 + 4.0 * tau;
+   values[ 3 ] = -tau;
+   values[ 4 ] = -tau;
+   rowLength = 5;
+}
+
 
 template< typename MeshReal,
           typename Device,
@@ -176,6 +243,46 @@ getLinearSystemRowLength( const MeshType& mesh,
 {
    return 7;
 }
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename Vector >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void
+tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const RealType& tau,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const CoordinatesType& coordinates,
+                    Vector& u,
+                    Vector& b,
+                    IndexType* columns,
+                    RealType* values,
+                    IndexType& rowLength ) const
+{
+   columns[ 0 ] = mesh.getCellZPredecessor( index );
+   columns[ 1 ] = mesh.getCellYPredecessor( index );
+   columns[ 2 ] = mesh.getCellXPredecessor( index );
+   columns[ 3 ] = index;
+   columns[ 4 ] = mesh.getCellXSuccessor( index );
+   columns[ 5 ] = mesh.getCellYSuccessor( index );
+   columns[ 6 ] = mesh.getCellZSuccessor( index );
+   values[ 0 ] = -tau;
+   values[ 1 ] = -tau;
+   values[ 2 ] = -tau;
+   values[ 3 ] = 1.0 + 6.0 * tau;
+   values[ 4 ] = -tau;
+   values[ 5 ] = -tau;
+   values[ 6 ] = -tau;
+   rowLength = 7;
+}
+
 
 
 #endif	/* TNLLINEARDIFFUSION_IMP_H */

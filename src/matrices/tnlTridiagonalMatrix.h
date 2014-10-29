@@ -60,6 +60,8 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfNonzeroMatrixElements() const;
 
+   IndexType getMaxRowlength() const;
+
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >

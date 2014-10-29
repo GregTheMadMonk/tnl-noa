@@ -32,6 +32,29 @@ tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
           this -> preconditioner -> getType() + " >";
 }
 
+template< typename Matrix,
+          typename Preconditioner >
+void
+tnlSORSolver< Matrix, Preconditioner >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
+}
+
+template< typename Matrix,
+          typename Preconditioner >
+bool
+tnlSORSolver< Matrix, Preconditioner >::
+setup( const tnlParameterContainer& parameters,
+       const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   this->setOmega( parameters.GetParameter< int >( "sor-omega" ) );
+}
+
+
 template< typename Matrix, typename Preconditioner >
 void tnlSORSolver< Matrix, Preconditioner > :: setOmega( const RealType& omega )
 {
@@ -67,12 +90,12 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
    const IndexType size = matrix -> getRows();
 
    this -> resetIterations();
-   this -> setResidue( this -> getMaxResidue() + 1.0 );
+   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
 
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
    while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getMaxResidue() )
+          this -> getResidue() > this -> getConvergenceResidue() )
    {
       /*matrix -> performSORIteration( this -> getOmega(),
                                      b,
@@ -87,7 +110,7 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getMaxResidue() ) return false;
+      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
    return true;
 };
 

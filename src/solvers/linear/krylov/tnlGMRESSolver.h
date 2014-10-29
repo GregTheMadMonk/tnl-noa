@@ -47,6 +47,12 @@ class tnlGMRESSolver : public tnlObject,
 
    tnlString getType() const;
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
    void setRestarting( IndexType rest );
 
    void setMatrix( const MatrixType& matrix );

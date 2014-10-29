@@ -44,6 +44,26 @@ tnlString tnlTFQMRSolver< Matrix, Preconditioner > :: getType() const
 
 template< typename Matrix,
           typename Preconditioner >
+void
+tnlTFQMRSolver< Matrix, Preconditioner >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+}
+
+template< typename Matrix,
+          typename Preconditioner >
+bool
+tnlTFQMRSolver< Matrix, Preconditioner >::
+setup( const tnlParameterContainer& parameters,
+       const tnlString& prefix )
+{
+   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+}
+
+template< typename Matrix,
+          typename Preconditioner >
 void tnlTFQMRSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
    this -> matrix = &matrix;

@@ -147,6 +147,12 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         if( discreteSolver == "sor" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "cg" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "bicgstab" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
             return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          return false;
@@ -233,6 +239,57 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, Con
       {
          cerr << "The semi-implicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
          return false;
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef typename Problem::MatrixType MatrixType;
+         typedef tnlSORSolver< MatrixType > LinearSystemSolver;
+         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
+         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
+                                                               TimeStepper,
+                                                               ConfigTag >::run( problem, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef typename Problem::MatrixType MatrixType;
+         typedef tnlCGSolver< MatrixType > LinearSystemSolver;
+         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
+         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
+                                                               TimeStepper,
+                                                               ConfigTag >::run( problem, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         typedef typename Problem::MatrixType MatrixType;
+         typedef tnlBICGStabSolver< MatrixType > LinearSystemSolver;
+         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
+         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
+                                                               TimeStepper,
+                                                               ConfigTag >::run( problem, parameters );
       }
 };
 
