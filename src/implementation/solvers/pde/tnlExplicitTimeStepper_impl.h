@@ -96,12 +96,13 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
                                                           const MeshType& mesh,
                                                           DofVectorType& dofVector )
 {
+   tnlAssert( this->odeSolver, );
    this->odeSolver->setTau( this -> timeStep );
    this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
    this->mesh = &mesh;
-   return this -> odeSolver -> solve( dofVector );
+   return this->odeSolver->solve( dofVector );
 }
 
 template< typename Problem,

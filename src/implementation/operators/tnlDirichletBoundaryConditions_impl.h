@@ -35,7 +35,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
 }
 
 template< typename MeshReal,
@@ -79,7 +79,7 @@ updateLinearSystem( const RealType& time,
 {
    columns[ 0 ] = index;
    values[ 0 ] = 1.0;
-   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   b[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
    rowLength = 1;
 }
 
@@ -118,7 +118,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );;
+   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );;
 }
 
 template< typename MeshReal,
@@ -162,7 +162,7 @@ updateLinearSystem( const RealType& time,
 {
    columns[ 0 ] = index;
    values[ 0 ] = 1.0;
-   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   b[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
    rowLength = 1;
 }
 
@@ -201,7 +201,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getVertex( coordinates ), time );;
+   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );;
 }
 
 template< typename MeshReal,
@@ -245,7 +245,7 @@ updateLinearSystem( const RealType& time,
 {
    columns[ 0 ] = index;
    values[ 0 ] = 1.0;
-   b[ index ] = function.getValue( mesh.getVertex( coordinates ), time );
+   b[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
    rowLength = 1;
 }
 

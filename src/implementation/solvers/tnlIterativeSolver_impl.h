@@ -89,8 +89,10 @@ void tnlIterativeSolver< Real, Index> :: resetIterations()
 template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
-   solverMonitor->setIterations( ++this->currentIteration );
-   solverMonitor->setResidue( this->getResidue() );
+   // TODO: fix
+   //tnlAssert( solverMonitor, );
+   //solverMonitor->setIterations( ++this->currentIteration );
+   //solverMonitor->setResidue( this->getResidue() );
    if( this->solverMonitor &&
        this->currentIteration % this->refreshRate == 0 )
       solverMonitor->refresh();
