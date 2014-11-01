@@ -69,4 +69,56 @@ getError( const Mesh& mesh,
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
 }
 
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ExactOperator,
+          typename ApproximateOperator,
+          typename Function >
+void
+tnlApproximationError< tnlGrid< Dimensions, Real, Device, Index >, ExactOperator, ApproximateOperator, Function >::
+getError( const MeshType& mesh,
+          const ExactOperator& exactOperator,
+          const ApproximateOperator& approximateOperator,
+          const Function& function,
+          RealType& l1Err,
+          RealType& l2Err,
+          RealType& maxErr )
+{
+   typedef tnlVector< RealType, DeviceType, IndexType > Vector;
+   Vector functionData, exactData, approximateData;
+   const IndexType entities = mesh.getNumberOfCells();
+
+   if( ! functionData.setSize( entities ) ||
+       ! exactData.setSize( entities ) ||
+       ! approximateData.setSize( entities )  )
+      return;
+
+   tnlFunctionDiscretizer< MeshType, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
+
+   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+   {
+      for( IndexType i = 0; i < entities; i++ )
+      {
+         if( ! mesh.isBoundaryCell( i ) )
+         {
+            VertexType v = mesh.getCellCenter( i );
+            CoordinatesType c = mesh.getCellCoordinates( i );
+            exactData[ i ] = exactOperator.getValue( function, v );
+            approximateData[ i ] = approximateOperator.getValue( mesh, i, c, functionData, 0.0 );
+         }
+         else exactData[ i ] = approximateData[ i ];
+      }
+   }
+   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+   {
+      // TODO
+   }
+   l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
+   l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
+   maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
+}
+
+
 #endif /* TNLAPPROXIMATIONERROR_IMPL_H_ */
