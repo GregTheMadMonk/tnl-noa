@@ -81,12 +81,13 @@ updateLinearSystem( const RealType& time,
                     RealType* values,
                     IndexType& rowLength ) const
 {
+   const RealType lambdaX = tau * mesh.getHxSquareInverse();
    columns[ 0 ] = mesh.getCellXPredecessor( index );
    columns[ 1 ] = index;
    columns[ 2 ] = mesh.getCellXSuccessor( index );
-   values[ 0 ] = -tau;
-   values[ 1 ] = 1.0 + 2.0 * tau;
-   values[ 2 ] = -tau;
+   values[ 0 ] = -lambdaX;
+   values[ 1 ] = 1.0 + 2.0 * lambdaX;
+   values[ 2 ] = -lambdaX;
    rowLength = 3;
 }
 
@@ -170,16 +171,18 @@ updateLinearSystem( const RealType& time,
                     RealType* values,
                     IndexType& rowLength ) const
 {
+   const RealType lambdaX = tau * mesh.getHxSquareInverse();
+   const RealType lambdaY = tau * mesh.getHySquareInverse();
    columns[ 0 ] = mesh.getCellYPredecessor( index );
    columns[ 1 ] = mesh.getCellXPredecessor( index );
    columns[ 2 ] = index;
    columns[ 3 ] = mesh.getCellXSuccessor( index );
    columns[ 4 ] = mesh.getCellYSuccessor( index );
-   values[ 0 ] = -tau;
-   values[ 1 ] = -tau;
-   values[ 2 ] = 1.0 + 4.0 * tau;
-   values[ 3 ] = -tau;
-   values[ 4 ] = -tau;
+   values[ 0 ] = -lambdaY;
+   values[ 1 ] = -lambdaX;
+   values[ 2 ] = 1.0 + 2.0 * ( lambdaX + lambdaY );
+   values[ 3 ] = -lambdaX;
+   values[ 4 ] = -lambdaY;
    rowLength = 5;
 }
 
@@ -266,6 +269,9 @@ updateLinearSystem( const RealType& time,
                     RealType* values,
                     IndexType& rowLength ) const
 {
+   const RealType lambdaX = tau * mesh.getHxSquareInverse();
+   const RealType lambdaY = tau * mesh.getHySquareInverse();
+   const RealType lambdaZ = tau * mesh.getHzSquareInverse();
    columns[ 0 ] = mesh.getCellZPredecessor( index );
    columns[ 1 ] = mesh.getCellYPredecessor( index );
    columns[ 2 ] = mesh.getCellXPredecessor( index );
@@ -273,13 +279,13 @@ updateLinearSystem( const RealType& time,
    columns[ 4 ] = mesh.getCellXSuccessor( index );
    columns[ 5 ] = mesh.getCellYSuccessor( index );
    columns[ 6 ] = mesh.getCellZSuccessor( index );
-   values[ 0 ] = -tau;
-   values[ 1 ] = -tau;
-   values[ 2 ] = -tau;
-   values[ 3 ] = 1.0 + 6.0 * tau;
-   values[ 4 ] = -tau;
-   values[ 5 ] = -tau;
-   values[ 6 ] = -tau;
+   values[ 0 ] = -lambdaZ;
+   values[ 1 ] = -lambdaY;
+   values[ 2 ] = -lambdaX;
+   values[ 3 ] = 1.0 + 2.0 * ( lambdaX + lambdaY + lambdaZ );
+   values[ 4 ] = -lambdaX;
+   values[ 5 ] = -lambdaY;
+   values[ 6 ] = -lambdaZ;
    rowLength = 7;
 }
 

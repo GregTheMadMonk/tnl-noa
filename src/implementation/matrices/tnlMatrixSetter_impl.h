@@ -54,8 +54,8 @@ template< int Dimensions,
 void
 tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >, DifferentialOperator, BoundaryConditions, RowLengthsVector >::
 getRowLengths( const MeshType& mesh,
-               DifferentialOperator& differentialOperator,
-               BoundaryConditions& boundaryConditions,
+               const DifferentialOperator& differentialOperator,
+               const BoundaryConditions& boundaryConditions,
                RowLengthsVector& rowLengths ) const
 {
    TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );

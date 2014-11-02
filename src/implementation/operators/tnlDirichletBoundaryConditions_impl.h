@@ -11,7 +11,7 @@ template< typename MeshReal,
 bool
 tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+       const tnlString& prefix )
 {
    return function.setup( parameters, prefix );
 }

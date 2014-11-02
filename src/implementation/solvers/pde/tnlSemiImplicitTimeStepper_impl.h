@@ -147,6 +147,8 @@ solve( const RealType& time,
                                            dofVector,
                                            this->matrix,
                                            this->rightHandSide );
+      cout << "u = " << dofVector << endl;
+      cout << "b = " << this->rightHandSide << endl;
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
       if( ! this->linearSystemSolver->solve( this->rightHandSide, dofVector ) )
@@ -154,6 +156,13 @@ solve( const RealType& time,
          cerr << "The linear system solver did not converge." << endl;
          return false;
       }
+      DofVectorType aux;
+      aux.setLike( dofVector );
+      this->matrix.vectorProduct( dofVector, aux );
+      cout << "tau = " << currentTau << endl;
+      cout << "u = " << dofVector << endl;
+      cout << "Ax = " << aux << endl;
+      cout << "b = " << this->rightHandSide << endl;
       t += currentTau;
    }
    return true;

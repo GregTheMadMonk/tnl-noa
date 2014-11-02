@@ -129,11 +129,11 @@ getValue( const Vertex& v,
    if( XDiffOrder == 1 && YDiffOrder == 0 )
       return 2.0 * M_PI * x / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 2 && YDiffOrder == 0 )
-      return 2.0 * M_PI * y * y / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * x * x / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 1 )
       return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
-      return 2.0 * M_PI * x * x / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * y * y / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    return 0.0;
 }
 
