@@ -71,6 +71,8 @@ class tnlSemiImplicitTimeStepper
    LinearSystemSolver* linearSystemSolver;
 
    RealType timeStep;
+
+   bool verbose;
 };
 
 #include <implementation/solvers/pde/tnlSemiImplicitTimeStepper_impl.h>

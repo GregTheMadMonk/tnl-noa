@@ -88,6 +88,9 @@ template< typename ConfigTag, typename ExplicitSolver > struct tnlConfigTagExpli
  * All semi-implicit solvers are enabled by default
  */
 
+class  tnlSemiImplicitSORSolverTag{};
+class  tnlSemiImplicitCGSolverTag{};
+class  tnlSemiImplicitBICGStabSolverTag{};
 class  tnlSemiImplicitGMRESSolverTag{};
 
 template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };

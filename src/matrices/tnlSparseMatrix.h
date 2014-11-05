@@ -43,6 +43,8 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getNumberOfNonzeroMatrixElements() const;
 
+   IndexType getMaxRowLength() const;
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -60,8 +62,9 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
-
    tnlVector< Index, Device, Index > columnIndexes;
+
+   Index maxRowLength;
 };
 
 #include <implementation/matrices/tnlSparseMatrix_impl.h>

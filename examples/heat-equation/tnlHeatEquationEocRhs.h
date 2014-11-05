@@ -37,7 +37,7 @@ class tnlHeatEquationEocRhs
       template< typename Vertex,
                 typename Real >
       Real getValue( const Vertex& vertex,
-                     const Real& time )
+                     const Real& time ) const
       {
          return testFunction.getTimeDerivative( vertex, time )
                 - exactOperator.getValue( testFunction, vertex, time );

@@ -32,8 +32,13 @@ class heatEquationConfig
    public:
       static void configSetup( tnlConfigDescription& config )
       {
-         //config.addDelimiter( "Heat equation settings:" );
-      }
+         config.addDelimiter( "Heat equation settings:" );
+         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< tnlString >( "dirichlet" );
+            config.addEntryEnum< tnlString >( "neumann" );
+         config.addEntry< tnlString >( "boundary-conditions", "File with the values of the boundary conditions.", "boundary.tnl" );
+         config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
+      };
 };
 
 template< typename Real,

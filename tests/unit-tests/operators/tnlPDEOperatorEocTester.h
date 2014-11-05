@@ -31,18 +31,19 @@
 template< typename ApproximateOperator,
           typename ExactOperator,
           typename TestFunction,
+          typename ApproximationMethod,
           int MeshSize,
           bool verbose = false >
 class tnlPDEOperatorEocTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlPDEOperatorEocTester< ApproximateOperator, ExactOperator, TestFunction, MeshSize, verbose > TesterType;
+   typedef tnlPDEOperatorEocTester< ApproximateOperator, ExactOperator, TestFunction, ApproximationMethod, MeshSize, verbose > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef typename ApproximateOperator::MeshType MeshType;
    typedef typename ApproximateOperator::RealType RealType;
    typedef typename ApproximateOperator::IndexType IndexType;
-   typedef tnlPDEOperatorEocTestSetter< ApproximateOperator, ExactOperator, MeshType, TestFunction > TestSetter;
-   typedef tnlPDEOperatorEocTestResult< ApproximateOperator, TestFunction > TestResult;
+   typedef tnlPDEOperatorEocTestSetter< ApproximateOperator, ExactOperator, ApproximationMethod, MeshType, TestFunction > TestSetter;
+   typedef tnlPDEOperatorEocTestResult< ApproximateOperator, ApproximationMethod, TestFunction > TestResult;
 
    tnlPDEOperatorEocTester(){};
 
@@ -55,6 +56,7 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
                            ApproximateOperator::getType() + ", " +
                            ExactOperator::getType() + ", " +
                            TestFunction::getType() + ", " +
+                           ApproximationMethod::getType() + ", " +
                            tnlString( MeshSize ) + ", " +
                            tnlString( verbose ) + " >";
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testName.getString() );
@@ -80,7 +82,8 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       tnlApproximationError< MeshType,
                              ExactOperator,
                              ApproximateOperator,
-                             TestFunction >
+                             TestFunction,
+                             ApproximationMethod >
          ::getError( mesh,
                      exactOperator,
                      approximateOperator,
@@ -94,7 +97,8 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       tnlApproximationError< MeshType,
                              ExactOperator,
                              ApproximateOperator,
-                             TestFunction >
+                             TestFunction,
+                             ApproximationMethod >
          ::getError( mesh,
                      exactOperator,
                      approximateOperator,

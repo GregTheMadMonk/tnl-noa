@@ -77,11 +77,14 @@ bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector&
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
+   tnlAssert( this->getRows() > 0, );
+   tnlAssert( this->getColumns() > 0, );
    tnlSharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
    this->rowPointers.computeExclusivePrefixSum();
+   this->maxRowLength = rowLengths.max();
 
    /****
     * Allocate values and column indexes

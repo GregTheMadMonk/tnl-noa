@@ -89,7 +89,8 @@ class tnlParameterContainer
       for( i = 0; i < size; i ++ )
          if( parameters[ i ] -> name == name )
             return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
-      cerr << "Unknown parameter " << name << endl;
+      cerr << "The program attempts to get unknown parameter " << name << endl;
+      cerr << "Aborting the program." << endl;
       abort();
    }
    

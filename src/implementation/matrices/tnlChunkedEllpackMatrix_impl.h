@@ -219,6 +219,8 @@ template< typename Real,
           typename Index >
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
 {
+   tnlAssert( this->getRows() > 0, );
+   tnlAssert( this->getColumns() > 0, );
 
    IndexType elementsToAllocation( 0 );
 
@@ -252,6 +254,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
       this->numberOfSlices = hostMatrix.numberOfSlices;
       elementsToAllocation = hostMatrix.values.getSize();
    }
+   this->maxRowLength = rowLengths.max();
    return tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 

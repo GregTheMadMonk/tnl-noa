@@ -37,6 +37,7 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
+   config.addEntry< bool >( "verbose", "Verbose mode.", true );
 }
 
 template< typename Problem,
@@ -46,6 +47,7 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
+   this->verbose = parameters.GetParameter< bool >( "verbose" );
    return true;
 }
 
@@ -55,7 +57,21 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshType& mesh )
 {
-   return this->problem->setupLinearSystem( mesh, this->matrix );
+   if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
+      return false;
+   if( this->matrix.getRows() == 0 || this->matrix.getColumns() == 0 )
+   {
+      cerr << "The matrix for the semi-implicit time stepping was not set correctly." << endl;
+      if( ! this->matrix.getRows() )
+         cerr << "The matrix dimensions are set to 0 rows." << endl;
+      if( ! this->matrix.getColumns() )
+         cerr << "The matrix dimensions are set to 0 columns." << endl;
+      cerr << "Please check the method 'setupLinearSystem' in your solver." << endl;
+      return false;
+   }
+   if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
+      return false;
+   return true;
 }
 
 template< typename Problem,
@@ -118,17 +134,45 @@ solve( const RealType& time,
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
+   this->linearSystemSolver->setMatrix( this->matrix );
    while( t < stopTime )
    {
       RealType currentTau = Min( this->timeStep, stopTime - t );
+
+      if( ! this->problem->preIterate( t,
+                                       currentTau,
+                                       mesh,
+                                       dofVector ) )
+      {
+         cerr << endl << "Preiteration failed." << endl;
+         return false;
+      }
+      if( verbose )
+         cout << "                                                                  Assembling the linear system ... \r" << flush;
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
                                            mesh,
                                            dofVector,
                                            this->matrix,
                                            this->rightHandSide );
+      if( verbose )
+         cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
+      if( ! this->linearSystemSolver->solve( this->rightHandSide, dofVector ) )
+      {
+         cerr << "The linear system solver did not converge." << endl;
+         return false;
+      }
+      if( ! this->problem->postIterate( t,
+                                        currentTau,
+                                        mesh,
+                                        dofVector ) )
+      {
+         cerr << endl << "Postiteration failed." << endl;
+         return false;
+      }
       t += currentTau;
    }
+   return true;
 }
 
 #endif /* TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_ */

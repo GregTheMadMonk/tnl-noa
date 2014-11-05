@@ -76,11 +76,17 @@ class heatEquationSolver
    void bindAuxiliaryDofs( const MeshType& mesh,
                            DofVectorType& auxiliaryDofs );
 
+   bool preIterate( const RealType& time,
+                    const RealType& tau,
+                    const MeshType& mesh,
+                    DofVectorType& u );
+
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
                         const MeshType& mesh,
                         DofVectorType& _u,
                         DofVectorType& _fu );
+
 
    void assemblyLinearSystem( const RealType& time,
                               const RealType& tau,
@@ -88,6 +94,12 @@ class heatEquationSolver
                               DofVectorType& u,
                               MatrixType& matrix,
                               DofVectorType& rightHandSide );
+
+   bool postIterate( const RealType& time,
+                     const RealType& tau,
+                     const MeshType& mesh,
+                     DofVectorType& u );
+
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
    

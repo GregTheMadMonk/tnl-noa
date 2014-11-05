@@ -125,8 +125,8 @@ bindAuxiliaryDofs( const MeshType& mesh,
 
 
 template< typename Mesh, typename DifferentialOperator, typename BoundaryCondition, typename RightHandSide >
-bool heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >
-:: setInitialCondition( const tnlParameterContainer& parameters,
+bool heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+setInitialCondition( const tnlParameterContainer& parameters,
                         const MeshType& mesh,
                         DofVectorType& dofs )
 {
@@ -149,13 +149,19 @@ heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide
 setupLinearSystem( const MeshType& mesh,
                    MatrixType& matrix )
 {
+   const IndexType dofs = this->getDofs( mesh );
    RowLengthsVectorType rowLengths;
+   if( ! rowLengths.setSize( dofs ) )
+      return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowLengthsVectorType > matrixSetter;
    matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
                                                             differentialOperator,
                                                             boundaryCondition,
                                                             rowLengths );
-   matrix.setRowLengths( rowLengths );
+   matrix.setDimensions( dofs, dofs );
+   if( ! matrix.setRowLengths( rowLengths ) )
+      return false;
+   return true;
 }
 
 template< typename Mesh,
@@ -176,6 +182,21 @@ makeSnapshot( const RealType& time,
       return false;
    return true;
 }
+
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
+bool
+heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+preIterate( const RealType& time,
+            const RealType& tau,
+            const MeshType& mesh,
+            DofVectorType& u )
+{
+   return true;
+}
+
 
 template< typename Mesh,
           typename DifferentialOperator,
@@ -226,7 +247,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorType& b )
 {
    tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
-   /*systemAssembler.template assembly< Mesh::Dimensions >( time,
+   systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,
                                                           this->differentialOperator,
@@ -235,8 +256,24 @@ assemblyLinearSystem( const RealType& time,
                                                           u,
                                                           matrix,
                                                           b );
-    */
+   //matrix.print( cout );
+   //abort();
 }
+
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
+bool
+heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+postIterate( const RealType& time,
+             const RealType& tau,
+             const MeshType& mesh,
+             DofVectorType& u )
+{
+   return true;
+}
+
 
 template< typename Mesh,
           typename DifferentialOperator,

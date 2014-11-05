@@ -27,6 +27,10 @@ template< typename Real,
 class tnlLinearSystemAssemblerTraversalUserData
 {
    public:
+      typedef Matrix MatrixType;
+      typedef typename Matrix::DeviceType DeviceType;
+      typedef tnlVector< typename MatrixType::RealType, DeviceType, typename MatrixType::IndexType > RowValuesType;
+      typedef tnlVector< typename MatrixType::IndexType, DeviceType, typename MatrixType::IndexType > RowColumnsType;
 
       const Real &time;
 
@@ -42,6 +46,10 @@ class tnlLinearSystemAssemblerTraversalUserData
 
       Matrix &matrix;
 
+      RowValuesType& values;
+
+      RowColumnsType& columns;
+
       tnlLinearSystemAssemblerTraversalUserData( const Real& time,
                                                  const Real& tau,
                                                  const DifferentialOperator& differentialOperator,
@@ -49,7 +57,9 @@ class tnlLinearSystemAssemblerTraversalUserData
                                                  const RightHandSide& rightHandSide,
                                                  DofVector& u,
                                                  Matrix& matrix,
-                                                 DofVector& b )
+                                                 DofVector& b,
+                                                 RowColumnsType& columns,
+                                                 RowValuesType& values )
       : time( time ),
         tau( tau ),
         differentialOperator( differentialOperator ),
@@ -57,7 +67,9 @@ class tnlLinearSystemAssemblerTraversalUserData
         rightHandSide( rightHandSide ),
         u( u ),
         b( b ),
-        matrix( matrix )
+        matrix( matrix ),
+        columns( columns ),
+        values( values )
       {};
 
    protected:
@@ -109,12 +121,19 @@ class tnlLinearSystemAssembler
                              TraversalUserData& userData,
                              const IndexType index )
          {
+            typename MatrixType::IndexType rowLength;
             userData.boundaryConditions.updateLinearSystem( userData.time,
                                                             mesh,
                                                             index,
                                                             userData.u,
-                                                            userData.matrix,
-                                                            userData.b );
+                                                            userData.b,
+                                                            userData.columns.getData(),
+                                                            userData.values.getData(),
+                                                            rowLength );
+            userData.matrix.setRowFast( index,
+                                        userData.columns.getData(),
+                                        userData.values.getData(),
+                                        rowLength );
          }
 
    };
@@ -131,14 +150,24 @@ class tnlLinearSystemAssembler
                              TraversalUserData& userData,
                              const IndexType index )
          {
-            userData.differentialOperator.updateLinearSystem( mesh,
+            userData.b[ index ] = userData.u[ index ] +
+                                  userData.tau * userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
+                                                                                  userData.time );
+            typename MatrixType::IndexType rowLength;
+            userData.differentialOperator.updateLinearSystem( userData.time,
+                                                              userData.tau,
+                                                              mesh,
                                                               index,
                                                               userData.u,
-                                                              userData.matrix,
                                                               userData.b,
-                                                              userData.time );
-            userData.b[ index ] += userData.tau * userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
-                                                                                   userData.time );
+                                                              userData.columns.getData(),
+                                                              userData.values.getData(),
+                                                              rowLength );
+            userData.matrix.setRowFast( index, 
+                                        userData.columns.getData(),
+                                        userData.values.getData(),
+                                        rowLength );
+            userData.matrix.addElement( index, index, 1.0, 1.0 );
          }
 
    };
@@ -189,22 +218,28 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< int EntityDimension >
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index,
-                             const CoordinatesType& coordinates )
+         void processCell( const MeshType& mesh,
+                           TraversalUserData& userData,
+                           const IndexType index,
+                           const CoordinatesType& coordinates )
          {
+            typename MatrixType::IndexType rowLength;
             userData.boundaryConditions.updateLinearSystem( userData.time,
                                                             mesh,
                                                             index,
                                                             coordinates,
                                                             userData.u,
-                                                            userData.matrix,
-                                                            userData.b );
+                                                            userData.b,
+                                                            userData.columns.getData(),
+                                                            userData.values.getData(),
+                                                            rowLength );
+            userData.matrix.setRowFast( index,
+                                        userData.columns.getData(),
+                                        userData.values.getData(),
+                                        rowLength );
          }
 
    };
@@ -213,25 +248,33 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< int EntityDimensions >
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index,
-                             const CoordinatesType& coordinates )
+         void processCell( const MeshType& mesh,
+                           TraversalUserData& userData,
+                           const IndexType index,
+                           const CoordinatesType& coordinates )
          {
-            userData.differentialOperator.updateLinearSystem( mesh,
+            userData.b[ index ] = userData.u[ index ] +
+                                  userData.tau * userData.rightHandSide.getValue( mesh.getCellCenter( index ),
+                                                                                  userData.time );
+            typename MatrixType::IndexType rowLength;
+            userData.differentialOperator.updateLinearSystem( userData.time,
+                                                              userData.tau,
+                                                              mesh,
                                                               index,
                                                               coordinates,
                                                               userData.u,
-                                                              userData.matrix,
                                                               userData.b,
-                                                              userData.time );
-            userData.b[ index ] += userData.tau *
-                                   userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
-                                                                    userData.time );
+                                                              userData.columns.getData(),
+                                                              userData.values.getData(),
+                                                              rowLength );
+            userData.matrix.setRowFast( index,
+                                        userData.columns.getData(),
+                                        userData.values.getData(),
+                                        rowLength );
+            userData.matrix.addElement( index, index, 1.0, 1.0 );
          }
 
    };

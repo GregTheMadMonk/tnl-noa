@@ -96,12 +96,13 @@ bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
                                                           const MeshType& mesh,
                                                           DofVectorType& dofVector )
 {
+   tnlAssert( this->odeSolver, );
    this->odeSolver->setTau( this -> timeStep );
    this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
    this->mesh = &mesh;
-   return this -> odeSolver -> solve( dofVector );
+   return this->odeSolver->solve( dofVector );
 }
 
 template< typename Problem,
@@ -111,7 +112,25 @@ void tnlExplicitTimeStepper< Problem, OdeSolver >::getExplicitRHS( const RealTyp
                                                                    DofVectorType& _u,
                                                                    DofVectorType& _fu )
 {
+   if( ! this->problem->preIterate( time,
+                                    tau,
+                                    *( this->mesh),
+                                    _u ) )
+   {
+      cerr << endl << "Preiteration failed." << endl;
+      return;
+      //return false; // TODO: throw exception
+   }
    this->problem->getExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
+   if( ! this->problem->postIterate( time,
+                                     tau,
+                                     *( this->mesh ),
+                                     _u ) )
+   {
+      cerr << endl << "Postiteration failed." << endl;
+      return;
+      //return false; // TODO: throw exception
+   }
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

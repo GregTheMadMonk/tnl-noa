@@ -76,7 +76,14 @@ assembly( const RealType& time,
           MatrixType& matrix,
           DofVector& b ) const
 {
-   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
+   const IndexType maxRowLength = matrix.getMaxRowLength();
+   tnlAssert( maxRowLength > 0, );
+   typename TraversalUserData::RowValuesType values;
+   typename TraversalUserData::RowColumnsType columns;
+   values.setSize( maxRowLength );
+   columns.setSize( maxRowLength );
+
+   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;

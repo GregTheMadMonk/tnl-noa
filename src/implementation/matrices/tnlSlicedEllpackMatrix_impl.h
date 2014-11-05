@@ -71,6 +71,8 @@ template< typename Real,
           int SliceSize >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( const RowLengthsVector& rowLengths )
 {
+   tnlAssert( this->getRows() > 0, );
+   tnlAssert( this->getColumns() > 0, );
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
    if( ! this->sliceRowLengths.setSize( slices ) ||
        ! this->slicePointers.setSize( slices + 1 ) )
@@ -78,8 +80,9 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( co
 
    DeviceDependentCode::computeMaximalRowLengthInSlices( *this, rowLengths );
 
-   this->slicePointers.computeExclusivePrefixSum();
+   this->maxRowLength = rowLengths.max();
 
+   this->slicePointers.computeExclusivePrefixSum();
    return this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 
