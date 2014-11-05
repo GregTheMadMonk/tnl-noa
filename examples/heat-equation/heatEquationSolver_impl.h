@@ -187,6 +187,21 @@ template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryCondition,
           typename RightHandSide >
+bool
+heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+preIterate( const RealType& time,
+            const RealType& tau,
+            const MeshType& mesh,
+            DofVectorType& u )
+{
+   return true;
+}
+
+
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
 void
 heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 getExplicitRHS( const RealType& time,
@@ -244,6 +259,21 @@ assemblyLinearSystem( const RealType& time,
    //matrix.print( cout );
    //abort();
 }
+
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
+bool
+heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+postIterate( const RealType& time,
+             const RealType& tau,
+             const MeshType& mesh,
+             DofVectorType& u )
+{
+   return true;
+}
+
 
 template< typename Mesh,
           typename DifferentialOperator,

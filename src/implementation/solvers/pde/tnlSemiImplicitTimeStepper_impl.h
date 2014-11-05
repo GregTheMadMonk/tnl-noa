@@ -139,6 +139,14 @@ solve( const RealType& time,
    {
       RealType currentTau = Min( this->timeStep, stopTime - t );
 
+      if( ! this->problem->preIterate( t,
+                                       currentTau,
+                                       mesh,
+                                       dofVector ) )
+      {
+         cerr << endl << "Preiteration failed." << endl;
+         return false;
+      }
       if( verbose )
          cout << "                                                                  Assembling the linear system ... \r" << flush;
       this->problem->assemblyLinearSystem( t,
@@ -152,6 +160,14 @@ solve( const RealType& time,
       if( ! this->linearSystemSolver->solve( this->rightHandSide, dofVector ) )
       {
          cerr << "The linear system solver did not converge." << endl;
+         return false;
+      }
+      if( ! this->problem->postIterate( t,
+                                        currentTau,
+                                        mesh,
+                                        dofVector ) )
+      {
+         cerr << endl << "Postiteration failed." << endl;
          return false;
       }
       t += currentTau;
