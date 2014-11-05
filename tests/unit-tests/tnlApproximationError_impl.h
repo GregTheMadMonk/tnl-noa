@@ -54,8 +54,9 @@ getError( const Mesh& mesh,
          if( ! mesh.isBoundaryCell( i ) )
          {
             VertexType v = mesh.getCellCenter( i );
+            CoordinatesType c = mesh.getCellCoordinates( i );
             exactData[ i ] = exactOperator.getValue( function, v );
-            approximateData[ i ] = approximateOperator.getValue( mesh, i, functionData );
+            approximateData[ i ] = approximateOperator.getValue( mesh, i, c, functionData, 0.0 );
          }
          else exactData[ i ] = approximateData[ i ];
       }
