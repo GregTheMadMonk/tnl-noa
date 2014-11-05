@@ -118,7 +118,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu )
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );;
+   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
 }
 
 template< typename MeshReal,
