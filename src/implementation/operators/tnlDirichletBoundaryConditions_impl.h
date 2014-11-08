@@ -32,7 +32,7 @@ setBoundaryConditions( const RealType& time,
                        const IndexType index,
                        const CoordinatesType& coordinates,
                        DofVectorType& u,
-                       DofVectorType& fu )
+                       DofVectorType& fu ) const
 {
    fu[ index ] = 0;
    u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
@@ -115,7 +115,7 @@ setBoundaryConditions( const RealType& time,
                        const IndexType index,
                        const CoordinatesType& coordinates,
                        DofVectorType& u,
-                       DofVectorType& fu )
+                       DofVectorType& fu ) const
 {
    fu[ index ] = 0;
    u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
@@ -198,7 +198,7 @@ setBoundaryConditions( const RealType& time,
                        const IndexType index,
                        const CoordinatesType& coordinates,
                        DofVectorType& u,
-                       DofVectorType& fu )
+                       DofVectorType& fu ) const
 {
    fu[ index ] = 0;
    u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );;

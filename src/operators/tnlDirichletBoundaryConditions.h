@@ -47,7 +47,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
-                               DofVectorType& fu );
+                               DofVectorType& fu ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -105,7 +105,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
-                               DofVectorType& fu );
+                               DofVectorType& fu ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -164,7 +164,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
-                               DofVectorType& fu );
+                               DofVectorType& fu ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__

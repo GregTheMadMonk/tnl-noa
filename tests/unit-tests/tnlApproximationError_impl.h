@@ -42,6 +42,8 @@ getError( const Mesh& mesh,
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    Vector functionData, exactData, approximateData;
    const IndexType entities = mesh.getNumberOfCells();
+   BoundaryConditionsType boundaryConditions;
+   ConstantFunctionType zeroFunction;
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
@@ -50,29 +52,25 @@ getError( const Mesh& mesh,
 
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
-   {
-      for( IndexType i = 0; i < entities; i++ )
-      {
-         if( ! mesh.isBoundaryCell( i ) )
-         {
-            VertexType v = mesh.getCellCenter( i );
-            exactData[ i ] = exactOperator.getValue( function, v );
-            approximateData[ i ] = approximateOperator.getValue( mesh, i, functionData );
-         }
-         else exactData[ i ] = approximateData[ i ];
-      }
-   }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
-   {
-      // TODO
-   }
+   tnlExplicitUpdater< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType > explicitUpdater;
+   explicitUpdater.template update< Mesh::Dimensions >( 0.0,
+                                                        mesh,
+                                                        approximateOperator,
+                                                        boundaryConditions,
+                                                        zeroFunction,
+                                                        functionData,
+                                                        approximateData );
+   cout << "Function = " << functionData << endl;
+   cout << "Approximation = " << approximateData << endl;
+   cout << "Exact = " << exactData << endl;
+
+
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
 }
 
-template< int Dimensions,
+/*template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
@@ -118,10 +116,14 @@ getError( const MeshType& mesh,
    {
       // TODO
    }
+   cout << "Function = " << functionData << endl;
+   cout << "Approximation = " << approximateData << endl;
+   cout << "Exact = " << exactData << endl;
+
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
-}
+}*/
 
 /****
  * Implicit (matrix) approximation
@@ -152,6 +154,8 @@ getError( const Mesh& mesh,
 
    const IndexType entities = mesh.getNumberOfCells();
 
+   cerr << "Semi-implicit test " << endl;
+
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
        ! approximateData.setSize( entities ) ||
@@ -181,7 +185,11 @@ getError( const Mesh& mesh,
                                                           approximateData // this has no meaning here
                                                           );
 
+   cout << "Matrix = " << matrix << endl;
    matrix.vectorProduct( functionData, approximateData );
+   cout << "Function = " << functionData << endl;
+   cout << "Approximation = " << approximateData << endl;
+   cout << "Exact = " << exactData << endl;
    for( IndexType i = 0; i < entities; i++ )
       if( mesh.isBoundaryCell( i ) )
          approximateData.setElement( i, exactData.getElement( i ) );

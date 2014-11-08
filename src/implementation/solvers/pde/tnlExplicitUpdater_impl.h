@@ -64,9 +64,9 @@ void
 tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const tnlGrid< Dimensions, Real, Device, Index >& mesh,
-        DifferentialOperator& differentialOperator,
-        BoundaryConditions& boundaryConditions,
-        RightHandSide& rightHandSide,
+        const DifferentialOperator& differentialOperator,
+        const BoundaryConditions& boundaryConditions,
+        const RightHandSide& rightHandSide,
         DofVector& u,
         DofVector& fu ) const
 {

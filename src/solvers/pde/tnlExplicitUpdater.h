@@ -29,18 +29,18 @@ class tnlExplicitUpdaterTraversalUserData
 
       const Real &time;
 
-      DifferentialOperator& differentialOperator;
+      const DifferentialOperator& differentialOperator;
 
-      BoundaryConditions& boundaryConditions;
+      const BoundaryConditions& boundaryConditions;
 
-      RightHandSide& rightHandSide;
+      const RightHandSide& rightHandSide;
 
       DofVector &u, &fu;
 
       tnlExplicitUpdaterTraversalUserData( const Real& time,
-                                           DifferentialOperator& differentialOperator,
-                                           BoundaryConditions& boundaryConditions,
-                                           RightHandSide& rightHandSide,
+                                           const DifferentialOperator& differentialOperator,
+                                           const BoundaryConditions& boundaryConditions,
+                                           const RightHandSide& rightHandSide,
                                            DofVector& u,
                                            DofVector& fu )
       : time( time ),
@@ -154,9 +154,9 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       template< int EntityDimensions >
       void update( const RealType& time,
                    const MeshType& mesh,
-                   DifferentialOperator& differentialOperator,
-                   BoundaryConditions& boundaryConditions,
-                   RightHandSide& rightHandSide,
+                   const DifferentialOperator& differentialOperator,
+                   const BoundaryConditions& boundaryConditions,
+                   const RightHandSide& rightHandSide,
                    DofVector& u,
                    DofVector& fu ) const;
 

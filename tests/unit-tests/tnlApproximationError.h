@@ -21,6 +21,7 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlConstantFunction.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
+#include <solvers/pde/tnlExplicitUpdater.h>
 
 class tnlExplicitApproximation
 {
@@ -76,7 +77,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
                             RealType& maxErr );
 };
 
-template< int Dimensions,
+/*template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
@@ -101,7 +102,7 @@ class tnlApproximationError< tnlGrid< Dimensions, Real, Device, Index >, ExactOp
                             RealType& l1Err,
                             RealType& l2Err,
                             RealType& maxErr );
-};
+};*/
 
 template< typename Mesh,
           typename ExactOperator,
