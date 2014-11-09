@@ -37,7 +37,9 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
    typedef typename MeshType::CoordinatesType CoordinatesType;
             
    bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+               const tnlString& prefix = "" );
+
+   void setFunction( const Function& function );
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -97,6 +99,8 @@ class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >,
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+   void setFunction( const Function& function );
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -154,7 +158,9 @@ class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >,
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
    bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+               const tnlString& prefix = "" );
+
+   void setFunction( const Function& function );
 
 #ifdef HAVE_CUDA
    __device__ __host__

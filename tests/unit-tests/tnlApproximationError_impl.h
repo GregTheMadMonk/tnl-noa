@@ -24,6 +24,7 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <operators/tnlExactOperatorEvaluator.h>
 
 template< typename Mesh,
           typename ExactOperator,
@@ -40,14 +41,15 @@ getError( const Mesh& mesh,
           RealType& maxErr )
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
-   Vector functionData, exactData, approximateData;
+   Vector functionData, exactData, approximateData, aux;
    const IndexType entities = mesh.getNumberOfCells();
    BoundaryConditionsType boundaryConditions;
    ConstantFunctionType zeroFunction;
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
-       ! approximateData.setSize( entities )  )
+       ! approximateData.setSize( entities ) ||
+       ! aux.setSize( entities) )
       return;
 
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
@@ -60,9 +62,16 @@ getError( const Mesh& mesh,
                                                         zeroFunction,
                                                         functionData,
                                                         approximateData );
-   cout << "Function = " << functionData << endl;
+   tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
+   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+
+   /*cout << "Function = " << functionData << endl;
    cout << "Approximation = " << approximateData << endl;
-   cout << "Exact = " << exactData << endl;
+   cout << "Exact = " << exactData << endl;*/
+
+   functionData.save( "explicit-function.tnl" );
+   approximateData.save( "explicit-approximation.tnl" );
+   exactData.save( "explicit-exact.tnl" );
 
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
@@ -175,7 +184,7 @@ getError( const Mesh& mesh,
 
    tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, MatrixType > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( 0.0, // time
-                                                          0.0, // tau
+                                                          1.0, // tau
                                                           mesh,
                                                           approximateOperator,
                                                           boundaryConditions,
@@ -184,15 +193,26 @@ getError( const Mesh& mesh,
                                                           matrix,
                                                           approximateData // this has no meaning here
                                                           );
+   tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
+   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   cout << "Matrix = " << matrix << endl;
+
+   //cout << "Matrix = " << matrix << endl;
    matrix.vectorProduct( functionData, approximateData );
-   cout << "Function = " << functionData << endl;
-   cout << "Approximation = " << approximateData << endl;
-   cout << "Exact = " << exactData << endl;
+   // TODO: replace this when ,matrix.vectorProduct has multiplicator parameter
    for( IndexType i = 0; i < entities; i++ )
-      if( mesh.isBoundaryCell( i ) )
-         approximateData.setElement( i, exactData.getElement( i ) );
+      approximateData.setElement( i, -1.0 * approximateData.getElement( i ) );
+
+   //cout << "Function = " << functionData << endl;
+   //cout << "Approximation = " << approximateData << endl;
+   //cout << "Exact = " << exactData << endl;
+
+
+   mesh.save( "mesh.tnl" );
+   functionData.save( "implicit-function.tnl" );
+   approximateData.save( "implicit-approximation.tnl" );
+   exactData.save( "implicit-exact.tnl" );
+
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );

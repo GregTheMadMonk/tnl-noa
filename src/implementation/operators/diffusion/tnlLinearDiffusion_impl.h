@@ -86,7 +86,7 @@ updateLinearSystem( const RealType& time,
    columns[ 1 ] = index;
    columns[ 2 ] = mesh.getCellXSuccessor( index );
    values[ 0 ] = -lambdaX;
-   values[ 1 ] = 1.0 + 2.0 * lambdaX;
+   values[ 1 ] = 2.0 * lambdaX;
    values[ 2 ] = -lambdaX;
    rowLength = 3;
 }
@@ -180,7 +180,7 @@ updateLinearSystem( const RealType& time,
    columns[ 4 ] = mesh.getCellYSuccessor( index );
    values[ 0 ] = -lambdaY;
    values[ 1 ] = -lambdaX;
-   values[ 2 ] = 1.0 + 2.0 * ( lambdaX + lambdaY );
+   values[ 2 ] = 2.0 * ( lambdaX + lambdaY );
    values[ 3 ] = -lambdaX;
    values[ 4 ] = -lambdaY;
    rowLength = 5;
@@ -282,7 +282,7 @@ updateLinearSystem( const RealType& time,
    values[ 0 ] = -lambdaZ;
    values[ 1 ] = -lambdaY;
    values[ 2 ] = -lambdaX;
-   values[ 3 ] = 1.0 + 2.0 * ( lambdaX + lambdaY + lambdaZ );
+   values[ 3 ] = 2.0 * ( lambdaX + lambdaY + lambdaZ );
    values[ 4 ] = -lambdaX;
    values[ 5 ] = -lambdaY;
    values[ 6 ] = -lambdaZ;
