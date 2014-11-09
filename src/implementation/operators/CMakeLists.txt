@@ -1,11 +1,16 @@
 ADD_SUBDIRECTORY( gradient )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
+ADD_SUBDIRECTORY( godunov )
+ADD_SUBDIRECTORY( upwind )
+ADD_SUBDIRECTORY( godunov-eikonal )
+ADD_SUBDIRECTORY( upwind-eikonal )
 
 SET( headers
      tnlDirichletBoundaryConditions_impl.h
      tnlFiniteDifferences_impl.h
-     tnlNeumannBoundaryConditions_impl.h )
+     tnlNeumannBoundaryConditions_impl.h
+     tnlNeumannReflectionBoundaryConditions_impl.h )
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/operators )
 
 if( BUILD_CUDA)

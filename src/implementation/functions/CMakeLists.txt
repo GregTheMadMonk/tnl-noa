@@ -3,7 +3,14 @@ SET( headers tnlFunctionDiscretizer_impl.h
              tnlExpBumpFunction_impl.h
              tnlSinBumpsFunction_impl.h
              tnlSinWaveFunction_impl.h
-             tnlTestFunction_impl.h )
+             tnlTestFunction_impl.h
+             tnlSDFSinBumpsFunction_impl.h
+	     tnlSDFSinBumpsFunctionSDF_impl.h
+             tnlSDFSinWaveFunction_impl.h 
+	     tnlSDFSinWaveFunctionSDF_impl.h
+	     tnlSDFParaboloid_impl.h
+	     tnlSDFParaboloidSDF_impl.h
+	     tnlSDFSchemeTest_impl.h  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/functions )
 set( common_SOURCES

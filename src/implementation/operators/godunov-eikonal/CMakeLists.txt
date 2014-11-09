@@ -1,0 +1,17 @@
+set( headers godunovEikonal1D_impl.h
+             godunovEikonal2D_impl.h
+             godunovEikonal3D_impl.h)
+
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/operators/godunov-eikonal )
+
+if( BUILD_CUDA)
+      set( tnl_implementation_operators_godunov-eikonal_CUDA__SOURCES
+        ${common_SOURCES}
+        PARENT_SCOPE )
+endif()
+
+set( tnl_implementation_operators_godunov-eikonal_SOURCES
+     ${common_SOURCES}
+     PARENT_SCOPE )
+
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/implementation/operators/godunov-eikonal )

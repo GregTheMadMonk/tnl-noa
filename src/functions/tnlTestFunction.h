@@ -33,12 +33,18 @@ class tnlTestFunction
    enum TestFunctions{ constant,
                        expBump,
                        sinBumps,
-                       sinWave };
+                       sinWave,
+   	   	   	   	   	   sdfParaboloid,
+   	   	   	   	   	   sdfParaboloidSDF,
+   	   	   	   	   	   sdfSinBumps,
+   	   	   	   	   	   sdfSinBumpsSDF,
+   	   	   	   	   	   sdfSinWave,
+   	   	   	   	   	   sdfSinWaveSDF };
 
    enum TimeDependence { none,
                          linear,
                          quadratic,
-                         cosine };
+                         sine };
 
    public:
 
@@ -93,7 +99,7 @@ class tnlTestFunction
    protected:
 
    template< typename FunctionType >
-   bool setupFunction( const tnlParameterContainer& parameters,
+   bool initFunction( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
 
    template< typename FunctionType >

@@ -260,5 +260,6 @@ bool resolveMeshType( const tnlList< tnlString >& parsedMeshType,
    if( dimensions == 3 )
       return resolveRealType< 3 >( parsedMeshType, parameters );
 
+
 }
 #endif /* TNL_INIT_H_ */
