@@ -49,7 +49,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
    config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
    config.addEntry< tnlString >( "pdf-file", "PDf file name for the matrix pattern.", "tnl-benchmark.log");
-   config.addEntry< tnlString >( "precison", "Precision of the arithmetics.", "double" );
+   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntry< double >( "stop-time" ,"Seconds to iterate the SpMV operation.", 1.0 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
