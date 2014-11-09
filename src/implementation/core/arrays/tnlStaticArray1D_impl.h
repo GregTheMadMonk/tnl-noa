@@ -149,7 +149,7 @@ template< typename Element >
    template< typename Array >
 bool tnlStaticArray< 1, Element >::operator == ( const Array& array ) const
 {
-   return( size == Array::size && data[ 0 ] == array[ 0 ] );
+   return( ( int ) size == ( int ) Array::size && data[ 0 ] == array[ 0 ] );
 }
 
 template< typename Element >

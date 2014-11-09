@@ -78,7 +78,7 @@ template< int FunctionDimensions,
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
 setupFunction( const tnlParameterContainer& parameters,
-              const tnlString& prefix )
+               const tnlString& prefix )
 {
    FunctionType* auxFunction = new FunctionType;
    if( ! auxFunction->setup( parameters, prefix ) )
@@ -153,6 +153,37 @@ setup( const tnlParameterContainer& parameters,
    }
    cerr << "Unknown function " << testFunction << endl;
    return false;
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+const tnlTestFunction& operator = ( const tnlTestFunction& function )
+{
+   this->functionType   = function.functionType;
+   this->timeDependence = function.timeDependence;
+   this->timeScale      = function.timeScale;
+
+
+   if( Device::DeviceType == ( int ) tnlHostDevice )
+   {
+      switch( this->functionType )
+      {
+         case constant:
+            this->function = new tnlConstantFunction< FunctionDimensions, Real, Device >;
+            *this->function = * ( ( tnlConstantFunction< FunctionDimensions, Real, Device >*) function.function );
+            ....
+      }
+
+   }
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   {
+      this->function = tnlCuda::passToDevice( *auxFunction );
+      delete auxFunction;
+      if( ! checkCudaDevice )
+         return false;
+   }
+
 }
 
 template< int FunctionDimensions,

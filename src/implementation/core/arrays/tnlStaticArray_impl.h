@@ -136,7 +136,7 @@ template< int Size, typename Element >
    template< typename Array >
 bool tnlStaticArray< Size, Element >::operator == ( const Array& array ) const
 {
-   if( size != Array::size )
+   if( ( int ) size != ( int ) Array::size )
       return false;
    for( int i = 0; i < size; i++ )
       if( data[ i ] != array[ i ] )

@@ -54,6 +54,8 @@ class tnlTestFunction
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+   const tnlTestFunction& operator = ( const tnlTestFunction& function );
+
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
