@@ -87,15 +87,6 @@ class hamiltonJacobiProblemSolver
                     const MeshType& mesh,
                     DofVectorType& u );
 
-   bool setupLinearSystem( const MeshType& mesh,
-                           MatrixType& matrix );
-
-   void assemblyLinearSystem( const RealType& time,
-                              const RealType& tau,
-                              const MeshType& mesh,
-                              DofVectorType& u,
-                              MatrixType& matrix,
-                              DofVectorType& rightHandSide );
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
 

@@ -249,58 +249,5 @@ postIterate( const RealType& time,
 
 
 
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide >
-void
-hamiltonJacobiProblemSolver< Mesh, HamiltonJacobi, BoundaryCondition, RightHandSide >::
-assemblyLinearSystem( const RealType& time,
-                      const RealType& tau,
-                      const MeshType& mesh,
-                      DofVectorType& u,
-                      MatrixType& matrix,
-                      DofVectorType& b )
-{
-   tnlLinearSystemAssembler< Mesh, DofVectorType, HamiltonJacobi, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
-   systemAssembler.template assembly< Mesh::Dimensions >( time,
-                                                          tau,
-                                                          mesh,
-                                                          this->differentialOperator,
-                                                          this->boundaryCondition,
-                                                          this->rightHandSide,
-                                                          u,
-                                                          matrix,
-                                                          b );
-   //matrix.print( cout );
-   //abort();
-}
-
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide >
-bool
-hamiltonJacobiProblemSolver< Mesh, HamiltonJacobi, BoundaryCondition, RightHandSide >::
-setupLinearSystem( const MeshType& mesh,
-                   MatrixType& matrix )
-{
-   const IndexType dofs = this->getDofs( mesh );
-   RowLengthsVectorType rowLengths;
-   if( ! rowLengths.setSize( dofs ) )
-      return false;
-   tnlMatrixSetter< MeshType, HamiltonJacobi, BoundaryCondition, RowLengthsVectorType > matrixSetter;
-   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
-                                                            differentialOperator,
-                                                            boundaryCondition,
-                                                            rowLengths );
-   matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setRowLengths( rowLengths ) )
-      return false;
-   return true;
-}
-
-
-
 
 #endif /* HAMILTONJACOBIPROBLEMSOLVER_IMPL_H_ */
