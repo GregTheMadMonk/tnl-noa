@@ -158,30 +158,35 @@ setup( const tnlParameterContainer& parameters,
 template< int FunctionDimensions,
           typename Real,
           typename Device >
-const tnlTestFunction& operator = ( const tnlTestFunction& function )
+const tnlTestFunction< FunctionDimensions, Real, Device >&
+tnlTestFunction< FunctionDimensions, Real, Device >::
+operator = ( const tnlTestFunction& function )
 {
    this->functionType   = function.functionType;
    this->timeDependence = function.timeDependence;
    this->timeScale      = function.timeScale;
 
+   abort();
 
    if( Device::DeviceType == ( int ) tnlHostDevice )
    {
       switch( this->functionType )
       {
          case constant:
-            this->function = new tnlConstantFunction< FunctionDimensions, Real, Device >;
-            *this->function = * ( ( tnlConstantFunction< FunctionDimensions, Real, Device >*) function.function );
-            ....
+            //this->function = new tnlConstantFunction< FunctionDimensions, Real >;
+            //*this->function = * ( ( tnlConstantFunction< FunctionDimensions, Real >*) function.function );
+            //....
+            //
+            ;
       }
 
    }
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
-      this->function = tnlCuda::passToDevice( *auxFunction );
+      /*this->function = tnlCuda::passToDevice( *auxFunction );
       delete auxFunction;
       if( ! checkCudaDevice )
-         return false;
+         return false;*/
    }
 
 }
