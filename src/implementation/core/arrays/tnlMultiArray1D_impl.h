@@ -103,7 +103,7 @@ template< typename Element, typename Device, typename Index >
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
-              printf( "i = %d this -> dimensions[ 0 ] = %d \n", ( int ) i, ( int ) this -> dimensions[ 0 ] ) );
+              cerr << "i = " << i << " this -> dimensions[ 0 ] = " <<  this -> dimensions[ 0 ] );
    return i;
 }
 

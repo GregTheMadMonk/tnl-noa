@@ -48,22 +48,20 @@ class tnlConstantFunction
              int ZDiffOrder,
              typename Vertex >
 #else
-   template< int XDiffOrder = 0,
+   template< int XDiffOrder,
              int YDiffOrder = 0,
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const;
-#ifdef HAVE_NOT_CXX11
+
    template< typename Vertex >
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const
    {
       return getValue< 0, 0, 0, Vertex >( v, time );
    }
-
-#endif
 
    protected:
 

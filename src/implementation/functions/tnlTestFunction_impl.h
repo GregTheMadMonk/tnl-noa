@@ -44,9 +44,10 @@ configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
    config.addRequiredEntry< tnlString >( prefix + "test-function", "Testing function." );
+      config.addEntryEnum( "constant" );
+      config.addEntryEnum( "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
-      config.addEntryEnum( "exp-bump" );
    config.addEntry     < double >( prefix + "value", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );

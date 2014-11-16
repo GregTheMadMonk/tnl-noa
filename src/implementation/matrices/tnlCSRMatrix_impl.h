@@ -426,8 +426,7 @@ typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct(
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
    IndexType column;
    while( elementPtr < rowEnd &&
-          ( column = this->columnIndexes[ elementPtr ] ) < this->columns &&
-          column != this->getPaddingIndex() )
+          ( column = this->columnIndexes[ elementPtr ] ) != this->getPaddingIndex() )
       result += this->values[ elementPtr++ ] * vector[ column ];
    return result;
 }
@@ -472,9 +471,9 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                                                    const IndexType row,
-                                                                                    Vector& x,
-                                                                                    const RealType& omega ) const
+                                                               const IndexType row,
+                                                               Vector& x,
+                                                               const RealType& omega ) const
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
@@ -487,12 +486,12 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
    IndexType column;
-   while( elementPtr < rowEnd && ( column = this->columnIndexes[ elementPtr ] ) < this->columns )
+   while( elementPtr < rowEnd && ( column = this->columnIndexes[ elementPtr ] ) != this->getPaddingIndex() )
    {
       if( column == row )
-         diagonalValue = this->values.getElement( elementPtr );
+         diagonalValue = this->values[ elementPtr ];
       else
-         sum += this->values.getElement( row * this->diagonalsShift.getSize() + elementPtr ) * x. getElement( column );
+         sum += this->values[ elementPtr ] * x[ column ];
       elementPtr++;
    }
    if( diagonalValue == ( Real ) 0.0 )
@@ -500,7 +499,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
       cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
       return false;
    }
-   x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
+   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
 }
 

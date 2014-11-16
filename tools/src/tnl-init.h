@@ -55,7 +55,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
    double tau = parameters.GetParameter< double >( "snapshot-period" );
    bool numericalDifferentiation = parameters.GetParameter< bool >( "numerical-differentiation" );
    int step( 0 );
-   const int steps = ceil( finalTime / tau );
+   const int steps = tau > 0 ? ceil( finalTime / tau ): 0;
 
    while( step <= steps )
    {

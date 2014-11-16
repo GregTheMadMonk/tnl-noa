@@ -115,8 +115,8 @@ template< typename Element, typename Device, typename Index >
 Index tnlMultiArray< 2, Element, Device, Index > :: getElementIndex( const Index j, const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ] && j >= 0 && j < this -> dimensions[ 1 ],
-              printf( "i = %d j = %d this -> dimensions[ 0 ] = %d this -> dimensions[ 1 ] = %d \n",
-               i, j, this -> dimensions[ 0 ], this -> dimensions[ 1 ] ) );
+              cerr << "i = " << i << " j = " << j << " this -> dimensions[ 0 ] = " <<  this -> dimensions[ 0 ]
+                   << " this -> dimensions[ 1 ] = " << this -> dimensions[ 1 ] );
    return j * this -> dimensions[ 0 ] + i;
 }
 

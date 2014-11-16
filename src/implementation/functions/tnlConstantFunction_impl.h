@@ -51,7 +51,7 @@ tnlConstantFunction< Dimensions, Real >::
 setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   this->setValue( parameters.GetParameter< double >( prefix + "-value") );
+   this->setValue( parameters.GetParameter< double >( prefix + "value") );
    return true;
 }
 
