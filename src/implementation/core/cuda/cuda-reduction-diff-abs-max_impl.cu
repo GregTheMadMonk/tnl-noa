@@ -87,11 +87,11 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< double, lon
                                      const typename tnlParallelReductionDiffAbsMax< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffAbsMax< double, long int> :: ResultType& result );
 
-template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< long double, long int > >
+/*template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsMax< long double, long int > >
                                    ( const tnlParallelReductionDiffAbsMax< long double, long int>& operation,
                                      const typename tnlParallelReductionDiffAbsMax< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionDiffAbsMax< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionDiffAbsMax< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionDiffAbsMax< long double, long int> :: ResultType& result );
+                                     typename tnlParallelReductionDiffAbsMax< long double, long int> :: ResultType& result );*/
 
 #endif                                     

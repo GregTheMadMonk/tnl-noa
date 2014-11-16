@@ -32,7 +32,7 @@ getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time );
 }
 
 tnlString
@@ -49,8 +49,8 @@ getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2, 0 >( v, time ) +
-          function.template getValue< 0, 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 2, 0, Vertex >( v, time );
 }
 
 tnlString
@@ -67,9 +67,9 @@ getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2, 0, 0 >( v, time ) +
-          function.template getValue< 0, 2, 0 >( v, time ) +
-          function.template getValue< 0, 0, 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 2, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 0, 2, Vertex >( v, time );
 
 }
 

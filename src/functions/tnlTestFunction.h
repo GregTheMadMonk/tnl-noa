@@ -54,6 +54,8 @@ class tnlTestFunction
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
+   const tnlTestFunction& operator = ( const tnlTestFunction& function );
+
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
@@ -72,6 +74,15 @@ class tnlTestFunction
                   const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
+   template< typename Vertex >
+   Real getValue( const Vertex& vertex,
+                  const Real& time = 0 ) const
+   {
+      return this->getValue< 0, 0, 0, Vertex >( vertex, time );
+   }
+#endif                  
+
+#ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
@@ -87,6 +98,15 @@ class tnlTestFunction
 #endif
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const;
+
+#ifdef HAVE_NOT_CXX11
+   template< typename Vertex >
+   Real getTimeDerivative( const Vertex& vertex,
+                           const Real& time = 0 ) const
+   {
+      return this->getTimeDerivative< 0, 0, 0, Vertex >( vertex, time );
+   }   
+#endif                              
 
    ~tnlTestFunction();
 

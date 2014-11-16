@@ -147,6 +147,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
+   // TODO: add const RealType& multiplicator = 1.0 )
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,

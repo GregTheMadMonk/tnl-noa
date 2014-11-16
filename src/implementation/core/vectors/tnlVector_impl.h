@@ -130,6 +130,7 @@ template< typename Real,
 tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
    alphaXPlusBetaY( -1.0, vector, 1.0 );
+   return *this;
 }
 
 template< typename Real,
@@ -139,6 +140,7 @@ template< typename Real,
 tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
    alphaXPlusBetaY( 1.0, vector, 1.0 );
+   return *this;
 }
 
 template< typename Real,

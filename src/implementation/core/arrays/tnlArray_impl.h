@@ -409,6 +409,7 @@ ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v
          str << ", " << v. getElement( i );
    }
    str << " ]";
+   return str;
 }
 
 

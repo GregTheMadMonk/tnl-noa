@@ -830,7 +830,7 @@ Vertex tnlGrid< 3, Real, Device, Index >::getCellCenter( const IndexType& cellIn
               cerr << " cellIndex = " << cellIndex
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return this->getCellCenter( this->getCellCoordinates( cellIndex ) );
+   return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
 }
 
 template< typename Real,
@@ -842,18 +842,18 @@ template< int nx, int ny, int nz, typename Vertex >
 #endif
 Vertex tnlGrid< 3, Real, Device, Index > :: getFaceCenter( const CoordinatesType& faceCoordinates ) const
 {
-   tnlStaticAssert( nx >= 0 && ny >= 0 && nz >= 0 && nx + ny + nz = 1, "Wrong template parameters nx or ny or nz." );
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nz >= 0 && nx + ny + nz == 1, "Wrong template parameters nx or ny or nz." );
    if( nx )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions.z(),
+      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions().z(),
                  cerr << "faceCoordinates.z() = " << faceCoordinates.z()
                       << " this->getDimensions().z() = " << this->getDimensions().z()
                       << " this->getName() = " << this->getName(); );
@@ -863,15 +863,15 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getFaceCenter( const CoordinatesType
    }
    if( ny )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x(),
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions.z(),
+      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions().z(),
                  cerr << "faceCoordinates.z() = " << faceCoordinates.z()
                       << " this->getDimensions().z() = " << this->getDimensions().z()
                       << " this->getName() = " << this->getName(); );
@@ -882,15 +882,15 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getFaceCenter( const CoordinatesType
    }
    if( nz )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x(),
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y()= " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "faceCoordinates.z() = " << faceCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
@@ -909,18 +909,18 @@ template< int dx, int dy, int dz, typename Vertex >
 #endif
 Vertex tnlGrid< 3, Real, Device, Index > :: getEdgeCenter( const CoordinatesType& edgeCoordinates ) const
 {
-   tnlStaticAssert( dx >= 0 && dy >= 0 && dz >= 0 && dx + dy + dz = 1, "Wrong template parameters nx or ny or nz." );
+   tnlStaticAssert( dx >= 0 && dy >= 0 && dz >= 0 && dx + dy + dz == 1, "Wrong template parameters nx or ny or nz." );
    if( dx )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x(),
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x(),
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
@@ -930,15 +930,15 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEdgeCenter( const CoordinatesType
    }
    if( dy )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y(),
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
@@ -948,15 +948,15 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEdgeCenter( const CoordinatesType
    }
    if( dz )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z(),
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z(),
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() = " << this->getDimensions().z()
                       << " this->getName() = " << this->getName(); );
@@ -1092,7 +1092,7 @@ __device__ __host__
 #endif
 bool tnlGrid< 3, Real, Device, Index > :: isBoundaryFace( const CoordinatesType& faceCoordinates ) const
 {
-   tnlStaticAssert( nx >= 0 && ny >= 0 && nz >=0 && nx + ny == 1, "Wrong template parameters nx or ny." );
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nz >=0 && nx + ny + nz == 1, "Wrong template parameters nx or ny or nz." );
    if( nx )
    {
       tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
@@ -1123,22 +1123,22 @@ bool tnlGrid< 3, Real, Device, Index > :: isBoundaryFace( const CoordinatesType&
    }
    if( nz )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x(),
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y()= " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( faceCoordinates.z() >= 0 && faceCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "faceCoordinates.z() = " << faceCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
       if( faceCoordinates.z() == 0 || faceCoordinates.z() == this->getDimensions().z() )
          return true;
       return false;
-   }
+   }   
 }
 
 template< typename Real,
@@ -1150,18 +1150,18 @@ __device__ __host__
 #endif
 bool tnlGrid< 3, Real, Device, Index >::isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const
 {
-   tnlStaticAssert( dx >= 0 && dy >= 0 && dz >= 0 && dx + dy + dz = 1, "Wrong template parameters nx or ny or nz." );
+   tnlStaticAssert( dx >= 0 && dy >= 0 && dz >= 0 && dx + dy + dz == 1, "Wrong template parameters nx or ny or nz." );
    if( dx )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x(),
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x(),
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
@@ -1172,15 +1172,15 @@ bool tnlGrid< 3, Real, Device, Index >::isBoundaryEdge( const CoordinatesType& e
    }
    if( dy )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y(),
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z() + 1,
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z() + 1,
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() + 1 = " << this->getDimensions().z() + 1
                       << " this->getName() = " << this->getName(); );
@@ -1192,15 +1192,15 @@ bool tnlGrid< 3, Real, Device, Index >::isBoundaryEdge( const CoordinatesType& e
    }
    if( dz )
    {
-      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( edgeCoordinates.x() >= 0 && edgeCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "edgeCoordinates.x() = " << edgeCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( edgeCoordinates.y() >= 0 && edgeCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "edgeCoordinates.y() = " << edgeCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions.z(),
+      tnlAssert( edgeCoordinates.z() >= 0 && edgeCoordinates.z() < this->getDimensions().z(),
                  cerr << "edgeCoordinates.z() = " << edgeCoordinates.z()
                       << " this->getDimensions().z() = " << this->getDimensions().z()
                       << " this->getName() = " << this->getName(); );
@@ -1404,7 +1404,7 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
          {
             for( IndexType i = 0; i < getDimensions(). x(); i++ )
             {
-               VertexType v = this -> getCellCenter( CoordinatesType( i, j, k ) );
+               VertexType v = this -> getCellCenter< VertexType >( CoordinatesType( i, j, k ) );
                tnlGnuplotWriter::write( file, v );
                tnlGnuplotWriter::write( file, function[ this->getCellIndex( CoordinatesType( i, j, k ) ) ] );
                file << endl;

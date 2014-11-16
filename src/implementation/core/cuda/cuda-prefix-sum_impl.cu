@@ -70,10 +70,10 @@ template bool cudaPrefixSum( const long int size,
                              const tnlParallelReductionSum< double, long int >& operation,
                              const enumPrefixSumType prefixSumType );
 
-template bool cudaPrefixSum( const long int size,
+/*template bool cudaPrefixSum( const long int size,
                              const long int blockSize,
                              const long double *deviceInput,
                              long double* deviceOutput,
                              const tnlParallelReductionSum< long double, long int >& operation,
-                             const enumPrefixSumType prefixSumType );   
+                             const enumPrefixSumType prefixSumType );*/   
 #endif

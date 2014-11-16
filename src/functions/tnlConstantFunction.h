@@ -55,6 +55,15 @@ class tnlConstantFunction
 #endif
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const;
+#ifdef HAVE_NOT_CXX11
+   template< typename Vertex >
+   RealType getValue( const Vertex& v,
+                      const Real& time = 0.0 ) const
+   {
+      return getValue< 0, 0, 0, Vertex >( v, time );
+   }
+
+#endif
 
    protected:
 

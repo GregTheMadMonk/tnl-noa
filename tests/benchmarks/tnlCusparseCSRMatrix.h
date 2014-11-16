@@ -110,7 +110,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
       {
          tnlAssert( matrix, );
 #ifdef HAVE_CUDA         
-         cusparseDcsrmv( *( this->cusparseHandle ),
+         /*cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
@@ -121,7 +121,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
                          this->matrix->columnIndexes.getData(),
                          inVector.getData(),
                          1.0,
-                         outVector.getData() );
+                         outVector.getData() );*/
 #endif         
       }
 };
@@ -138,7 +138,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
       {
          tnlAssert( matrix, );
 #ifdef HAVE_CUDA         
-         cusparseScsrmv( *( this->cusparseHandle ),
+         /*cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
@@ -149,7 +149,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
                          this->matrix->columnIndexes.getData(),
                          inVector.getData(),
                          0,
-                         outVector.getData() );
+                         outVector.getData() );*/
 #endif         
       }
 };

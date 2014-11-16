@@ -138,19 +138,31 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -252,6 +264,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    void setDimensions( const CoordinatesType& dimensions );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
@@ -382,25 +397,42 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
-template< int nx, int ny, typename Vertex = VertexType >
+   
+#ifdef HAVE_NOT_CXX11    
+   template< int nx, int ny, typename Vertex >
+#else
+   template< int nx, int ny, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -711,31 +743,51 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
-template< int nx, int ny, int nz, typename Vertex = VertexType >
+#ifdef HAVE_NOT_CXX11    
+   template< int nx, int ny, int nz, typename Vertex >
+#else
+   template< int nx, int ny, int nz, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
-
-template< int dx, int dy, int dz, typename Vertex = VertexType >
+   
+#ifdef HAVE_NOT_CXX11    
+   template< int dx, int dy, int dz, typename Vertex >
+#else
+   template< int dx, int dy, int dz, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

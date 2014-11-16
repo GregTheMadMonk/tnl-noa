@@ -29,18 +29,18 @@ class tnlExplicitUpdaterTraversalUserData
 
       const Real &time;
 
-      DifferentialOperator& differentialOperator;
+      const DifferentialOperator& differentialOperator;
 
-      BoundaryConditions& boundaryConditions;
+      const BoundaryConditions& boundaryConditions;
 
-      RightHandSide& rightHandSide;
+      const RightHandSide& rightHandSide;
 
       DofVector &u, &fu;
 
       tnlExplicitUpdaterTraversalUserData( const Real& time,
-                                           DifferentialOperator& differentialOperator,
-                                           BoundaryConditions& boundaryConditions,
-                                           RightHandSide& rightHandSide,
+                                           const DifferentialOperator& differentialOperator,
+                                           const BoundaryConditions& boundaryConditions,
+                                           const RightHandSide& rightHandSide,
                                            DofVector& u,
                                            DofVector& fu )
       : time( time ),
@@ -154,9 +154,9 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       template< int EntityDimensions >
       void update( const RealType& time,
                    const MeshType& mesh,
-                   DifferentialOperator& differentialOperator,
-                   BoundaryConditions& boundaryConditions,
-                   RightHandSide& rightHandSide,
+                   const DifferentialOperator& differentialOperator,
+                   const BoundaryConditions& boundaryConditions,
+                   const RightHandSide& rightHandSide,
                    DofVector& u,
                    DofVector& fu ) const;
 
@@ -190,6 +190,8 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
+         typedef typename MeshType::VertexType VertexType;
+
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
@@ -204,7 +206,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                userData.u,
                                                                                userData.time );
 
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getCellCenter( coordinates ),
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
                                                                         userData.time );
             }
 

@@ -87,11 +87,11 @@ template bool reductionOnCudaDevice< tnlParallelReductionSum< double, long int >
                                      const typename tnlParallelReductionSum< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionSum< double, long int> :: ResultType& result );
 
-template bool reductionOnCudaDevice< tnlParallelReductionSum< long double, long int > >
+/*template bool reductionOnCudaDevice< tnlParallelReductionSum< long double, long int > >
                                    ( const tnlParallelReductionSum< long double, long int>& operation,
                                      const typename tnlParallelReductionSum< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionSum< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionSum< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionSum< long double, long int> :: ResultType& result );
+                                     typename tnlParallelReductionSum< long double, long int> :: ResultType& result );*/
                                      
 #endif                                     

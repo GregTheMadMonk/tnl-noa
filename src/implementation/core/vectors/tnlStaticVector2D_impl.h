@@ -80,6 +80,7 @@ tnlStaticVector< 2, Real >& tnlStaticVector< 2, Real >::operator += ( const tnlS
 {
    this->data[ 0 ] += v[ 0 ];
    this->data[ 1 ] += v[ 1 ];
+   return *this;
 }
 
 template< typename Real >
@@ -90,6 +91,7 @@ tnlStaticVector< 2, Real >& tnlStaticVector< 2, Real >::operator -= ( const tnlS
 {
    this->data[ 0 ] -= v[ 0 ];
    this->data[ 1 ] -= v[ 1 ];
+   return *this;
 }
 
 template< typename Real >
@@ -100,6 +102,7 @@ tnlStaticVector< 2, Real >& tnlStaticVector< 2, Real >::operator *= ( const Real
 {
    this->data[ 0 ] *= c;
    this->data[ 1 ] *= c;
+   return *this;
 }
 
 template< typename Real >
@@ -192,7 +195,7 @@ bool tnlStaticVector< 2, Real >::operator >= ( const tnlStaticVector& v ) const
 
 extern template class tnlStaticVector< 2, float >;
 extern template class tnlStaticVector< 2, double >;
-extern template class tnlStaticVector< 2, long double >;
+//extern template class tnlStaticVector< 2, long double >;
 
 #endif
 

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlLinearDiffusionTest.cpp  -  description
+                          tnlLinearDiffusionTest.cu  -  description
                              -------------------
-    begin                : Sep 4, 2014
+    begin                : Nov 15, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -51,9 +51,9 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
+#ifdef HAVE_CPPUNIT
    const bool verbose( true );
    const int MeshSize( 64 );
-#ifdef HAVE_CPPUNIT
    /****
     * Explicit approximation
     */

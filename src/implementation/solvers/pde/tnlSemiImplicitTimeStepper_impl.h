@@ -157,7 +157,7 @@ solve( const RealType& time,
                                            this->rightHandSide );
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
-      if( ! this->linearSystemSolver->solve( this->rightHandSide, dofVector ) )
+      if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
          cerr << "The linear system solver did not converge." << endl;
          return false;

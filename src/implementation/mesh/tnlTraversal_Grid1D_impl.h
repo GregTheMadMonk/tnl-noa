@@ -35,13 +35,22 @@ processEntities( const GridType& grid,
     */
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
-   for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+
+   /****
+    * Boundary conditions
+    */
+   coordinates.x() = 0;
+   boundaryEntitiesProcessor.template processCell( grid, userData, 0, coordinates );
+   coordinates.x() = xSize - 1;
+   boundaryEntitiesProcessor.template processCell( grid, userData, xSize - 1, coordinates );
+
+   /****
+    * Interior cells
+    */
+   for( coordinates.x() = 1; coordinates.x() < xSize-1; coordinates.x() ++ )
    {
       const IndexType index = grid.getCellIndex( coordinates );
-      if( grid.isBoundaryCell( coordinates ) )
-         boundaryEntitiesProcessor.template processCell( grid, userData, index, coordinates );
-      else
-         interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
+      interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
    }
 }
 

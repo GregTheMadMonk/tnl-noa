@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlExplicitUpdater_impl.h  -  description
+                          tnlExactOperatorEvaluator_impl.h  -  description
                              -------------------
-    begin                : Jul 29, 2014
+    begin                : Nov 8, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,30 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLEXPLICITUPDATER_IMPL_H_
-#define TNLEXPLICITUPDATER_IMPL_H_
-
-#include <mesh/tnlTraversal_Grid1D.h>
-#include <mesh/tnlTraversal_Grid2D.h>
-#include <mesh/tnlTraversal_Grid3D.h>
+#ifndef TNLEXACTOPERATOREVALUATOR_IMPL_H_
+#define TNLEXACTOPERATOREVALUATOR_IMPL_H_
 
 template< typename Mesh,
           typename DofVector,
           typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RightHandSide >
+          typename Function,
+          typename BoundaryConditions >
    template< int EntityDimensions >
 void
-tnlExplicitUpdater< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
-update( const RealType& time,
-        const Mesh& mesh,
-        DifferentialOperator& differentialOperator,
-        BoundaryConditions& boundaryConditions,
-        RightHandSide& rightHandSide,
-        DofVector& u,
-        DofVector& fu ) const
+tnlExactOperatorEvaluator< Mesh, DofVector, DifferentialOperator, Function, BoundaryConditions >::
+evaluate( const RealType& time,
+          const Mesh& mesh,
+          const DifferentialOperator& differentialOperator,
+          const Function& function,
+          const BoundaryConditions& boundaryConditions,
+          DofVector& fu ) const
 {
-   TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
+   TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
@@ -57,20 +52,19 @@ template< int Dimensions,
           typename Index,
           typename DofVector,
           typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RightHandSide >
+          typename Function,
+          typename BoundaryConditions >
    template< int EntityDimensions >
 void
-tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
-update( const RealType& time,
-        const tnlGrid< Dimensions, Real, Device, Index >& mesh,
-        const DifferentialOperator& differentialOperator,
-        const BoundaryConditions& boundaryConditions,
-        const RightHandSide& rightHandSide,
-        DofVector& u,
-        DofVector& fu ) const
+tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, Function, BoundaryConditions >::
+evaluate( const RealType& time,
+          const tnlGrid< Dimensions, Real, Device, Index >& mesh,
+          const DifferentialOperator& differentialOperator,
+          const Function& function,
+          const BoundaryConditions& boundaryConditions,
+          DofVector& fu ) const
 {
-   TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
+   TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
@@ -84,4 +78,5 @@ update( const RealType& time,
 }
 
 
-#endif /* TNLEXPLICITUPDATER_IMPL_H_ */
+
+#endif /* TNLEXACTOPERATOREVALUATOR_IMPL_H_ */

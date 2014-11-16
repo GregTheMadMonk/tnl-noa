@@ -1,4 +1,20 @@
+TODO: test aproximace pro implicitni schemata 
+TODO: pokusit se napsat test explicitni aproximace podobne jako implicinit bez specializace pro grid
+TODO: doladit semi-implicitni resic
+TODO: opravit argumenty metod v heat equation - nekde se nepredavaji dofy a pomocne dofy
+TODO: doresit okrajove podminky v heat equation - nacitani ze souboru
+      => soucasne Dir. a Neum. okrajove podminky prejmenovat asi tnlAnalytic... a zavest nove tnlDirichlet... a tnlNeumann...
+      ktere budou mit sve hodnoty ulozene  ve vektoru      
 TODO: neumanovy okrajove podminky
+TODO: doladit vse s CUDA
+TODO: doplnit mesh travelsals pro jine mesh entity nez cell
+TODO: implementace maticovych resicu
+      * Gaussova eliminace
+      * SOR metoda
+      * Jacobiho metoda
+      * TFQMR metoda
+      * IDR metody 
+
 
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 

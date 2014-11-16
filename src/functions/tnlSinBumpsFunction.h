@@ -139,9 +139,9 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
+#endif   
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-#endif   
 };
 
 #include <implementation/functions/tnlSinBumpsFunction_impl.h>

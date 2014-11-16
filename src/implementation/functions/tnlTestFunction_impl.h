@@ -78,7 +78,7 @@ template< int FunctionDimensions,
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
 setupFunction( const tnlParameterContainer& parameters,
-              const tnlString& prefix )
+               const tnlString& prefix )
 {
    FunctionType* auxFunction = new FunctionType;
    if( ! auxFunction->setup( parameters, prefix ) )
@@ -153,6 +153,42 @@ setup( const tnlParameterContainer& parameters,
    }
    cerr << "Unknown function " << testFunction << endl;
    return false;
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+const tnlTestFunction< FunctionDimensions, Real, Device >&
+tnlTestFunction< FunctionDimensions, Real, Device >::
+operator = ( const tnlTestFunction& function )
+{
+   this->functionType   = function.functionType;
+   this->timeDependence = function.timeDependence;
+   this->timeScale      = function.timeScale;
+
+   abort();
+
+   if( Device::DeviceType == ( int ) tnlHostDevice )
+   {
+      switch( this->functionType )
+      {
+         case constant:
+            //this->function = new tnlConstantFunction< FunctionDimensions, Real >;
+            //*this->function = * ( ( tnlConstantFunction< FunctionDimensions, Real >*) function.function );
+            //....
+            //
+            ;
+      }
+
+   }
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   {
+      /*this->function = tnlCuda::passToDevice( *auxFunction );
+      delete auxFunction;
+      if( ! checkCudaDevice )
+         return false;*/
+   }
+
 }
 
 template< int FunctionDimensions,
@@ -326,9 +362,9 @@ extern template class tnlTestFunction< 1, double, tnlCuda >;
 extern template class tnlTestFunction< 2, double, tnlCuda >;
 extern template class tnlTestFunction< 3, double, tnlCuda >;
 
-extern template class tnlTestFunction< 1, long double, tnlCuda >;
+/*extern template class tnlTestFunction< 1, long double, tnlCuda >;
 extern template class tnlTestFunction< 2, long double, tnlCuda >;
-extern template class tnlTestFunction< 3, long double, tnlCuda >;
+extern template class tnlTestFunction< 3, long double, tnlCuda >;*/
 #endif
 
 #endif

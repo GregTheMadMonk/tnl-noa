@@ -67,6 +67,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
    template< typename Vector >
    tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
 
+   // TODO: implement
+   //tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+
    Real max() const;
 
    Real min() const;
