@@ -97,10 +97,23 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
        this->currentIteration % this->refreshRate == 0 )
       solverMonitor->refresh();
 
-   if( std::isnan( this->getResidue() ) ||
-       ( this->getResidue() > this->getDivergenceResidue() &&
-         this->getIterations() > this->minIterations ) ||
-       this->getIterations() > this->getMaxIterations() )
+   if( std::isnan( this->getResidue() ) )
+   {
+      cerr << "The residue is NaN." << endl;
+      return false;
+   }
+   if(( this->getResidue() > this->getDivergenceResidue() &&
+         this->getIterations() > this->minIterations ) )
+   {
+      cerr << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
+      return false;
+   }
+   if( this->getIterations() > this->getMaxIterations() )
+   {
+      cerr << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
+      return false;
+   }
+   if( this->getResidue() < this->getConvergenceResidue() )
       return false;
    return true;
 }

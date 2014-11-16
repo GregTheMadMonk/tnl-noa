@@ -142,7 +142,8 @@ bool tnlDenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
 {
    tnlAssert( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+              cerr << " row = " << row << " column = " << column << " this->getRows() = " << this->getRows()
+                   << " this->getColumns() = " << this->getColumns() );
    this->values.operator[]( this->getElementIndex( row, column ) ) = value;
    return true;
 }

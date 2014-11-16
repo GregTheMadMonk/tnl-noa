@@ -51,7 +51,7 @@ setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setOmega( parameters.GetParameter< int >( "sor-omega" ) );
+   this->setOmega( parameters.GetParameter< double >( prefix + "sor-omega" ) );
 }
 
 
@@ -94,23 +94,25 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
 
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
-      /*matrix -> performSORIteration( this -> getOmega(),
-                                     b,
-                                     x,
-                                     0,
-                                     size );*/
-      if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-      if( ! this -> nextIteration() )
-         return false;
+      for( IndexType row = 0; row < size; row ++ )
+         matrix->performSORIteration( b,
+                                      row,
+                                      x,
+                                      this->getOmega() );
+      //if( this -> getIterations() % 10 == 0 )
+         this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
       this -> refreshSolverMonitor();
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+   this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
+   if( this -> getResidue() > this -> getConvergenceResidue() ||
+       std::isnan( this->getResidue() ) )
+   {
+      cerr << "The residue ( " << this->getResidue() << " ) is over the convergence residue ( " << this -> getConvergenceResidue() << ")." << endl;
+      return false;
+   }
    return true;
 };
 

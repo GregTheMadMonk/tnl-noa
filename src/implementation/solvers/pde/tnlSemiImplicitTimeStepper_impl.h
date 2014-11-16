@@ -159,9 +159,11 @@ solve( const RealType& time,
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
-         cerr << "The linear system solver did not converge." << endl;
+         cerr << endl << "The linear system solver did not converge." << endl;
          return false;
       }
+      //if( verbose )
+      //   cout << endl;
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
