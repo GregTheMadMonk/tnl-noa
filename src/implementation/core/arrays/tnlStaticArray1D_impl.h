@@ -65,28 +65,28 @@ tnlString tnlStaticArray< 1, Element >::getType()
           tnlString( " >" );
 }
 
+template< typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< typename Element >
 int tnlStaticArray< 1, Element >::getSize() const
 {
    return size;
 }
 
+template< typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< typename Element >
 Element* tnlStaticArray< 1, Element >::getData()
 {
    return data;
 }
 
+template< typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< typename Element >
 const Element* tnlStaticArray< 1, Element >::getData() const
 {
    return data;
@@ -136,6 +136,7 @@ template< typename Element >
 tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const tnlStaticArray< 1, Element >& array )
 {
    data[ 0 ] = array[ 0 ];
+   return *this;
 }
 
 template< typename Element >
@@ -143,6 +144,7 @@ template< typename Element >
 tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const Array& array )
 {
    data[ 0 ] = array[ 0 ];
+   return *this;
 }
 
 template< typename Element >
@@ -207,7 +209,7 @@ extern template class tnlStaticArray< 1, int >;
 extern template class tnlStaticArray< 1, long int >;
 extern template class tnlStaticArray< 1, float >;
 extern template class tnlStaticArray< 1, double >;
-extern template class tnlStaticArray< 1, long double >;
+//extern template class tnlStaticArray< 1, long double >;
 
 #endif
 

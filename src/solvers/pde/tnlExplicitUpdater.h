@@ -190,6 +190,8 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
+         typedef typename MeshType::VertexType VertexType;
+
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
@@ -204,7 +206,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                userData.u,
                                                                                userData.time );
 
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getCellCenter( coordinates ),
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
                                                                         userData.time );
             }
 

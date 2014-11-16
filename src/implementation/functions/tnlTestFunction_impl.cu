@@ -28,9 +28,9 @@ template class tnlTestFunction< 1, double, tnlCuda >;
 template class tnlTestFunction< 2, double, tnlCuda >;
 template class tnlTestFunction< 3, double, tnlCuda >;
 
-template class tnlTestFunction< 1, long double, tnlCuda >;
+/*template class tnlTestFunction< 1, long double, tnlCuda >;
 template class tnlTestFunction< 2, long double, tnlCuda >;
-template class tnlTestFunction< 3, long double, tnlCuda >;
+template class tnlTestFunction< 3, long double, tnlCuda >;*/
 
 #endif
 #endif

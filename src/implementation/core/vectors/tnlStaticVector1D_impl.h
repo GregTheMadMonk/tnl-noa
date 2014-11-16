@@ -61,6 +61,7 @@ __host__ __device__
 tnlStaticVector< 1, Real >& tnlStaticVector< 1, Real >::operator += ( const tnlStaticVector& v )
 {
    this->data[ 0 ] += v[ 0 ];
+   return *this;
 }
 
 template< typename Real >
@@ -70,6 +71,7 @@ __host__ __device__
 tnlStaticVector< 1, Real >& tnlStaticVector< 1, Real >::operator -= ( const tnlStaticVector& v )
 {
    this->data[ 0 ] -= v[ 0 ];
+   return *this;
 }
 
 template< typename Real >
@@ -79,6 +81,7 @@ __host__ __device__
 tnlStaticVector< 1, Real >& tnlStaticVector< 1, Real >::operator *= ( const Real& c )
 {
    this->data[ 0 ] *= c;
+   return *this;
 }
 
 template< typename Real >
@@ -163,7 +166,7 @@ bool tnlStaticVector< 1, Real >::operator >= ( const tnlStaticVector& v ) const
 
 extern template class tnlStaticVector< 1, float >;
 extern template class tnlStaticVector< 1, double >;
-extern template class tnlStaticVector< 1, long double >;
+//extern template class tnlStaticVector< 1, long double >;
 
 #endif
 

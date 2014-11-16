@@ -256,9 +256,10 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                            const IndexType index,
                            const CoordinatesType& coordinates )
          {
+            typedef typename MeshType::VertexType VertexType;
             userData.b[ index ] = userData.u[ index ] +
-                                  userData.tau * userData.rightHandSide.getValue( mesh.getCellCenter( index ),
-                                                                                  userData.time );
+                                  userData.tau * userData.rightHandSide.template getValue< VertexType >( mesh.template getCellCenter< VertexType >( index ),
+                                                                                                         userData.time );
             typename MatrixType::IndexType rowLength;
             userData.differentialOperator.updateLinearSystem( userData.time,
                                                               userData.tau,

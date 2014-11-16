@@ -37,7 +37,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
+   u[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
 }
 
 template< int Dimensions,
@@ -83,7 +83,7 @@ updateLinearSystem( const RealType& time,
 {
    columns[ 0 ] = index;
    values[ 0 ] = 1.0;
-   b[ index ] = function.getValue( mesh.getCellCenter( coordinates ), time );
+   b[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    rowLength = 1;
 }
 

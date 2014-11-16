@@ -362,9 +362,9 @@ extern template class tnlTestFunction< 1, double, tnlCuda >;
 extern template class tnlTestFunction< 2, double, tnlCuda >;
 extern template class tnlTestFunction< 3, double, tnlCuda >;
 
-extern template class tnlTestFunction< 1, long double, tnlCuda >;
+/*extern template class tnlTestFunction< 1, long double, tnlCuda >;
 extern template class tnlTestFunction< 2, long double, tnlCuda >;
-extern template class tnlTestFunction< 3, long double, tnlCuda >;
+extern template class tnlTestFunction< 3, long double, tnlCuda >;*/
 #endif
 
 #endif
