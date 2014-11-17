@@ -48,7 +48,7 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
-   config.addEntry     < double >( prefix + "value", "Value of the constant function.", 0.0 );
+   config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-y", "Wave length of the sine based test functions.", 1.0 );
@@ -167,29 +167,29 @@ operator = ( const tnlTestFunction& function )
    this->timeDependence = function.timeDependence;
    this->timeScale      = function.timeScale;
 
-   abort();
+   deleteFunctions();
 
    if( Device::DeviceType == ( int ) tnlHostDevice )
    {
       switch( this->functionType )
       {
          case constant:
-            //this->function = new tnlConstantFunction< FunctionDimensions, Real >;
-            //*this->function = * ( ( tnlConstantFunction< FunctionDimensions, Real >*) function.function );
-            //....
-            //
-            ;
+            this->copyFunction< tnlConstantFunction< FunctionDimensions, Real > >( function.function );
+            break;
+         case expBump:
+            this->copyFunction< tnlExpBumpFunction< FunctionDimensions, Real > >( function.function );
+            break;
+         case sinBumps:
+            this->copyFunction< tnlSinBumpsFunction< FunctionDimensions, Real > >( function.function );
+            break;
+         case sinWave:
+            this->copyFunction< tnlSinWaveFunction< FunctionDimensions, Real > >( function.function );
+            break;
+         default:
+            tnlAssert( false, );
+            break;
       }
-
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
-   {
-      /*this->function = tnlCuda::passToDevice( *auxFunction );
-      delete auxFunction;
-      if( ! checkCudaDevice )
-         return false;*/
-   }
-
 }
 
 template< int FunctionDimensions,
@@ -312,16 +312,23 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 deleteFunction()
 {
    if( Device::DeviceType == ( int ) tnlHostDevice )
-      delete ( FunctionType * ) function;
+   {
+      if( function )
+         delete ( FunctionType * ) function;
+   }
    if( Device::DeviceType == ( int ) tnlCudaDevice )
-      tnlCuda::freeFromDevice( ( FunctionType * ) function );
+   {
+      if( function )
+         tnlCuda::freeFromDevice( ( FunctionType * ) function );
+   }
 }
 
 template< int FunctionDimensions,
           typename Real,
           typename Device >
+void
 tnlTestFunction< FunctionDimensions, Real, Device >::
-~tnlTestFunction()
+deleteFunctions()
 {
    switch( functionType )
    {
@@ -338,6 +345,36 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
          deleteFunction< tnlSinWaveFunction< Dimensions, Real> >();
          break;
    }
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+   template< typename FunctionType >
+void
+tnlTestFunction< FunctionDimensions, Real, Device >::
+copyFunction( const void* function )
+{
+   if( Device::DeviceType == ( int ) tnlHostDevice ) 
+   {
+      FunctionType* f = new FunctionType;
+      *f = * ( FunctionType* )function;
+   }
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   {
+      tnlAssert( false, );
+      abort();
+   }
+}
+
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+tnlTestFunction< FunctionDimensions, Real, Device >::
+~tnlTestFunction()
+{
+   deleteFunctions();
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

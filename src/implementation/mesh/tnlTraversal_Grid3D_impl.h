@@ -72,9 +72,9 @@ processEntities( const GridType& grid,
 #ifdef HAVE_OPENMP
 //#pragma omp parallel for
 #endif
-   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
-      for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
-         for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+   for( coordinates.z() = 1; coordinates.z() < zSize - 1; coordinates.z() ++ )
+      for( coordinates.y() = 1; coordinates.y() < ySize - 1; coordinates.y() ++ )
+         for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
          {
             const IndexType index = grid.getCellIndex( coordinates );
             interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );

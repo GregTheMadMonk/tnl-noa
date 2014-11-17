@@ -51,8 +51,8 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
-   const bool verbose( true );
-   const int MeshSize( 64 );
+   const bool verbose( false );
+   const int MeshSize( 32 );
 #ifdef HAVE_CPPUNIT
    /****
     * Explicit approximation
@@ -62,8 +62,8 @@ int main( int argc, char* argv[] )
                                                              tnlExpBumpFunction< 1, double >,
                                                              tnlExplicitApproximation,
                                                              MeshSize,
-                                                             verbose > >()
-       /*! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
+                                                             verbose > >() ||
+       ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 2 >,
                                                              tnlExpBumpFunction< 2, double >,
                                                              tnlExplicitApproximation,
@@ -74,9 +74,9 @@ int main( int argc, char* argv[] )
                                                              tnlExpBumpFunction< 3, double >,
                                                              tnlExplicitApproximation,
                                                              MeshSize,
-                                                             verbose > >() */
-                                                              );
-      //return EXIT_FAILURE;
+                                                             verbose > >()
+                                                              )
+      return EXIT_FAILURE;
    /****
     * Implicit (matrix) approximation
     */
@@ -85,8 +85,8 @@ int main( int argc, char* argv[] )
                                                              tnlExpBumpFunction< 1, double >,
                                                              tnlImplicitApproximation,
                                                              MeshSize,
-                                                             verbose > >()
-       /*! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
+                                                             verbose > >() ||
+       ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 2 >,
                                                              tnlExpBumpFunction< 2, double >,
                                                              tnlImplicitApproximation,
@@ -97,7 +97,7 @@ int main( int argc, char* argv[] )
                                                              tnlExpBumpFunction< 3, double >,
                                                              tnlImplicitApproximation,
                                                              MeshSize,
-                                                             verbose > >() */
+                                                             verbose > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

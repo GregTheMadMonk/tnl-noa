@@ -4,6 +4,7 @@ ADD_SUBDIRECTORY( euler )
 
 SET( headers tnlFiniteDifferences.h
              tnlDirichletBoundaryConditions.h
+             tnlAnalyticDirichletBoundaryConditions.h
              tnlNeumannBoundaryConditions.h
              tnlExactOperatorEvaluator.h )
 

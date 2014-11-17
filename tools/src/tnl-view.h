@@ -89,8 +89,6 @@ bool convertObject( const Mesh& mesh,
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
-   if( verbose )
-      cout << "[ OK ].  \r";
    return true;
 }
 
@@ -245,9 +243,9 @@ bool processFiles( const tnlParameterContainer& parameters )
    bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
    tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
    bool error( false );
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
@@ -285,6 +283,9 @@ bool processFiles( const tnlParameterContainer& parameters )
             continue;
          }
          setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+         if( verbose )
+            cout << "[ OK ].  " << endl;
+
       }
    }
    if( verbose )

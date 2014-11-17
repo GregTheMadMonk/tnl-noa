@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlDirichletBoundaryConditions_impl.h  -  description
+           tnlAnalyticDirichletBoundaryConditions_impl.h  -  description
                              -------------------
-    begin                : Nov 17, 2014
-    copyright            : (C) 2014 by oberhuber
+    begin                : Nov 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,86 +15,65 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H_
-#define TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H_
+#ifndef tnlAnalyticDirichletBoundaryConditions_IMPL_H
+#define	tnlAnalyticDirichletBoundaryConditions_IMPL_H
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry     < tnlString >( prefix + "file", "Data for the boundary conditions." );
+   Function::configSetup( config, prefix );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 bool
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   if( parameters.CheckParameter( prefix + "file" ) )
-   {
-      tnlString fileName = parameters.GetParameter< tnlString >( prefix + "file" );
-      if( ! this->vector.load( fileName ) )
-         return false;
-   }
-   return true;
+   return function.setup( parameters, prefix );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-Vector&
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
-getVector()
+void
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+setFunction( const Function& function )
 {
-   return this->vector;
+   this->function = function;
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
-          typename Real,
-          typename Index >
-const Vector&
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
-getVector() const
-{
-   return this->vector;
-}
-
-
-template< int Dimensions,
-          typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
@@ -103,21 +82,21 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   u[ index ] = this->vector[ index ];
+   u[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
 Index
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const CoordinatesType& coordinates ) const
@@ -129,14 +108,14 @@ template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -149,10 +128,9 @@ updateLinearSystem( const RealType& time,
 {
    columns[ 0 ] = index;
    values[ 0 ] = 1.0;
-   b[ index ] = this->vector[ index ];
+   b[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    rowLength = 1;
 }
 
+#endif	/* tnlAnalyticDirichletBoundaryConditions_IMPL_H */
 
-
-#endif /* TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H_ */

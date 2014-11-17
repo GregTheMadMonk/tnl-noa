@@ -22,7 +22,7 @@ template< int Dimensions,
           typename Real >
 tnlConstantFunction< Dimensions, Real >::
 tnlConstantFunction()
-: value( 0.0 )
+: constant( 0.0 )
 {
 }
 
@@ -30,18 +30,28 @@ template< int Dimensions,
           typename Real >
 void
 tnlConstantFunction< Dimensions, Real >::
-setValue( const RealType& value )
+setConstant( const RealType& constant )
 {
-   this->value = value;
+   this->constant = constant;
 }
 
 template< int Dimensions,
           typename Real >
 const Real&
 tnlConstantFunction< Dimensions, Real >::
-getValue() const
+getConstant() const
 {
-   return this->value;
+   return this->constant;
+}
+
+template< int FunctionDimensions,
+          typename Real >
+void
+tnlConstantFunction< FunctionDimensions, Real >::
+configSetup( tnlConfigDescription& config,
+             const tnlString& prefix )
+{
+   config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
 }
 
 template< int Dimensions,
@@ -49,9 +59,9 @@ template< int Dimensions,
 bool
 tnlConstantFunction< Dimensions, Real >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+       const tnlString& prefix )
 {
-   this->setValue( parameters.GetParameter< double >( prefix + "value") );
+   this->setConstant( parameters.GetParameter< double >( prefix + "constant") );
    return true;
 }
 
@@ -68,7 +78,7 @@ getValue( const Vertex& v,
 {
    if( XDiffOrder || YDiffOrder || ZDiffOrder )
       return 0.0;
-   return value;
+   return constant;
 }
 
 #endif

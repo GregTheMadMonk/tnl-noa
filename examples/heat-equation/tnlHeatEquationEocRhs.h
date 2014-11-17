@@ -27,9 +27,10 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
-      bool setup( const tnlParameterContainer& parameters )
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlString& prefix = "" )
       {
-         if( ! testFunction.setup( parameters ) )
+         if( ! testFunction.setup( parameters, prefix ) )
             return false;
          return true;
       };

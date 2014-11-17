@@ -119,6 +119,11 @@ class tnlTestFunction
    template< typename FunctionType >
    void deleteFunction();
 
+   void deleteFunctions();
+
+   template< typename FunctionType >
+   void copyFunction( const void* function );
+
    void* function;
 
    TestFunctions functionType;

@@ -21,7 +21,7 @@
 #include <core/vectors/tnlStaticVector.h>
 
 template< int FunctionDimensions,
-          typename Real >
+          typename Real = double >
 class tnlConstantFunction
 {
    public:
@@ -33,14 +33,14 @@ class tnlConstantFunction
    tnlConstantFunction();
 
    static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix );
+                            const tnlString& prefix = "" );
 
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   void setValue( const RealType& value );
+   void setConstant( const RealType& constant );
 
-   const RealType& getValue() const;
+   const RealType& getConstant() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -65,7 +65,7 @@ class tnlConstantFunction
 
    protected:
 
-   RealType value;
+   RealType constant;
 };
 
 #include <implementation/functions/tnlConstantFunction_impl.h>

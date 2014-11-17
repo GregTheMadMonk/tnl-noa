@@ -21,7 +21,7 @@
 #include <functions/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
+#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include "tnlHeatEquationEocRhs.h"
 #include "heatEquationSolver.h"
 
@@ -64,7 +64,7 @@ class heatEquationSetter
       typedef tnlTestFunction< MeshType::Dimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
-      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
       typedef heatEquationSolver< MeshType, ApproximateOperator, BoundaryConditions, RightHandSide > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

@@ -44,6 +44,7 @@ getError( const Mesh& mesh,
    Vector functionData, exactData, approximateData, aux;
    const IndexType entities = mesh.getNumberOfCells();
    BoundaryConditionsType boundaryConditions;
+   boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
    if( ! functionData.setSize( entities ) ||
@@ -65,74 +66,14 @@ getError( const Mesh& mesh,
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   /*cout << "Function = " << functionData << endl;
-   cout << "Approximation = " << approximateData << endl;
-   cout << "Exact = " << exactData << endl;*/
-
-   functionData.save( "explicit-function.tnl" );
-   approximateData.save( "explicit-approximation.tnl" );
-   exactData.save( "explicit-exact.tnl" );
-
+   for( IndexType i = 0; i < entities; i++ )
+      if( mesh.isBoundaryCell( i ) )
+         approximateData.setElement( i, exactData.getElement( i ) );
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
 }
-
-/*template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ExactOperator,
-          typename ApproximateOperator,
-          typename Function >
-void
-tnlApproximationError< tnlGrid< Dimensions, Real, Device, Index >, ExactOperator, ApproximateOperator, Function, tnlExplicitApproximation >::
-getError( const MeshType& mesh,
-          const ExactOperator& exactOperator,
-          const ApproximateOperator& approximateOperator,
-          const Function& function,
-          RealType& l1Err,
-          RealType& l2Err,
-          RealType& maxErr )
-{
-   typedef tnlVector< RealType, DeviceType, IndexType > Vector;
-   Vector functionData, exactData, approximateData;
-   const IndexType entities = mesh.getNumberOfCells();
-
-   if( ! functionData.setSize( entities ) ||
-       ! exactData.setSize( entities ) ||
-       ! approximateData.setSize( entities )  )
-      return;
-
-   tnlFunctionDiscretizer< MeshType, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
-
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
-   {
-      for( IndexType i = 0; i < entities; i++ )
-      {
-         if( ! mesh.isBoundaryCell( i ) )
-         {
-            VertexType v = mesh.getCellCenter( i );
-            CoordinatesType c = mesh.getCellCoordinates( i );
-            exactData[ i ] = exactOperator.getValue( function, v );
-            approximateData[ i ] = approximateOperator.getValue( mesh, i, c, functionData, 0.0 );
-         }
-         else exactData[ i ] = approximateData[ i ];
-      }
-   }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
-   {
-      // TODO
-   }
-   cout << "Function = " << functionData << endl;
-   cout << "Approximation = " << approximateData << endl;
-   cout << "Exact = " << exactData << endl;
-
-   l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
-   l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
-   maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
-}*/
 
 /****
  * Implicit (matrix) approximation
@@ -159,11 +100,10 @@ getError( const Mesh& mesh,
    MatrixType matrix;
    RowLengthsVectorType rowLengths;
    BoundaryConditionsType boundaryConditions;
+   boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
    const IndexType entities = mesh.getNumberOfCells();
-
-   cerr << "Semi-implicit test " << endl;
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
@@ -193,26 +133,22 @@ getError( const Mesh& mesh,
                                                           matrix,
                                                           approximateData // this has no meaning here
                                                           );
+
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-
-   //cout << "Matrix = " << matrix << endl;
+   for( IndexType i = 0; i < entities; i++ )
+      if( ! mesh.isBoundaryCell( i ) )
+         matrix.setElement( i, i, matrix.getElement( i, i ) - 1.0 );
    matrix.vectorProduct( functionData, approximateData );
-   // TODO: replace this when ,matrix.vectorProduct has multiplicator parameter
+
+   // TODO: replace this when matrix.vectorProduct has multiplicator parameter
    for( IndexType i = 0; i < entities; i++ )
       approximateData.setElement( i, -1.0 * approximateData.getElement( i ) );
 
-   //cout << "Function = " << functionData << endl;
-   //cout << "Approximation = " << approximateData << endl;
-   //cout << "Exact = " << exactData << endl;
-
-
-   mesh.save( "mesh.tnl" );
-   functionData.save( "implicit-function.tnl" );
-   approximateData.save( "implicit-approximation.tnl" );
-   exactData.save( "implicit-exact.tnl" );
-
+   for( IndexType i = 0; i < entities; i++ )
+      if( mesh.isBoundaryCell( i ) )
+         approximateData.setElement( i, exactData.getElement( i ) );
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );

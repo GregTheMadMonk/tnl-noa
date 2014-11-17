@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlDirichletBoundaryConditions.h  -  description
+           tnlAnalyticDirichletBoundaryConditions.h  -  description
                              -------------------
-    begin                : Nov 17, 2014
-    copyright            : (C) 2014 by oberhuber
+    begin                : Nov 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,49 +15,53 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
-#define TNLDIRICHLETBOUNDARYCONDITIONS_H_
+
+#ifndef tnlAnalyticDirichletBoundaryConditions_H
+#define	tnlAnalyticDirichletBoundaryConditions_H
+
+#include <core/vectors/tnlStaticVector.h>
+#include <config/tnlParameterContainer.h>
+#include <functions/tnlConstantFunction.h>
+#include <core/vectors/tnlSharedVector.h>
 
 template< typename Mesh,
-          typename Vector,
+          typename Function = tnlConstantFunction< Mesh::Dimensions,
+                                                   typename Mesh::RealType >,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlDirichletBoundaryConditions
+class tnlAnalyticDirichletBoundaryConditions
 {
-
+   
 };
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >
+class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >
 {
    public:
-
+   
    typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< Dimensions, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   void configSetup( tnlConfigDescription& config,
-                     const tnlString& prefix );
-
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+            
    bool setup( const tnlParameterContainer& parameters,
                const tnlString& prefix = "" );
 
-   Vector& getVector();
-
-   const Vector& getVector() const;
+   void setFunction( const Function& function );
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -91,9 +95,9 @@ class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, Mes
 
    protected:
 
-   Vector vector;
+   Function function;
 };
 
-#include <implementation/operators/tnlDirichletBoundaryConditions_impl.h>
+#include <implementation/operators/tnlAnalyticDirichletBoundaryConditions_impl.h>
 
-#endif /* TNLDIRICHLETBOUNDARYCONDITIONS_H_ */
+#endif	/* tnlAnalyticDirichletBoundaryConditions_H */

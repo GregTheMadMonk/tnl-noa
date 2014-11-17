@@ -65,8 +65,8 @@ bool
 heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 setup( const tnlParameterContainer& parameters )
 {
-   if( ! boundaryCondition.setup( parameters ) ||
-       ! rightHandSide.setup( parameters ) )
+   if( ! boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
+       ! rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
 }
