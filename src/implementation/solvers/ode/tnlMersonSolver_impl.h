@@ -162,8 +162,9 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
     * Set necessary parameters
     */
    RealType& time = this->time;
-   RealType currentTau = this->tau;
-   if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
+   RealType currentTau = Min( this->getTau(), this->getMaxTau() );
+   if( time + currentTau > this->getStopTime() )
+      currentTau = this->getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -214,6 +215,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       if( adaptivity != 0.0 && eps != 0.0 )
       {
          currentTau *= 0.8 * pow( adaptivity / eps, 0.2 );
+         currentTau = Min( currentTau, this->getMaxTau() );
          :: MPIBcast( currentTau, 1, 0, this -> solver_comm );
       }
       if( time + currentTau > this -> getStopTime() )

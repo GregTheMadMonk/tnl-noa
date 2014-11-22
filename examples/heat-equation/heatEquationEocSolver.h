@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlTimerCPU.h  -  description
+                          heatEquationEocSolver.h  -  description
                              -------------------
-    begin                : 2007/06/23
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : Nov 22, 2014
+    copyright            : (C) 2014 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,42 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef tnlTimerCPUH
-#define tnlTimerCPUH
+#ifndef HEATEQUATIONEOCSOLVER_H_
+#define HEATEQUATIONEOCSOLVER_H_
 
-#include "tnlConfig.h"
-#ifdef HAVE_SYS_RESOURCE_H
-   #include <sys/resource.h>
-#endif
+#include "heatEquationSolver.h"
 
 
-#include "mpi-supp.h"
-
-class tnlTimerCPU
+template< typename Mesh,
+          typename DifferentialOperator,
+          typename BoundaryCondition,
+          typename RightHandSide >
+class heatEquationEocSolver : public heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >
 {
    public:
 
-   tnlTimerCPU();
+      static tnlString getTypeStatic();
 
-   void Reset();
-   
-   void Stop();
-
-   void Continue();
-
-   double GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
-      
-   protected:
-
-   double initial_time;
-
-   double total_time;
-
-   bool stop_state;
+      bool setup( const tnlParameterContainer& parameters );
 };
 
-extern tnlTimerCPU defaultCPUTimer;
+#include "heatEquationEocSolver_impl.h"
 
-
-
-#endif
+#endif /* HEATEQUATIONEOCSOLVER_H_ */

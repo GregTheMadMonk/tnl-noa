@@ -23,7 +23,7 @@
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include "tnlHeatEquationEocRhs.h"
-#include "heatEquationSolver.h"
+#include "heatEquationEocSolver.h"
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -65,7 +65,7 @@ class heatEquationSetter
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
       typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
-      typedef heatEquationSolver< MeshType, ApproximateOperator, BoundaryConditions, RightHandSide > Solver;
+      typedef heatEquationEocSolver< MeshType, ApproximateOperator, BoundaryConditions, RightHandSide > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
    };

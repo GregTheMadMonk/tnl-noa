@@ -101,19 +101,11 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                       row,
                                       x,
                                       this->getOmega() );
-      //if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
-      this -> refreshSolverMonitor();
+      this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
    this -> refreshSolverMonitor();
-   if( this -> getResidue() > this -> getConvergenceResidue() ||
-       std::isnan( this->getResidue() ) )
-   {
-      cerr << "The residue ( " << this->getResidue() << " ) is over the convergence residue ( " << this -> getConvergenceResidue() << ")." << endl;
-      return false;
-   }
-   return true;
+   return this->checkConvergence();
 };
 
 template< typename Matrix, typename Preconditioner >

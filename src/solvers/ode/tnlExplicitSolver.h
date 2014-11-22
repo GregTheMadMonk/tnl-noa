@@ -58,9 +58,13 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
 
    RealType getStopTime() const;
 
-   void setTau( const RealType& t );
+   void setTau( const RealType& tau );
    
    const RealType& getTau() const;
+
+   void setMaxTau( const RealType& maxTau );
+
+   const RealType& getMaxTau() const;
 
    void setMPIComm( MPI_Comm comm );
   
@@ -97,6 +101,8 @@ protected:
     */
    RealType tau;
 
+   RealType maxTau;
+
    MPI_Comm solver_comm;
 
    IndexType verbosity;
@@ -112,126 +118,7 @@ protected:
    tnlODESolverMonitor< RealType, IndexType >* solverMonitor;
 };
 
-template< typename Problem >
-tnlExplicitSolver < Problem > :: tnlExplicitSolver()
-:  time( 0.0 ),
-   tau( 0.0 ),
-   stopTime( 0.0 ),
-   solver_comm( MPI_COMM_WORLD ),
-   verbosity( 0 ),
-   cpu_timer( &default_mcore_cpu_timer ),
-   rt_timer( &defaultRTTimer ),
-   testingMode( false ),
-   problem( 0 ),
-   solverMonitor( 0 )
-   {
-   };
-
-template< typename Problem >
-void tnlExplicitSolver < Problem > :: configSetup( tnlConfigDescription& config,
-                                                   const tnlString& prefix )
-{
-   tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
-}
-
-template< typename Problem >
-bool tnlExplicitSolver < Problem >::setup( const tnlParameterContainer& parameters,
-                                          const tnlString& prefix )
-{   
-   return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
-}
-
-
-template< typename Problem >
-void tnlExplicitSolver< Problem > :: setProblem( Problem& problem )
-{
-   this -> problem = &problem;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setTime( const RealType& t )
-{
-   time = t;
-};
-
-template< class Problem >
-const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTime() const
-{
-   return time;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setTau( const RealType& t )
-{
-   tau = t;
-};
-
-template< class Problem >
-const typename Problem :: RealType& tnlExplicitSolver < Problem > :: getTau() const
-{
-   return tau;
-};
-
-template< class Problem >
-typename Problem :: RealType tnlExplicitSolver < Problem > :: getStopTime() const
-{
-    return stopTime;
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setStopTime( const RealType& stopTime )
-{
-    this -> stopTime = stopTime;
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setMPIComm( MPI_Comm comm )
-{
-   solver_comm = comm;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setVerbose( IndexType v )
-{
-   verbosity = v;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setTimerCPU( tnlTimerCPU* timer )
-{
-   cpu_timer = timer;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setTimerRT( tnlTimerRT* timer )
-{
-   rt_timer = timer;
-};
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor )
-{
-   this -> solverMonitor = &solverMonitor;
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: refreshSolverMonitor()
-{
-   if( this -> solverMonitor )
-   {
-      this -> solverMonitor -> setIterations( this -> getIterations() );
-      this -> solverMonitor -> setResidue( this -> getResidue() );
-      this -> solverMonitor -> setTimeStep( this -> getTau() );
-      this -> solverMonitor -> setTime( this -> getTime() );
-      this -> solverMonitor -> refresh();
-   }
-}
-
-template< class Problem >
-void tnlExplicitSolver < Problem > :: setTestingMode( bool testingMode )
-{
-   this -> testingMode = testingMode;
-}
+#include <implementation/solvers/ode/tnlExplicitSolver_impl.h>
 
 
 #endif

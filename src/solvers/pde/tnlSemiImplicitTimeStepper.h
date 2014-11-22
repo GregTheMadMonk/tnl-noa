@@ -58,7 +58,8 @@ class tnlSemiImplicitTimeStepper
    bool solve( const RealType& time,
                const RealType& stopTime,
                const MeshType& mesh,
-               DofVectorType& dofVector );
+               DofVectorType& dofVector,
+               DofVectorType& auxiliaryDofVector );
 
    protected:
 

@@ -65,8 +65,8 @@ bool
 heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 setup( const tnlParameterContainer& parameters )
 {
-   if( ! boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! rightHandSide.setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
+       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -119,7 +119,7 @@ template< typename Mesh,
 void
 heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 bindAuxiliaryDofs( const MeshType& mesh,
-                   DofVectorType& auxiliaryDofVector )
+                   DofVectorType& auxiliaryDofs )
 {
 }
 
@@ -127,8 +127,9 @@ bindAuxiliaryDofs( const MeshType& mesh,
 template< typename Mesh, typename DifferentialOperator, typename BoundaryCondition, typename RightHandSide >
 bool heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 setInitialCondition( const tnlParameterContainer& parameters,
-                        const MeshType& mesh,
-                        DofVectorType& dofs )
+                     const MeshType& mesh,
+                     DofVectorType& dofs,
+                     DofVectorType& auxiliaryDofs )
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
@@ -172,7 +173,9 @@ bool
 heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshType& mesh )
+              const MeshType& mesh,
+              const DofVectorType& dofs,
+              DofVectorType& auxiliaryDofs )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
@@ -192,7 +195,8 @@ heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide
 preIterate( const RealType& time,
             const RealType& tau,
             const MeshType& mesh,
-            DofVectorType& u )
+            DofVectorType& dofs,
+            DofVectorType& auxDofs )
 {
    return true;
 }
@@ -207,8 +211,8 @@ heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const Mesh& mesh,
-                DofVectorType& _u,
-                DofVectorType& _fu )
+                DofVectorType& u,
+                DofVectorType& fu )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
@@ -219,15 +223,15 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
 
-   this->bindDofs( mesh, _u );
+   this->bindDofs( mesh, u );
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< Mesh::Dimensions >( time,
                                                         mesh,
                                                         this->differentialOperator,
                                                         this->boundaryCondition,
                                                         this->rightHandSide,
-                                                        _u,
-                                                        _fu );
+                                                        u,
+                                                        fu );
    //_u.save( "u.tnl" );
    //_fu.save( "fu.tnl" );
    //getchar();
@@ -243,6 +247,7 @@ assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
                       DofVectorType& u,
+                      DofVectorType& auxDofs,
                       MatrixType& matrix,
                       DofVectorType& b )
 {
@@ -269,7 +274,8 @@ heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshType& mesh,
-             DofVectorType& u )
+             DofVectorType& dofs,
+             DofVectorType& auxDofs )
 {
    return true;
 }

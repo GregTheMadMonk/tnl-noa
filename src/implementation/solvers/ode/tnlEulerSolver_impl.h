@@ -82,8 +82,8 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
     * Set necessary parameters
     */
    RealType& time = this->time;
-   RealType currentTau = this->tau;
-   if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
+   RealType currentTau = Min( this->getTau(), this->getMaxTau() );
+   if( time + currentTau > this->getStopTime() ) currentTau = this->getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -145,7 +145,10 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       }
 
       if( this -> cflCondition != 0.0 )
+      {
          currentTau /= 0.95;
+         currentTau = Min( currentTau, this->getMaxTau() );
+      }
    }
 };
 

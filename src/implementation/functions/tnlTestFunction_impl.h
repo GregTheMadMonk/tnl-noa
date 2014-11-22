@@ -63,7 +63,7 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
-   config.addEntry     < tnlString >( prefix + "test-function-time-dependence", "Time dependence of the test function.", "none" );
+   config.addEntry     < tnlString >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
       config.addEntryEnum( "quadratic" );
@@ -113,7 +113,7 @@ setup( const tnlParameterContainer& parameters,
    const tnlString& timeDependence =
             parameters.GetParameter< tnlString >(
                      prefix +
-                     "test-function-time-dependence" );
+                     "time-dependence" );
    cout << "Time dependence ... " << timeDependence << endl;
    if( timeDependence == "none" )
       this->timeDependence = none;
