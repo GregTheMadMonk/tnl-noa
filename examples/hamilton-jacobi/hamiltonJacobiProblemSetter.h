@@ -27,6 +27,8 @@
 #include <operators/godunov-eikonal/godunovEikonal.h>
 #include <operators/upwind/upwind.h>
 #include <operators/godunov/godunov.h>
+#include <functions/tnlSDFSign.h>
+#include <functions/tnlSDFGridValue.h>
 
 template< typename RealType,
 		  typename DeviceType,

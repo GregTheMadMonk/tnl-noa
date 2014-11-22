@@ -10,7 +10,9 @@ SET( headers tnlFunctionDiscretizer.h
 	     tnlSDFSinWaveFunctionSDF.h
 	     tnlSDFParaboloid.h 
 	     tnlSDFParaboloidSDF.h
-	     tnlSDFSchemeTest.h )
+	     tnlSDFSchemeTest.h
+	     tnlSDFSign.h
+	     tnlSDFGridValue.h )
                     
 SET( libtnlfunctionsincludedir ${TNL_INCLUDE_DIR}/functions )
 SET( libtnlfunctionsinclude_HEADERS ${headers} )

@@ -31,7 +31,9 @@ class hamiltonJacobiProblemConfig
          config.addEntry       < tnlString > ( "scheme", "This defines scheme used for discretization.", "godunov" );
          config.addEntryEnum( "godunov" );
          config.addEntryEnum( "upwind" );
-         config.addEntry        < double > ( "epsilon", "This defines epsilon for smoothening oh sign().", 0.0 );
+         config.addEntryEnum( "godunov2" );
+         config.addEntryEnum( "upwind2" );
+         config.addEntry        < double > ( "epsilon", "This defines epsilon for smoothening of sign().", 0.0 );
          config.addEntry        < double > ( "-value", "Constant value of RHS.", 0.0 );
       }
 };

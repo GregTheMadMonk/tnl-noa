@@ -133,7 +133,7 @@ Real godunovScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, Func
 
 	RealType nabla, xb, xf, fi;
 
-	fi = f.getValue(coordinates,0);
+	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
 
 	   if(fi > 0.0)
 	   {

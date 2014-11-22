@@ -19,6 +19,7 @@
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
+#include <exception>
 
 template< typename Mesh,
 		  typename HamiltonJacobi,
@@ -120,6 +121,7 @@ bindDofs( const MeshType& mesh,
    const IndexType dofs = mesh.getNumberOfCells();
    this->solution.bind( dofVector.getData(), dofs );
 }
+
 
 template< typename Mesh,
           typename HamiltonJacobi,

@@ -135,7 +135,7 @@ Real godunovScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Func
 
 	RealType nabla, xb, xf, yb, yf, zb, zf, fi;
 
-	fi = f.getValue(coordinates,0);
+	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
 
 	   if(fi > 0.0)
 	   {
@@ -175,19 +175,19 @@ Real godunovScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Func
 		   zb = negativePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
 		   if(xb + xf > 0.0)
-			   xf = 0.0;
-		   else
 			   xb = 0.0;
+		   else
+			   xf = 0.0;
 
 		   if(yb + yf > 0.0)
-			   yf = 0.0;
-		   else
 			   yb = 0.0;
+		   else
+			   yf = 0.0;
 
 		   if(zb + zf > 0.0)
-			   zf = 0.0;
-		   else
 			   zb = 0.0;
+		   else
+			   zf = 0.0;
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
 

@@ -135,7 +135,7 @@ Real upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Funct
 
 	RealType nabla, xb, xf, yb, yf, zb, zf, fi;
 
-	fi = f.getValue(coordinates,0);
+	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
 
 	   if(fi > 0.0)
 	   {
