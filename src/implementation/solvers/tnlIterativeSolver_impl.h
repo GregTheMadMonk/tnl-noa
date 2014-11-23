@@ -101,14 +101,26 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
    }
 
    if( std::isnan( this->getResidue() ) )
+   {
+      //cerr << endl << "RES is Nan" << endl;
       return false;
+   }
    if(( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) )
+   {
+      ///cerr << endl << "RES is over the divergence residue." << endl;
       return false;
+   }
    if( this->getIterations() > this->getMaxIterations() )
+   {
+      //cerr << endl << "Max. iterations exceeded." << endl;
       return false;
+   }
    if( this->getResidue() < this->getConvergenceResidue() )
+   {
+      //cerr << endl << "The solver has. converged." <<  endl;
       return false;
+   }
    return true;
 }
 
@@ -119,23 +131,23 @@ checkConvergence()
 {
    if( std::isnan( this->getResidue() ) )
    {
-      cerr << "The residue is NaN." << endl;
+      cerr << endl << "The residue is NaN." << endl;
       return false;
    }
    if(( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) )
    {
-      cerr << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
+      cerr << endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
       return false;
    }
-   if( this->getIterations() > this->getMaxIterations() )
+   if( this->getIterations() >= this->getMaxIterations() )
    {
-      cerr << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
+      cerr << endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
       return false;
    }
    if( this->getResidue() > this->getConvergenceResidue() )
    {
-      cerr << "The residue ( = " << this->getResidue() << " ) is too large." << endl;
+      cerr << endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << endl;
       return false;
    }
    return true;

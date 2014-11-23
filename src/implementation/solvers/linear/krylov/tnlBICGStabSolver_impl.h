@@ -83,7 +83,7 @@ template< typename Matrix,
 bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    dbgFunctionName( "tnlBICGStabSolver", "Solve" );
-   if( ! this -> setSize( matrix -> getRows() ) ) return false;
+   if( ! this->setSize( matrix->getRows() ) ) return false;
 
    this -> resetIterations();
    this -> setResidue( this -> getConvergenceResidue() + 1.0 );
@@ -121,12 +121,11 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       bNorm = b. lpNorm( 2.0 );
    }
 
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
-      //dbgCout( "Starting BiCGStab iteration " << iter + 1 );
-
-      // alpha_j = ( r_j, r^ast_0 ) / ( A * p_j, r^ast_0 )
+      /****
+       * alpha_j = ( r_j, r^ast_0 ) / ( A * p_j, r^ast_0 )
+       */
       /*if( M ) // preconditioner
       {
          A. vectorProduct( p, M_tmp );
@@ -140,11 +139,14 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = rho / s2;
 
-      // s_j = r_j - alpha_j * A p_j
+      /****
+       * s_j = r_j - alpha_j * A p_j
+       */
       s. alphaXPlusBetaZ( 1.0, r, -alpha, Ap );
 
-      // omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
-      //dbgCout( "Computing As" );
+      /****
+       * omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
+       */
       /*if( M ) // preconditioner
       {
          A. vectorProduct( s, M_tmp );
@@ -153,40 +155,44 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       }
       else*/
           this -> matrix -> vectorProduct( s, As );
-      s1 = s2 = 0.0;
+
       s1 = As. scalarProduct( s );
       s2 = As. scalarProduct( As );
       if( s2 == 0.0 ) omega = 0.0;
       else omega = s1 / s2;
-      
-      // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
-      // r_{j+1} = s_j - omega_j * A * s_j
-      //dbgCout( "Computing new x and new r." );
+
+      /****
+       * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
+       */
       x. alphaXPlusBetaZPlusY( alpha, p, omega, s );
-      r. alphaXPlusBetaZ( 1.0, s, -omega, As );
       
-      // beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
+      /****
+       * r_{j+1} = s_j - omega_j * A * s_j
+       */
+      r. alphaXPlusBetaZ( 1.0, s, -omega, As );
+
+      /****
+       * beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
+       */
       s1 = 0.0;
       s1 = r. scalarProduct( r_ast );
       if( rho == 0.0 ) beta = 0.0;
       else beta = ( s1 / rho ) * ( alpha / omega );
       rho = s1;
 
-      // p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
+      /****
+       * p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
+       */
       RealType residue = computeBICGStabNewP( p, r, beta, omega, Ap );
 
       residue /= bNorm;
-      this -> setResidue( residue );
-      if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-      if( ! this -> nextIteration() )
-         return false;
-      this -> refreshSolverMonitor();
+      this->setResidue( residue );
+      if( this->getIterations() % 10 == 0 )
+         this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
-   return true;
+   //this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+   this->refreshSolverMonitor();
+   return this->checkConvergence();
 };
 
 template< typename Matrix,

@@ -1,7 +1,3 @@
-TODO: doladit iterativni resice 
-      * nepocitaji se iterace
-      * iterovat podle metody nextIteration
-      * naspat metodu checkConvergence - ta se vola na konci a napise hlaksu, proc resic pripadne neskonvergoval
 TODO: doladit vse s CUDA
 TODO: doplnit mesh travelsals pro jine mesh entity nez cell
 TODO: implementace maticovych resicu
