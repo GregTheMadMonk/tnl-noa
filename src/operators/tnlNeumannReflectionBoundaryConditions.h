@@ -126,6 +126,7 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 3, MeshReal, Device, Mesh
                                DofVectorType& u,
                                DofVectorType& fu );
 
+   private:
 
    CoordinatesType tmp;
 

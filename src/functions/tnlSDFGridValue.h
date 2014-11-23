@@ -52,13 +52,7 @@ class tnlSDFGridValue< Mesh, 1, Real > : public tnlSDFGridValueBase< Real >
 	typedef typename Mesh::IndexType IndexType;
 	typedef tnlVector< RealType2, DeviceType, IndexType> DofVectorType;
    typedef typename Mesh::CoordinatesType CoordinatesType;
-   VertexType origin;
-   RealType2 hx;
-   Mesh mesh;
-   DofVectorType u;
 
-   void bind( const Mesh& mesh,
-	          DofVectorType& dofVector );
    bool setup( const tnlParameterContainer& parameters,
            const tnlString& prefix = ""  );
 
@@ -77,6 +71,13 @@ class tnlSDFGridValue< Mesh, 1, Real > : public tnlSDFGridValueBase< Real >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+   private:
+
+   VertexType origin;
+   RealType2 hx;
+   Mesh mesh;
+   DofVectorType u;
 
 };
 
@@ -93,15 +94,7 @@ class tnlSDFGridValue< Mesh, 2, Real > : public tnlSDFGridValueBase< Real >
 	typedef typename Mesh::IndexType IndexType;
 	typedef tnlVector< RealType2, DeviceType, IndexType> DofVectorType;
    typedef typename Mesh::CoordinatesType CoordinatesType;
-   CoordinatesType dimensions;
-   VertexType origin;
-   RealType2 hx, hy;
-   Mesh mesh;
-   DofVectorType u;
 
-
-   void bind( const Mesh& mesh,
-	          DofVectorType& dofVector );
    bool setup( const tnlParameterContainer& parameters,
            const tnlString& prefix = ""  );
 
@@ -120,6 +113,14 @@ class tnlSDFGridValue< Mesh, 2, Real > : public tnlSDFGridValueBase< Real >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+   private:
+
+   CoordinatesType dimensions;
+   VertexType origin;
+   RealType2 hx, hy;
+   Mesh mesh;
+   DofVectorType u;
 
 };
 
@@ -136,15 +137,7 @@ class tnlSDFGridValue< Mesh, 3, Real > : public tnlSDFGridValueBase< Real >
 	typedef typename Mesh::IndexType IndexType;
 	typedef tnlVector< RealType2, DeviceType, IndexType> DofVectorType;
    typedef typename Mesh::CoordinatesType CoordinatesType;
-   CoordinatesType dimensions;
-   VertexType origin;
-   RealType2 hx, hy, hz;
-   Mesh mesh;
-   DofVectorType u;
 
-
-   void bind( const Mesh& mesh,
-	          DofVectorType& dofVector );
    bool setup( const tnlParameterContainer& parameters,
            const tnlString& prefix = ""  );
 
@@ -163,6 +156,14 @@ class tnlSDFGridValue< Mesh, 3, Real > : public tnlSDFGridValueBase< Real >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+   private:
+
+   CoordinatesType dimensions;
+   VertexType origin;
+   RealType2 hx, hy, hz;
+   Mesh mesh;
+   DofVectorType u;
 
 };
 

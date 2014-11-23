@@ -33,7 +33,6 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu )
 {
-   //fu[ index ] = 0;
 	tmp = coordinates;
 
    if(coordinates.x() == 0)
@@ -121,7 +120,6 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu )
 {
-   //fu[ index ] = 0;
 	tmp = coordinates;
 
    if(coordinates.x() == 0)

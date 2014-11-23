@@ -65,11 +65,6 @@ public:
 
 	RealType sign(const RealType x, const RealType eps) const;
 
-/*	void GetExplicitRHS( const RealType& time,
-                        const RealType& tau,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );*/
-
     template< typename Vector >
  #ifdef HAVE_CUDA
     __device__ __host__
@@ -86,7 +81,6 @@ public:
 protected:
 
 	Function f;
-
 
 	MeshType originalMesh;
 
@@ -130,11 +124,6 @@ public:
     RealType negativePart(const RealType arg) const;
 
     RealType sign(const RealType x, const Real eps) const;
-
-/*    void GetExplicitRHS( const RealType& time,
-                         const RealType& tau,
-                         DofVectorType& _u,
-                         DofVectorType& _fu );*/
 
     template< typename Vector >
  #ifdef HAVE_CUDA
@@ -191,11 +180,6 @@ public:
     RealType negativePart(const RealType arg) const;
 
     RealType sign(const RealType x, const Real eps) const;
-
-/*    void GetExplicitRHS( const RealType& time,
-                         const RealType& tau,
-                         DofVectorType& _u,
-                         DofVectorType& _fu );*/
 
     template< typename Vector >
  #ifdef HAVE_CUDA
