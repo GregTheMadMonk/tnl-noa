@@ -77,6 +77,8 @@ setup( const tnlParameterContainer& parameters,
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
    }
+   this->dofs.setValue( 0.0 );
+   this->auxiliaryDofs.setValue( 0.0 );
    this->problem->bindDofs( mesh, this->dofs );
    this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
    
