@@ -1,11 +1,11 @@
 set( tnl_heat_equation_SOURCES
      tnlHeatEquationEocRhs.h
-     tnlRightHandSide_impl.h
-     tnlRightHandSide.h
      tnl-heat-equation.cpp
      tnl-heat-equation-eoc.cpp
      heatEquationSolver_impl.h
      heatEquationSolver.h
+     heatEquationEocSolver.h
+     heatEquationEocSolver_impl.h
      tnlHeatEquationEocRhs.h )
                
 ADD_EXECUTABLE(tnl-heat-equation${debugExt} tnl-heat-equation.cpp)

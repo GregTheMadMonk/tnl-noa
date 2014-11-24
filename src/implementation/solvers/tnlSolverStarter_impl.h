@@ -147,6 +147,15 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         if( discreteSolver != "sor" &&
+             discreteSolver != "cg" &&
+             discreteSolver != "bicgstab" &&
+             discreteSolver != "gmres" )
+         {
+            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab or gmres." << endl;
+            return false;
+         }
+
          if( discreteSolver == "sor" )
             return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cg" )

@@ -130,7 +130,8 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
-       DofVectorType& dofVector )
+       DofVectorType& dofVector,
+       DofVectorType& auxiliaryDofVector )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
@@ -142,7 +143,8 @@ solve( const RealType& time,
       if( ! this->problem->preIterate( t,
                                        currentTau,
                                        mesh,
-                                       dofVector ) )
+                                       dofVector,
+                                       auxiliaryDofVector ) )
       {
          cerr << endl << "Preiteration failed." << endl;
          return false;
@@ -153,6 +155,7 @@ solve( const RealType& time,
                                            currentTau,
                                            mesh,
                                            dofVector,
+                                           auxiliaryDofVector,
                                            this->matrix,
                                            this->rightHandSide );
       if( verbose )
@@ -167,7 +170,8 @@ solve( const RealType& time,
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
-                                        dofVector ) )
+                                        dofVector,
+                                        auxiliaryDofVector ) )
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;

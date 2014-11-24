@@ -20,7 +20,8 @@
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-tnlExplicitTimeStepper< Problem, OdeSolver > :: tnlExplicitTimeStepper()
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+tnlExplicitTimeStepper()
 : odeSolver( 0 ),
   problem( 0 ),
   timeStep( 0 )
@@ -57,51 +58,64 @@ init( const MeshType& mesh )
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver >::setSolver(
-      typename tnlExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& odeSolver )
+void
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+setSolver( typename tnlExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& odeSolver )
 {
-   this -> odeSolver = &odeSolver;
+   this->odeSolver = &odeSolver;
 };
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver > :: setProblem( ProblemType& problem )
+void
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+setProblem( ProblemType& problem )
 {
-   this -> problem = &problem;
+   this->problem = &problem;
 };
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-Problem* tnlExplicitTimeStepper< Problem, OdeSolver > :: getProblem() const
+Problem*
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+getProblem() const
 {
-    return this -> problem;
+    return this->problem;
 };
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-bool tnlExplicitTimeStepper< Problem, OdeSolver > :: setTimeStep( const RealType& timeStep )
+bool
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0.0 )
    {
       cerr << "Tau for tnlExplicitTimeStepper must be positive. " << endl;
       return false;
    }
-   this -> timeStep = timeStep;
+   this->timeStep = timeStep;
 };
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-bool tnlExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time,
-                                                          const RealType& stopTime,
-                                                          const MeshType& mesh,
-                                                          DofVectorType& dofVector )
+bool
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+solve( const RealType& time,
+       const RealType& stopTime,
+       const MeshType& mesh,
+       DofVectorType& dofVector,
+       DofVectorType& auxiliaryDofVector )
 {
    tnlAssert( this->odeSolver, );
    this->odeSolver->setTau( this -> timeStep );
    this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
+   if( this->odeSolver->getMinIterations() )
+      this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->mesh = &mesh;
+   this->auxiliaryDofs = &auxiliaryDofVector;
    return this->odeSolver->solve( dofVector );
 }
 
@@ -109,23 +123,25 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 void tnlExplicitTimeStepper< Problem, OdeSolver >::getExplicitRHS( const RealType& time,
                                                                    const RealType& tau,
-                                                                   DofVectorType& _u,
-                                                                   DofVectorType& _fu )
+                                                                   DofVectorType& u,
+                                                                   DofVectorType& fu )
 {
    if( ! this->problem->preIterate( time,
                                     tau,
                                     *( this->mesh),
-                                    _u ) )
+                                    u,
+                                    *( this->auxiliaryDofs ) ) )
    {
       cerr << endl << "Preiteration failed." << endl;
       return;
       //return false; // TODO: throw exception
    }
-   this->problem->getExplicitRHS( time, tau, *( this->mesh ), _u, _fu );
+   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu );
    if( ! this->problem->postIterate( time,
                                      tau,
                                      *( this->mesh ),
-                                     _u ) )
+                                     u,
+                                     *( this->auxiliaryDofs ) ) )
    {
       cerr << endl << "Postiteration failed." << endl;
       return;

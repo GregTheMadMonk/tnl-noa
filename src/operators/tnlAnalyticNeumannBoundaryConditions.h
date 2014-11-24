@@ -1,20 +1,36 @@
-#ifndef TNLNEUMANNBOUNDARYCONDITIONS_H
-#define	TNLNEUMANNBOUNDARYCONDITIONS_H
+/***************************************************************************
+                          tnlAnalyticNeumannBoundaryConditions.h  -  description
+                             -------------------
+    begin                : Nov 22, 2014
+    copyright            : (C) 2014 by oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNLANALYTICNEUMANNBOUNDARYCONDITIONS_H_
+#define TNLANALYTICNEUMANNBOUNDARYCONDITIONS_H_
+
 
 template< typename Mesh,
-          typename Vector,
+          typename Function = tnlConstantFunction< Mesh::Dimensions,
+                                                   typename Mesh::RealType >,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlNeumannBoundaryConditions
+class tnlAnalyticNeumannBoundaryConditions
 {
 
 };
 
-/****
- * Base
- */
-template< typename Vector >
-class tnlNeumannBoundaryConditionsBase
+template< typename Function >
+class tnlAnalyticNeumannBoundaryConditionsBase
 {
    public:
 
@@ -24,27 +40,27 @@ class tnlNeumannBoundaryConditionsBase
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" );
 
-      Vector& getVector();
+      void setFunction( const Function& function );
 
-      const Vector& getVector() const;
 
    protected:
 
-      Vector vector;
+      Function function;
 
 };
 
 /****
  * 1D grid
  */
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlAnalyticNeumannBoundaryConditionsBase< Function >
 {
    public:
 
@@ -53,11 +69,11 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
+
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -88,19 +104,21 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, V
                                IndexType* columns,
                                RealType* values,
                                IndexType& rowLength ) const;
+
 };
 
 /****
  * 2D grid
  */
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlAnalyticNeumannBoundaryConditionsBase< Function >
 {
    public:
 
@@ -109,7 +127,6 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 2, RealType > VertexType;
@@ -149,14 +166,15 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, V
 /****
  * 3D grid
  */
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlAnalyticNeumannBoundaryConditionsBase< Function >
 {
    public:
 
@@ -165,11 +183,11 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
+
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -203,7 +221,6 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, V
 };
 
 
-#include <implementation/operators/tnlNeumannBoundaryConditions_impl.h>
+#include <implementation/operators/tnlAnalyticNeumannBoundaryConditions_impl.h>
 
-#endif	/* TNLNEUMANNBOUNDARYCONDITIONS_H */
-
+#endif /* TNLANALYTICNEUMANNBOUNDARYCONDITIONS_H_ */

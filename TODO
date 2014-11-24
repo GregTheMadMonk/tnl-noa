@@ -1,10 +1,3 @@
-TODO: doladit heat eq. eoc test
-TODO: opravit argumenty metod v heat equation - nekde se nepredavaji dofy a pomocne dofy
-TODO: neumanovy okrajove podminky
-TODO: doladit iterativni resice 
-      * nepocitaji se iterace
-      * iterovat podle metody nextIteration
-      * naspat metodu checkConvergence - ta se vola na konci a napise hlaksu, proc resic pripadne neskonvergoval
 TODO: doladit vse s CUDA
 TODO: doplnit mesh travelsals pro jine mesh entity nez cell
 TODO: implementace maticovych resicu
@@ -21,8 +14,6 @@ TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj
       to by melo byt robustnejsi, nez doposavadni pristup 
 
 TODO: vyjimky 
-    
-TODO: implementovat maticovy format COO - mimo jine by se dal vyuzit k rychlejsimu parsovani mtx souboru
 
 TODO: prubezne ukladani vysledku behem vypoctu 
                  
