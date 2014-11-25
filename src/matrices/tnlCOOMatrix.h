@@ -1,5 +1,7 @@
 /* u addElement by nejspis melo byt realokovani pole jinak se asi prvek, ktery
  * na danem miste nebyl pridat neda, leda by se puvodne naalokovalo pole o neco vetsi
+ *
+ * u getRowLengths dat jeden cyklus co projede vsechny prvky a nastavi rovnou cele pole
  */
 #ifndef TNLCOOMATRIX_H_
 #define TNLCOOMATRIX_H_
@@ -50,6 +52,10 @@ public:
 					const IndexType column,
 					const RealType& value,
 					const RealType& thisElementMultiplicator = 1.0);
+
+	bool appendElement( const IndexType row,
+						const IndexType column,
+						const RealType& value);
 
 	bool setRow(const IndexType row,
 				const IndexType* columns,
@@ -106,6 +112,8 @@ private:
 	IndexType numberOfUsedValues;
 
 	int cudaWarpSize;
+
+	bool appendMode;
 };
 
 #include <implementation/matrices/tnlCOOMatrix_impl.h>

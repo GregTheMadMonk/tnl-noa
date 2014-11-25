@@ -11,7 +11,8 @@ template< typename Real,
 	  	  typename Index >
 tnlCOOMatrix< Real, Device, Index >::tnlCOOMatrix()
 :cudaWarpSize( 32 ),
- numberOfUsedValues( 0 )
+ numberOfUsedValues( 0 ),
+ appendMode( true )
 {
 };
 
@@ -89,8 +90,14 @@ template< typename Real,
 		  typename Index >
 void tnlCOOMatrix< Real, Device, Index >::getRowLengths(tnlVector< IndexType, DeviceType, IndexType >& rowLengthsVector) const
 {
+	IndexType rowLength;
 	for(IndexType row = 0; row < this->getRows(); row++)
-		rowLengthsVector.setElement(row, this->getRowLength(row));
+		rowLengthsVector.setElement(row, 0);
+	for(IndexType elementPtr = 0; elementPtr < this->values.getSize(); elementPtr++)
+	{
+		rowLength = rowLengthsVector.getElement(this->rowIndexes.getElement(elementPtr));
+		rowLengthsVector.setElement(this->rowIndexes.getElement(elementPtr), rowLength++);
+	}
 }
 
 template< typename Real,
@@ -110,9 +117,12 @@ template< typename Real,
 		  typename Index >
 bool tnlCOOMatrix< Real, Device, Index >::setElement( const IndexType row,
 						      	  	  	  	  	  	  const IndexType column,
-						      	  	  	  	  	  	  const RealType& value)
+						      	  	  	  	  	  	  const RealType& value )
 {
-	return this->addElement( row, column, value, 1.0);
+	if( this->appendMode )
+		return this->addElement( row, column, value, 1.0 );
+	else
+		return this->appendElement( row, column, value );
 }
 
 template< typename Real,
@@ -129,6 +139,8 @@ bool tnlCOOMatrix< Real, Device, Index >::addElement( const IndexType row,
                     << " column = " << column
                     << " this->rows = " << this->rows
                     << " this->columns = " << this->columns );
+	if( appendMode )
+		return this->appendElement( row, column, value );
 
 	IndexType endPtr = this->getNumberOfUsedValues();
 	for(IndexType elementPtr = 0; elementPtr < endPtr; elementPtr++)
@@ -148,6 +160,25 @@ bool tnlCOOMatrix< Real, Device, Index >::addElement( const IndexType row,
 		return true;
 	}
 	return false;
+}
+
+template< typename Real,
+		  typename Device,
+		  typename Index >
+bool tnlCOOMatrix< Real, Device, Index >::appendElement( const IndexType row,
+														 const IndexType column,
+														 const RealType& value )
+{
+	if( !this->getNumberOfUsedValues < this->values.getSize() )
+		return false;
+	else
+	{
+		this->rowIndexes.setElement( this->getNumberOfUsedValues(), row );
+		this->columnIndexes.setElement( this->getNumberOfUsedValues(), column );
+		this->values.setElement( this->getNumberOfUsedValues(), value );
+		this->numberOfUsedValues++;
+	}
+	return true;
 }
 
 template< typename Real,
@@ -236,6 +267,8 @@ template< typename InVector,
 void tnlCOOMatrix< Real, Device, Index >::vectorProductHost(const InVector& inVector,
 															OutVector& outVector) const
 {
+	for(IndexType row = 0; row < this->getRows(); row++)
+		outVector[ row ] = 0;
 	for(IndexType i = 0; i < this->values.getSize(); i++)
 		outVector[ this->rowIndexes.getElement(i) ] = this->values.getElement(i)*inVector[ this->columnIndexes.getElement(i) ];
 }
