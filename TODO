@@ -1,5 +1,8 @@
+TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
+
 TODO: doladit vse s CUDA
 TODO: doplnit mesh travelsals pro jine mesh entity nez cell
+TODO: implementovat tnlProblem
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda

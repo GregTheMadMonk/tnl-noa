@@ -116,7 +116,8 @@ class tnlExplicitUpdater
                                                                                index,
                                                                                userData.u,
                                                                                userData.time );
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.getEntityCenter< EntityDimensions >( index ),
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh,
+                                                                        index,
                                                                         userData.time );
             }
 
@@ -201,12 +202,14 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                               const CoordinatesType& coordinates )
             {
                userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
-                                                                               index,
-                                                                               coordinates,
-                                                                               userData.u,
-                                                                               userData.time );
+                                                                              index,
+                                                                              coordinates,
+                                                                              userData.u,
+                                                                              userData.time );
 
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
+               userData.fu[ index ] += userData.rightHandSide.getValue( mesh,
+                                                                        index,
+                                                                        coordinates,
                                                                         userData.time );
             }
 

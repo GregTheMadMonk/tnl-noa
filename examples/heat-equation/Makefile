@@ -27,11 +27,9 @@ dist: $(DIST)
 
 install: $(TARGET)
 	cp $(TARGET) $(INSTALL_DIR)/bin
-	cp $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/heat-equation
 
 uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
-	rm -f $(CONFIG_FILE) $(INSTALL_DIR)/share/tnl-0.1/examples/heat-equation
 
 $(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
