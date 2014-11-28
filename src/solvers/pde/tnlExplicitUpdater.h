@@ -18,6 +18,8 @@
 #ifndef TNLEXPLICITUPDATER_H_
 #define TNLEXPLICITUPDATER_H_
 
+#include <functions/tnlFunctionAdapter.h>
+
 template< typename Real,
           typename DofVector,
           typename DifferentialOperator,
@@ -116,9 +118,11 @@ class tnlExplicitUpdater
                                                                                index,
                                                                                userData.u,
                                                                                userData.time );
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh,
-                                                                        index,
-                                                                        userData.time );
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               userData.fu[ index ] += FunctionAdapter::getValue( mesh,
+                                                                  userData.rightHandSide,
+                                                                  index,
+                                                                  userData.time );
             }
 
       };
@@ -207,10 +211,12 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                               userData.u,
                                                                               userData.time );
 
-               userData.fu[ index ] += userData.rightHandSide.getValue( mesh,
-                                                                        index,
-                                                                        coordinates,
-                                                                        userData.time );
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               userData.fu[ index ] += FunctionAdapter::getValue( mesh,
+                                                                  userData.rightHandSide,
+                                                                  index,
+                                                                  coordinates,
+                                                                  userData.time );
             }
 
       };

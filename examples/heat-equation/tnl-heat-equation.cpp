@@ -24,6 +24,7 @@
 #include <operators/tnlAnalyticNeumannBoundaryConditions.h>
 #include <operators/tnlNeumannBoundaryConditions.h>
 #include <functions/tnlConstantFunction.h>
+#include <functions/tnlAnalyticFunctionAdapter.h>
 #include "heatEquationSolver.h"
 
 //typedef tnlDefaultConfigTag BuildConfig;

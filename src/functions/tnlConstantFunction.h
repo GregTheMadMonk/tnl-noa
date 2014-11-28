@@ -53,10 +53,16 @@ class tnlConstantFunction
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const;
 
    template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const
    {
