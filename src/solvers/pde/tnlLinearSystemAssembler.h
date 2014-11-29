@@ -150,10 +150,12 @@ class tnlLinearSystemAssembler
                              TraversalUserData& userData,
                              const IndexType index )
          {
+            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             userData.b[ index ] = userData.u[ index ] +
-                                  userData.tau * userData.rightHandSide.getValue( mesh,
-                                                                                  index,
-                                                                                  userData.time );
+                                  FunctionAdapter::getValue( mesh,
+                                                             userData.rightHandSide,
+                                                             index,
+                                                             userData.time );
             typename MatrixType::IndexType rowLength;
             userData.differentialOperator.updateLinearSystem( userData.time,
                                                               userData.tau,
@@ -257,12 +259,14 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                            const IndexType index,
                            const CoordinatesType& coordinates )
          {
-            typedef typename MeshType::VertexType VertexType;
+            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             userData.b[ index ] = userData.u[ index ] +
-                                  userData.tau * userData.rightHandSide.template getValue< VertexType >( mesh,
-                                                                                                         index,
-                                                                                                         coordinates,
-                                                                                                         userData.time );
+                                  FunctionAdapter::getValue( mesh,
+                                                             userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             userData.time );
+            
             typename MatrixType::IndexType rowLength;
             userData.differentialOperator.updateLinearSystem( userData.time,
                                                               userData.tau,

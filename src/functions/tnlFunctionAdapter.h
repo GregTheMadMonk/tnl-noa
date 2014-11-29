@@ -35,10 +35,10 @@ class tnlFunctionAdapter
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const RealType& time = 0.0 )
       {
          return function.getValue( mesh.template getEntityCenter< MeshEntityDimension >,
                                    time );
@@ -67,10 +67,10 @@ class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real > 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const RealType& time = 0.0 )
       {
          VertexType v;
          return function.getValue( v, time );
@@ -100,11 +100,11 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const CoordinatesType& coordinates,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
       {
          return function.getValue( mesh.template getCellCenter( coordinates ),
                                    time );
@@ -134,11 +134,11 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const CoordinatesType& coordinates,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
       {
          VertexType v;
          return function.getValue( v, time );
@@ -163,10 +163,10 @@ class tnlFunctionAdapter< Mesh, tnlVector< Real, Device, Index > >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const RealType& time = 0.0 )
       {
          return function[ index ];
       }
@@ -206,11 +206,11 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-      RealType getValue( const MeshType& mesh,
-                         const FunctionType& function,
-                         const IndexType index,
-                         const CoordinatesType& coordinates,
-                         const RealType& time = 0.0 )
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
       {
          return function[ index ];
       }
