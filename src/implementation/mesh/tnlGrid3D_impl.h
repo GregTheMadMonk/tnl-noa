@@ -63,6 +63,22 @@ tnlString tnlGrid< 3, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlGrid< 3, Real, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlGrid< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 3, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 &&

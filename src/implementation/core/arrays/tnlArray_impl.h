@@ -68,6 +68,22 @@ tnlString tnlArray< Element, Device, Index > :: getTypeVirtual() const
 template< typename Element,
            typename Device,
            typename Index >
+tnlString tnlArray< Element, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlString tnlArray< Element, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
 bool tnlArray< Element, Device, Index > :: setSize( const Index size )
 {
    tnlAssert( size >= 0,

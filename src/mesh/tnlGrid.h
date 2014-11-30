@@ -44,6 +44,8 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 1, Real > VertexType;
    typedef tnlStaticVector< 1, Index > CoordinatesType;
+   typedef tnlGrid< 1, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
 
    enum { Dimensions = 1};
 
@@ -52,6 +54,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize );
 
@@ -252,6 +258,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
+   typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
+
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -259,6 +268,10 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize );
 
@@ -539,6 +552,9 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 3, Real > VertexType;
    typedef tnlStaticVector< 3, Index > CoordinatesType;
+   typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
+
    enum { Dimensions = 3};
 
    tnlGrid();
@@ -546,6 +562,10 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 

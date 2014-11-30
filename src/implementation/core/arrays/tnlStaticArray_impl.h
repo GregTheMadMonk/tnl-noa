@@ -217,12 +217,16 @@ ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+// TODO: it does not work with CUDA
+
+#ifndef HAVE_CUDA
 extern template class tnlStaticArray< 4, char >;
 extern template class tnlStaticArray< 4, int >;
 extern template class tnlStaticArray< 4, long int >;
 extern template class tnlStaticArray< 4, float >;
 extern template class tnlStaticArray< 4, double >;
 //extern template class tnlStaticArray< 4, long double >;
+#endif
 
 #endif
 

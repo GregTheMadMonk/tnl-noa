@@ -81,8 +81,10 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
+   printf( "Dirichlet. BC for index %d \n", index );
    fu[ index ] = 0;
    u[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
+   printf( "Dirichlet. BC fo index %d done \n", index );
 }
 
 template< int Dimensions,

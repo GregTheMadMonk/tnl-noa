@@ -282,7 +282,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                         userData.columns.getData(),
                                         userData.values.getData(),
                                         rowLength );
-            userData.matrix.addElement( index, index, 1.0, 1.0 );
+            userData.matrix.addElementFast( index, index, 1.0, 1.0 );
          }
 
    };

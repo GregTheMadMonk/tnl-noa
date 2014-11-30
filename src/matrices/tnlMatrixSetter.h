@@ -67,6 +67,9 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimension >
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
          void processEntity( const MeshType& mesh,
                              TraversalUserData& userData,
                              const IndexType index )
@@ -82,6 +85,9 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimensions >
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
          void processEntity( const MeshType& mesh,
                              TraversalUserData& userData,
                              const IndexType index )
@@ -126,6 +132,9 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
          void processCell( const MeshType& mesh,
                            TraversalUserData& userData,
                            const IndexType index,
@@ -141,6 +150,9 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
          void processCell( const MeshType& mesh,
                            TraversalUserData& userData,
                            const IndexType index,

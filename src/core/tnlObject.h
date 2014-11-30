@@ -46,11 +46,20 @@ class tnlObject
 
    /****
     * Type getter. This returns the type in C++ style - for example the returned value
-    * may look ass follows: "tnlVector< double, tnlCuda >".
+    * may look as follows: "tnlVector< double, tnlCuda >".
     */
    static tnlString getType();
 
    virtual tnlString getTypeVirtual() const;
+
+   /****
+    * This is used for load and save methods.
+    * Each object is saved as if it was stored on tnlHost. So even tnlVector< double, tnlCuda >
+    * is saved as tnlVector< double, tnlHost >.
+    */
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    /****
     *  Name getter

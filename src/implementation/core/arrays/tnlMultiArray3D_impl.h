@@ -35,7 +35,7 @@ tnlMultiArray< 3, Element, Device, Index > :: tnlMultiArray( const tnlString& na
 }
 
 template< typename Element, typename Device, typename Index >
-tnlString tnlMultiArray< 3, Element, Device, Index > :: getType() const
+tnlString tnlMultiArray< 3, Element, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiArray< ") +
           tnlString( Dimensions ) +
@@ -47,6 +47,30 @@ tnlString tnlMultiArray< 3, Element, Device, Index > :: getType() const
           tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 3, Element, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 3, Element, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 3, Element, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
 
 template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 3, Element, Device, Index > :: setDimensions( const Index kSize,

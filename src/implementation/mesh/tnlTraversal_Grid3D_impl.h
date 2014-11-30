@@ -45,27 +45,27 @@ processEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.z() = 0;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.z() = zSize - 1;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.y() = ySize - 1;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.x() = xSize - 1;
-         boundaryEntitiesProcessor.template processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 
 
@@ -77,7 +77,7 @@ processEntities( const GridType& grid,
          for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
          {
             const IndexType index = grid.getCellIndex( coordinates );
-            interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
+            interiorEntitiesProcessor.processCell( grid, userData, index, coordinates );
          }
 }
 

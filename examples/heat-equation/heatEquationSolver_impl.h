@@ -223,6 +223,7 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
 
+   cout << "u = " << u << endl;
    this->bindDofs( mesh, u );
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< Mesh::Dimensions >( time,
@@ -232,6 +233,8 @@ getExplicitRHS( const RealType& time,
                                                         this->rightHandSide,
                                                         u,
                                                         fu );
+   cout << "u = " << u << endl;
+   cout << "fu = " << fu << endl;
    //_u.save( "u.tnl" );
    //_fu.save( "fu.tnl" );
    //getchar();

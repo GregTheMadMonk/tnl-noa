@@ -106,7 +106,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function >
                                 const CoordinatesType& coordinates,
                                 const RealType& time = 0.0 )
       {
-         return function.getValue( mesh.template getCellCenter( coordinates ),
+         return function.getValue( mesh.template getCellCenter< VertexType >( coordinates ),         
                                    time );
       }
 };

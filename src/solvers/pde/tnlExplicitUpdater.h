@@ -181,6 +181,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                const IndexType index,
                                const CoordinatesType& coordinates )
             {
+               printf( "Setting boundary conditions at cell %d \n", index );
                userData.boundaryConditions.setBoundaryConditions( userData.time,
                                                                   mesh,
                                                                   index,

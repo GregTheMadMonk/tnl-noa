@@ -20,24 +20,24 @@
 
 
 
-template< typename Element, typename Device, typename Index >
-tnlMultiVector< 3, Element, Device, Index > :: tnlMultiVector()
+template< typename Real, typename Device, typename Index >
+tnlMultiVector< 3, Real, Device, Index > :: tnlMultiVector()
 {
 }
 
-template< typename Element, typename Device, typename Index >
-tnlMultiVector< 3, Element, Device, Index > :: tnlMultiVector( const tnlString& name )
+template< typename Real, typename Device, typename Index >
+tnlMultiVector< 3, Real, Device, Index > :: tnlMultiVector( const tnlString& name )
 {
    this -> setName( name );
 }
 
-template< typename Element, typename Device, typename Index >
-tnlString tnlMultiVector< 3, Element, Device, Index > :: getType() const
+template< typename Real, typename Device, typename Index >
+tnlString tnlMultiVector< 3, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiVector< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( ::getType< Element >() ) +
+          tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           tnlString( Device :: getDeviceType() ) +
           tnlString( ", " ) +
@@ -53,8 +53,24 @@ tnlString tnlMultiVector< 3, Real, Device, Index > :: getTypeVirtual() const
    return this->getType();
 };
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: setDimensions( const Index kSize,
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlMultiVector< 3, Real, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlMultiVector< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
                                                                        const Index jSize,
                                                                        const Index iSize )
 {
@@ -66,29 +82,29 @@ bool tnlMultiVector< 3, Element, Device, Index > :: setDimensions( const Index k
    dimensions[ 0 ] = iSize;
    dimensions[ 1 ] = jSize;
    dimensions[ 2 ] = kSize;
-   return tnlVector< Element, Device, Index > :: setSize( iSize * jSize * kSize );
+   return tnlVector< Real, Device, Index > :: setSize( iSize * jSize * kSize );
 }
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: setDimensions( const tnlStaticVector< 3, Index >& dimensions )
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const tnlStaticVector< 3, Index >& dimensions )
 {
    tnlAssert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               cerr << "dimensions = " << dimensions );
    this -> dimensions = dimensions;
-   return tnlVector< Element, Device, Index > :: setSize( this -> dimensions[ 2 ] *
+   return tnlVector< Real, Device, Index > :: setSize( this -> dimensions[ 2 ] *
                                                           this -> dimensions[ 1 ] *
                                                           this -> dimensions[ 0 ] );
 }
 
-template< typename Element, typename Device, typename Index >
+template< typename Real, typename Device, typename Index >
    template< typename MultiVector >
-bool tnlMultiVector< 3, Element, Device, Index > :: setLike( const MultiVector& multiVector )
+bool tnlMultiVector< 3, Real, Device, Index > :: setLike( const MultiVector& multiVector )
 {
    return setDimensions( multiVector. getDimensions() );
 }
 
-template< typename Element, typename Device, typename Index >
-void tnlMultiVector< 3, Element, Device, Index > :: getDimensions( Index& kSize,
+template< typename Real, typename Device, typename Index >
+void tnlMultiVector< 3, Real, Device, Index > :: getDimensions( Index& kSize,
                                                                   Index& jSize,
                                                                   Index& iSize ) const
 {
@@ -97,14 +113,14 @@ void tnlMultiVector< 3, Element, Device, Index > :: getDimensions( Index& kSize,
    kSize = this -> dimensions[ 2 ];
 }
 
-template< typename Element, typename Device, typename Index >
-const tnlStaticVector< 3, Index >& tnlMultiVector< 3, Element, Device, Index > :: getDimensions() const
+template< typename Real, typename Device, typename Index >
+const tnlStaticVector< 3, Index >& tnlMultiVector< 3, Real, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
-template< typename Element, typename Device, typename Index >
-Index tnlMultiVector< 3, Element, Device, Index > :: getElementIndex( const Index k,
+template< typename Real, typename Device, typename Index >
+Index tnlMultiVector< 3, Real, Device, Index > :: getElementIndex( const Index k,
                                                                      const Index j,
                                                                      const Index i ) const
 {
@@ -118,42 +134,42 @@ Index tnlMultiVector< 3, Element, Device, Index > :: getElementIndex( const Inde
    return ( k * this -> dimensions[ 1 ]  + j ) * this -> dimensions[ 0 ] + i;
 }
 
-template< typename Element, typename Device, typename Index >
-Element tnlMultiVector< 3, Element, Device, Index > :: getElement( const Index k,
+template< typename Real, typename Device, typename Index >
+Real tnlMultiVector< 3, Real, Device, Index > :: getElement( const Index k,
                                                                   const Index j,
                                                                   const Index i ) const
 {
-   return tnlVector< Element, Device, Index > :: getElement( getElementIndex( k, j, i ) );
+   return tnlVector< Real, Device, Index > :: getElement( getElementIndex( k, j, i ) );
 }
 
-template< typename Element, typename Device, typename Index >
-void tnlMultiVector< 3, Element, Device, Index > :: setElement( const Index k,
+template< typename Real, typename Device, typename Index >
+void tnlMultiVector< 3, Real, Device, Index > :: setElement( const Index k,
                                                                     const Index j,
-                                                                    const Index i, Element value )
+                                                                    const Index i, Real value )
 {
-   tnlVector< Element, Device, Index > :: setElement( getElementIndex( k, j, i ), value );
+   tnlVector< Real, Device, Index > :: setElement( getElementIndex( k, j, i ), value );
 }
 
 
-template< typename Element, typename Device, typename Index >
-Element& tnlMultiVector< 3, Element, Device, Index > :: operator()( const Index k,
+template< typename Real, typename Device, typename Index >
+Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index k,
                                                                         const Index j,
                                                                         const Index i )
 {
-   return tnlVector< Element, Device, Index > :: operator[]( getElementIndex( k, j, i ) );
+   return tnlVector< Real, Device, Index > :: operator[]( getElementIndex( k, j, i ) );
 }
 
-template< typename Element, typename Device, typename Index >
-const Element& tnlMultiVector< 3, Element, Device, Index > :: operator()( const Index k,
+template< typename Real, typename Device, typename Index >
+const Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index k,
                                                                                const Index j,
                                                                                const Index i ) const
 {
-   return tnlVector< Element, Device, Index > :: operator[]( getElementIndex( k, j, i ) );
+   return tnlVector< Real, Device, Index > :: operator[]( getElementIndex( k, j, i ) );
 }
 
-template< typename Element, typename Device, typename Index >
+template< typename Real, typename Device, typename Index >
    template< typename MultiVector >
-bool tnlMultiVector< 3, Element, Device, Index > :: operator == ( const MultiVector& Vector ) const
+bool tnlMultiVector< 3, Real, Device, Index > :: operator == ( const MultiVector& Vector ) const
 {
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
@@ -162,19 +178,19 @@ bool tnlMultiVector< 3, Element, Device, Index > :: operator == ( const MultiVec
                    << " dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second Vector is " << Vector. getName()
                    << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
-   return tnlVector< Element, Device, Index > :: operator == ( Vector );
+   return tnlVector< Real, Device, Index > :: operator == ( Vector );
 }
 
-template< typename Element, typename Device, typename Index >
+template< typename Real, typename Device, typename Index >
    template< typename MultiVector >
-bool tnlMultiVector< 3, Element, Device, Index > :: operator != ( const MultiVector& Vector ) const
+bool tnlMultiVector< 3, Real, Device, Index > :: operator != ( const MultiVector& Vector ) const
 {
    return ! ( (* this ) == Vector );
 }
 
-template< typename Element, typename Device, typename Index >
-tnlMultiVector< 3, Element, Device, Index >&
-   tnlMultiVector< 3, Element, Device, Index > :: operator = ( const tnlMultiVector< 3, Element, Device, Index >& Vector )
+template< typename Real, typename Device, typename Index >
+tnlMultiVector< 3, Real, Device, Index >&
+   tnlMultiVector< 3, Real, Device, Index > :: operator = ( const tnlMultiVector< 3, Real, Device, Index >& Vector )
 {
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
@@ -183,14 +199,14 @@ tnlMultiVector< 3, Element, Device, Index >&
                    << " dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second Vector is " << Vector. getName()
                    << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
-   tnlVector< Element, Device, Index > :: operator = ( Vector );
+   tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
 
-template< typename Element, typename Device, typename Index >
+template< typename Real, typename Device, typename Index >
    template< typename MultiVector >
-tnlMultiVector< 3, Element, Device, Index >&
-   tnlMultiVector< 3, Element, Device, Index > :: operator = ( const MultiVector& Vector )
+tnlMultiVector< 3, Real, Device, Index >&
+   tnlMultiVector< 3, Real, Device, Index > :: operator = ( const MultiVector& Vector )
 {
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
@@ -199,14 +215,14 @@ tnlMultiVector< 3, Element, Device, Index >&
                    << " dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second Vector is " << Vector. getName()
                    << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
-   tnlVector< Element, Device, Index > :: operator = ( Vector );
+   tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: save( tnlFile& file ) const
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: save( tnlFile& file ) const
 {
-   if( ! tnlVector< Element, Device, Index > :: save( file ) )
+   if( ! tnlVector< Real, Device, Index > :: save( file ) )
    {
       cerr << "I was not able to write the tnlVector of tnlMultiVector "
            << this -> getName() << endl;
@@ -221,10 +237,10 @@ bool tnlMultiVector< 3, Element, Device, Index > :: save( tnlFile& file ) const
    return true;
 }
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: load( tnlFile& file )
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: load( tnlFile& file )
 {
-   if( ! tnlVector< Element, Device, Index > :: load( file ) )
+   if( ! tnlVector< Real, Device, Index > :: load( file ) )
    {
       cerr << "I was not able to read the tnlVector of tnlMultiVector "
            << this -> getName() << endl;
@@ -239,8 +255,8 @@ bool tnlMultiVector< 3, Element, Device, Index > :: load( tnlFile& file )
    return true;
 }
 
-template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 3, Element, Device, Index >& Vector )
+template< typename Real, typename Device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiVector< 3, Real, Device, Index >& Vector )
 {
    for( Index k = 0; k < Vector. getDimensions()[ 2 ]; k ++ )
    {
@@ -257,14 +273,14 @@ ostream& operator << ( ostream& str, const tnlMultiVector< 3, Element, Device, I
    return str;
 }
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: save( const tnlString& fileName ) const
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 }
 
-template< typename Element, typename Device, typename Index >
-bool tnlMultiVector< 3, Element, Device, Index > :: load( const tnlString& fileName )
+template< typename Real, typename Device, typename Index >
+bool tnlMultiVector< 3, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 }

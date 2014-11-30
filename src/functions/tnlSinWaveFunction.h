@@ -72,7 +72,10 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 
@@ -97,7 +100,10 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -122,7 +128,10 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };

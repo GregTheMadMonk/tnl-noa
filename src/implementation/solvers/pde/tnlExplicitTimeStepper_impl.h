@@ -95,6 +95,7 @@ setTimeStep( const RealType& timeStep )
       return false;
    }
    this->timeStep = timeStep;
+   return true;
 };
 
 template< typename Problem,

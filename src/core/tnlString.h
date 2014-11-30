@@ -128,6 +128,9 @@ class tnlString
    //! Return length of the string
    int getLength() const;
 
+   void replace( const tnlString& pattern,
+                 const tnlString& replaceWith );
+
    // TODO: remove
    //! Write to a binary file
    bool save( ostream& file ) const;

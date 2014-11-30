@@ -207,6 +207,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 getValue( const Vertex& vertex,
           const Real& time ) const
 {
+   printf( "Test function \n" );
    Real scale( 1.0 );
    switch( this->timeDependence )
    {
@@ -224,6 +225,8 @@ getValue( const Vertex& vertex,
          scale = cos( this->timeScale * time );
          break;
    }
+   printf( "Time scale = %f \n", scale );
+   return 0.0;
    //cout << "scale = " << scale << " time= " << time << " timeScale = " << timeScale << " timeDependence = " << ( int ) timeDependence << endl;
    switch( functionType )
    {

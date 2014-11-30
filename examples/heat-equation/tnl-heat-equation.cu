@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnl-heat-equation.cpp  -  description
+                          tnl-heat-equation.cu  -  description
                              -------------------
-    begin                : Jan 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Nov 29, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

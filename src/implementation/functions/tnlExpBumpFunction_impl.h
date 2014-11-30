@@ -76,10 +76,14 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
                                          const Real& time ) const
 {
+   printf( "Exp. bump. function \n");
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
@@ -113,6 +117,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 2, Real >::
 getValue( const Vertex& v,
@@ -156,6 +163,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 3, Real >::
 getValue( const Vertex& v,

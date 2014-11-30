@@ -121,6 +121,7 @@ bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameter
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
+   return true;
 }
 
 template< typename Problem >
@@ -384,7 +385,7 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
 
       computeErrorKernel<<< grid_size, block_size >>>( size, tau, _k1, _k3, _k4, _k5, _kAux );
       cudaThreadSynchronize();
-      eps = tnlMax( kAux );
+      eps = kAux.max();
 #endif
    }
    :: MPIAllreduce( eps, maxEps, 1, MPI_MAX, this -> solver_comm );

@@ -60,6 +60,7 @@ bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const tnlParameterCo
    if( realType == "long-double" )
       return tnlSolverInitiatorRealResolver< ProblemSetter, long double, ConfigTag >::run( parameters );
    cerr << "The real type '" << realType << "' is not defined. " << endl;
+   return false;
 };
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,

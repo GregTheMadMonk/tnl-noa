@@ -64,12 +64,36 @@ tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlSharedArray< Elemen
 template< typename Element,
           typename Device,
           typename Index >
-tnlString tnlSharedArray< Element, Device, Index > :: getType() const
+tnlString tnlSharedArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlSharedArray< " ) + ", " +
                      ::getType< Element >() + ", " +
                      Device::getDeviceType() + ", " +
                      ::getType< Index >() + " >";
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlString tnlSharedArray< Element, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlString tnlSharedArray< Element, Device, Index > :: getSerializationType()
+{
+   return tnlArray< Element, Device, Index >::getSerializationType();
+};
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlString tnlSharedArray< Element, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
 };
 
 template< typename Element,

@@ -81,6 +81,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlSinBumpsFunction< 1, Real >::
 getValue( const Vertex& v,
@@ -125,6 +128,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlSinBumpsFunction< 2, Real>::
 getValue( const Vertex& v,
@@ -178,6 +184,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlSinBumpsFunction< 3, Real >::
 getValue( const Vertex& v,

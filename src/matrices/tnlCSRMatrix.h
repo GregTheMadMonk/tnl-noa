@@ -198,11 +198,11 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector,
              int warpSize >
    __device__
-   void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
-                                                                 OutVector& outVector,
-                                                                 const IndexType warpStart,
-                                                                 const IndexType warpEnd,
-                                                                 const IndexType inWarpIdx ) const;
+   void spmvCudaVectorized( const InVector& inVector,
+                            OutVector& outVector,
+                            const IndexType warpStart,
+                            const IndexType warpEnd,
+                            const IndexType inWarpIdx ) const;
 
    template< typename InVector,
              typename OutVector,

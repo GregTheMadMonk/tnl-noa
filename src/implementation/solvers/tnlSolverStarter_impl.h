@@ -603,6 +603,7 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
    sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. GetTime() ) / this -> totalRtTimer. GetTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
+   return true;
 }
 
 #endif /* TNLSOLVERSTARTER_IMPL_H_ */

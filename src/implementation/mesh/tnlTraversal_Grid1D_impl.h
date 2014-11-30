@@ -40,9 +40,9 @@ processEntities( const GridType& grid,
     * Boundary conditions
     */
    coordinates.x() = 0;
-   boundaryEntitiesProcessor.template processCell( grid, userData, 0, coordinates );
+   boundaryEntitiesProcessor.processCell( grid, userData, 0, coordinates );
    coordinates.x() = xSize - 1;
-   boundaryEntitiesProcessor.template processCell( grid, userData, xSize - 1, coordinates );
+   boundaryEntitiesProcessor.processCell( grid, userData, xSize - 1, coordinates );
 
    /****
     * Interior cells
@@ -50,7 +50,7 @@ processEntities( const GridType& grid,
    for( coordinates.x() = 1; coordinates.x() < xSize-1; coordinates.x() ++ )
    {
       const IndexType index = grid.getCellIndex( coordinates );
-      interiorEntitiesProcessor.template processCell( grid, userData, index, coordinates );
+      interiorEntitiesProcessor.processCell( grid, userData, index, coordinates );
    }
 }
 
@@ -79,11 +79,65 @@ processEntities( const GridType& grid,
    {
       const IndexType index = grid.getVertexIndex( coordinates );
       if( grid.isBoundaryVertex( coordinates ) )
-         boundaryEntitiesProcessor.template processVertices( grid, userData, index, coordinates );
+         boundaryEntitiesProcessor.processVertices( grid, userData, index, coordinates );
       else
-         interiorEntitiesProcessor.template processVertices( grid, userData, index, coordinates );
+         interiorEntitiesProcessor.processVertices( grid, userData, index, coordinates );
    }
 }
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename BoundaryEntitiesProcessor >
+__global__ void tnlTraversalGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
+                                                 UserData* userData,
+                                                 BoundaryEntitiesProcessor* boundaryEntitiesProcessor )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid->getDimensions().x();
+
+   if( threadIdx.x == 0 )
+   {
+      coordinates.x() = 0;
+      boundaryEntitiesProcessor->processCell( *grid, *userData, 0, coordinates );
+   }
+   else
+   {
+      coordinates.x() = xSize - 1;
+      boundaryEntitiesProcessor->processCell( *grid, *userData, xSize - 1, coordinates );
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename InteriorEntitiesProcessor >
+__global__ void tnlTraversalGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
+                                                 UserData* userData,
+                                                 InteriorEntitiesProcessor* interiorEntitiesProcessor,
+                                                 int gridIdx )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   CoordinatesType coordinates;
+   coordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( coordinates.x() != 0 && coordinates.x() != grid->getDimensions().x() - 1 )
+   {
+      const IndexType index = grid->getCellIndex( coordinates );
+      interiorEntitiesProcessor->processCell( *grid, *userData, index, coordinates );
+   }
+}
+
+#endif
 
 template< typename Real,
           typename Index >
@@ -95,11 +149,47 @@ tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 1 >::
 processEntities( const GridType& grid,
                  UserData& userData,
                  BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 InteriorEntitiesProcessor& interiorEntitiesProcessor ) const
 {
    /****
     * Traversing cells
     */
+#ifdef HAVE_CUDA
+
+   dim3 cudaBlockSize( 256 );
+
+   /****
+    * Boundary conditions
+    */
+   cerr << "Setting boundary conditions." << endl;
+   tnlTraversalGrid1DBoundaryCells<<< 1, 2 >>>
+                                    ( &grid,
+                                      &userData,
+                                      &boundaryEntitiesProcessor );
+   cudaThreadSynchronize();
+   checkCudaDevice;
+   cerr << "Setting boundary conditions... done" << endl;
+   return;
+
+   /****
+    * Interior cells
+    */
+   const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( grid.getNumberOfCells(), cudaBlockSize.x );
+   const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
+   dim3 cudaGridSize;
+   cerr << "Evaluating operator..." << endl;
+   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+   {
+      if( gridIdx == cudaGrids - 1 )
+         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+      tnlTraversalGrid1DInteriorCells<<< cudaGridSize, cudaBlockSize >>>
+                                       ( &grid,
+                                         &userData,
+                                         &interiorEntitiesProcessor,
+                                         gridIdx );
+   }
+   checkCudaDevice;
+#endif
 
 }
 

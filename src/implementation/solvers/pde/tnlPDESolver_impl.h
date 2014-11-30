@@ -164,6 +164,7 @@ setFinalTime( const RealType& finalTime )
       return false;
    }
    this->finalTime = finalTime;
+   return true;
 }
 
 template< typename Problem,
@@ -187,6 +188,7 @@ setSnapshotPeriod( const RealType& period )
       return false;
    }
    this->snapshotPeriod = period;
+   return true;
 }
 
 template< typename Problem,
@@ -210,6 +212,7 @@ setTimeStep( const RealType& timeStep )
       return false;
    }
    this->timeStep = timeStep;
+   return true;
 }
    
 template< typename Problem,
@@ -233,6 +236,7 @@ setTimeStepOrder( const RealType& timeStepOrder )
       return false;
    }
    this->timeStepOrder = timeStepOrder;
+   return true;
 }
 
 template< typename Problem,

@@ -50,7 +50,7 @@ tnlCGSolver< Matrix, Preconditioner >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,

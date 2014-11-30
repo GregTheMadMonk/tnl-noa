@@ -68,6 +68,22 @@ tnlString tnlVector< Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlVector< Real, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlVector< Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlVector< Real, Device, Index >::addElement( const IndexType i,
                                                    const RealType& value )
 {

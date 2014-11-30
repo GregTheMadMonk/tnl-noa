@@ -60,7 +60,7 @@ tnlBICGStabSolver< Matrix, Preconditioner >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,
@@ -247,7 +247,7 @@ RealType computeBICGStabNewPCuda( Vector& p,
                                   const RealType& omega,
                                   const Vector& Ap )
 {
-
+   abort();
 }
 
 
@@ -264,10 +264,8 @@ RealType computeBICGStabNewP( Vector& p,
    {
       case tnlHostDevice:
          return computeBICGStabNewPHost( p, r, beta, omega, Ap );
-         break;
       case tnlCudaDevice:
          return computeBICGStabNewPCuda( p, r, beta, omega, Ap );
-         break;
    }
 }
 

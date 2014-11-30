@@ -74,6 +74,9 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif   
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -101,7 +104,10 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -130,6 +136,9 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif   
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
