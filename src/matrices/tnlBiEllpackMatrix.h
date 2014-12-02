@@ -1,6 +1,9 @@
 #ifndef TNLBIELLPACKMATRIX_H_
 #define TNLBIELLPACKMATRIX_H_
 
+template< typename Device >
+class tnlBiEllpackMatrixDeviceDependentCode;
+
 template< typename Real, typename Device = tnlCuda, typename Index = int >
 class tnlBiEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
@@ -35,7 +38,10 @@ public:
 	bool addElement( const IndexType row,
 					 const IndexType column,
 					 const RealType& value,
-					 const thisElementMultiplicator& = 1.0 );
+					 const RealType& thisElementMultiplicator = 1.0 );
+
+	Real getElement( const IndexType row,
+					 const IndexType column ) const;
 
 	bool setRow( const IndexType row,
 				 const IndexType* columns,
@@ -48,11 +54,21 @@ public:
 				 const IndexType numberOfElements,
 				 const RealType& thisElementMultiplicator = 1.0 );
 
-	void performRowBubbleSort(const IndexType begin,
-							  const IndexType end,
-							  const RowLengthsVector& rowLengths);
+	void getRow( const IndexType row,
+			 	 IndexType* columns,
+			 	 RealType* values ) const;
 
-	void sortCuda();
+	IndexType getGroupLength( const IndexType strip,
+							  const IndexType group ) const;
+
+	template< typename InVector,
+			  typename OutVector >
+	void vectorProduct( const InVector& inVector,
+						OutVector& outVector );
+
+	template< typename InVector >
+	RealType rowVectorProduct( const IndexType row,
+							   const InVector& inVector );
 
 	void setVirtualRows(const IndexType rows);
 
@@ -60,22 +76,22 @@ public:
 
 	IndexType getWarpSize();
 
+	void reset();
 
-
+	typedef tnlBiEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+	friend class tnlBiEllpackMatrixDeviceDependentCode< DeviceType >;
 
 private:
 
 	IndexType warpSize;
 
+	IndexType logWarpSize;
+
 	IndexType virtualRows;
 
 	tnlVector< Index, Device, Index > rowPermArray;
 
-	tnlVector< Index, Device, Index > slicePointers;
-
-	tnlVector< Index, Device, Index > sliceRowLengths;
-
-	tnlVector< Index, Device, Index > rowLengths;
+	tnlVector< Index, Device, Index > groupPointers;
 
 };
 
