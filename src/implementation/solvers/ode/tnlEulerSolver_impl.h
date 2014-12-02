@@ -81,8 +81,8 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    /****
     * Set necessary parameters
     */
-   RealType& time = this->time;
-   RealType currentTau = this->tau;
+   double time = 0.0;
+   double currentTau = this->tau0;
    if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    this->resetIterations();

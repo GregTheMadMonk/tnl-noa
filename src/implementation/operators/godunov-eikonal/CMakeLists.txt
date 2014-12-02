@@ -1,6 +1,9 @@
 set( headers godunovEikonal1D_impl.h
              godunovEikonal2D_impl.h
-             godunovEikonal3D_impl.h)
+             godunovEikonal3D_impl.h
+             parallelGodunovEikonal1D_impl.h
+             parallelGodunovEikonal2D_impl.h
+             parallelGodunovEikonal3D_impl.h)
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/operators/godunov-eikonal )
 
