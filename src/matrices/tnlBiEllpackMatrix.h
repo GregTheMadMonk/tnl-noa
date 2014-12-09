@@ -1,6 +1,9 @@
 #ifndef TNLBIELLPACKMATRIX_H_
 #define TNLBIELLPACKMATRIX_H_
 
+#include <matrices/tnlSparseMatrix.h>
+#include <core/vectors/tnlVector.h>
+
 template< typename Device >
 class tnlBiEllpackMatrixDeviceDependentCode;
 
@@ -15,8 +18,10 @@ public:
 	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
 	typedef tnlBiEllpackMatrix< Real, Device, Index > thisType;
-	typedef tnlBiEllpackMatrix< Real, Device, Index > hostType;
+	typedef tnlBiEllpackMatrix< Real, tnlHost, Index > hostType;
 	typedef tnlBiEllpackMatrix< Real, tnlCuda, Index > cudaType;
+
+	tnlBiEllpackMatrix();
 
 	static tnlString getType();
 
@@ -27,9 +32,9 @@ public:
 
 	bool setRowLengths( const RowLengthsVector& rowLengths );
 
-	void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
-
 	IndexType getRowLength( const IndexType row ) const;
+
+	void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
 	bool setElement( const IndexType row,
 					 const IndexType column,
@@ -39,9 +44,6 @@ public:
 					 const IndexType column,
 					 const RealType& value,
 					 const RealType& thisElementMultiplicator = 1.0 );
-
-	Real getElement( const IndexType row,
-					 const IndexType column ) const;
 
 	bool setRow( const IndexType row,
 				 const IndexType* columns,
@@ -54,6 +56,9 @@ public:
 				 const IndexType numberOfElements,
 				 const RealType& thisElementMultiplicator = 1.0 );
 
+	RealType getElement( const IndexType row,
+					 	 const IndexType column ) const;
+
 	void getRow( const IndexType row,
 			 	 IndexType* columns,
 			 	 RealType* values ) const;
@@ -64,11 +69,11 @@ public:
 	template< typename InVector,
 			  typename OutVector >
 	void vectorProduct( const InVector& inVector,
-						OutVector& outVector );
+						OutVector& outVector ) const;
 
 	template< typename InVector >
-	RealType rowVectorProduct( const IndexType row,
-							   const InVector& inVector );
+	typename InVector::RealType rowVectorProduct( const IndexType row,
+							   	   	   	   	      const InVector& inVector ) const;
 
 	void setVirtualRows(const IndexType rows);
 
@@ -76,7 +81,19 @@ public:
 
 	IndexType getWarpSize();
 
+	IndexType getNumberOfGroups( const IndexType row ) const;
+
 	void reset();
+
+	bool save( tnlFile& file ) const;
+
+	bool load( tnlFile& file );
+
+	bool save( const tnlString& fileName ) const;
+
+	bool load( const tnlString& fileName );
+
+	void print( ostream& str ) const;
 
 	typedef tnlBiEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
 	friend class tnlBiEllpackMatrixDeviceDependentCode< DeviceType >;
@@ -95,5 +112,6 @@ private:
 
 };
 
+#include <implementation/matrices/tnlBiEllpackMatrix_impl.h>
 
 #endif
