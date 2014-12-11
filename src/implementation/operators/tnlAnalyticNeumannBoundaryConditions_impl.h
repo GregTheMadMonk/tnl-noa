@@ -44,7 +44,23 @@ void
 tnlAnalyticNeumannBoundaryConditionsBase< Function >::
 setFunction( const Function& function )
 {
-   return function->function;
+   this->function = function;
+}
+
+template< typename Function >
+Function&
+tnlAnalyticNeumannBoundaryConditionsBase< Function >::
+getFunction()
+{
+   return this->function;
+}
+
+template< typename Function >
+const Function&
+tnlAnalyticNeumannBoundaryConditionsBase< Function >::
+getFunction() const
+{
+   return this->function;
 }
 
 /****

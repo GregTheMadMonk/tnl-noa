@@ -18,6 +18,7 @@
 #ifndef TNLCONSTANTFUNCTION_H_
 #define TNLCONSTANTFUNCTION_H_
 
+#include <iostream>
 #include <core/vectors/tnlStaticVector.h>
 
 template< int FunctionDimensions,
@@ -73,6 +74,14 @@ class tnlConstantFunction
 
    RealType constant;
 };
+
+template< int FunctionDimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< FunctionDimensions, Real >& f )
+{
+   str << "Constant function: constant = " << f.getConstant();
+   return str;
+}
 
 #include <implementation/functions/tnlConstantFunction_impl.h>
 

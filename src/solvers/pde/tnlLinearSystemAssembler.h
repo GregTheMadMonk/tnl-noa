@@ -117,9 +117,9 @@ class tnlLinearSystemAssembler
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
             typename MatrixType::IndexType rowLength;
             userData.boundaryConditions.updateLinearSystem( userData.time,
@@ -146,9 +146,9 @@ class tnlLinearSystemAssembler
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             userData.b[ index ] = userData.u[ index ] +
@@ -224,10 +224,10 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
             typename MatrixType::IndexType rowLength;
             userData.boundaryConditions.updateLinearSystem( userData.time,
@@ -254,10 +254,10 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             userData.b[ index ] = userData.u[ index ] +

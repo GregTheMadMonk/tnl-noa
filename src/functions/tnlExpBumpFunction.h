@@ -143,6 +143,14 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
                          const Real& time = 0.0 ) const;
 };
 
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+{
+   str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
+   return str;
+}
+
 #include <implementation/functions/tnlExpBumpFunction_impl.h>
 
 

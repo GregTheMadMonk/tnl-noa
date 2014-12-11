@@ -95,6 +95,7 @@ setupFunction( const tnlParameterContainer& parameters,
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
       this->function = tnlCuda::passToDevice( *auxFunction );
+      cout << "Copying test function to device -- this->function - " << this->function << endl;
       delete auxFunction;
       if( ! checkCudaDevice )
          return false;
@@ -108,8 +109,9 @@ template< int FunctionDimensions,
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+       const tnlString& prefix )
 {
+   cout << "Test function setup ... " << endl;
    const tnlString& timeDependence =
             parameters.GetParameter< tnlString >(
                      prefix +
@@ -163,33 +165,35 @@ const tnlTestFunction< FunctionDimensions, Real, Device >&
 tnlTestFunction< FunctionDimensions, Real, Device >::
 operator = ( const tnlTestFunction& function )
 {
+   /*****
+    * TODO: if the function is on the device we cannot do the following
+    */
+   abort();
    this->functionType   = function.functionType;
    this->timeDependence = function.timeDependence;
    this->timeScale      = function.timeScale;
 
-   deleteFunctions();
+   this->deleteFunctions();
 
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   switch( this->functionType )
    {
-      switch( this->functionType )
-      {
-         case constant:
-            this->copyFunction< tnlConstantFunction< FunctionDimensions, Real > >( function.function );
-            break;
-         case expBump:
-            this->copyFunction< tnlExpBumpFunction< FunctionDimensions, Real > >( function.function );
-            break;
-         case sinBumps:
-            this->copyFunction< tnlSinBumpsFunction< FunctionDimensions, Real > >( function.function );
-            break;
-         case sinWave:
-            this->copyFunction< tnlSinWaveFunction< FunctionDimensions, Real > >( function.function );
-            break;
-         default:
-            tnlAssert( false, );
-            break;
-      }
+      case constant:
+         this->copyFunction< tnlConstantFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case expBump:
+         this->copyFunction< tnlExpBumpFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case sinBumps:
+         this->copyFunction< tnlSinBumpsFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case sinWave:
+         this->copyFunction< tnlSinWaveFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      default:
+         tnlAssert( false, );
+         break;
    }
+
 }
 
 template< int FunctionDimensions,
@@ -207,7 +211,6 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 getValue( const Vertex& vertex,
           const Real& time ) const
 {
-   printf( "Test function \n" );
    Real scale( 1.0 );
    switch( this->timeDependence )
    {
@@ -225,9 +228,6 @@ getValue( const Vertex& vertex,
          scale = cos( this->timeScale * time );
          break;
    }
-   printf( "Time scale = %f \n", scale );
-   return 0.0;
-   //cout << "scale = " << scale << " time= " << time << " timeScale = " << timeScale << " timeDependence = " << ( int ) timeDependence << endl;
    switch( functionType )
    {
       case constant:
@@ -358,6 +358,7 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 copyFunction( const void* function )
 {
+   cout << "Copy function ********************************* " << endl;
    if( Device::DeviceType == ( int ) tnlHostDevice ) 
    {
       FunctionType* f = new FunctionType;
@@ -370,6 +371,50 @@ copyFunction( const void* function )
    }
 }
 
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+   template< typename FunctionType >
+ostream&
+tnlTestFunction< FunctionDimensions, Real, Device >::
+printFunction( ostream& str ) const
+{
+   FunctionType* f = ( FunctionType* ) this->function;
+   if( Device::DeviceType == ( int ) tnlHostDevice )
+   {
+      str << *f;
+      return str;
+   }
+   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   {
+      tnlCuda::print( f, str );
+      return str;
+   }
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+ostream&
+tnlTestFunction< FunctionDimensions, Real, Device >::
+print( ostream& str ) const
+{
+   str << " timeDependence = " << this->timeDependence;
+   str << " functionType = " << this->functionType;
+   str << " function = " << this->function << "; ";
+   switch( functionType )
+   {
+      case constant:
+         return printFunction< tnlConstantFunction< Dimensions, Real> >( str );
+      case expBump:
+         return printFunction< tnlExpBumpFunction< Dimensions, Real> >( str );
+      case sinBumps:
+         return printFunction< tnlSinBumpsFunction< Dimensions, Real> >( str );
+      case sinWave:
+         return printFunction< tnlSinWaveFunction< Dimensions, Real> >( str );
+   }
+   return str;
+}
 
 template< int FunctionDimensions,
           typename Real,
@@ -379,6 +424,7 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 {
    deleteFunctions();
 }
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

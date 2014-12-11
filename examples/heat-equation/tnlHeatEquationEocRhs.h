@@ -37,6 +37,9 @@ class tnlHeatEquationEocRhs
 
       template< typename Vertex,
                 typename Real >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       Real getValue( const Vertex& vertex,
                      const Real& time ) const
       {

@@ -42,11 +42,13 @@ class tnlAnalyticNeumannBoundaryConditionsBase
 
       void setFunction( const Function& function );
 
+      Function& getFunction();
+
+      const Function& getFunction() const;
 
    protected:
 
       Function function;
-
 };
 
 /****
@@ -64,10 +66,12 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIn
 {
    public:
 
+
    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlAnalyticNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
 
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
@@ -220,6 +224,15 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIn
                                IndexType& rowLength ) const;
 };
 
+template< typename Mesh,
+          typename Function,
+          typename Real,
+          typename Index >
+ostream& operator << ( ostream& str, const tnlAnalyticNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
+{
+   str << "Analytic Dirichlet boundary conditions: function = " << bc.getFunction();
+   return str;
+}
 
 #include <implementation/operators/tnlAnalyticNeumannBoundaryConditions_impl.h>
 

@@ -35,9 +35,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 };
 
 template< typename Real,
@@ -55,9 +53,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 1 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 };
 
 template< typename Real,
@@ -75,9 +71,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 };
 
 
@@ -96,9 +90,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 
 };
 
@@ -117,9 +109,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 
 };
 
@@ -138,9 +128,7 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >
                 typename BoundaryEntitiesProcessor,
                 typename InteriorEntitiesProcessor >
       void processEntities( const GridType& grid,
-                            UserData& userData,
-                            BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                            InteriorEntitiesProcessor& interiorEntitesProcessor ) const;
+                            UserData& userData ) const;
 
 };
 

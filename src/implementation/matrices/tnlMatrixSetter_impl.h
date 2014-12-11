@@ -31,16 +31,12 @@ getRowLengths( const Mesh& mesh,
                RowLengthsVector& rowLengths ) const
 {
    TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-   TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
-   TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
    meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
                                           ( mesh,
-                                            userData,
-                                            boundaryEntitiesProcessor,
-                                            interiorEntitiesProcessor );
+                                            userData );
 }
 
 template< int Dimensions,
@@ -59,16 +55,12 @@ getRowLengths( const MeshType& mesh,
                RowLengthsVector& rowLengths ) const
 {
    TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-   TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
-   TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
    meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
                                           ( mesh,
-                                            userData,
-                                            boundaryEntitiesProcessor,
-                                            interiorEntitiesProcessor );
+                                            userData );
 }
 
 

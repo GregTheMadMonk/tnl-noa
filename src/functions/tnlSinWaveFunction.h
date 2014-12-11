@@ -136,6 +136,17 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
                          const Real& time = 0.0 ) const;
 };
 
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
+{
+   str << "Sin Wave. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
+   return str;
+}
+
+
 #include <implementation/functions/tnlSinWaveFunction_impl.h>
 
 #endif /* TNLSINWAVEFUNCTION_H_ */

@@ -24,7 +24,7 @@ template< typename Real >
 bool
 tnlExpBumpFunctionBase< Real >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+       const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
    this->sigma = parameters.GetParameter< double >( prefix + "sigma" );
@@ -83,7 +83,6 @@ Real
 tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
                                          const Real& time ) const
 {
-   printf( "Exp. bump. function \n");
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;

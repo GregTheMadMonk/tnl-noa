@@ -70,9 +70,9 @@ class tnlMatrixSetter
 #ifdef HAVE_CUDA
          __device__ __host__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
             userData.rowLengths[ index ] =
                      userData.boundaryConditions.getLinearSystemRowLength( mesh, index );
@@ -88,9 +88,9 @@ class tnlMatrixSetter
 #ifdef HAVE_CUDA
          __device__ __host__
 #endif
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
             userData.rowLengths[ index ] =
                      userData.differentialOperator.getLinearSystemRowLength( mesh, index );
@@ -135,10 +135,10 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
          __device__ __host__
 #endif
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
             userData.rowLengths[ index ] =
                      userData.boundaryConditions.getLinearSystemRowLength( mesh, index, coordinates );
@@ -153,10 +153,10 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
          __device__ __host__
 #endif
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
             userData.rowLengths[ index ] =
                      userData.differentialOperator.getLinearSystemRowLength( mesh, index, coordinates );

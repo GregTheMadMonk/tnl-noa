@@ -49,6 +49,7 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function, Real, Index > ThisType;
 
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
@@ -62,6 +63,10 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
                const tnlString& prefix = "" );
 
    void setFunction( const Function& function );
+
+   Function& getFunction();
+
+   const Function& getFunction() const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -97,6 +102,16 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
 
    Function function;
 };
+
+template< typename Mesh,
+          typename Function, 
+          typename Real,
+          typename Index >
+ostream& operator << ( ostream& str, const tnlAnalyticDirichletBoundaryConditions< Mesh, Function, Real, Index >& bc )
+{
+   str << "Analytic Dirichlet boundary conditions: function = " << bc.getFunction();
+   return str;
+}
 
 #include <implementation/operators/tnlAnalyticDirichletBoundaryConditions_impl.h>
 

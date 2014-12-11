@@ -27,9 +27,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitiesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing cells
@@ -44,16 +42,16 @@ processEntities( const GridType& grid,
    for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
    {
       coordinates.y() = 0;
-      boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       coordinates.y() = ySize - 1;
-      boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
    }
    for( coordinates.y() = 1; coordinates.y() < ySize - 1; coordinates.y() ++ )
    {
       coordinates.x() = 0;
-      boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       coordinates.x() = xSize - 1;
-      boundaryEntitiesProcessor.processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
    }
 
    /****
@@ -66,7 +64,7 @@ processEntities( const GridType& grid,
       for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
       {
          const IndexType index = grid.getCellIndex( coordinates );
-         interiorEntitiesProcessor.processCell( grid, userData, index, coordinates );
+         InteriorEntitiesProcessor::processCell( grid, userData, index, coordinates );
       }
 }
 
@@ -78,9 +76,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 1 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing faces
@@ -95,9 +91,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing vertices
@@ -113,9 +107,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 2 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing cells
@@ -130,9 +122,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 1 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing faces
@@ -147,9 +137,7 @@ template< typename Real,
 void
 tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
 processEntities( const GridType& grid,
-                 UserData& userData,
-                 BoundaryEntitiesProcessor& boundaryEntitiesProcessor,
-                 InteriorEntitiesProcessor& interiorEntitesProcessor ) const
+                 UserData& userData ) const
 {
    /****
     * Traversing vertices

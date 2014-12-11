@@ -36,6 +36,9 @@ class tnlExactLinearDiffusion< 1 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif      
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -54,6 +57,9 @@ class tnlExactLinearDiffusion< 2 >
       template< typename Function, typename Vertex, typename Real >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
 #endif      
       static Real getValue( const Function& function,
                             const Vertex& v,
@@ -73,7 +79,10 @@ class tnlExactLinearDiffusion< 3 >
       template< typename Function, typename Vertex, typename Real >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif      
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );

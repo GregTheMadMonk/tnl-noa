@@ -153,6 +153,17 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                          const Real& time = 0.0 ) const;
 };
 
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
+{
+   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
+   return str;
+}
+
+
 #include <implementation/functions/tnlSinBumpsFunction_impl.h>
 
 

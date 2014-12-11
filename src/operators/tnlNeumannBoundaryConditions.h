@@ -202,6 +202,16 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, V
                                IndexType& rowLength ) const;
 };
 
+template< typename Mesh,
+          typename Function,
+          typename Real,
+          typename Index >
+ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
+{
+   str << "Dirichlet boundary conditions: vector = " << bc.getVector();
+   return str;
+}
+
 
 #include <implementation/operators/tnlNeumannBoundaryConditions_impl.h>
 

@@ -108,6 +108,8 @@ class tnlTestFunction
    }   
 #endif                              
 
+   ostream& print( ostream& str ) const;
+
    ~tnlTestFunction();
 
    protected:
@@ -124,6 +126,9 @@ class tnlTestFunction
    template< typename FunctionType >
    void copyFunction( const void* function );
 
+   template< typename FunctionType >
+   ostream& printFunction( ostream& str ) const;
+
    void* function;
 
    TestFunctions functionType;
@@ -133,6 +138,15 @@ class tnlTestFunction
    Real timeScale;
 
 };
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, Real, Device >& f )
+{
+   str << "Test function: ";
+   return f.print( str );
+}
 
 #include <implementation/functions/tnlTestFunction_impl.h>
 

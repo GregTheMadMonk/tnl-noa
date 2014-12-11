@@ -29,15 +29,15 @@ class tnlExplicitUpdaterTraversalUserData
 {
    public:
 
-      const Real &time;
+      const Real *time;
 
-      const DifferentialOperator& differentialOperator;
+      const DifferentialOperator* differentialOperator;
 
-      const BoundaryConditions& boundaryConditions;
+      const BoundaryConditions* boundaryConditions;
 
-      const RightHandSide& rightHandSide;
+      const RightHandSide* rightHandSide;
 
-      DofVector &u, &fu;
+      DofVector *u, *fu;
 
       tnlExplicitUpdaterTraversalUserData( const Real& time,
                                            const DifferentialOperator& differentialOperator,
@@ -45,14 +45,15 @@ class tnlExplicitUpdaterTraversalUserData
                                            const RightHandSide& rightHandSide,
                                            DofVector& u,
                                            DofVector& fu )
-      : time( time ),
-        differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rightHandSide( rightHandSide ),
-        u( u ),
-        fu( fu )
+      : time( &time ),
+        differentialOperator( &differentialOperator ),
+        boundaryConditions( &boundaryConditions ),
+        rightHandSide( &rightHandSide ),
+        u( &u ),
+        fu( &fu )
       {};
 };
+
 
 template< typename Mesh,
           typename DofVector,
@@ -89,15 +90,15 @@ class tnlExplicitUpdater
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index )
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index )
             {
-               userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  mesh,
-                                                                  index,
-                                                                  userData.u,
-                                                                  userData.fu );
+               userData.boundaryConditions->setBoundaryConditions( *userData.time,
+                                                                   mesh,
+                                                                   index,
+                                                                   *userData.u,
+                                                                   *userData.fu );
             }
 
       };
@@ -110,19 +111,19 @@ class tnlExplicitUpdater
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index )
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index )
             {
-               userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
-                                                                               index,
-                                                                               userData.u,
-                                                                               userData.time );
+               (* userData.fu )[ index ] = userData.differentialOperator->getValue( mesh,
+                                                                                    index,
+                                                                                    *userData.u,
+                                                                                    *userData.time );
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               userData.fu[ index ] += FunctionAdapter::getValue( mesh,
-                                                                  userData.rightHandSide,
-                                                                  index,
-                                                                  userData.time );
+               ( *userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
+                                                                       *userData.rightHandSide,
+                                                                       index,
+                                                                       *userData.time );
             }
 
       };
@@ -176,18 +177,17 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processCell( const MeshType& mesh,
-                               TraversalUserData& userData,
-                               const IndexType index,
-                               const CoordinatesType& coordinates )
+            static void processCell( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
             {
-               printf( "Setting boundary conditions at cell %d \n", index );
-               userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  mesh,
-                                                                  index,
-                                                                  coordinates,
-                                                                  userData.u,
-                                                                  userData.fu );
+               userData.boundaryConditions->setBoundaryConditions( *userData.time,
+                                                                   mesh,
+                                                                   index,
+                                                                   coordinates,
+                                                                   *userData.u,
+                                                                   *userData.fu );
             }
 
       };
@@ -201,23 +201,23 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processCell( const MeshType& mesh,
-                              TraversalUserData& userData,
-                              const IndexType index,
-                              const CoordinatesType& coordinates )
+            static void processCell( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
             {
-               userData.fu[ index ] = userData.differentialOperator.getValue( mesh,
-                                                                              index,
-                                                                              coordinates,
-                                                                              userData.u,
-                                                                              userData.time );
+               ( *userData.fu)[ index ] = userData.differentialOperator->getValue( mesh,
+                                                                                   index,
+                                                                                   coordinates,
+                                                                                   *userData.u,
+                                                                                   *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               userData.fu[ index ] += FunctionAdapter::getValue( mesh,
-                                                                  userData.rightHandSide,
-                                                                  index,
-                                                                  coordinates,
-                                                                  userData.time );
+               ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
+                                                                        *userData.rightHandSide,
+                                                                        index,
+                                                                        coordinates,
+                                                                        *userData.time );
             }
 
       };

@@ -77,14 +77,17 @@ class tnlCuda
    static ObjectType* passToDevice( const ObjectType& object );
 
    template< typename ObjectType >
-   static ObjectType passFromDevice( const ObjectType& object );
+   static ObjectType passFromDevice( const ObjectType* object );
 
    template< typename ObjectType >
-   static void passFromDevice( const ObjectType& deviceObject,
+   static void passFromDevice( const ObjectType* deviceObject,
                                ObjectType& hostObject );
 
    template< typename ObjectType >
    static void freeFromDevice( ObjectType* object );
+
+   template< typename ObjectType >
+   static void print( const ObjectType* object, ostream& str = std::cout );
 
 #ifdef HAVE_CUDA
    template< typename Index >

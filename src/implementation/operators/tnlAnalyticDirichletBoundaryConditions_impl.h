@@ -69,6 +69,34 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
+Function&
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+getFunction()
+{
+   return this->function;
+}
+
+template< int Dimensions,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
+const Function&
+tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+getFunction() const
+{
+   return this->function;
+}
+
+template< int Dimensions,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -81,10 +109,8 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
-   printf( "Dirichlet. BC for index %d \n", index );
    fu[ index ] = 0;
    u[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   printf( "Dirichlet. BC fo index %d done \n", index );
 }
 
 template< int Dimensions,

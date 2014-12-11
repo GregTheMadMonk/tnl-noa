@@ -94,6 +94,16 @@ class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, Mes
    Vector vector;
 };
 
+template< typename Mesh,
+          typename Function,
+          typename Real,
+          typename Index >
+ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >& bc )
+{
+   str << "Dirichlet boundary conditions: vector = " << bc.getVector();
+   return str;
+}
+
 #include <implementation/operators/tnlDirichletBoundaryConditions_impl.h>
 
 #endif /* TNLDIRICHLETBOUNDARYCONDITIONS_H_ */
