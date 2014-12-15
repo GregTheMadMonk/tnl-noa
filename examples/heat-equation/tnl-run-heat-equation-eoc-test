@@ -4,8 +4,9 @@ device="cuda"
 dimensions="1D 2D 3D"
 dimensions="1D"
 sizes1D="16 32 64 128 256 512"
-sizes1D="16"
+sizes1D="16 32 64"
 sizes2D="16 32 64 128 256 512"
+#sizes2D="8"
 sizes3D="16 32 64 128"
 testFunctions="exp-bump"
 snapshotPeriod=0.1
@@ -13,6 +14,7 @@ finalTime=1.5
 timeDependence="cosine"
 solverName="tnl-heat-equation-eoc-test"
 #solverName="gdb --args tnl-heat-equation-eoc-test-dbg"
+#
 
 setupTestFunction()
 {
@@ -114,7 +116,6 @@ solve()
                
 computeError()
 {
-
    tnl-diff --mesh mesh.tnl \
             --input-files exact-u-*.tnl u-*.tnl \
             --mode halves \
@@ -153,20 +154,41 @@ runTest()
          do
             mkdir -p $size
             cd $size
+            echo ""
+            echo ""
+            echo ""
             if test ! -f computation-done;
             then
                touch computation-in-progress
+               echo "========================================================================="
+               echo "===                   SETTING UP THE GRID                             ==="
+               echo "========================================================================="
                setupGrid $dim $size 
+               echo "========================================================================="
+               echo "===                WRITING THE EXACT SOLUTION                         ==="
+               echo "========================================================================="
                setInitialCondition $testFunction
+               echo "========================================================================="
+               echo "===                   STARTING THE SOLVER                             ==="
+               echo "========================================================================="
                solve explicit merson
                #solve semi-implicit gmres
                mv computation-in-progress computation-done
-            fi
+            fi            
+            echo "========================================================================="
+            echo "===                   COMPUTING THE ERROR                             ==="
+            echo "========================================================================="
             computeError
+            echo "========================================================================="
+            echo "===                     COMPUTING THE EOC                             ==="            
+            echo "========================================================================="
             if test ! x$lastSize = x;
             then
                tnl-err2eoc ../$lastSize/errors.txt errors.txt
             fi
+            echo "========================================================================="
+            echo "===                     COMPUTATION DONE                              ==="            
+            echo "========================================================================="
             cd ..
             lastSize=$size
          done
