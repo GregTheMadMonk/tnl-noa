@@ -357,7 +357,7 @@ bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this -> size ) )
+   if( ! file. write< const Index, tnlHost >( &this -> size ) )
 #else            
    if( ! file. write( &this -> size ) )
 #endif      

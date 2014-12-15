@@ -18,6 +18,15 @@
 #ifndef tnlEulerSolver_implH
 #define tnlEulerSolver_implH
 
+#ifdef HAVE_CUDA
+template< typename RealType, typename Index >
+__global__ void updateUEuler( const Index size,
+                              const RealType tau,
+                              const RealType* k1,
+                              RealType* u,
+                              RealType* cudaBlockResidue );
+#endif
+
 
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
@@ -162,18 +171,73 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    RealType* _u = u. getData();
    RealType* _k1 = k1. getData();
 
+   if( DeviceType :: getDevice() == tnlHostDevice )
+   {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau )
 #endif
-   for( IndexType i = 0; i < size; i ++ )
+      for( IndexType i = 0; i < size; i ++ )
+      {
+         const RealType add = tau * _k1[ i ];
+         _u[ i ] += add;
+         localResidue += fabs( add );
+      }
+   }
+   if( DeviceType :: getDevice() == tnlCudaDevice )
    {
-      const RealType add = tau * _k1[ i ];
-      _u[ i ] += add;
-      localResidue += fabs( add );
+#ifdef HAVE_CUDA
+      dim3 cudaBlockSize( 512 );
+      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
+
+      localResidue = 0.0;
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+
+         updateUEuler<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
+                                                                      tau,
+                                                                      &_k1[ gridOffset ],
+                                                                      &_u[ gridOffset ],
+                                                                      this->cudaBlockResidue.getData() );
+         localResidue += this->cudaBlockResidue.sum();
+         cudaThreadSynchronize();
+      }
+#endif
    }
    localResidue /= tau * ( RealType ) size;
    :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this -> solver_comm );
 }
 
+#ifdef HAVE_CUDA
+template< typename RealType, typename Index >
+__global__ void updateUEuler( const Index size,
+                              const RealType tau,
+                              const RealType* k1,
+                              RealType* u,
+                              RealType* cudaBlockResidue )
+{
+   extern __shared__ RealType du[];
+   const Index blockOffset = blockIdx. x * blockDim. x;
+   const Index i = blockOffset  + threadIdx. x;
+   if( i < size )
+      u[ i ] += du[ threadIdx.x ] = tau * k1[ i ];
+   else
+      du[ threadIdx.x ] = 0.0;
+   du[ threadIdx.x ] = fabs( du[ threadIdx.x ] );
+   __syncthreads();
+
+   const Index rest = size - blockOffset;
+   Index n =  rest < blockDim.x ? rest : blockDim.x;
+
+   computeBlockResidue( du,
+                        cudaBlockResidue,
+                        n );
+}
+#endif
 
 #endif

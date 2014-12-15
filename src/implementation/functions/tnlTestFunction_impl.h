@@ -95,7 +95,6 @@ setupFunction( const tnlParameterContainer& parameters,
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
       this->function = tnlCuda::passToDevice( *auxFunction );
-      cout << "Copying test function to device -- this->function - " << this->function << endl;
       delete auxFunction;
       if( ! checkCudaDevice )
          return false;

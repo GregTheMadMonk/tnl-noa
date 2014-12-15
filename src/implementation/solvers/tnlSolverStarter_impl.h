@@ -65,7 +65,7 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter;
 
 template< typename ConfigTag >
 tnlSolverStarter< ConfigTag > :: tnlSolverStarter()
-: logWidth( 72 )
+: logWidth( 80 )
 {
 }
 

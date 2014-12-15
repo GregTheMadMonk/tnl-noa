@@ -115,7 +115,7 @@ template< typename Real,
           typename InteriorEntitiesProcessor >
 __global__ void tnlTraversalGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
                                                  UserData* userData,
-                                                 int gridIdx )
+                                                 const Index gridIdx )
 {
    typedef Real RealType;
    typedef Index IndexType;

@@ -66,7 +66,7 @@ class heatEquationSolver
    bool makeSnapshot( const RealType& time,
                       const IndexType& step,
                       const MeshType& mesh,
-                      const DofVectorType& dofs,
+                      DofVectorType& dofs,
                       DofVectorType& auxDofs );
 
    IndexType getDofs( const MeshType& mesh ) const;

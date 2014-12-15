@@ -339,12 +339,12 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, tnlHost >( &this -> size ) )
+   if( ! file. write< const Index, tnlHost >( &this->size ) )
       return false;
 #else            
-   if( ! file. write( &this -> size ) )
+   if( ! file. write( &this->size ) )
       return false;
-#endif      
+#endif
    if( this -> size != 0 && ! tnlArrayIO< Element, Device, Index >::save( file, this -> data, this -> size ) )
    {
       cerr << "I was not able to save " << this->getType()

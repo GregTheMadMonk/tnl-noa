@@ -174,11 +174,12 @@ heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
-              const DofVectorType& dofs,
+              DofVectorType& dofs,
               DofVectorType& auxiliaryDofs )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
+   this->bindDofs( mesh, dofs );
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->solution.save( fileName ) )
@@ -223,7 +224,7 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
 
-   cout << "u = " << u << endl;
+   //cout << "u = " << u << endl;
    this->bindDofs( mesh, u );
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< Mesh::Dimensions >( time,
@@ -233,8 +234,8 @@ getExplicitRHS( const RealType& time,
                                                         this->rightHandSide,
                                                         u,
                                                         fu );
-   cout << "u = " << u << endl;
-   cout << "fu = " << fu << endl;
+   //cout << "u = " << u << endl;
+   //cout << "fu = " << fu << endl;
    //_u.save( "u.tnl" );
    //_fu.save( "fu.tnl" );
    //getchar();

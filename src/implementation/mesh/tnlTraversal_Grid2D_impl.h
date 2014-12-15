@@ -98,6 +98,82 @@ processEntities( const GridType& grid,
     */
 }
 
+/***
+ *
+ *    CUDA Specializations
+ *
+ */
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename BoundaryEntitiesProcessor >
+__global__ void tnlTraversalGrid2DBoundaryCells( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
+                                                 UserData* userData,
+                                                 const Index gridXIdx,
+                                                 const Index gridYIdx )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   const IndexType& xSize = grid->getDimensions().x();
+   const IndexType& ySize = grid->getDimensions().y();
+
+   CoordinatesType cellCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
+                                    ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y );
+
+   if( cellCoordinates.x() < grid->getDimensions().x() &&
+       cellCoordinates.y() < grid->getDimensions().y() )
+   {
+      if( grid->isBoundaryCell( cellCoordinates ) )
+      {
+         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+         BoundaryEntitiesProcessor::processCell( *grid,
+                                                 *userData,
+                                                 grid->getCellIndex( cellCoordinates ),
+                                                 cellCoordinates );
+      }
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename InteriorEntitiesProcessor >
+__global__ void tnlTraversalGrid2DInteriorCells( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
+                                                 UserData* userData,
+                                                 const Index gridXIdx,
+                                                 const Index gridYIdx )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   const IndexType& xSize = grid->getDimensions().x();
+   const IndexType& ySize = grid->getDimensions().y();
+
+   CoordinatesType cellCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
+                                    ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y );
+
+   if( cellCoordinates.x() < grid->getDimensions().x() &&
+       cellCoordinates.y() < grid->getDimensions().y() )
+   {
+      if( ! grid->isBoundaryCell( cellCoordinates ) )
+      {
+         //printf( "Processing interior conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+         InteriorEntitiesProcessor::processCell( *grid,
+                                                 *userData,
+                                                 grid->getCellIndex( cellCoordinates ),
+                                                 cellCoordinates );
+      }
+   }
+}
+
+#endif
 
 template< typename Real,
           typename Index >
@@ -112,6 +188,50 @@ processEntities( const GridType& grid,
    /****
     * Traversing cells
     */
+#ifdef HAVE_CUDA
+   GridType* kernelGrid = tnlCuda::passToDevice( grid );
+   UserData* kernelUserData = tnlCuda::passToDevice( userData );
+
+   dim3 cudaBlockSize( 16, 16 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x(), cudaBlockSize.x );
+   cudaBlocks.y = tnlCuda::getNumberOfBlocks( grid.getDimensions().y(), cudaBlockSize.y );
+   const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
+   const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+
+   /****
+    * Boundary conditions
+    */
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+      {
+         tnlTraversalGrid2DBoundaryCells< Real, Index, UserData, BoundaryEntitiesProcessor >
+                                        <<< cudaBlocks, cudaBlockSize >>>
+                                       ( kernelGrid,
+                                         kernelUserData,
+                                         gridXIdx,
+                                         gridYIdx );
+      }
+   cudaThreadSynchronize();
+   checkCudaDevice;
+
+   /****
+    * Interior cells
+    */
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+      {
+         tnlTraversalGrid2DInteriorCells< Real, Index, UserData, InteriorEntitiesProcessor >
+                                        <<< cudaBlocks, cudaBlockSize >>>
+                                       ( kernelGrid,
+                                         kernelUserData,
+                                         gridXIdx,
+                                         gridYIdx );
+      }
+   checkCudaDevice;
+   tnlCuda::freeFromDevice( kernelGrid );
+   tnlCuda::freeFromDevice( kernelUserData );
+#endif
 }
 
 template< typename Real,

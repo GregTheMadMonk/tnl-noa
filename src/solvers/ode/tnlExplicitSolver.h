@@ -116,6 +116,11 @@ protected:
    Problem* problem;
 
    tnlODESolverMonitor< RealType, IndexType >* solverMonitor;
+
+   /****
+    * Auxiliary array for the computation of the solver residue on CUDA device.
+    */
+   tnlVector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
 #include <implementation/solvers/ode/tnlExplicitSolver_impl.h>
