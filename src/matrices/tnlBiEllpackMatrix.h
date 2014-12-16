@@ -7,7 +7,7 @@
 template< typename Device >
 class tnlBiEllpackMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlCuda, typename Index = int >
+template< typename Real, typename Device = tnlCuda, typename Index = int, int StripSize = 32 >
 class tnlBiEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
 public:
@@ -33,6 +33,9 @@ public:
 	bool setRowLengths( const RowLengthsVector& rowLengths );
 
 	IndexType getRowLength( const IndexType row ) const;
+
+	template< typename Real2, typename Device2, typename Index2 >
+	bool setLike( const tnlBiEllpackMatrix< Real2, Device2, Index2, StripSize >& matrix );
 
 	void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
@@ -94,6 +97,17 @@ public:
 	bool load( const tnlString& fileName );
 
 	void print( ostream& str ) const;
+
+#ifdef HAVE_CUDA
+	template< typename InVector,
+			  typename OutVector,
+			  int warpSize>
+	__device__
+	void spmvCuda( const InVector& inVector,
+				   OutVector& outVector,
+				   const IndexType warpStart,
+				   const IndexType inWarpIdx ) const;
+#endif
 
 	typedef tnlBiEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
 	friend class tnlBiEllpackMatrixDeviceDependentCode< DeviceType >;
