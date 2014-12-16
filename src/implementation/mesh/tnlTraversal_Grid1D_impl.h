@@ -87,25 +87,28 @@ template< typename Real,
           typename UserData,
           typename BoundaryEntitiesProcessor >
 __global__ void tnlTraversalGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
-                                                 UserData* userData )
+                                                 UserData* userData,
+                                                 Index gridXIdx )
 {
    typedef Real RealType;
    typedef Index IndexType;
    typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
 
-   CoordinatesType coordinates;
    const IndexType& xSize = grid->getDimensions().x();
 
-   if( threadIdx.x == 0 )
+   CoordinatesType cellCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x );
+
+   if( cellCoordinates.x() < grid->getDimensions().x() )
    {
-      coordinates.x() = 0;
-      BoundaryEntitiesProcessor::processCell( *grid, *userData, 0, coordinates );
-   }
-   else
-   {
-      coordinates.x() = xSize - 1;
-      BoundaryEntitiesProcessor::processCell( *grid, *userData, xSize - 1, coordinates );
+      if( grid->isBoundaryCell( cellCoordinates ) )
+      {
+         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+         BoundaryEntitiesProcessor::processCell( *grid,
+                                                 *userData,
+                                                 grid->getCellIndex( cellCoordinates ),
+                                                 cellCoordinates );
+      }
    }
 }
 
@@ -152,33 +155,35 @@ processEntities( const GridType& grid,
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 
    dim3 cudaBlockSize( 256 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x(), cudaBlockSize.x );
+   const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
 
    /****
     * Boundary conditions
     */
-   tnlTraversalGrid1DBoundaryCells< Real, Index, UserData, BoundaryEntitiesProcessor >
-                                  <<< 1, 2 >>>
-                                    ( kernelGrid,
-                                      kernelUserData );
-
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      tnlTraversalGrid1DBoundaryCells< Real, Index, UserData, BoundaryEntitiesProcessor >
+                                        <<< cudaBlocks, cudaBlockSize >>>
+                                       ( kernelGrid,
+                                         kernelUserData,
+                                         gridXIdx );
    cudaThreadSynchronize();
    checkCudaDevice;
 
    /****
     * Interior cells
     */
-   const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( grid.getNumberOfCells(), cudaBlockSize.x );
-   const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
    dim3 cudaGridSize;
-   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx++ )
    {
-      if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+      if( gridXIdx == cudaXGrids - 1 )
+         cudaGridSize.x = cudaBlocks.x % tnlCuda::getMaxGridSize();
       tnlTraversalGrid1DInteriorCells< Real, Index, UserData, InteriorEntitiesProcessor >
                                      <<< cudaGridSize, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
-                                         gridIdx );
+                                         gridXIdx );
    }
    checkCudaDevice;
    tnlCuda::freeFromDevice( kernelGrid );
