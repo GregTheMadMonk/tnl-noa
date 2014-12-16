@@ -55,17 +55,12 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlSharedVector< Real, Device, Index > :: getType() const
+tnlString tnlSharedVector< Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlVector< " ) +
+   return tnlString( "tnlSharedVector< " ) +
                      ::getType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                      ::getType< Index >() + " >";
-   /****
-    * It seems that there is no reason to differ here between vector and shared vector.
-    * This method is used mainly (or only) for loading and saving of objects.
-    * Making difference between shared vector and vector only complicates thinks.
-    */
 };
 
 template< typename Real,
@@ -74,6 +69,22 @@ template< typename Real,
 tnlString tnlSharedVector< Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlSharedVector< Real, Device, Index > :: getSerializationType()
+{
+   return tnlVector< Real, tnlHost, Index >::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlSharedVector< Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
 };
 
 template< typename Real,

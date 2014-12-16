@@ -32,32 +32,22 @@ if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
    AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
 endif()   
 
-if( WITH_CUDA STREQUAL "yes" )
-   AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )
-   set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
-else()
-   AddCompilerFlag( "-std=gnu++0x" )
-endif()      
-
 #####
 # Check for CUDA
 #
-if( NOT WITH_CUDA STREQUAL "no" )
+if( WITH_CUDA STREQUAL "yes" )
     find_package( CUDA )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
-        set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this      
-        
+        set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this              
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
-            
-       #set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" )
-       #set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\" -shared )
-       set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
-       set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
-       
+        AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )          
+        set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
+        set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
+        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
         ####
         # Check for CUSP
         #
@@ -90,9 +80,13 @@ if( NOT WITH_CUDA STREQUAL "no" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
            endif()            
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
-            
+   
+    else( CUDA_FOUND )
+      AddCompilerFlag( "-std=gnu++0x" )         
     endif( CUDA_FOUND )
-endif( NOT WITH_CUDA STREQUAL "no" )    
+else( WITH_CUDA STREQUAL "yes" )
+   AddCompilerFlag( "-std=gnu++0x" )       
+endif( WITH_CUDA STREQUAL "yes" )    
 
 ####
 # Check for OpenMP

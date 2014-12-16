@@ -49,7 +49,7 @@ class tnlTimerCPU
    bool stop_state;
 };
 
-extern tnlTimerCPU default_mcore_cpu_timer;
+extern tnlTimerCPU defaultCPUTimer;
 
 
 

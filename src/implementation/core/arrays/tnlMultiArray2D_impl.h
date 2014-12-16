@@ -36,7 +36,7 @@ tnlMultiArray< 2, Element, Device, Index > :: tnlMultiArray( const tnlString& na
 
 
 template< typename Element, typename Device, typename Index >
-tnlString tnlMultiArray< 2, Element, Device, Index > :: getType() const
+tnlString tnlMultiArray< 2, Element, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiArray< ") +
           tnlString( Dimensions ) +
@@ -48,6 +48,30 @@ tnlString tnlMultiArray< 2, Element, Device, Index > :: getType() const
           tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 2, Element, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 2, Element, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 2, Element, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
 
 template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 2, Element, Device, Index > :: setDimensions( const Index jSize,
@@ -115,8 +139,8 @@ template< typename Element, typename Device, typename Index >
 Index tnlMultiArray< 2, Element, Device, Index > :: getElementIndex( const Index j, const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ] && j >= 0 && j < this -> dimensions[ 1 ],
-              printf( "i = %d j = %d this -> dimensions[ 0 ] = %d this -> dimensions[ 1 ] = %d \n",
-               i, j, this -> dimensions[ 0 ], this -> dimensions[ 1 ] ) );
+              cerr << "i = " << i << " j = " << j << " this -> dimensions[ 0 ] = " <<  this -> dimensions[ 0 ]
+                   << " this -> dimensions[ 1 ] = " << this -> dimensions[ 1 ] );
    return j * this -> dimensions[ 0 ] + i;
 }
 

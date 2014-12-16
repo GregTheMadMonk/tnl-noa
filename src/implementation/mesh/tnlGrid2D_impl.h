@@ -60,6 +60,22 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
@@ -512,7 +528,7 @@ Vertex tnlGrid< 2, Real, Device, Index >::getCellCenter( const IndexType& cellIn
               cerr << " cellIndex = " << cellIndex
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return this->getCellCenter( this->getCellCoordinates( cellIndex ) );
+   return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
 }
 
 template< typename Real,
@@ -524,14 +540,14 @@ template< int nx, int ny, typename Vertex >
 #endif
 Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType& faceCoordinates ) const
 {
-   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny = 1, "Wrong template parameters nx or ny." );
+   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
    if( nx )
    {
-      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions.x() + 1,
+      tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y(),
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y(),
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
@@ -544,7 +560,7 @@ Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType
                  cerr << "faceCoordinates.x() = " << faceCoordinates.x()
                       << " this->getDimensions().x() = " << this->getDimensions().x()
                       << " this->getName() = " << this->getName(); );
-      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions.y() + 1,
+      tnlAssert( faceCoordinates.y() >= 0 && faceCoordinates.y() < this->getDimensions().y() + 1,
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
@@ -849,11 +865,11 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       for( Index j = 0; j < this -> dimensions. y(); j ++ )
       {
          file << "draw( ";
-         v = this -> getVertex( CoordinatesType( 0, j ) );
+         v = this -> getVertex< VertexType >( CoordinatesType( 0, j ) );
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index i = 0; i < this -> dimensions. x(); i ++ )
          {
-            v = this -> getVertex( CoordinatesType( i + 1, j ) );
+            v = this -> getVertex< VertexType >( CoordinatesType( i + 1, j ) );
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
@@ -862,11 +878,11 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
       {
          file << "draw( ";
-         v = this -> getVertex( CoordinatesType( i, 0 ) );
+         v = this -> getVertex< VertexType >( CoordinatesType( i, 0 ) );
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
-            v = this -> getVertex( CoordinatesType( i, j + 1 ) );
+            v = this -> getVertex< VertexType >( CoordinatesType( i, j + 1 ) );
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
@@ -876,7 +892,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
-            v = this -> getCellCenter( CoordinatesType( i, j ) );
+            v = this -> getCellCenter< VertexType >( CoordinatesType( i, j ) );
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
                  << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
          }
@@ -931,8 +947,9 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
             */
          }
-
+      return true;
    }
+   return false;
 }
 
 template< typename Real,
@@ -962,7 +979,7 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
       {
          for( IndexType i = 0; i < getDimensions(). x(); i++ )
          {
-            VertexType v = this->getCellCenter( CoordinatesType( i, j ) );
+            VertexType v = this->getCellCenter< VertexType >( CoordinatesType( i, j ) );
             tnlGnuplotWriter::write( file,  v );
             tnlGnuplotWriter::write( file,  function[ this->getCellIndex( CoordinatesType( i, j ) ) ] );
             file << endl;

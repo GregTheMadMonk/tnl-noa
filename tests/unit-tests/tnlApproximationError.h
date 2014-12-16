@@ -20,7 +20,8 @@
 
 #include <mesh/tnlGrid.h>
 #include <functions/tnlConstantFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
+#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
+#include <solvers/pde/tnlExplicitUpdater.h>
 
 class tnlExplicitApproximation
 {
@@ -65,36 +66,9 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
       typedef tnlConstantFunction< MeshType::Dimensions, RealType > ConstantFunctionType;
-      typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunctionType  > BoundaryConditionsType;
+      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,
-                            const ExactOperator& exactOperator,
-                            const ApproximateOperator& approximateOperator,
-                            const Function& function,
-                            RealType& l1Err,
-                            RealType& l2Err,
-                            RealType& maxErr );
-};
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ExactOperator,
-          typename ApproximateOperator,
-          typename Function >
-class tnlApproximationError< tnlGrid< Dimensions, Real, Device, Index >, ExactOperator, ApproximateOperator, Function, tnlExplicitApproximation >
-{
-   public:
-
-      typedef typename ApproximateOperator::RealType RealType;
-      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-      typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef typename MeshType::VertexType VertexType;
-
-      static void getError( const MeshType& mesh,
                             const ExactOperator& exactOperator,
                             const ApproximateOperator& approximateOperator,
                             const Function& function,
@@ -117,7 +91,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
       typedef tnlConstantFunction< MeshType::Dimensions, RealType > ConstantFunctionType;
-      typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunctionType  > BoundaryConditionsType;
+      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,
                             const ExactOperator& exactOperator,

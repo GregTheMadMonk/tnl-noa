@@ -51,7 +51,7 @@ setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setOmega( parameters.GetParameter< int >( "sor-omega" ) );
+   this->setOmega( parameters.GetParameter< double >( prefix + "sor-omega" ) );
 }
 
 
@@ -94,24 +94,18 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
 
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
-      /*matrix -> performSORIteration( this -> getOmega(),
-                                     b,
-                                     x,
-                                     0,
-                                     size );*/
-      if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-      if( ! this -> nextIteration() )
-         return false;
-      this -> refreshSolverMonitor();
+      for( IndexType row = 0; row < size; row ++ )
+         matrix->performSORIteration( b,
+                                      row,
+                                      x,
+                                      this->getOmega() );
+      this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+   this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
-   return true;
+   return this->checkConvergence();
 };
 
 template< typename Matrix, typename Preconditioner >
@@ -119,5 +113,49 @@ tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
 {
 }
 
+#include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlMultidiagonalMatrix.h>
+
+extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, long int > >;
+
+// TODO: fix this
+
+/*extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
+
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
+
+
+#ifdef HAVE_CUDA
+// TODO: fix this - it does not work with CUDA
+/*extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, long int > >;*/
+
+
+/*
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
+*/
+
+/*
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;
+*/
+#endif
 
 #endif /* TNLSORSOLVER_IMPL_H_ */

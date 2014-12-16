@@ -17,7 +17,7 @@
 
 #include <core/tnlTimerCPU.h>
 
-tnlTimerCPU default_mcore_cpu_timer;
+tnlTimerCPU defaultCPUTimer;
 
 tnlTimerCPU :: tnlTimerCPU()
 {

@@ -52,6 +52,16 @@ tnlString tnlObject :: getTypeVirtual() const
    return this->getType();
 }
 
+tnlString tnlObject :: getSerializationType()
+{
+   return tnlString( "tnlObject" );
+}
+
+tnlString tnlObject :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
 void tnlObject :: setName( const tnlString& name)
 {
    this -> name = name;
@@ -73,7 +83,8 @@ bool tnlObject :: save( tnlFile& file ) const
 #endif      
       return false;
    dbgCout( "Writing object name " << name );
-   if( ! this->getTypeVirtual().save( file ) || ! name. save( file ) ) return false;
+   if( ! this->getSerializationTypeVirtual().save( file ) ||
+       ! name. save( file ) ) return false;
    return true;
 }
 
@@ -81,12 +92,12 @@ bool tnlObject :: load( tnlFile& file )
 {
    dbgFunctionName( "tnlObject", "Load" );
    dbgCout( "Reading object type " );
-   tnlString load_type;
-   if( ! getObjectType( file, load_type ) )
+   tnlString objectType;
+   if( ! getObjectType( file, objectType ) )
       return false;
-   if( load_type != getTypeVirtual() )
+   if( objectType != this->getSerializationTypeVirtual() )
    {
-      cerr << "Given file contains instance of " << load_type << " but " << getTypeVirtual() << " is expected." << endl;
+      cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << endl;
       return false;
    }
    dbgCout( "Reading object name " );

@@ -33,6 +33,9 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlSharedVector< Real, tnlHost, Index > HostType;
+   typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
+
 
    tnlSharedVector();
 
@@ -43,9 +46,13 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );

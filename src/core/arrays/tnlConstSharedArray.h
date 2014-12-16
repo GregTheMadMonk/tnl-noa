@@ -36,10 +36,18 @@ class tnlConstSharedArray : public tnlObject
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlConstSharedArray< Element, tnlHost, Index > HostType;
+   typedef tnlConstSharedArray< Element, tnlCuda, Index > CudaType;
 
    tnlConstSharedArray();
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void bind( const Element* _data,
               const Index _size );

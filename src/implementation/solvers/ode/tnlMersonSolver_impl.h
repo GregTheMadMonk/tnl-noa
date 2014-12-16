@@ -76,12 +76,13 @@ __global__ void computeErrorKernel( const Index size,
                                     Real* err );
 
 template< typename Real, typename Index >
-__global__ void updateU( const Index size,
-                         const Real tau,
-                         const Real* k1,
-                         const Real* k4,
-                         const Real* k5,
-                         Real* u );
+__global__ void updateUMerson( const Index size,
+                               const Real tau,
+                               const Real* k1,
+                               const Real* k4,
+                               const Real* k5,
+                               Real* u,
+                               Real* blockResidue );
 #endif
 
 
@@ -121,6 +122,7 @@ bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameter
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
+   return true;
 }
 
 template< typename Problem >
@@ -162,8 +164,9 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
     * Set necessary parameters
     */
    RealType& time = this->time;
-   RealType currentTau = this->tau;
-   if( time + currentTau > this -> getStopTime() ) currentTau = this -> getStopTime() - time;
+   RealType currentTau = Min( this->getTau(), this->getMaxTau() );
+   if( time + currentTau > this->getStopTime() )
+      currentTau = this->getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -214,6 +217,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       if( adaptivity != 0.0 && eps != 0.0 )
       {
          currentTau *= 0.8 * pow( adaptivity / eps, 0.2 );
+         currentTau = Min( currentTau, this->getMaxTau() );
          :: MPIBcast( currentTau, 1, 0, this -> solver_comm );
       }
       if( time + currentTau > this -> getStopTime() )
@@ -306,28 +310,51 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-      const int block_size = 512;
-      const int grid_size = ( size - 1 ) / block_size + 1;
+      dim3 cudaBlockSize( 512 );
+      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
       this->problem->getExplicitRHS( time, tau, u, k1 );
       cudaThreadSynchronize();
 
-      computeK2Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _kAux );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         computeK2Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_kAux[ gridOffset ] );
+      }
       cudaThreadSynchronize();
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
       cudaThreadSynchronize();
 
-      computeK3Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k2, _kAux );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         computeK3Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k2[ gridOffset ], &_kAux[ gridOffset ] );
+      }
       cudaThreadSynchronize();
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
       cudaThreadSynchronize();
 
-      computeK4Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k3, _kAux );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         computeK4Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_kAux[ gridOffset ] );
+      }
       cudaThreadSynchronize();
       this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
       cudaThreadSynchronize();
 
-      computeK5Arg<<< grid_size, block_size >>>( size, tau, _u, _k1, _k3, _k4, _kAux );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         computeK5Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_k4[ gridOffset ], &_kAux[ gridOffset ] );
+      }
       cudaThreadSynchronize();
       this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
       cudaThreadSynchronize();
@@ -377,12 +404,26 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-      const int block_size = 512;
-      const int grid_size = ( size - 1 ) / block_size + 1;
+      dim3 cudaBlockSize( 512 );
+      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
-      computeErrorKernel<<< grid_size, block_size >>>( size, tau, _k1, _k3, _k4, _k5, _kAux );
-      cudaThreadSynchronize();
-      eps = tnlMax( kAux );
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         computeErrorKernel<<< cudaBlocks, cudaBlockSize >>>( currentSize,
+                                                              tau,
+                                                              &_k1[ gridOffset ],
+                                                              &_k3[ gridOffset ],
+                                                              &_k4[ gridOffset ],
+                                                              &_k5[ gridOffset ],
+                                                              &_kAux[ gridOffset ] );
+         cudaThreadSynchronize();
+         eps = Max( eps, kAux.max() );
+      }
 #endif
    }
    :: MPIAllreduce( eps, maxEps, 1, MPI_MAX, this -> solver_comm );
@@ -431,12 +472,30 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    if( DeviceType :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-      const int block_size = 512;
-      const int grid_size = ( size - 1 ) / block_size + 1;
+      dim3 cudaBlockSize( 512 );
+      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
-      updateU<<< grid_size, block_size >>>( size, tau, _k1, _k4, _k5, _u );
-      cudaThreadSynchronize();
       localResidue = 0.0;
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
+      {
+         const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
+         const IndexType gridOffset = gridIdx * threadsPerGrid;
+         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+
+         updateUMerson<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
+                                                                       tau,
+                                                                       &_k1[ gridOffset ],
+                                                                       &_k4[ gridOffset ],
+                                                                       &_k5[ gridOffset ],
+                                                                       &_u[ gridOffset ],
+                                                                       this->cudaBlockResidue.getData() );
+         localResidue += this->cudaBlockResidue.sum();
+         cudaThreadSynchronize();
+      }
+
 #endif
    }
    localResidue /= tau * ( RealType ) size;
@@ -530,16 +589,30 @@ __global__ void computeErrorKernel( const Index size,
 }
 
 template< typename RealType, typename Index >
-__global__ void updateU( const Index size,
-                         const RealType tau,
-                         const RealType* k1,
-                         const RealType* k4,
-                         const RealType* k5,
-                         RealType* u )
+__global__ void updateUMerson( const Index size,
+                               const RealType tau,
+                               const RealType* k1,
+                               const RealType* k4,
+                               const RealType* k5,
+                               RealType* u,
+                               RealType* cudaBlockResidue )
 {
-        Index i = blockIdx. x * blockDim. x + threadIdx. x;
-        if( i < size )
-                u[ i ] += 1.0 / 6.0 * tau * ( k1[ i ] + 4.0 * k4[ i ] + k5[ i ] );
+   extern __shared__ RealType du[];
+   const Index blockOffset = blockIdx. x * blockDim. x;
+   const Index i = blockOffset  + threadIdx. x;
+   if( i < size )
+      u[ i ] += du[ threadIdx.x ] = 1.0 / 6.0 * tau * ( k1[ i ] + 4.0 * k4[ i ] + k5[ i ] );
+   else
+      du[ threadIdx.x ] = 0.0;
+   du[ threadIdx.x ] = fabs( du[ threadIdx.x ] );
+   __syncthreads();
+
+   const Index rest = size - blockOffset;
+   Index n =  rest < blockDim.x ? rest : blockDim.x;
+
+   computeBlockResidue( du,
+                        cudaBlockResidue,
+                        n );
 }
 
 #endif

@@ -24,6 +24,7 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <operators/tnlExactOperatorEvaluator.h>
 
 template< typename Mesh,
           typename ExactOperator,
@@ -40,85 +41,35 @@ getError( const Mesh& mesh,
           RealType& maxErr )
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
-   Vector functionData, exactData, approximateData;
+   Vector functionData, exactData, approximateData, aux;
    const IndexType entities = mesh.getNumberOfCells();
+   BoundaryConditionsType boundaryConditions;
+   boundaryConditions.setFunction( function );
+   ConstantFunctionType zeroFunction;
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
-       ! approximateData.setSize( entities )  )
+       ! approximateData.setSize( entities ) ||
+       ! aux.setSize( entities) )
       return;
 
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
-   {
-      for( IndexType i = 0; i < entities; i++ )
-      {
-         if( ! mesh.isBoundaryCell( i ) )
-         {
-            VertexType v = mesh.getCellCenter( i );
-            CoordinatesType c = mesh.getCellCoordinates( i );
-            exactData[ i ] = exactOperator.getValue( function, v );
-            approximateData[ i ] = approximateOperator.getValue( mesh, i, c, functionData, 0.0 );
-         }
-         else exactData[ i ] = approximateData[ i ];
-      }
-   }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
-   {
-      // TODO
-   }
-   l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
-   l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
-   maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
-}
+   tnlExplicitUpdater< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType > explicitUpdater;
+   explicitUpdater.template update< Mesh::Dimensions >( 0.0,
+                                                        mesh,
+                                                        approximateOperator,
+                                                        boundaryConditions,
+                                                        zeroFunction,
+                                                        functionData,
+                                                        approximateData );
+   tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
+   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ExactOperator,
-          typename ApproximateOperator,
-          typename Function >
-void
-tnlApproximationError< tnlGrid< Dimensions, Real, Device, Index >, ExactOperator, ApproximateOperator, Function, tnlExplicitApproximation >::
-getError( const MeshType& mesh,
-          const ExactOperator& exactOperator,
-          const ApproximateOperator& approximateOperator,
-          const Function& function,
-          RealType& l1Err,
-          RealType& l2Err,
-          RealType& maxErr )
-{
-   typedef tnlVector< RealType, DeviceType, IndexType > Vector;
-   Vector functionData, exactData, approximateData;
-   const IndexType entities = mesh.getNumberOfCells();
+   for( IndexType i = 0; i < entities; i++ )
+      if( mesh.isBoundaryCell( i ) )
+         approximateData.setElement( i, exactData.getElement( i ) );
 
-   if( ! functionData.setSize( entities ) ||
-       ! exactData.setSize( entities ) ||
-       ! approximateData.setSize( entities )  )
-      return;
-
-   tnlFunctionDiscretizer< MeshType, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
-
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
-   {
-      for( IndexType i = 0; i < entities; i++ )
-      {
-         if( ! mesh.isBoundaryCell( i ) )
-         {
-            VertexType v = mesh.getCellCenter( i );
-            CoordinatesType c = mesh.getCellCoordinates( i );
-            exactData[ i ] = exactOperator.getValue( function, v );
-            approximateData[ i ] = approximateOperator.getValue( mesh, i, c, functionData, 0.0 );
-         }
-         else exactData[ i ] = approximateData[ i ];
-      }
-   }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
-   {
-      // TODO
-   }
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
@@ -149,6 +100,7 @@ getError( const Mesh& mesh,
    MatrixType matrix;
    RowLengthsVectorType rowLengths;
    BoundaryConditionsType boundaryConditions;
+   boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
    const IndexType entities = mesh.getNumberOfCells();
@@ -172,7 +124,7 @@ getError( const Mesh& mesh,
 
    tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, MatrixType > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( 0.0, // time
-                                                          0.0, // tau
+                                                          1.0, // tau
                                                           mesh,
                                                           approximateOperator,
                                                           boundaryConditions,
@@ -182,7 +134,18 @@ getError( const Mesh& mesh,
                                                           approximateData // this has no meaning here
                                                           );
 
+   tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
+   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+
+   for( IndexType i = 0; i < entities; i++ )
+      if( ! mesh.isBoundaryCell( i ) )
+         matrix.setElement( i, i, matrix.getElement( i, i ) - 1.0 );
    matrix.vectorProduct( functionData, approximateData );
+
+   // TODO: replace this when matrix.vectorProduct has multiplicator parameter
+   for( IndexType i = 0; i < entities; i++ )
+      approximateData.setElement( i, -1.0 * approximateData.getElement( i ) );
+
    for( IndexType i = 0; i < entities; i++ )
       if( mesh.isBoundaryCell( i ) )
          approximateData.setElement( i, exactData.getElement( i ) );

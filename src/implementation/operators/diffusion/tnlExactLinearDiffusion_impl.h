@@ -26,13 +26,16 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real
 tnlExactLinearDiffusion< 1 >::
 getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time );
 }
 
 tnlString
@@ -43,14 +46,17 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real
 tnlExactLinearDiffusion< 2 >::
 getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2, 0 >( v, time ) +
-          function.template getValue< 0, 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 2, 0, Vertex >( v, time );
 }
 
 tnlString
@@ -61,15 +67,18 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Real
 tnlExactLinearDiffusion< 3 >::
 getValue( const Function& function,
           const Vertex& v,
           const Real& time )
 {
-   return function.template getValue< 2, 0, 0 >( v, time ) +
-          function.template getValue< 0, 2, 0 >( v, time ) +
-          function.template getValue< 0, 0, 2 >( v, time );
+   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 2, 0, Vertex >( v, time ) +
+          function.template getValue< 0, 0, 2, Vertex >( v, time );
 
 }
 

@@ -74,6 +74,7 @@ bool tnlStaticContainer< Size, Element >::save( tnlFile& file ) const
            << " " << this->getName() << "." << endl;
       return false;
    }
+   return true;
 }
 
 template< int Size, typename Element >
@@ -86,6 +87,7 @@ bool tnlStaticContainer< Size, Element >::load( tnlFile& file )
            << " " << this->getName() << "." << endl;
       return false;
    }
+   return true;
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

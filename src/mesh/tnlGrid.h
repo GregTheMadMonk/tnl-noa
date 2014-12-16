@@ -44,6 +44,8 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 1, Real > VertexType;
    typedef tnlStaticVector< 1, Index > CoordinatesType;
+   typedef tnlGrid< 1, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
 
    enum { Dimensions = 1};
 
@@ -52,6 +54,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize );
 
@@ -138,19 +144,31 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -240,6 +258,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
+   typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
+
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -248,10 +269,17 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    tnlString getTypeVirtual() const;
 
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
+
    void setDimensions( const Index xSize, const Index ySize );
 
    void setDimensions( const CoordinatesType& dimensions );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
@@ -382,25 +410,42 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
-template< int nx, int ny, typename Vertex = VertexType >
+   
+#ifdef HAVE_NOT_CXX11    
+   template< int nx, int ny, typename Vertex >
+#else
+   template< int nx, int ny, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -507,6 +552,9 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 3, Real > VertexType;
    typedef tnlStaticVector< 3, Index > CoordinatesType;
+   typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
+
    enum { Dimensions = 3};
 
    tnlGrid();
@@ -514,6 +562,10 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
@@ -711,31 +763,51 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
-template< int nx, int ny, int nz, typename Vertex = VertexType >
+#ifdef HAVE_NOT_CXX11    
+   template< int nx, int ny, int nz, typename Vertex >
+#else
+   template< int nx, int ny, int nz, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
-
-template< int dx, int dy, int dz, typename Vertex = VertexType >
+   
+#ifdef HAVE_NOT_CXX11    
+   template< int dx, int dy, int dz, typename Vertex >
+#else
+   template< int dx, int dy, int dz, typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
 
+#ifdef HAVE_NOT_CXX11    
+   template< typename Vertex >
+#else
    template< typename Vertex = VertexType >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

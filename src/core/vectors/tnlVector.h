@@ -32,6 +32,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlVector< Real, tnlHost, Index > HostType;
+   typedef tnlVector< Real, tnlCuda, Index > CudaType;
+
 
    tnlVector();
 
@@ -42,6 +45,10 @@ class tnlVector : public tnlArray< Real, Device, Index >
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );
@@ -66,6 +73,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    template< typename Vector >
    tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
+
+   // TODO: implement
+   //tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
 
    Real max() const;
 

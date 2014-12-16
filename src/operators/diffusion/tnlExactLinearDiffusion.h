@@ -30,8 +30,15 @@ class tnlExactLinearDiffusion< 1 >
       enum { Dimensions = 1 };
 
       static tnlString getType();
-
+   
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif      
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -46,7 +53,14 @@ class tnlExactLinearDiffusion< 2 >
 
       static tnlString getType();
 
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif      
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -61,7 +75,14 @@ class tnlExactLinearDiffusion< 3 >
 
       static tnlString getType();
 
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );

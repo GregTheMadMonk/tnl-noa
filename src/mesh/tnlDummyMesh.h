@@ -32,12 +32,12 @@ class tnlDummyMesh
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
-                                                        const GridFunction& f2 ) const { return 0.0; };
+                                                        const GridFunction& f2 ) const { return 0.0; }
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
-                                                        const typename GridFunction::RealType& p ) const { return 0.0; };
+                                                        const typename GridFunction::RealType& p ) const { return 0.0; }
 
    bool save( tnlFile& file ) const{};
 
@@ -55,7 +55,7 @@ class tnlDummyMesh
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
                 const tnlString& fileName,
-                const tnlString& format ) const{};
+                const tnlString& format ) const{}
 };
 
 

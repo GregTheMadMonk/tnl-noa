@@ -44,8 +44,8 @@ tnlGMRESSolver< Matrix, Preconditioner >::
 getType() const
 {
    return tnlString( "tnlGMRESSolver< " ) +
-          this -> matrix -> getType() + ", " +
-          this -> preconditioner -> getType() + " >";
+          this->matrix -> getType() + ", " +
+          this->preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,
@@ -83,14 +83,14 @@ template< typename Matrix,
           typename Preconditioner >
 void tnlGMRESSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
-   this -> matrix = &matrix;
+   this->matrix = &matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
 void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
-   this -> preconditioner = &preconditioner;
+   this->preconditioner = &preconditioner;
 }
 
 template< typename Matrix,
@@ -149,15 +149,14 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
 
    if( normb == 0.0 ) normb = 1.0;
 
-   this -> resetIterations();
-   this -> setResidue( beta / normb );
+   this->resetIterations();
+   this->setResidue( beta / normb );
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi;
    vi. setName( "tnlGMRESSolver::vi" );
    tnlSharedVector< RealType, DeviceType, IndexType > vk;
    vk. setName( "tnlGMRESSolver::vk" );
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
       const IndexType m = restarting;
       for( i = 0; i < m + 1; i ++ )
@@ -182,7 +181,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /****
        * Starting m-loop
        */
-      for( i = 0; i < m && this -> getIterations() <= this -> getMaxIterations(); i++ )
+      for( i = 0; i < m && this->getIterations() <= this->getMaxIterations(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -247,14 +246,12 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
          this->refreshSolverMonitor();
 
-         if( this -> getResidue() < this -> getConvergenceResidue() )
+         if( this->getResidue() < this->getConvergenceResidue() )
          {
             update( i, m, _H, _s, _v, x );
-            //if( this -> verbosity > 0 )
-            //   this -> printOut();
             return true;
          }
-         if( ! this -> nextIteration() )
+         if( ! this->nextIteration() )
             return false;
       }
       update( m - 1, m, _H, _s, _v, x );
@@ -278,14 +275,10 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
          beta = _r. lpNorm( ( RealType ) 2.0 );
       }
-      this -> setResidue( beta / normb );
-      this -> refreshSolverMonitor();
-      if( ! this -> nextIteration() )
-         return false;
+      this->setResidue( beta / normb );
    }
-   this -> refreshSolverMonitor();
-   if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
-   return true;
+   this->refreshSolverMonitor();
+   return this->checkConvergence();
 };
 
 template< typename Matrix,
@@ -326,7 +319,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    vi. setName( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {
-      vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
+      vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );
       x. addVector( vi, y[ i ] );
    }
 };

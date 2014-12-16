@@ -50,7 +50,7 @@ tnlCGSolver< Matrix, Preconditioner >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,
@@ -70,64 +70,80 @@ void tnlCGSolver< Matrix, Preconditioner > :: setPreconditioner( const Precondit
 template< typename Matrix,
           typename Preconditioner >
    template< typename Vector, typename ResidueGetter >
-bool tnlCGSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
+bool
+tnlCGSolver< Matrix, Preconditioner >::
+solve( const Vector& b, Vector& x )
 {
-   if( ! this -> setSize( matrix -> getRows() ) ) return false;
+   if( ! this->setSize( matrix->getRows() ) ) return false;
 
-   this -> resetIterations();
-   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
+   this->resetIterations();
+   this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, s1, s2;
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
-   // r_0 = b - A x_0, p_0 = r_0
-   this -> matrix -> vectorProduct( x, r );
+   /****
+    * r_0 = b - A x_0, p_0 = r_0
+    */
+   this->matrix->vectorProduct( x, r );
    r. addVector( b, 1.0, -1.0 );
    p = r;
 
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
-      // 1. alpha_j = ( r_j, r_j ) / ( A * p_j, p_j )
-      this -> matrix -> vectorProduct( p, Ap );
+      /****
+       * 1. alpha_j = ( r_j, r_j ) / ( A * p_j, p_j )
+       */
+      this->matrix->vectorProduct( p, Ap );
 
-      s1 = r. scalarProduct( r );
-      s2 = Ap. scalarProduct( p );
-      s1 = s2 = 0.0;
-      // if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
+      s1 = r.scalarProduct( r );
+      s2 = Ap.scalarProduct( p );
+
+      /****
+       * if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
+       */
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = s1 / s2;
       
-      // 2. x_{j+1} = x_j + \alpha_j p_j
-      x. addVector( p, alpha );
+      /****
+       * 2. x_{j+1} = x_j + \alpha_j p_j
+       */
+      x.addVector( p, alpha );
       
-      // 3. r_{j+1} = r_j - \alpha_j A * p_j
+      /****
+       * 3. r_{j+1} = r_j - \alpha_j A * p_j
+       */
       new_r = r;
-      new_r. addVector( Ap, -alpha );
+      new_r.addVector( Ap, -alpha );
 
-      //4. beta_j = ( r_{j+1}, r_{j+1} ) / ( r_j, r_j )
+      /****
+       * 4. beta_j = ( r_{j+1}, r_{j+1} ) / ( r_j, r_j )
+       */
       s1 = new_r. scalarProduct( new_r );
       s2 = r. scalarProduct( r );
-      // if s2 = 0 => r = 0 => we have the solution
+
+      /****
+       * if s2 = 0 => r = 0 => we have the solution
+       */
       if( s2 == 0.0 ) beta = 0.0;
       else beta = s1 / s2;
 
-      // 5. p_{j+1} = r_{j+1} + beta_j * p_j
+      /****
+       * 5. p_{j+1} = r_{j+1} + beta_j * p_j
+       */
       p. addVector( new_r, 1.0, beta );
 
-      // 6. r_{j+1} = new_r
-      new_r. swap( r );
+      /****
+       * 6. r_{j+1} = new_r
+       */
+      new_r.swap( r );
       
       if( this -> getIterations() % 10 == 0 )
          this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-      if( ! this -> nextIteration() )
-         return false;
-      this -> refreshSolverMonitor();
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
-   return true;
+   return this->checkConvergence();
 };
 
 template< typename Matrix,

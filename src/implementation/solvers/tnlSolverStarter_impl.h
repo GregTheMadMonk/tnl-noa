@@ -65,7 +65,7 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter;
 
 template< typename ConfigTag >
 tnlSolverStarter< ConfigTag > :: tnlSolverStarter()
-: logWidth( 72 )
+: logWidth( 80 )
 {
 }
 
@@ -147,6 +147,15 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         if( discreteSolver != "sor" &&
+             discreteSolver != "cg" &&
+             discreteSolver != "bicgstab" &&
+             discreteSolver != "gmres" )
+         {
+            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab or gmres." << endl;
+            return false;
+         }
+
          if( discreteSolver == "sor" )
             return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cg" )
@@ -594,6 +603,7 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
    sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. GetTime() ) / this -> totalRtTimer. GetTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
+   return true;
 }
 
 #endif /* TNLSOLVERSTARTER_IMPL_H_ */

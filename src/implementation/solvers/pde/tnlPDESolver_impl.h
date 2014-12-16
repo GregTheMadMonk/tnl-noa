@@ -77,6 +77,8 @@ setup( const tnlParameterContainer& parameters,
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
    }
+   this->dofs.setValue( 0.0 );
+   this->auxiliaryDofs.setValue( 0.0 );
    this->problem->bindDofs( mesh, this->dofs );
    this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
    
@@ -84,7 +86,7 @@ setup( const tnlParameterContainer& parameters,
     * Set-up the initial condition
     */
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, mesh, this->dofs ) )
+   if( ! this->problem->setInitialCondition( parameters, mesh, this->dofs, this->auxiliaryDofs ) )
       return false;
 
    /****
@@ -162,6 +164,7 @@ setFinalTime( const RealType& finalTime )
       return false;
    }
    this->finalTime = finalTime;
+   return true;
 }
 
 template< typename Problem,
@@ -185,6 +188,7 @@ setSnapshotPeriod( const RealType& period )
       return false;
    }
    this->snapshotPeriod = period;
+   return true;
 }
 
 template< typename Problem,
@@ -208,6 +212,7 @@ setTimeStep( const RealType& timeStep )
       return false;
    }
    this->timeStep = timeStep;
+   return true;
 }
    
 template< typename Problem,
@@ -231,6 +236,7 @@ setTimeStepOrder( const RealType& timeStepOrder )
       return false;
    }
    this->timeStepOrder = timeStepOrder;
+   return true;
 }
 
 template< typename Problem,
@@ -290,7 +296,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    this->problem->bindDofs( mesh, this->dofs );
    this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
 
-   if( ! this->problem->makeSnapshot( t, step, mesh ) )
+   if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
@@ -300,7 +306,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    {
       RealType tau = Min( this -> snapshotPeriod,
                           this -> finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, mesh, dofs ) )
+      if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->auxiliaryDofs ) )
          return false;
       step ++;
       t += tau;
@@ -310,7 +316,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
       this->computeRtTimer->Stop();
       this->computeCpuTimer->Stop();
 
-      if( ! this->problem->makeSnapshot( t, step, mesh ) )
+      if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;

@@ -72,7 +72,10 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 
@@ -97,7 +100,10 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -122,10 +128,24 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
+
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
+{
+   str << "Sin Wave. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
+   return str;
+}
+
 
 #include <implementation/functions/tnlSinWaveFunction_impl.h>
 

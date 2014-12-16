@@ -121,6 +121,7 @@ setTimeStep( const RealType& timeStep )
       return false;
    }
    this->timeStep = timeStep;
+   return true;
 };
 
 template< typename Problem,
@@ -130,7 +131,8 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
-       DofVectorType& dofVector )
+       DofVectorType& dofVector,
+       DofVectorType& auxiliaryDofVector )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
@@ -142,7 +144,8 @@ solve( const RealType& time,
       if( ! this->problem->preIterate( t,
                                        currentTau,
                                        mesh,
-                                       dofVector ) )
+                                       dofVector,
+                                       auxiliaryDofVector ) )
       {
          cerr << endl << "Preiteration failed." << endl;
          return false;
@@ -153,19 +156,23 @@ solve( const RealType& time,
                                            currentTau,
                                            mesh,
                                            dofVector,
+                                           auxiliaryDofVector,
                                            this->matrix,
                                            this->rightHandSide );
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
-      if( ! this->linearSystemSolver->solve( this->rightHandSide, dofVector ) )
+      if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
-         cerr << "The linear system solver did not converge." << endl;
+         cerr << endl << "The linear system solver did not converge." << endl;
          return false;
       }
+      //if( verbose )
+      //   cout << endl;
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
-                                        dofVector ) )
+                                        dofVector,
+                                        auxiliaryDofVector ) )
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;

@@ -68,28 +68,28 @@ tnlString tnlStaticArray< Size, Element >::getType()
           tnlString( " >" );
 }
 
+template< int Size, typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< int Size, typename Element >
 int tnlStaticArray< Size, Element >::getSize() const
 {
    return size;
 }
 
+template< int Size, typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< int Size, typename Element >
 Element* tnlStaticArray< Size, Element >::getData()
 {
    return data;
 }
 
+template< int Size, typename Element >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-template< int Size, typename Element >
 const Element* tnlStaticArray< Size, Element >::getData() const
 {
    return data;
@@ -122,6 +122,7 @@ tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operator = ( c
 {
    for( int i = 0; i < size; i++ )
       data[ i ] = array[ i ];
+   return *this;
 }
 
 template< int Size, typename Element >
@@ -130,13 +131,14 @@ tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operator = ( c
 {
    for( int i = 0; i < size; i++ )
       data[ i ] = array[ i ];
+   return *this;
 }
 
 template< int Size, typename Element >
    template< typename Array >
 bool tnlStaticArray< Size, Element >::operator == ( const Array& array ) const
 {
-   if( size != Array::size )
+   if( ( int ) size != ( int ) Array::size )
       return false;
    for( int i = 0; i < size; i++ )
       if( data[ i ] != array[ i ] )
@@ -215,12 +217,16 @@ ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+// TODO: it does not work with CUDA
+
+#ifndef HAVE_CUDA
 extern template class tnlStaticArray< 4, char >;
 extern template class tnlStaticArray< 4, int >;
 extern template class tnlStaticArray< 4, long int >;
 extern template class tnlStaticArray< 4, float >;
 extern template class tnlStaticArray< 4, double >;
-extern template class tnlStaticArray< 4, long double >;
+//extern template class tnlStaticArray< 4, long double >;
+#endif
 
 #endif
 

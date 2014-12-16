@@ -58,6 +58,22 @@ tnlString tnlGrid< 1, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void tnlGrid< 1, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() != 0 )
@@ -325,7 +341,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const IndexType& cellIn
               cerr << " cellIndex = " << cellIndex
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return this->getCellCenter( this->getCellCoordinates( cellIndex ) );
+   return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
 }
 
 template< typename Real,
@@ -547,7 +563,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    {
       for( IndexType i = 0; i < getDimensions(). x(); i++ )
       {
-         VertexType v = this->getCellCenter( CoordinatesType( i ) );
+         VertexType v = this->getCellCenter< VertexType >( CoordinatesType( i ) );
          tnlGnuplotWriter::write( file,  v );
          tnlGnuplotWriter::write( file,  function[ this->getCellIndex( i ) ] );
          file << endl;

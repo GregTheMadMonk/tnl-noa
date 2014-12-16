@@ -18,10 +18,11 @@
 #ifndef TNLCONSTANTFUNCTION_H_
 #define TNLCONSTANTFUNCTION_H_
 
+#include <iostream>
 #include <core/vectors/tnlStaticVector.h>
 
 template< int FunctionDimensions,
-          typename Real >
+          typename Real = double >
 class tnlConstantFunction
 {
    public:
@@ -33,14 +34,14 @@ class tnlConstantFunction
    tnlConstantFunction();
 
    static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix );
+                            const tnlString& prefix = "" );
 
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   void setValue( const RealType& value );
+   void setConstant( const RealType& constant );
 
-   const RealType& getValue() const;
+   const RealType& getConstant() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -48,18 +49,39 @@ class tnlConstantFunction
              int ZDiffOrder,
              typename Vertex >
 #else
-   template< int XDiffOrder = 0,
+   template< int XDiffOrder,
              int YDiffOrder = 0,
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const;
 
+   template< typename Vertex >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   RealType getValue( const Vertex& v,
+                      const Real& time = 0.0 ) const
+   {
+      return getValue< 0, 0, 0, Vertex >( v, time );
+   }
+
    protected:
 
-   RealType value;
+   RealType constant;
 };
+
+template< int FunctionDimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< FunctionDimensions, Real >& f )
+{
+   str << "Constant function: constant = " << f.getConstant();
+   return str;
+}
 
 #include <implementation/functions/tnlConstantFunction_impl.h>
 

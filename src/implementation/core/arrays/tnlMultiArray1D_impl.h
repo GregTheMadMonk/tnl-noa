@@ -33,7 +33,7 @@ tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray( const tnlString& na
 }
 
 template< typename Element, typename Device, typename Index >
-tnlString tnlMultiArray< 1, Element, Device, Index > :: getType() const
+tnlString tnlMultiArray< 1, Element, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiArray< ") +
           tnlString( Dimensions ) +
@@ -45,6 +45,30 @@ tnlString tnlMultiArray< 1, Element, Device, Index > :: getType() const
           tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 1, Element, Device, Index > :: getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 1, Element, Device, Index > :: getSerializationType()
+{
+   return HostType::getType();
+};
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString tnlMultiArray< 1, Element, Device, Index > :: getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
 
 template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
@@ -103,7 +127,7 @@ template< typename Element, typename Device, typename Index >
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
-              printf( "i = %d this -> dimensions[ 0 ] = %d \n", ( int ) i, ( int ) this -> dimensions[ 0 ] ) );
+              cerr << "i = " << i << " this -> dimensions[ 0 ] = " <<  this -> dimensions[ 0 ] );
    return i;
 }
 

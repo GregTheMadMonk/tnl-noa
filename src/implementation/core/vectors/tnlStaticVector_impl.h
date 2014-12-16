@@ -71,6 +71,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator += ( cons
 {
    for( int i = 0; i < Size; i++ )
       this->data[ i ] += v[ i ];
+   return *this;
 }
 
 template< int Size, typename Real >
@@ -81,6 +82,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator -= ( cons
 {
    for( int i = 0; i < Size; i++ )
       this->data[ i ] -= v[ i ];
+   return *this;
 }
 
 template< int Size, typename Real >
@@ -91,6 +93,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator *= ( cons
 {
    for( int i = 0; i < Size; i++ )
       this->data[ i ] *= c;
+   return *this;
 }
 
 template< int Size, typename Real >
@@ -197,9 +200,12 @@ tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector<
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifndef HAVE_CUDA
+// TODO: does not work with CUDA
 extern template class tnlStaticVector< 4, float >;
 extern template class tnlStaticVector< 4, double >;
-extern template class tnlStaticVector< 4, long double >;
+//extern template class tnlStaticVector< 4, long double >;
+#endif
 
 #endif
 

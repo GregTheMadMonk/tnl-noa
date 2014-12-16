@@ -147,6 +147,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
+   // TODO: add const RealType& multiplicator = 1.0 )
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
@@ -197,11 +198,11 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector,
              int warpSize >
    __device__
-   void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
-                                                                 OutVector& outVector,
-                                                                 const IndexType warpStart,
-                                                                 const IndexType warpEnd,
-                                                                 const IndexType inWarpIdx ) const;
+   void spmvCudaVectorized( const InVector& inVector,
+                            OutVector& outVector,
+                            const IndexType warpStart,
+                            const IndexType warpEnd,
+                            const IndexType inWarpIdx ) const;
 
    template< typename InVector,
              typename OutVector,

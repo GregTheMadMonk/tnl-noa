@@ -65,26 +65,34 @@ class tnlCuda
 
    static int getGPUTransferBufferSize();
 
+   static int getNumberOfBlocks( const int threads,
+                                 const int blockSize );
+
+   static int getNumberOfGrids( const int blocks,
+                                const int gridSize = getMaxGridSize() );
+
    static size_t getFreeMemory();
 
    template< typename ObjectType >
    static ObjectType* passToDevice( const ObjectType& object );
 
    template< typename ObjectType >
-   static ObjectType passFromDevice( const ObjectType& object );
+   static ObjectType passFromDevice( const ObjectType* object );
 
    template< typename ObjectType >
-   static void passFromDevice( const ObjectType& deviceObject,
+   static void passFromDevice( const ObjectType* deviceObject,
                                ObjectType& hostObject );
 
    template< typename ObjectType >
    static void freeFromDevice( ObjectType* object );
 
+   template< typename ObjectType >
+   static void print( const ObjectType* object, ostream& str = std::cout );
+
 #ifdef HAVE_CUDA
    template< typename Index >
    static __device__ Index getInterleaving( const Index index );
 #endif
-
 
    static bool checkDevice( const char* file_name, int line );
 

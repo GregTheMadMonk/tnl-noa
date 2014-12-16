@@ -91,22 +91,72 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
    // TODO: fix
    //tnlAssert( solverMonitor, );
-   //solverMonitor->setIterations( ++this->currentIteration );
-   //solverMonitor->setResidue( this->getResidue() );
-   if( this->solverMonitor &&
-       this->currentIteration % this->refreshRate == 0 )
-      solverMonitor->refresh();
+   this->currentIteration++;
+   if( this->solverMonitor )
+   {
+      solverMonitor->setIterations( this->currentIteration );
+      solverMonitor->setResidue( this->getResidue() );
+      if( this->currentIteration % this->refreshRate == 0 )
+         solverMonitor->refresh();
+   }
 
-   if( std::isnan( this->getResidue() ) ||
-       ( this->getResidue() > this->getDivergenceResidue() &&
-         this->getIterations() > this->minIterations ) ||
-       this->getIterations() > this->getMaxIterations() )
+   if( std::isnan( this->getResidue() ) )
+   {
+      //cerr << endl << "RES is Nan" << endl;
       return false;
+   }
+   if(( this->getResidue() > this->getDivergenceResidue() &&
+         this->getIterations() > this->minIterations ) )
+   {
+      ///cerr << endl << "RES is over the divergence residue." << endl;
+      return false;
+   }
+   if( this->getIterations() > this->getMaxIterations() )
+   {
+      //cerr << endl << "Max. iterations exceeded." << endl;
+      return false;
+   }
+   if( this->getResidue() < this->getConvergenceResidue() )
+   {
+      //cerr << endl << "The solver has. converged." <<  endl;
+      return false;
+   }
    return true;
 }
 
 template< typename Real, typename Index >
-const Index& tnlIterativeSolver< Real, Index> :: getIterations() const
+bool
+tnlIterativeSolver< Real, Index>::
+checkConvergence()
+{
+   if( std::isnan( this->getResidue() ) )
+   {
+      cerr << endl << "The residue is NaN." << endl;
+      return false;
+   }
+   if(( this->getResidue() > this->getDivergenceResidue() &&
+         this->getIterations() > this->minIterations ) )
+   {
+      cerr << endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
+      return false;
+   }
+   if( this->getIterations() >= this->getMaxIterations() )
+   {
+      cerr << endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
+      return false;
+   }
+   if( this->getResidue() > this->getConvergenceResidue() )
+   {
+      cerr << endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << endl;
+      return false;
+   }
+   return true;
+}
+
+template< typename Real, typename Index >
+const Index&
+tnlIterativeSolver< Real, Index>::
+getIterations() const
 {
    return this -> currentIteration;
 }

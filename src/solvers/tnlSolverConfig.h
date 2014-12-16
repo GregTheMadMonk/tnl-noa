@@ -30,4 +30,4 @@ class tnlSolverConfig
 
 #include <implementation/solvers/tnlSolverConfig_impl.h>
 
-#endif /* TNLSOLVERCONFIGSETUP_H_ */
+#endif /* TNLSOLVERCONFIG_H_ */

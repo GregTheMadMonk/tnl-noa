@@ -1,4 +1,5 @@
 SET( headers tnlFunctionDiscretizer.h
+             tnlFunctionAdapter.h
              tnlConstantFunction.h
              tnlExpBumpFunction.h
              tnlSinBumpsFunction.h

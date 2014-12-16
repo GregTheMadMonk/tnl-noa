@@ -57,14 +57,17 @@ class heatEquationSolver
 
    bool setInitialCondition( const tnlParameterContainer& parameters,
                              const MeshType& mesh,
-                             DofVectorType& dofs );
+                             DofVectorType& dofs,
+                             DofVectorType& auxDofs );
 
    bool setupLinearSystem( const MeshType& mesh,
                            MatrixType& matrix );
 
    bool makeSnapshot( const RealType& time,
                       const IndexType& step,
-                      const MeshType& mesh );
+                      const MeshType& mesh,
+                      DofVectorType& dofs,
+                      DofVectorType& auxDofs );
 
    IndexType getDofs( const MeshType& mesh ) const;
 
@@ -79,7 +82,8 @@ class heatEquationSolver
    bool preIterate( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
-                    DofVectorType& u );
+                    DofVectorType& dofs,
+                    DofVectorType& auxDofs );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -91,14 +95,16 @@ class heatEquationSolver
    void assemblyLinearSystem( const RealType& time,
                               const RealType& tau,
                               const MeshType& mesh,
-                              DofVectorType& u,
+                              DofVectorType& dofs,
+                              DofVectorType& auxDofs,
                               MatrixType& matrix,
                               DofVectorType& rightHandSide );
 
    bool postIterate( const RealType& time,
                      const RealType& tau,
                      const MeshType& mesh,
-                     DofVectorType& u );
+                     DofVectorType& dofs,
+                     DofVectorType& auxDofs );
 
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();

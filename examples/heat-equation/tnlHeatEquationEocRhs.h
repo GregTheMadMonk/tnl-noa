@@ -27,15 +27,19 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
-      bool setup( const tnlParameterContainer& parameters )
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlString& prefix = "" )
       {
-         if( ! testFunction.setup( parameters ) )
+         if( ! testFunction.setup( parameters, prefix ) )
             return false;
          return true;
       };
 
       template< typename Vertex,
                 typename Real >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       Real getValue( const Vertex& vertex,
                      const Real& time ) const
       {

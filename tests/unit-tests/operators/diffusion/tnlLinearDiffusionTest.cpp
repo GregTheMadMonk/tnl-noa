@@ -51,7 +51,7 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
-   const bool verbose( true );
+   const bool verbose( false );
    const int MeshSize( 32 );
 #ifdef HAVE_CPPUNIT
    /****
@@ -74,7 +74,8 @@ int main( int argc, char* argv[] )
                                                              tnlExpBumpFunction< 3, double >,
                                                              tnlExplicitApproximation,
                                                              MeshSize,
-                                                             verbose > >() )
+                                                             verbose > >()
+                                                              )
       return EXIT_FAILURE;
    /****
     * Implicit (matrix) approximation

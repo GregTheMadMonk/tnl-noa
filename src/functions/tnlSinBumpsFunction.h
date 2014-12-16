@@ -80,6 +80,9 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -110,6 +113,9 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -139,10 +145,24 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-#endif   
 };
+
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
+{
+   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
+   return str;
+}
+
 
 #include <implementation/functions/tnlSinBumpsFunction_impl.h>
 

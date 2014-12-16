@@ -24,7 +24,7 @@ template< typename Real >
 bool
 tnlExpBumpFunctionBase< Real >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+       const tnlString& prefix )
 {
    this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
    this->sigma = parameters.GetParameter< double >( prefix + "sigma" );
@@ -76,6 +76,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
                                          const Real& time ) const
@@ -113,6 +116,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 2, Real >::
 getValue( const Vertex& v,
@@ -156,6 +162,9 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
 Real
 tnlExpBumpFunction< 3, Real >::
 getValue( const Vertex& v,

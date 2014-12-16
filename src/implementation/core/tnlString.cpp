@@ -224,6 +224,52 @@ int tnlString :: getLength() const
    return strlen( string );
 }
 
+void
+tnlString::
+replace( const tnlString& pattern,
+         const tnlString& replaceWith )
+{
+   int occurences( 0 );
+   int patternLength = pattern.getLength();
+   const int length = this->getLength();
+   int patternPointer( 0 );
+   for( int i = 0; i < length; i++ )
+   {
+      if( this->string[ i ] == pattern[ patternPointer ] )
+         patternPointer++;
+      if( patternPointer == patternLength )
+      {
+         occurences++;
+         patternPointer = 0;
+      }
+   }
+   const int replaceWithLength = replaceWith.getLength();
+   int newStringLength = length + occurences * ( replaceWithLength - patternLength );
+   char* newString = new char[ newStringLength ];
+   int newStringPointer( 0 );
+   int lastPatternStart( 0 );
+   for( int i = 0; i < length; i++ )
+   {
+      if( this->string[ i ] == pattern[ patternPointer ] )
+      {
+         if( patternPointer == 0 )
+            lastPatternStart = newStringPointer;
+         patternPointer++;
+      }
+      newString[ newStringPointer++ ] = this->string[ i ];
+      if( patternPointer == patternLength )
+      {
+         newStringPointer = lastPatternStart;
+         for( int j = 0; j < replaceWithLength; j++ )
+            newString[ newStringPointer++ ] = replaceWith[ j ];
+         patternPointer = 0;
+      }
+   }
+   delete[] this->string;
+   this->string = newString;
+}
+
+
 const char* tnlString :: getString() const
 {
    return string;

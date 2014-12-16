@@ -23,31 +23,37 @@
 #include <core/tnlAssert.h>
 
 
-template< int Dimensions, typename Element = double, typename Device = tnlHost, typename Index = int >
-class tnlMultiVector : public tnlVector< Element, Device, Index >
+template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
+class tnlMultiVector : public tnlVector< Real, Device, Index >
 {
 };
 
-template< typename Element, typename Device, typename Index >
-class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, Device, Index >
+template< typename Real, typename Device, typename Index >
+class tnlMultiVector< 1, Real, Device, Index > : public tnlVector< Real, Device, Index >
 {
    public:
    enum { Dimensions = 1};
-   typedef Element ElementType;
+   typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
    tnlMultiVector();
 
    tnlMultiVector( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
 
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
+
    bool setDimensions( const Index iSize );
 
-   bool setDimensions( const tnlStaticVector< 1, Index >& dimensions );
+   bool setDimensions( const tnlStaticVector< Dimensions, Index >& dimensions );
 
    void getDimensions( Index& iSize ) const;
 
@@ -59,23 +65,23 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
    
    Index getElementIndex( const Index i ) const;
 
-   void setElement( const Index i, Element value );
+   void setElement( const Index i, Real value );
 
    //! This method can be used for general access to the elements of the Vectors.
    /*! It does not return reference but value. So it can be used to access
     *  Vectors in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index i ) const;
+   Real getElement( const Index i ) const;
 
    //! Operator for accessing elements of the Vector.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of Vectors in different adress space
     *  (GPU device usualy).
     */
-   Element& operator()( const Index i );
+   Real& operator()( const Index i );
 
-   const Element& operator()( const Index i ) const;
+   const Real& operator()( const Index i ) const;
 
    template< typename MultiVector >
    bool operator == ( const MultiVector& Vector ) const;
@@ -83,10 +89,10 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 1, Element, Device, Index >& operator = ( const tnlMultiVector< 1, Element, Device, Index >& Vector );
+   tnlMultiVector< 1, Real, Device, Index >& operator = ( const tnlMultiVector< 1, Real, Device, Index >& Vector );
 
    template< typename MultiVector >
-   tnlMultiVector< 1, Element, Device, Index >& operator = ( const MultiVector& Vector );
+   tnlMultiVector< 1, Real, Device, Index >& operator = ( const MultiVector& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -100,25 +106,31 @@ class tnlMultiVector< 1, Element, Device, Index > : public tnlVector< Element, D
 
    protected:
 
-   tnlStaticVector< 1, Index > dimensions;
+   tnlStaticVector< Dimensions, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, Device, Index >
+template< typename Real, typename Device, typename Index >
+class tnlMultiVector< 2, Real, Device, Index > : public tnlVector< Real, Device, Index >
 {
    public:
    enum { Dimensions = 2 };
-   typedef Element ElementType;
+   typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
    tnlMultiVector();
 
    tnlMultiVector( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index jSize, const Index iSize );
 
@@ -134,23 +146,23 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
 
    Index getElementIndex( const Index j, const Index i ) const;
 
-   void setElement( const Index j, const Index i, Element value );
+   void setElement( const Index j, const Index i, Real value );
 
    //! This method can be used for general access to the elements of the Vectors.
    /*! It does not return reference but value. So it can be used to access
     *  Vectors in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index j, const Index i ) const;
+   Real getElement( const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the Vector.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of Vectors in different adress space
     *  (GPU device usualy).
     */
-   Element& operator()( const Index j, const Index i );
+   Real& operator()( const Index j, const Index i );
 
-   const Element& operator()( const Index j, const Index i ) const;
+   const Real& operator()( const Index j, const Index i ) const;
 
    template< typename MultiVector >
    bool operator == ( const MultiVector& Vector ) const;
@@ -158,10 +170,10 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 2, Element, Device, Index >& operator = ( const tnlMultiVector< 2, Element, Device, Index >& Vector );
+   tnlMultiVector< 2, Real, Device, Index >& operator = ( const tnlMultiVector< 2, Real, Device, Index >& Vector );
 
    template< typename MultiVector >
-   tnlMultiVector< 2, Element, Device, Index >& operator = ( const MultiVector& Vector );
+   tnlMultiVector< 2, Real, Device, Index >& operator = ( const MultiVector& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -178,23 +190,29 @@ class tnlMultiVector< 2, Element, Device, Index > : public tnlVector< Element, D
    tnlStaticVector< 2, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, Device, Index >
+template< typename Real, typename Device, typename Index >
+class tnlMultiVector< 3, Real, Device, Index > : public tnlVector< Real, Device, Index >
 {
    public:
 
    enum { Dimensions = 3 };
-   typedef Element ElementType;
+   typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
    tnlMultiVector();
 
    tnlMultiVector( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
@@ -210,23 +228,23 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
 
    Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
-   void setElement( const Index k, const Index j, const Index i, Element value );
+   void setElement( const Index k, const Index j, const Index i, Real value );
 
    //! This method can be used for general access to the elements of the Vectors.
    /*! It does not return reference but value. So it can be used to access
     *  Vectors in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index k, const Index j, const Index i ) const;
+   Real getElement( const Index k, const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the Vector.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of Vectors in different adress space
     *  (GPU device usualy).
     */
-   Element& operator()( const Index k, const Index j, const Index i );
+   Real& operator()( const Index k, const Index j, const Index i );
 
-   const Element& operator()( const Index k, const Index j, const Index i ) const;
+   const Real& operator()( const Index k, const Index j, const Index i ) const;
 
    template< typename MultiVector >
    bool operator == ( const MultiVector& Vector ) const;
@@ -234,10 +252,10 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 3, Element, Device, Index >& operator = ( const tnlMultiVector< 3, Element, Device, Index >& Vector );
+   tnlMultiVector< 3, Real, Device, Index >& operator = ( const tnlMultiVector< 3, Real, Device, Index >& Vector );
 
    template< typename MultiVector >
-   tnlMultiVector< 3, Element, Device, Index >& operator = ( const MultiVector& Vector );
+   tnlMultiVector< 3, Real, Device, Index >& operator = ( const MultiVector& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -254,23 +272,29 @@ class tnlMultiVector< 3, Element, Device, Index > : public tnlVector< Element, D
    tnlStaticVector< 3, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, Device, Index >
+template< typename Real, typename Device, typename Index >
+class tnlMultiVector< 4, Real, Device, Index > : public tnlVector< Real, Device, Index >
 {
    public:
 
    enum { Dimensions = 4 };
-   typedef Element ElementType;
+   typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
    tnlMultiVector();
 
    tnlMultiVector( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
@@ -286,23 +310,23 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
 
    Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
-   void setElement( const Index l, const Index k, const Index j, const Index i, Element value );
+   void setElement( const Index l, const Index k, const Index j, const Index i, Real value );
 
    //! This method can be used for general access to the elements of the Vectors.
    /*! It does not return reference but value. So it can be used to access
     *  Vectors in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index l, const Index k, const Index j, const Index i ) const;
+   Real getElement( const Index l, const Index k, const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the Vector.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of Vectors in different adress space
     *  (GPU device usualy).
     */
-   Element& operator()( const Index l, const Index k, const Index j, const Index i );
+   Real& operator()( const Index l, const Index k, const Index j, const Index i );
 
-   const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
+   const Real& operator()( const Index l, const Index k, const Index j, const Index i ) const;
 
    template< typename MultiVector >
    bool operator == ( const MultiVector& Vector ) const;
@@ -310,10 +334,10 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 4, Element, Device, Index >& operator = ( const tnlMultiVector< 4, Element, Device, Index >& Vector );
+   tnlMultiVector< 4, Real, Device, Index >& operator = ( const tnlMultiVector< 4, Real, Device, Index >& Vector );
 
    template< typename MultiVector >
-   tnlMultiVector< 4, Element, Device, Index >& operator = ( const MultiVector& Vector );
+   tnlMultiVector< 4, Real, Device, Index >& operator = ( const MultiVector& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -330,17 +354,17 @@ class tnlMultiVector< 4, Element, Device, Index > : public tnlVector< Element, D
    tnlStaticVector< 4, Index > dimensions;
 };
 
-template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 1, Element, device, Index >& Vector );
+template< typename Real, typename device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiVector< 1, Real, device, Index >& Vector );
 
-template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 2, Element, device, Index >& Vector );
+template< typename Real, typename device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiVector< 2, Real, device, Index >& Vector );
 
-template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 3, Element, device, Index >& Vector );
+template< typename Real, typename device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiVector< 3, Real, device, Index >& Vector );
 
-template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 4, Element, device, Index >& Vector );
+template< typename Real, typename device, typename Index >
+ostream& operator << ( ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
 
 
 #include <implementation/core/vectors/tnlMultiVector1D_impl.h>

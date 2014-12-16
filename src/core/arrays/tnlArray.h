@@ -37,6 +37,8 @@ class tnlArray : public virtual tnlObject
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlArray< Element, tnlHost, Index > HostType;
+   typedef tnlArray< Element, tnlCuda, Index > CudaType;
 
    tnlArray();
 
@@ -45,6 +47,10 @@ class tnlArray : public virtual tnlObject
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setSize( Index size );
 

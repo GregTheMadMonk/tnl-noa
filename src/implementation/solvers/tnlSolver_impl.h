@@ -23,9 +23,11 @@
 #include <solvers/tnlSolverConfig.h>
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          template< typename ConfTag > class ProblemConfig,
+          template< typename ConfigTag > class ProblemConfig,
           typename ConfigTag >
-bool tnlSolver< ProblemSetter, ProblemConfig, ConfigTag > :: run( int argc, char* argv[] )
+bool
+tnlSolver< ProblemSetter, ProblemConfig, ConfigTag >::
+run( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription configDescription;
@@ -35,10 +37,7 @@ bool tnlSolver< ProblemSetter, ProblemConfig, ConfigTag > :: run( int argc, char
       return false;
 
    tnlSolverInitiator< ProblemSetter, ConfigTag > solverInitiator;
-   if( ! solverInitiator. run( parameters ) )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
-
+   return solverInitiator.run( parameters );
 };
 
 #endif /* TNLSOLVER_IMPL_H_ */

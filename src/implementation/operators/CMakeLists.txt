@@ -4,8 +4,10 @@ ADD_SUBDIRECTORY( euler )
 
 SET( headers
      tnlDirichletBoundaryConditions_impl.h
+     tnlAnalyticDirichletBoundaryConditions_impl.h
      tnlFiniteDifferences_impl.h
-     tnlNeumannBoundaryConditions_impl.h )
+     tnlNeumannBoundaryConditions_impl.h
+     tnlAnalyticNeumannBoundaryConditions_impl.h )
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/implementation/operators )
 
 if( BUILD_CUDA)

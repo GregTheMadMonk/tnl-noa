@@ -26,17 +26,17 @@ void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& m
                                                                    const typename Vector::RealType& time )
 {
    //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
-   typename Mesh::IndexType i = 0;
+   IndexType i = 0;
    discreteFunction.setSize( mesh.getNumberOfCells() );
    if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
       while( i < mesh.getNumberOfCells() )
       {
-         typename Mesh::VertexType v;
-         typename Mesh::CoordinatesType c;
+         VertexType v;
+         CoordinatesType c;
          c = mesh.getCellCoordinates( i );
-         v = mesh.getCellCenter( c );
-         discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v, time );
+         v = mesh.template getCellCenter< VertexType >( c );
+         discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder, VertexType >( v, time );
          i++;
       }
    }

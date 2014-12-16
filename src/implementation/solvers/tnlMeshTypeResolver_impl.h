@@ -89,6 +89,8 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       return resolveMeshRealType< 2 >( parameters, parsedMeshType );
    if( dimensions == 3 )
       return resolveMeshRealType< 3 >( parameters, parsedMeshType );
+   cerr << "Dimensions higher than 3 are not supported." << endl;
+   return false;
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -106,6 +108,8 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       return resolveMeshIndexType< MeshDimensions, double >( parameters, parsedMeshType );
    if( parsedMeshType[ 2 ] == "long-double" )
       return resolveMeshIndexType< MeshDimensions, long double >( parameters, parsedMeshType );
+   cerr << "The type '" << parsedMeshType[ 2 ] << "' is not allowed for real type." << endl;
+   return false;
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -124,6 +128,8 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, 1 >::re
       return resolveMeshType< MeshDimensions, MeshRealType, int >( parameters, parsedMeshType );
    if( parsedMeshType[ 4 ] == "long int" )
       return resolveMeshType< MeshDimensions, MeshRealType, long int >( parameters, parsedMeshType );
+   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << endl;
+   return false;
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -142,6 +148,8 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       typedef tnlGrid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
       return tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
    }
+   cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << endl;
+   return false;
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,

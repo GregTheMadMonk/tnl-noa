@@ -22,6 +22,7 @@
 
 class tnlFile;
 class tnlHost;
+class tnlCuda;
 
 template< typename Element, typename Device, typename Index >
 class tnlArray;
@@ -39,6 +40,8 @@ class tnlSharedArray : public tnlObject
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlSharedArray< Element, tnlHost, Index > HostType;
+   typedef tnlSharedArray< Element, tnlCuda, Index > CudaType;
 
    tnlSharedArray();
 
@@ -49,7 +52,13 @@ class tnlSharedArray : public tnlObject
 
    tnlSharedArray( tnlSharedArray< Element, Device, Index >& array );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void bind( Element* _data,
               const Index _size );

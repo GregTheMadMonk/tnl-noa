@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <core/tnlCuda.h>
+#include <core/mfuncs.h>
 #include <tnlConfig.h>
  
 tnlString tnlCuda :: getDeviceType()
@@ -27,6 +28,19 @@ int tnlCuda::getGPUTransferBufferSize()
 {
    return 1 << 20;
 }
+
+int tnlCuda::getNumberOfBlocks( const int threads,
+                                const int blockSize )
+{
+   return roundUpDivision( threads, blockSize );
+}
+
+int tnlCuda::getNumberOfGrids( const int blocks,
+                               const int gridSize )
+{
+   return roundUpDivision( blocks, gridSize );
+}
+
 
 bool tnlCuda::checkDevice( const char* file_name, int line )
 {
