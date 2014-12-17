@@ -32,11 +32,15 @@ getRowLengths( const Mesh& mesh,
 {
    TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processEntities< TraversalUserData,
-                                           TraversalBoundaryEntitiesProcessor,
-                                           TraversalInteriorEntitiesProcessor >
-                                          ( mesh,
-                                            userData );
+   meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                   TraversalBoundaryEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+   meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                   TraversalInteriorEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+
 }
 
 template< int Dimensions,
@@ -56,11 +60,15 @@ getRowLengths( const MeshType& mesh,
 {
    TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processEntities< TraversalUserData,
-                                           TraversalBoundaryEntitiesProcessor,
-                                           TraversalInteriorEntitiesProcessor >
-                                          ( mesh,
-                                            userData );
+   meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                   TraversalBoundaryEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+   meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                   TraversalInteriorEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+
 }
 
 

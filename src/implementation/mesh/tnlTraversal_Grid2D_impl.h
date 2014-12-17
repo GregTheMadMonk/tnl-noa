@@ -22,41 +22,51 @@
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
 tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
 {
    /****
-    * Traversing cells
+    * Boundary conditions
     */
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
 
-   /****
-    * Boundary conditions
-    */
    for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
    {
       coordinates.y() = 0;
-      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       coordinates.y() = ySize - 1;
-      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
    }
    for( coordinates.y() = 1; coordinates.y() < ySize - 1; coordinates.y() ++ )
    {
       coordinates.x() = 0;
-      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       coordinates.x() = xSize - 1;
-      BoundaryEntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+      EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
    }
+}
 
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
+{
    /****
     * Interior cells
     */
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+
 #ifdef HAVE_OPENMP
 //#pragma omp parallel for
 #endif
@@ -64,39 +74,67 @@ processEntities( const GridType& grid,
       for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
       {
          const IndexType index = grid.getCellIndex( coordinates );
-         InteriorEntitiesProcessor::processCell( grid, userData, index, coordinates );
+         EntitiesProcessor::processCell( grid, userData, index, coordinates );
       }
 }
 
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
 tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 1 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
 {
    /****
-    * Traversing faces
+    * Traversing boundary faces
     */
 }
 
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 1 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
 {
    /****
-    * Traversing vertices
+    * Traversing interior faces
     */
 }
+
+
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >::
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
+{
+   /****
+    * Traversing boundary vertices
+    */
+}
+
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
+{
+   /****
+    * Traversing interior vertices
+    */
+}
+
 
 /***
  *
@@ -108,7 +146,7 @@ processEntities( const GridType& grid,
 template< typename Real,
           typename Index,
           typename UserData,
-          typename BoundaryEntitiesProcessor >
+          typename EntitiesProcessor >
 __global__ void tnlTraversalGrid2DBoundaryCells( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
                                                  UserData* userData,
                                                  const Index gridXIdx,
@@ -131,10 +169,10 @@ __global__ void tnlTraversalGrid2DBoundaryCells( const tnlGrid< 2, Real, tnlCuda
       if( grid->isBoundaryCell( cellCoordinates ) )
       {
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
-         BoundaryEntitiesProcessor::processCell( *grid,
-                                                 *userData,
-                                                 grid->getCellIndex( cellCoordinates ),
-                                                 cellCoordinates );
+         EntitiesProcessor::processCell( *grid,
+                                         *userData,
+                                         grid->getCellIndex( cellCoordinates ),
+                                         cellCoordinates );
       }
    }
 }
@@ -142,7 +180,7 @@ __global__ void tnlTraversalGrid2DBoundaryCells( const tnlGrid< 2, Real, tnlCuda
 template< typename Real,
           typename Index,
           typename UserData,
-          typename InteriorEntitiesProcessor >
+          typename EntitiesProcessor >
 __global__ void tnlTraversalGrid2DInteriorCells( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
                                                  UserData* userData,
                                                  const Index gridXIdx,
@@ -165,10 +203,10 @@ __global__ void tnlTraversalGrid2DInteriorCells( const tnlGrid< 2, Real, tnlCuda
       if( ! grid->isBoundaryCell( cellCoordinates ) )
       {
          //printf( "Processing interior conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
-         InteriorEntitiesProcessor::processCell( *grid,
-                                                 *userData,
-                                                 grid->getCellIndex( cellCoordinates ),
-                                                 cellCoordinates );
+         EntitiesProcessor::processCell( *grid,
+                                         *userData,
+                                         grid->getCellIndex( cellCoordinates ),
+                                         cellCoordinates );
       }
    }
 }
@@ -178,17 +216,17 @@ __global__ void tnlTraversalGrid2DInteriorCells( const tnlGrid< 2, Real, tnlCuda
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
 tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 2 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
 {
-   /****
-    * Traversing cells
-    */
 #ifdef HAVE_CUDA
+
+   /****
+    * Boundary conditions
+    */
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 
@@ -199,13 +237,10 @@ processEntities( const GridType& grid,
    const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
    const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
 
-   /****
-    * Boundary conditions
-    */
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraversalGrid2DBoundaryCells< Real, Index, UserData, BoundaryEntitiesProcessor >
+         tnlTraversalGrid2DBoundaryCells< Real, Index, UserData, EntitiesProcessor >
                                         <<< cudaBlocks, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -214,14 +249,36 @@ processEntities( const GridType& grid,
       }
    cudaThreadSynchronize();
    checkCudaDevice;
+#endif
+}
 
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 2 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
+{
+#ifdef HAVE_CUDA
    /****
     * Interior cells
     */
+   GridType* kernelGrid = tnlCuda::passToDevice( grid );
+   UserData* kernelUserData = tnlCuda::passToDevice( userData );
+
+   dim3 cudaBlockSize( 16, 16 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x(), cudaBlockSize.x );
+   cudaBlocks.y = tnlCuda::getNumberOfBlocks( grid.getDimensions().y(), cudaBlockSize.y );
+   const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
+   const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraversalGrid2DInteriorCells< Real, Index, UserData, InteriorEntitiesProcessor >
+         tnlTraversalGrid2DInteriorCells< Real, Index, UserData, EntitiesProcessor >
                                         <<< cudaBlocks, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -237,30 +294,57 @@ processEntities( const GridType& grid,
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
 tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 1 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
 {
    /****
-    * Traversing faces
+    * Traversing boundary faces
     */
 }
 
 template< typename Real,
           typename Index >
    template< typename UserData,
-             typename BoundaryEntitiesProcessor,
-             typename InteriorEntitiesProcessor >
+             typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
-processEntities( const GridType& grid,
-                 UserData& userData ) const
+tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 1 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
 {
    /****
-    * Traversing vertices
+    * Traversing interior faces
+    */
+}
+
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
+processBoundaryEntities( const GridType& grid,
+                         UserData& userData ) const
+{
+   /****
+    * Boundary interior vertices
+    */
+}
+
+
+template< typename Real,
+          typename Index >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
+processInteriorEntities( const GridType& grid,
+                         UserData& userData ) const
+{
+   /****
+    * Traversing interior vertices
     */
 }
 

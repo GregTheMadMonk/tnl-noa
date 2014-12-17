@@ -43,11 +43,15 @@ assembly( const RealType& time,
 {
    TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processEntities< TraversalUserData,
-                                           TraversalBoundaryEntitiesProcessor,
-                                           TraversalInteriorEntitiesProcessor >
-                                          ( mesh,
-                                            userData );
+   meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                   TraversalBoundaryEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+   meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                   TraversalInteriorEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+
 }
 
 template< int Dimensions,
@@ -81,11 +85,15 @@ assembly( const RealType& time,
 
    TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
    tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processEntities< TraversalUserData,
-                                           TraversalBoundaryEntitiesProcessor,
-                                           TraversalInteriorEntitiesProcessor >
-                                          ( mesh,
-                                            userData );
+   meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                   TraversalBoundaryEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+   meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                   TraversalInteriorEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+
 }
 
 

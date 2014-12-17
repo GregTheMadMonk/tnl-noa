@@ -32,10 +32,14 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 2 >
       typedef typename GridType::CoordinatesType CoordinatesType;
 
       template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 template< typename Real,
@@ -50,10 +54,14 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 1 >
       typedef typename GridType::CoordinatesType CoordinatesType;
 
       template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 template< typename Real,
@@ -68,10 +76,14 @@ class tnlTraversal< tnlGrid< 2, Real, tnlHost, Index >, 0 >
       typedef typename GridType::CoordinatesType CoordinatesType;
 
       template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 
@@ -86,12 +98,16 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
 
-      template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
 
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 template< typename Real,
@@ -106,11 +122,14 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
       typedef typename GridType::CoordinatesType CoordinatesType;
 
       template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
 
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 template< typename Real,
@@ -125,11 +144,14 @@ class tnlTraversal< tnlGrid< 2, Real, tnlCuda, Index >, 0 >
       typedef typename GridType::CoordinatesType CoordinatesType;
 
       template< typename UserData,
-                typename BoundaryEntitiesProcessor,
-                typename InteriorEntitiesProcessor >
-      void processEntities( const GridType& grid,
-                            UserData& userData ) const;
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
 
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
 };
 
 
