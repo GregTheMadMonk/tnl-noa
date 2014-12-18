@@ -47,11 +47,11 @@ assembly( const RealType& time,
    typedef typename TraversalUserData::RowColumnsType RowColumnsType;
    RowValuesType values;
    RowColumnsType columns;
-   values.setSize( maxRowLength );
-   columns.setSize( maxRowLength );
 
    if( DeviceType::DeviceType == tnlHostDevice )
    {
+      values.setSize( maxRowLength );
+      columns.setSize( maxRowLength );
       TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
       tnlTraversal< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
@@ -65,6 +65,9 @@ assembly( const RealType& time,
    }
    if( DeviceType::DeviceType == tnlCudaDevice )
    {
+      values.setSize( maxRowLength );
+      columns.setSize( maxRowLength );
+
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
@@ -130,11 +133,11 @@ assembly( const RealType& time,
    typedef typename TraversalUserData::RowColumnsType RowColumnsType;
    RowValuesType values;
    RowColumnsType columns;
-   values.setSize( maxRowLength );
-   columns.setSize( maxRowLength );
 
    if( DeviceType::DeviceType == tnlHostDevice )
    {
+      values.setSize( maxRowLength );
+      columns.setSize( maxRowLength );
       TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
       tnlTraversal< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
@@ -148,6 +151,8 @@ assembly( const RealType& time,
    }
    if( DeviceType::DeviceType == tnlCudaDevice )
    {
+      values.setSize( maxRowLength );
+      columns.setSize( maxRowLength );
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );

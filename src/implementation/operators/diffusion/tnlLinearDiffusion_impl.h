@@ -89,6 +89,7 @@ updateLinearSystem( const RealType& time,
    values[ 1 ] = 2.0 * lambdaX;
    values[ 2 ] = -lambdaX;
    rowLength = 3;
+   printf( "Linear diffusion index %d columns %d %d %d \n", index, columns[ 0 ], columns[ 1 ], columns[ 2 ] );
 }
 
 template< typename MeshReal,

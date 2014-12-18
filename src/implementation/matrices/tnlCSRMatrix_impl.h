@@ -274,6 +274,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
 
    for( IndexType i = 0; i < elements; i++ )
    {
+      printf( "Setting element row: %d column: %d value: %f \n", row, columnIndexes[ i ], values[ i ] );
       this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
       this->values[ elementPointer ] = values[ i ];
       elementPointer++;
