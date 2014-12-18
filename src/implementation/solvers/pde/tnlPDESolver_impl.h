@@ -33,6 +33,8 @@ tnlPDESolver()
   ioCpuTimer( 0 ),
   computeCpuTimer( 0 )
 {
+   this->dofs.setName( "dofs" );
+   this->auxiliaryDofs.setName( "auxiliaryDofs" );
 }
 
 template< typename Problem,
@@ -60,23 +62,29 @@ setup( const tnlParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   cout << "Loading a mesh from the file " << meshFile << "...";
    if( ! this->mesh.load( meshFile ) )
    {
+      cerr << endl;
       cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
       cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << endl;
       return false;
    }
+   cout << " [ OK ] " << endl;
 
    /****
     * Set DOFs (degrees of freedom)
     */
    tnlAssert( problem->getDofs( this->mesh ) != 0, );
+   cout << "Allocating dofs ... ";
    if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) ||
        ! this->auxiliaryDofs.setSize( problem->getAuxiliaryDofs( this->mesh ) ) )
    {
+      cerr << endl;
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
    }
+   cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
    this->auxiliaryDofs.setValue( 0.0 );
    this->problem->bindDofs( mesh, this->dofs );
@@ -85,9 +93,11 @@ setup( const tnlParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
+   cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, mesh, this->dofs, this->auxiliaryDofs ) )
       return false;
+   cout << " [ OK ]" << endl;
 
    /****
     * Initialize the time discretisation

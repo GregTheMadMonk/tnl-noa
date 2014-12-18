@@ -30,17 +30,42 @@ getRowLengths( const Mesh& mesh,
                BoundaryConditions& boundaryConditions,
                RowLengthsVector& rowLengths ) const
 {
-   TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                   TraversalBoundaryEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
-   meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                   TraversalInteriorEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
+   if( DeviceType::DeviceType == tnlHostDevice )
+   {
+      TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+   }
+   if( DeviceType::DeviceType == tnlCudaDevice )
+   {
+      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
+      RowLengthsVector* kernelRowLengths = tnlCuda::passToDevice( rowLengths );
+      TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRowLengths );
+      checkCudaDevice;
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
 
+      checkCudaDevice;
+      tnlCuda::freeFromDevice( kernelDifferentialOperator );
+      tnlCuda::freeFromDevice( kernelBoundaryConditions );
+      tnlCuda::freeFromDevice( kernelRowLengths );
+      checkCudaDevice;
+   }
 }
 
 template< int Dimensions,
@@ -58,17 +83,42 @@ getRowLengths( const MeshType& mesh,
                const BoundaryConditions& boundaryConditions,
                RowLengthsVector& rowLengths ) const
 {
-   TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                   TraversalBoundaryEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
-   meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                   TraversalInteriorEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
+   if( DeviceType::DeviceType == tnlHostDevice )
+   {
+      TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+   }
+   if( DeviceType::DeviceType == tnlCudaDevice )
+   {
+      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
+      RowLengthsVector* kernelRowLengths = tnlCuda::passToDevice( rowLengths );
+      TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRowLengths );
+      checkCudaDevice;
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
 
+      checkCudaDevice;
+      tnlCuda::freeFromDevice( kernelDifferentialOperator );
+      tnlCuda::freeFromDevice( kernelBoundaryConditions );
+      tnlCuda::freeFromDevice( kernelRowLengths );
+      checkCudaDevice;
+   }
 }
 
 

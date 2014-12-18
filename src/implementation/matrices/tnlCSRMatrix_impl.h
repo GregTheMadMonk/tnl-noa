@@ -550,8 +550,8 @@ void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
-      IndexType elementPtr = this->rowPointers[ row ];
-      const IndexType rowEnd = this->rowPointers[ row + 1 ];
+      IndexType elementPtr = this->rowPointers.getElement( row );
+      const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
       IndexType column;
       while( elementPtr < rowEnd &&
              ( column = this->columnIndexes.getElement( elementPtr ) ) < this->columns &&

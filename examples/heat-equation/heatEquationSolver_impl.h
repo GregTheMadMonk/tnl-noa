@@ -265,8 +265,8 @@ assemblyLinearSystem( const RealType& time,
                                                           u,
                                                           matrix,
                                                           b );
-   //matrix.print( cout );
-   //abort();
+   matrix.print( cout );
+   abort();
 }
 
 template< typename Mesh,

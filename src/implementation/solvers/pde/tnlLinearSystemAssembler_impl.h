@@ -41,17 +41,65 @@ assembly( const RealType& time,
           MatrixType& matrix,
           DofVector& b ) const
 {
-   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                   TraversalBoundaryEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
-   meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                   TraversalInteriorEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
+   const IndexType maxRowLength = matrix.getMaxRowLength();
+   tnlAssert( maxRowLength > 0, );
+   typedef typename TraversalUserData::RowValuesType RowValuesType;
+   typedef typename TraversalUserData::RowColumnsType RowColumnsType;
+   RowValuesType values;
+   RowColumnsType columns;
+   values.setSize( maxRowLength );
+   columns.setSize( maxRowLength );
 
+   if( DeviceType::DeviceType == tnlHostDevice )
+   {
+      TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+   }
+   if( DeviceType::DeviceType == tnlCudaDevice )
+   {
+      RealType* kernelTime = tnlCuda::passToDevice( time );
+      RealType* kernelTau = tnlCuda::passToDevice( tau );
+      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
+      RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
+      DofVector* kernelU = tnlCuda::passToDevice( u );
+      DofVector* kernelB = tnlCuda::passToDevice( b );
+      MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
+      RowValuesType* kernelValues = tnlCuda::passToDevice( values );
+      RowColumnsType* kernelColumns = tnlCuda::passToDevice( columns );
+      TraversalUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB, *kernelColumns, *kernelValues );
+      checkCudaDevice;
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+
+      checkCudaDevice;
+      tnlCuda::freeFromDevice( kernelTime );
+      tnlCuda::freeFromDevice( kernelTau );
+      tnlCuda::freeFromDevice( kernelDifferentialOperator );
+      tnlCuda::freeFromDevice( kernelBoundaryConditions );
+      tnlCuda::freeFromDevice( kernelRightHandSide );
+      tnlCuda::freeFromDevice( kernelU );
+      tnlCuda::freeFromDevice( kernelB );
+      tnlCuda::freeFromDevice( kernelMatrix );
+      tnlCuda::freeFromDevice( kernelColumns );
+      tnlCuda::freeFromDevice( kernelValues );
+      checkCudaDevice;
+   }
 }
 
 template< int Dimensions,
@@ -78,22 +126,63 @@ assembly( const RealType& time,
 {
    const IndexType maxRowLength = matrix.getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
-   typename TraversalUserData::RowValuesType values;
-   typename TraversalUserData::RowColumnsType columns;
+   typedef typename TraversalUserData::RowValuesType RowValuesType;
+   typedef typename TraversalUserData::RowColumnsType RowColumnsType;
+   RowValuesType values;
+   RowColumnsType columns;
    values.setSize( maxRowLength );
    columns.setSize( maxRowLength );
 
-   TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                   TraversalBoundaryEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
-   meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                   TraversalInteriorEntitiesProcessor >
-                                                 ( mesh,
-                                                   userData );
+   if( DeviceType::DeviceType == tnlHostDevice )
+   {
+      TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b, columns, values );
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+   }
+   if( DeviceType::DeviceType == tnlCudaDevice )
+   {
+      RealType* kernelTime = tnlCuda::passToDevice( time );
+      RealType* kernelTau = tnlCuda::passToDevice( tau );
+      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
+      RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
+      DofVector* kernelU = tnlCuda::passToDevice( u );
+      DofVector* kernelB = tnlCuda::passToDevice( b );
+      MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
+      RowValuesType* kernelValues = tnlCuda::passToDevice( values );
+      RowColumnsType* kernelColumns = tnlCuda::passToDevice( columns );
+      TraversalUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB, *kernelColumns, *kernelValues );
+      checkCudaDevice;
+      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
 
+      checkCudaDevice;
+      tnlCuda::freeFromDevice( kernelTime );
+      tnlCuda::freeFromDevice( kernelTau );
+      tnlCuda::freeFromDevice( kernelDifferentialOperator );
+      tnlCuda::freeFromDevice( kernelBoundaryConditions );
+      tnlCuda::freeFromDevice( kernelRightHandSide );
+      tnlCuda::freeFromDevice( kernelU );
+      tnlCuda::freeFromDevice( kernelB );
+      tnlCuda::freeFromDevice( kernelMatrix );
+      tnlCuda::freeFromDevice( kernelColumns );
+      tnlCuda::freeFromDevice( kernelValues );
+      checkCudaDevice;
+   }
 }
 
 

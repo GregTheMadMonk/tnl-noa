@@ -128,7 +128,7 @@ __global__ void tnlTraversalGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda
    {
       if( grid->isBoundaryCell( cellCoordinates ) )
       {
-         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+         printf( "Processing boundary conditions at %d \n", cellCoordinates.x() );
          EntitiesProcessor::processCell( *grid,
                                          *userData,
                                          grid->getCellIndex( cellCoordinates ),
@@ -150,12 +150,13 @@ __global__ void tnlTraversalGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda
    typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
 
-   CoordinatesType coordinates;
-   coordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( coordinates.x() > 0 && coordinates.x() < grid->getDimensions().x() - 1 )
+   CoordinatesType cellCoordinates;
+   cellCoordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( cellCoordinates.x() > 0 && cellCoordinates.x() < grid->getDimensions().x() - 1 )
    {
-      const IndexType index = grid->getCellIndex( coordinates );
-      EntitiesProcessor::processCell( *grid, *userData, index, coordinates );
+      printf( "Processing interior cell at %d \n", cellCoordinates.x() );
+      const IndexType index = grid->getCellIndex( cellCoordinates );
+      EntitiesProcessor::processCell( *grid, *userData, index, cellCoordinates );
    }
 }
 

@@ -25,18 +25,18 @@ class tnlMatrixSetterTraversalUserData
 {
    public:
 
-      const DifferentialOperator& differentialOperator;
+      const DifferentialOperator* differentialOperator;
 
-      const BoundaryConditions& boundaryConditions;
+      const BoundaryConditions* boundaryConditions;
 
-      RowLengthsVector& rowLengths;
+      RowLengthsVector* rowLengths;
 
       tnlMatrixSetterTraversalUserData( const DifferentialOperator& differentialOperator,
                                         const BoundaryConditions& boundaryConditions,
                                         RowLengthsVector& rowLengths )
-      : differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rowLengths( rowLengths )
+      : differentialOperator( &differentialOperator ),
+        boundaryConditions( &boundaryConditions ),
+        rowLengths( &rowLengths )
       {};
 
 };
@@ -74,8 +74,8 @@ class tnlMatrixSetter
                                     TraversalUserData& userData,
                                     const IndexType index )
          {
-            userData.rowLengths[ index ] =
-                     userData.boundaryConditions.getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index );
          }
 
    };
@@ -92,8 +92,8 @@ class tnlMatrixSetter
                                     TraversalUserData& userData,
                                     const IndexType index )
          {
-            userData.rowLengths[ index ] =
-                     userData.differentialOperator.getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index );
          }
 
    };
@@ -140,8 +140,8 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
-            userData.rowLengths[ index ] =
-                     userData.boundaryConditions.getLinearSystemRowLength( mesh, index, coordinates );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
          }
 
    };
@@ -158,8 +158,8 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
-            userData.rowLengths[ index ] =
-                     userData.differentialOperator.getLinearSystemRowLength( mesh, index, coordinates );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
          }
 
    };

@@ -57,8 +57,10 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshType& mesh )
 {
+   cout << "Setting up the linear system...";
    if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
       return false;
+   cout << " [ OK ]" << endl;
    if( this->matrix.getRows() == 0 || this->matrix.getColumns() == 0 )
    {
       cerr << "The matrix for the semi-implicit time stepping was not set correctly." << endl;

@@ -32,23 +32,23 @@ class tnlLinearSystemAssemblerTraversalUserData
       typedef tnlVector< typename MatrixType::RealType, DeviceType, typename MatrixType::IndexType > RowValuesType;
       typedef tnlVector< typename MatrixType::IndexType, DeviceType, typename MatrixType::IndexType > RowColumnsType;
 
-      const Real &time;
+      const Real* time;
 
-      const Real &tau;
+      const Real* tau;
 
-      const DifferentialOperator& differentialOperator;
+      const DifferentialOperator* differentialOperator;
 
-      const BoundaryConditions& boundaryConditions;
+      const BoundaryConditions* boundaryConditions;
 
-      const RightHandSide& rightHandSide;
+      const RightHandSide* rightHandSide;
 
-      DofVector &u, &b;
+      DofVector *u, *b;
 
-      Matrix &matrix;
+      Matrix *matrix;
 
-      RowValuesType& values;
+      RowValuesType* values;
 
-      RowColumnsType& columns;
+      RowColumnsType* columns;
 
       tnlLinearSystemAssemblerTraversalUserData( const Real& time,
                                                  const Real& tau,
@@ -60,16 +60,16 @@ class tnlLinearSystemAssemblerTraversalUserData
                                                  DofVector& b,
                                                  RowColumnsType& columns,
                                                  RowValuesType& values )
-      : time( time ),
-        tau( tau ),
-        differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rightHandSide( rightHandSide ),
-        u( u ),
-        b( b ),
-        matrix( matrix ),
-        columns( columns ),
-        values( values )
+      : time( &time ),
+        tau( &tau ),
+        differentialOperator( &differentialOperator ),
+        boundaryConditions( &boundaryConditions ),
+        rightHandSide( &rightHandSide ),
+        u( &u ),
+        b( &b ),
+        matrix( &matrix ),
+        columns( &columns ),
+        values( &values )
       {};
 
    protected:
@@ -122,18 +122,18 @@ class tnlLinearSystemAssembler
                                     const IndexType index )
          {
             typename MatrixType::IndexType rowLength;
-            userData.boundaryConditions.updateLinearSystem( userData.time,
+            userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                             mesh,
                                                             index,
-                                                            userData.u,
-                                                            userData.b,
-                                                            userData.columns.getData(),
-                                                            userData.values.getData(),
+                                                            *userData.u,
+                                                            *userData.b,
+                                                            userData.columns->getData(),
+                                                            userData.values->getData(),
                                                             rowLength );
-            userData.matrix.setRowFast( index,
-                                        userData.columns.getData(),
-                                        userData.values.getData(),
-                                        rowLength );
+            userData.matrix->setRowFast( index,
+                                         userData.columns->getData(),
+                                         userData.values->getData(),
+                                         rowLength );
          }
 
    };
@@ -151,26 +151,26 @@ class tnlLinearSystemAssembler
                                     const IndexType index )
          {
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            userData.b[ index ] = userData.u[ index ] +
+            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
                                   FunctionAdapter::getValue( mesh,
-                                                             userData.rightHandSide,
+                                                             *userData.rightHandSide,
                                                              index,
-                                                             userData.time );
+                                                             *userData.time );
             typename MatrixType::IndexType rowLength;
-            userData.differentialOperator.updateLinearSystem( userData.time,
-                                                              userData.tau,
-                                                              mesh,
-                                                              index,
-                                                              userData.u,
-                                                              userData.b,
-                                                              userData.columns.getData(),
-                                                              userData.values.getData(),
-                                                              rowLength );
-            userData.matrix.setRowFast( index, 
-                                        userData.columns.getData(),
-                                        userData.values.getData(),
-                                        rowLength );
-            userData.matrix.addElement( index, index, 1.0, 1.0 );
+            userData.differentialOperator->updateLinearSystem( *userData.time,
+                                                               *userData.tau,
+                                                               mesh,
+                                                               index,
+                                                               *userData.u,
+                                                               *userData.b,
+                                                               userData.columns->getData(),
+                                                               userData.values->getData(),
+                                                               rowLength );
+            userData.matrix->setRowFast( index,
+                                         userData.columns->getData(),
+                                         userData.values->getData(),
+                                         rowLength );
+            userData.matrix->addElement( index, index, 1.0, 1.0 );
          }
 
    };
@@ -229,20 +229,21 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
+            printf( "index = %d \n", index );
             typename MatrixType::IndexType rowLength;
-            userData.boundaryConditions.updateLinearSystem( userData.time,
-                                                            mesh,
-                                                            index,
-                                                            coordinates,
-                                                            userData.u,
-                                                            userData.b,
-                                                            userData.columns.getData(),
-                                                            userData.values.getData(),
-                                                            rowLength );
-            userData.matrix.setRowFast( index,
-                                        userData.columns.getData(),
-                                        userData.values.getData(),
-                                        rowLength );
+            userData.boundaryConditions->updateLinearSystem( *userData.time,
+                                                             mesh,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.u,
+                                                             *userData.b,
+                                                             userData.columns->getData(),
+                                                             userData.values->getData(),
+                                                             rowLength );
+            userData.matrix->setRowFast( index,
+                                         userData.columns->getData(),
+                                         userData.values->getData(),
+                                         rowLength );
          }
 
    };
@@ -259,30 +260,31 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
+            printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            userData.b[ index ] = userData.u[ index ] +
+            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
                                   FunctionAdapter::getValue( mesh,
-                                                             userData.rightHandSide,
+                                                             *userData.rightHandSide,
                                                              index,
                                                              coordinates,
-                                                             userData.time );
+                                                             *userData.time );
             
             typename MatrixType::IndexType rowLength;
-            userData.differentialOperator.updateLinearSystem( userData.time,
-                                                              userData.tau,
-                                                              mesh,
-                                                              index,
-                                                              coordinates,
-                                                              userData.u,
-                                                              userData.b,
-                                                              userData.columns.getData(),
-                                                              userData.values.getData(),
-                                                              rowLength );
-            userData.matrix.setRowFast( index,
-                                        userData.columns.getData(),
-                                        userData.values.getData(),
-                                        rowLength );
-            userData.matrix.addElementFast( index, index, 1.0, 1.0 );
+            userData.differentialOperator->updateLinearSystem( *userData.time,
+                                                               *userData.tau,
+                                                               mesh,
+                                                               index,
+                                                               coordinates,
+                                                               *userData.u,
+                                                               *userData.b,
+                                                               userData.columns->getData(),
+                                                               userData.values->getData(),
+                                                               rowLength );
+            userData.matrix->setRowFast( index,
+                                         userData.columns->getData(),
+                                         userData.values->getData(),
+                                         rowLength );
+            userData.matrix->addElementFast( index, index, 1.0, 1.0 );
          }
 
    };
