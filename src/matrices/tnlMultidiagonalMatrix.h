@@ -36,6 +36,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
    typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
    typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlMatrix< Real, Device, Index > BaseType;
+   typedef typename BaseType::MatrixRow MatrixRow;
 
 
    tnlMultidiagonalMatrix();
@@ -145,9 +147,19 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   void getRow( const IndexType row,
+   /*void getRow( const IndexType row,
                 IndexType* columns,
-                RealType* values ) const;
+                RealType* values ) const;*/
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   MatrixRow getRow( const IndexType rowIndex );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
 #ifdef HAVE_CUDA

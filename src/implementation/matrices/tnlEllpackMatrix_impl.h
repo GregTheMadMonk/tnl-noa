@@ -437,10 +437,10 @@ void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
 {
-   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType elementPtr = DDCType::getRowBegin( *this, row );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
-   const IndexType step = DDCType::getElementStep( *this );
+   //typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   IndexType elementPtr = DeviceDependentCode::getRowBegin( *this, row );
+   const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+   const IndexType step = DeviceDependentCode::getElementStep( *this );
 
    for( IndexType i = 0; i < this->rowLengths; i++ )
    {
@@ -450,7 +450,7 @@ void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 void tnlEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
@@ -468,6 +468,40 @@ void tnlEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
       values[ i ] = this->values.getElement( elementPtr );
       elementPtr += step;
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
+tnlEllpackMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
+   return MatrixRow( &this->columns[ rowBegin ],
+                     &this->values[ rowBegin ],
+                     this->rowLengths,
+                     DeviceDependentCode::getElementStep( *this ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
+tnlEllpackMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
+   return MatrixRow( &this->columns[ rowBegin ],
+                     &this->values[ rowBegin ],
+                     this->rowLengths,
+                     DeviceDependentCode::getElementStep( *this ) );
 }
 
 template< typename Real,

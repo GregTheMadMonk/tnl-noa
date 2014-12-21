@@ -24,14 +24,31 @@ class tnlMatrixRow
 {
    public:
 
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       tnlMatrixRow();
 
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      tnlMatrixRow( Index* columns,
+                    Real* values,
+                    const Index length,
+                    const Index step );
+
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       void bind( Index* columns,
                  Real* values,
                  const Index length,
                  const Index step );
 
-      Real setElement( const Index& elementIndex,
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
+      void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );
 

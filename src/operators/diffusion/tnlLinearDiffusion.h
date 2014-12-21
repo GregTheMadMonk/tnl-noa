@@ -47,7 +47,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -58,9 +58,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                                const CoordinatesType& coordinates,
                                Vector& u,
                                Vector& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 
 };
 
@@ -99,7 +97,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -110,9 +108,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                                const CoordinatesType& coordinates,
                                Vector& u,
                                Vector& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 };
 
 
@@ -150,7 +146,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -161,9 +157,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                const CoordinatesType& coordinates,
                                Vector& u,
                                Vector& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 
 };
 

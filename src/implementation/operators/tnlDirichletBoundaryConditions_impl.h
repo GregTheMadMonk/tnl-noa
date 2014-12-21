@@ -132,6 +132,7 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -143,14 +144,10 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
-   columns[ 0 ] = index;
-   values[ 0 ] = 1.0;
+   matrixRow.setElement( 0, index, 1.0 );
    b[ index ] = this->vector[ index ];
-   rowLength = 1;
 }
 
 

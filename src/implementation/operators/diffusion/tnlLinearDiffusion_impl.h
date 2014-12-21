@@ -64,7 +64,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -77,19 +77,13 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
-   columns[ 0 ] = mesh.getCellXPredecessor( index );
-   columns[ 1 ] = index;
-   columns[ 2 ] = mesh.getCellXSuccessor( index );
-   values[ 0 ] = -lambdaX;
-   values[ 1 ] = 2.0 * lambdaX;
-   values[ 2 ] = -lambdaX;
-   rowLength = 3;
-   printf( "Linear diffusion index %d columns %d %d %d \n", index, columns[ 0 ], columns[ 1 ], columns[ 2 ] );
+   matrixRow.setElement( 0, mesh.getCellXPredecessor( index ),     - lambdaX );
+   matrixRow.setElement( 1, index,                             2.0 * lambdaX );
+   matrixRow.setElement( 2, mesh.getCellXSuccessor( index ),       - lambdaX );
+   //printf( "Linear diffusion index %d columns %d %d %d \n", index, columns[ 0 ], columns[ 1 ], columns[ 2 ] );
 }
 
 template< typename MeshReal,
@@ -155,7 +149,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -168,23 +162,15 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
-   columns[ 0 ] = mesh.getCellYPredecessor( index );
-   columns[ 1 ] = mesh.getCellXPredecessor( index );
-   columns[ 2 ] = index;
-   columns[ 3 ] = mesh.getCellXSuccessor( index );
-   columns[ 4 ] = mesh.getCellYSuccessor( index );
-   values[ 0 ] = -lambdaY;
-   values[ 1 ] = -lambdaX;
-   values[ 2 ] = 2.0 * ( lambdaX + lambdaY );
-   values[ 3 ] = -lambdaX;
-   values[ 4 ] = -lambdaY;
-   rowLength = 5;
+   matrixRow.setElement( 0, mesh.getCellYPredecessor( index ), -lambdaY );
+   matrixRow.setElement( 1, mesh.getCellXPredecessor( index ), -lambdaX );
+   matrixRow.setElement( 2, index,                             2.0 * ( lambdaX + lambdaY ) );
+   matrixRow.setElement( 3, mesh.getCellXSuccessor( index ),   -lambdaX );
+   matrixRow.setElement( 4, mesh.getCellYSuccessor( index ),   -lambdaY );
 }
 
 
@@ -253,7 +239,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector >
+   template< typename Vector, typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -266,28 +252,18 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
    const RealType lambdaZ = tau * mesh.getHzSquareInverse();
-   columns[ 0 ] = mesh.getCellZPredecessor( index );
-   columns[ 1 ] = mesh.getCellYPredecessor( index );
-   columns[ 2 ] = mesh.getCellXPredecessor( index );
-   columns[ 3 ] = index;
-   columns[ 4 ] = mesh.getCellXSuccessor( index );
-   columns[ 5 ] = mesh.getCellYSuccessor( index );
-   columns[ 6 ] = mesh.getCellZSuccessor( index );
-   values[ 0 ] = -lambdaZ;
-   values[ 1 ] = -lambdaY;
-   values[ 2 ] = -lambdaX;
-   values[ 3 ] = 2.0 * ( lambdaX + lambdaY + lambdaZ );
-   values[ 4 ] = -lambdaX;
-   values[ 5 ] = -lambdaY;
-   values[ 6 ] = -lambdaZ;
-   rowLength = 7;
+   matrixRow.setElement( 0, mesh.getCellZPredecessor( index ), -lambdaZ );
+   matrixRow.setElement( 1, mesh.getCellYPredecessor( index ), -lambdaY );
+   matrixRow.setElement( 2, mesh.getCellXPredecessor( index ), -lambdaX );
+   matrixRow.setElement( 3, index,                             2.0 * ( lambdaX + lambdaY + lambdaZ ) );
+   matrixRow.setElement( 4, mesh.getCellXSuccessor( index ),   -lambdaX );
+   matrixRow.setElement( 5, mesh.getCellYSuccessor( index ),   -lambdaY );
+   matrixRow.setElement( 6, mesh.getCellZSuccessor( index ),   -lambdaZ );
 }
 
 

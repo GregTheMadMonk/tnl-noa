@@ -364,7 +364,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType ro
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 void tnlTridiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
@@ -382,7 +382,34 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
          elementPointer++;
       }
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
+tnlTridiagonalMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   tnlAssert( false, );
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
+tnlTridiagonalMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   tnlAssert( false, );
+}
+
 
 template< typename Real,
           typename Device,

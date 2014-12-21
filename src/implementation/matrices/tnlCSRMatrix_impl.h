@@ -395,12 +395,14 @@ void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
-void tnlCSRMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                  IndexType* columns,
-                                                  RealType* values ) const
+void
+tnlCSRMatrix< Real, Device, Index >::
+getRow( const IndexType row,
+        IndexType* columns,
+        RealType* values ) const
 {
    IndexType elementPointer = this->rowPointers.getElement( row );
    const IndexType rowLength = this->rowPointers.getElement( row + 1 ) - elementPointer;
@@ -410,6 +412,42 @@ void tnlCSRMatrix< Real, Device, Index >::getRow( const IndexType row,
       values[ i ] = this->values.getElement( elementPointer );
       elementPointer++;
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
+tnlCSRMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   const IndexType rowOffset = this->rowPointers[ rowIndex ];
+   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
+                     &this->values[ rowOffset ],
+                     rowLength,
+                     1 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
+tnlCSRMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   const IndexType rowOffset = this->rowPointers[ rowIndex ];
+   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
+                     &this->values[ rowOffset ],
+                     rowLength,
+                     1 );
 }
 
 template< typename Real,

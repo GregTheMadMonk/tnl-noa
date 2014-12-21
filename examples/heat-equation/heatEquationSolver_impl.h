@@ -180,6 +180,7 @@ makeSnapshot( const RealType& time,
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
    this->bindDofs( mesh, dofs );
+   //cout << "dofs = " << dofs << endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->solution.save( fileName ) )
@@ -265,8 +266,10 @@ assemblyLinearSystem( const RealType& time,
                                                           u,
                                                           matrix,
                                                           b );
-   matrix.print( cout );
-   abort();
+   //matrix.print( cout );
+   //cout << endl << b << endl;
+   //cout << endl << u << endl;
+   //abort();
 }
 
 template< typename Mesh,

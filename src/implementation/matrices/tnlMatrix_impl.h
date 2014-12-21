@@ -115,7 +115,9 @@ bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
       return false;
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
-      matrix.getRow( row, columns.getData(), values.getData() );
+      tnlAssert( false, );
+      // TODO: fix this
+      //matrix.getRow( row, columns.getData(), values.getData() );
       this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
    }
    return true;

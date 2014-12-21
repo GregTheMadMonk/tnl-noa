@@ -941,8 +941,44 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getChunkFast( const IndexTy
    }
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
+tnlChunkedEllpackMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   const IndexType rowOffset = this->rowPointers[ rowIndex ];
+   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+   return MatrixRow( &this->columns[ rowOffset ],
+                     &this->values[ rowOffset ],
+                     rowLength,
+                     1 );
+}
 
 template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
+tnlChunkedEllpackMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   const IndexType rowOffset = this->rowPointers[ rowIndex ];
+   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+   return MatrixRow( &this->columns[ rowOffset ],
+                     &this->values[ rowOffset ],
+                     rowLength,
+                     1 );
+}
+
+
+/*template< typename Real,
           typename Device,
           typename Index >
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
@@ -969,7 +1005,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row
       chunkIndex++;
       offset += chunkSize;
    }
-}
+}*/
 
 template< typename Real,
           typename Device,

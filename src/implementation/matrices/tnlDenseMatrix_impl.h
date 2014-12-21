@@ -322,7 +322,7 @@ void tnlDenseMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 void tnlDenseMatrix< Real, Device, Index >::getRow( const IndexType row,
@@ -334,8 +334,43 @@ void tnlDenseMatrix< Real, Device, Index >::getRow( const IndexType row,
       columns[ i ] = i;
       values[ i ] = this->getElement( row, i );
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
+tnlDenseMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   tnlAssert( false, ); // TODO: implement
+   /*const IndexType rowOffset = this->getElementIndex( row, 0 );
+   const IndexType step = this->getElementIndex( row, 1 ) - rowOffset;
+   return MatrixRow( &this->values[ rowOffset ],
+                     this->columns,
+                     step );*/
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
+tnlDenseMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   tnlAssert( false, ); // TODO: implement
+   /*const IndexType rowOffset = this->getElementIndex( row, 0 );
+   const IndexType step = this->getElementIndex( row, 1 ) - rowOffset;
+   return MatrixRow( &this->values[ rowOffset ],
+                     this->columns,
+                     step );*/
+}
 
 template< typename Real,
           typename Device,

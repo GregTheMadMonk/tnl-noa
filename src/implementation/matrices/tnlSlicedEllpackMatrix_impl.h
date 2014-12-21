@@ -449,7 +449,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowFast( const
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
@@ -467,6 +467,44 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRow( const Ind
       elementPtr += step;
       i++;
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
+tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
+getRow( const IndexType rowIndex )
+{
+   Index rowBegin, rowEnd, step;
+   DeviceDependentCode::initRowTraverse( *this, rowIndex, rowBegin, rowEnd, step );
+   return MatrixRow( &this->columns[ rowBegin ],
+                     &this->values[ rowBegin ],
+                     ( rowEnd - rowBegin ) / step,
+                     step );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
+tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
+getRow( const IndexType rowIndex ) const
+{
+   Index rowBegin, rowEnd, step;
+   DeviceDependentCode::initRowTraverse( *this, rowIndex, rowBegin, rowEnd, step );
+   return MatrixRow( &this->columns[ rowBegin ],
+                     &this->values[ rowBegin ],
+                     ( rowEnd - rowBegin ) / step,
+                     step );
 }
 
 template< typename Real,

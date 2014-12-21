@@ -56,6 +56,8 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlSlicedEllpackMatrix< Real, Device, Index > ThisType;
    typedef tnlSlicedEllpackMatrix< Real, tnlHost, Index > HostType;
    typedef tnlSlicedEllpackMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlSparseMatrix< Real, Device, Index > BaseType;
+   typedef typename BaseType::MatrixRow MatrixRow;
 
 
    tnlSlicedEllpackMatrix();
@@ -150,9 +152,19 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   void getRow( const IndexType row,
+   /*void getRow( const IndexType row,
                 IndexType* columns,
-                RealType* values ) const;
+                RealType* values ) const;*/
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   MatrixRow getRow( const IndexType rowIndex );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
    #ifdef HAVE_CUDA

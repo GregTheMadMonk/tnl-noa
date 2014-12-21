@@ -39,6 +39,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlCSRMatrix< Real, Device, Index > ThisType;
    typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
    typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlSparseMatrix< Real, Device, Index > BaseType;
+   typedef typename BaseType::MatrixRow MatrixRow;
 
 
    enum SPMVCudaKernel { scalar, vector, hybrid };
@@ -131,10 +133,15 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   MatrixRow getRow( const IndexType rowIndex );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
 #ifdef HAVE_CUDA

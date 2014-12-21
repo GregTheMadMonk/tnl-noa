@@ -21,6 +21,7 @@
 #include <core/tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
+#include <matrices/tnlMatrixRow.h>
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -34,6 +35,7 @@ class tnlMatrix : public virtual tnlObject
    typedef Index IndexType;
    typedef tnlVector< IndexType, DeviceType, IndexType > RowLengthsVector;
    typedef tnlVector< RealType, DeviceType, IndexType > ValuesVector;
+   typedef tnlMatrixRow< RealType, IndexType > MatrixRow;
 
    tnlMatrix();
 
@@ -94,9 +96,15 @@ class tnlMatrix : public virtual tnlObject
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   virtual void getRow( const IndexType row,
-                        IndexType* columns,
-                        RealType* values ) const = 0;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   MatrixRow getRow( const IndexType rowIndex );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    tnlMatrix< RealType, DeviceType, IndexType >& operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& );
 

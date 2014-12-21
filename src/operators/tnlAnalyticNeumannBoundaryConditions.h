@@ -96,6 +96,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIn
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -105,9 +106,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIn
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 
 };
 
@@ -153,6 +152,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIn
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -162,9 +162,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIn
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 };
 
 /****
@@ -210,6 +208,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIn
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -219,9 +218,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIn
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 };
 
 template< typename Mesh,

@@ -428,7 +428,7 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType 
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
@@ -446,6 +446,32 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
          pointer++;
       }
    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+typename tnlMultidiagonalMatrix< Real, Device, Index >::MatrixRow
+tnlMultidiagonalMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex )
+{
+   tnlAssert( false, );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+const typename tnlMultidiagonalMatrix< Real, Device, Index >::MatrixRow
+tnlMultidiagonalMatrix< Real, Device, Index >::
+getRow( const IndexType rowIndex ) const
+{
+   tnlAssert( false, );
 }
 
 template< typename Real,

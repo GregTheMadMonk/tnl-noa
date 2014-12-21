@@ -33,6 +33,8 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef tnlVector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
+   typedef tnlMatrix< Real, Device, Index > BaseType;
+   typedef typename BaseType::MatrixRow MatrixRow;
 
    tnlSparseMatrix();
 

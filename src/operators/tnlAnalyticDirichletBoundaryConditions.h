@@ -85,6 +85,7 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -94,9 +95,7 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 
    protected:
 

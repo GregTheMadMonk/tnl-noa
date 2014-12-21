@@ -1,10 +1,10 @@
 #!/bin/bash
 
-device="cuda"
+device="host"
 dimensions="1D 2D 3D"
-dimensions="1D"
+#dimensions="1D"
 sizes1D="16 32 64 128 256 512"
-sizes1D="16 32 64"
+#sizes1D="256"
 sizes2D="16 32 64 128 256 512"
 #sizes2D="8"
 sizes3D="16 32 64 128"
@@ -12,7 +12,7 @@ testFunctions="exp-bump"
 snapshotPeriod=0.1
 finalTime=1.5
 timeDependence="cosine"
-solverName="tnl-heat-equation-eoc-test"
+solverName="tnl-heat-equation-eoc-test-dbg"
 #solverName="gdb --args tnl-heat-equation-eoc-test-dbg"
 #
 
@@ -88,12 +88,14 @@ solve()
                  --mesh mesh.tnl \
                  --initial-condition exact-u-00000.tnl \
                  --time-discretisation ${timeDiscretisation} \
-                 --time-step 0.01 \
+                 --time-step 10 \
                  --time-step-order 2 \
                  --discrete-solver ${discreteSolver} \
                  --merson-adaptivity 1.0e-5 \
+                 --sor-omega 1.95 \
                  --gmres-restarting 10 \
                  --min-iterations 20 \
+                 --convergence-residue 1.0e-12 \
                  --test-function ${testFunction}\
                  --amplitude ${amplitude} \
                  --wave-length ${waveLength} \
@@ -171,8 +173,8 @@ runTest()
                echo "========================================================================="
                echo "===                   STARTING THE SOLVER                             ==="
                echo "========================================================================="
-               solve explicit merson
-               #solve semi-implicit gmres
+               #solve explicit merson
+               solve semi-implicit gmres
                mv computation-in-progress computation-done
             fi            
             echo "========================================================================="

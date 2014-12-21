@@ -116,6 +116,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -127,28 +128,21 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellXSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                            1.0 );
+      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    else
    {
-      columns[ 0 ] = mesh.getCellXPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
-   rowLength = 2;
 }
 
 /****
@@ -221,6 +215,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -232,44 +227,33 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellXSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                           1.0 );
+      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      columns[ 0 ] = mesh.getCellXPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
    if( coordinates.y() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellYSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                           1.0 );
+      matrixRow.setElement( 1, mesh.getCellYSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      columns[ 0 ] = mesh.getCellYPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellYPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
-   rowLength = 2;
 }
 
 /****
@@ -352,6 +336,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -363,60 +348,45 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    IndexType* columns,
-                    RealType* values,
-                    IndexType& rowLength ) const
+                    MatrixRow& matrixRow ) const
 {
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellXSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                            1.0 );
+      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      columns[ 0 ] = mesh.getCellXPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
    if( coordinates.y() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellYSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                            1.0 );
+      matrixRow.setElement( 1, mesh.getCellYSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      columns[ 0 ] = mesh.getCellYPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellYPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
    if( coordinates.z() == 0 )
    {
-      columns[ 0 ] = index;
-      columns[ 1 ] = mesh.getCellZSuccessor( index );
-      values[ 0 ] = 1.0;
-      values[ 1 ] = -1.0;
+      matrixRow.setElement( 0, index,                           1.0 );
+      matrixRow.setElement( 1, mesh.getCellZSuccessor( index ), -1.0 );
       b[ index ] = - mesh.getHz() * functionValue;
    }
    if( coordinates.z() == mesh.getDimensions().z() - 1 )
    {
-      columns[ 0 ] = mesh.getCellZPredecessor( index );
-      columns[ 1 ] = index;
-      values[ 0 ] = -1.0;
-      values[ 1 ] = 1.0;
+      matrixRow.setElement( 0, mesh.getCellZPredecessor( index ), -1.0 );
+      matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHz() * functionValue;
    }
-   rowLength = 2;
 }
 
 
