@@ -43,11 +43,11 @@ if( WITH_CUDA STREQUAL "yes" )
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this              
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-DHAVE_CUDA)
-        AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128" )          
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
+        AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )          
         set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
         set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
-        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
+        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared " )
         ####
         # Check for CUSP
         #

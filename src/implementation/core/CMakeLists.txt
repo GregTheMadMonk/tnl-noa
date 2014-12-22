@@ -29,6 +29,7 @@ IF( BUILD_CUDA )
         ${tnl_implementation_core_cuda_CUDA__SOURCES}
         ${tnl_implementation_core_vectors_CUDA__SOURCES}
         ${common_SOURCES} 
+        ${CURRENT_DIR}/tnlCuda.cu
         PARENT_SCOPE )
 ENDIF()    
 

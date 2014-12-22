@@ -94,7 +94,11 @@ class tnlCuda
    static __device__ Index getInterleaving( const Index index );
 #endif
 
+#ifdef HAVE_CUDA
    static bool checkDevice( const char* file_name, int line );
+#else
+   static bool checkDevice( const char* file_name, int line ) { return false;};
+#endif
 
 };
 

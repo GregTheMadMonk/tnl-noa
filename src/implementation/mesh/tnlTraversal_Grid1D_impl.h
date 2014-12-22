@@ -128,7 +128,7 @@ __global__ void tnlTraversalGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda
    {
       if( grid->isBoundaryCell( cellCoordinates ) )
       {
-         //printf( "Processing boundary conditions at %d \n", cellCoordinates.x() );
+         printf( "Processing boundary conditions at %d \n", cellCoordinates.x() );
          EntitiesProcessor::processCell( *grid,
                                          *userData,
                                          grid->getCellIndex( cellCoordinates ),
@@ -154,7 +154,7 @@ __global__ void tnlTraversalGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda
    cellCoordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( cellCoordinates.x() > 0 && cellCoordinates.x() < grid->getDimensions().x() - 1 )
    {
-      //printf( "Processing interior cell at %d \n", cellCoordinates.x() );
+      printf( "Processing interior cell at %d \n", cellCoordinates.x() );
       const IndexType index = grid->getCellIndex( cellCoordinates );
       EntitiesProcessor::processCell( *grid, *userData, index, cellCoordinates );
    }
@@ -215,6 +215,8 @@ processInteriorEntities( const GridType& grid,
    cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x(), cudaBlockSize.x );
    const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
 
+
+   cerr << "Processing interior cells ..................." << endl;
    dim3 cudaGridSize;
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx++ )
    {
