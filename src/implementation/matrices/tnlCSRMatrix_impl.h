@@ -807,6 +807,7 @@ void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& 
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
    InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
    OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+   checkCudaDevice;
    dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
    const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
@@ -859,6 +860,7 @@ void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& 
                                               gridIdx );
 
    }
+   checkCudaDevice;
    tnlCuda::freeFromDevice( kernel_this );
    tnlCuda::freeFromDevice( kernel_inVector );
    tnlCuda::freeFromDevice( kernel_outVector );

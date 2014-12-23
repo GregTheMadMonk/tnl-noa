@@ -396,18 +396,23 @@ void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
               cerr << "Vector name is " << y. getName() );
    tnlAssert( y. getSize() == x. getSize(),
               cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( y.getData() != 0, );
+   tnlAssert( x.getData() != 0, );
+
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
+
       const Index& size = x.getSize();
-      blockSize. x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
-      vectorAddVectorCudaKernel<<< gridSize, blockSize >>>( y.getData(),
-                                                            x.getData(),
-                                                            size,
-                                                            alpha,
-                                                            thisMultiplicator);
+      dim3 cudaBlockSize( 256 );
+      dim3 cudaBlocks;
+      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+
+      vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
+                                                                  x.getData(),
+                                                                  size,
+                                                                  alpha,
+                                                                  thisMultiplicator);
       checkCudaDevice;
    #else
       tnlCudaSupportMissingMessage;;

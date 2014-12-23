@@ -27,7 +27,7 @@
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
-                     const Index size )
+                                                    const Index size )
 {
 #ifdef HAVE_CUDA
    if( cudaMalloc( ( void** ) &data,
@@ -43,6 +43,7 @@ bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
 template< typename Element >
 bool tnlArrayOperations< tnlCuda >::freeMemory( Element* data )
 {
+   tnlAssert( data, );
 #ifdef HAVE_CUDA
       cudaFree( data );
       return checkCudaDevice;
@@ -54,14 +55,16 @@ bool tnlArrayOperations< tnlCuda >::freeMemory( Element* data )
 
 template< typename Element >
 void tnlArrayOperations< tnlCuda >::setMemoryElement( Element* data,
-                                                        const Element& value )
+                                                      const Element& value )
 {
+   tnlAssert( data, );
    tnlArrayOperations< tnlCuda >::setMemory( data, value, 1 );
 }
 
 template< typename Element >
 Element tnlArrayOperations< tnlCuda >::getMemoryElement( const Element* data )
 {
+   tnlAssert( data, );
    Element result;
    tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
@@ -70,12 +73,14 @@ Element tnlArrayOperations< tnlCuda >::getMemoryElement( const Element* data )
 template< typename Element, typename Index >
 Element& tnlArrayOperations< tnlCuda >::getArrayElementReference( Element* data, const Index i )
 {
+   tnlAssert( data, );
    return data[ i ];
 }
 
 template< typename Element, typename Index >
 const Element& tnlArrayOperations< tnlCuda >::getArrayElementReference( const Element* data, const Index i )
 {
+   tnlAssert( data, );
    return data[ i ];
 }
 
@@ -101,6 +106,7 @@ bool tnlArrayOperations< tnlCuda >::setMemory( Element* data,
                     const Element& value,
                     const Index size )
 {
+   tnlAssert( data, );
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
@@ -139,6 +145,8 @@ bool tnlArrayOperations< tnlCuda >::copyMemory( DestinationElement* destination,
                                                          const SourceElement* source,
                                                          const Index size )
 {
+   tnlAssert( destination, );
+   tnlAssert( source, );
    #ifdef HAVE_CUDA
       if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
       {
@@ -170,6 +178,8 @@ bool tnlArrayOperations< tnlCuda >::compareMemory( const Element1* destination,
                                                    const Element2* source,
                                                    const Index size )
 {
+   tnlAssert( destination, );
+   tnlAssert( source, );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
    tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
@@ -188,6 +198,8 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
                                                          const SourceElement* source,
                                                          const Index size )
 {
+   tnlAssert( destination, );
+   tnlAssert( source, );
    #ifdef HAVE_CUDA
    if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
    {
@@ -244,6 +256,9 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
                                                             const Element2* source,
                                                             const Index size )
 {
+   tnlAssert( destination, );
+   tnlAssert( source, );
+   tnlAssert( size >= 0, cerr << "size = " << size );
    #ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ tnlCuda::getGPUTransferBufferSize() ];
    if( ! host_buffer )
@@ -290,6 +305,9 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
                                                          const SourceElement* source,
                                                          const Index size )
 {
+   tnlAssert( destination, );
+   tnlAssert( source, );
+   tnlAssert( size >= 0, cerr << "size = " << size );
    #ifdef HAVE_CUDA
    if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
    {
@@ -345,6 +363,9 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory( const Element1* host
                                                             const Element2* deviceData,
                                                             const Index size )
 {
+   tnlAssert( hostData, );
+   tnlAssert( deviceData, );
+   tnlAssert( size >= 0, cerr << "size = " << size );
    return tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( deviceData, hostData, size );
 }
 

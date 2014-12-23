@@ -288,6 +288,7 @@ template< typename Element,
           typename Index >
 void tnlArray< Element, Device, Index > :: setValue( const Element& e )
 {
+   tnlAssert( this->getData(),);
    tnlArrayOperations< Device > :: setMemory( this -> getData(), e, this -> getSize() );
 }
 

@@ -19,31 +19,34 @@
 
 bool tnlCuda::checkDevice( const char* file_name, int line )
 {
-   cerr << "Checking the CUDA device ... " << endl;
    cudaError error = cudaGetLastError();
    if( error == cudaSuccess )
       return true;
    cerr << "CUDA ERROR(" << error << ") at line " << line << " in " << file_name << ":" << endl;
    switch( error )
    {
+      // 1
       case cudaErrorMissingConfiguration:
          cerr
           << "The device function being invoked (usually via ::cudaLaunch()) was not " << endl
           << "previously configured via the ::cudaConfigureCall() function. " << endl;
        break;
 
-      case cudaErrorMemoryAllocation:
+      // 2
+      case cudaErrorMemoryAllocation:   
          cerr
           << "The API call failed because it was unable to allocate enough memory to " << endl
           << "perform the requested operation. " << endl;
        break;
 
+      // 3
       case cudaErrorInitializationError:
          cerr
           << "The API call failed because the CUDA driver and runtime could not be " << endl
           << "initialized. " << endl;
        break;
-
+   
+      // 4
       case cudaErrorLaunchFailure:
          cerr
           << "An exception occurred on the device while executing a kernel. Common " << endl
@@ -54,6 +57,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "using CUDA. " << endl;
        break;
 
+      // 5
       case cudaErrorPriorLaunchFailure:
          cerr
           << "This indicated that a previous kernel launch failed. This was previously " << endl
@@ -62,6 +66,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "removed with the CUDA 3.1 release. " << endl;
        break;
 
+      // 6
       case cudaErrorLaunchTimeout:
          cerr
           << "This indicates that the device kernel took too long to execute. This can " << endl
@@ -72,6 +77,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "reconstructed if the program is to continue using CUDA. " << endl;
        break;
 
+      // 7
       case cudaErrorLaunchOutOfResources:
          cerr
           << "This indicates that a launch did not occur because it did not have " << endl
@@ -81,12 +87,14 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "kernel launch specifies too many threads for the kernel's register count. " << endl;
        break;
 
+      // 8
       case cudaErrorInvalidDeviceFunction:
          cerr
           << "The requested device function does not exist or is not compiled for the " << endl
           << "proper device architecture. " << endl;
        break;
-
+ 
+      // 9 
       case cudaErrorInvalidConfiguration:
          cerr
           << "This indicates that a kernel launch is requesting resources that can " << endl
@@ -96,46 +104,54 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "device limitations. " << endl;
        break;
 
+      // 10 
       case cudaErrorInvalidDevice:
          cerr
           << "This indicates that the device ordinal supplied by the user does not " << endl
           << "correspond to a valid CUDA device. " << endl;
        break;
 
+      // 11
       case cudaErrorInvalidValue:
          cerr
           << "This indicates that one or more of the parameters passed to the API call " << endl
           << "is not within an acceptable range of values. " << endl;
        break;
 
+      // 12
       case cudaErrorInvalidPitchValue:
          cerr
           << "This indicates that one or more of the pitch-related parameters passed " << endl
           << "to the API call is not within the acceptable range for pitch. " << endl;
        break;
 
+      // 13
       case cudaErrorInvalidSymbol:
          cerr
           << "This indicates that the symbol name/identifier passed to the API call " << endl
           << "is not a valid name or identifier. " << endl;
        break;
 
+      // 14
       case cudaErrorMapBufferObjectFailed:
       cerr
        << "This indicates that the buffer object could not be mapped. " << endl;
        break;
 
+      // 15
       case cudaErrorUnmapBufferObjectFailed:
          cerr
           << "This indicates that the buffer object could not be unmapped. " << endl;
        break;
 
+      // 16
       case cudaErrorInvalidHostPointer:
          cerr
           << "This indicates that at least one host pointer passed to the API call is " << endl
           << "not a valid host pointer. " << endl;
        break;
 
+      // 17
       case cudaErrorInvalidDevicePointer:
          cerr
           << "This indicates that at least one device pointer passed to the API call is " << endl

@@ -76,8 +76,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVec
 {
    tnlAssert( this->getRows() > 0, );
    tnlAssert( this->getColumns() > 0, );
-   tnlAssert( this->rowLengths > 0,
-              cerr << "this->rowLengths = " << this->rowLengths );
+   tnlAssert( rowLengths.getSize() > 0, );
    this->rowLengths = this->maxRowLength = rowLengths.max();
    return allocateElements();
 }
@@ -481,7 +480,7 @@ tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
-   return MatrixRow( &this->columns[ rowBegin ],
+   return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->rowLengths,
                      DeviceDependentCode::getElementStep( *this ) );
@@ -498,7 +497,7 @@ tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
-   return MatrixRow( &this->columns[ rowBegin ],
+   return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->rowLengths,
                      DeviceDependentCode::getElementStep( *this ) );
@@ -581,7 +580,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   IndexType i( row * this->rowLengths );
+   /*IndexType i( row * this->rowLengths );
    const IndexType rowEnd( i + this->rowLengths );
    IndexType column;
    while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
@@ -598,7 +597,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
       return false;
    }
    x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
-   return true;
+   return true;*/
 }
 
 

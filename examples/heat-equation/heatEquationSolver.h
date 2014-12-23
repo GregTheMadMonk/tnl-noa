@@ -27,6 +27,7 @@
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
 #include "heatEquationSolver.h"
 
 

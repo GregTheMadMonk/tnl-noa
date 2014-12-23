@@ -210,8 +210,7 @@ Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return tnlArrayOperations< Device >::getArrayElementReference( this -> data, i );
+   return this->data[ i ];
 };
 
 template< typename Element,
@@ -227,8 +226,7 @@ const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i 
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
-   // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return tnlArrayOperations< Device >::getArrayElementReference( this -> data, i );
+   return this->data[ i ];
 };
 
 template< typename Element,

@@ -86,7 +86,8 @@ setup( const tnlParameterContainer& parameters,
    }
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
-   this->auxiliaryDofs.setValue( 0.0 );
+   if( this->auxiliaryDofs.getSize() != 0 )
+      this->auxiliaryDofs.setValue( 0.0 );
    this->problem->bindDofs( mesh, this->dofs );
    this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
    
