@@ -449,26 +449,6 @@ void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-void tnlEllpackMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                      IndexType* columns,
-                                                      RealType* values ) const
-{
-   typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType elementPtr = DDCType::getRowBegin( *this, row );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
-   const IndexType step = DDCType::getElementStep( *this );
-
-   for( IndexType i = 0; i < this->rowLengths; i++ )
-   {
-      columns[ i ] = this->columnIndexes.getElement( elementPtr );
-      values[ i ] = this->values.getElement( elementPtr );
-      elementPtr += step;
-   }
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -479,7 +459,7 @@ typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
-   const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
+   IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->rowLengths,
@@ -496,7 +476,7 @@ const typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   const IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
+   IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->rowLengths,
@@ -580,15 +560,17 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   /*IndexType i( row * this->rowLengths );
-   const IndexType rowEnd( i + this->rowLengths );
+   IndexType i = DeviceDependentCode::getRowBegin( *this, row );
+   const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+   const IndexType step = DeviceDependentCode::getElementStep( *this );
+
    IndexType column;
    while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
    {
       if( column == row )
-         diagonalValue = this->values.getElement( i );
+         diagonalValue = this->values[ i ];
       else
-         sum += this->values.getElement( row * this->diagonalsShift.getSize() + i ) * x. getElement( column );
+         sum += this->values[ i ] * x[ column ];
       i++;
    }
    if( diagonalValue == ( Real ) 0.0 )
@@ -596,8 +578,8 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
       cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
       return false;
    }
-   x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
-   return true;*/
+   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
+   return true;
 }
 
 

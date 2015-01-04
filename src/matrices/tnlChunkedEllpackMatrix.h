@@ -194,6 +194,9 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -312,6 +315,9 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                       RealType* values ) const;
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    typename Vector::RealType chunkVectorProduct( const IndexType sliceOffset,
                                                  const IndexType chunkIndex,
                                                  const IndexType chunkSize,

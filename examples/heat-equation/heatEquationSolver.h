@@ -30,6 +30,9 @@
 #include <matrices/tnlEllpackMatrix.h>
 #include "heatEquationSolver.h"
 
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlDenseMatrix.h>
+
 
 template< typename Mesh,
           typename DifferentialOperator,
@@ -44,7 +47,7 @@ class heatEquationSolver
    typedef typename DifferentialOperator::IndexType IndexType;
    typedef Mesh MeshType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+   typedef tnlSlicedEllpackMatrix< RealType, DeviceType, IndexType > MatrixType;
    typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
 
    static tnlString getTypeStatic();

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMatrixRow_impl.h  -  description
+                          tnlSparseMatrixRow_impl.h  -  description
                              -------------------
     begin                : Dec 19, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMATRIXROW_IMPL_H_
-#define TNLMATRIXROW_IMPL_H_
+#ifndef TNLSPARSEMATRIXROW_IMPL_H_
+#define TNLSPARSEMATRIXROW_IMPL_H_
 
 template< typename Real, typename Index >
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-tnlMatrixRow< Real, Index >::
-tnlMatrixRow()
+tnlSparseMatrixRow< Real, Index >::
+tnlSparseMatrixRow()
 : values( 0 ),
   columns( 0 ),
   length( 0 ),
@@ -35,11 +35,11 @@ template< typename Real, typename Index >
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-tnlMatrixRow< Real, Index >::
-tnlMatrixRow( Index* columns,
-              Real* values,
-              const Index length,
-              const Index step )
+tnlSparseMatrixRow< Real, Index >::
+tnlSparseMatrixRow( Index* columns,
+                    Real* values,
+                    const Index length,
+                    const Index step )
 : values( values ),
   columns( columns ),
   length( length ),
@@ -52,7 +52,7 @@ template< typename Real, typename Index >
       __device__ __host__
 #endif
 void
-tnlMatrixRow< Real, Index >::
+tnlSparseMatrixRow< Real, Index >::
 bind( Index* columns,
       Real* values,
       const Index length,
@@ -69,7 +69,7 @@ template< typename Real, typename Index >
       __device__ __host__
 #endif
 void
-tnlMatrixRow< Real, Index >::
+tnlSparseMatrixRow< Real, Index >::
 setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
@@ -84,4 +84,4 @@ setElement( const Index& elementIndex,
    this->values[ elementIndex * step ] = value;
 }
 
-#endif /* TNLMATRIXROW_IMPL_H_ */
+#endif /* TNLSPARSEMATRIXROW_IMPL_H_ */

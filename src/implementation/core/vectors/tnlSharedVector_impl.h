@@ -152,6 +152,7 @@ template< typename Real,
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
    alphaXPlusBetaY( -1.0, vector, 1.0 );
+   return ( *this );
 }
 
 template< typename Real,
@@ -161,39 +162,8 @@ template< typename Real,
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
    alphaXPlusBetaY( 1.0, vector, 1.0 );
+   return ( *this );
 }
-
-/*template< typename Element,
-          typename Device,
-          typename Index >
-bool tnlSharedVector< Element, Device, Index > :: save( tnlFile& file ) const
-{
-   tnlAssert( this -> size != 0,
-              cerr << "You try to save empty vector. Its name is " << this -> getName() );
-   if( ! tnlObject :: save( file ) )
-      return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this -> size ) )
-#else               
-   if( ! file. write( &this -> size ) )
-#endif      
-      return false;
-   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
-   {
-      cerr << "I was not able to SAVE tnlSharedVector " << this -> getName()
-           << " with size " << this -> getSize() << endl;
-      return false;
-   }
-   return true;
-};
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool tnlSharedVector< Element, Device, Index > :: save( const tnlString& fileName ) const
-{
-   return tnlObject :: save( fileName );
-};*/
 
 template< typename Real,
           typename Device,

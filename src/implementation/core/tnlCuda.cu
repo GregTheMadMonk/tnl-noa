@@ -391,5 +391,6 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
        break;
 
    }
+   throw EXIT_FAILURE;
    return false;
 }

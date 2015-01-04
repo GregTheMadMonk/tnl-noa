@@ -80,6 +80,7 @@ updateLinearSystem( const RealType& time,
                     MatrixRow& matrixRow ) const
 {
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
+   //printf( "tau = %f lambda = %f dx_sqr = %f dx = %f, \n", tau, lambdaX, mesh.getHxSquareInverse(), mesh.getHx() );
    matrixRow.setElement( 0, mesh.getCellXPredecessor( index ),     - lambdaX );
    matrixRow.setElement( 1, index,                             2.0 * lambdaX );
    matrixRow.setElement( 2, mesh.getCellXSuccessor( index ),       - lambdaX );

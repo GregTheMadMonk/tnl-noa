@@ -141,10 +141,6 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-/*   void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;*/
-
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

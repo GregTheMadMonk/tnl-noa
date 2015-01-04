@@ -107,6 +107,14 @@ Index tnlTridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlTridiagonalMatrix< Real, Device, Index >::getMaxRowLength() const
+{
+   return 3;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2, typename Device2, typename Index2 >
 bool tnlTridiagonalMatrix< Real, Device, Index >::setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m )
 {
@@ -364,26 +372,6 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType ro
    }
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-void tnlTridiagonalMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                          IndexType* columns,
-                                                          RealType* values ) const
-{
-   IndexType elementPointer( 0 );
-   for( IndexType i = -1; i <= 1; i++ )
-   {
-      const IndexType column = row + 1;
-      if( column >= 0 && column < this->getColumns() )
-      {
-         columns[ elementPointer ] = column;
-         values[ elementPointer ] = this->values.getElement( this->getElementIndex( row, column ) );
-         elementPointer++;
-      }
-   }
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -394,7 +382,16 @@ typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
 tnlTridiagonalMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
-   tnlAssert( false, );
+   if( Device::getDevice() == tnlHostDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, rowIndex ) ],
+                        rowIndex,
+                        this->getColumns(),
+                        1 );
+   if( Device::getDevice() == tnlCudaDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, rowIndex ) ],
+                        rowIndex,
+                        this->getColumns(),
+                        this->rows );
 }
 
 template< typename Real,
@@ -548,15 +545,20 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlTridiagonalMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                                 const IndexType row,
-                                                                 Vector& x,
-                                                                 const RealType& omega ) const
+                                                                       const IndexType row,
+                                                                       Vector& x,
+                                                                       const RealType& omega ) const
 {
    RealType sum( 0.0 );
-   for( IndexType i = 0; i < this->getColumns(); i++ )
-      sum += this->operator()( row, i ) * x[ i ];
-   x[ row ] += omega / this->operator()( row, row )( b[ row ] - sum );
+   if( row > 0 )
+      sum += this->getElementFast( row, row - 1 ) * x[ row - 1 ];
+   if( row < this->getColumns() - 1 )
+      sum += this->getElementFast( row, row + 1 ) * x[ row + 1 ];
+   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / this->getElementFast( row, row ) * ( b[ row ] - sum );
 }
 
 template< typename Real,
@@ -627,14 +629,11 @@ template< typename Real,
 Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                     const IndexType column ) const
 {
-   // TODO: remove the #ifndef when CUDA supports std:cerr
-#ifndef HAVE_CUDA   
    tnlAssert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
               cerr << " this->rows = " << this->rows
                    << " row = " << row << " column = " << column );
    tnlAssert( abs( row - column ) < 2,
               cerr << "row = " << row << " column = " << column << endl );
-#endif   
    return tnlTridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }
 
@@ -650,7 +649,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
                                     const Index row,
                                     const Index column )
       {
-         return 3*row + column - row;
+         return 2*row + column;
       }
 
       template< typename Vector,

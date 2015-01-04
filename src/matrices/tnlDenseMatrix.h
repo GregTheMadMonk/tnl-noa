@@ -20,6 +20,7 @@
 
 #include <core/tnlHost.h>
 #include <matrices/tnlMatrix.h>
+#include <matrices/tnlDenseMatrixRow.h>
 #include <core/arrays/tnlArray.h>
 
 template< typename Device >
@@ -40,7 +41,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
    typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef tnlDenseMatrixRow< Real, Index > MatrixRow;
 
 
    tnlDenseMatrix();
@@ -65,6 +66,8 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
     * in a given row.
     */
    IndexType getRowLength( const IndexType row ) const;
+
+   IndexType getMaxRowLength() const;
 
    IndexType getNumberOfMatrixElements() const;
 

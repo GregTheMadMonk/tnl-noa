@@ -208,6 +208,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior cells
     */
+   checkCudaDevice;
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 

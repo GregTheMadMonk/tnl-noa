@@ -20,6 +20,7 @@
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
+#include <matrices/tnlMultidiagonalMatrixSetter.h>
 #include "heatEquationSolver.h"
 
 
@@ -163,6 +164,7 @@ setupLinearSystem( const MeshType& mesh,
    if( ! matrix.setRowLengths( rowLengths ) )
       return false;
    return true;
+   //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
 }
 
 template< typename Mesh,
@@ -268,8 +270,8 @@ assemblyLinearSystem( const RealType& time,
                                                           b );
    /*matrix.print( cout );
    cout << endl << b << endl;
-   cout << endl << u << endl;*/
-   //abort();
+   cout << endl << u << endl;
+   abort();*/
 }
 
 template< typename Mesh,

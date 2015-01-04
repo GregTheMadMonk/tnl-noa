@@ -94,6 +94,14 @@ Index tnlDenseMatrix< Real, Device, Index >::getRowLength( const IndexType row )
 template< typename Real,
           typename Device,
           typename Index >
+Index tnlDenseMatrix< Real, Device, Index >::getMaxRowLength() const
+{
+   return this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index tnlDenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return this->getRows() * this->getColumns();
@@ -322,20 +330,6 @@ void tnlDenseMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-void tnlDenseMatrix< Real, Device, Index >::getRow( const IndexType row,
-                                                    IndexType* columns,
-                                                    RealType* values ) const
-{
-   for( IndexType i = 0; i < this->getColumns(); i++ )
-   {
-      columns[ i ] = i;
-      values[ i ] = this->getElement( row, i );
-   }
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -346,12 +340,14 @@ typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
 tnlDenseMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
-   tnlAssert( false, ); // TODO: implement
-   /*const IndexType rowOffset = this->getElementIndex( row, 0 );
-   const IndexType step = this->getElementIndex( row, 1 ) - rowOffset;
-   return MatrixRow( &this->values[ rowOffset ],
-                     this->columns,
-                     step );*/
+   if( Device::getDevice() == tnlHostDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
+                        this->columns,
+                        1 );
+   if( Device::getDevice() == tnlCudaDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
+                        this->columns,
+                        this->rows );
 }
 
 template< typename Real,
@@ -364,12 +360,14 @@ const typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
 tnlDenseMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   tnlAssert( false, ); // TODO: implement
-   /*const IndexType rowOffset = this->getElementIndex( row, 0 );
-   const IndexType step = this->getElementIndex( row, 1 ) - rowOffset;
-   return MatrixRow( &this->values[ rowOffset ],
-                     this->columns,
-                     step );*/
+   if( Device::getDevice() == tnlHostDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
+                        this->columns,
+                        1 );
+   if( Device::getDevice() == tnlCudaDevice )
+      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
+                        this->columns,
+                        this->rows );
 }
 
 template< typename Real,
@@ -875,10 +873,15 @@ void tnlDenseMatrix< Real, Device, Index >::performSORIteration( const Vector& b
                                                                  Vector& x,
                                                                  const RealType& omega ) const
 {
-   RealType sum( 0.0 );
+   RealType sum( 0.0 ), diagonalValue;
    for( IndexType i = 0; i < this->getColumns(); i++ )
-      sum += this->operator()( row, i ) * x[ i ];
-   x[ row ] += omega / this->operator()( row, row )( b[ row ] - sum );
+   {
+      if( i == row )
+         diagonalValue = this->getElementFast( row, row );
+      else
+         sum += this->getElementFast( row, i ) * x[ i ];
+   }
+   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
 
 template< typename Real,

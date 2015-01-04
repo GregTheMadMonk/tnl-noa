@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlMatrixRow.h  -  description
+                          tnlMultidiagonalMatrixRow.h  -  description
                              -------------------
-    begin                : Dec 19, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    begin                : Jan 2, 2015
+    copyright            : (C) 2015 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,34 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef TNLMATRIXROW_H_
-#define TNLMATRIXROW_H_
+#ifndef TNLMULTIDIAGONALMATRIXROW_H_
+#define TNLMULTIDIAGONALMATRIXROW_H_
 
 template< typename Real, typename Index >
-class tnlMatrixRow
+class tnlMultidiagonalMatrixRow
 {
    public:
 
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      tnlMatrixRow();
+      tnlMultidiagonalMatrixRow();
 
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      tnlMatrixRow( Index* columns,
-                    Real* values,
-                    const Index length,
-                    const Index step );
+      tnlMultidiagonalMatrixRow( Real* values,
+                                 Index* diagonals,
+                                 const Index maxRowLength,
+                                 const Index row,
+                                 const Index columns,
+                                 const Index step );
 
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      void bind( Index* columns,
-                 Real* values,
-                 const Index length,
+      void bind( Real* values,
+                 Index* diagonals,
+                 const Index maxRowLength,
+                 const Index row,
+                 const Index columns,
                  const Index step );
 
 #ifdef HAVE_CUDA
@@ -56,11 +59,12 @@ class tnlMatrixRow
 
       Real* values;
 
-      Index* columns;
+      Index* diagonals;
 
-      Index length, step;
+      Index row, columns, maxRowLength, step;
 };
 
-#include <implementation/matrices/tnlMatrixRow_impl.h>
+#include <implementation/matrices/tnlMultidiagonalMatrixRow_impl.h>
 
-#endif /* TNLMATRIXROW_H_ */
+
+#endif /* TNLMULTIDIAGONALMATRIXROW_H_ */

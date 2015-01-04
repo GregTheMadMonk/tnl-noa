@@ -395,25 +395,6 @@ void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
    }
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-void
-tnlCSRMatrix< Real, Device, Index >::
-getRow( const IndexType row,
-        IndexType* columns,
-        RealType* values ) const
-{
-   IndexType elementPointer = this->rowPointers.getElement( row );
-   const IndexType rowLength = this->rowPointers.getElement( row + 1 ) - elementPointer;
-   for( IndexType i = 0; i < rowLength; i++ )
-   {
-      columns[ i ] = this->columnIndexes.getElement( elementPointer );
-      values[ i ] = this->values.getElement( elementPointer );
-      elementPointer++;
-   }
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >

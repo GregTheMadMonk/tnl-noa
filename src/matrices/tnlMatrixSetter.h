@@ -127,7 +127,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                        const BoundaryConditions& boundaryConditions,
                        RowLengthsVector& rowLengths ) const;
 
-
    class TraversalBoundaryEntitiesProcessor
    {
       public:

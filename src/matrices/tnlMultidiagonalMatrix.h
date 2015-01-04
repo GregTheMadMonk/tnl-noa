@@ -20,6 +20,7 @@
 
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
+#include <matrices/tnlMultidiagonalMatrixRow.h>
 
 template< typename Device >
 class tnlMultidiagonalMatrixDeviceDependentCode;
@@ -37,7 +38,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
    typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef tnlMultidiagonalMatrixRow< Real, Index > MatrixRow;
 
 
    tnlMultidiagonalMatrix();
@@ -52,6 +53,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
+
+   IndexType getMaxRowLength() const;
 
    template< typename Vector >
    bool setDiagonals( const Vector& diagonals );

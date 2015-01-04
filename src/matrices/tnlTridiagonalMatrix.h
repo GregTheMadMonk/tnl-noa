@@ -20,6 +20,7 @@
 
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
+#include <matrices/tnlTridiagonalMatrixRow.h>
 
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
@@ -39,7 +40,7 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef tnlTridiagonalMatrix< Real, tnlHost, Index > HostType;
    typedef tnlTridiagonalMatrix< Real, tnlCuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef tnlTridiagonalMatrixRow< Real, Index > MatrixRow;
 
    tnlTridiagonalMatrix();
 
@@ -53,6 +54,8 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    bool setRowLengths( const RowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
+
+   IndexType getMaxRowLength() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlTridiagonalMatrix< Real2, Device2, Index2 >& m );
@@ -141,10 +144,6 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   /*void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;*/
-
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -183,6 +182,9 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 #endif   
 
    template< typename Vector >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void performSORIteration( const Vector& b,
                              const IndexType row,
                              Vector& x,

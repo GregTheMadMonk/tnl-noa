@@ -93,7 +93,7 @@ template< typename Real,
 Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
 {
    const IndexType slice = roundUpDivision( row, SliceSize );
-   return this->sliceRowLengths[ slice ];
+   return this->sliceRowLengths.getElement( slice );
 }
 
 template< typename Real,
@@ -449,26 +449,6 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowFast( const
    }
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRow( const IndexType row,
-                                                                       IndexType* columns,
-                                                                       RealType* values ) const
-{
-   Index elementPtr, rowEnd, step, i( 0 );
-   DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
-
-   while( elementPtr < rowEnd )
-   {
-      columns[ i ] = this->columnIndexes.getElement( elementPtr );
-      values[ i ] = this->values.getElement( elementPtr );
-      elementPtr += step;
-      i++;
-   }
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -481,10 +461,11 @@ tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex )
 {
    Index rowBegin, rowEnd, step;
-   DeviceDependentCode::initRowTraverse( *this, rowIndex, rowBegin, rowEnd, step );
-   return MatrixRow( &this->columns[ rowBegin ],
+   DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
+   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
-                     ( rowEnd - rowBegin ) / step,
+                     this->sliceRowLengths[ slice ],
                      step );
 }
 
@@ -500,10 +481,11 @@ tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex ) const
 {
    Index rowBegin, rowEnd, step;
-   DeviceDependentCode::initRowTraverse( *this, rowIndex, rowBegin, rowEnd, step );
-   return MatrixRow( &this->columns[ rowBegin ],
+   DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
+   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
-                     ( rowEnd - rowBegin ) / step,
+                     this->sliceRowLengths[ slice ],
                      step );
 }
 
@@ -590,26 +572,28 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
-   const IndexType sliceIdx = row / SliceSize;
+   /*const IndexType sliceIdx = row / SliceSize;
    const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
    IndexType elementPtr = this->slicePointers[ sliceIdx ] +
                           rowLength * ( row - sliceIdx * SliceSize );
-   const IndexType rowEnd( elementPtr + rowLength );
+   const IndexType rowEnd( elementPtr + rowLength );*/
+   IndexType elementPtr, rowEnd, step;
+   DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
    IndexType column;
    while( elementPtr < rowEnd && ( column = this->columnIndexes[ elementPtr ] ) < this->columns )
    {
       if( column == row )
-         diagonalValue = this->values.getElement( elementPtr );
+         diagonalValue = this->values[  elementPtr ];
       else
-         sum += this->values.getElement( row * this->diagonalsShift.getSize() + elementPtr ) * x. getElement( column );
-      elementPtr++;
+         sum += this->values[ elementPtr ] * x[ column ];
+      elementPtr += step;
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
       return false;
    }
-   x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
+   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
 }
 

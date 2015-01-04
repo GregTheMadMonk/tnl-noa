@@ -225,10 +225,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              *userData.u,
                                                              *userData.b,
                                                              matrixRow );
-            /*userData.matrix->setRowFast( index,
-                                         userData.columns->getData(),
-                                         userData.values->getData(),
-                                         rowLength );*/
          }
 
    };
@@ -263,10 +259,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            /*userData.matrix->setRowFast( index,
-                                         userData.columns->getData(),
-                                         userData.values->getData(),
-                                         rowLength );*/
             userData.matrix->addElementFast( index, index, 1.0, 1.0 );
          }
 
