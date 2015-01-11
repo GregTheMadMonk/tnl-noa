@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlTraversal.h  -  description
+                          tnlFunctionType.h  -  description
                              -------------------
-    begin                : Jul 28, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    begin                : Jan 10, 2015
+    copyright            : (C) 2015 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,12 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLTRAVERSAL_H_
-#define TNLTRAVERSAL_H_
+#ifndef TNLFUNCTIONTYPE_H_
+#define TNLFUNCTIONTYPE_H_
 
-template< typename Mesh,
-          int EntitiesDimensions = Mesh::Dimensions >
-class tnlTraversal{};
+enum tnlFunctionTypeEnum { tnlGeneralFunction, tnlDiscreteFunction, tnlAnalyticFunction };
 
+template< typename Function >
+class tnlFunctionType
+{
+   public:
 
-#endif /* TNLTRAVERSAL_H_ */
+      enum { Type = tnlGeneralFunction };
+};
+
+#endif /* TNLFUNCTIONTYPE_H_ */

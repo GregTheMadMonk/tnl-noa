@@ -20,6 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlFunctionType.h>
 
 template< typename Vertex >
 class tnlSinBumpsFunctionBase
@@ -163,6 +164,14 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
    return str;
 }
 
+template< int FunctionDimensions,
+          typename Real >
+class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
 
 #include <implementation/functions/tnlSinBumpsFunction_impl.h>
 

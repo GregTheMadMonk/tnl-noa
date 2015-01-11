@@ -18,9 +18,9 @@
 #ifndef TNLEXPLICITUPDATER_IMPL_H_
 #define TNLEXPLICITUPDATER_IMPL_H_
 
-#include <mesh/tnlTraversal_Grid1D.h>
-#include <mesh/tnlTraversal_Grid2D.h>
-#include <mesh/tnlTraversal_Grid3D.h>
+#include <mesh/tnlTraverser_Grid1D.h>
+#include <mesh/tnlTraverser_Grid2D.h>
+#include <mesh/tnlTraverser_Grid3D.h>
 
 template< typename Mesh,
           typename DofVector,
@@ -41,7 +41,7 @@ update( const RealType& time,
    if( DeviceType::DeviceType == tnlHostDevice )
    {
       TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -62,7 +62,7 @@ update( const RealType& time,
       DofVector* kernelFu = tnlCuda::passToDevice( fu );
       TraversalUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
       checkCudaDevice;
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -103,10 +103,10 @@ update( const RealType& time,
         DofVector& fu ) const
 {
 
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
       TraversalUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -117,7 +117,7 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
    {
 
       RealType* kernelTime = tnlCuda::passToDevice( time );
@@ -128,7 +128,7 @@ update( const RealType& time,
       DofVector* kernelFu = tnlCuda::passToDevice( fu );
       checkCudaDevice;
       TraversalUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                    ( mesh,

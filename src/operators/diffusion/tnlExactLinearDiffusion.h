@@ -18,6 +18,8 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
+#include <functions/tnlFunctionType.h>
+
 template< int Dimensions >
 class tnlExactLinearDiffusion
 {};
@@ -86,6 +88,13 @@ class tnlExactLinearDiffusion< 3 >
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
+};
+
+template< int Dimensions >
+class tnlFunctionType< tnlExactLinearDiffusion< Dimensions > >
+{
+   public:
+      enum { Type = tnlAnalyticFunction };
 };
 
 #include <implementation/operators/diffusion/tnlExactLinearDiffusion_impl.h>

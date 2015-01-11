@@ -18,6 +18,8 @@
 #ifndef TNLMATRIXSETTER_IMPL_H_
 #define TNLMATRIXSETTER_IMPL_H_
 
+#include<mesh/tnlTraverser.h>
+
 template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
@@ -33,7 +35,7 @@ getRowLengths( const Mesh& mesh,
    if( DeviceType::DeviceType == tnlHostDevice )
    {
       TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -50,7 +52,7 @@ getRowLengths( const Mesh& mesh,
       RowLengthsVector* kernelRowLengths = tnlCuda::passToDevice( rowLengths );
       TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRowLengths );
       checkCudaDevice;
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -83,10 +85,10 @@ getRowLengths( const MeshType& mesh,
                const BoundaryConditions& boundaryConditions,
                RowLengthsVector& rowLengths ) const
 {
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
       TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -96,14 +98,14 @@ getRowLengths( const MeshType& mesh,
                                                     ( mesh,
                                                       userData );
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
    {
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RowLengthsVector* kernelRowLengths = tnlCuda::passToDevice( rowLengths );
       TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRowLengths );
       checkCudaDevice;
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,

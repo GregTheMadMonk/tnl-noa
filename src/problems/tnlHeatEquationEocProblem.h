@@ -1,5 +1,5 @@
 /***************************************************************************
-                          heatEquationEocSolver_impl.h  -  description
+                          tnlHeatEquationEocProblem.h  -  description
                              -------------------
     begin                : Nov 22, 2014
     copyright            : (C) 2014 by oberhuber
@@ -15,32 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HEATEQUATIONEOCSOLVER_IMPL_H_
-#define HEATEQUATIONEOCSOLVER_IMPL_H_
+#ifndef TNLHEATEQUATIONEOCPROBLEM_H_
+#define TNLHEATEQUATIONEOCPROBLEM_H_
+
+#include <problems/tnlHeatEquationProblem.h>
+
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
-tnlString
-heatEquationEocSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-getTypeStatic()
+          typename RightHandSide,
+          typename DifferentialOperator = tnlLinearDiffusion< Mesh,
+                                                              typename BoundaryCondition::RealType > >
+class tnlHeatEquationEocProblem : public tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
-   return tnlString( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
-}
+   public:
 
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
-bool
-heatEquationEocSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-setup( const tnlParameterContainer& parameters )
-{
-   if( ! this->boundaryCondition.setup( parameters ) ||
-       ! this->rightHandSide.setup( parameters ) )
-      return false;
-   return true;
-}
+      static tnlString getTypeStatic();
 
-#endif /* HEATEQUATIONEOCSOLVER_IMPL_H_ */
+      bool setup( const tnlParameterContainer& parameters );
+};
+
+#include <problems/tnlHeatEquationEocProblem_impl.h>
+
+#endif /* TNLHEATEQUATIONEOCPROBLEM_H_ */

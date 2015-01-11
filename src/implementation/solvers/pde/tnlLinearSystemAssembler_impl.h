@@ -18,9 +18,9 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_IMPL_H_
 #define TNLLINEARSYSTEMASSEMBLER_IMPL_H_
 
-#include <mesh/tnlTraversal_Grid1D.h>
-#include <mesh/tnlTraversal_Grid2D.h>
-#include <mesh/tnlTraversal_Grid3D.h>
+#include <mesh/tnlTraverser_Grid1D.h>
+#include <mesh/tnlTraverser_Grid2D.h>
+#include <mesh/tnlTraverser_Grid3D.h>
 
 template< typename Mesh,
           typename DofVector,
@@ -51,7 +51,7 @@ assembly( const RealType& time,
    if( DeviceType::DeviceType == tnlHostDevice )
    {
       TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -73,7 +73,7 @@ assembly( const RealType& time,
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
       TraversalUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
       checkCudaDevice;
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -121,10 +121,10 @@ assembly( const RealType& time,
    const IndexType maxRowLength = matrix.getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
 
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
       TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -134,7 +134,7 @@ assembly( const RealType& time,
                                                     ( mesh,
                                                       userData );
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
@@ -146,7 +146,7 @@ assembly( const RealType& time,
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
       TraversalUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
       checkCudaDevice;
-      tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( mesh,

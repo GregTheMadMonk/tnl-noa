@@ -19,10 +19,116 @@
 #define TNLFUNCTIONADAPTER_H_
 
 #include <functions/tnlConstantFunction.h>
+#include <functions/tnlFunctionType.h>
 
 template< typename Mesh,
-          typename Function >
+          typename Function,
+          int FunctionType = tnlFunctionType< Function >::Type >
 class tnlFunctionAdapter
+{
+};
+
+/****
+ * General implementation:
+ * - it passes both mesh entity center and mesh entity index
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, tnlGeneralFunction >
+{
+   public:
+
+      typedef Mesh MeshType;
+      typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename MeshType::IndexType IndexType;
+
+      template< int MeshEntityDimension >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const RealType& time = 0.0 )
+      {
+         return function.getValue( mesh.template getEntityCenter< MeshEntityDimension >,
+                                   index,
+                                   time );
+      }
+};
+
+/****
+ * General implementation with specialization for grid functions
+ *  - it takes grid coordinates for faster entity center evaluation
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Function >
+class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlGeneralFunction >
+{
+         public:
+
+      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
+      typedef Function FunctionType;
+      typedef Real RealType;
+      typedef Index IndexType;
+      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
+      {
+         return function.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
+                                   index,
+                                   time );
+      }
+};
+
+/****
+ * Specialization for discrete functions:
+ * - it passes only the mesh entity index
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, tnlDiscreteFunction >
+{
+   public:
+
+      typedef Mesh MeshType;
+      typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename MeshType::IndexType IndexType;
+
+      template< int MeshEntityDimension >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const RealType& time = 0.0 )
+      {
+         return function.getValue( index,
+                                   time );
+      }
+};
+
+/****
+ * Specialization for analytic functions:
+ * - it does not pass the mesh entity index
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
 {
    public:
 
@@ -46,6 +152,40 @@ class tnlFunctionAdapter
 };
 
 /****
+ * Specialization for analytic grid functions:
+ * - it does not pass the mesh entity index
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Function >
+class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticFunction >
+{
+         public:
+
+      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
+      typedef Function FunctionType;
+      typedef Real RealType;
+      typedef Index IndexType;
+      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
+      {
+         return function.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
+                                   time );
+      }
+};
+
+/****
  * Specialization for constant function
  *  - it does not ask the mesh for the mesh entity center
  */
@@ -53,7 +193,7 @@ class tnlFunctionAdapter
 template< typename Mesh,
           int FunctionDimensions,
           typename Real >
-class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real > >
+class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real >, tnlAnalyticFunction >
 {
    public:
 
@@ -78,40 +218,6 @@ class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real > 
 };
 
 /****
- * Specialization for grids
- *  - it takes grid coordinates for faster entity center evaluation
- */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function >
-{
-         public:
-
-      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-      typedef Function FunctionType;
-      typedef Real RealType;
-      typedef Index IndexType;
-      typedef typename MeshType::VertexType VertexType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType index,
-                                const CoordinatesType& coordinates,
-                                const RealType& time = 0.0 )
-      {
-         return function.getValue( mesh.template getCellCenter< VertexType >( coordinates ),         
-                                   time );
-      }
-};
-
-/****
  * Specialization for grids and constant function
  *  - it takes grid coordinates for faster entity center evaluation
  */
@@ -120,7 +226,8 @@ template< int Dimensions,
           typename Device,
           typename Index >
 class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
-                          tnlConstantFunction< Dimensions, Real > >
+                          tnlConstantFunction< Dimensions, Real >,
+                          tnlAnalyticFunction >
 {
    public:
 
@@ -143,93 +250,6 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
          VertexType v;
          return function.getValue( v, time );
       }
-};
-
-/****
- * Specialization for mesh functions
- */
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionAdapter< Mesh, tnlVector< Real, Device, Index > >
-{
-   public:
-      typedef Mesh MeshType;
-      typedef tnlVector< Real, Device, Index > FunctionType;
-      typedef Real RealType;
-      typedef Index IndexType;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType index,
-                                const RealType& time = 0.0 )
-      {
-         return function[ index ];
-      }
-};
-
-/****
- * Specialization for mesh functions
- */
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionAdapter< Mesh, tnlSharedVector< Real, Device, Index > >
-   : public tnlFunctionAdapter< Mesh, tnlVector< Real, Device, Index > >
-{
-   public:
-      typedef tnlSharedVector< Real, Device, Index > FunctionType;
-};
-
-/****
- * Specialization for mesh functions and grids
- */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
-                          tnlVector< Real, Device, Index > >
-{
-   public:
-      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-      typedef tnlVector< Real, Device, Index > FunctionType;
-      typedef Real RealType;
-      typedef Index IndexType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType index,
-                                const CoordinatesType& coordinates,
-                                const RealType& time = 0.0 )
-      {
-         return function[ index ];
-      }
-};
-
-/****
- * Specialization for mesh functions and grids
- */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
-                          tnlSharedVector< Real, Device, Index > >
-   : public tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
-                                tnlVector< Real, Device, Index > >
-{
-   public:
-      typedef tnlSharedVector< Real, Device, Index > FunctionType;
 };
 
 #endif /* TNLFUNCTIONADAPTER_H_ */

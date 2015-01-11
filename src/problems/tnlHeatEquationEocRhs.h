@@ -18,6 +18,8 @@
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
+#include <functions/tnlFunctionType.h>
+
 template< typename ExactOperator,
           typename TestFunction >
 class tnlHeatEquationEocRhs
@@ -53,6 +55,13 @@ class tnlHeatEquationEocRhs
       TestFunction testFunction;
 };
 
+template< typename ExactOperator,
+          typename TestFunction >
+class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
+{
+   public:
 
+      enum { Type = tnlAnalyticFunction };
+};
 
 #endif /* TNLHEATEQUATIONEOCRHS_H_ */

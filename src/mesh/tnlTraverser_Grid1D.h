@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTraversal_Grid1D.h  -  description
+                          tnlTraverser_Grid1D.h  -  description
                              -------------------
     begin                : Jul 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,14 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLTRAVERSAL_GRID1D_H_
-#define TNLTRAVERSAL_GRID1D_H_
+#ifndef TNLTRAVERSER_GRID1D_H_
+#define TNLTRAVERSER_GRID1D_H_
 
-#include <mesh/tnlTraversal.h>
+#include <mesh/tnlTraverser.h>
 
 template< typename Real,
           typename Index >
-class tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 1 >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
@@ -46,7 +46,7 @@ class tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 1 >
 
 template< typename Real,
           typename Index >
-class tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 0 >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
@@ -71,7 +71,7 @@ class tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 0 >
  */
 template< typename Real,
           typename Index >
-class tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
@@ -95,7 +95,7 @@ class tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
 
 template< typename Real,
           typename Index >
-class tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 0 >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 0 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
@@ -117,6 +117,6 @@ class tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 0 >
 
 };
 
-#include <implementation/mesh/tnlTraversal_Grid1D_impl.h>
+#include <implementation/mesh/tnlTraverser_Grid1D_impl.h>
 
-#endif /* TNLTRAVERSAL_GRID1D_H_ */
+#endif /* TNLTRAVERSER_GRID1D_H_ */

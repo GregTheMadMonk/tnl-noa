@@ -18,7 +18,7 @@
 #ifndef TNLAPPROXIMATIONERROR_IMPL_H_
 #define TNLAPPROXIMATIONERROR_IMPL_H_
 
-#include <mesh/tnlTraversal.h>
+#include <mesh/tnlTraverser.h>
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlFunctionDiscretizer.h>
 #include <matrices/tnlCSRMatrix.h>

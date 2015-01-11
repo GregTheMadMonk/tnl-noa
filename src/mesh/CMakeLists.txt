@@ -15,9 +15,9 @@ SET( headers tnlGrid.h
              tnlMeshInitializer.h
              tnlMeshEntityInitializer.h
              tnlMeshSuperentityInitializerLayer.h
-             tnlTraversal.h
-             tnlTraversal_Grid1D.h 
-             tnlTraversal_Grid2D.h 
-             tnlTraversal_Grid3D.h )
+             tnlTraverser.h
+             tnlTraverser_Grid1D.h 
+             tnlTraverser_Grid2D.h 
+             tnlTraverser_Grid3D.h )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh )

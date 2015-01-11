@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTraversal_Grid1D_impl.h  -  description
+                          tnlTraverser_Grid1D_impl.h  -  description
                              -------------------
     begin                : Jul 29, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLTRAVERSAL_GRID1D_IMPL_H_
-#define TNLTRAVERSAL_GRID1D_IMPL_H_
+#ifndef TNLTRAVERSER_GRID1D_IMPL_H_
+#define TNLTRAVERSER_GRID1D_IMPL_H_
 
 template< typename Real,
           typename Index >
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 1 >::
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >::
 processBoundaryEntities( const GridType& grid,
                  UserData& userData ) const
 {
@@ -43,7 +43,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 1 >::
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >::
 processInteriorEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -64,7 +64,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 0 >::
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >::
 processBoundaryEntities( const GridType& grid,
                  UserData& userData ) const
 {
@@ -84,7 +84,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlHost, Index >, 0 >::
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >::
 processInteriorEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -111,7 +111,7 @@ template< typename Real,
           typename Index,
           typename UserData,
           typename EntitiesProcessor >
-__global__ void tnlTraversalGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
+__global__ void tnlTraverserGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
                                                  UserData* userData,
                                                  Index gridXIdx )
 {
@@ -140,7 +140,7 @@ template< typename Real,
           typename Index,
           typename UserData,
           typename EntitiesProcessor >
-__global__ void tnlTraversalGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
+__global__ void tnlTraverserGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda, Index >* grid,
                                                  UserData* userData,
                                                  const Index gridIdx )
 {
@@ -165,7 +165,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 1 >::
+tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >::
 processBoundaryEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -183,7 +183,7 @@ processBoundaryEntities( const GridType& grid,
    const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
 
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-      tnlTraversalGrid1DBoundaryCells< Real, Index, UserData, EntitiesProcessor >
+      tnlTraverserGrid1DBoundaryCells< Real, Index, UserData, EntitiesProcessor >
                                         <<< cudaBlocks, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -200,7 +200,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 1 >::
+tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >::
 processInteriorEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -222,7 +222,7 @@ processInteriorEntities( const GridType& grid,
    {
       if( gridXIdx == cudaXGrids - 1 )
          cudaGridSize.x = cudaBlocks.x % tnlCuda::getMaxGridSize();
-      tnlTraversalGrid1DInteriorCells< Real, Index, UserData, EntitiesProcessor >
+      tnlTraverserGrid1DInteriorCells< Real, Index, UserData, EntitiesProcessor >
                                      <<< cudaGridSize, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -240,7 +240,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 0 >::
+tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 0 >::
 processBoundaryEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -255,7 +255,7 @@ template< typename Real,
    template< typename UserData,
              typename EntitiesProcessor >
 void
-tnlTraversal< tnlGrid< 1, Real, tnlCuda, Index >, 0 >::
+tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 0 >::
 processInteriorEntities( const GridType& grid,
                          UserData& userData ) const
 {
@@ -266,4 +266,4 @@ processInteriorEntities( const GridType& grid,
 }
 
 
-#endif /* TNLTRAVERSAL_GRID1D_IMPL_H_ */
+#endif /* TNLTRAVERSER_GRID1D_IMPL_H_ */

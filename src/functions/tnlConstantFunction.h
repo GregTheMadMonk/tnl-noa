@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlFunctionType.h>
 
 template< int FunctionDimensions,
           typename Real = double >
@@ -82,6 +83,15 @@ std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< Functi
    str << "Constant function: constant = " << f.getConstant();
    return str;
 }
+
+template< int FunctionDimensions,
+          typename Real >
+class tnlFunctionType< tnlConstantFunction< FunctionDimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
 
 #include <implementation/functions/tnlConstantFunction_impl.h>
 

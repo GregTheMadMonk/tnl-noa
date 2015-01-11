@@ -1,8 +1,8 @@
 /***************************************************************************
-                          heatEquationEocSolver.h  -  description
+                          tnlTraverser.h  -  description
                              -------------------
-    begin                : Nov 22, 2014
-    copyright            : (C) 2014 by oberhuber
+    begin                : Jul 28, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,25 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HEATEQUATIONEOCSOLVER_H_
-#define HEATEQUATIONEOCSOLVER_H_
-
-#include "heatEquationSolver.h"
-
+#ifndef TNLTRAVERSER_H_
+#define TNLTRAVERSER_H_
 
 template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
-class heatEquationEocSolver : public heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >
-{
-   public:
+          int EntitiesDimensions = Mesh::Dimensions >
+class tnlTraverser{};
 
-      static tnlString getTypeStatic();
 
-      bool setup( const tnlParameterContainer& parameters );
-};
-
-#include "heatEquationEocSolver_impl.h"
-
-#endif /* HEATEQUATIONEOCSOLVER_H_ */
+#endif /* TNLTRAVERSER_H_ */

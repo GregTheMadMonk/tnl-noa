@@ -1,5 +1,5 @@
 /***************************************************************************
-                          simpleProblemSolver_impl.h  -  description
+                          tnlHeatEquationProblem_impl.h  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,55 +15,55 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HEATEQUATIONSOLVER_IMPL_H_
-#define HEATEQUATIONSOLVER_IMPL_H_
+#ifndef TNLHEATEQUATIONPROBLEM_IMPL_H_
+#define TNLHEATEQUATIONPROBLEM_IMPL_H_
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <matrices/tnlMultidiagonalMatrixSetter.h>
-#include "heatEquationSolver.h"
+#include <core/tnlLogger.h>
+#include <solvers/pde/tnlExplicitUpdater.h>
+#include <solvers/pde/tnlLinearSystemAssembler.h>
 
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 tnlString
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "heatEquationSolver< " ) + Mesh :: getTypeStatic() + " >";
+   return tnlString( "tnlHeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 tnlString
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return tnlString( "Heat equation" );
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 void
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
 {
-   //logger. WriteParameter< tnlString >( "Problem name:", "problem-name", parameters );
-   //logger. WriteParameter< int >( "Simple parameter:", 1 );
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 bool
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
@@ -73,12 +73,12 @@ setup( const tnlParameterContainer& parameters )
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
-typename heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::IndexType
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-getDofs( const Mesh& mesh ) const
+          typename RightHandSide,
+          typename DifferentialOperator >
+typename tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+getDofs( const MeshType& mesh ) const
 {
    /****
     * Set-up DOFs and supporting grid functions
@@ -87,25 +87,11 @@ getDofs( const Mesh& mesh ) const
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
-typename heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::IndexType
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-getAuxiliaryDofs( const Mesh& mesh ) const
-{
-   /****
-    * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
-    */
-   return 0;
-}
-
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 void
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
@@ -114,19 +100,11 @@ bindDofs( const MeshType& mesh,
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
-void
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-bindAuxiliaryDofs( const MeshType& mesh,
-                   DofVectorType& auxiliaryDofs )
-{
-}
-
-
-template< typename Mesh, typename DifferentialOperator, typename BoundaryCondition, typename RightHandSide >
-bool heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+          typename RightHandSide,
+          typename DifferentialOperator >
+bool
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
@@ -143,15 +121,17 @@ setInitialCondition( const tnlParameterContainer& parameters,
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
+   template< typename MatrixType >          
 bool
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
                    MatrixType& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
+   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
    RowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
@@ -168,11 +148,11 @@ setupLinearSystem( const MeshType& mesh,
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 bool
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
@@ -191,30 +171,14 @@ makeSnapshot( const RealType& time,
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
-bool
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-preIterate( const RealType& time,
-            const RealType& tau,
-            const MeshType& mesh,
-            DofVectorType& dofs,
-            DofVectorType& auxDofs )
-{
-   return true;
-}
-
-
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
 void
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const Mesh& mesh,
+                const MeshType& mesh,
                 DofVectorType& u,
                 DofVectorType& fu )
 {
@@ -245,11 +209,12 @@ getExplicitRHS( const RealType& time,
 }
 
 template< typename Mesh,
-          typename DifferentialOperator,
           typename BoundaryCondition,
-          typename RightHandSide >
+          typename RightHandSide,
+          typename DifferentialOperator >
+    template< typename MatrixType >          
 void
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
@@ -274,32 +239,4 @@ assemblyLinearSystem( const RealType& time,
    abort();*/
 }
 
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
-bool
-heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::
-postIterate( const RealType& time,
-             const RealType& tau,
-             const MeshType& mesh,
-             DofVectorType& dofs,
-             DofVectorType& auxDofs )
-{
-   return true;
-}
-
-
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryCondition,
-          typename RightHandSide >
-tnlSolverMonitor< typename heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::RealType,
-                  typename heatEquationSolver< Mesh, DifferentialOperator, BoundaryCondition, RightHandSide >::IndexType >*
-heatEquationSolver< Mesh,DifferentialOperator,BoundaryCondition,RightHandSide >::
-getSolverMonitor()
-{
-   return 0;
-}
-
-#endif /* HEATEQUATION_IMPL_H_ */
+#endif /* TNLHEATEQUATIONPROBLEM_IMPL_H_ */

@@ -36,7 +36,7 @@ evaluate( const RealType& time,
    TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+   tnlTraverser< MeshType, EntityDimensions > meshTraversal;
    meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
@@ -67,7 +67,7 @@ evaluate( const RealType& time,
    TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
-   tnlTraversal< MeshType, EntityDimensions > meshTraversal;
+   tnlTraverser< MeshType, EntityDimensions > meshTraversal;
    meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
