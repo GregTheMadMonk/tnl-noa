@@ -111,7 +111,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& auxiliaryDofs )
 {
    this->bindDofs( mesh, dofs );
-   const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;

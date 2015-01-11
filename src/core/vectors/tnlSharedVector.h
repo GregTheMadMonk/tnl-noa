@@ -165,6 +165,6 @@ class tnlFunctionType< tnlSharedVector< Real, Device, Index > >
       enum { Type = tnlDiscreteFunction };
 };
 
-#include <implementation/core/vectors/tnlSharedVector_impl.h>
+#include <core/vectors/tnlSharedVector_impl.h>
 
 #endif /* TNLSHAREDVECTOR_H_ */

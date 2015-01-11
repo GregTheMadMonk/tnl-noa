@@ -47,7 +47,7 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setup( const tnlParameterContainer& parameters,
       const tnlString& prefix )
 {
-   this->verbose = parameters.GetParameter< bool >( "verbose" );
+   this->verbose = parameters.getParameter< bool >( "verbose" );
    return true;
 }
 

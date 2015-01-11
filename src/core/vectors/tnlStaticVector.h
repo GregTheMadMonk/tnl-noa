@@ -404,10 +404,10 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
 template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
 
-#include <implementation/core/vectors/tnlStaticVector_impl.h>
-#include <implementation/core/vectors/tnlStaticVector1D_impl.h>
-#include <implementation/core/vectors/tnlStaticVector2D_impl.h>
-#include <implementation/core/vectors/tnlStaticVector3D_impl.h>
+#include <core/vectors/tnlStaticVector_impl.h>
+#include <core/vectors/tnlStaticVector1D_impl.h>
+#include <core/vectors/tnlStaticVector2D_impl.h>
+#include <core/vectors/tnlStaticVector3D_impl.h>
 
 // TODO: move to some other source file
 

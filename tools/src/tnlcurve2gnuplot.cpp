@@ -38,19 +38,19 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
    
    setupConfig( conf_desc );
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
 
-   tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   tnlList< tnlString > input_files = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    tnlList< tnlString > output_files;
-   if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
+   if( ! parameters. getParameter< tnlList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
    int output_step( 1 );
-   parameters. GetParameter< int >( "output-step", output_step );
-   tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
+   parameters. getParameter< int >( "output-step", output_step );
+   tnlString output_file_format = parameters. getParameter< tnlString >( "output-file-format" );
 
    int size = input_files. getSize();
    /*if( size != output_files. getSize() )

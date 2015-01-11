@@ -86,7 +86,7 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    /****
     * Set-up the time discretisation
     */
-   const tnlString& timeDiscretisation = parameters. GetParameter< tnlString>( "time-discretisation" );
+   const tnlString& timeDiscretisation = parameters. getParameter< tnlString>( "time-discretisation" );
    if( timeDiscretisation == "explicit" )
       return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
    if( timeDiscretisation == "semi-implicit" )
@@ -110,7 +110,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisation, Con
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The time discretisation " << parameters.GetParameter< tnlString >( "time-discretisation" ) << " is not supported." << endl;
+         cerr << "The time discretisation " << parameters.getParameter< tnlString >( "time-discretisation" ) << " is not supported." << endl;
          return false;
       }
 };
@@ -123,7 +123,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscreti
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         const tnlString& discreteSolver = parameters. getParameter< tnlString>( "discrete-solver" );
          if( discreteSolver != "euler" &&
              discreteSolver != "merson" )
          {
@@ -146,7 +146,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         const tnlString& discreteSolver = parameters. getParameter< tnlString>( "discrete-solver" );
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
@@ -176,7 +176,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscreti
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         const tnlString& discreteSolver = parameters. GetParameter< tnlString>( "discrete-solver" );
+         const tnlString& discreteSolver = parameters. getParameter< tnlString>( "discrete-solver" );
          return false;
       }
 };
@@ -194,7 +194,7 @@ class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, ConfigTag, 
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The explicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         cerr << "The explicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
          return false;
       }
 };
@@ -246,7 +246,7 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, Con
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The semi-implicit solver " << parameters.GetParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         cerr << "The semi-implicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
          return false;
       }
 };
@@ -340,7 +340,7 @@ class tnlSolverStarterExplicitTimeStepperSetter
 
          ExplicitSolver explicitSolver;
          explicitSolver.setup( parameters );
-         int verbose = parameters.GetParameter< int >( "verbose" );
+         int verbose = parameters.getParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
          SolverMonitorType odeSolverMonitor;
          if( ! problem.getSolverMonitor() )
@@ -429,7 +429,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlSORSolver< typename Problem :: DiscreteSolverMatrixType,
                             typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      double omega = parameters. GetParameter< double >( "sor-omega" );
+      double omega = parameters. getParameter< double >( "sor-omega" );
       solver. setName( "sor-solver" );
       solver. setOmega( omega );
       //solver. setVerbose( this -> verbose );
@@ -461,7 +461,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlGMRESSolver< typename Problem :: DiscreteSolverMatrixType,
                               typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      int restarting = parameters. GetParameter< int >( "gmres-restarting" );
+      int restarting = parameters. getParameter< int >( "gmres-restarting" );
       solver. setName( "gmres-solver" );
       solver. setRestarting( restarting );
       //solver. setVerbose( this -> verbose );
@@ -494,15 +494,15 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Write a prolog
     */
-   int verbose = parameters.GetParameter< int >( "verbose" );
-   parameters. GetParameter< int >( "log-width", logWidth );
+   int verbose = parameters.getParameter< int >( "verbose" );
+   parameters. getParameter< int >( "log-width", logWidth );
    if( verbose )
    {
       tnlLogger logger( logWidth, cout );
       solver.writeProlog( logger, parameters );
    }
    tnlString logFileName;
-   bool haveLogFile = parameters.GetParameter< tnlString >( "log-file", logFileName );
+   bool haveLogFile = parameters.getParameter< tnlString >( "log-file", logFileName );
    if( haveLogFile )
    {
       fstream logFile;

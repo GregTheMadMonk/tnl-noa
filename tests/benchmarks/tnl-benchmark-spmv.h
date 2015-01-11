@@ -293,11 +293,11 @@ void writeTestFailed( fstream& logFile,
 template< typename Real >
 bool setupBenchmark( const tnlParameterContainer& parameters )
 {
-   const tnlString& test = parameters.GetParameter< tnlString >( "test" );
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
-   const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
-   const int verbose = parameters.GetParameter< int >( "verbose" );
-   const double stopTime = parameters.GetParameter< double >( "stop-time" );
+   const tnlString& test = parameters.getParameter< tnlString >( "test" );
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
+   const int verbose = parameters.getParameter< int >( "verbose" );
+   const double stopTime = parameters.getParameter< double >( "stop-time" );
    fstream logFile;
    if( ! initLogFile( logFile, logFileName ) )
    {
@@ -675,12 +675,12 @@ int main( int argc, char* argv[] )
 
    setupConfig( conf_desc );
    
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
    if( precision == "float" )
       if( ! setupBenchmark< float >( parameters ) )
          return EXIT_FAILURE;

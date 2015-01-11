@@ -61,7 +61,7 @@ setup( const tnlParameterContainer& parameters,
    /****
     * Load the mesh from the mesh file
     */
-   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
    cout << "Loading a mesh from the file " << meshFile << "...";
    if( ! this->mesh.load( meshFile ) )
    {
@@ -103,10 +103,10 @@ setup( const tnlParameterContainer& parameters,
    /****
     * Initialize the time discretisation
     */
-   this->setFinalTime( parameters.GetParameter< double >( "final-time" ) );
-   this->setSnapshotPeriod( parameters.GetParameter< double >( "snapshot-period" ) );
-   this->setTimeStep( parameters.GetParameter< double >( "time-step") );
-   this->setTimeStepOrder( parameters.GetParameter< double >( "time-step-order" ) );
+   this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
+   this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
+   this->setTimeStep( parameters.getParameter< double >( "time-step") );
+   this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
    return true;
 }
 
@@ -126,7 +126,7 @@ writeProlog( tnlLogger& logger,
    logger.writeParameter< double >( "Initial time step:", "time-step", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
-   const tnlString& solverName = parameters. GetParameter< tnlString >( "discrete-solver" );
+   const tnlString& solverName = parameters. getParameter< tnlString >( "discrete-solver" );
    logger.writeParameter< tnlString >( "Discrete solver:", "discrete-solver", parameters );
    if( solverName == "merson" )
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );

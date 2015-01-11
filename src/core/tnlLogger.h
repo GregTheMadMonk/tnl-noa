@@ -57,7 +57,7 @@ class tnlLogger
    ostream& stream;
 };
 
-#include <implementation/core/tnlLogger_impl.h>
+#include <core/tnlLogger_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 extern template void tnlLogger::writeParameter< char* >( const tnlString&,

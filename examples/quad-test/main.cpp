@@ -27,12 +27,12 @@ int main(int argc, char* argv[]) {
 	tnlConfigDescription conf_desc;
 	if(conf_desc.ParseConfigDescription(CONFIG_FILE) != 0)
 		return EXIT_FAILURE;
-	if(!ParseCommandLine(argc, argv, conf_desc, parameters)) {
+	if(!parseCommandLine(argc, argv, conf_desc, parameters)) {
 		conf_desc.PrintUsage(argv[ 0 ]);
 		return EXIT_FAILURE;
 	}
 
-	tnlString inputFile = parameters.GetParameter <tnlString> ("input-file");
+	tnlString inputFile = parameters.getParameter <tnlString> ("input-file");
 	tnlFile binaryFile;
 	if(! binaryFile.open(inputFile, tnlReadMode)) {
 		cerr << "I am not able to open the file " << inputFile << "." << endl;

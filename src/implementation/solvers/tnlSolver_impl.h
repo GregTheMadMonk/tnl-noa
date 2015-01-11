@@ -33,7 +33,7 @@ run( int argc, char* argv[] )
    tnlConfigDescription configDescription;
    ProblemConfig< ConfigTag >::configSetup( configDescription );
    tnlSolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
-   if( ! ParseCommandLine( argc, argv, configDescription, parameters ) )
+   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
    tnlSolverInitiator< ProblemSetter, ConfigTag > solverInitiator;

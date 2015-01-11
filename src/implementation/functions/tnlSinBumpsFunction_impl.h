@@ -69,9 +69,9 @@ template< typename Real >
 bool tnlSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
-   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
+   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
+   this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
    return true;
 }
 
@@ -114,11 +114,11 @@ template< typename Real >
 bool tnlSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
-   this->waveLength.y() = parameters.GetParameter< double >( prefix + "wave-length-y" );
-   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
-   this->phase.y() = parameters.GetParameter< double >( prefix + "phase-y" );
+   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
+   this->waveLength.y() = parameters.getParameter< double >( prefix + "wave-length-y" );
+   this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
+   this->phase.y() = parameters.getParameter< double >( prefix + "phase-y" );
    return true;
 }
 
@@ -168,13 +168,13 @@ template< typename Real >
 bool tnlSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
-   this->waveLength.x() = parameters.GetParameter< double >( prefix + "wave-length-x" );
-   this->waveLength.y() = parameters.GetParameter< double >( prefix + "wave-length-y" );
-   this->waveLength.z() = parameters.GetParameter< double >( prefix + "wave-length-z" );
-   this->phase.x() = parameters.GetParameter< double >( prefix + "phase-x" );
-   this->phase.y() = parameters.GetParameter< double >( prefix + "phase-y" );
-   this->phase.z() = parameters.GetParameter< double >( prefix + "phase-z" );
+   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+   this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
+   this->waveLength.y() = parameters.getParameter< double >( prefix + "wave-length-y" );
+   this->waveLength.z() = parameters.getParameter< double >( prefix + "wave-length-z" );
+   this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
+   this->phase.y() = parameters.getParameter< double >( prefix + "phase-y" );
+   this->phase.z() = parameters.getParameter< double >( prefix + "phase-z" );
    return true;
 }
 

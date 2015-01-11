@@ -66,7 +66,7 @@ bool simpleProblemSolver< Mesh>::setup( const tnlParameterContainer& parameters 
     * Set-up your solver here. It means:
     * 1. Read input parameters and model coefficients like these
     */
-   const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
+   const tnlString& problemName = parameters. getParameter< tnlString >( "problem-name" );
    return true;
 }
 
@@ -112,7 +112,7 @@ bool simpleProblemSolver< Mesh>::setInitialCondition( const tnlParameterContaine
    /****
     * Set the initial condition here. Manipulate only this -> dofVector.
     */
-   /*const tnlString& initialConditionFile = parameters.GetParameter< tnlString >( "initial-condition" );
+   /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->u.load( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;

@@ -33,10 +33,10 @@ template< typename Real >
 bool tnlSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
-   this->waveLength = parameters.GetParameter< double >( prefix + "wave-length" );
-   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
-   this->phase = parameters.GetParameter< double >( prefix + "phase" );
-   parameters.GetParameter< double >( prefix + "waves-number" );
+   this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
+   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+   this->phase = parameters.getParameter< double >( prefix + "phase" );
+   parameters.getParameter< double >( prefix + "waves-number" );
    return true;
 }
 

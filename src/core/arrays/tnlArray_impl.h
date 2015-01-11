@@ -24,7 +24,7 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 #include <core/arrays/tnlArrayOperations.h>
-#include <implementation/core/arrays/tnlArrayIO.h>
+#include <core/arrays/tnlArrayIO.h>
 
 using namespace std;
 

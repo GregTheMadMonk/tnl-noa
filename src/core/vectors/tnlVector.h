@@ -159,6 +159,6 @@ class tnlFunctionType< tnlVector< Real, Device, Index > >
       enum { Type = tnlDiscreteFunction };
 };
 
-#include <implementation/core/vectors/tnlVector_impl.h>
+#include <core/vectors/tnlVector_impl.h>
 
 #endif /* TNLVECTOR_H_ */

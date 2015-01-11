@@ -55,8 +55,8 @@ bool testMatrix( const tnlParameterContainer& parameters )
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
 
-   const tnlString& fileName = parameters.GetParameter< tnlString >( "input-file" );
-   bool verbose = parameters.GetParameter< bool >( "verbose" );
+   const tnlString& fileName = parameters.getParameter< tnlString >( "input-file" );
+   bool verbose = parameters.getParameter< bool >( "verbose" );
    fstream file;
    file.open( fileName.getString(), ios::in );
    if( ! file )
@@ -68,7 +68,7 @@ bool testMatrix( const tnlParameterContainer& parameters )
       return false;
    if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
-   if( parameters.GetParameter< bool >( "hard-test" ) )
+   if( parameters.getParameter< bool >( "hard-test" ) )
    {
       typedef tnlDenseMatrix< RealType, DeviceType, IndexType > DenseMatrix;
       DenseMatrix denseMatrix;
@@ -100,7 +100,7 @@ bool testMatrix( const tnlParameterContainer& parameters )
       if( verbose )
          cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << endl;
    }
-   if( parameters.GetParameter< bool >( "multiplication-test" ) )
+   if( parameters.getParameter< bool >( "multiplication-test" ) )
    {
       tnlVector< RealType, DeviceType, IndexType > x, b;
       x.setSize( matrix.getColumns() );
@@ -134,13 +134,13 @@ int main( int argc, char* argv[] )
 
    setupConfig( conf_desc );
    
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
 
-   const tnlString& matrixFormat = parameters.GetParameter< tnlString >( "matrix-format" );
+   const tnlString& matrixFormat = parameters.getParameter< tnlString >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
        if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters ) )

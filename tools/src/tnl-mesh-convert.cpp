@@ -41,7 +41,7 @@ int main( int argc, char* argv[] )
    
    configSetup( conf_desc );
 
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;

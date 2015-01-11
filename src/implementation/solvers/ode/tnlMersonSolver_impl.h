@@ -120,8 +120,8 @@ bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameter
                                          const tnlString& prefix )
 {
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
-   if( parameters.CheckParameter( prefix + "merson-adaptivity" ) )
-      this->setAdaptivity( parameters.GetParameter< double >( prefix + "merson-adaptivity" ) );
+   if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
+      this->setAdaptivity( parameters.getParameter< double >( prefix + "merson-adaptivity" ) );
    return true;
 }
 

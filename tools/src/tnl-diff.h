@@ -27,12 +27,12 @@
 template< typename Mesh, typename Element, typename Real, typename Index >
 bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameters )
 {
-   bool verbose = parameters. GetParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. GetParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. GetParameter< tnlString >( "output-file" );
-   double snapshotPeriod = parameters. GetParameter< double >( "snapshot-period" );
-   bool writeDifference = parameters. GetParameter< bool >( "write-difference" );
+   bool verbose = parameters. getParameter< bool >( "verbose" );
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
+   tnlString mode = parameters. getParameter< tnlString >( "mode" );
+   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
+   bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
    fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
@@ -268,14 +268,14 @@ bool setElementType( const Mesh& mesh,
 template< typename Mesh >
 bool processFiles( const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    tnlString& inputFile = inputFiles[ 0 ];
 
    /****
     * Reading the mesh
     */
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
 
    Mesh mesh;
    if( meshFile != "" )

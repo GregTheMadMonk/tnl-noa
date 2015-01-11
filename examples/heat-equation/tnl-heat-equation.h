@@ -73,8 +73,8 @@ class heatEquationSetter
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
 
-      tnlString boundaryConditionsType = parameters.GetParameter< tnlString >( "boundary-conditions-type" );
-      if( parameters.CheckParameter( "boundary-conditions-constant" ) )
+      tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+      if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
          typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
          if( boundaryConditionsType == "dirichlet" )

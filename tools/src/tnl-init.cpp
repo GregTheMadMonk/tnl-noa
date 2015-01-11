@@ -56,10 +56,10 @@ int main( int argc, char* argv[] )
 
    setupConfig( conf_desc );
    
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
    tnlString meshType;
    if( ! getObjectType( meshFile, meshType ) )
    {

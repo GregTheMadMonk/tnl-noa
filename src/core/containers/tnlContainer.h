@@ -59,6 +59,6 @@ class tnlContainer : public tnlObject
    tnlArray< Element, Device, Index > data;
 };
 
-#include<implementation/core/containers/tnlContainer_impl.h>
+#include <core/containers/tnlContainer_impl.h>
 
 #endif /* TNLCONTAINER_H_ */

@@ -1,5 +1,3 @@
-ADD_SUBDIRECTORY( config )
-ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( functions )
@@ -20,7 +18,6 @@ IF( BUILD_CUDA )
 ENDIF() 
 
 set( tnl_implementation_SOURCES 
-     ${tnl_implementation_config_SOURCES}
      ${tnl_implementation_core_SOURCES}
      ${tnl_implementation_functions_SOURCES}
      ${tnl_implementation_matrices_SOURCES}

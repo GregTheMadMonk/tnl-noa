@@ -49,11 +49,11 @@ template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: setup( const tnlParameterContainer& parameters,
                                                const tnlString& prefix )
 {
-   this->setMaxIterations( parameters.GetParameter< int >( "max-iterations" ) );
-   this->setMinIterations( parameters.GetParameter< int >( "min-iterations" ) );
-   this->setConvergenceResidue( parameters.GetParameter< double >( "convergence-residue" ) );
-   this->setDivergenceResidue( parameters.GetParameter< double >( "divergence-residue" ) );
-   this->setRefreshRate( parameters.GetParameter< int >( "refresh-rate" ) );
+   this->setMaxIterations( parameters.getParameter< int >( "max-iterations" ) );
+   this->setMinIterations( parameters.getParameter< int >( "min-iterations" ) );
+   this->setConvergenceResidue( parameters.getParameter< double >( "convergence-residue" ) );
+   this->setDivergenceResidue( parameters.getParameter< double >( "divergence-residue" ) );
+   this->setRefreshRate( parameters.getParameter< int >( "refresh-rate" ) );
 }
 
 template< typename Real, typename Index >

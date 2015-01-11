@@ -29,7 +29,7 @@
 template< int Dimensions >
 bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-mesh-file" );
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-mesh-file" );
    const tnlString fileExt = getFileExtension( inputFileName );
 
    if( Dimensions == 2 )
@@ -45,7 +45,7 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       //if( ! tnlMeshInitializer< MeshConfig >::initMesh( mesh ) )
       //   return false;
       tnlString outputFile;
-      if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
+      if( parameters.getParameter< tnlString >( "output-file", outputFile ) )
       {
          cout << "Writing the mesh to the file " << outputFile << "." << endl;
          if( ! mesh.save( outputFile ) )
@@ -61,7 +61,7 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 bool convertMesh( const tnlParameterContainer& parameters )
 {
    tnlString inputFileName;
-   if( parameters.GetParameter( "input-mesh-file", inputFileName ) )
+   if( parameters.getParameter( "input-mesh-file", inputFileName ) )
    {
       const tnlString fileExt = getFileExtension( inputFileName );
       if( fileExt == "ng" )

@@ -57,8 +57,8 @@ bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters
                                         const tnlString& prefix )
 {
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
-   if( parameters.CheckParameter( prefix + "euler-cfl" ) )
-      this->setCFLCondition( parameters.GetParameter< double >( prefix + "euler-cfl" ) );
+   if( parameters.checkParameter( prefix + "euler-cfl" ) )
+      this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
 }
 
 template< typename Problem >

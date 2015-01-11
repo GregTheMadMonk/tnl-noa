@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
    configSetup( conf_desc );
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
    if( ! resolveRealType( parameters ) )
       return EXIT_FAILURE;

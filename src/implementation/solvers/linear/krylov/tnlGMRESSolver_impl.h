@@ -67,7 +67,7 @@ setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setRestarting( parameters.GetParameter< int >( "gmres-restarting" ) );
+   this->setRestarting( parameters.getParameter< int >( "gmres-restarting" ) );
 }
 
 template< typename Matrix,

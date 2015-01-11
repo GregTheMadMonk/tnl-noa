@@ -55,7 +55,7 @@ class tnlStaticContainer : public tnlObject
    tnlStaticArray< Size, Element > data;
 };
 
-#include<implementation/core/containers/tnlStaticContainer_impl.h>
+#include <core/containers/tnlStaticContainer_impl.h>
 
 
 #endif /* TNLSTATICCONTAINER_H_ */

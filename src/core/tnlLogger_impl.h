@@ -31,7 +31,7 @@ void tnlLogger::writeParameter( const tnlString& label,
    for( i = 0; i < parameterLevel; i ++ )
       stream << " ";
    std::stringstream str;
-   str << parameters.GetParameter< T >( parameterName );
+   str << parameters.getParameter< T >( parameterName );
    stream  << label
            << setw( width - label.getLength() - parameterLevel - 3 )
            << str.str() << " |" << endl;

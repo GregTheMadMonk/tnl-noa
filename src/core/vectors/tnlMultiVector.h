@@ -367,9 +367,9 @@ template< typename Real, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
 
 
-#include <implementation/core/vectors/tnlMultiVector1D_impl.h>
-#include <implementation/core/vectors/tnlMultiVector2D_impl.h>
-#include <implementation/core/vectors/tnlMultiVector3D_impl.h>
-#include <implementation/core/vectors/tnlMultiVector4D_impl.h>
+#include <core/vectors/tnlMultiVector1D_impl.h>
+#include <core/vectors/tnlMultiVector2D_impl.h>
+#include <core/vectors/tnlMultiVector3D_impl.h>
+#include <core/vectors/tnlMultiVector4D_impl.h>
 
 #endif /* TNLMULTIVECTOR_H_ */

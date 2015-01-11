@@ -122,6 +122,6 @@ class tnlConstSharedArray : public tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlConstSharedArray< Element, Device, Index >& v );
 
-#include <implementation/core/arrays/tnlConstSharedArray_impl.h>
+#include <core/arrays/tnlConstSharedArray_impl.h>
 
 #endif /* TNLCONSTSHAREDARRAY_H_ */

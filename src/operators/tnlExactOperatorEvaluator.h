@@ -86,9 +86,9 @@ class tnlExactOperatorEvaluator
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index )
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index )
             {
                userData.boundaryConditions.setBoundaryConditions( userData.time,
                                                                   mesh,
@@ -107,9 +107,9 @@ class tnlExactOperatorEvaluator
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processEntity( const MeshType& mesh,
-                                TraversalUserData& userData,
-                                const IndexType index )
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index )
             {
                userData.fu[ index ] = userData.differentialOperator.getValue( userData.function,
                                                                               mesh.template getEntityCenter< EntityDimensions >( index ),
@@ -157,10 +157,10 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processCell( const MeshType& mesh,
-                              TraversalUserData& userData,
-                              const IndexType index,
-                              const CoordinatesType& c )
+            static void processCell( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& c )
             {
                userData.boundaryConditions.setBoundaryConditions( userData.time,
                                                                   mesh,
@@ -179,10 +179,10 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
 #ifdef HAVE_CUDA
             __host__ __device__
 #endif
-            void processCell( const MeshType& mesh,
-                              TraversalUserData& userData,
-                              const IndexType index,
-                              const CoordinatesType& c )
+            static void processCell( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& c )
             {
                userData.fu[ index ] = userData.differentialOperator.getValue( userData.function,
                                                                               mesh.template getCellCenter( index ),                                                                           

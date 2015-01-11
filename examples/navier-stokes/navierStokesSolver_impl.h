@@ -89,8 +89,8 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device
                                                         const tnlParameterContainer& parameters ) const
 {
    tnlStaticVector< 2, IndexType > meshes;
-   meshes.x() = parameters.GetParameter< int >( "x-size" );
-   meshes.y() = parameters.GetParameter< int >( "y-size" );
+   meshes.x() = parameters.getParameter< int >( "x-size" );
+   meshes.y() = parameters.getParameter< int >( "y-size" );
    if( meshes.x() <= 0 )
    {
       cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
@@ -122,7 +122,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    /****
     * Set-up problem type
     */
-   const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
+   const tnlString& problemName = parameters. getParameter< tnlString >( "problem-name" );
    if( problemName == "riser" )
       problem = riser;
    if( problemName == "cavity" )
@@ -131,15 +131,15 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    /****
     * Set-up the geometry
     */
-   const tnlString& meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
    if( ! this->mesh.load( meshFile ) )
    {
       cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
       return false;
    }
    /*tnlStaticVector< 2, RealType > proportions;
-   proportions. x() = parameters. GetParameter< double >( "width" );
-   proportions. y() = parameters. GetParameter< double >( "height" );
+   proportions. x() = parameters. getParameter< double >( "width" );
+   proportions. y() = parameters. getParameter< double >( "height" );
    if( proportions. x() <= 0 )
    {
       cerr << "Error: width must be positive real number! It is " << proportions. x() << " now." << endl;
@@ -163,12 +163,12 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    /****
     * Set-up model coefficients
     */
-   this->p_0 = parameters. GetParameter< double >( "p0" );
-   nsSolver.setT( parameters. GetParameter< double >( "T") );
-   nsSolver.setHeatCapacityRatio( parameters. GetParameter< double >( "gamma" ) );
-   nsSolver.setMu( parameters. GetParameter< double >( "mu") );
-   nsSolver.setR( parameters. GetParameter< double >( "R") );
-   nsSolver.setGravity( parameters. GetParameter< double >( "gravity") );
+   this->p_0 = parameters. getParameter< double >( "p0" );
+   nsSolver.setT( parameters. getParameter< double >( "T") );
+   nsSolver.setHeatCapacityRatio( parameters. getParameter< double >( "gamma" ) );
+   nsSolver.setMu( parameters. getParameter< double >( "mu") );
+   nsSolver.setR( parameters. getParameter< double >( "R") );
+   nsSolver.setGravity( parameters. getParameter< double >( "gravity") );
    if( ! this->boundaryConditions.setup( parameters ) )
       return false;
 
@@ -307,7 +307,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( tnlLogger& logger,
                                                              const tnlParameterContainer& parameters ) const
 {
    logger. WriteParameter< tnlString >( "Problem name:", "problem-name", parameters );
-   const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
+   const tnlString& problemName = parameters. getParameter< tnlString >( "problem-name" );
    if( problemName == "cavity" )
    {
       logger. WriteParameter< double >( "Max. inflow velocity:", "max-inflow-velocity", parameters, 1 );

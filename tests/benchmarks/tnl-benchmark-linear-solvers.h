@@ -107,7 +107,7 @@ template< typename Matrix >
 bool readMatrix( const tnlParameterContainer& parameters,
                  Matrix& matrix )
 {
-   const tnlString fileName = parameters.GetParameter< tnlString >( "input-file" );
+   const tnlString fileName = parameters.getParameter< tnlString >( "input-file" );
 
    Matrix* hostMatrix;
    if( Matrix::DeviceType::DeviceType == ( int ) tnlCudaDevice )
@@ -143,7 +143,7 @@ bool readMatrix( const tnlParameterContainer& parameters,
 template< typename Matrix >
 bool resolveLinearSolver( const tnlParameterContainer& parameters )
 {
-   const tnlString& solver = parameters.GetParameter< tnlString >( "solver" );
+   const tnlString& solver = parameters.getParameter< tnlString >( "solver" );
 
    Matrix matrix;
    if( ! readMatrix( parameters, matrix ) )
@@ -169,7 +169,7 @@ template< typename Real,
           typename Device >
 bool resolveMatrixFormat( const tnlParameterContainer& parameters )
 {
-   const tnlString& matrixFormat = parameters.GetParameter< tnlString >( "matrix-format" );
+   const tnlString& matrixFormat = parameters.getParameter< tnlString >( "matrix-format" );
 
    if( matrixFormat == "dense" )
       return resolveLinearSolver< tnlDenseMatrix< Real, Device, int > >( parameters );
@@ -199,7 +199,7 @@ bool resolveMatrixFormat( const tnlParameterContainer& parameters )
 template< typename Real >
 bool resolveDevice( const tnlParameterContainer& parameters )
 {
-   const tnlString& device = parameters.GetParameter< tnlString >( "device" );
+   const tnlString& device = parameters.getParameter< tnlString >( "device" );
 
    if( device == "host" )
       return resolveMatrixFormat< Real, tnlHost >( parameters );
@@ -218,12 +218,12 @@ int main( int argc, char* argv[] )
 
    configSetup( conf_desc );
    
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
    if( precision == "float" )
       if( ! resolveDevice< float >( parameters ) )
          return EXIT_FAILURE;

@@ -55,7 +55,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename ConfigTag >
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const tnlParameterContainer& parameters )
 {
-   const tnlString& meshFileName = parameters.GetParameter< tnlString >( "mesh" );
+   const tnlString& meshFileName = parameters.getParameter< tnlString >( "mesh" );
 
    tnlString meshType;
    if( ! getObjectType( meshFileName, meshType ) )

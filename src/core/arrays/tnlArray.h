@@ -145,6 +145,6 @@ class tnlArray : public virtual tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
 
-#include <implementation/core/arrays/tnlArray_impl.h>
+#include <core/arrays/tnlArray_impl.h>
 
 #endif /* TNLARRAY_H_ */

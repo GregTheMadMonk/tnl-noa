@@ -112,7 +112,7 @@ setup( const tnlParameterContainer& parameters,
 {
    cout << "Test function setup ... " << endl;
    const tnlString& timeDependence =
-            parameters.GetParameter< tnlString >(
+            parameters.getParameter< tnlString >(
                      prefix +
                      "time-dependence" );
    cout << "Time dependence ... " << timeDependence << endl;
@@ -125,9 +125,9 @@ setup( const tnlParameterContainer& parameters,
    if( timeDependence == "cosine" )
       this->timeDependence = cosine;
 
-   this->timeScale = parameters.GetParameter< double >( prefix + "time-scale" );
+   this->timeScale = parameters.getParameter< double >( prefix + "time-scale" );
 
-   const tnlString& testFunction = parameters.GetParameter< tnlString >( prefix + "test-function" );
+   const tnlString& testFunction = parameters.getParameter< tnlString >( prefix + "test-function" );
    cout << "Test function ... " << testFunction << endl;
    if( testFunction == "constant" )
    {

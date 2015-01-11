@@ -543,9 +543,9 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGridOld< 3, Real, De
                                                    int root,
                                                    MPI_Comm comm )
 {
-   int mpi_mesh_x_size = parameters. GetParameter< int >( "mpi-mesh-x-size" );
-   int mpi_mesh_y_size = parameters. GetParameter< int >( "mpi-mesh-y-size" );
-   int mpi_mesh_z_size = parameters. GetParameter< int >( "mpi-mesh-z-size" );
+   int mpi_mesh_x_size = parameters. getParameter< int >( "mpi-mesh-x-size" );
+   int mpi_mesh_y_size = parameters. getParameter< int >( "mpi-mesh-y-size" );
+   int mpi_mesh_z_size = parameters. getParameter< int >( "mpi-mesh-z-size" );
 
    return Init( u,
                 mpi_mesh_x_size,

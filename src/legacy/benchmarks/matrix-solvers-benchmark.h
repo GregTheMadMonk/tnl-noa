@@ -41,7 +41,7 @@ const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg
 
 void writeTestFailToLog( const tnlParameterContainer& parameters )
 {
-   const tnlString& logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
    fstream logFile;
    if( logFileName != "" )
    {
@@ -70,7 +70,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
-   const RealType& maxResidue = parameters. GetParameter< double >( "max-residue" );
+   const RealType& maxResidue = parameters. getParameter< double >( "max-residue" );
    const IndexType& size = matrix. getRows();
    const IndexType nonZeros = matrix. getNumberOfMatrixElements();
    //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
@@ -92,7 +92,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
 #endif   
 
    bool solverConverged( solver. getResidue() < maxResidue );
-   const tnlString& logFileName = parameters. GetParameter< tnlString >( "log-file" );
+   const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
    fstream logFile;
    if( logFileName != "" )
    {
@@ -130,17 +130,17 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
-   const tnlString& solverClass = parameters. GetParameter< tnlString >( "solver-class" );
+   const tnlString& solverClass = parameters. getParameter< tnlString >( "solver-class" );
    if( solverClass == "tnl" )
    {
-      const tnlString& solverName = parameters. GetParameter< tnlString >( "solver-name" );
+      const tnlString& solverName = parameters. getParameter< tnlString >( "solver-name" );
       IndexType iterations( 0 );
       RealType residue( 0.0 );
       bool converged( false );
       if( solverName == "sor" )
       {
          tnlSORSolver< Matrix > solver;
-         const RealType& sorOmega = parameters. GetParameter< double >( "sor-omega" );
+         const RealType& sorOmega = parameters. getParameter< double >( "sor-omega" );
          solver. setOmega( sorOmega );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
@@ -157,7 +157,7 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
       if( solverName == "gmres" )
       {
          tnlGMRESSolver< Matrix > solver;
-         const IndexType& gmresRestarting = parameters. GetParameter< int >( "gmres-restarting" );
+         const IndexType& gmresRestarting = parameters. getParameter< int >( "gmres-restarting" );
          solver. setRestarting( gmresRestarting );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
@@ -254,7 +254,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
     * Loading the matrix from the input file
     */
    typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
-   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
+   tnlString inputFile = parameters. getParameter< tnlString >( "input-file" );
    csrMatrixType csrMatrix;
    csrMatrix.setName( "matrix-solvers-benchmark:csrMatrix" );
    if( ! csrMatrix. load( inputFile ) )
@@ -266,7 +266,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    /****
     * Writing matrix statistics
     */
-   tnlString matrixStatsFileName = parameters. GetParameter< tnlString >( "matrix-stats-file" );
+   tnlString matrixStatsFileName = parameters. getParameter< tnlString >( "matrix-stats-file" );
    if( matrixStatsFileName )
    {
       fstream matrixStatsFile;
@@ -300,7 +300,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    x. setValue( ( Real ) 0.0 );
    csrMatrix. vectorProduct( x1, b );
 
-   const tnlString device = parameters. GetParameter< tnlString >( "device" );
+   const tnlString device = parameters. getParameter< tnlString >( "device" );
    if( device == "host" )
       if( ! benchmarkMatrixOnDevice( parameters, csrMatrix, b, x ) )
          return false;
@@ -345,16 +345,16 @@ int main( int argc, char* argv[] )
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString inputFile = parameters. GetParameter< tnlString >( "input-file" );
-   tnlString str_input_mtx_file = parameters. GetParameter< tnlString >( "input-mtx-file" );
-   tnlString log_file_name = parameters. GetParameter< tnlString >( "log-file" );
-   double stop_time = parameters. GetParameter< double >( "stop-time" );
-   int verbose = parameters. GetParameter< int >( "verbose");
+   tnlString inputFile = parameters. getParameter< tnlString >( "input-file" );
+   tnlString str_input_mtx_file = parameters. getParameter< tnlString >( "input-mtx-file" );
+   tnlString log_file_name = parameters. getParameter< tnlString >( "log-file" );
+   double stop_time = parameters. getParameter< double >( "stop-time" );
+   int verbose = parameters. getParameter< int >( "verbose");
 
    /****
     * Checking a type of the input data

@@ -51,7 +51,7 @@ setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setOmega( parameters.GetParameter< double >( prefix + "sor-omega" ) );
+   this->setOmega( parameters.getParameter< double >( prefix + "sor-omega" ) );
    if( this->omega <= 0.0 || this->omega > 2.0 )
    {
       cerr << "Warning: The SOR method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << endl;

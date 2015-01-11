@@ -42,14 +42,14 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
    setupConfig( conf_desc );
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
 
-   int verbose = parameters. GetParameter< int >( "verbose" );
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   int verbose = parameters. getParameter< int >( "verbose" );
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
    if( meshFile == "" )
    {
       if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )

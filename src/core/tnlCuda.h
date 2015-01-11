@@ -130,6 +130,6 @@ class tnlCuda
 
 #endif
 
-#include <implementation/core/tnlCuda_impl.h>
+#include <core/tnlCuda_impl.h>
 
 #endif /* TNLCUDA_H_ */

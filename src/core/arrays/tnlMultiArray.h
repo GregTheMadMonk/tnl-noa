@@ -449,10 +449,10 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 
-#include <implementation/core/arrays/tnlMultiArray1D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray2D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray3D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray4D_impl.h>
+#include <core/arrays/tnlMultiArray1D_impl.h>
+#include <core/arrays/tnlMultiArray2D_impl.h>
+#include <core/arrays/tnlMultiArray3D_impl.h>
+#include <core/arrays/tnlMultiArray4D_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

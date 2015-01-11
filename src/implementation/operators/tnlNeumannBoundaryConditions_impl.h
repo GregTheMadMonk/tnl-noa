@@ -16,9 +16,9 @@ tnlNeumannBoundaryConditionsBase< Vector >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   if( parameters.CheckParameter( prefix + "file" ) )
+   if( parameters.checkParameter( prefix + "file" ) )
    {
-      tnlString fileName = parameters.GetParameter< tnlString >( prefix + "file" );
+      tnlString fileName = parameters.getParameter< tnlString >( prefix + "file" );
       if( ! this->vector.load( fileName ) )
          return false;
    }

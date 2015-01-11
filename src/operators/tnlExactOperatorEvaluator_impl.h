@@ -65,16 +65,15 @@ evaluate( const RealType& time,
           DofVector& fu ) const
 {
    TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
-   TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
-   TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
-   tnlTraverser< MeshType, EntityDimensions > meshTraversal;
-   meshTraversal.template processEntities< TraversalUserData,
-                                           TraversalBoundaryEntitiesProcessor,
-                                           TraversalInteriorEntitiesProcessor >
-                                          ( mesh,
-                                            userData,
-                                            boundaryEntitiesProcessor,
-                                            interiorEntitiesProcessor );
+   tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+   meshTraverser.template processBoundaryEntities< TraversalUserData,
+                                                   TraversalBoundaryEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
+   meshTraverser.template processInteriorEntities< TraversalUserData,
+                                                   TraversalInteriorEntitiesProcessor >
+                                                 ( mesh,
+                                                   userData );
 }
 
 

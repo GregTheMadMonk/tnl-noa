@@ -26,8 +26,8 @@ tnlExpBumpFunctionBase< Real >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   this->amplitude = parameters.GetParameter< double >( prefix + "amplitude" );
-   this->sigma = parameters.GetParameter< double >( prefix + "sigma" );
+   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+   this->sigma = parameters.getParameter< double >( prefix + "sigma" );
    return true;
 }
 

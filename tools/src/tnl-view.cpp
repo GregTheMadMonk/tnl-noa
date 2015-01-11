@@ -66,12 +66,12 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
    setupConfig( conf_desc );
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
 
-   int verbose = parameters. GetParameter< int >( "verbose" );
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   int verbose = parameters. getParameter< int >( "verbose" );
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
    if( meshFile == "" )
    {
       if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
@@ -116,7 +116,7 @@ int main( int argc, char* argv[] )
    }
    if( parsedMeshType[ 0 ] == "tnlMesh" )
    {
-      /*tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+      /*tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
          typedef tnlMeshTriangleTag CellTag;
