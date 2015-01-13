@@ -112,6 +112,6 @@ ostream& operator << ( ostream& str, const tnlAnalyticDirichletBoundaryCondition
    return str;
 }
 
-#include <implementation/operators/tnlAnalyticDirichletBoundaryConditions_impl.h>
+#include <operators/tnlAnalyticDirichletBoundaryConditions_impl.h>
 
 #endif	/* tnlAnalyticDirichletBoundaryConditions_H */

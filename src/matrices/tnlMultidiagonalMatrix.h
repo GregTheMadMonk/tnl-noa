@@ -224,6 +224,6 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
 };
 
-#include <implementation/matrices/tnlMultidiagonalMatrix_impl.h>
+#include <matrices/tnlMultidiagonalMatrix_impl.h>
 
 #endif /* TNLMULTIDIAGONALMATRIX_H_ */

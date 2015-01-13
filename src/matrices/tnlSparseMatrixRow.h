@@ -61,6 +61,6 @@ class tnlSparseMatrixRow
       Index length, step;
 };
 
-#include <implementation/matrices/tnlSparseMatrixRow_impl.h>
+#include <matrices/tnlSparseMatrixRow_impl.h>
 
 #endif /* TNLSPARSEMATRIXROW_H_ */

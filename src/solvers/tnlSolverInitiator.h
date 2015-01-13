@@ -32,6 +32,6 @@ class tnlSolverInitiator : public tnlObject
 
 };
 
-#include <implementation/solvers/tnlSolverInitiator_impl.h>
+#include <solvers/tnlSolverInitiator_impl.h>
 
 #endif /* TNLSOLVERINITIATOR_H_ */

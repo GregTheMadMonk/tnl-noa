@@ -265,6 +265,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    };
 };
 
-#include <implementation/solvers/pde/tnlLinearSystemAssembler_impl.h>
+#include <solvers/pde/tnlLinearSystemAssembler_impl.h>
 
 #endif /* TNLLINEARSYSTEMASSEMBLER_H_ */

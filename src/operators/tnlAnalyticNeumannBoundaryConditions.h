@@ -231,6 +231,6 @@ ostream& operator << ( ostream& str, const tnlAnalyticNeumannBoundaryConditions<
    return str;
 }
 
-#include <implementation/operators/tnlAnalyticNeumannBoundaryConditions_impl.h>
+#include <operators/tnlAnalyticNeumannBoundaryConditions_impl.h>
 
 #endif /* TNLANALYTICNEUMANNBOUNDARYCONDITIONS_H_ */

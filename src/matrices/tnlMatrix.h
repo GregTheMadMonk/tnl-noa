@@ -136,6 +136,6 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  OutVector& outVector );
 
 
-#include <implementation/matrices/tnlMatrix_impl.h>
+#include <matrices/tnlMatrix_impl.h>
 
 #endif /* TNLMATRIX_H_ */

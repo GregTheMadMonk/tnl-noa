@@ -123,7 +123,7 @@ protected:
    tnlVector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
-#include <implementation/solvers/ode/tnlExplicitSolver_impl.h>
+#include <solvers/ode/tnlExplicitSolver_impl.h>
 
 
 #endif

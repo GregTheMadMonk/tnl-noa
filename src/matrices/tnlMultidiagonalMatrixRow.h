@@ -64,7 +64,7 @@ class tnlMultidiagonalMatrixRow
       Index row, columns, maxRowLength, step;
 };
 
-#include <implementation/matrices/tnlMultidiagonalMatrixRow_impl.h>
+#include <matrices/tnlMultidiagonalMatrixRow_impl.h>
 
 
 #endif /* TNLMULTIDIAGONALMATRIXROW_H_ */

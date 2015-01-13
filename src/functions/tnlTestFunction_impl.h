@@ -232,22 +232,17 @@ getValue( const Vertex& vertex,
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
                    getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       default:
          return 0.0;
-         break;
    }
 }
 
@@ -389,6 +384,7 @@ printFunction( ostream& str ) const
       tnlCuda::print( f, str );
       return str;
    }
+   return str;
 }
 
 template< int FunctionDimensions,

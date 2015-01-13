@@ -72,6 +72,6 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    Index maxRowLength;
 };
 
-#include <implementation/matrices/tnlSparseMatrix_impl.h>
+#include <matrices/tnlSparseMatrix_impl.h>
 
 #endif /* TNLSPARSEMATRIX_H_ */

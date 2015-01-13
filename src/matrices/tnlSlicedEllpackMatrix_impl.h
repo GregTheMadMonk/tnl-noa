@@ -141,6 +141,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( con
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   return false;
 }
 
 template< typename Real,
@@ -762,6 +763,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
             matrix.slicePointers.setElement( slice++, sliceRowLength * SliceSize );
          }
          matrix.slicePointers.setElement( matrix.slicePointers.getSize() - 1, 0 );
+         return true;
       }
 
       template< typename Real,
@@ -867,6 +869,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
          tnlCuda::freeFromDevice( kernel_rowLengths );
          checkCudaDevice;
 #endif
+         return true;
       }
 
       template< typename Real,

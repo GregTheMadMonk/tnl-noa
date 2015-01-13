@@ -88,6 +88,6 @@ class tnlMatrixReader
 
 
 
-#include <implementation/matrices/tnlMatrixReader_impl.h>
+#include <matrices/tnlMatrixReader_impl.h>
 
 #endif /* TNLMATRIXREADER_H_ */

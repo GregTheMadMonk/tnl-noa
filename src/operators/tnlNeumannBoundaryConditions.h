@@ -210,7 +210,7 @@ ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, F
 }
 
 
-#include <implementation/operators/tnlNeumannBoundaryConditions_impl.h>
+#include <operators/tnlNeumannBoundaryConditions_impl.h>
 
 #endif	/* TNLNEUMANNBOUNDARYCONDITIONS_H */
 

@@ -1,7 +1,0 @@
-SET( headers tnlEulerSolver_impl.h
-             tnlMersonSolver_impl.h 
-             tnlODESolverMonitor_impl.h
-             tnlExplicitSolver_impl.h )
-
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/implementation/solvers/ode )
-

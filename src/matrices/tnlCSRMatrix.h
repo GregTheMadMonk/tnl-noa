@@ -234,7 +234,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 };
 
-#include <implementation/matrices/tnlCSRMatrix_impl.h>
+#include <matrices/tnlCSRMatrix_impl.h>
 
 
 #endif /* TNLCSRMATRIX_H_ */

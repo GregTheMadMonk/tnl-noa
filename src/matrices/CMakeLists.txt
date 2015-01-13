@@ -1,21 +1,37 @@
 SET( headers tnlMatrix.h
+             tnlMatrix_impl.h
              tnlDenseMatrix.h
+             tnlDenseMatrix_impl.h
              tnlTridiagonalMatrix.h
+             tnlTridiagonalMatrix_impl.h
              tnlMultidiagonalMatrix.h
+             tnlMultidiagonalMatrix_impl.h
              tnlSparseMatrix.h
+             tnlSparseMatrix_impl.h
              tnlEllpackMatrix.h
+             tnlEllpackMatrix_impl.h
              tnlSlicedEllpackMatrix.h
+             tnlSlicedEllpackMatrix_impl.h
              tnlChunkedEllpackMatrix.h
-             tnlCSRMatrix.h 
+             tnlChunkedEllpackMatrix_impl.h
+             tnlCSRMatrix.h
+             tnlCSRMatrix_impl.h 
              tnlMatrixReader.h
+             tnlMatrixReader_impl.h
              tnlMatrixWriter.h
+             tnlMatrixWriter_impl.h
              tnlMatrixSetter.h
+             tnlMatrixSetter_impl.h
              tnlSparseMatrixRow.h
+             tnlSparseMatrixRow_impl.h
              tnlDenseMatrixRow.h
+             tnlDenseMatrixRow_impl.h
              tnlTridiagonalMatrixRow.h
+             tnlTridiagonalMatrixRow_impl.h
              tnlMultidiagonalMatrixSetter.h
+             tnlMultidiagonalMatrixSetter_impl.h
              tnlMultidiagonalMatrixRow.h )
-	
+
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/matrices )
 set( common_SOURCES  )
 

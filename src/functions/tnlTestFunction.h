@@ -148,6 +148,6 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
-#include <implementation/functions/tnlTestFunction_impl.h>
+#include <functions/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */

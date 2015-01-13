@@ -102,6 +102,6 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeRe
                                 const tnlList< tnlString >& parsedMeshType );
 };*/
 
-#include <implementation/solvers/tnlMeshTypeResolver_impl.h>
+#include <solvers/tnlMeshTypeResolver_impl.h>
 
 #endif /* TNLMESHTYPERESOLVER_H_ */

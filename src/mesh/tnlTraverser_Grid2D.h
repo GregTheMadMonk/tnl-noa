@@ -155,6 +155,6 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 0 >
 };
 
 
-#include <implementation/mesh/tnlTraverser_Grid2D_impl.h>
+#include <mesh/tnlTraverser_Grid2D_impl.h>
 
 #endif /* TNLTRAVERSER_GRID2D_H_ */

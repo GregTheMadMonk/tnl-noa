@@ -228,6 +228,6 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
 };
 
-#include <implementation/matrices/tnlDenseMatrix_impl.h>
+#include <matrices/tnlDenseMatrix_impl.h>
 
 #endif /* TNLDENSEMATRIX_H_ */

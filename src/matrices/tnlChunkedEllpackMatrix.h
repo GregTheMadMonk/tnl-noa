@@ -347,7 +347,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 #endif
 };
 
-#include <implementation/matrices/tnlChunkedEllpackMatrix_impl.h>
+#include <matrices/tnlChunkedEllpackMatrix_impl.h>
 
 
 #endif /* TNLCHUNKEDELLPACKMATRIX_H_ */

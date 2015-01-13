@@ -18,8 +18,8 @@
 #ifndef TNLUNIQUECONTAINER_H_
 #define TNLUNIQUECONTAINER_H_
 
-#include<map>
-#include<core/tnlObject.h>
+#include <map>
+#include <core/tnlObject.h>
 
 /****
  * Unique container (map) - stores each object at most once.

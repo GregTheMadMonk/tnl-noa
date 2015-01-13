@@ -943,10 +943,12 @@ template< typename Real,
 Index tnlDenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {
+   tnlAssert( Device::getDevice() == tnlHostDevice || Device::getDevice() == tnlCudaDevice, )
    if( Device::getDevice() == tnlHostDevice )
       return row * this->columns + column;
    if( Device::getDevice() == tnlCudaDevice)
       return column * this->rows + row;
+   return -1;
 }
 
 template<>

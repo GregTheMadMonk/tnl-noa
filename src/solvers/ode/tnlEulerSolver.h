@@ -62,6 +62,6 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    RealType cflCondition;
 };
 
-#include <implementation/solvers/ode/tnlEulerSolver_impl.h>
+#include <solvers/ode/tnlEulerSolver_impl.h>
 
 #endif

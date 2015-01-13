@@ -58,7 +58,7 @@ class tnlTridiagonalMatrixRow
       Index row, columns, step;
 };
 
-#include <implementation/matrices/tnlTridiagonalMatrixRow_impl.h>
+#include <matrices/tnlTridiagonalMatrixRow_impl.h>
 
 
 #endif /* TNLTRIDIAGONALMATRIXROW_H_ */

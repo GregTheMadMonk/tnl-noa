@@ -86,6 +86,6 @@ class tnlMultidiagonalMatrixSetter< tnlGrid< 3, MeshReal, Device, MeshIndex > >
                                bool crossStencil = false );
 };
 
-#include <implementation/matrices/tnlMultidiagonalMatrixSetter_impl.h>
+#include <matrices/tnlMultidiagonalMatrixSetter_impl.h>
 
 #endif /* TNLMULTIDIAGONALMATRIXSETTER_H_ */

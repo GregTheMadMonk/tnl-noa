@@ -82,6 +82,6 @@ class tnlSORSolver : public tnlObject,
 
 };
 
-#include <implementation/solvers/linear/stationary/tnlSORSolver_impl.h>
+#include <solvers/linear/stationary/tnlSORSolver_impl.h>
 
 #endif

@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <assert.h>
 
 using namespace std;
 
@@ -37,8 +38,9 @@ using namespace std;
            __STRING( ___tnl__assert_condition ),                                                         \
            __FILE__,                                                                                     \
            __LINE__ );                                                                                   \
-        abort();                                                                                         \
+    abort();                                                                   \
    }
+
 #else
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                       \
 	if( ! ( ___tnl__assert_condition ) )                                                     \

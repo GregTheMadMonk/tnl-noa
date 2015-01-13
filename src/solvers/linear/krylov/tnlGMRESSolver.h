@@ -105,7 +105,7 @@ class tnlGMRESSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <implementation/solvers/linear/krylov/tnlGMRESSolver_impl.h>
+#include <solvers/linear/krylov/tnlGMRESSolver_impl.h>
 
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>

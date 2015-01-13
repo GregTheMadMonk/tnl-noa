@@ -162,7 +162,7 @@ class tnlFunctionType< tnlExpBumpFunction< FunctionDimensions, Real > >
 };
 
 
-#include <implementation/functions/tnlExpBumpFunction_impl.h>
+#include <functions/tnlExpBumpFunction_impl.h>
 
 
 #endif /* TNLEXPBUMPFUNCTION_H_ */

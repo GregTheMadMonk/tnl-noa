@@ -81,6 +81,6 @@ class tnlExplicitTimeStepper
    DofVectorType* auxiliaryDofs;
 };
 
-#include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
+#include <solvers/pde/tnlExplicitTimeStepper_impl.h>
 
 #endif /* TNLEXPLICITTIMESTEPPER_H_ */

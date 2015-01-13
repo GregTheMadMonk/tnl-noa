@@ -220,7 +220,7 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 };
 
-#include <implementation/matrices/tnlSlicedEllpackMatrix_impl.h>
+#include <matrices/tnlSlicedEllpackMatrix_impl.h>
 
 
 #endif /* TNLSLICEDELLPACKMATRIX_H_ */

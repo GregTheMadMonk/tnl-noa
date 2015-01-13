@@ -156,6 +156,6 @@ class tnlFunctionType< tnlSinWaveFunction< FunctionDimensions, Real > >
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <implementation/functions/tnlSinWaveFunction_impl.h>
+#include <functions/tnlSinWaveFunction_impl.h>
 
 #endif /* TNLSINWAVEFUNCTION_H_ */

@@ -224,6 +224,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addElementFast( const IndexTyp
 {
    const Index i = this->getElementIndex( row, column );
    this->values[ i ] = thisElementMultiplicator*this->values[ i ] + value;
+   return true;
 }
 
 template< typename Real,
@@ -236,6 +237,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addElement( const IndexType ro
 {
    const Index i = this->getElementIndex( row, column );
    this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value );
+   return true;
 }
 
 template< typename Real,

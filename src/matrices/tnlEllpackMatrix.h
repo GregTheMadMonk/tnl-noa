@@ -198,7 +198,7 @@ template< typename Vector >
    friend class tnlEllpackMatrixDeviceDependentCode< DeviceType >;
 };
 
-#include <implementation/matrices/tnlEllpackMatrix_impl.h>
+#include <matrices/tnlEllpackMatrix_impl.h>
 
 
 #endif /* TNLELLPACKMATRIX_H_ */

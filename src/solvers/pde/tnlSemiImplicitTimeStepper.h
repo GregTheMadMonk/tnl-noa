@@ -76,6 +76,6 @@ class tnlSemiImplicitTimeStepper
    bool verbose;
 };
 
-#include <implementation/solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
+#include <solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
 
 #endif /* TNLSEMIIMPLICITTIMESTEPPER_H_ */

@@ -18,8 +18,8 @@
 #ifndef TNLARRAYIO_H_
 #define TNLARRAYIO_H_
 
-#include<core/tnlDynamicTypeTag.h>
-#include<core/tnlFile.h>
+#include <core/tnlDynamicTypeTag.h>
+#include <core/tnlFile.h>
 
 template< typename Element,
           typename Device,

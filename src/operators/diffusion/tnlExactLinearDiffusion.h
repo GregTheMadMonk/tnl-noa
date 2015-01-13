@@ -97,6 +97,6 @@ class tnlFunctionType< tnlExactLinearDiffusion< Dimensions > >
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <implementation/operators/diffusion/tnlExactLinearDiffusion_impl.h>
+#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>
 
 #endif /* TNLEXACTLINEARDIFFUSION_H_ */

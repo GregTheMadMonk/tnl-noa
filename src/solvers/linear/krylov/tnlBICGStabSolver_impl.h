@@ -259,14 +259,17 @@ RealType computeBICGStabNewP( Vector& p,
                               const RealType& omega,
                               const Vector& Ap )
 {
-   typedef typename Vector :: DeviceType DeviceType;
-   switch( DeviceType :: getDevice() )
+   typedef typename Vector::DeviceType DeviceType;
+   tnlAssert( DeviceType::getDevice() == tnlHostDevice ||
+              DeviceType::getDevice() == tnlCudaDevice, );
+   switch( DeviceType::getDevice() )
    {
       case tnlHostDevice:
          return computeBICGStabNewPHost( p, r, beta, omega, Ap );
       case tnlCudaDevice:
          return computeBICGStabNewPCuda( p, r, beta, omega, Ap );
    }
+   return 0.0;
 }
 
 

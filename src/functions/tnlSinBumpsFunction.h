@@ -173,7 +173,7 @@ class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <implementation/functions/tnlSinBumpsFunction_impl.h>
+#include <functions/tnlSinBumpsFunction_impl.h>
 
 
 #endif /* TNLSINBUMPSFUNCTION_H_ */

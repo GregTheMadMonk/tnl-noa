@@ -56,7 +56,7 @@ class tnlDenseMatrixRow
       Index columns, step;
 };
 
-#include <implementation/matrices/tnlDenseMatrixRow_impl.h>
+#include <matrices/tnlDenseMatrixRow_impl.h>
 
 
 #endif /* TNLDENSEMATRIXROW_H_ */

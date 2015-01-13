@@ -92,6 +92,7 @@ bool tnlContainer< Element, Device, Index >::save( tnlFile& file ) const
            << " " << this->getName() << "." << endl;
       return false;
    }
+   return true;
 }
 
 template< typename Element, typename Device, typename Index >
@@ -104,6 +105,7 @@ bool tnlContainer< Element, Device, Index >::load( tnlFile& file )
            << " " << this->getName() << "." << endl;
       return false;
    }
+   return true;
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

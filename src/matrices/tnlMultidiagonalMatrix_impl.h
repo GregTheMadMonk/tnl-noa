@@ -147,6 +147,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setLike( const tnlMultidia
       return false;
    if( ! setDiagonals( matrix.getDiagonals() ) )
       return false;
+   return true;
 }
 
 template< typename Real,

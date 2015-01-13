@@ -75,6 +75,6 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    RealType adaptivity;
 };
 
-#include <implementation/solvers/ode/tnlMersonSolver_impl.h>
+#include <solvers/ode/tnlMersonSolver_impl.h>
 
 #endif

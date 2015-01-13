@@ -103,6 +103,6 @@ ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh,
    return str;
 }
 
-#include <implementation/operators/tnlDirichletBoundaryConditions_impl.h>
+#include <operators/tnlDirichletBoundaryConditions_impl.h>
 
 #endif /* TNLDIRICHLETBOUNDARYCONDITIONS_H_ */

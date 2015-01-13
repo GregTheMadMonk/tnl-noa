@@ -142,6 +142,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::operator == ( const tnlEllpackMatr
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   return false;
 }
 
 template< typename Real,

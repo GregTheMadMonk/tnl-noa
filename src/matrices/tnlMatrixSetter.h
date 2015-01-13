@@ -165,6 +165,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
 
 };
 
-#include <implementation/matrices/tnlMatrixSetter_impl.h>
+#include <matrices/tnlMatrixSetter_impl.h>
 
 #endif /* TNLMATRIXSETTER_H_ */

@@ -92,6 +92,6 @@ class tnlIterativeSolver
    Index refreshRate;
 };
 
-#include <implementation/solvers/tnlIterativeSolver_impl.h>
+#include <solvers/tnlIterativeSolver_impl.h>
 
 #endif /* TNLITERATIVESOLVER_H_ */

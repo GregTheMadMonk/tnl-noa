@@ -224,5 +224,5 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
 
 };
 
-#include <implementation/solvers/pde/tnlExplicitUpdater_impl.h>
+#include <solvers/pde/tnlExplicitUpdater_impl.h>
 #endif /* TNLEXPLICITUPDATER_H_ */

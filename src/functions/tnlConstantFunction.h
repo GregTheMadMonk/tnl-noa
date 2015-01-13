@@ -93,6 +93,6 @@ class tnlFunctionType< tnlConstantFunction< FunctionDimensions, Real > >
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <implementation/functions/tnlConstantFunction_impl.h>
+#include <functions/tnlConstantFunction_impl.h>
 
 #endif /* TNLCONSTANTFUNCTION_H_ */

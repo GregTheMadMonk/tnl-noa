@@ -49,6 +49,6 @@ class tnlSolverStarter
    tnlTimerCPU ioCpuTimer, computeCpuTimer, totalCpuTimer;
 };
 
-#include <implementation/solvers/tnlSolverStarter_impl.h>
+#include <solvers/tnlSolverStarter_impl.h>
 
 #endif /* TNLSOLVERSTARTER_H_ */

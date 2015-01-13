@@ -666,6 +666,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          chunkedEllpackMatrix.reset();
       }
    }
+   return true;
 }
 
 int main( int argc, char* argv[] )

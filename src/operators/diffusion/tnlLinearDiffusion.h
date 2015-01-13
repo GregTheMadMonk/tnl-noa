@@ -162,7 +162,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
 };
 
 
-#include <implementation/operators/diffusion/tnlLinearDiffusion_impl.h>
+#include <operators/diffusion/tnlLinearDiffusion_impl.h>
 
 
 #endif	/* TNLLINEARDIFFUSION_H */

@@ -214,7 +214,7 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;
 };
 
-#include <implementation/matrices/tnlTridiagonalMatrix_impl.h>
+#include <matrices/tnlTridiagonalMatrix_impl.h>
 
 
 #endif /* TNLTRIDIAGONALMATRIX_H_ */

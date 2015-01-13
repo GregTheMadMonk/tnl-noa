@@ -186,7 +186,7 @@ Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( c
 }
 
 
-#include <implementation/operators/tnlFiniteDifferences_impl.h>
+#include <operators/tnlFiniteDifferences_impl.h>
 
 
 

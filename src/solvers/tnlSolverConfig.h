@@ -28,6 +28,6 @@ class tnlSolverConfig
       static bool configSetup( tnlConfigDescription& configDescription );
 };
 
-#include <implementation/solvers/tnlSolverConfig_impl.h>
+#include <solvers/tnlSolverConfig_impl.h>
 
 #endif /* TNLSOLVERCONFIG_H_ */

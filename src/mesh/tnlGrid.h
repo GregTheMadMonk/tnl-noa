@@ -920,9 +920,9 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
 };
 
-#include <implementation/mesh/tnlGrid1D_impl.h>
-#include <implementation/mesh/tnlGrid2D_impl.h>
-#include <implementation/mesh/tnlGrid3D_impl.h>
+#include <mesh/tnlGrid1D_impl.h>
+#include <mesh/tnlGrid2D_impl.h>
+#include <mesh/tnlGrid3D_impl.h>
 
 
 #endif /* TNLGRID_H_ */

@@ -149,6 +149,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
                     rowValues.getData(),
                     m.getRowLength( row ) );
    }
+   return *this;
 }
 
 template< typename Real,

@@ -211,7 +211,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const RowLengthsV
     */
    for( IndexType j = sliceBegin + 1; j < sliceEnd; j++ )
       rowToChunkMapping[ j ] += rowToChunkMapping[ j - 1 ];
-
+   return true;
 }
 
 template< typename Real,
@@ -361,6 +361,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator == ( const tnlChun
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   return false;
 }
 
 template< typename Real,

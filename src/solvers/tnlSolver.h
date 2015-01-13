@@ -31,5 +31,5 @@ class tnlSolver
    protected:
 };
 
-#include <implementation/solvers/tnlSolver_impl.h>
+#include <solvers/tnlSolver_impl.h>
 #endif /* TNLSOLVER_H_ */

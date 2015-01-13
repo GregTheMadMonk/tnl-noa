@@ -253,7 +253,6 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
           this->values.setElement( elementPtr, value );
           return true;
        }
-    return false;
 }
 
 template< typename Real,
