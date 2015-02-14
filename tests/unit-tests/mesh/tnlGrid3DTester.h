@@ -264,30 +264,40 @@ class tnlGridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       const IndexType ySize( 17 );
       const IndexType zSize( 19 );
-      /*GridType grid;
-      grid.setDimensions( xSize, ySize );
-      for( IndexType j = 0; j < ySize; j++ )
-         for( IndexType i = 0; i < xSize; i++ )
-         {
-            const CoordinatesType cellCoordinates( i, j );
-            const IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+      GridType grid;
+      grid.setDimensions( xSize, ySize, zSize );
+      for( IndexType k = 0; k < zSize; k++ )
+         for( IndexType j = 0; j < ySize; j++ )
+            for( IndexType i = 0; i < xSize; i++ )
+            {
+               const CoordinatesType cellCoordinates( i, j, k );
+               const IndexType cellIndex = grid.getCellIndex( cellCoordinates );
 
-            CoordinatesType faceCoordinates( i, j );
-            IndexType faceIndex = grid.template getFaceIndex< 1, 0 >( faceCoordinates );
-            CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< -1, 0 >( cellIndex ) ) );
+               CoordinatesType faceCoordinates( i, j, k );
+               IndexType faceIndex = grid.template getFaceIndex< 1, 0, 0 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< -1, 0, 0 >( cellIndex ) ) );
 
-            faceCoordinates = CoordinatesType( i + 1, j );
-            faceIndex = grid.template getFaceIndex< 1, 0 >( faceCoordinates );
-            CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 1, 0 >( cellIndex ) ) );
+               faceCoordinates = CoordinatesType( i + 1, j, k );
+               faceIndex = grid.template getFaceIndex< 1, 0, 0 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 1, 0, 0 >( cellIndex ) ) );
 
-            faceCoordinates = CoordinatesType( i, j );
-            faceIndex = grid.template getFaceIndex< 0, 1 >( faceCoordinates );
-            CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, -1 >( cellIndex ) ) );
+               faceCoordinates = CoordinatesType( i, j, k );
+               faceIndex = grid.template getFaceIndex< 0, 1, 0 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, -1, 0 >( cellIndex ) ) );
 
-            faceCoordinates = CoordinatesType( i, j + 1 );
-            faceIndex = grid.template getFaceIndex< 0, 1 >( faceCoordinates );
-            CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, 1 >( cellIndex ) ) );
-         }*/
+               faceCoordinates = CoordinatesType( i, j + 1, k );
+               faceIndex = grid.template getFaceIndex< 0, 1, 0 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, 1, 0 >( cellIndex ) ) );
+
+               faceCoordinates = CoordinatesType( i, j, k );
+               faceIndex = grid.template getFaceIndex< 0, 0, 1 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, 0, -1 >( cellIndex ) ) );
+
+               faceCoordinates = CoordinatesType( i, j, k + 1 );
+               faceIndex = grid.template getFaceIndex< 0, 0, 1 >( faceCoordinates );
+               CPPUNIT_ASSERT( ( faceIndex == grid.template getFaceNextToCell< 0, 0, 1 >( cellIndex ) ) );
+
+            }
    }
 
    void getCellNextToFaceTest()
@@ -295,48 +305,65 @@ class tnlGridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       const IndexType ySize( 17 );
       const IndexType zSize( 19 );
-      /*GridType grid;
-      grid.setDimensions( xSize, ySize );
-      for( IndexType j = 0; j <= ySize; j++ )
-         for( IndexType i = 0; i <= xSize; i++ )
-         {
-            const CoordinatesType faceCoordinates( i, j );
-            if( j < ySize )
+      GridType grid;
+      grid.setDimensions( xSize, ySize, zSize );
+      for( IndexType k = 0; k <= zSize; k++ )
+         for( IndexType j = 0; j <= ySize; j++ )
+            for( IndexType i = 0; i <= xSize; i++ )
             {
-               const IndexType faceIndex = grid.template getFaceIndex< 1, 0 >( faceCoordinates );
+               const CoordinatesType faceCoordinates( i, j, k );
+               if( j < ySize && k < zSize )
+               {
+                  const IndexType faceIndex = grid.template getFaceIndex< 1, 0, 0 >( faceCoordinates );
 
-               if( i > 0 )
-               {
-                  CoordinatesType cellCoordinates( i - 1, j );
-                  IndexType cellIndex = grid.getCellIndex( cellCoordinates );
-                  CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< -1, 0 >( faceIndex ) ) );
+                  if( i > 0 )
+                  {
+                     CoordinatesType cellCoordinates( i - 1, j, k );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< -1, 0, 0 >( faceIndex ) ) );
+                  }
+                  if( i < xSize )
+                  {
+                     CoordinatesType cellCoordinates( i, j, k );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 1, 0, 0 >( faceIndex ) ) );
+                  }
                }
-               if( i < xSize )
+               if( i < xSize && k < zSize )
                {
-                  CoordinatesType cellCoordinates( i, j );
-                  IndexType cellIndex = grid.getCellIndex( cellCoordinates );
-                  CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 1, 0 >( faceIndex ) ) );
+                  const IndexType faceIndex = grid.template getFaceIndex< 0, 1, 0 >( faceCoordinates );
+                  if( j > 0 )
+                  {
+                     CoordinatesType cellCoordinates( i, j - 1, k );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, -1, 0 >( faceIndex ) ) );
+                  }
+                  if( j < ySize )
+                  {
+                     CoordinatesType cellCoordinates( i, j, k );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, 1, 0 >( faceIndex ) ) );
+                  }
                }
+               if( i < xSize && j < ySize )
+               {
+                  const IndexType faceIndex = grid.template getFaceIndex< 0, 0, 1 >( faceCoordinates );
+                  if( k > 0 )
+                  {
+                     CoordinatesType cellCoordinates( i, j, k - 1 );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, 0, -1 >( faceIndex ) ) );
+                  }
+                  if( k < zSize )
+                  {
+                     CoordinatesType cellCoordinates( i, j, k );
+                     IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+                     CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, 0, 1 >( faceIndex ) ) );
+                  }
+               }
+
             }
-            if( i < xSize )
-            {
-               const IndexType faceIndex = grid.template getFaceIndex< 0, 1 >( faceCoordinates );
-               if( j > 0 )
-               {
-                  CoordinatesType cellCoordinates( i, j - 1 );
-                  IndexType cellIndex = grid.getCellIndex( cellCoordinates );
-                  CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, -1 >( faceIndex ) ) );
-               }
-               if( j < ySize )
-               {
-                  CoordinatesType cellCoordinates( i, j );
-                  IndexType cellIndex = grid.getCellIndex( cellCoordinates );
-                  CPPUNIT_ASSERT( ( cellIndex == grid.template getCellNextToFace< 0, 1 >( faceIndex ) ) );
-               }
-            }
-         }*/
    }
-
 };
 
 #endif /* TESTS_UNIT_TESTS_MESH_TNLGRID3DTESTER_H_ */

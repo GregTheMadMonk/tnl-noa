@@ -548,7 +548,9 @@ Index tnlGrid< 3, Real, Device, Index >::getFaceNextToCell( const IndexType& cel
    if( nx )
       result = cellIndex + cellIndex / this->getDimensions().x() + ( nx + ( nx < 0 ) );
    if( ny )
-      result = this->numberOfNxFaces + cellIndex + ( ny + ( ny < 0 ) ) * this->getDimensions().x();
+      result = this->numberOfNxFaces + cellIndex + ( cellIndex / ( this->getDimensions().x() * this->getDimensions().y() ) + ( ny + ( ny < 0 ) ) )  * this->getDimensions().x();
+   if( nz )
+      result = this->numberOfNxAndNyFaces + cellIndex + ( nz + ( nz < 0 ) ) * this->getDimensions().x() * this->getDimensions().y();
    tnlAssert( result >= 0 &&
               result < this->getNumberOfFaces(),
               cerr << " cellIndex = " << cellIndex
@@ -574,22 +576,41 @@ Index tnlGrid< 3, Real, Device, Index >::getCellNextToFace( const IndexType& fac
 #ifndef NDEBUG
    int _nx, _ny, _nz;
 #endif
-   tnlAssert( ( nx + this->getFaceCoordinates( faceIndex, _nx, _ny ).x() >= 0 &&
-                nx + this->getFaceCoordinates( faceIndex, _nx, _ny ).x() <= this->getDimensions().x() ),
+   tnlAssert( ( nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() >= 0 &&
+                nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() <= this->getDimensions().x() ),
               cerr << " nx = " << nx
-                   << " this->getFaceCoordinates( faceIndex, _nx, _ny ).x() = " << this->getFaceCoordinates( faceIndex, _nx, _ny ).x()
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x()
                    << " this->getDimensions().x()  = " << this->getDimensions().x() );
-   tnlAssert( ( ny + this->getFaceCoordinates( faceIndex, _nx, _ny ).y() >= 0 &&
-                      ny + this->getFaceCoordinates( faceIndex, _nx, _ny ).y() <= this->getDimensions().y() ),
+   tnlAssert( ( ny + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() >= 0 &&
+                ny + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() <= this->getDimensions().y() ),
               cerr << " ny = " << ny
-                   << " this->getFaceCoordinates( faceIndex, _nx, _ny ).y() = " << this->getFaceCoordinates( faceIndex, _nx, _ny ).y()
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y()
                    << " this->getDimensions().y()  = " << this->getDimensions().y() );
+   tnlAssert( ( nz + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() >= 0 &&
+                nz + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() <= this->getDimensions().z() ),
+              cerr << " nz = " << nz
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z()
+                   << " this->getDimensions().z()  = " << this->getDimensions().z() );
 
    IndexType result;
    if( nx )
       result = faceIndex + ( nx - ( nx > 0 ) ) - faceIndex / ( this->getDimensions().x() + 1 );
    if( ny )
-      result = faceIndex - this->numberOfNxFaces + ( ny - ( ny > 0 ) ) * this->getDimensions().x();
+   {
+      IndexType aux = faceIndex - this->numberOfNxFaces;
+      result = aux + ( ny - ( ny > 0 ) ) * this->getDimensions().x() - aux / ( ( this->getDimensions().y() + 1 ) * this->getDimensions().x() ) * this->getDimensions().x();
+   }
+   if( nz )
+      result = faceIndex - this->numberOfNxAndNyFaces + ( nz - ( nz > 0 ) ) * this->getDimensions().y() * this->getDimensions().x();
+   tnlAssert( result >= 0 &&
+              result < this->getNumberOfFaces(),
+              cerr << " faceIndex = " << faceIndex
+                   << " nx = " << nx
+                   << " ny = " << ny
+                   << " nz = " << nz
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getName() " << this->getName(); );
+   return result;
 }
 
 template< typename Real,
