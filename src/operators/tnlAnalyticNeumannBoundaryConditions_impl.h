@@ -87,9 +87,9 @@ setBoundaryConditions( const RealType& time,
    fu[ index ] = 0;
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
-      u[ index ] = u[ mesh.getCellXSuccessor( index ) ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 1 >( index ) ] - mesh.getHx() * functionValue;
    else
-      u[ index ] = u[ mesh.getCellXPredecessor( index ) ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< -1 >( index ) ] + mesh.getHx() * functionValue;
 }
 
 template< typename MeshReal,
@@ -134,12 +134,12 @@ updateLinearSystem( const RealType& time,
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    else
    {
-      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
@@ -171,22 +171,22 @@ setBoundaryConditions( const RealType& time,
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
-      u[ index ] = u[ mesh.getCellXSuccessor( index ) ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 1, 0 >( index ) ] - mesh.getHx() * functionValue;
       return;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ mesh.getCellXPredecessor( index ) ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< -1, 0 >( index ) ] + mesh.getHx() * functionValue;
       return;
    }
    if( coordinates.y() == 0 )
    {
-      u[ index ] = u[ mesh.getCellYSuccessor( index ) ] - mesh.getHy() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, 1 >( index ) ] - mesh.getHy() * functionValue;
       return;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ mesh.getCellYPredecessor( index ) ] + mesh.getHy() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, -1 >( index ) ] + mesh.getHy() * functionValue;
       return;
    }
 }
@@ -233,24 +233,24 @@ updateLinearSystem( const RealType& time,
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
-      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
    if( coordinates.y() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
-      matrixRow.setElement( 1, mesh.getCellYSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      matrixRow.setElement( 0, mesh.getCellYPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
@@ -282,32 +282,32 @@ setBoundaryConditions( const RealType& time,
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
-      u[ index ] = u[ mesh.getCellXSuccessor( index ) ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 1, 0, 0 >( index ) ] - mesh.getHx() * functionValue;
       return;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ mesh.getCellXPredecessor( index ) ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< -1, 0, 0 >( index ) ] + mesh.getHx() * functionValue;
       return;
    }
    if( coordinates.y() == 0 )
    {
-      u[ index ] = u[ mesh.getCellYSuccessor( index ) ] - mesh.getHy() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, 1, 0 >( index ) ] - mesh.getHy() * functionValue;
       return;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ mesh.getCellYPredecessor( index ) ] + mesh.getHy() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, -1, 0 >( index ) ] + mesh.getHy() * functionValue;
       return;
    }
    if( coordinates.z() == 0 )
    {
-      u[ index ] = u[ mesh.getCellZSuccessor( index ) ] - mesh.getHz() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, 1 >( index ) ] - mesh.getHz() * functionValue;
       return;
    }
    if( coordinates.z() == mesh.getDimensions().z() - 1 )
    {
-      u[ index ] = u[ mesh.getCellZPredecessor( index ) ] + mesh.getHz() * functionValue;
+      u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, - 1 >( index ) ] + mesh.getHz() * functionValue;
       return;
    }
 }
@@ -354,36 +354,36 @@ updateLinearSystem( const RealType& time,
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.getCellXSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    if( coordinates.x() == mesh.getDimensions().x() - 1 )
    {
-      matrixRow.setElement( 0, mesh.getCellXPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
    if( coordinates.y() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.getCellYSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
    if( coordinates.y() == mesh.getDimensions().y() - 1 )
    {
-      matrixRow.setElement( 0, mesh.getCellYPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
    if( coordinates.z() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
-      matrixRow.setElement( 1, mesh.getCellZSuccessor( index ), -1.0 );
+      matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHz() * functionValue;
    }
    if( coordinates.z() == mesh.getDimensions().z() - 1 )
    {
-      matrixRow.setElement( 0, mesh.getCellZPredecessor( index ), -1.0 );
+      matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHz() * functionValue;
    }

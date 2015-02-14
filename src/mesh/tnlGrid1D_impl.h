@@ -230,31 +230,19 @@ tnlGrid< 1, Real, Device, Index > :: getVertexCoordinates( const Index vertexInd
 template< typename Real,
           typename Device,
           typename Index >
+   template< int dx >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Index tnlGrid< 1, Real, Device, Index > :: getCellXPredecessor( const IndexType& cellIndex ) const
+Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& cellIndex ) const
 {
-   tnlAssert( cellIndex > 0 && cellIndex < this->getNumberOfCells(),
+   tnlAssert( cellIndex + dx >= 0 &&
+              cellIndex + dx < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
+                   << " dx = " << dx
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return cellIndex - 1;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Index tnlGrid< 1, Real, Device, Index > :: getCellXSuccessor( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - 1,
-              cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() - 1 = " << this->getNumberOfCells() - 1
-                   << " this->getName() " << this->getName(); );
-   return cellIndex + 1;
+   return cellIndex + dx;
 }
 
 template< typename Real,
