@@ -365,6 +365,17 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
+Index tnlGrid< 1, Real, Device, Index > :: getNumberOfFaces() const
+{
+   return this->numberOfVertices;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 Index tnlGrid< 1, Real, Device, Index > :: getNumberOfVertices() const
 {
    return this->numberOfVertices;

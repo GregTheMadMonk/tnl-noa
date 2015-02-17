@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem.h  -  description
+                          tnlIncompressibleNavierStokesProblem.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,22 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLHEATEQUATIONPROBLEM_H_
-#define TNLHEATEQUATIONPROBLEM_H_
+#ifndef TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_H_
+#define TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_H_
 
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
-#include <array/tnlStaticArray.h>
+#include <core/arrays/tnlStaticArray.h>
+#include "tnlINSBoundaryConditions.h"
+#include "tnlExplicitINSTimeStepper.h"
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlLinearDiffusion< Mesh,
-                                                              typename BoundaryCondition::RealType > >
-class tnlNSProblem : public tnlPDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+          typename DifferentialOperator >
+class tnlIncompressibleNavierStokesProblem : public tnlPDEProblem< Mesh,
+                                                                   typename DifferentialOperator::RealType,
+                                                                   typename Mesh::DeviceType,
+                                                                   typename DifferentialOperator::IndexType  >
 {
    public:
 
@@ -38,11 +39,14 @@ class tnlNSProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > ThisType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
+
+      typedef tnlExplicitINSTimeStepper< ThisType, void > TimeStepper;
 	  
-	  enum { Dimensions = Mesh::Dimensions };
+	   enum { Dimensions = Mesh::Dimensions };
 
       static tnlString getTypeStatic() {return tnlString( "tnlNSProblem< " ) + Mesh :: getTypeStatic() + " >";}
 
@@ -102,6 +106,6 @@ class tnlNSProblem : public tnlPDEProblem< Mesh,
       RightHandSide rightHandSide;
 };
 
-#include <problems/tnlHeatEquationProblem_impl.h>
+#include "tnlIncompressibleNavierStokesProblem_impl.h"
 
-#endif /* TNLHEATEQUATIONPROBLEM_H_ */
+#endif /* TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_H_ */

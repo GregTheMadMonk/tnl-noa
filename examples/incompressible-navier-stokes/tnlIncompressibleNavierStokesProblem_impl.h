@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem_impl.h  -  description
+                          tnlIncompressibleNavierStokesProblem_impl.h  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLHEATEQUATIONPROBLEM_IMPL_H_
-#define TNLHEATEQUATIONPROBLEM_IMPL_H_
+#ifndef TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_IMPL_H_
+#define TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_IMPL_H_
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
@@ -32,21 +32,21 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
+   /*if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
-   return true;
+   return true;*/
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-typename tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getDofs( const MeshType& mesh ) const
 {
    /****
@@ -55,19 +55,16 @@ getDofs( const MeshType& mesh ) const
    return mesh.getNumberOfFaces();
 }
 
-template< typename Mesh,
+/*template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-typename tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getAuxiliaryDofs( const MeshType& mesh ) const
 {
-   /****
-    * Set-up DOFs and supporting grid functions
-    */
    return mesh.getNumberOfCells();
-}
+}*/
 
 
 template< typename Mesh,
@@ -75,7 +72,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
@@ -84,25 +81,25 @@ bindDofs( const MeshType& mesh,
    this->u[ 1 ].bind( &dofVector.getData()[ uDofs ], uDofs );
 }
 
-template< typename Mesh,
+/*template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindAuxiliaryDofs( const MeshType& mesh,
           DofVectorType& auxDofs )
 {
    const IndexType pDofs = mesh.getNumberOfCells();
    this->p.bind( auxDofs.getData(), pDofs );
-}
+}*/
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
@@ -129,7 +126,7 @@ template< typename Mesh,
           typename DifferentialOperator >
    template< typename MatrixType >          
 bool
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
                    MatrixType& matrix )
 {
@@ -155,7 +152,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
@@ -169,8 +166,8 @@ makeSnapshot( const RealType& time,
    //cout << "dofs = " << dofs << endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->solution.save( fileName ) )
-      return false;
+   //if( ! this->solution.save( fileName ) )
+   //   return false;
    return true;
 }
 
@@ -179,7 +176,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
@@ -219,7 +216,7 @@ template< typename Mesh,
           typename DifferentialOperator >
     template< typename MatrixType >          
 void
-tnlNSProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
@@ -244,4 +241,4 @@ assemblyLinearSystem( const RealType& time,
    abort();*/
 }
 
-#endif /* TNLHEATEQUATIONPROBLEM_IMPL_H_ */
+#endif /* TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_IMPL_H_ */

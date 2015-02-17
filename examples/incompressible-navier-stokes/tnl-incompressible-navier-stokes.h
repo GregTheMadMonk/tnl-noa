@@ -22,12 +22,10 @@
 #include <solvers/tnlFastBuildConfig.h>
 #include <solvers/tnlConfigTags.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlAnalyticNeumannBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
-#include <problems/tnlHeatEquationProblem.h>
+#include "tnlINSBoundaryConditions.h"
+#include "tnlINSRightHandSide.h"
+#include "tnlIncompressibleNavierStokes.h"
+#include "tnlIncompressibleNavierStokesProblem.h"
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -70,38 +68,14 @@ class tnlIncompressibleNavierStokesSetter
    static bool run( const tnlParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::Dimensions };
-      typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
 
-      /*tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
-      if( parameters.checkParameter( "boundary-conditions-constant" ) )
-      {
-         typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
-         if( boundaryConditionsType == "dirichlet" )
-         {
-            typedef tnlAnalyticDirichletBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-            typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
-            SolverStarter solverStarter;
-            return solverStarter.template run< Solver >( parameters );
-         }
-         typedef tnlAnalyticNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
-         SolverStarter solverStarter;
-         return solverStarter.template run< Solver >( parameters );
-      }
-      typedef tnlVector< Real, Device, Index > VectorType;
-      if( boundaryConditionsType == "dirichlet" )
-      {
-         typedef tnlDirichletBoundaryConditions< MeshType, VectorType, Real, Index > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
-         SolverStarter solverStarter;
-         return solverStarter.template run< Solver >( parameters );
-      }
-      typedef tnlNeumannBoundaryConditions< MeshType, VectorType, Real, Index > BoundaryConditions;
-      typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+      typedef tnlINSBoundaryConditions< MeshType, Real, Index > BoundaryConditions;
+      typedef tnlIncompressibleNavierStokes< MeshType, Real, Index > ApproximateOperator;
+      typedef tnlINSRightHandSide< MeshType, Real, Index > RightHandSide;
+      typedef tnlIncompressibleNavierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
-      return solverStarter.template run< Solver >( parameters );*/
+      return solverStarter.template run< Solver >( parameters );
    };
 };
 

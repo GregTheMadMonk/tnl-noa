@@ -164,6 +164,11 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
+   Index getNumberOfFaces() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getNumberOfVertices() const;
 
 #ifdef HAVE_CUDA
