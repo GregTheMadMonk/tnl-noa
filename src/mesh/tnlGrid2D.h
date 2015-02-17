@@ -226,8 +226,13 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 #endif
    Index getNumberOfCells() const;
 
+#ifdef HAVE_NOT_CXX11
+   template< int nx,
+             int ny >
+#else
    template< int nx = 1,
              int ny = 1 >
+#endif
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
