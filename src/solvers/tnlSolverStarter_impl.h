@@ -34,6 +34,11 @@
 #include <solvers/ode/tnlODESolverMonitor.h>
 
 template< typename Problem,
+          typename ConfigTag,
+          typename TimeStepper = typename Problem::TimeStepper >
+class tnlUserDefinedTimeDiscretisationSetter;
+
+template< typename Problem,
           typename TimeDiscretisation,
           typename ConfigTag,
           bool enabled = tnlConfigTagTimeDiscretisation< ConfigTag, TimeDiscretisation >::enabled >
@@ -83,19 +88,51 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
       return false;
    }
 
-   /****
-    * Set-up the time discretisation
-    */
-   const tnlString& timeDiscretisation = parameters. getParameter< tnlString>( "time-discretisation" );
-   if( timeDiscretisation == "explicit" )
-      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-   if( timeDiscretisation == "semi-implicit" )
-      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-   if( timeDiscretisation == "implicit" )
-      return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-   cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
-   return false;
+   return tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
 }
+
+template< typename Problem,
+          typename ConfigTag,
+          typename TimeStepper >
+class tnlUserDefinedTimeDiscretisationSetter
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         TimeStepper timeStepper;
+         if( ! timeStepper.setup( parameters ) )
+         {
+            cerr << "The time stepper initiation failed!" << endl;
+            return false;
+         }
+         tnlSolverStarter< ConfigTag > solverStarter;
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag >
+class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         /****
+          * Set-up the time discretisation
+          */
+         const tnlString& timeDiscretisation = parameters. getParameter< tnlString>( "time-discretisation" );
+         if( timeDiscretisation == "explicit" )
+            return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         if( timeDiscretisation == "semi-implicit" )
+            return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         if( timeDiscretisation == "implicit" )
+            return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
+         return false;
+      }
+};
 
 /****
  * Setting the time discretisation

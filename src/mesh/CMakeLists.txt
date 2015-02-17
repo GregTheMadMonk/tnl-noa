@@ -4,8 +4,11 @@ ADD_SUBDIRECTORY( traits )
 ADD_SUBDIRECTORY( topologies )
 
 SET( headers tnlGrid.h
+             tnlGrid1D.h
              tnlGrid1D_impl.h
+             tnlGrid2D.h
              tnlGrid2D_impl.h
+             tnlGrid3D.h
              tnlGrid3D_impl.h
              tnlDummyMesh.h
              tnlGnuplotWriter.h

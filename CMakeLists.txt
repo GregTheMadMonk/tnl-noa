@@ -25,7 +25,7 @@ else()
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
     OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -DNDEBUG " )
+    AddCompilerFlag( "-O3 -DNDEBUG" )
 endif()
 
 if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )

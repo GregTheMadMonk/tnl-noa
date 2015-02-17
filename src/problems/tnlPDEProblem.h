@@ -38,6 +38,11 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
+      /****
+       * This means that the time stepper will be set from the command line arguments.
+       */
+      typedef void TimeStepper;
+
       static tnlString getTypeStatic();
 
       tnlString getPrologHeader() const;

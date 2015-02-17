@@ -508,91 +508,109 @@ tnlGrid< 3, Real, Device, Index > :: getVertexCoordinates( const Index vertexInd
 template< typename Real,
           typename Device,
           typename Index >
+   template< int dx, int dy, int dz >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellXPredecessor( const IndexType& cellIndex ) const
+Index tnlGrid< 3, Real, Device, Index > :: getCellNextToCell( const IndexType& cellIndex ) const
 {
-   tnlAssert( cellIndex > 0 && cellIndex < this->getNumberOfCells(),
+   tnlAssert( cellIndex + dx >= 0 &&
+              cellIndex + dx < this->getNumberOfCells() &&
+              cellIndex + dy * this->getDimensions().x() >= 0 &&
+              cellIndex + dy * this->getDimensions().x() < this->getNumberOfCells() &&
+              cellIndex + dz * this->cellZNeighboursStep >= 0 &&
+              cellIndex + dz * this->cellZNeighboursStep < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
+                   << " dx = " << dx
+                   << " dy = " << dy
+                   << " dz = " << dz
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return cellIndex - 1;
+   return cellIndex + dx +
+          dy * this->getDimensions().x() +
+          dz * this->cellZNeighboursStep;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+   template< int nx, int ny, int nz >
 #ifdef HAVE_CUDA
-   __device__ __host__
+__device__ __host__
 #endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellXSuccessor( const IndexType& cellIndex ) const
+Index tnlGrid< 3, Real, Device, Index >::getFaceNextToCell( const IndexType& cellIndex ) const
 {
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - 1,
+   tnlAssert( nx * ny * nz == 0 && nx + ny + nz != 0,
+              cerr << "nx = " << nx
+                   << "ny = " << ny
+                   << "nz = " << nz );
+   IndexType result;
+   if( nx )
+      result = cellIndex + cellIndex / this->getDimensions().x() + ( nx + ( nx < 0 ) );
+   if( ny )
+      result = this->numberOfNxFaces + cellIndex + ( cellIndex / ( this->getDimensions().x() * this->getDimensions().y() ) + ( ny + ( ny < 0 ) ) )  * this->getDimensions().x();
+   if( nz )
+      result = this->numberOfNxAndNyFaces + cellIndex + ( nz + ( nz < 0 ) ) * this->getDimensions().x() * this->getDimensions().y();
+   tnlAssert( result >= 0 &&
+              result < this->getNumberOfFaces(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() - 1 = " << this->getNumberOfCells() - 1
-                   << " this->getName() " << this->getName(); );
-   return cellIndex + 1;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellYPredecessor( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= this->getDimensions().x() && cellIndex < this->getNumberOfCells(),
-              cerr << " cellIndex = " << cellIndex
+                   << " nx = " << nx
+                   << " ny = " << ny
+                   << " nz = " << nz
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return cellIndex - this->getDimensions().x();
+   return result;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+   template< int nx, int ny, int nz >
 #ifdef HAVE_CUDA
-   __device__ __host__
+__device__ __host__
 #endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellYSuccessor( const IndexType& cellIndex ) const
+Index tnlGrid< 3, Real, Device, Index >::getCellNextToFace( const IndexType& faceIndex ) const
 {
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->getDimensions().x(),
-              cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() - this->getDimensions().x() = " << this->getNumberOfCells() - this->getDimensions().x()
-                   << " this->getName() " << this->getName(); );
-   return cellIndex + this->getDimensions().x();
-}
+   tnlAssert( abs( nx ) + abs( ny ) + abs( nz ) == 1,
+              cerr << "nx = " << nx << " ny = " << ny << " nz = " << nz );
+#ifndef NDEBUG
+   int _nx, _ny, _nz;
+#endif
+   tnlAssert( ( nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() >= 0 &&
+                nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() <= this->getDimensions().x() ),
+              cerr << " nx = " << nx
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x()
+                   << " this->getDimensions().x()  = " << this->getDimensions().x() );
+   tnlAssert( ( ny + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() >= 0 &&
+                ny + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() <= this->getDimensions().y() ),
+              cerr << " ny = " << ny
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).y()
+                   << " this->getDimensions().y()  = " << this->getDimensions().y() );
+   tnlAssert( ( nz + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() >= 0 &&
+                nz + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() <= this->getDimensions().z() ),
+              cerr << " nz = " << nz
+                   << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z()
+                   << " this->getDimensions().z()  = " << this->getDimensions().z() );
 
-template< typename Real,
-          typename Device,
-          typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellZPredecessor( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= this->cellZNeighboursStep && cellIndex < this->getNumberOfCells(),
-              cerr << " cellIndex = " << cellIndex
+   IndexType result;
+   if( nx )
+      result = faceIndex + ( nx - ( nx > 0 ) ) - faceIndex / ( this->getDimensions().x() + 1 );
+   if( ny )
+   {
+      IndexType aux = faceIndex - this->numberOfNxFaces;
+      result = aux + ( ny - ( ny > 0 ) ) * this->getDimensions().x() - aux / ( ( this->getDimensions().y() + 1 ) * this->getDimensions().x() ) * this->getDimensions().x();
+   }
+   if( nz )
+      result = faceIndex - this->numberOfNxAndNyFaces + ( nz - ( nz > 0 ) ) * this->getDimensions().y() * this->getDimensions().x();
+   tnlAssert( result >= 0 &&
+              result < this->getNumberOfFaces(),
+              cerr << " faceIndex = " << faceIndex
+                   << " nx = " << nx
+                   << " ny = " << ny
+                   << " nz = " << nz
                    << " this->getNumberOfCells() = " << this->getNumberOfCells()
                    << " this->getName() " << this->getName(); );
-   return cellIndex - this->cellZNeighboursStep;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Index tnlGrid< 3, Real, Device, Index > :: getCellZSuccessor( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells() - this->cellZNeighboursStep,
-              cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() - this->cellZNeighboursStep = " << this->getNumberOfCells() - this->cellZNeighboursStep
-                   << " this->getName() " << this->getName(); );
-   return cellIndex + this->cellZNeighboursStep;
+   return result;
 }
 
 template< typename Real,
@@ -1023,23 +1041,29 @@ Index tnlGrid< 3, Real, Device, Index > :: getNumberOfCells() const
 template< typename Real,
           typename Device,
           typename Index >
+   template< int nx, int ny, int nz >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
 Index tnlGrid< 3, Real, Device, Index > :: getNumberOfFaces() const
 {
-   return this->numberOfFaces;
+   return nx * this->numberOfNxFaces +
+          ny * this->numberOfNyFaces +
+          nz * this->numberOfNzFaces;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+   template< int dx, int dy, int dz >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
 Index tnlGrid< 3, Real, Device, Index > :: getNumberOfEdges() const
 {
-   return this->numberOfEdges;
+   return dx * this->numberOfDxEdges +
+          dy * this->numberOfDyEdges +
+          dz * this->numberOfDzEdges;
 }
 
 template< typename Real,
