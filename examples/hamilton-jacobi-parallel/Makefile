@@ -8,7 +8,7 @@ INSTALL_DIR = ${HOME}/local
 CXX = g++
 CUDA_CXX = nvcc
 OMP_FLAGS = -DHAVE_OPENMP -fopenmp
-CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR) -O3 $(OMP_FLAGS)
+CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR) -O3 $(OMP_FLAGS) -DDEBUG
 LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-0.1 -lgomp
 
 SOURCES = main.cpp

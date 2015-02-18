@@ -44,7 +44,6 @@ int main( int argc, char* argv[] )
    	   cout << "-------------------------------------------------------------" << endl;
    	   cout << "Starting solver loop..." << endl;
    	   solver.run();
-   	   cout << "a" <<endl;
   // }
 
    return EXIT_SUCCESS;

@@ -45,7 +45,10 @@ public:
 	bool init( const tnlParameterContainer& parameters );
 	void run();
 
+	void test();
+
 private:
+
 
 	void synchronize();
 
@@ -71,7 +74,7 @@ private:
 
 
 	VectorType u0, work_u;
-	IntVectorType subgridValues, boundaryConditions;
+	IntVectorType subgridValues, boundaryConditions, unusedCell;
 	MeshType mesh, subMesh;
 	Scheme scheme;
 	double delta, tau0, stopTime,cflCondition;
