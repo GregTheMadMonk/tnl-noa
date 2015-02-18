@@ -30,7 +30,8 @@ SET( headers tnlMatrix.h
              tnlTridiagonalMatrixRow_impl.h
              tnlMultidiagonalMatrixSetter.h
              tnlMultidiagonalMatrixSetter_impl.h
-             tnlMultidiagonalMatrixRow.h )
+             tnlMultidiagonalMatrixRow.h
+             tnlMultidiagonalMatrixRow_impl.h  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/matrices )
 set( common_SOURCES  )
