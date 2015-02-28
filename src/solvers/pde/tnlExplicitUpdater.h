@@ -190,6 +190,23 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                    *userData.fu );
             }
 
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            static void processFace( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
+            {
+               userData.boundaryConditions->setBoundaryConditions( *userData.time,
+                                                                   mesh,
+                                                                   index,
+                                                                   coordinates,
+                                                                   *userData.u,
+                                                                   *userData.fu );
+            }
+
+
       };
 
       class TraversalInteriorEntitiesProcessor
@@ -220,6 +237,27 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                         *userData.time );
             }
 
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            static void processFace( const MeshType& mesh,
+                                     TraversalUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
+            {
+               ( *userData.fu)[ index ] = userData.differentialOperator->getValue( mesh,
+                                                                                   index,
+                                                                                   coordinates,
+                                                                                   *userData.u,
+                                                                                   *userData.time );
+
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
+                                                                        *userData.rightHandSide,
+                                                                        index,
+                                                                        coordinates,
+                                                                        *userData.time );
+            }
       };
 
 };

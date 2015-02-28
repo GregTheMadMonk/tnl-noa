@@ -97,16 +97,16 @@ processBoundaryEntities( const GridType& grid,
    for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
    {
       coordinates.y() = 0;
-      EntitiesProcessor::processFace< 0, 1 >( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
       coordinates.y() = ySize;
-      EntitiesProcessor::processFace< 0, 1 >( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
    }
    for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
    {
       coordinates.x() = 0;
-      EntitiesProcessor::processFace< 1, 0 >( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
       coordinates.x() = ySize;
-      EntitiesProcessor::processFace< 1, 0 >( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
    }
 
 }
@@ -134,13 +134,13 @@ processInteriorEntities( const GridType& grid,
       for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
       {
          const IndexType index = grid.template getFaceIndex< 1, 0 >( coordinates );
-         EntitiesProcessor::processFace< 1, 0 >( grid, userData, index, coordinates );
+         EntitiesProcessor::processFace( grid, userData, index, coordinates );
       }
    for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
       for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
       {
          const IndexType index = grid.template getFaceIndex< 0, 1 >( coordinates );
-         EntitiesProcessor::processFace< 0, 1 >( grid, userData, index, coordinates );
+         EntitiesProcessor::processFace( grid, userData, index, coordinates );
       }
 }
 

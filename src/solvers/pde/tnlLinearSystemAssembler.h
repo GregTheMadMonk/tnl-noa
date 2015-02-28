@@ -227,6 +227,26 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              matrixRow );
          }
 
+#ifdef HAVE_CUDA
+         __host__ __device__
+#endif
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            //printf( "index = %d \n", index );
+            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
+            userData.boundaryConditions->updateLinearSystem( *userData.time,
+                                                             mesh,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.u,
+                                                             *userData.b,
+                                                             matrixRow );
+         }
+
+
    };
 
    class TraversalInteriorEntitiesProcessor
@@ -262,6 +282,34 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
             userData.matrix->addElementFast( index, index, 1.0, 1.0 );
          }
 
+#ifdef HAVE_CUDA
+         __host__ __device__
+#endif
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            //printf( "index = %d \n", index );
+            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
+                                  ( *userData.tau ) * FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.time );
+
+            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
+            userData.differentialOperator->updateLinearSystem( *userData.time,
+                                                               *userData.tau,
+                                                               mesh,
+                                                               index,
+                                                               coordinates,
+                                                               *userData.u,
+                                                               *userData.b,
+                                                               matrixRow );
+            userData.matrix->addElementFast( index, index, 1.0, 1.0 );
+         }
    };
 };
 
