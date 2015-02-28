@@ -292,7 +292,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
-            printf( "index = %d \n", index );
+            //printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
