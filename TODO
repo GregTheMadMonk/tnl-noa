@@ -1,8 +1,6 @@
 TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
 
-TODO: doladit vse s CUDA
 TODO: doplnit mesh travelsals pro jine mesh entity nez cell
-TODO: implementovat tnlProblem
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda
@@ -10,6 +8,8 @@ TODO: implementace maticovych resicu
       * TFQMR metoda
       * IDR metody 
 
+TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. V pripade hran gridu, by ty v sobe mohly mit i orientaci.
+      Asi by to bylo vyhodne i pro site se smisenym typem entit. 
 
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 
