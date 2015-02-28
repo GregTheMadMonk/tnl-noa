@@ -123,6 +123,42 @@ class tnlFunctionAdapter< Mesh, Function, tnlDiscreteFunction >
 };
 
 /****
+ * Specialization for discrete functions:
+ * - it passes only the mesh entity index
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Function >
+class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlDiscreteFunction >
+{
+   public:
+
+      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
+      typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename MeshType::IndexType IndexType;
+      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+
+      //template< int MeshEntityDimension >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType index,
+                                const CoordinatesType& coordinates,
+                                const RealType& time = 0.0 )
+      {
+         return function.getValue( index,
+                                   time );
+      }
+};
+
+
+/****
  * Specialization for analytic functions:
  * - it does not pass the mesh entity index
  */
@@ -251,5 +287,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
          return function.getValue( v, time );
       }
 };
+
+
 
 #endif /* TNLFUNCTIONADAPTER_H_ */

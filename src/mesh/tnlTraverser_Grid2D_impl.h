@@ -97,16 +97,16 @@ processBoundaryEntities( const GridType& grid,
    for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
    {
       coordinates.y() = 0;
-      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.template getFaceIndex< 0, 1 >( coordinates ), coordinates );
       coordinates.y() = ySize;
-      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 0, 1 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.template getFaceIndex< 0, 1 >( coordinates ), coordinates );
    }
    for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
    {
       coordinates.x() = 0;
-      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.template getFaceIndex< 1, 0 >( coordinates ), coordinates );
       coordinates.x() = ySize;
-      EntitiesProcessor::processFace( grid, userData, grid.getFaceIndex< 1, 0 >( coordinates ), coordinates );
+      EntitiesProcessor::processFace( grid, userData, grid.template getFaceIndex< 1, 0 >( coordinates ), coordinates );
    }
 
 }

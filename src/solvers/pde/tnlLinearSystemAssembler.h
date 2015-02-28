@@ -18,6 +18,8 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_H_
 #define TNLLINEARSYSTEMASSEMBLER_H_
 
+#include <functions/tnlFunctionAdapter.h>
+
 template< typename Real,
           typename DofVector,
           typename DifferentialOperator,
@@ -141,9 +143,9 @@ class tnlLinearSystemAssembler
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = ( *userData.u )[ index ] +
                      ( *userData.tau ) * FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             *userData.time );
+                                                                    *userData.rightHandSide,
+                                                                    index,
+                                                                    *userData.time );
 
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -290,7 +292,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
-            //printf( "index = %d \n", index );
+            printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
