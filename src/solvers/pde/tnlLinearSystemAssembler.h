@@ -46,8 +46,11 @@ class tnlLinearSystemAssemblerTraversalUserData
 
       Matrix *matrix;
 
+      const Real* timeDiscretisationCoefficient;
+
       tnlLinearSystemAssemblerTraversalUserData( const Real& time,
                                                  const Real& tau,
+                                                 const Real& timeDiscretisationCoefficient,
                                                  const DifferentialOperator& differentialOperator,
                                                  const BoundaryConditions& boundaryConditions,
                                                  const RightHandSide& rightHandSide,
@@ -56,6 +59,7 @@ class tnlLinearSystemAssemblerTraversalUserData
                                                  DofVector& b )
       : time( &time ),
         tau( &tau ),
+        timeDiscretisationCoefficient( &timeDiscretisationCoefficient ),
         differentialOperator( &differentialOperator ),
         boundaryConditions( &boundaryConditions ),
         rightHandSide( &rightHandSide ),
@@ -120,10 +124,6 @@ class tnlLinearSystemAssembler
                                                             *userData.u,
                                                             *userData.b,
                                                             matrixRow );
-            /*userData.matrix->setRowFast( index,
-                                         userData.columns->getData(),
-                                         userData.values->getData(),
-                                         rowLength );*/
          }
 
    };
@@ -155,13 +155,8 @@ class tnlLinearSystemAssembler
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            /*userData.matrix->setRowFast( index,
-                                         userData.columns->getData(),
-                                         userData.values->getData(),
-                                         rowLength );*/
             userData.matrix->addElement( index, index, 1.0, 1.0 );
          }
-
    };
 };
 
@@ -195,6 +190,9 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                       RightHandSide,
                                                       MatrixType > TraversalUserData;
 
+   tnlLinearSystemAssembler()
+   : timeDiscretisationCoefficient( 1.0 ){}
+
    template< int EntityDimensions >
    void assembly( const RealType& time,
                   const RealType& tau,
@@ -205,6 +203,14 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                   DofVector& u,
                   MatrixType& matrix,
                   DofVector& b ) const;
+
+   /****
+    * TODO: Fix this. Somehow.
+    */
+   void setTimeDiscretisationCoefficient( const Real& c )
+   {
+      this->timeDiscretisationCoefficient = c;
+   }
 
    class TraversalBoundaryEntitiesProcessor
    {
@@ -281,7 +287,11 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            userData.matrix->addElementFast( index, index, 1.0, 1.0 );
+            if( *userData.timeDiscretisationCoefficient != 0.0 )
+               userData.matrix->addElementFast( index,
+                                                index,
+                                                *userData.timeDiscretisationCoefficient,
+                                                1.0 );
          }
 
 #ifdef HAVE_CUDA
@@ -310,9 +320,18 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            userData.matrix->addElementFast( index, index, 1.0, 1.0 );
+            if( *userData.timeDiscretisationCoefficient != 0.0 )
+               userData.matrix->addElementFast( index,
+                                                index,
+                                                *userData.timeDiscretisationCoefficient,
+                                                1.0 );
+
          }
    };
+
+   protected:
+
+   Real timeDiscretisationCoefficient;
 };
 
 #include <solvers/pde/tnlLinearSystemAssembler_impl.h>

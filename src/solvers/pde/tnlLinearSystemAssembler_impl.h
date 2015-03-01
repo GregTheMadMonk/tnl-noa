@@ -123,7 +123,15 @@ assembly( const RealType& time,
 
    if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
-      TraversalUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
+      TraversalUserData userData( time,
+                                  tau,
+                                  this->timeDiscretisationCoefficient,
+                                  differentialOperator,
+                                  boundaryConditions,
+                                  rightHandSide,
+                                  u,
+                                  matrix,
+                                  b );
       tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
@@ -138,13 +146,23 @@ assembly( const RealType& time,
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
+      RealType timeDiscretisationCoefficient = this->timeDiscretisationCoefficient; // retyping between different floating point types, TODO check it
+      RealType* kernelTimeDiscretisationCoefficient = tnlCuda::passToDevice( timeDiscretisationCoefficient );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
       DofVector* kernelU = tnlCuda::passToDevice( u );
       DofVector* kernelB = tnlCuda::passToDevice( b );
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
-      TraversalUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
+      TraversalUserData userData( *kernelTime,
+                                  *kernelTau,
+                                  *kernelTimeDiscretisationCoefficient,
+                                  *kernelDifferentialOperator,
+                                  *kernelBoundaryConditions,
+                                  *kernelRightHandSide,
+                                  *kernelU,
+                                  *kernelMatrix,
+                                  *kernelB );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityDimensions > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
