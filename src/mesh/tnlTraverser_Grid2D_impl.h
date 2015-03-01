@@ -289,8 +289,8 @@ __global__ void tnlTraverserGrid2DBoundaryFaces( const tnlGrid< 2, Real, tnlCuda
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processFace( *grid,
                                          *userData,
-                                         grid->template getFaceIndex< nx, ny >( cellCoordinates ),
-                                         cellCoordinates );
+                                         grid->template getFaceIndex< nx, ny >( faceCoordinates ),
+                                         faceCoordinates );
       }
    }
 }
@@ -314,19 +314,19 @@ __global__ void tnlTraverserGrid2DInteriorFaces( const tnlGrid< 2, Real, tnlCuda
    const IndexType& xSize = grid->getDimensions().x();
    const IndexType& ySize = grid->getDimensions().y();
 
-   CoordinatesType cellCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
+   CoordinatesType faceCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
                                     ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y );
 
-   if( cellCoordinates.x() < grid->getDimensions().x() + nx &&
-       cellCoordinates.y() < grid->getDimensions().y() + ny )
+   if( faceCoordinates.x() < grid->getDimensions().x() + nx &&
+       faceCoordinates.y() < grid->getDimensions().y() + ny )
    {
-      if( ! grid->isBoundaryFace( cellCoordinates ) )
+      if( ! grid->isBoundaryFace( faceCoordinates ) )
       {
          //printf( "Processing interior conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processFace( *grid,
                                          *userData,
                                          grid->template getFaceIndex< nx, ny >( faceCoordinates ),
-                                         cellCoordinates );
+                                         faceCoordinates );
       }
    }
 }
