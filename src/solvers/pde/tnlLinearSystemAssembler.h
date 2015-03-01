@@ -261,6 +261,11 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
+      /****
+       *
+       * TODO: FIX THIS. The assembler is not designed properly for the stationary problems!!!
+       *
+       */
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
@@ -271,7 +276,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          {
             //printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
+            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
@@ -304,7 +309,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          {
             //printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
+            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
