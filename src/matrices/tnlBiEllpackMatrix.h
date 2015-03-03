@@ -17,9 +17,9 @@ public:
 	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
 	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef tnlBiEllpackMatrix< Real, Device, Index > thisType;
-	typedef tnlBiEllpackMatrix< Real, tnlHost, Index > hostType;
-	typedef tnlBiEllpackMatrix< Real, tnlCuda, Index > cudaType;
+	typedef tnlBiEllpackMatrix< Real, Device, Index > ThisType;
+	typedef tnlBiEllpackMatrix< Real, tnlHost, Index > HostType;
+	typedef tnlBiEllpackMatrix< Real, tnlCuda, Index > CudaType;
 
 	tnlBiEllpackMatrix();
 
@@ -34,7 +34,9 @@ public:
 
 	IndexType getRowLength( const IndexType row ) const;
 
-	template< typename Real2, typename Device2, typename Index2 >
+	template< typename Real2,
+			  typename Device2,
+			  typename Index2 >
 	bool setLike( const tnlBiEllpackMatrix< Real2, Device2, Index2, StripSize >& matrix );
 
 	void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
@@ -66,6 +68,9 @@ public:
 			 	 IndexType* columns,
 			 	 RealType* values ) const;
 
+#ifdef HAVE_CUDA
+	__device__ __host__
+#endif
 	IndexType getGroupLength( const IndexType strip,
 							  const IndexType group ) const;
 
@@ -74,16 +79,16 @@ public:
 	void vectorProduct( const InVector& inVector,
 						OutVector& outVector ) const;
 
-	template< typename InVector >
-	typename InVector::RealType rowVectorProduct( const IndexType row,
-							   	   	   	   	      const InVector& inVector ) const;
+	template< typename InVector,
+			  typename OutVector >
+	void vectorProductHost( const InVector& inVector,
+							OutVector& outVector ) const;
 
 	void setVirtualRows(const IndexType rows);
 
-	IndexType getVirtualRows();
-
-	IndexType getWarpSize();
-
+#ifdef HAVE_CUDA
+	__device__ __host__
+#endif
 	IndexType getNumberOfGroups( const IndexType row ) const;
 
 	void reset();
@@ -98,16 +103,45 @@ public:
 
 	void print( ostream& str ) const;
 
-#ifdef HAVE_CUDA
+	void performRowBubbleSort( tnlVector< Index, Device, Index >& tempRowLengths );
+	void computeColumnSizes( tnlVector< Index, Device, Index >& tempRowLengths );
+
+//	void verifyRowLengths( const typename tnlBiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths );
+
 	template< typename InVector,
-			  typename OutVector,
-			  int warpSize>
+			  typename OutVector >
+#ifdef HAVE_CUDA
 	__device__
+#endif
 	void spmvCuda( const InVector& inVector,
 				   OutVector& outVector,
 				   const IndexType warpStart,
+				   const IndexType warpEnd,
 				   const IndexType inWarpIdx ) const;
+
+#ifdef HAVE_CUDA
+	__device__ __host__
 #endif
+	IndexType getStripLength( const IndexType strip ) const;
+
+#ifdef HAVE_CUDA
+	__device__
+#endif
+	void performRowBubbleSortCudaKernel( const typename tnlBiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+										 const IndexType strip );
+
+#ifdef HAVE_CUDA
+	__device__
+#endif
+	void computeColumnSizesCudaKernel( const typename tnlBiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+									   const IndexType numberOfStrips,
+									   const IndexType strip );
+
+#ifdef HAVE_CUDA
+	__device__
+#endif
+	IndexType power( const IndexType number,
+				     const IndexType exponent ) const;
 
 	typedef tnlBiEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
 	friend class tnlBiEllpackMatrixDeviceDependentCode< DeviceType >;
