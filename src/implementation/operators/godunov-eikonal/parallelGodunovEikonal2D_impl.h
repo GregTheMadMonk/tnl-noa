@@ -130,17 +130,27 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
 {
 
-	if ( (coordinates.x() == 0 && (boundaryCondition & 4)) or
+	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
 		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
-		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)) )
+		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)))
+		 /*and
+		 !(		 (coordinates.y() == 0 or coordinates.y() == mesh.getDimensions().y() - 1)
+				 and
+				 ( coordinates.x() == 0 or coordinates.x() == mesh.getDimensions().x() - 1)
+		  )*/
+		)
 	{
 		return 0.0;
 	}
 
+	RealType acc = hx*hy*hx*hy;
+
 	RealType nabla, xb, xf, yb, yf, signui;
 
 	signui = sign(u[cellIndex],epsilon);
+
+	if(fabs(u[cellIndex]) < acc) return 0.0;
 
 	   if(signui > 0.0)
 	   {
@@ -191,7 +201,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 			   yb = 0.0;
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-
+		   if(fabs(1.0-nabla) < acc)
+			   return 0.0;
 		   return signui*(1.0 - nabla);
 	   }
 	   else if (signui < 0.0)
@@ -246,6 +257,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
+		   if(fabs(1.0-nabla) < acc)
+			   return 0.0;
 		   return signui*(1.0 - nabla);
 	   }
 	   else

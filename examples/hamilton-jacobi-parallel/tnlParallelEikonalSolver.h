@@ -70,7 +70,7 @@ private:
 
 	void insertSubgrid( VectorType u, const int i );
 
-	VectorType runSubgrid( int boundaryCondition, VectorType u);
+	VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
 
 
 	VectorType u0, work_u;
