@@ -672,7 +672,7 @@ void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& in
          if( inWarpIdx < 2 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 2 ];
       if( warpSize >= 2 )
          if( inWarpIdx < 1 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 1 ];
-      __syncthreads(); // TODO: I am not sure why
+      __syncthreads(); // TODO: I am not sure why - aux must be volatile
 
       if( inWarpIdx == 0 )
          outVector[ row ] = aux[ threadIdx.x ];

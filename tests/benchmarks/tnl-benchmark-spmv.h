@@ -393,7 +393,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          cusparseDestroy( cusparseHandle );
 
          cout << " done.   \r";
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
+         /*cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
          benchmarkMatrix( cudaCSRMatrix,
                           cudaX,
                           cudaB,
@@ -524,7 +524,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           stopTime,
                           baseline,
                           verbose,
-                          logFile );
+                          logFile );*/
       }
       cudaCSRMatrix.reset();
 #endif
