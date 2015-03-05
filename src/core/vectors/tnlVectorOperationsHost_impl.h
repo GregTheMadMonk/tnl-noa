@@ -314,7 +314,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
    Real result = 0;
    const Index n = v1. getSize();
    for( Index i = 0; i < n; i ++ )
-      result += v1. getElement( i ) * v2. getElement( i );
+      result += v1[ i ] * v2[ i ];
    return result;
 }
 

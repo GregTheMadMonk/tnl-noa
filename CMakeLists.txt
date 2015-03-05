@@ -85,7 +85,7 @@ if( WITH_CUDA STREQUAL "yes" )
       AddCompilerFlag( "-std=gnu++0x" )         
     endif( CUDA_FOUND )
 else( WITH_CUDA STREQUAL "yes" )
-   AddCompilerFlag( "-std=gnu++0x" )       
+   AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
 endif( WITH_CUDA STREQUAL "yes" )    
 
 ####

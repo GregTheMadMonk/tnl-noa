@@ -50,22 +50,22 @@ Element tnlArrayOperations< tnlHost >::getMemoryElement( Element* data )
 
 template< typename Element, typename Index >
 Element& tnlArrayOperations< tnlHost >::getArrayElementReference( Element* data,
-                                                                    const Index i )
+                                                                  const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
 const Element& tnlArrayOperations< tnlHost >::getArrayElementReference( const Element* data,
-                                                                          const Index i )
+                                                                       const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlHost >::setMemory( Element* data,
-                                                        const Element& value,
-                                                        const Index size )
+                                               const Element& value,
+                                               const Index size )
 {
    for( Index i = 0; i < size; i ++ )
       data[ i ] = value;
