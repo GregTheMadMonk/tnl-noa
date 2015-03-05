@@ -284,7 +284,7 @@ __global__ void tnlTraverserGrid2DBoundaryFaces( const tnlGrid< 2, Real, tnlCuda
    if( faceCoordinates.x() < grid->getDimensions().x() + nx &&
        faceCoordinates.y() < grid->getDimensions().y() + ny )
    {
-      if( grid->isBoundaryFace( faceCoordinates ) )
+      if( grid->template isBoundaryFace< nx, ny >( faceCoordinates ) )
       {
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processFace( *grid,
@@ -320,7 +320,7 @@ __global__ void tnlTraverserGrid2DInteriorFaces( const tnlGrid< 2, Real, tnlCuda
    if( faceCoordinates.x() < grid->getDimensions().x() + nx &&
        faceCoordinates.y() < grid->getDimensions().y() + ny )
    {
-      if( ! grid->isBoundaryFace( faceCoordinates ) )
+      if( ! grid->template isBoundaryFace< nx, ny >( faceCoordinates ) )
       {
          //printf( "Processing interior conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processFace( *grid,

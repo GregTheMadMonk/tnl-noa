@@ -258,9 +258,9 @@ __device__ __host__
 typename tnlGrid< 2, Real, Device, Index >::CoordinatesType
 tnlGrid< 2, Real, Device, Index >::getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const
 {
-   tnlAssert( faceIndex >= 0 && faceIndex < this->getNumberOfFaces(),
+   tnlAssert( faceIndex >= 0 && faceIndex < ( this->template getNumberOfFaces< 1, 1 >() ),
               cerr << " faceIndex = " << faceIndex
-                   << " this->getNumberOfFaces() = " << this->getNumberOfFaces()
+                   << " this->getNumberOfFaces() = " << ( this->template getNumberOfFaces< 1, 1 >() )
                    << " this->getName() " << this->getName(); );
    if( faceIndex < this->numberOfNxFaces )
    {
@@ -350,11 +350,11 @@ Index tnlGrid< 2, Real, Device, Index >::getFaceNextToCell( const IndexType& cel
    if( ny )
       result = this->numberOfNxFaces + cellIndex + ( ny + ( ny < 0 ) ) * this->getDimensions().x();
    tnlAssert( result >= 0 &&
-              result < this->getNumberOfFaces(),
+              result < ( this->template getNumberOfFaces< 1, 1 >() ),
               cerr << " cellIndex = " << cellIndex
                    << " nx = " << nx
                    << " ny = " << ny
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
+                   << " this->getNumberOfCells() = " << ( this->template getNumberOfCells< 1, 1 >() )
                    << " this->getName() " << this->getName(); );
    return result;
 }
