@@ -21,11 +21,11 @@
 
 template< typename Function,
           typename DofVector >
-class tnlFunctionEnumeratorTraversalUserData
+class tnlFunctionEnumeratorTraverserUserData
 {
    public:
 
-      typedef DofVector::RealType RealType;
+      typedef typename DofVector::RealType RealType;
 
       const RealType *time;
 
@@ -37,7 +37,7 @@ class tnlFunctionEnumeratorTraversalUserData
 
       const RealType* dofVectorCoefficient;
 
-      tnlFunctionEnumeratorTraversalUserData( const RealType& time,
+      tnlFunctionEnumeratorTraverserUserData( const RealType& time,
                                               const Function& function,
                                               DofVector& u,
                                               const RealType& functionCoefficient,
@@ -61,19 +61,19 @@ class tnlFunctionEnumerator
       typedef typename DofVector::RealType RealType;
       typedef typename DofVector::DeviceType DeviceType;
       typedef typename DofVector::IndexType IndexType;
-      typedef tnlFunctionEnumeratorTraversalUserData< Function,
-                                                      DofVector > TraversalUserData;
+      typedef tnlFunctionEnumeratorTraverserUserData< Function,
+                                                      DofVector > TraverserUserData;
 
       template< int EntityDimensions >
       void enumerate( const MeshType& mesh,
-                      const Function& function
+                      const Function& function,
                       DofVector& u,
                       const RealType& functionCoefficient = 1.0,
                       const RealType& dofVectorCoefficient = 0.0,
                       const RealType& time = 0.0 ) const;
 
 
-      class TraversalEntitiesProcessor
+      class TraverserEntitiesProcessor
       {
          public:
 
@@ -82,7 +82,7 @@ class tnlFunctionEnumerator
             __host__ __device__
 #endif
             static void processEntity( const MeshType& mesh,
-                                       TraversalUserData& userData,
+                                       TraverserUserData& userData,
                                        const IndexType index )
             {
                typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
@@ -115,16 +115,18 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlFunctionEnumeratorTraversalUserData< Function,
-                                                      DofVector > TraversalUserData;
+      typedef tnlFunctionEnumeratorTraverserUserData< Function,
+                                                      DofVector > TraverserUserData;
 
       template< int EntityDimensions >
       void enumerate( const MeshType& mesh,
                       const Function& function,
                       DofVector& u,
+                      const RealType& functionCoefficient = 1.0,
+                      const RealType& dofVectorCoefficient = 0.0,
                       const RealType& time = 0.0 ) const;
 
-      class TraversalEntitiesProcessor
+      class TraverserEntitiesProcessor
       {
          public:
 
@@ -134,7 +136,7 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
             __host__ __device__
 #endif
             static void processCell( const MeshType& mesh,
-                                     TraversalUserData& userData,
+                                     TraverserUserData& userData,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {
@@ -153,7 +155,7 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
             __host__ __device__
 #endif
             static void processFace( const MeshType& mesh,
-                                     TraversalUserData& userData,
+                                     TraverserUserData& userData,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {

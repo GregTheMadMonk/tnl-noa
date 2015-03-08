@@ -38,14 +38,14 @@ enumerate( const MeshType& mesh,
 {
    if( DeviceType::DeviceType == tnlHostDevice )
    {
-      TraversalUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
-      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
-      meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                      TraversalEntitiesProcessor >
+      TraverserUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
+      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
-      meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                      TraversalProcessor >
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
 
@@ -57,15 +57,15 @@ enumerate( const MeshType& mesh,
       DofVector* kernelU = tnlCuda::passToDevice( u );
       RealType* kernelFunctionCoefficient = tnlCuda::passToDevice( functionCoefficient );
       RealType* kernelDofVectorCoefficient = tnlCuda::passToDevice( dofVectorCoefficient );
-      TraversalUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
+      TraverserUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
-      meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                      TraversalBoundaryEntitiesProcessor >
+      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
-      meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                      TraversalInteriorEntitiesProcessor >
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
 
@@ -83,10 +83,8 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
-          typename DofVector,
-          typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RightHandSide >
+          typename Function,
+          typename DofVector >
    template< int EntityDimensions >
 void
 tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >, Function, DofVector  >::
@@ -99,14 +97,14 @@ enumerate( const tnlGrid< Dimensions, Real, Device, Index >& mesh,
 {
    if( DeviceType::DeviceType == tnlHostDevice )
    {
-      TraversalUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
-      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
-      meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                      TraversalEntitiesProcessor >
+      TraverserUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
+      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
-      meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                      TraversalProcessor >
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
 
@@ -118,15 +116,15 @@ enumerate( const tnlGrid< Dimensions, Real, Device, Index >& mesh,
       DofVector* kernelU = tnlCuda::passToDevice( u );
       RealType* kernelFunctionCoefficient = tnlCuda::passToDevice( functionCoefficient );
       RealType* kernelDofVectorCoefficient = tnlCuda::passToDevice( dofVectorCoefficient );
-      TraversalUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
+      TraverserUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraversal;
-      meshTraversal.template processBoundaryEntities< TraversalUserData,
-                                                      TraversalBoundaryEntitiesProcessor >
+      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
-      meshTraversal.template processInteriorEntities< TraversalUserData,
-                                                      TraversalInteriorEntitiesProcessor >
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
                                                     ( mesh,
                                                       userData );
 

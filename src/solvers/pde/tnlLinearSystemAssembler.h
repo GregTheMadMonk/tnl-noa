@@ -26,7 +26,7 @@ template< typename Real,
           typename BoundaryConditions,
           typename RightHandSide,
           typename Matrix >
-class tnlLinearSystemAssemblerTraversalUserData
+class tnlLinearSystemAssemblerTraverserUserData
 {
    public:
       typedef Matrix MatrixType;
@@ -48,7 +48,7 @@ class tnlLinearSystemAssemblerTraversalUserData
 
       const Real* timeDiscretisationCoefficient;
 
-      tnlLinearSystemAssemblerTraversalUserData( const Real& time,
+      tnlLinearSystemAssemblerTraverserUserData( const Real& time,
                                                  const Real& tau,
                                                  const Real& timeDiscretisationCoefficient,
                                                  const DifferentialOperator& differentialOperator,
@@ -87,12 +87,12 @@ class tnlLinearSystemAssembler
    typedef typename DofVector::DeviceType DeviceType;
    typedef typename DofVector::IndexType IndexType;
    typedef Matrix MatrixType;
-   typedef tnlLinearSystemAssemblerTraversalUserData< RealType,
+   typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
-                                                      MatrixType > TraversalUserData;
+                                                      MatrixType > TraverserUserData;
 
    template< int EntityDimensions >
    void assembly( const RealType& time,
@@ -105,7 +105,7 @@ class tnlLinearSystemAssembler
                   MatrixType& matrix,
                   DofVector& b ) const;
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
@@ -114,7 +114,7 @@ class tnlLinearSystemAssembler
          __host__ __device__
 #endif
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const IndexType index )
          {
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
@@ -128,7 +128,7 @@ class tnlLinearSystemAssembler
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
 
@@ -137,7 +137,7 @@ class tnlLinearSystemAssembler
          __host__ __device__
 #endif
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const IndexType index )
          {
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
@@ -183,12 +183,12 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    typedef typename DofVector::IndexType IndexType;
    typedef Matrix MatrixType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef tnlLinearSystemAssemblerTraversalUserData< RealType,
+   typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
-                                                      MatrixType > TraversalUserData;
+                                                      MatrixType > TraverserUserData;
 
    tnlLinearSystemAssembler()
    : timeDiscretisationCoefficient( 1.0 ){}
@@ -212,7 +212,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
       this->timeDiscretisationCoefficient = c;
    }
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
@@ -220,7 +220,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
@@ -239,7 +239,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
@@ -257,7 +257,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
 
@@ -270,7 +270,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
@@ -303,7 +303,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
