@@ -352,8 +352,6 @@ processBoundaryEntities( const GridType& grid,
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 
-   printf( "Number of cells = %d \n", grid.getNumberOfCells() );
-
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;
    cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x(), cudaBlockSize.x );

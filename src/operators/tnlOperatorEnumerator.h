@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlFunctionEnumerator.h  -  description
+                          tnlOperatorEnumerator.h  -  description
                              -------------------
-    begin                : Mar 5, 2015
+    begin                : Mar 8, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,14 +14,14 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_H_
-#define SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_H_
+#ifndef SRC_OPERATORS_TNLOPERATORENUMERATOR_H_
+#define SRC_OPERATORS_TNLOPERATORENUMERATOR_H_
 
-#include <functions/tnlFunctionAdapter.h>
+//#include <_operators/tnlOperatorAdapter.h>
 
-template< typename Function,
+template< typename Operator,
           typename DofVector >
-class tnlFunctionEnumeratorTraverserUserData
+class tnlOperatorEnumeratorTraverserUserData
 {
    public:
 
@@ -29,46 +29,46 @@ class tnlFunctionEnumeratorTraverserUserData
 
       const RealType *time;
 
-      const Function* function;
+      const Operator* _operator;
 
       DofVector *u;
 
-      const RealType* functionCoefficient;
+      const RealType* _operatorCoefficient;
 
       const RealType* dofVectorCoefficient;
 
-      tnlFunctionEnumeratorTraverserUserData( const RealType& time,
-                                              const Function& function,
+      tnlOperatorEnumeratorTraverserUserData( const RealType& time,
+                                              const Operator& _operator,
                                               DofVector& u,
-                                              const RealType& functionCoefficient,
+                                              const RealType& _operatorCoefficient,
                                               const RealType& dofVectorCoefficient )
       : time( &time ),
-        function( &function ),
+        _operator( &_operator ),
         u( &u ),
-        functionCoefficient( &functionCoefficient ),
+        _operatorCoefficient( &_operatorCoefficient ),
         dofVectorCoefficient( &dofVectorCoefficient )
       {};
 };
 
 
 template< typename Mesh,
-          typename Function,
+          typename Operator,
           typename DofVector >
-class tnlFunctionEnumerator
+class tnlOperatorEnumerator
 {
    public:
       typedef Mesh MeshType;
       typedef typename DofVector::RealType RealType;
       typedef typename DofVector::DeviceType DeviceType;
       typedef typename DofVector::IndexType IndexType;
-      typedef tnlFunctionEnumeratorTraverserUserData< Function,
+      typedef tnlOperatorEnumeratorTraverserUserData< Operator,
                                                       DofVector > TraverserUserData;
 
       template< int EntityDimensions >
       void enumerate( const MeshType& mesh,
-                      const Function& function,
+                      const Operator& _operator,
                       DofVector& u,
-                      const RealType& functionCoefficient = 1.0,
+                      const RealType& _operatorCoefficient = 1.0,
                       const RealType& dofVectorCoefficient = 0.0,
                       const RealType& time = 0.0 ) const;
 
@@ -85,13 +85,12 @@ class tnlFunctionEnumerator
                                        TraverserUserData& userData,
                                        const IndexType index )
             {
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               //typedef tnlOperatorAdapter< MeshType, Operator > OperatorAdapter;
                ( *userData.u )[ index ] =
                         ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       *userData.time );
+                        ( *userData._operatorCoefficient ) * userData._operator ->getValue( mesh,
+                                                                                            index,
+                                                                                            *userData.time );
             }
 
       };
@@ -102,10 +101,10 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
-          typename Function,
+          typename Operator,
           typename DofVector >
-class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
-                             Function,
+class tnlOperatorEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
+                             Operator,
                              DofVector >
 {
    public:
@@ -115,14 +114,14 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlFunctionEnumeratorTraverserUserData< Function,
+      typedef tnlOperatorEnumeratorTraverserUserData< Operator,
                                                       DofVector > TraverserUserData;
 
       template< int EntityDimensions >
       void enumerate( const MeshType& mesh,
-                      const Function& function,
+                      const Operator& _operator,
                       DofVector& u,
-                      const RealType& functionCoefficient = 1.0,
+                      const RealType& _operatorCoefficient = 1.0,
                       const RealType& dofVectorCoefficient = 0.0,
                       const RealType& time = 0.0 ) const;
 
@@ -141,14 +140,13 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
                                      const CoordinatesType& coordinates )
             {
                //printf( "Enumerator::processCell mesh =%p \n", &mesh );
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               //typedef tnlOperatorAdapter< MeshType, Operator > OperatorAdapter;
                ( *userData.u )[ index ] =
                         ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       coordinates,
-                                                                                       *userData.time );
+                        ( *userData._operatorCoefficient ) * userData._operator->getValue( mesh,
+                                                                                           index,
+                                                                                           coordinates,
+                                                                                           *userData.time );
 
             }
 
@@ -160,21 +158,18 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               //typedef tnlOperatorAdapter< MeshType, Operator > OperatorAdapter;
                ( *userData.u )[ index ] =
                         ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       coordinates,
-                                                                                       *userData.time );
+                        ( *userData._operatorCoefficient ) * userData._operator->getValue( mesh,
+                                                                                           index,
+                                                                                           coordinates,
+                                                                                           *userData.time );
             }
       };
 
 };
 
-#include <functions/tnlFunctionEnumerator_impl.h>
+#include <operators/tnlOperatorEnumerator_impl.h>
 
-
-
-#endif /* SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_H_ */
+#endif /* SRC_OPERATORS_TNLOPERATORENUMERATOR_H_ */

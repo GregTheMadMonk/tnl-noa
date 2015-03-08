@@ -1,3 +1,5 @@
+TODO: v tnlMeshResolver se provadi preklad pro vsechny mozne sablonove parametry => prorezat
+
 TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
 
 TODO: doplnit mesh travelsals pro jine mesh entity nez cell
