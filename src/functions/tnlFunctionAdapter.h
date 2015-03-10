@@ -52,7 +52,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlGeneralFunction >
                                 const IndexType index,
                                 const RealType& time = 0.0 )
       {
-         return function.getValue( mesh.template getEntityCenter< MeshEntityDimension >,
+         return function.getValue( mesh, //.template getEntityCenter< MeshEntityDimension >,
                                    index,
                                    time );
       }
@@ -87,7 +87,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
                                 const CoordinatesType& coordinates,
                                 const RealType& time = 0.0 )
       {
-         return function.getValue( mesh.template getCellCenter< VertexType >( coordinates ),
+         return function.getValue( mesh, //.template getCellCenter< VertexType >( coordinates ),
                                    index,
                                    time );
       }
