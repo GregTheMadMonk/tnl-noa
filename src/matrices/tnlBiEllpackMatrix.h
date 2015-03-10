@@ -91,6 +91,8 @@ public:
 #endif
 	IndexType getNumberOfGroups( const IndexType row ) const;
 
+	bool vectorProductTest() const;
+
 	void reset();
 
 	bool save( tnlFile& file ) const;
@@ -115,9 +117,9 @@ public:
 #endif
 	void spmvCuda( const InVector& inVector,
 				   OutVector& outVector,
-				   const IndexType warpStart,
-				   const IndexType warpEnd,
-				   const IndexType inWarpIdx ) const;
+				   /*const IndexType warpStart,
+				   const IndexType inWarpIdx*/
+				   int globalIdx ) const;
 
 #ifdef HAVE_CUDA
 	__device__ __host__
