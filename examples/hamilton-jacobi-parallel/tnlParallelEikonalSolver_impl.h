@@ -639,6 +639,8 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 		//tmp = true;
 
 
+	double value = Sign(u[0]) * u.absMax();
+
 	if(tmp)
 	{}
 
@@ -649,28 +651,28 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 		for(int i = 0; i < this->n; i++)
 			for(int j = 1;j < this->n; j++)
 				if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
-				u[i*this->n + j] = u[i*this->n];
+				u[i*this->n + j] = value;// u[i*this->n];
 	}
 	else if(boundaryCondition == 2)
 	{
 		for(int i = 0; i < this->n; i++)
 			for(int j =0 ;j < this->n -1; j++)
 				if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
-				u[i*this->n + j] = u[(i+1)*this->n - 1];
+				u[i*this->n + j] = value;// u[(i+1)*this->n - 1];
 	}
 	else if(boundaryCondition == 1)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 0;i < this->n - 1; i++)
 				if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
-				u[i*this->n + j] = u[j + this->n*(this->n - 1)];
+				u[i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
 	}
 	else if(boundaryCondition == 8)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 1;i < this->n; i++)
 				if(fabs(u[i*this->n + j]) < fabs(u[j]))
-				u[i*this->n + j] = u[j];
+				u[i*this->n + j] = value;// u[j];
 	}
 
 
