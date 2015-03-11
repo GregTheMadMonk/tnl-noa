@@ -157,6 +157,30 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::run()
 				{
 					insertSubgrid( runSubgrid(8, getSubgrid(i),i), i);
 				}
+
+
+				if( (getBoundaryCondition(i) & 1) || (getBoundaryCondition(i) & 2) )
+				{
+					//cout << "3 @ " << getBoundaryCondition(i) << endl;
+					insertSubgrid( runSubgrid(3, getSubgrid(i),i), i);
+				}
+				if( (getBoundaryCondition(i) & 1) || (getBoundaryCondition(i) & 4) )
+				{
+					//cout << "5 @ " << getBoundaryCondition(i) << endl;
+					insertSubgrid( runSubgrid(5, getSubgrid(i),i), i);
+				}
+				if( (getBoundaryCondition(i) & 8) || (getBoundaryCondition(i) & 2) )
+				{
+					//cout << "10 @ " << getBoundaryCondition(i) << endl;
+					insertSubgrid( runSubgrid(10, getSubgrid(i),i), i);
+				}
+				if( (getBoundaryCondition(i) & 8) || (getBoundaryCondition(i) & 4) )
+				{
+					//cout << "12 @ " << getBoundaryCondition(i) << endl;
+					insertSubgrid( runSubgrid(12, getSubgrid(i),i), i);
+				}
+
+
 				/*if(getBoundaryCondition(i))
 				{
 					insertSubgrid( runSubgrid(15, getSubgrid(i),i), i);
@@ -513,7 +537,7 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 	/**/
 
 
-	bool tmp = false;
+/*	bool tmp = false;
 	for(int i = 0; i < u.getSize(); i++)
 	{
 		if(u[0]*u[i] <= 0.0)
@@ -525,44 +549,131 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 	{}
 	else if(boundaryCondition == 4)
 	{
-		for(int i = 0; i < u.getSize(); i=subMesh.getCellYSuccessor(i))
+		int i;
+		for(i = 0; i < u.getSize() - subMesh.getDimensions().x() ; i=subMesh.getCellYSuccessor(i))
 		{
-			for(int j = i; j < subMesh.getDimensions().x(); j=subMesh.getCellXSuccessor(j))
+			int j;
+			for(j = i; j < subMesh.getDimensions().x() - 1; j=subMesh.getCellXSuccessor(j))
 			{
 				u[j] = u[i];
 			}
+			u[j] = u[i];
 		}
+		int j;
+		for(j = i; j < subMesh.getDimensions().x() - 1; j=subMesh.getCellXSuccessor(j))
+		{
+			u[j] = u[i];
+		}
+		u[j] = u[i];
 	}
 	else if(boundaryCondition == 8)
 	{
-		for(int i = 0; i < subMesh.getDimensions().x(); i=subMesh.getCellXSuccessor(i))
+		int i;
+		for(i = 0; i < subMesh.getDimensions().x() - 1; i=subMesh.getCellXSuccessor(i))
 		{
-			for(int j = i; j < u.getSize(); j=subMesh.getCellYSuccessor(j))
+			int j;
+			for(j = i; j < u.getSize() - subMesh.getDimensions().x(); j=subMesh.getCellYSuccessor(j))
 			{
 				u[j] = u[i];
 			}
+			u[j] = u[i];
 		}
+		int j;
+		for(j = i; j < u.getSize() - subMesh.getDimensions().x(); j=subMesh.getCellYSuccessor(j))
+		{
+			u[j] = u[i];
+		}
+		u[j] = u[i];
+
 	}
 	else if(boundaryCondition == 2)
 	{
-		for(int i = subMesh.getDimensions().x() - 1; i < u.getSize(); i=subMesh.getCellYSuccessor(i))
+		int i;
+		for(i = subMesh.getDimensions().x() - 1; i < u.getSize() - subMesh.getDimensions().x() ; i=subMesh.getCellYSuccessor(i))
 		{
-			for(int j = i; j > (i-1)*subMesh.getDimensions().x(); j=subMesh.getCellXPredecessor(j))
+			int j;
+			for(j = i; j > (i-1)*subMesh.getDimensions().x(); j=subMesh.getCellXPredecessor(j))
 			{
 				u[j] = u[i];
 			}
+			u[j] = u[i];
 		}
+		int j;
+		for(j = i; j > (i-1)*subMesh.getDimensions().x(); j=subMesh.getCellXPredecessor(j))
+		{
+			u[j] = u[i];
+		}
+		u[j] = u[i];
 	}
 	else if(boundaryCondition == 1)
 	{
-		for(int i = (subMesh.getDimensions().y() - 1)*subMesh.getDimensions().x(); i < u.getSize(); i=subMesh.getCellXSuccessor(i))
+		int i;
+		for(i = (subMesh.getDimensions().y() - 1)*subMesh.getDimensions().x(); i < u.getSize() - 1; i=subMesh.getCellXSuccessor(i))
 		{
-			for(int j = i; j > 0; j=subMesh.getCellYPredecessor(j))
+			int j;
+			for(j = i; j >=subMesh.getDimensions().x(); j=subMesh.getCellYPredecessor(j))
 			{
 				u[j] = u[i];
 			}
+			u[j] = u[i];
 		}
+		int j;
+		for(j = i; j >=subMesh.getDimensions().x(); j=subMesh.getCellYPredecessor(j))
+		{
+			u[j] = u[i];
+		}
+		u[j] = u[i];
 	}
+*/
+	/**/
+
+
+
+	bool tmp = false;
+	for(int i = 0; i < u.getSize(); i++)
+	{
+		if(u[0]*u[i] <= 0.0)
+			tmp=true;
+	}
+	//if(this->currentStep + 3 < getSubgridValue(subGridID))
+		//tmp = true;
+
+
+	if(tmp)
+	{}
+
+
+	//north - 1, east - 2, west - 4, south - 8
+	else if(boundaryCondition == 4)
+	{
+		for(int i = 0; i < this->n; i++)
+			for(int j = 1;j < this->n; j++)
+				if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
+				u[i*this->n + j] = u[i*this->n];
+	}
+	else if(boundaryCondition == 2)
+	{
+		for(int i = 0; i < this->n; i++)
+			for(int j =0 ;j < this->n -1; j++)
+				if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
+				u[i*this->n + j] = u[(i+1)*this->n - 1];
+	}
+	else if(boundaryCondition == 1)
+	{
+		for(int j = 0; j < this->n; j++)
+			for(int i = 0;i < this->n - 1; i++)
+				if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
+				u[i*this->n + j] = u[j + this->n*(this->n - 1)];
+	}
+	else if(boundaryCondition == 8)
+	{
+		for(int j = 0; j < this->n; j++)
+			for(int i = 1;i < this->n; i++)
+				if(fabs(u[i*this->n + j]) < fabs(u[j]))
+				u[i*this->n + j] = u[j];
+	}
+
+
 
 	/**/
 
@@ -575,8 +686,9 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
    double finalTime = this->stopTime;// + 3.0*(u.max() - u.min());
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
-   double maxResidue( 0.0 );
-   while( time < finalTime)
+   double maxResidue( 1.0 );
+   double lastResidue( 10000.0 );
+   while( time < finalTime /*|| maxResidue > subMesh.getHx()*/)
    {
       /****
        * Compute the RHS
@@ -591,6 +703,8 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 
       if( this -> cflCondition * maxResidue != 0.0)
     	  currentTau =  this -> cflCondition / maxResidue;
+      /*if(maxResidue > lastResidue)
+    	  currentTau *=(1.0/10.0);*/
 
 
       if( time + currentTau > finalTime ) currentTau = finalTime - time;
@@ -610,9 +724,10 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
       time += currentTau;
 
       //cout << '\r' << flush;
-      //cout << maxResidue << "   " << currentTau << " @ " << time << flush;
+     //cout << maxResidue << "   " << currentTau << " @ " << time << flush;
+     lastResidue = maxResidue;
    }
-
+   //cout << "Time: " << time << ", Res: " << maxResidue <<endl;
 	/*if (u.max() > 0.0)
 		this->stopTime /=(double) this->gridCols;*/
 
