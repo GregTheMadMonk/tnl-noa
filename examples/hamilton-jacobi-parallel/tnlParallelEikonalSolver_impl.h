@@ -73,7 +73,7 @@ bool tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::init( const tnlPara
 
 	stretchGrid();
 	this->stopTime /= (double)(this->gridCols);
-	this->stopTime *= 2.0*(1.0+1.0/((double)(this->n) - 1.0));
+	this->stopTime *= (1.0+1.0/((double)(this->n) - 1.0));
 	cout << "Setting stopping time to " << this->stopTime << endl;
 
 	cout << "Initializating scheme..." << endl;
@@ -144,21 +144,25 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::run()
 				if(getBoundaryCondition(i) & 1)
 				{
 					insertSubgrid( runSubgrid(1, getSubgrid(i),i), i);
+					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 2)
 				{
 					insertSubgrid( runSubgrid(2, getSubgrid(i),i), i);
+					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 4)
 				{
 					insertSubgrid( runSubgrid(4, getSubgrid(i),i), i);
+					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 8)
 				{
 					insertSubgrid( runSubgrid(8, getSubgrid(i),i), i);
+					this->calculationsCount[i]++;
 				}
 
-
+/*
 				if( (getBoundaryCondition(i) & 1) || (getBoundaryCondition(i) & 2) )
 				{
 					//cout << "3 @ " << getBoundaryCondition(i) << endl;
@@ -179,7 +183,7 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::run()
 					//cout << "12 @ " << getBoundaryCondition(i) << endl;
 					insertSubgrid( runSubgrid(12, getSubgrid(i),i), i);
 				}
-
+*/
 
 				/*if(getBoundaryCondition(i))
 				{
@@ -198,6 +202,8 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::run()
 
 	contractGrid();
 	this->u0.save("u-00001.tnl");
+	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() << endl;
+	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) << endl;
 	cout << "Solver finished" << endl;
 
 }
@@ -348,6 +354,8 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::stretchGrid()
 
 	this->subgridValues.setSize(this->gridCols*this->gridRows);
 	this->boundaryConditions.setSize(this->gridCols*this->gridRows);
+	this->calculationsCount.setSize(this->gridCols*this->gridRows);
+	this->calculationsCount.setValue(0);
 
 	for(int i = 0; i < this->subgridValues.getSize(); i++ )
 	{
@@ -650,28 +658,28 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 	{
 		for(int i = 0; i < this->n; i++)
 			for(int j = 1;j < this->n; j++)
-				if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
+				//if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
 				u[i*this->n + j] = value;// u[i*this->n];
 	}
 	else if(boundaryCondition == 2)
 	{
 		for(int i = 0; i < this->n; i++)
 			for(int j =0 ;j < this->n -1; j++)
-				if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
+				//if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
 				u[i*this->n + j] = value;// u[(i+1)*this->n - 1];
 	}
 	else if(boundaryCondition == 1)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 0;i < this->n - 1; i++)
-				if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
+				//if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
 				u[i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
 	}
 	else if(boundaryCondition == 8)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 1;i < this->n; i++)
-				if(fabs(u[i*this->n + j]) < fabs(u[j]))
+				//if(fabs(u[i*this->n + j]) < fabs(u[j]))
 				u[i*this->n + j] = value;// u[j];
 	}
 
@@ -689,7 +697,7 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
    double maxResidue( 1.0 );
-   double lastResidue( 10000.0 );
+   //double lastResidue( 10000.0 );
    while( time < finalTime /*|| maxResidue > subMesh.getHx()*/)
    {
       /****
@@ -712,8 +720,10 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
       if( time + currentTau > finalTime ) currentTau = finalTime - time;
       for( int i = 0; i < fu.getSize(); i ++ )
       {
+    	  cout << "Too big RHS! i = " << i << ", fu = " << fu[i] << ", u = " << u[i] << endl;
     	  if((u[i]+currentTau * fu[ i ])*u[i] < 0.0 && fu[i] != 0.0 && u[i] != 0.0 )
     		  currentTau = fabs(u[i]/(2.0*fu[i]));
+    	  
       }
 
 
@@ -727,9 +737,9 @@ tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::runSubgrid( int boundary
 
       //cout << '\r' << flush;
      //cout << maxResidue << "   " << currentTau << " @ " << time << flush;
-     lastResidue = maxResidue;
+     //lastResidue = maxResidue;
    }
-   //cout << "Time: " << time << ", Res: " << maxResidue <<endl;
+   cout << "Time: " << time << ", Res: " << maxResidue <<endl;
 	/*if (u.max() > 0.0)
 		this->stopTime /=(double) this->gridCols;*/
 

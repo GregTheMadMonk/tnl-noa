@@ -74,7 +74,7 @@ private:
 
 
 	VectorType u0, work_u;
-	IntVectorType subgridValues, boundaryConditions, unusedCell;
+	IntVectorType subgridValues, boundaryConditions, unusedCell, calculationsCount;
 	MeshType mesh, subMesh;
 	Scheme scheme;
 	double delta, tau0, stopTime,cflCondition;
