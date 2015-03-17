@@ -221,11 +221,12 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       }
 };
 
+// TODO: Fix the specializations for the constant function.
+#ifdef UNDEF
 /****
  * Specialization for constant function
  *  - it does not ask the mesh for the mesh entity center
  */
-
 template< typename Mesh,
           int FunctionDimensions,
           typename Real >
@@ -288,6 +289,6 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
       }
 };
 
-
+#endif /* UNDEF */
 
 #endif /* TNLFUNCTIONADAPTER_H_ */
