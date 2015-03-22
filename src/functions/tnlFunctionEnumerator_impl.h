@@ -95,7 +95,7 @@ enumerate( const tnlGrid< Dimensions, Real, Device, Index >& mesh,
            const RealType& dofVectorCoefficient,
            const RealType& time ) const
 {
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
       TraverserUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
       tnlTraverser< MeshType, EntityDimensions > meshTraverser;
@@ -109,7 +109,7 @@ enumerate( const tnlGrid< Dimensions, Real, Device, Index >& mesh,
                                                       userData );
 
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       Function* kernelFunction = tnlCuda::passToDevice( function );

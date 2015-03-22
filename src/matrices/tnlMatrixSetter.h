@@ -143,6 +143,19 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                      userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
          }
 
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif         
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
+
    };
 
    class TraversalInteriorEntitiesProcessor
@@ -160,6 +173,19 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
             ( *userData.rowLengths )[ index ] =
                      userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
          }
+         
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
 
    };
 
