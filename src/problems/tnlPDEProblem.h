@@ -50,7 +50,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
 
-      IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
+      typename tnlPDEProblem< Mesh, Real, Device, Index >::IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
 
       void bindAuxiliaryDofs( const MeshType& mesh,
                               DofVectorType& auxiliaryDofs );
@@ -68,7 +68,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
                         DofVectorType& auxDofs );
 
 
-      tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
+      tnlSolverMonitor< typename tnlPDEProblem< Mesh, Real, Device, Index >::RealType, typename tnlPDEProblem< Mesh, Real, Device, Index >::IndexType >* getSolverMonitor();
 
 
 };
