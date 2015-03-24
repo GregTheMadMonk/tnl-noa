@@ -75,7 +75,7 @@ bool tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::init( const tnlPara
 	this->stopTime /= (double)(this->gridCols);
 	this->stopTime *= (1.0+1.0/((double)(this->n) - 1.0));
 	cout << "Setting stopping time to " << this->stopTime << endl;
-	this->stopTime = ((double)(this->n) - 1.0)*parameters.GetParameter <double>("stop-time")*this->mesh.getHx();
+	this->stopTime = 1.5*((double)(this->n))*parameters.GetParameter <double>("stop-time")*this->mesh.getHx();
 	cout << "Setting stopping time to " << this->stopTime << endl;
 
 	cout << "Initializating scheme..." << endl;
@@ -136,7 +136,9 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::run()
 			end=true;
 		else
 			end=false;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for num_threads(3) schedule(dynamic)
+#endif
 		for(int i = 0; i < this->subgridValues.getSize(); i++)
 		{
 			if(getSubgridValue(i) != INT_MAX)
@@ -349,11 +351,11 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::stretchGrid()
 	cout << "Stretching grid..." << endl;
 
 
-	//this->gridCols = ceil( ((double)(this->mesh.getDimensions().x()-1)) / ((double)(this->n-1)) );
-	//this->gridRows = ceil( ((double)(this->mesh.getDimensions().y()-1)) / ((double)(this->n-1)) );
+	this->gridCols = ceil( ((double)(this->mesh.getDimensions().x()-1)) / ((double)(this->n-1)) );
+	this->gridRows = ceil( ((double)(this->mesh.getDimensions().y()-1)) / ((double)(this->n-1)) );
 
-	this->gridCols = (this->mesh.getDimensions().x()-1) / (this->n-1) ;
-	this->gridRows = (this->mesh.getDimensions().y()-1) / (this->n-1) ;
+	//this->gridCols = (this->mesh.getDimensions().x()-1) / (this->n-1) ;
+	//this->gridRows = (this->mesh.getDimensions().y()-1) / (this->n-1) ;
 
 	cout << "Setting gridCols to " << this->gridCols << "." << endl;
 	cout << "Setting gridRows to " << this->gridRows << "." << endl;
@@ -375,11 +377,28 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::stretchGrid()
 		cerr << "Could not allocate memory for stretched grid." << endl;
 	if(!this->unusedCell.setSize(stretchedSize))
 		cerr << "Could not allocate memory for supporting stretched grid." << endl;
+	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
+	cout << idealStretch << endl;
 
 	for(int i = 0; i < stretchedSize; i++)
 	{
 		this->unusedCell[i] = 1;
-		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols));
+		int diff =(this->n*this->gridCols) - idealStretch ;
+		//cout << "diff = " << diff <<endl;
+		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols)) + (i/(this->n*this->gridCols))*diff;
+
+		if(i%(this->n*this->gridCols) - idealStretch  >= 0)
+		{
+			//cout << i%(this->n*this->gridCols) - idealStretch +1 << endl;
+			k+= i%(this->n*this->gridCols) - idealStretch +1 ;
+		}
+
+		if(i/(this->n*this->gridCols) - idealStretch + 1  > 0)
+		{
+			//cout << i/(this->n*this->gridCols) - idealStretch + 1  << endl;
+			k+= (i/(this->n*this->gridCols) - idealStretch +1 )* this->mesh.getDimensions().x() ;
+		}
+
 		//cout << "i = " << i << " : i-k = " << i-k << endl;
 		/*int j=(i % (this->n*this->gridCols)) - ( (this->mesh.getDimensions().x() - this->n)/(this->n - 1) + this->mesh.getDimensions().x() - 1)
 				+ (this->n*this->gridCols - this->mesh.getDimensions().x())*(i/(this->n*this->n*this->gridCols)) ;
@@ -407,15 +426,19 @@ void tnlParallelEikonalSolver<Scheme, double, tnlHost, int>::contractGrid()
 	cout << "Contracting grid..." << endl;
 	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
 
+	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
+	cout << idealStretch << endl;
+
 	for(int i = 0; i < stretchedSize; i++)
 	{
-		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols));
-		/*int j=(i % (this->n*this->gridCols)) - ( (this->mesh.getDimensions().x() - this->n)/(this->n - 1) + this->mesh.getDimensions().x() - 1)
-				+ (this->n*this->gridCols - this->mesh.getDimensions().x())*(i/(this->n*this->n*this->gridCols)) ;
-		int l = i-k - (this->u0.getSize() - 1);
+		int diff =(this->n*this->gridCols) - idealStretch ;
+		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols)) + (i/(this->n*this->gridCols))*diff;
 
-		if(!(j > 0) && !(l>0))*/
+		if((i%(this->n*this->gridCols) - idealStretch  < 0) && (i/(this->n*this->gridCols) - idealStretch + 1  <= 0))
+		{
+			//cout << i <<" : " <<i-k<< endl;
 			this->u0[i-k] = this->work_u[i];
+		}
 
 	}
 
