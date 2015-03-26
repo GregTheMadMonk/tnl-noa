@@ -45,10 +45,25 @@ public:
 					 const IndexType column,
 					 const RealType& value );
 
+#ifdef HAVE_CUDA
+	__device__ __host__
+#endif
+	bool setElementFast( const IndexType row,
+						 const IndexType column,
+						 const RealType& value );
+
 	bool addElement( const IndexType row,
 					 const IndexType column,
 					 const RealType& value,
 					 const RealType& thisElementMultiplicator = 1.0 );
+
+#ifdef HAVE_CUDA
+	__device__ __host__
+#endif
+	bool addElementFast( const IndexType row,
+						 const IndexType column,
+						 const RealType& value,
+						 const RealType& thisElementMultiplicator = 1.0 );
 
 	bool setRow( const IndexType row,
 				 const IndexType* columns,
@@ -63,6 +78,12 @@ public:
 
 	RealType getElement( const IndexType row,
 					 	 const IndexType column ) const;
+
+#ifdef HAVE_CUDA
+	__device__ __host__
+#endif
+	RealType getElementFast( const IndexType row,
+							 const IndexType column ) const;
 
 	void getRow( const IndexType row,
 			 	 IndexType* columns,
