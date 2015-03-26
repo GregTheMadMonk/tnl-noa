@@ -109,19 +109,21 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
                           OutVector& outVector ) const
       {
          tnlAssert( matrix, );
-#ifdef HAVE_CUDA         
+#ifdef HAVE_CUDA  
+	 double d = 1.0;       
+         double* alpha = &d;
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
                          this->matrix->values.getSize(),
-                         1.0,
+                         alpha,
                          this->matrixDescriptor,
                          this->matrix->values.getData(),
                          this->matrix->rowPointers.getData(),
                          this->matrix->columnIndexes.getData(),
                          inVector.getData(),
-                         1.0,
+                         alpha,
                          outVector.getData() );
 #endif         
       }
@@ -139,18 +141,20 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
       {
          tnlAssert( matrix, );
 #ifdef HAVE_CUDA         
+         float d = 1.0;       
+         float* alpha = &d;
          cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
                          this->matrix->values.getSize(),
-                         1.0,
+                         alpha,
                          this->matrixDescriptor,
                          this->matrix->values.getData(),
                          this->matrix->rowPointers.getData(),
                          this->matrix->columnIndexes.getData(),
                          inVector.getData(),
-                         0,
+                         alpha,
                          outVector.getData() );
 #endif         
       }
