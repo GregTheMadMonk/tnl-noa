@@ -105,7 +105,11 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
            << ". Please set some positive value using the SetRestarting method." << endl;
       return false;
    }
-   if( ! setSize( matrix -> getRows(), restarting ) ) return false;
+   if( ! setSize( matrix -> getRows(), restarting ) )
+   {
+       cerr << "I am not able to allocate enough memory for the GMRES solver. You may try to decrease the restarting parameter." << endl;
+       return false;
+   }
 
 
    IndexType i, j = 1, k, l;
@@ -141,10 +145,12 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
    else
    {
-      matrix -> vectorProduct( x, _r );
+      matrix -> vectorProduct( x, _r );      
       normb = b. lpNorm( ( RealType ) 2.0 );
       _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
+      cout << "x = " << x << endl;
+      cout << " beta = " << beta << endl;
    }
 
    if( normb == 0.0 ) normb = 1.0;
@@ -194,6 +200,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          }
          else
              matrix -> vectorProduct( vi, _w );
+         
+         cout << " i = " << i << " vi = " << vi << endl;
 
          for( k = 0; k <= i; k++ )
          {
@@ -208,6 +216,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
              * w = w - H_{k,i} v_k
              */
             _w. addVector( vk, -H_k_i );
+            
+            cout << "H_ki = " << H_k_i << endl;
+            cout << "w = " << _w << endl;
          }
          /***
           * H_{i+1,i} = |w|
@@ -215,11 +226,15 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          RealType normw = _w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
+         cout << "normw = " << normw << endl;
+         
          /***
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. addVector( _w, ( RealType ) 1.0 / normw );
+         
+         cout << "vi = " << vi << endl;
 
          /****
           * Applying the Givens rotations
@@ -276,6 +291,11 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       this->setResidue( beta / normb );
+
+      cout << " x = " << x << endl;
+      cout << " beta = " << beta << endl;
+      cout << "residue = " << beta / normb << endl;
+
    }
    this->refreshSolverMonitor();
    return this->checkConvergence();

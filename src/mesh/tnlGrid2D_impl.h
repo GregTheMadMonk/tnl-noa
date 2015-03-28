@@ -76,6 +76,9 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() con
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )

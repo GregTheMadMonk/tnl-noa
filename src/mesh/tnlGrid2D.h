@@ -302,6 +302,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    protected:
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void computeSpaceSteps();
 
    CoordinatesType dimensions;

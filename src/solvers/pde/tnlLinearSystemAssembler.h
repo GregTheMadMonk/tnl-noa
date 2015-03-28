@@ -244,6 +244,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
+            // printf("Matrix assembler: Index = %d \n", index );
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                              mesh,
@@ -308,6 +309,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
+            // printf("Matrix assembler: Index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,

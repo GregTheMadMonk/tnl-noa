@@ -636,15 +636,16 @@ void tnlEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
-      IndexType i( row * this->rowLengths );
-      const IndexType rowEnd( i + this->rowLengths );
+      IndexType i = DeviceDependentCode::getRowBegin( *this, row );
+      const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+      const IndexType step = DeviceDependentCode::getElementStep( *this );
       while( i < rowEnd &&
              this->columnIndexes.getElement( i ) < this->columns &&
              this->columnIndexes.getElement( i ) != this->getPaddingIndex() )
       {
          const Index column = this->columnIndexes.getElement( i );
          str << " Col:" << column << "->" << this->values.getElement( i ) << "\t";
-         i++;
+         i += step;
       }
       str << endl;
    }
