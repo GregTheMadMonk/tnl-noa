@@ -6,7 +6,7 @@ set( tnlVersion "0.1" )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-include( OptimizeForArchitecture )
+#include( OptimizeForArchitecture )
 include( UseCodeCoverage )
 
 ####
@@ -24,8 +24,8 @@ else()
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-    OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -DNDEBUG" )
+    #OptimizeForArchitecture()
+    AddCompilerFlag( "-O3 -march=native -DNDEBUG" )
 endif()
 
 if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
