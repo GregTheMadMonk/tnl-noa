@@ -149,8 +149,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       normb = b. lpNorm( ( RealType ) 2.0 );
       _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
-      cout << "x = " << x << endl;
-      cout << " beta = " << beta << endl;
+      //cout << "x = " << x << endl;
+      //cout << " beta = " << beta << endl;
    }
 
    if( normb == 0.0 ) normb = 1.0;
@@ -159,9 +159,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->setResidue( beta / normb );
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi;
-   vi. setName( "tnlGMRESSolver::vi" );
+   //vi. setName( "tnlGMRESSolver::vi" );
    tnlSharedVector< RealType, DeviceType, IndexType > vk;
-   vk. setName( "tnlGMRESSolver::vk" );
+   //vk. setName( "tnlGMRESSolver::vk" );
    while( this->nextIteration() )
    {
       const IndexType m = restarting;
@@ -201,7 +201,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          else
              matrix -> vectorProduct( vi, _w );
          
-         cout << " i = " << i << " vi = " << vi << endl;
+         //cout << " i = " << i << " vi = " << vi << endl;
 
          for( k = 0; k <= i; k++ )
          {
@@ -217,8 +217,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
              */
             _w. addVector( vk, -H_k_i );
             
-            cout << "H_ki = " << H_k_i << endl;
-            cout << "w = " << _w << endl;
+            //cout << "H_ki = " << H_k_i << endl;
+            //cout << "w = " << _w << endl;
          }
          /***
           * H_{i+1,i} = |w|
@@ -226,7 +226,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          RealType normw = _w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
-         cout << "normw = " << normw << endl;
+         //cout << "normw = " << normw << endl;
          
          /***
           * v_{i+1} = w / |w|
@@ -234,7 +234,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. addVector( _w, ( RealType ) 1.0 / normw );
          
-         cout << "vi = " << vi << endl;
+         //cout << "vi = " << vi << endl;
 
          /****
           * Applying the Givens rotations
@@ -292,9 +292,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       }
       this->setResidue( beta / normb );
 
-      cout << " x = " << x << endl;
-      cout << " beta = " << beta << endl;
-      cout << "residue = " << beta / normb << endl;
+      //cout << " x = " << x << endl;
+      //cout << " beta = " << beta << endl;
+      //cout << "residue = " << beta / normb << endl;
 
    }
    this->refreshSolverMonitor();
