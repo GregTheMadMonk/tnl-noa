@@ -6,7 +6,7 @@ set( tnlVersion "0.1" )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-#include( OptimizeForArchitecture )
+include( OptimizeForArchitecture )
 include( UseCodeCoverage )
 
 ####
