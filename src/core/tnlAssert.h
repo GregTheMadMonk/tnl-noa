@@ -26,20 +26,21 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <assert.h>
 
 using namespace std;
 
 #ifdef HAVE_CUDA
-#define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                       \
-   if( ! ( ___tnl__assert_condition ) )                                                     \
-   {                                                                                        \
-   cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << endl  \
-             << "File: " << __FILE__ << endl                                                \
-             << "Line: " << __LINE__ << endl                                                \
-             << "Diagnostics: ";                                                            \
-        ___tnl__assert_command;                                                             \
-        abort();                                                                            \
+#define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
+   if( ! ( ___tnl__assert_condition ) )                                                                  \
+   {                                                                                                     \
+   printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.", \
+           __STRING( ___tnl__assert_condition ),                                                         \
+           __FILE__,                                                                                     \
+           __LINE__ );                                                                                   \
+    abort();                                                                   \
    }
+
 #else
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                       \
 	if( ! ( ___tnl__assert_condition ) )                                                     \
@@ -61,6 +62,7 @@ using namespace std;
  * Static assert
  */
 
+#ifndef HAVE_CUDA // TODO: fix this when nvcc can compile it
 // static_assert() available for g++ 4.3 or newer with -std=c++0x or -std=gnu++0x
 #if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 2)) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define CXX0X_STATIC_ASSERT_AVAILABLE
@@ -86,5 +88,9 @@ template<int x> struct static_assert_test{};
       JOIN(static_assertion_failure_identifier, __LINE__)
 
 #endif // defined(CXX0X_STATIC_ASSERT_AVAILABLE)
+
+#else
+#define tnlStaticAssert(expression, msg)
+#endif // ifndef HAVE_CUDA
 
 #endif /* TNLASSERT_H_ */

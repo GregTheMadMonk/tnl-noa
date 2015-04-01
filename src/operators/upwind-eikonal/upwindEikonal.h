@@ -199,9 +199,9 @@ protected:
 
 
 
-#include <implementation/operators/upwind-eikonal/upwindEikonal1D_impl.h>
-#include <implementation/operators/upwind-eikonal/upwindEikonal2D_impl.h>
-#include <implementation/operators/upwind-eikonal/upwindEikonal3D_impl.h>
+#include <operators/upwind-eikonal/upwindEikonal1D_impl.h>
+#include <operators/upwind-eikonal/upwindEikonal2D_impl.h>
+#include <operators/upwind-eikonal/upwindEikonal3D_impl.h>
 
 
 #endif /* UPWINDEIKONAL_H_ */

@@ -52,8 +52,8 @@ bool convertObject( const Mesh& mesh,
                     const tnlList< tnlString >& parsedObjectType,
                     const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
    tnlString outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -89,8 +89,6 @@ bool convertObject( const Mesh& mesh,
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
-   if( verbose )
-      cout << "[ OK ].  \r";
    return true;
 }
 
@@ -230,8 +228,8 @@ bool setElementType( const Mesh& mesh,
 template< typename Mesh >
 bool processFiles( const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
 
    Mesh mesh;
    if( meshFile != "" )
@@ -242,18 +240,18 @@ bool processFiles( const tnlParameterContainer& parameters )
       }
    mesh. writeMesh( "mesh.asy", "asymptote" );
 
-   bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    bool error( false );
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
          cout << "Processing file " << inputFiles[ i ] << " ... " << flush;
 
-      tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+      tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
       tnlString outputFileName;
       if( ! getOutputFileName( inputFiles[ i ],
                                outputFormat,
@@ -285,6 +283,9 @@ bool processFiles( const tnlParameterContainer& parameters )
             continue;
          }
          setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+         if( verbose )
+            cout << "[ OK ].  " << endl;
+
       }
    }
    if( verbose )

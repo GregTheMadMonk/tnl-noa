@@ -213,9 +213,9 @@ protected:
 
 
 
-#include <implementation/operators/godunov/godunov1D_impl.h>
-#include <implementation/operators/godunov/godunov2D_impl.h>
-#include <implementation/operators/godunov/godunov3D_impl.h>
+#include <operators/godunov/godunov1D_impl.h>
+#include <operators/godunov/godunov2D_impl.h>
+#include <operators/godunov/godunov3D_impl.h>
 
 
 #endif /* GODUNOV_H_ */

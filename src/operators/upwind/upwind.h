@@ -214,9 +214,9 @@ protected:
 
 
 
-#include <implementation/operators/upwind/upwind1D_impl.h>
-#include <implementation/operators/upwind/upwind2D_impl.h>
-#include <implementation/operators/upwind/upwind3D_impl.h>
+#include <operators/upwind/upwind1D_impl.h>
+#include <operators/upwind/upwind2D_impl.h>
+#include <operators/upwind/upwind3D_impl.h>
 
 
 #endif /* UPWIND_H_ */

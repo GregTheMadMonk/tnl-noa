@@ -20,6 +20,7 @@
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
+#include <functions/tnlFunctionType.h>
 
 class tnlHost;
 
@@ -33,6 +34,9 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlSharedVector< Real, tnlHost, Index > HostType;
+   typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
+
 
    tnlSharedVector();
 
@@ -43,9 +47,13 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
-   tnlString getType() const;
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );
@@ -147,6 +155,16 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
 };
 
-#include <implementation/core/vectors/tnlSharedVector_impl.h>
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlFunctionType< tnlSharedVector< Real, Device, Index > >
+{
+   public:
+
+      enum { Type = tnlDiscreteFunction };
+};
+
+#include <core/vectors/tnlSharedVector_impl.h>
 
 #endif /* TNLSHAREDVECTOR_H_ */

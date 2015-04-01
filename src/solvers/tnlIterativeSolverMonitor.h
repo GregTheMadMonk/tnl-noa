@@ -67,6 +67,6 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    tnlTimerRT rtTimer;
 };
 
-#include <implementation/solvers/tnlIterativeSolverMonitor_impl.h>
+#include <solvers/tnlIterativeSolverMonitor_impl.h>
 
 #endif /* TNLITERATIVESOLVERMONITOR_H_ */

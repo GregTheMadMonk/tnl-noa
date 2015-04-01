@@ -49,7 +49,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
    config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
    config.addEntry< tnlString >( "pdf-file", "PDf file name for the matrix pattern.", "tnl-benchmark.log");
-   config.addEntry< tnlString >( "precison", "Precision of the arithmetics.", "double" );
+   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntry< double >( "stop-time" ,"Seconds to iterate the SpMV operation.", 1.0 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
@@ -293,11 +293,11 @@ void writeTestFailed( fstream& logFile,
 template< typename Real >
 bool setupBenchmark( const tnlParameterContainer& parameters )
 {
-   const tnlString& test = parameters.GetParameter< tnlString >( "test" );
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
-   const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
-   const int verbose = parameters.GetParameter< int >( "verbose" );
-   const double stopTime = parameters.GetParameter< double >( "stop-time" );
+   const tnlString& test = parameters.getParameter< tnlString >( "test" );
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
+   const int verbose = parameters.getParameter< int >( "verbose" );
+   const double stopTime = parameters.getParameter< double >( "stop-time" );
    fstream logFile;
    if( ! initLogFile( logFile, logFileName ) )
    {
@@ -393,7 +393,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          cusparseDestroy( cusparseHandle );
 
          cout << " done.   \r";
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
+         /*cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
          benchmarkMatrix( cudaCSRMatrix,
                           cudaX,
                           cudaB,
@@ -524,7 +524,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           stopTime,
                           baseline,
                           verbose,
-                          logFile );
+                          logFile );*/
       }
       cudaCSRMatrix.reset();
 #endif
@@ -666,6 +666,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          chunkedEllpackMatrix.reset();
       }
    }
+   return true;
 }
 
 int main( int argc, char* argv[] )
@@ -675,12 +676,12 @@ int main( int argc, char* argv[] )
 
    setupConfig( conf_desc );
    
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
    if( precision == "float" )
       if( ! setupBenchmark< float >( parameters ) )
          return EXIT_FAILURE;

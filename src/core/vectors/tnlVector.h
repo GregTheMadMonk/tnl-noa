@@ -19,6 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
+#include <functions/tnlFunctionType.h>
 
 class tnlHost;
 
@@ -32,6 +33,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlVector< Real, tnlHost, Index > HostType;
+   typedef tnlVector< Real, tnlCuda, Index > CudaType;
+
 
    tnlVector();
 
@@ -42,6 +46,10 @@ class tnlVector : public tnlArray< Real, Device, Index >
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );
@@ -66,6 +74,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    template< typename Vector >
    tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
+
+   // TODO: implement
+   //tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
 
    Real max() const;
 
@@ -138,6 +149,16 @@ class tnlVector : public tnlArray< Real, Device, Index >
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 };
 
-#include <implementation/core/vectors/tnlVector_impl.h>
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlFunctionType< tnlVector< Real, Device, Index > >
+{
+   public:
+
+      enum { Type = tnlDiscreteFunction };
+};
+
+#include <core/vectors/tnlVector_impl.h>
 
 #endif /* TNLVECTOR_H_ */

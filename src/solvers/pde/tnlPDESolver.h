@@ -97,6 +97,6 @@ class tnlPDESolver : public tnlObject
 
 };
 
-#include <implementation/solvers/pde/tnlPDESolver_impl.h>
+#include <solvers/pde/tnlPDESolver_impl.h>
 
 #endif /* TNLPDESOLVER_H_ */

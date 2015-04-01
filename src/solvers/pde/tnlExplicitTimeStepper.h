@@ -60,7 +60,8 @@ class tnlExplicitTimeStepper
    bool solve( const RealType& time,
                const RealType& stopTime,
                const MeshType& mesh,
-               DofVectorType& dofVector );
+               DofVectorType& dofVector,
+               DofVectorType& auxiliaryDofVector );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -76,8 +77,10 @@ class tnlExplicitTimeStepper
    const MeshType* mesh;
 
    RealType timeStep;
+
+   DofVectorType* auxiliaryDofs;
 };
 
-#include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
+#include <solvers/pde/tnlExplicitTimeStepper_impl.h>
 
 #endif /* TNLEXPLICITTIMESTEPPER_H_ */

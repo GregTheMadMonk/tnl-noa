@@ -34,17 +34,17 @@ class tnlTestFunction
                        expBump,
                        sinBumps,
                        sinWave,
-   	   	   	   	   	   sdfParaboloid,
-   	   	   	   	   	   sdfParaboloidSDF,
-   	   	   	   	   	   sdfSinBumps,
-   	   	   	   	   	   sdfSinBumpsSDF,
-   	   	   	   	   	   sdfSinWave,
-   	   	   	   	   	   sdfSinWaveSDF };
+    	   	   	sdfParaboloid,
+   	   	   	sdfParaboloidSDF,
+   	   	   	sdfSinBumps,
+   	   	   	sdfSinBumpsSDF,
+   	   	   	sdfSinWave,
+   	   	   	sdfSinWaveSDF  };
 
    enum TimeDependence { none,
                          linear,
                          quadratic,
-                         sine };
+                         cosine };
 
    public:
 
@@ -59,6 +59,8 @@ class tnlTestFunction
 
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
+
+   const tnlTestFunction& operator = ( const tnlTestFunction& function );
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -78,6 +80,15 @@ class tnlTestFunction
                   const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
+   template< typename Vertex >
+   Real getValue( const Vertex& vertex,
+                  const Real& time = 0 ) const
+   {
+      return this->getValue< 0, 0, 0, Vertex >( vertex, time );
+   }
+#endif                  
+
+#ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
@@ -94,16 +105,35 @@ class tnlTestFunction
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const;
 
+#ifdef HAVE_NOT_CXX11
+   template< typename Vertex >
+   Real getTimeDerivative( const Vertex& vertex,
+                           const Real& time = 0 ) const
+   {
+      return this->getTimeDerivative< 0, 0, 0, Vertex >( vertex, time );
+   }   
+#endif                              
+
+   ostream& print( ostream& str ) const;
+
    ~tnlTestFunction();
 
    protected:
 
    template< typename FunctionType >
-   bool initFunction( const tnlParameterContainer& parameters,
+   bool setupFunction( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
 
    template< typename FunctionType >
    void deleteFunction();
+
+   void deleteFunctions();
+
+   template< typename FunctionType >
+   void copyFunction( const void* function );
+
+   template< typename FunctionType >
+   ostream& printFunction( ostream& str ) const;
 
    void* function;
 
@@ -115,6 +145,15 @@ class tnlTestFunction
 
 };
 
-#include <implementation/functions/tnlTestFunction_impl.h>
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
+ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, Real, Device >& f )
+{
+   str << "Test function: ";
+   return f.print( str );
+}
+
+#include <functions/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */

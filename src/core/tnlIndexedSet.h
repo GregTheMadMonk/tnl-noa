@@ -76,6 +76,6 @@ template< typename Element,
           typename Key >
 ostream& operator <<( ostream& str, tnlIndexedSet< Element, Index, Key >& set );
 
-#include <implementation/core/tnlIndexedSet_impl.h>
+#include <core/tnlIndexedSet_impl.h>
 
 #endif /* TNLINDEXEDSET_H_ */

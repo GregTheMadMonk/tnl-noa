@@ -39,6 +39,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlCSRMatrix< Real, Device, Index > ThisType;
    typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
    typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlSparseMatrix< Real, Device, Index > BaseType;
+   typedef typename BaseType::MatrixRow MatrixRow;
 
 
    enum SPMVCudaKernel { scalar, vector, hybrid };
@@ -131,10 +133,15 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
-   void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   MatrixRow getRow( const IndexType rowIndex );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
 #ifdef HAVE_CUDA
@@ -147,6 +154,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
+   // TODO: add const RealType& multiplicator = 1.0 )
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
@@ -197,11 +205,11 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
              typename OutVector,
              int warpSize >
    __device__
-   void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
-                                                                 OutVector& outVector,
-                                                                 const IndexType warpStart,
-                                                                 const IndexType warpEnd,
-                                                                 const IndexType inWarpIdx ) const;
+   void spmvCudaVectorized( const InVector& inVector,
+                            OutVector& outVector,
+                            const IndexType warpStart,
+                            const IndexType warpEnd,
+                            const IndexType inWarpIdx ) const;
 
    template< typename InVector,
              typename OutVector,
@@ -226,7 +234,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 };
 
-#include <implementation/matrices/tnlCSRMatrix_impl.h>
+#include <matrices/tnlCSRMatrix_impl.h>
 
 
 #endif /* TNLCSRMATRIX_H_ */

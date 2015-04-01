@@ -145,7 +145,7 @@ class tnlSDFSign< Mesh, 3, Real, FunctionType, SignMod > : public tnlSDFSignBase
 
 };
 
-#include <implementation/functions/tnlSDFSign_impl.h>
+#include <functions/tnlSDFSign_impl.h>
 
 #endif /* TNLSDFSIGN_H_ */
 

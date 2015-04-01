@@ -105,6 +105,6 @@ class tnlSDFSchemeTest< function, 3, Real > : public tnlSDFSchemeTestBase< funct
 
 };
 
-#include <implementation/functions/tnlSDFSchemeTest_impl.h>
+#include <functions/tnlSDFSchemeTest_impl.h>
 
 #endif /* TNLSDFSCHEMETEST_H_ */

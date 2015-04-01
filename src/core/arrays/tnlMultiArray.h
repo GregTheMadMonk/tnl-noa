@@ -37,6 +37,9 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 1, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 1, Element, tnlCuda, Index > CudaType;
+
 
 #ifdef HAVE_CUDA
    //__device__ __host__
@@ -45,7 +48,13 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index iSize );
 
@@ -127,6 +136,9 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 2, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 2, Element, tnlCuda, Index > CudaType;
+
 
 #ifdef HAVE_CUDA
    //__device__ __host__
@@ -135,7 +147,13 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index jSize, const Index iSize );
 
@@ -221,6 +239,9 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 3, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 3, Element, tnlCuda, Index > CudaType;
+
 
 #ifdef HAVE_CUDA
    //__device__ __host__
@@ -229,7 +250,13 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
@@ -315,6 +342,9 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 4, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 4, Element, tnlCuda, Index > CudaType;
+
 
 #ifdef HAVE_CUDA
    //__device__ __host__
@@ -323,7 +353,13 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
@@ -413,10 +449,10 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 
-#include <implementation/core/arrays/tnlMultiArray1D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray2D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray3D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray4D_impl.h>
+#include <core/arrays/tnlMultiArray1D_impl.h>
+#include <core/arrays/tnlMultiArray2D_impl.h>
+#include <core/arrays/tnlMultiArray3D_impl.h>
+#include <core/arrays/tnlMultiArray4D_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -437,7 +473,7 @@ extern template class tnlMultiArray< 4, double, tnlHost, int >;
 extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 4, double, tnlHost, long int >;
 
-// TODO: There are problems with nvlink - it maght be better in later versions
+// TODO: There are problems with nvlink - it might be better in later versions
 /*extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
 extern template class tnlMultiArray< 1, double, tnlCuda, int >;
 extern template class tnlMultiArray< 1, float,  tnlCuda, long int >;

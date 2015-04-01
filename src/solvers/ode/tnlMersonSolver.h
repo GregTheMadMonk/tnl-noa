@@ -69,10 +69,12 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
 
    DofVectorType k1, k2, k3, k4, k5, kAux;
 
-   //! This controls the accuracy of the solver
+   /****
+    * This controls the accuracy of the solver
+    */
    RealType adaptivity;
 };
 
-#include <implementation/solvers/ode/tnlMersonSolver_impl.h>
+#include <solvers/ode/tnlMersonSolver_impl.h>
 
 #endif

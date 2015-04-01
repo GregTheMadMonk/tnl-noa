@@ -58,7 +58,8 @@ class tnlSemiImplicitTimeStepper
    bool solve( const RealType& time,
                const RealType& stopTime,
                const MeshType& mesh,
-               DofVectorType& dofVector );
+               DofVectorType& dofVector,
+               DofVectorType& auxiliaryDofVector );
 
    protected:
 
@@ -75,6 +76,6 @@ class tnlSemiImplicitTimeStepper
    bool verbose;
 };
 
-#include <implementation/solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
+#include <solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
 
 #endif /* TNLSEMIIMPLICITTIMESTEPPER_H_ */

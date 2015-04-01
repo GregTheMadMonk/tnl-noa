@@ -33,6 +33,6 @@ class tnlLinearResidueGetter
                                RealType bNorm = 0 );
 };
 
-#include <implementation/solvers/linear/tnlLinearResidueGetter_impl.h>
+#include <solvers/linear/tnlLinearResidueGetter_impl.h>
 
 #endif /* TNLLINEARRESIDUEGETTER_H_ */

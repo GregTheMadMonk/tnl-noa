@@ -19,6 +19,7 @@
 #define TNLSPARSEMATRIX_H_
 
 #include <matrices/tnlMatrix.h>
+#include <matrices/tnlSparseMatrixRow.h>
 
 template< typename Real,
           typename Device,
@@ -33,8 +34,12 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef tnlVector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
+   typedef tnlMatrix< Real, Device, Index > BaseType;
+   typedef tnlSparseMatrixRow< RealType, IndexType > MatrixRow;
 
    tnlSparseMatrix();
+
+   virtual bool setRowLengths( const RowLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlSparseMatrix< Real2, Device2, Index2 >& matrix );
@@ -67,6 +72,6 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    Index maxRowLength;
 };
 
-#include <implementation/matrices/tnlSparseMatrix_impl.h>
+#include <matrices/tnlSparseMatrix_impl.h>
 
 #endif /* TNLSPARSEMATRIX_H_ */

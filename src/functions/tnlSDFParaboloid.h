@@ -74,7 +74,7 @@ class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -85,7 +85,6 @@ class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< Real >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
-
 };
 
 template< typename Real >
@@ -101,7 +100,7 @@ class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -112,7 +111,6 @@ class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< Real >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
-
 };
 
 template< typename Real >
@@ -128,7 +126,7 @@ class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -140,9 +138,28 @@ class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< Real >
            const Real& time = 0.0  ) const;
 #endif
 
+
+
 };
 
-#include <implementation/functions/tnlSDFParaboloid_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFParaboloid < Dimensions, Real >& f )
+{
+   str << "tnlSDFParaboloid";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFParaboloid< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFParaboloid_impl.h>
 
 #endif /* TNLSDFPARABOLOID_H_ */
 

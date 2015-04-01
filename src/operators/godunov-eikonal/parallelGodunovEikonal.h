@@ -25,6 +25,7 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
+#include <core/tnlCuda.h>
 
 
 template< typename Mesh,
@@ -54,13 +55,21 @@ public:
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	static tnlString getType();
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	RealType positivePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	RealType negativePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	RealType sign(const RealType x, const RealType eps) const;
 
     template< typename Vector >
@@ -73,7 +82,9 @@ public:
                    const Vector& u,
                    const RealType& time,
                    const IndexType boundaryCondition) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	bool init( const tnlParameterContainer& parameters );
 
 
@@ -110,13 +121,21 @@ public:
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	static tnlString getType();
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType positivePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType negativePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType sign(const RealType x, const Real eps) const;
 
     template< typename Vector >
@@ -130,7 +149,20 @@ public:
                    const RealType& time,
                    const IndexType boundaryCondition ) const;
 
-    bool init( const tnlParameterContainer& parameters );
+    template< typename Vector >
+ #ifdef HAVE_CUDA
+    __device__ __host__
+ #endif
+    Real getValue( const MeshType& mesh,
+                   const IndexType cellIndex,
+                   const CoordinatesType& coordinates,
+                   const RealType* u,
+                   const RealType& time,
+                   const IndexType boundaryCondition ) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+	bool init( const tnlParameterContainer& parameters );
 
 
 protected:
@@ -164,13 +196,21 @@ public:
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
 	static tnlString getType();
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType positivePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType negativePart(const RealType arg) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     RealType sign(const RealType x, const Real eps) const;
 
     template< typename Vector >
@@ -183,7 +223,9 @@ public:
                    const Vector& u,
                    const RealType& time,
                    const IndexType boundaryCondition ) const;
-
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
     bool init( const tnlParameterContainer& parameters );
 
 
@@ -204,9 +246,9 @@ protected:
 
 
 
-#include <implementation/operators/godunov-eikonal/parallelGodunovEikonal1D_impl.h>
-#include <implementation/operators/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
-#include <implementation/operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
+#include <operators/godunov-eikonal/parallelGodunovEikonal1D_impl.h>
+#include <operators/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
+#include <operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
 
 
 #endif /* GODUNOVEIKONAL_H_ */

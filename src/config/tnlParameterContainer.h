@@ -51,21 +51,21 @@ class tnlParameterContainer
 
    tnlParameterContainer();
 
-   template< class T > bool AddParameter( const tnlString& name,
+   template< class T > bool addParameter( const tnlString& name,
                                           const T& value );
 
-   bool AddParameter( const tnlString& name, 
+   bool addParameter( const tnlString& name,
                       const tnlString& value );
 
-   bool CheckParameter( const tnlString& name ) const;
+   bool checkParameter( const tnlString& name ) const;
 
-   template< class T > bool SetParameter( const tnlString& name,
+   template< class T > bool setParameter( const tnlString& name,
                                           const T& value );
 
-   bool SetParameter( const tnlString& name,
+   bool setParameter( const tnlString& name,
                       const tnlString& value );
 
-   template< class T > bool GetParameter( const tnlString& name,
+   template< class T > bool getParameter( const tnlString& name,
                                           T& value,
                                           bool verbose = false ) const
    {
@@ -82,7 +82,7 @@ class tnlParameterContainer
       return false;
    }
 
-   template< class T > const T& GetParameter( const tnlString& name ) const
+   template< class T > const T& getParameter( const tnlString& name ) const
    {
       int i;
       const int size = parameters. getSize();
@@ -105,19 +105,24 @@ class tnlParameterContainer
 
 };
 
-bool ParseCommandLine( int argc, char* argv[], 
+bool parseCommandLine( int argc, char* argv[],
                        const tnlConfigDescription& config_description,
                        tnlParameterContainer& parameters,
                        bool printUsage = true );
 
-template< class T > bool tnlParameterContainer :: AddParameter( const tnlString& name,
-                                                                const T& value )
+template< class T >
+bool
+tnlParameterContainer::
+addParameter( const tnlString& name, const T& value )
 {
    return parameters. Append( new tnlParameter< T >( name, ::getType< T >(). getString(), value ) );
 };
 
-template< class T > bool tnlParameterContainer :: SetParameter( const tnlString& name,
-                                                                const T& value )
+template< class T >
+bool
+tnlParameterContainer::
+setParameter( const tnlString& name,
+              const T& value )
 {
    int i;
    for( i = 0; i < parameters. getSize(); i ++ )
@@ -139,6 +144,6 @@ template< class T > bool tnlParameterContainer :: SetParameter( const tnlString&
          }
       }
    }
-   return AddParameter< T >( name, value );
+   return addParameter< T >( name, value );
 };
 #endif

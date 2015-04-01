@@ -20,6 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlFunctionType.h>
 
 template< typename Vertex >
 class tnlSinBumpsFunctionBase
@@ -80,6 +81,9 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -110,6 +114,9 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -139,12 +146,34 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-#endif   
 };
 
-#include <implementation/functions/tnlSinBumpsFunction_impl.h>
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
+{
+   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
+   return str;
+}
+
+template< int FunctionDimensions,
+          typename Real >
+class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSinBumpsFunction_impl.h>
 
 
 #endif /* TNLSINBUMPSFUNCTION_H_ */

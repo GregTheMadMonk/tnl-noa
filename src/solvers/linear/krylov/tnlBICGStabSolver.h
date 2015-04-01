@@ -81,6 +81,6 @@ class tnlBICGStabSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <implementation/solvers/linear/krylov/tnlBICGStabSolver_impl.h>
+#include <solvers/linear/krylov/tnlBICGStabSolver_impl.h>
 
 #endif

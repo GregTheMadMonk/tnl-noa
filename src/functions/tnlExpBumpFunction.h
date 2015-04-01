@@ -20,6 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlFunctionType.h>
 
 template< typename Real >
 class tnlExpBumpFunctionBase
@@ -74,6 +75,9 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif   
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -101,7 +105,10 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
@@ -130,11 +137,32 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif   
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
 
-#include <implementation/functions/tnlExpBumpFunction_impl.h>
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+{
+   str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
+   return str;
+}
+
+template< int FunctionDimensions,
+          typename Real >
+class tnlFunctionType< tnlExpBumpFunction< FunctionDimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+
+#include <functions/tnlExpBumpFunction_impl.h>
 
 
 #endif /* TNLEXPBUMPFUNCTION_H_ */

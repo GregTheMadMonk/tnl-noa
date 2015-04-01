@@ -70,7 +70,7 @@ class tnlSDFSinWaveFunctionSDF< 1, Real > : public tnlSDFSinWaveFunctionSDFBase<
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -81,7 +81,6 @@ class tnlSDFSinWaveFunctionSDF< 1, Real > : public tnlSDFSinWaveFunctionSDFBase<
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
-
 
 };
 
@@ -98,7 +97,7 @@ class tnlSDFSinWaveFunctionSDF< 2, Real > : public tnlSDFSinWaveFunctionSDFBase<
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -109,6 +108,8 @@ class tnlSDFSinWaveFunctionSDF< 2, Real > : public tnlSDFSinWaveFunctionSDFBase<
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+
 };
 
 template< typename Real >
@@ -125,7 +126,7 @@ class tnlSDFSinWaveFunctionSDF< 3, Real > : public tnlSDFSinWaveFunctionSDFBase<
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -136,8 +137,27 @@ class tnlSDFSinWaveFunctionSDF< 3, Real > : public tnlSDFSinWaveFunctionSDFBase<
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+
 };
 
-#include <implementation/functions/tnlSDFSinWaveFunctionSDF_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFSinWaveFunctionSDF< Dimensions, Real >& f )
+{
+   str << "tnlSDFSinWaveFunctionSDF";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFSinWaveFunctionSDF< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFSinWaveFunctionSDF_impl.h>
 
 #endif /* TNLSDFSINWAVEFUNCTIONSDF_H_ */

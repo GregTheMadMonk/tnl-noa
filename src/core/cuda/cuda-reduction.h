@@ -25,6 +25,6 @@ bool reductionOnCudaDevice( const Operation& operation,
                             const typename Operation :: RealType* deviceInput2,
                             typename Operation :: ResultType& result );
 
-#include <implementation/core/cuda/cuda-reduction_impl.h>
+#include <core/cuda/cuda-reduction_impl.h>
 
 #endif /* CUDA_REDUCTION_H_ */

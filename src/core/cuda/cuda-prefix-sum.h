@@ -32,6 +32,6 @@ bool cudaPrefixSum( const Index size,
                     const enumPrefixSumType prefixSumType = inclusivePrefixSum );
 
 
-#include <implementation/core/cuda/cuda-prefix-sum_impl.h>
+#include <core/cuda/cuda-prefix-sum_impl.h>
 
 #endif /* CUDA_PREFIX_SUM_H_ */

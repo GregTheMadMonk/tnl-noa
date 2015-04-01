@@ -104,6 +104,7 @@ class tnlSDFSinWaveFunction< 2, Real > : public tnlSDFSinWaveFunctionBase< Real 
 #endif   
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
+
 };
 
 template< typename Real >
@@ -129,8 +130,27 @@ class tnlSDFSinWaveFunction< 3, Real > : public tnlSDFSinWaveFunctionBase< Real 
 #endif   
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
+
+
 };
 
-#include <implementation/functions/tnlSDFSinWaveFunction_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFSinWaveFunction< Dimensions, Real >& f )
+{
+   str << "tnlSDFSinWaveFunction";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFSinWaveFunction< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFSinWaveFunction_impl.h>
 
 #endif /* TNLSDFSINWAVEFUNCTION_H_ */

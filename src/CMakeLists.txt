@@ -6,27 +6,30 @@ ADD_SUBDIRECTORY( debug )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( operators )
+ADD_SUBDIRECTORY( problems )
 ADD_SUBDIRECTORY( solvers )
 ADD_SUBDIRECTORY( legacy )
-ADD_SUBDIRECTORY( implementation )
 
 set( tnl_SOURCES ${tnl_functions_SOURCES}
                  ${tnl_config_SOURCES}
                  ${tnl_core_SOURCES}
-                 ${tnl_implementation_SOURCES}
                  ${tnl_legacy_SOURCES}
                  ${tnl_debug_SOURCES}
                  ${tnl_matrices_SOURCES}
-                 ${tnl_operators_SOURCES} )
+                 ${tnl_operators_SOURCES}
+                 ${tnl_solvers_SOURCES}
+                 ${tnl_problems_SOURCES}
+                  )
 
 set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
                        ${tnl_config_CUDA__SOURCES}
                        ${tnl_core_CUDA__SOURCES}
-                       ${tnl_implementation_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
                        ${tnl_debug_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}
-                       ${tnl_operators_CUDA__SOURCES} )
+                       ${tnl_problems_CUDA__SOURCES}
+                       ${tnl_operators_CUDA__SOURCES}
+                       ${tnl_solvers_CUDA__SOURCES} )
                  
                  
 if( BUILD_CUDA )

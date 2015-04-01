@@ -74,7 +74,7 @@ typedef Real RealType;
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -85,7 +85,6 @@ typedef Real RealType;
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
-
 };
 
 template< typename Real >
@@ -101,7 +100,7 @@ typedef Real RealType;
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -112,7 +111,6 @@ typedef Real RealType;
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
-
 };
 
 template< typename Real >
@@ -128,7 +126,7 @@ typedef Real RealType;
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -140,9 +138,28 @@ typedef Real RealType;
            const Real& time = 0.0  ) const;
 #endif
 
+
+
 };
 
-#include <implementation/functions/tnlSDFParaboloidSDF_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFParaboloidSDF < Dimensions, Real >& f )
+{
+   str << "tnlSDFParaboloidSDF";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFParaboloidSDF< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFParaboloidSDF_impl.h>
 
 #endif /* TNLSDFPARABOLOIDSDF_H_ */
 

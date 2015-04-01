@@ -77,7 +77,7 @@ class tnlSDFSinBumpsFunction< 1, Real > : public tnlSDFSinBumpsFunctionBase< tnl
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -87,7 +87,7 @@ class tnlSDFSinBumpsFunction< 1, Real > : public tnlSDFSinBumpsFunctionBase< tnl
              typename Vertex = VertexType >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
-#endif   
+#endif
 };
 
 template< typename Real >
@@ -109,7 +109,7 @@ class tnlSDFSinBumpsFunction< 2, Real > : public tnlSDFSinBumpsFunctionBase< tnl
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -141,7 +141,7 @@ class tnlSDFSinBumpsFunction< 3, Real > : public tnlSDFSinBumpsFunctionBase< tnl
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -151,10 +151,29 @@ class tnlSDFSinBumpsFunction< 3, Real > : public tnlSDFSinBumpsFunctionBase< tnl
              typename Vertex = VertexType >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
-#endif   
+#endif
+
+
 };
 
-#include <implementation/functions/tnlSDFSinBumpsFunction_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFSinBumpsFunction< Dimensions, Real >& f )
+{
+   str << "tnlSDFSinBumpsFunction";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFSinBumpsFunction< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFSinBumpsFunction_impl.h>
 
 
 #endif /* TNLSDFSINBUMPSFUNCTION_H_ */

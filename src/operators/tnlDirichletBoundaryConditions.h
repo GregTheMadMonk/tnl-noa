@@ -1,42 +1,63 @@
-#ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H
-#define	TNLDIRICHLETBOUNDARYCONDITIONS_H
+/***************************************************************************
+                          tnlDirichletBoundaryConditions.h  -  description
+                             -------------------
+    begin                : Nov 17, 2014
+    copyright            : (C) 2014 by oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#include <core/vectors/tnlStaticVector.h>
-#include <config/tnlParameterContainer.h>
-#include <functions/tnlConstantFunction.h>
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
+#define TNLDIRICHLETBOUNDARYCONDITIONS_H_
 
 template< typename Mesh,
-          typename Function = tnlConstantFunction< Mesh::Dimensions,
-                                                   typename Mesh::RealType >,
+          typename Vector,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
 {
-   
+
 };
 
-template< typename MeshReal,
+template< int Dimensions,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Function,
+          typename Vector,
           typename Real,
           typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
+class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >
 {
    public:
-   
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+
+   typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
 
+   typedef Vector VectorType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< 1, RealType > VertexType;
+   typedef tnlStaticVector< Dimensions, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-            
+
+   void configSetup( tnlConfigDescription& config,
+                     const tnlString& prefix );
+
    bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+               const tnlString& prefix = "" );
+
+   Vector& getVector();
+
+   const Vector& getVector() const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -46,7 +67,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                const IndexType index,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
-                               DofVectorType& fu );
+                               DofVectorType& fu ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -55,6 +76,7 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
+   template< typename MatrixRow >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -64,132 +86,23 @@ class tnlDirichletBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                                const CoordinatesType& coordinates,
                                DofVectorType& u,
                                DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
+                               MatrixRow& matrixRow ) const;
 
    protected:
 
-   Function function;
+   Vector vector;
 };
 
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
+template< typename Mesh,
           typename Function,
           typename Real,
           typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
+ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >& bc )
 {
-   public:
-   
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   str << "Dirichlet boundary conditions: vector = " << bc.getVector();
+   return str;
+}
 
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< 2, RealType > VertexType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
+#include <operators/tnlDirichletBoundaryConditions_impl.h>
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu );
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      void updateLinearSystem( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
-
-   protected:
-
-   Function function;
-
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Function,
-          typename Real,
-          typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
-{
-   public:
-   
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< 3, RealType > VertexType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu );
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      void updateLinearSystem( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& b,
-                               IndexType* columns,
-                               RealType* values,
-                               IndexType& rowLength ) const;
-
-   protected:
-
-   Function function;
-};
-
-#include <implementation/operators/tnlDirichletBoundaryConditions_impl.h>
-
-#endif	/* TNLDIRICHLETBOUNDARYCONDITIONS_H */
+#endif /* TNLDIRICHLETBOUNDARYCONDITIONS_H_ */

@@ -43,10 +43,6 @@ class tnlIterativeSolver
 
    const Index& getMinIterations() const;
 
-   void resetIterations();
-
-   bool nextIteration();
-
    const Index& getIterations() const;
 
    void setConvergenceResidue( const Real& convergenceResidue );
@@ -65,7 +61,14 @@ class tnlIterativeSolver
 
    void setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor );
 
+   void resetIterations();
+
+   bool nextIteration();
+
+   bool checkConvergence();
+
    void refreshSolverMonitor();
+
 
    protected:
 
@@ -89,6 +92,6 @@ class tnlIterativeSolver
    Index refreshRate;
 };
 
-#include <implementation/solvers/tnlIterativeSolver_impl.h>
+#include <solvers/tnlIterativeSolver_impl.h>
 
 #endif /* TNLITERATIVESOLVER_H_ */

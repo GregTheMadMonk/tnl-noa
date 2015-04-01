@@ -94,10 +94,6 @@ class tnlMatrix : public virtual tnlObject
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   virtual void getRow( const IndexType row,
-                        IndexType* columns,
-                        RealType* values ) const = 0;
-
    tnlMatrix< RealType, DeviceType, IndexType >& operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& );
 
    template< typename Matrix >
@@ -140,6 +136,6 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  OutVector& outVector );
 
 
-#include <implementation/matrices/tnlMatrix_impl.h>
+#include <matrices/tnlMatrix_impl.h>
 
 #endif /* TNLMATRIX_H_ */

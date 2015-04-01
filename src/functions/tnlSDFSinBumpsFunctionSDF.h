@@ -77,7 +77,7 @@ class tnlSDFSinBumpsFunctionSDF< 1, Real > : public tnlSDFSinBumpsFunctionSDFBas
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex>
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -109,7 +109,7 @@ class tnlSDFSinBumpsFunctionSDF< 2, Real > : public tnlSDFSinBumpsFunctionSDFBas
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -141,7 +141,7 @@ class tnlSDFSinBumpsFunctionSDF< 3, Real > : public tnlSDFSinBumpsFunctionSDFBas
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex = VertexType >
+             typename Vertex >
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #else
@@ -152,8 +152,27 @@ class tnlSDFSinBumpsFunctionSDF< 3, Real > : public tnlSDFSinBumpsFunctionSDFBas
    RealType getValue( const Vertex& v,
            const Real& time = 0.0  ) const;
 #endif
+
+
 };
 
-#include <implementation/functions/tnlSDFSinBumpsFunctionSDF_impl.h>
+template< int Dimensions,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const tnlSDFSinBumpsFunctionSDF< Dimensions, Real >& f )
+{
+   str << "tnlSDFSinBumpsFunctionSDF";
+   return str;
+};
+
+template< int Dimensions,
+          typename Real >
+class tnlFunctionType< tnlSDFSinBumpsFunctionSDF< Dimensions, Real > >
+{
+   public:
+
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <functions/tnlSDFSinBumpsFunctionSDF_impl.h>
 
 #endif /* TNLSDFSINBUMPSFUNCTIONSDF_H_ */

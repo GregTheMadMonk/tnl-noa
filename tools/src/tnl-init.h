@@ -34,7 +34,7 @@ template< typename MeshType,
 bool renderFunction( const tnlParameterContainer& parameters )
 {
    MeshType mesh;
-   tnlString meshFile = parameters.GetParameter< tnlString >( "mesh" );
+   tnlString meshFile = parameters.getParameter< tnlString >( "mesh" );
    cout << "+ -> Loading mesh from " << meshFile << " ... " << endl;
    if( ! mesh.load( meshFile ) )
       return false;
@@ -51,11 +51,11 @@ bool renderFunction( const tnlParameterContainer& parameters )
       return false;
 
    double time( 0.0 );
-   double finalTime = parameters.GetParameter< double >( "final-time" );
-   double tau = parameters.GetParameter< double >( "snapshot-period" );
-   bool numericalDifferentiation = parameters.GetParameter< bool >( "numerical-differentiation" );
+   double finalTime = parameters.getParameter< double >( "final-time" );
+   double tau = parameters.getParameter< double >( "snapshot-period" );
+   bool numericalDifferentiation = parameters.getParameter< bool >( "numerical-differentiation" );
    int step( 0 );
-   const int steps = ceil( finalTime / tau );
+   const int steps = tau > 0 ? ceil( finalTime / tau ): 0;
 
    while( step <= steps )
    {
@@ -74,7 +74,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
          tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction, time );
       }
 
-      tnlString outputFile = parameters.GetParameter< tnlString >( "output-file" );
+      tnlString outputFile = parameters.getParameter< tnlString >( "output-file" );
       if( finalTime > 0.0 )
       {
          tnlString extension = tnlString( "." ) + getFileExtension( outputFile );
@@ -104,9 +104,9 @@ template< typename MeshType,
 bool resolveDerivatives( const tnlParameterContainer& parameters )
 {
 
-   int xDiff = parameters.GetParameter< int >( "x-derivative" );
-   int yDiff = parameters.GetParameter< int >( "y-derivative" );
-   int zDiff = parameters.GetParameter< int >( "z-derivative" );
+   int xDiff = parameters.getParameter< int >( "x-derivative" );
+   int yDiff = parameters.getParameter< int >( "y-derivative" );
+   int zDiff = parameters.getParameter< int >( "z-derivative" );
    if( xDiff < 0 || yDiff < 0 || zDiff < 0 || ( xDiff + yDiff + zDiff ) > 4 )
    {
       cerr << "Wrong orders of partial derivatives: "
@@ -191,7 +191,7 @@ bool resolveDerivatives( const tnlParameterContainer& parameters )
 template< typename MeshType >
 bool resolveRealType( const tnlParameterContainer& parameters )
 {
-   tnlString realType = parameters.GetParameter< tnlString >( "real-type" );
+   tnlString realType = parameters.getParameter< tnlString >( "real-type" );
    if( realType == "mesh-real-type" )
       return resolveDerivatives< MeshType, typename MeshType::RealType >( parameters );
    if( realType == "float" )
@@ -259,7 +259,6 @@ bool resolveMeshType( const tnlList< tnlString >& parsedMeshType,
 
    if( dimensions == 3 )
       return resolveRealType< 3 >( parsedMeshType, parameters );
-
 
 }
 #endif /* TNL_INIT_H_ */

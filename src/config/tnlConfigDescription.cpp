@@ -111,32 +111,32 @@ void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter
    {
       const char* entry_name = entries[ i ]->name.getString();
       if( entries[ i ]->hasDefaultValue &&
-          ! parameter_container.CheckParameter( entry_name ) )
+          ! parameter_container.checkParameter( entry_name ) )
       {
          if( entries[ i ]->getEntryType() == "tnlString" )
          {
-            parameter_container. AddParameter< tnlString >(
+            parameter_container. addParameter< tnlString >(
                entry_name,
                ( ( tnlConfigEntry< tnlString >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "bool" )
          {
-            parameter_container. AddParameter< bool >(
+            parameter_container. addParameter< bool >(
                entry_name,
                ( ( tnlConfigEntry< bool >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "int" )
          {
-            parameter_container. AddParameter< int >(
+            parameter_container. addParameter< int >(
                entry_name,
                ( ( tnlConfigEntry< int >* ) entries[ i ] ) -> defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "double" )
          {
-            parameter_container. AddParameter< double >(
+            parameter_container. addParameter< double >(
                entry_name,
                ( ( tnlConfigEntry< double >* ) entries[ i ] ) -> defaultValue );
             continue;
@@ -156,7 +156,7 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
    {
       const char* entry_name = entries[ i ] -> name. getString();
       if( entries[ i ] -> required && 
-          ! parameter_container. CheckParameter( entry_name ) )
+          ! parameter_container. checkParameter( entry_name ) )
          missingParameters.Append( entry_name );
    }
    if( missingParameters.getSize() != 0 )

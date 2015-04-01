@@ -236,7 +236,7 @@ class tnlVectorOperations< tnlCuda >
                                           const typename Vector::IndexType end );
 };
 
-#include <implementation/core/vectors/tnlVectorOperationsHost_impl.h>
-#include <implementation/core/vectors/tnlVectorOperationsCuda_impl.h>
+#include <core/vectors/tnlVectorOperationsHost_impl.h>
+#include <core/vectors/tnlVectorOperationsCuda_impl.h>
 
 #endif /* TNLVECTOROPERATIONS_H_ */

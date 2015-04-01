@@ -21,7 +21,7 @@
 #include <solvers/tnlConfigTags.h>
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          template< typename ConfTag > class SolverConfig,
+          template< typename ConfTag > class ProblemConfig,
           typename ConfigTag = tnlDefaultConfigTag >
 class tnlSolver
 {
@@ -31,5 +31,5 @@ class tnlSolver
    protected:
 };
 
-#include <implementation/solvers/tnlSolver_impl.h>
+#include <solvers/tnlSolver_impl.h>
 #endif /* TNLSOLVER_H_ */

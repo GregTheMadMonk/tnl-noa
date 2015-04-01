@@ -25,18 +25,18 @@ class tnlMatrixSetterTraversalUserData
 {
    public:
 
-      DifferentialOperator& differentialOperator;
+      const DifferentialOperator* differentialOperator;
 
-      BoundaryConditions& boundaryConditions;
+      const BoundaryConditions* boundaryConditions;
 
-      RowLengthsVector& rowLengths;
+      RowLengthsVector* rowLengths;
 
-      tnlMatrixSetterTraversalUserData( DifferentialOperator& differentialOperator,
-                                        BoundaryConditions& boundaryConditions,
+      tnlMatrixSetterTraversalUserData( const DifferentialOperator& differentialOperator,
+                                        const BoundaryConditions& boundaryConditions,
                                         RowLengthsVector& rowLengths )
-      : differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rowLengths( rowLengths )
+      : differentialOperator( &differentialOperator ),
+        boundaryConditions( &boundaryConditions ),
+        rowLengths( &rowLengths )
       {};
 
 };
@@ -67,12 +67,15 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimension >
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
-            userData.rowLengths[ index ] =
-                     userData.boundaryConditions.getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index );
          }
 
    };
@@ -82,12 +85,15 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimensions >
-         void processEntity( const MeshType& mesh,
-                             TraversalUserData& userData,
-                             const IndexType index )
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index )
          {
-            userData.rowLengths[ index ] =
-                     userData.differentialOperator.getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index );
          }
 
    };
@@ -117,23 +123,39 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
 
    template< int EntityDimensions >
    void getRowLengths( const MeshType& mesh,
-                       DifferentialOperator& differentialOperator,
-                       BoundaryConditions& boundaryConditions,
+                       const DifferentialOperator& differentialOperator,
+                       const BoundaryConditions& boundaryConditions,
                        RowLengthsVector& rowLengths ) const;
-
 
    class TraversalBoundaryEntitiesProcessor
    {
       public:
 
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
-            userData.rowLengths[ index ] =
-                     userData.boundaryConditions.getLinearSystemRowLength( mesh, index, coordinates );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
          }
+
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif         
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+             //printf("Matrix setter: Index = %d \n", index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
 
    };
 
@@ -141,19 +163,36 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         void processCell( const MeshType& mesh,
-                           TraversalUserData& userData,
-                           const IndexType index,
-                           const CoordinatesType& coordinates )
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processCell( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
          {
-            userData.rowLengths[ index ] =
-                     userData.differentialOperator.getLinearSystemRowLength( mesh, index, coordinates );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
          }
+         
+#ifdef HAVE_CUDA
+         __device__ __host__
+#endif
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            // printf("Matrix setter: Index = %d \n", index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
 
    };
 
 };
 
-#include <implementation/matrices/tnlMatrixSetter_impl.h>
+#include <matrices/tnlMatrixSetter_impl.h>
 
 #endif /* TNLMATRIXSETTER_H_ */

@@ -259,12 +259,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       rowLengths.setValue( 7 );
       m.setRowLengths( rowLengths );
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -340,7 +340,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       rowLengths.setValue( 10 );
       m.setRowLengths( rowLengths );
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
@@ -348,7 +348,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             for( int j = 0; j < 10; j++ )
                m.addElementFast( i, j, 1, 0.5 );
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -377,13 +377,13 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setRowLengths( rowLengths );
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = 9; j >= 0; j-- )
                m.setElementFast( i, j, i+j );
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -456,13 +456,13 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          rowLengths.setElement( i, i+1 );
       m.setRowLengths( rowLengths );
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
             for( int j = 0; j <= i; j++ )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -491,13 +491,13 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setRowLengths( rowLengths );
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = i; j >= 0; j-- )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -597,7 +597,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setRowLengths( rowLengths );
 
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          RealType values[ 1 ];
          IndexType columnIndexes[ 1 ];
@@ -608,7 +608,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 1 );
          }
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -702,7 +702,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -715,7 +715,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -746,7 +746,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setRowLengths( rowLengths );
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -755,7 +755,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -847,7 +847,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -856,7 +856,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
@@ -887,7 +887,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setRowLengths( rowLengths );
 
-      if( DeviceType::DeviceType == tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -896,7 +896,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_matrix = tnlCuda::passToDevice( m );

@@ -18,8 +18,8 @@
 #ifndef TNLSTATICCONTAINER_H_
 #define TNLSTATICCONTAINER_H_
 
-#include<core/tnlObject.h>
-#include<core/arrays/tnlStaticArray.h>
+#include <core/tnlObject.h>
+#include <core/arrays/tnlStaticArray.h>
 
 template< int Size, typename Element >
 class tnlStaticContainer : public tnlObject
@@ -55,7 +55,7 @@ class tnlStaticContainer : public tnlObject
    tnlStaticArray< Size, Element > data;
 };
 
-#include<implementation/core/containers/tnlStaticContainer_impl.h>
+#include <core/containers/tnlStaticContainer_impl.h>
 
 
 #endif /* TNLSTATICCONTAINER_H_ */

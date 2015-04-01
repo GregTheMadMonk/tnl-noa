@@ -167,7 +167,7 @@ class tnlSDFGridValue< Mesh, 3, Real > : public tnlSDFGridValueBase< Real >
 
 };
 
-#include <implementation/functions/tnlSDFGridValue_impl.h>
+#include <functions/tnlSDFGridValue_impl.h>
 
 #endif /* TNLSDFGRIDVALUE_H_ */
 

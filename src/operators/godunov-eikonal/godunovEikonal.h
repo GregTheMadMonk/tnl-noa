@@ -201,9 +201,9 @@ protected:
 
 
 
-#include <implementation/operators/godunov-eikonal/godunovEikonal1D_impl.h>
-#include <implementation/operators/godunov-eikonal/godunovEikonal2D_impl.h>
-#include <implementation/operators/godunov-eikonal/godunovEikonal3D_impl.h>
+#include <operators/godunov-eikonal/godunovEikonal1D_impl.h>
+#include <operators/godunov-eikonal/godunovEikonal2D_impl.h>
+#include <operators/godunov-eikonal/godunovEikonal3D_impl.h>
 
 
 #endif /* GODUNOVEIKONAL_H_ */

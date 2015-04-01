@@ -133,6 +133,6 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 3, MeshReal, Device, Mesh
 
 };
 
-#include <implementation/operators/tnlNeumannReflectionBoundaryConditions_impl.h>
+#include <operators/tnlNeumannReflectionBoundaryConditions_impl.h>
 
 #endif	/* TNLNEUMANNREFLECTIONBOUNDARYCONDITIONS_H */

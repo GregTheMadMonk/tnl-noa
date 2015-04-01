@@ -108,12 +108,12 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    typedef tnlCSRMatrix< RealType, tnlHost, int > CsrMatrix;
    CsrMatrix csrMatrix;
 
-   const tnlString& inputFileName = parameters.GetParameter< tnlString >( "input-file" );
-   const tnlString& inputMtxFileName = parameters.GetParameter< tnlString >( "input-mtx-file" );
-   const tnlString& logFileName = parameters.GetParameter< tnlString >( "log-file" );
-   const tnlString& pdfFileName = parameters.GetParameter< tnlString >( "pdf-file" );
-   bool verbose = parameters.GetParameter< bool >( "verbose" );
-   const int maxIterations = parameters.GetParameter< int >( "max-iterations" );
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   const tnlString& inputMtxFileName = parameters.getParameter< tnlString >( "input-mtx-file" );
+   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
+   const tnlString& pdfFileName = parameters.getParameter< tnlString >( "pdf-file" );
+   bool verbose = parameters.getParameter< bool >( "verbose" );
+   const int maxIterations = parameters.getParameter< int >( "max-iterations" );
 
    fstream inputFile;
    inputFile.open( inputMtxFileName.getString(), ios::in );
@@ -407,12 +407,12 @@ int main( int argc, char* argv[] )
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.GetParameter< tnlString >( "precision" );
+   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
    if( precision == "float" )
       if( ! benchmarkMatrix< float >( parameters ) )
          return EXIT_FAILURE;

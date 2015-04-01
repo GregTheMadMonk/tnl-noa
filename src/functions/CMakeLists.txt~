@@ -1,0 +1,42 @@
+SET( headers tnlFunctionDiscretizer.h
+             tnlFunctionDiscretizer_impl.h
+             tnlFunctionEnumerator.h
+             tnlFunctionEnumerator_impl.h
+             tnlFunctionAdapter.h
+             tnlConstantFunction.h
+             tnlConstantFunction_impl.h
+             tnlExpBumpFunction.h
+             tnlExpBumpFunction_impl.h
+             tnlSinBumpsFunction.h
+             tnlSinBumpsFunction_impl.h
+             tnlSinWaveFunction.h
+             tnlSinWaveFunction_impl.h
+             tnlTestFunction.h
+             tnlFunctionType.h
+             tnlTestFunction_impl.h
+             tnlSDFSinBumpsFunction.h
+             tnlSDFSinBumpsFunctionSDF.h
+             tnlSDFSinWaveFunction.h 
+	     tnlSDFSinWaveFunctionSDF.h
+	     tnlSDFParaboloid.h 
+	     tnlSDFParaboloidSDF.h
+	     tnlSDFSchemeTest.h
+	     tnlSDFSign.h
+	     tnlSDFGridValue.h )
+
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )
+set( common_SOURCES
+     ${CURRENT_DIR}/tnlTestFunction_impl.cpp )       
+
+IF( BUILD_CUDA )
+   set( tnl_functions_CUDA__SOURCES
+        ${common_SOURCES} 
+        ${CURRENT_DIR}/tnlTestFunction_impl.cu
+        PARENT_SCOPE )
+ENDIF()    
+
+set( tnl_functions_SOURCES     
+     ${common_SOURCES}
+     PARENT_SCOPE )
+        
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functions )

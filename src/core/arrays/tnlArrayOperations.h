@@ -172,7 +172,7 @@ template<> struct tnlFastArrayOperations< float,             float  >{ enum{ ena
 template<> struct tnlFastArrayOperations< double,            double  >{ enum{ enabled = true }; };
 
 
-#include <implementation/core/arrays/tnlArrayOperationsHost_impl.h>
-#include <implementation/core/arrays/tnlArrayOperationsCuda_impl.h>
+#include <core/arrays/tnlArrayOperationsHost_impl.h>
+#include <core/arrays/tnlArrayOperationsCuda_impl.h>
 
 #endif /* TNLARRAYOPERATIONS_H_ */

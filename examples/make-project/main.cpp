@@ -25,7 +25,7 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
    if( conf_desc.parseConfigDescription( CONFIG_FILE ) != 0 )
       return EXIT_FAILURE;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;

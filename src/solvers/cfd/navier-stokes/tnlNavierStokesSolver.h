@@ -152,6 +152,6 @@ class tnlNavierStokesSolver
 
 };
 
-#include <implementation/solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
+#include <solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
 
 #endif /* tnlNavierStokesSolver_H_ */

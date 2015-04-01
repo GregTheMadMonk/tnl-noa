@@ -24,6 +24,9 @@ class tnlFunctionDiscretizer
    public:
 
       typedef typename Vector::DeviceType DeviceType;
+      typedef typename Mesh::IndexType IndexType;
+      typedef typename Mesh::VertexType VertexType;
+      typedef typename Mesh::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
@@ -45,6 +48,6 @@ class tnlFunctionDiscretizer
    
 };
 
-#include <implementation/functions/tnlFunctionDiscretizer_impl.h>
+#include <functions/tnlFunctionDiscretizer_impl.h>
 
 #endif /* TNLFUNCTIONDISCRETIZER_H_ */

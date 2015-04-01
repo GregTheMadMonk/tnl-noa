@@ -76,7 +76,7 @@ class tnlSolverTesterSetter
              typename IndexType >
    bool run( const tnlParameterContainer& parameters ) const
    {
-      int dimensions = parameters. GetParameter< int >( "dimensions" );
+      int dimensions = parameters. getParameter< int >( "dimensions" );
       if( dimensions <= 0 || dimensions > 3 )
       {
          cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;

@@ -31,8 +31,10 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
-          typename TestFunction >
+          typename TestFunction,
+          typename ApproximationMethod >
 class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real, Device, Index >, Real, Index >,
+                                   ApproximationMethod,
                                    TestFunction >
 {
    public:
@@ -49,22 +51,51 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
-   const bool verbose( true );
+   const bool verbose( false );
    const int MeshSize( 32 );
 #ifdef HAVE_CPPUNIT
+   /****
+    * Explicit approximation
+    */
    if( ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 1, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 1 >,
                                                              tnlExpBumpFunction< 1, double >,
+                                                             tnlExplicitApproximation,
                                                              MeshSize,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 2 >,
                                                              tnlExpBumpFunction< 2, double >,
+                                                             tnlExplicitApproximation,
                                                              MeshSize,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 3, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 3 >,
                                                              tnlExpBumpFunction< 3, double >,
+                                                             tnlExplicitApproximation,
+                                                             MeshSize,
+                                                             verbose > >()
+                                                              )
+      return EXIT_FAILURE;
+   /****
+    * Implicit (matrix) approximation
+    */
+   if( ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 1, double, tnlHost, int >, double, int >,
+                                                             tnlExactLinearDiffusion< 1 >,
+                                                             tnlExpBumpFunction< 1, double >,
+                                                             tnlImplicitApproximation,
+                                                             MeshSize,
+                                                             verbose > >() ||
+       ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
+                                                             tnlExactLinearDiffusion< 2 >,
+                                                             tnlExpBumpFunction< 2, double >,
+                                                             tnlImplicitApproximation,
+                                                             MeshSize,
+                                                             verbose > >() ||
+       ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 3, double, tnlHost, int >, double, int >,
+                                                             tnlExactLinearDiffusion< 3 >,
+                                                             tnlExpBumpFunction< 3, double >,
+                                                             tnlImplicitApproximation,
                                                              MeshSize,
                                                              verbose > >()
        )

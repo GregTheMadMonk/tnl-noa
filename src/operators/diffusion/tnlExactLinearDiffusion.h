@@ -18,6 +18,8 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
+#include <functions/tnlFunctionType.h>
+
 template< int Dimensions >
 class tnlExactLinearDiffusion
 {};
@@ -30,8 +32,15 @@ class tnlExactLinearDiffusion< 1 >
       enum { Dimensions = 1 };
 
       static tnlString getType();
-
+   
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif      
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -46,7 +55,14 @@ class tnlExactLinearDiffusion< 2 >
 
       static tnlString getType();
 
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif      
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -61,12 +77,26 @@ class tnlExactLinearDiffusion< 3 >
 
       static tnlString getType();
 
+#ifdef HAVE_NOT_CXX11      
+      template< typename Function, typename Vertex, typename Real >
+#else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+#endif
+#ifdef HAVE_CUDA
+      __device__ __host__
+#endif
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };
 
-#include <implementation/operators/diffusion/tnlExactLinearDiffusion_impl.h>
+template< int Dimensions >
+class tnlFunctionType< tnlExactLinearDiffusion< Dimensions > >
+{
+   public:
+      enum { Type = tnlAnalyticFunction };
+};
+
+#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>
 
 #endif /* TNLEXACTLINEARDIFFUSION_H_ */
