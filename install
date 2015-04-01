@@ -1,43 +1,49 @@
 #!/bin/bash
 
-TARGET=TNL
-INSTALL_PREFIX=${HOME}/local
-WITH_CUDA=yes
-TEMPLATE_EXPLICIT_INSTANTIATION=yes
-VERBOSE="VERBOSE=1"
+BUILD_DEBUG="yes"
+BUILD_RELEASE="yes"
 
-CMAKE="cmake"
-CPUS=`grep -c processor /proc/cpuinfo`
-#CPUS="1"
+OPTIONS=""
 
+for option in "$@"
+do
+    case $option in
+        --no-debug                    ) BUILD_DEBUG="no" ;;
+        --no-release                  ) BUILD_RELEASE="no" ;;        
+        *                             ) OPTIONS="${OPTIONS} ${option}" ;;
+    esac
+done
 
-echo "Building $TARGET using $CPUS processors."
-
-if [ ! -d Debug ];
+if test ${BUILD_DEBUG} = "yes";
 then
-   mkdir Debug
+    if [ ! -d Debug ];
+    then
+       mkdir Debug
+    fi
+    cd Debug
+    ../build --root-dir=.. --build=Debug ${OPTIONS}
+    if test $? != 0;
+    then
+       exit 1
+    fi
+    make install
+    cd ..
 fi
-if [ ! -d Release ];
+
+if test ${BUILD_RELEASE} = "yes";
 then
-   mkdir Release
+    if [ ! -d Release ];
+    then
+       mkdir Release
+    fi
+    cd Release
+    ../build --root-dir=.. --build=Release ${OPTIONS}
+    if test $? != 0;
+    then
+        exit 1
+    fi
+    make install
+    cd ..
 fi
-
-cd Debug
-${CMAKE} .. -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_INSTALL_PREFIX=${HOME}/local \
-            -DWITH_CUDA=${WITH_CUDA} \
-            -DPETSC_DIR=${PETSC_DIR} \
-            -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
-make -j${CPUS} ${VERBOSE}
-make -j${CPUS} test
-make -j${CPUS} install
-
-cd ../Release
-${CMAKE} .. -DCMAKE_INSTALL_PREFIX=${HOME}/local \
-            -DWITH_CUDA=${WITH_CUDA} \
-            -DPETSC_DIR=${PETSC_DIR} \
-            -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
-make -j${CPUS} ${VERBOSE}
-make -j${CPUS} test
-make -j${CPUS} install
+exit 0
 

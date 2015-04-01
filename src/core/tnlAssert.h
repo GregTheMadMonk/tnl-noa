@@ -38,7 +38,7 @@ using namespace std;
            __STRING( ___tnl__assert_condition ),                                                         \
            __FILE__,                                                                                     \
            __LINE__ );                                                                                   \
-   asm("trap;")                                                              \
+                                                              \
    }
 
 #else

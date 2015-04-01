@@ -85,7 +85,8 @@ if( WITH_CUDA STREQUAL "yes" )
       AddCompilerFlag( "-std=gnu++0x" )         
     endif( CUDA_FOUND )
 else( WITH_CUDA STREQUAL "yes" )
-   AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
+   #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
+   AddCompilerFlag( "-std=gnu++0x" )       
 endif( WITH_CUDA STREQUAL "yes" )    
 
 ####
@@ -139,51 +140,55 @@ endif()
 ####
 # Check for cppunit
 #
-FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
-  /usr/local/include
-  /usr/include
-  DOC "CppUnit headers."
-)
+if( WITH_TESTS STREQUAL "yes" )
+    FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
+      /usr/local/include
+      /usr/include
+      DOC "CppUnit headers."
+    )
 
-####
-# With Win32, important to have both
-#
-if(WIN32)
-  FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-               ${CPPUNIT_INCLUDE_DIR}/../lib
-               /usr/local/lib
-               /usr/lib)
-  FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunitd
-               ${CPPUNIT_INCLUDE_DIR}/../lib
-               /usr/local/lib
-               /usr/lib)
-else(WIN32)
-  # On unix system, debug and release have the same name
-  FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-               ${CPPUNIT_INCLUDE_DIR}/../lib
-               /usr/local/lib
-               /usr/lib)
-  FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunit
-               ${CPPUNIT_INCLUDE_DIR}/../lib
-               /usr/local/lib
-               /usr/lib)
-endif(WIN32)
+    ####
+    # With Win32, important to have both
+    #
+    if(WIN32)
+      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
+                   ${CPPUNIT_INCLUDE_DIR}/../lib
+                   /usr/local/lib
+                   /usr/lib)
+      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunitd
+                   ${CPPUNIT_INCLUDE_DIR}/../lib
+                   /usr/local/lib
+                   /usr/lib)
+    else(WIN32)
+      # On unix system, debug and release have the same name
+      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
+                   ${CPPUNIT_INCLUDE_DIR}/../lib
+                   /usr/local/lib
+                   /usr/lib)
+      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunit
+                   ${CPPUNIT_INCLUDE_DIR}/../lib
+                   /usr/local/lib
+                   /usr/lib)
+    endif(WIN32)
 
 
-if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-      message( "CPPUNIT not found." )
-      set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT" )
-else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-  message( "CPPUNIT headers found -- ${CPPUNIT_INCLUDE_DIR}" )
-  if(CPPUNIT_LIBRARY)
-    message( "CPPUNIT library found -- ${CPPUNIT_LIBRARY}" )
-    set(CPPUNIT_FOUND "YES")
-    set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
-    set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
-                                ${CMAKE_DL_LIBS})
-   set( HAVE_CPPUNIT "#define HAVE_CPPUNIT" )
-  endif(CPPUNIT_LIBRARY)
-endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
+    if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
+          message( "CPPUNIT not found." )
+          set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT" )
+    else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
+      message( "CPPUNIT headers found -- ${CPPUNIT_INCLUDE_DIR}" )
+      if(CPPUNIT_LIBRARY)
+        message( "CPPUNIT library found -- ${CPPUNIT_LIBRARY}" )
+        set(CPPUNIT_FOUND "YES")
+        set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
+        set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
+                                    ${CMAKE_DL_LIBS})
+       set( HAVE_CPPUNIT "#define HAVE_CPPUNIT" )
+      endif(CPPUNIT_LIBRARY)
+    endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
+    ENABLE_TESTING()
+    INCLUDE( Dart )
+endif( WITH_TESTS STREQUAL "yes" )
 
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
@@ -210,9 +215,6 @@ endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
 #   endif()
 #endif()
 
-
-ENABLE_TESTING()
-INCLUDE( Dart )
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
 
