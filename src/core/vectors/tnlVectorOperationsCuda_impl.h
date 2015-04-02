@@ -52,7 +52,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( cons
                           v. getSize(),
                           v. getData(),
                           ( Real* ) 0,
-                          result );
+                          result );   
    return result;
 }
 

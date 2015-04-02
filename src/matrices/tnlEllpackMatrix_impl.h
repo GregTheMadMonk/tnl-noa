@@ -460,6 +460,7 @@ typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
+   //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
    IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
@@ -477,6 +478,7 @@ const typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
+   //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
    IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],

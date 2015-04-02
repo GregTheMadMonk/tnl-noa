@@ -77,6 +77,7 @@ setElement( const Index& elementIndex,
    tnlAssert( this->columns, );
    tnlAssert( this->values, );
    tnlAssert( this->step > 0,);
+   //printf( "elementIndex = %d length = %d \n", elementIndex, this->length );
    tnlAssert( elementIndex >= 0 && elementIndex < this->length,
               cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
 

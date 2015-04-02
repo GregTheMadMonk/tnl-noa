@@ -249,7 +249,7 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
 {
-#ifdef HAVE_CUDA
+#ifdef HAVE_CUDA    
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
    InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
@@ -266,6 +266,7 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                        kernel_inVector,
                                        kernel_outVector,
                                        gridIdx );
+      checkCudaDevice;
    }
    tnlCuda::freeFromDevice( kernel_this );
    tnlCuda::freeFromDevice( kernel_inVector );

@@ -124,14 +124,14 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename MatrixType >          
+   template< typename Matrix >          
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
-                   MatrixType& matrix )
+                   Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
+   typedef typename Matrix::RowLengthsVector RowLengthsVectorType;
    RowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
@@ -212,7 +212,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename MatrixType >          
+    template< typename Matrix >          
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
@@ -220,10 +220,10 @@ assemblyLinearSystem( const RealType& time,
                       const MeshType& mesh,
                       DofVectorType& u,
                       DofVectorType& auxDofs,
-                      MatrixType& matrix,
+                      Matrix& matrix,
                       DofVectorType& b )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, Matrix > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,

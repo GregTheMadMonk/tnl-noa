@@ -293,8 +293,10 @@ typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
    IndexType alignedBlockSize = 1;
    while( alignedBlockSize < blockSize. x ) alignedBlockSize <<= 1;
    blockSize. x = alignedBlockSize;
-
-   gridSize. x = Min( ( IndexType ) ( size / blockSize. x + 1 ) / 2, desGridSize );
+   //const IndexType numberOfBlocks = tnlCuda::getNumberOfBlocks( size / 2, blockSize.x );
+   
+   //gridSize. x = Min( ( IndexType ) ( size / blockSize. x + 1 ) / 2, desGridSize );
+   gridSize. x = Min( tnlCuda::getNumberOfBlocks( size / 2, blockSize.x ), desGridSize );
 
    if( ! output &&
        ! tnlArrayOperations< tnlCuda >::allocateMemory( output, :: Max( ( IndexType ) 1, size / desBlockSize ) ) )
@@ -304,49 +306,50 @@ typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
    /***
     * Depending on the blockSize we generate appropriate template instance.
     */
-      switch( blockSize. x )
-      {
-         case 512:
-            tnlCUDAReductionKernel< Operation, 512 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 256:
-            tnlCUDAReductionKernel< Operation, 256 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 128:
-            tnlCUDAReductionKernel< Operation, 128 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  64:
-            tnlCUDAReductionKernel< Operation,  64 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  32:
-            tnlCUDAReductionKernel< Operation,  32 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  16:
-            tnlCUDAReductionKernel< Operation,  16 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   8:
-            tnlCUDAReductionKernel< Operation,   8 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   4:
-            tnlCUDAReductionKernel< Operation,   4 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   2:
-            tnlCUDAReductionKernel< Operation,   2 >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   1:
-            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-         default:
-            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-      }
+   switch( blockSize. x )
+   {
+      case 512:
+         tnlCUDAReductionKernel< Operation, 512 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case 256:
+         tnlCUDAReductionKernel< Operation, 256 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case 128:
+         tnlCUDAReductionKernel< Operation, 128 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  64:
+         tnlCUDAReductionKernel< Operation,  64 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  32:
+         tnlCUDAReductionKernel< Operation,  32 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  16:
+         tnlCUDAReductionKernel< Operation,  16 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+     case   8:
+         tnlCUDAReductionKernel< Operation,   8 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case   4:
+         tnlCUDAReductionKernel< Operation,   4 >
+        <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+        break;
+      case   2:
+         tnlCUDAReductionKernel< Operation,   2 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case   1:
+         tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+      default:
+         tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+   }
+   checkCudaDevice;
    return gridSize. x;
 }
 #endif
@@ -402,6 +405,8 @@ bool reductionOnCudaDevice( const Operation& operation,
                                         deviceAux1,
                                         ( ResultType* ) 0,
                                         deviceAux2 );
+      if( ! checkCudaDevice )
+          return false;
       Swap( deviceAux1, deviceAux2 );
    }
 
@@ -428,7 +433,7 @@ bool reductionOnCudaDevice( const Operation& operation,
       return false;
    if( deviceAux2 && ! tnlArrayOperations< tnlCuda >::freeMemory( deviceAux2 ) )
       return false;
-   return true;
+   return checkCudaDevice;
 #else
    tnlCudaSupportMissingMessage;;
    return false;

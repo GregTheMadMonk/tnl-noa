@@ -368,9 +368,9 @@ processBoundaryEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
-   cudaThreadSynchronize();
-   checkCudaDevice;
+   cudaThreadSynchronize();   
 #endif
 }
 
@@ -406,8 +406,8 @@ processInteriorEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
-   checkCudaDevice;
    tnlCuda::freeFromDevice( kernelGrid );
    tnlCuda::freeFromDevice( kernelUserData );
 #endif
@@ -450,9 +450,10 @@ processBoundaryEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
    cudaThreadSynchronize();
-   checkCudaDevice;
+   
 
    /****
     * < 0, 1 > faces
@@ -470,9 +471,10 @@ processBoundaryEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
    cudaThreadSynchronize();
-   checkCudaDevice;
+   
 #endif
 
 }
@@ -517,9 +519,10 @@ processInteriorEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
    cudaThreadSynchronize();
-   checkCudaDevice;
+   
 
    /****
     * < 0, 1 > faces
@@ -537,9 +540,9 @@ processInteriorEntities( const GridType& grid,
                                          kernelUserData,
                                          gridXIdx,
                                          gridYIdx );
+         checkCudaDevice;
       }
    cudaThreadSynchronize();
-   checkCudaDevice;
 #endif
 }
 

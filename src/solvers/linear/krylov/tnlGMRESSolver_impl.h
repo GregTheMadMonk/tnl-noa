@@ -150,8 +150,11 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
       //cout << "x = " << x << endl;
-      //cout << " beta = " << beta << endl;
    }
+   
+    //cout << "norm b = " << normb << endl;
+    //cout << " beta = " << beta << endl;
+
 
    if( normb == 0.0 ) normb = 1.0;
 
@@ -210,7 +213,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
              * H_{k,i} = ( w, v_k )
              */
             RealType H_k_i = _w. scalarProduct( vk );
-            H[ k + i * ( m + 1 ) ] = H_k_i;
+            H[ k + i * ( m + 1 ) ] = H_k_i;           
 
             /****
              * w = w - H_{k,i} v_k

@@ -954,7 +954,7 @@ class tnlParallelReductionScalarProduct
                                                  const RealType* data3 ) const
    {
       return data1[ idx1 ] +
-             ( data2[ idx2 ] * data2[ idx2] ) +
+             ( data2[ idx2 ] * data3[ idx2] ) +
              ( data2[ idx3 ] * data3[ idx3] );
    };
 

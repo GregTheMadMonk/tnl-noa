@@ -20,6 +20,7 @@
 
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
+#include <matrices/tnlEllpackMatrix.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -37,6 +38,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlEllpackMatrix< RealType, DeviceType, IndexType > MatrixType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
@@ -55,9 +57,9 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                                 DofVectorType& dofs,
                                 DofVectorType& auxDofs );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
-                              MatrixType& matrix );
+                              Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
@@ -76,13 +78,13 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            DofVectorType& _u,
                            DofVectorType& _fu );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
                                  DofVectorType& dofs,
                                  DofVectorType& auxDofs,
-                                 MatrixType& matrix,
+                                 Matrix& matrix,
                                  DofVectorType& rightHandSide );
 
 
