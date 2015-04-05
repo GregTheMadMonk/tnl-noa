@@ -974,18 +974,18 @@ __device__
 void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::runSubgridCUDA( int boundaryCondition, double* u, int subGridID)
 {
 
-	__shared__ bool tmp;
+	__shared__ int tmp;
 	int i = threadIdx.x;
 	int j = threadIdx.y;
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
 
 	if(l == 0)
-		tmp = false;
+		tmp = 0;
 
 	__syncthreads();
 
 	if(u[0]*u[l] <= 0.0)
-		atomicOr((int*) &tmp,(int) true);
+		atomicOr( &tmp, 1);
 
 
 
@@ -1079,7 +1079,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
     	  maxResidue = 0.0;
       }
  //
-      double tau2 = 0.0;
+      double tau2 = 1.0;
       if((u[l]+currentTau * fu)*u[l] < 0.0 && fu != 0.0 && u[l] != 0.0 )
     	  tau2 = fabs(u[l]/(2.0*fu));
 
@@ -1098,6 +1098,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 
       time += currentTau;
+      __syncthreads();
    }
 
 }
