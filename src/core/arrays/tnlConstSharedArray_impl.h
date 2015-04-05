@@ -283,14 +283,33 @@ ostream& operator << ( ostream& str, const tnlConstSharedArray< Element, Device,
 
 extern template class tnlConstSharedArray< float, tnlHost, int >;
 extern template class tnlConstSharedArray< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlHost, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlConstSharedArray< float, tnlHost, long int >;
 extern template class tnlConstSharedArray< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
 extern template class tnlConstSharedArray< float, tnlCuda, int >;
 extern template class tnlConstSharedArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlConstSharedArray< float, tnlCuda, long int >;
 extern template class tnlConstSharedArray< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlCuda, long int >;
+#endif
+
+#endif
 #endif
 
 #endif

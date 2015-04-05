@@ -52,13 +52,14 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< double, int > >
                                      const typename tnlParallelReductionAbsMax< double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMax< double, int> :: ResultType& result );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< long double, int > >
                                    ( const tnlParallelReductionAbsMax< long double, int>& operation,
                                      const typename tnlParallelReductionAbsMax< long double, int > :: IndexType size,
                                      const typename tnlParallelReductionAbsMax< long double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionAbsMax< long double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMax< long double, int> :: ResultType& result );
-                                     
+#endif                                     
 
 template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< char, long int > >
                                    ( const tnlParallelReductionAbsMax< char, long int >& operation,
@@ -67,6 +68,7 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< char, long int 
                                      const typename tnlParallelReductionAbsMax< char, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMax< char, long int > :: ResultType& result );
 
+#ifdef INSTANTIATE_LONG_INT
 template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< int, long int > >
                                    ( const tnlParallelReductionAbsMax< int, long int >& operation,
                                      const typename tnlParallelReductionAbsMax< int, long int > :: IndexType size,
@@ -88,11 +90,14 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< double, long in
                                      const typename tnlParallelReductionAbsMax< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMax< double, long int> :: ResultType& result );
 
-/*template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< long double, long int > >
+#ifdef INSTANTIATE_LONG_DOUBLE
+template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< long double, long int > >
                                    ( const tnlParallelReductionAbsMax< long double, long int>& operation,
                                      const typename tnlParallelReductionAbsMax< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionAbsMax< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionAbsMax< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionAbsMax< long double, long int> :: ResultType& result );*/
+                                     typename tnlParallelReductionAbsMax< long double, long int> :: ResultType& result );
+#endif
+#endif
 
 #endif                                     

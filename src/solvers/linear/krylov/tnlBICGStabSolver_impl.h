@@ -142,7 +142,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       /****
        * s_j = r_j - alpha_j * A p_j
        */
-      s. alphaXPlusBetaZ( 1.0, r, -alpha, Ap );
+      s.addVectors( r, 1.0, Ap, -alpha );
 
       /****
        * omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
@@ -164,12 +164,12 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       /****
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
-      x. alphaXPlusBetaZPlusY( alpha, p, omega, s );
+      x.addVectors( p, alpha, s, omega );
       
       /****
        * r_{j+1} = s_j - omega_j * A * s_j
        */
-      r. alphaXPlusBetaZ( 1.0, s, -omega, As );
+      r.addVectors( s, 1.0, As, -omega );
 
       /****
        * beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )

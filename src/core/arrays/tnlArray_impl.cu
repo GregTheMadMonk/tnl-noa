@@ -22,8 +22,19 @@
 #ifdef HAVE_CUDA
 template class tnlArray< float, tnlCuda, int >;
 template class tnlArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlArray< long double, tnlCuda, int >;
+#endif
+
+
+#ifdef INSTANTIATE_LONG_INT
 template class tnlArray< float, tnlCuda, long int >;
 template class tnlArray< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlArray< long double, tnlCuda, long int >;
+#endif
+#endif
+
 #endif
 
 #endif

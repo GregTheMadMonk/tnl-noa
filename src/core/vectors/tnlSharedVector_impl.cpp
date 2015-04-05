@@ -21,14 +21,32 @@
 
 template class tnlSharedVector< float, tnlHost, int >;
 template class tnlSharedVector< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlSharedVector< long double, tnlHost, int >;
+#endif
+#ifdef INSTANTIATE_LONG_INT
 template class tnlSharedVector< float, tnlHost, long int >;
 template class tnlSharedVector< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlSharedVector< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
 template class tnlSharedVector< float, tnlCuda, int >;
 template class tnlSharedVector< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlSharedVector< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 template class tnlSharedVector< float, tnlCuda, long int >;
 template class tnlSharedVector< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlSharedVector< long double, tnlCuda, long int >;
+#endif
+#endif
+
 #endif
 
 #endif

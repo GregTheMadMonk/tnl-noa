@@ -458,20 +458,31 @@ ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, In
 
 extern template class tnlMultiArray< 1, float,  tnlHost, int >;
 extern template class tnlMultiArray< 1, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlMultiArray< 1, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 1, double, tnlHost, long int >;
+#endif
+
 extern template class tnlMultiArray< 2, float,  tnlHost, int >;
 extern template class tnlMultiArray< 2, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlMultiArray< 2, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 2, double, tnlHost, long int >;
+#endif
+
 extern template class tnlMultiArray< 3, float,  tnlHost, int >;
 extern template class tnlMultiArray< 3, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlMultiArray< 3, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 3, double, tnlHost, long int >;
+#endif
+
 extern template class tnlMultiArray< 4, float,  tnlHost, int >;
 extern template class tnlMultiArray< 4, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
 extern template class tnlMultiArray< 4, double, tnlHost, long int >;
+#endif
 
 // TODO: There are problems with nvlink - it might be better in later versions
 /*extern template class tnlMultiArray< 1, float,  tnlCuda, int >;

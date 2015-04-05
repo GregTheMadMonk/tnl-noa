@@ -222,10 +222,14 @@ ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 #ifndef HAVE_CUDA
 extern template class tnlStaticArray< 4, char >;
 extern template class tnlStaticArray< 4, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlStaticArray< 4, long int >;
+#endif
 extern template class tnlStaticArray< 4, float >;
 extern template class tnlStaticArray< 4, double >;
-//extern template class tnlStaticArray< 4, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlStaticArray< 4, long double >;
+#endif
 #endif
 
 #endif

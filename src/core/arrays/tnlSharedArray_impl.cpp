@@ -20,14 +20,32 @@
 
 template class tnlSharedArray< float, tnlHost, int >;
 template class tnlSharedArray< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlHost, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 template class tnlSharedArray< float, tnlHost, long int >;
 template class tnlSharedArray< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
 template class tnlSharedArray< float, tnlCuda, int >;
 template class tnlSharedArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 template class tnlSharedArray< float, tnlCuda, long int >;
 template class tnlSharedArray< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlCuda, long int >;
+#endif
+#endif
 #endif
 
 #endif

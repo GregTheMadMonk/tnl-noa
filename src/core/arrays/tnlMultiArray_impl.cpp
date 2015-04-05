@@ -21,39 +21,61 @@
 
 template class tnlMultiArray< 1, float,  tnlHost, int >;
 template class tnlMultiArray< 1, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 1, float,  tnlHost, long int >;
 template class tnlMultiArray< 1, double, tnlHost, long int >;
+#endif
+
 template class tnlMultiArray< 2, float,  tnlHost, int >;
 template class tnlMultiArray< 2, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 2, float,  tnlHost, long int >;
 template class tnlMultiArray< 2, double, tnlHost, long int >;
+#endif
+
 template class tnlMultiArray< 3, float,  tnlHost, int >;
 template class tnlMultiArray< 3, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 3, float,  tnlHost, long int >;
 template class tnlMultiArray< 3, double, tnlHost, long int >;
+#endif
+
 template class tnlMultiArray< 4, float,  tnlHost, int >;
 template class tnlMultiArray< 4, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 4, float,  tnlHost, long int >;
 template class tnlMultiArray< 4, double, tnlHost, long int >;
+#endif
 
 #ifndef HAVE_CUDA
 
 template class tnlMultiArray< 1, float,  tnlCuda, int >;
 template class tnlMultiArray< 1, double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 1, float,  tnlCuda, long int >;
 template class tnlMultiArray< 1, double, tnlCuda, long int >;
+#endif
+
 template class tnlMultiArray< 2, float,  tnlCuda, int >;
 template class tnlMultiArray< 2, double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 2, float,  tnlCuda, long int >;
 template class tnlMultiArray< 2, double, tnlCuda, long int >;
+#endif
+
 template class tnlMultiArray< 3, float,  tnlCuda, int >;
 template class tnlMultiArray< 3, double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 3, float,  tnlCuda, long int >;
 template class tnlMultiArray< 3, double, tnlCuda, long int >;
+#endif
+
 template class tnlMultiArray< 4, float,  tnlCuda, int >;
 template class tnlMultiArray< 4, double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlMultiArray< 4, float,  tnlCuda, long int >;
 template class tnlMultiArray< 4, double, tnlCuda, long int >;
+#endif
 
 #endif
 

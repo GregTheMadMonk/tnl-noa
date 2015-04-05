@@ -168,7 +168,9 @@ bool tnlStaticVector< 1, Real >::operator >= ( const tnlStaticVector& v ) const
 // TODO: does not work with CUDA
 extern template class tnlStaticVector< 1, float >;
 extern template class tnlStaticVector< 1, double >;
-//extern template class tnlStaticVector< 1, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlStaticVector< 1, long double >;
+#endif
 #endif
 
 #endif

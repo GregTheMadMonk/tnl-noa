@@ -22,8 +22,17 @@
 #ifdef HAVE_CUDA
 template class tnlVector< float, tnlCuda, int >;
 template class tnlVector< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlVector< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
 template class tnlVector< float, tnlCuda, long int >;
 template class tnlVector< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlVector< long double, tnlCuda, long int >;
+#endif
+#endif
 #endif
 
 #endif

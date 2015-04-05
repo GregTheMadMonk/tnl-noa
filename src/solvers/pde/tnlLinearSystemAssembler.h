@@ -78,6 +78,7 @@ template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
 class tnlLinearSystemAssembler
 {
@@ -141,11 +142,11 @@ class tnlLinearSystemAssembler
                                     const IndexType index )
          {
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
+            ( *userData.b )[ index ] = 0.0;/*( *userData.u )[ index ] +
                      ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                                     *userData.rightHandSide,
                                                                     index,
-                                                                    *userData.time );
+                                                                    *userData.time );*/
 
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -155,7 +156,18 @@ class tnlLinearSystemAssembler
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            userData.matrix->addElement( index, index, 1.0, 1.0 );
+            //userData.matrix->addElement( index, index, 1.0, 1.0 );
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
+            
          }
    };
 };
@@ -168,12 +180,14 @@ template< int Dimensions,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
 class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                 DofVector,
                                 DifferentialOperator,
                                 BoundaryConditions,
                                 RightHandSide,
+                                TimeDiscretisation,
                                 Matrix >
 {
    public:
@@ -277,12 +291,12 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          {
             //printf( "index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
+            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
                                                              coordinates,
-                                                             *userData.time );
+                                                             *userData.time );*/
             
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -293,11 +307,23 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            if( *userData.timeDiscretisationCoefficient != 0.0 )
+            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,
                                                 *userData.timeDiscretisationCoefficient,
-                                                1.0 );
+                                                1.0 );*/
+            
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
          }
 
 #ifdef HAVE_CUDA
@@ -311,12 +337,12 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
             //printf( "index = %d \n", index );
             // printf("Matrix assembler: Index = %d \n", index );
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
+            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
                                                              coordinates,
-                                                             *userData.time );
+                                                             *userData.time );*/
 
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -327,11 +353,23 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            if( *userData.timeDiscretisationCoefficient != 0.0 )
+            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,
                                                 *userData.timeDiscretisationCoefficient,
-                                                1.0 );
+                                                1.0 );*/
+            
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
 
          }
    };

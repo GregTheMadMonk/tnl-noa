@@ -281,22 +281,17 @@ getTimeDerivative( const Vertex& vertex,
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
-         break;
       default:
          return 0.0;
-         break;
    }
 }
 
@@ -352,7 +347,6 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 copyFunction( const void* function )
 {
-   cout << "Copy function ********************************* " << endl;
    if( Device::DeviceType == ( int ) tnlHostDevice ) 
    {
       FunctionType* f = new FunctionType;
@@ -374,17 +368,17 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 printFunction( ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   switch( Device::DeviceType )
    {
-      str << *f;
-      return str;
+      case tnlHostDevice:
+         str << *f;
+         return str;
+      case tnlCudaDevice:
+         tnlCuda::print( f, str );
+         return str;
+      default:
+         return str;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
-   {
-      tnlCuda::print( f, str );
-      return str;
-   }
-   return str;
 }
 
 template< int FunctionDimensions,

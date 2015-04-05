@@ -111,9 +111,6 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
        return false;
    }
 
-
-   IndexType i, j = 1, k, l;
-
    IndexType _size = size;
 
    RealType *r = _r. getData();
@@ -136,7 +133,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       normb = _M_tmp. lpNorm( ( RealType ) 2.0 );
 
       matrix -> vectorProduct( x, _M_tmp );
-      _M_tmp. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
+      _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
       /*for( i = 0; i < size; i ++ )
          M_tmp[ i ] = b[ i ] - M_tmp[ i ];*/
 
@@ -147,7 +144,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    {
       matrix -> vectorProduct( x, _r );      
       normb = b. lpNorm( ( RealType ) 2.0 );
-      _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
+      _r. addVector( b, ( RealType ) 1.0, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
       //cout << "x = " << x << endl;
    }
@@ -168,7 +165,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    while( this->nextIteration() )
    {
       const IndexType m = restarting;
-      for( i = 0; i < m + 1; i ++ )
+      for( IndexType i = 0; i < m + 1; i ++ )
          H[ i ] = s[ i ] = cs[ i ] = sn[ i ] = 0.0;
 
       /****
@@ -190,7 +187,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /****
        * Starting m-loop
        */
-      for( i = 0; i < m && this->getIterations() <= this->getMaxIterations(); i++ )
+      for( IndexType i = 0; i < m && this->getIterations() <= this->getMaxIterations(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -206,7 +203,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          
          //cout << " i = " << i << " vi = " << vi << endl;
 
-         for( k = 0; k <= i; k++ )
+         for( IndexType k = 0; k <= i; k++ )
          {
             vk. bind( &( _v. getData()[ k * _size ] ), _size );
             /***
@@ -242,7 +239,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          /****
           * Applying the Givens rotations
           */
-         for( k = 0; k < i; k++ )
+         for( IndexType k = 0; k < i; k++ )
             applyPlaneRotation( H[ k + i * ( m + 1 )],
                                 H[ k + 1 + i * ( m + 1 ) ],
                                 cs[ k ],
@@ -281,16 +278,16 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       if( preconditioner )
       {
          matrix -> vectorProduct( x, _M_tmp );
-         for( i = 0; i < _size; i ++ )
+         for( IndexType i = 0; i < _size; i ++ )
             M_tmp[ i ] = b[ i ] - M_tmp[ i ];
          //preconditioner -> solve( M_tmp, r );
-         for( i = 0; i < _size; i ++ )
+         for( IndexType i = 0; i < _size; i ++ )
             beta += r[ i ] * r[ i ];
       }
       else
       {
          matrix -> vectorProduct( x, _r );
-         _r. alphaXPlusBetaY( ( RealType ) 1.0, b, -1.0 );
+         _r.addVector( b, ( RealType ) 1.0, -1.0 );
          beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       this->setResidue( beta / normb );

@@ -672,6 +672,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
+      __cuda_callable__
       static Index getRowBegin( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -680,6 +681,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
+      __cuda_callable__
       static Index getRowEnd( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -688,6 +690,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
+      __cuda_callable__
       static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
       {
          return 1;

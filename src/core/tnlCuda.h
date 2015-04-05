@@ -107,6 +107,11 @@ class tnlCuda
 #define tnlCudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
 
+#ifdef HAVE_CUDA
+#define __cuda_callable__ __device__ __host__
+#else
+#define __cuda_callable__
+#endif
 
 // TODO: This would be nice in tnlCuda but C++ standard does not allow it.
 #ifdef HAVE_CUDA

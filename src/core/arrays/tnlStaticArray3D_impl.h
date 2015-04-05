@@ -277,10 +277,14 @@ void tnlStaticArray< 3, Element >::sort()
 #ifndef HAVE_CUDA
 extern template class tnlStaticArray< 3, char >;
 extern template class tnlStaticArray< 3, int >;
+#ifdef INSTANTIATE_LONG_INT
 extern template class tnlStaticArray< 3, long int >;
+#endif
 extern template class tnlStaticArray< 3, float >;
 extern template class tnlStaticArray< 3, double >;
-//extern template class tnlStaticArray< 3, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlStaticArray< 3, long double >;
+#endif
 #endif
 
 #endif

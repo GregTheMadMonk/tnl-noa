@@ -748,6 +748,7 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
       typedef tnlHost Device;
 
       template< typename Index >
+      __cuda_callable__
       static Index getElementIndex( const Index rows,
                                     const Index diagonals,
                                     const Index row,

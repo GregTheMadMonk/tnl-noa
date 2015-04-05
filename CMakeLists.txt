@@ -18,7 +18,8 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
-    AddCompilerFlag( "-g" )
+    set( CXX_FLAGS "${CXXFLAGS} -g ")
+    #AddCompilerFlag( "-g" )
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
@@ -27,10 +28,6 @@ else()
     #OptimizeForArchitecture()
     AddCompilerFlag( "-O3 -march=native -DNDEBUG" )
 endif()
-
-if( WITH_TEMPLATE_EXPLICIT_INSTANTIATION STREQUAL "yes" )
-   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-endif()   
 
 #####
 # Check for CUDA
@@ -44,10 +41,20 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_SEPARABLE_COMPILATION ON)
         set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this              
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
-        AddCompilerFlag( "-DHAVE_NOT_CXX11 -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )          
+        AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
         set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
         set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared " )
+
+        ####
+        # Check for cuBLAS
+        #
+        if( WITH_CUBLAS STREQUAL "yes" ) 
+            message( "Enabling CUBLAS." )
+            set( HAVE_CUBLAS TRUE)
+            set( HAVE_CUBLAS "#define HAVE_CUBLAS" )
+        endif( WITH_CUBLAS STREQUAL "yes" )       
+
         ####
         # Check for CUSP
         #
@@ -94,7 +101,8 @@ endif( WITH_CUDA STREQUAL "yes" )
 #
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
-   AddCompilerFlag( "-DHAVE_OPENMP -fopenmp" )
+   #AddCompilerFlag( "-DHAVE_OPENMP -fopenmp" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
 # TODO: finish this
 endif()
 
@@ -214,6 +222,33 @@ endif( WITH_TESTS STREQUAL "yes" )
 #      endif()
 #   endif()
 #endif()
+
+####
+# Explicit template instantiation
+#
+if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
+   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
+endif()   
+
+if( INSTANTIATE_INT STREQUAL "yes" )
+   AddCompilerFlag( "-DINSTANTIATE_INT " )
+endif()   
+
+if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+   AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+endif()   
+
+if( INSTANTIATE_FLOAT STREQUAL "yes" )
+   AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+endif()   
+
+if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+   AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+endif()   
+
+if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+   AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+endif()   
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )

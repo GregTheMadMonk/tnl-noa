@@ -22,31 +22,47 @@
 
 template class tnlStaticArray< 1, char >;
 template class tnlStaticArray< 1, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlStaticArray< 1, long int >;
+#endif
 template class tnlStaticArray< 1, float >;
 template class tnlStaticArray< 1, double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlStaticArray< 1, long double >;
+#endif
 
 template class tnlStaticArray< 2, char >;
 template class tnlStaticArray< 2, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlStaticArray< 2, long int >;
+#endif
 template class tnlStaticArray< 2, float >;
 template class tnlStaticArray< 2, double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlStaticArray< 2, long double >;
+#endif
 
 template class tnlStaticArray< 3, char >;
 template class tnlStaticArray< 3, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlStaticArray< 3, long int >;
+#endif
 template class tnlStaticArray< 3, float >;
 template class tnlStaticArray< 3, double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlStaticArray< 3, long double >;
+#endif
 
 template class tnlStaticArray< 4, char >;
 template class tnlStaticArray< 4, int >;
+#ifdef INSTANTIATE_LONG_INT
 template class tnlStaticArray< 4, long int >;
+#endif
 template class tnlStaticArray< 4, float >;
 template class tnlStaticArray< 4, double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlStaticArray< 4, long double >;
+#endif
 
 #endif
 #endif

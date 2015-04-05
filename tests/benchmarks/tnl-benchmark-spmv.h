@@ -252,7 +252,7 @@ double benchmarkMatrix( const Matrix& matrix,
    {
       matrix.vectorProduct( x, b );
 #ifdef HAVE_CUDA
-      if( Matrix::DeviceType::DeviceType == tnlCudaDevice )
+      if( ( tnlDeviceEnum ) Matrix::DeviceType::DeviceType == tnlCudaDevice )
          cudaThreadSynchronize();
 #endif
       time = timer.GetTime();

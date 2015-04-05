@@ -144,8 +144,6 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
    bool dimensionsLine( false );
    lineNumber = 0;
    tnlTimerRT timer;
-   IndexType currentRow, currentColumn;
-   RealType value;
    while( line.getLine( file ) )
    {
       lineNumber++;

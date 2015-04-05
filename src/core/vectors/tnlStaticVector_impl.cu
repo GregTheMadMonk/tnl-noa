@@ -22,19 +22,27 @@
 
 template class tnlStaticVector< 1, float >;
 template class tnlStaticVector< 1, double >;
-//template class tnlStaticVector< 1, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlStaticVector< 1, long double >;
+#endif
 
 template class tnlStaticVector< 2, float >;
 template class tnlStaticVector< 2, double >;
-//template class tnlStaticVector< 2, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlStaticVector< 2, long double >;
+#endif
 
 template class tnlStaticVector< 3, float >;
 template class tnlStaticVector< 3, double >;
-//template class tnlStaticVector< 3, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlStaticVector< 3, long double >;
+#endif
 
 template class tnlStaticVector< 4, float >;
 template class tnlStaticVector< 4, double >;
-//template class tnlStaticVector< 4, long double >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlStaticVector< 4, long double >;
+#endif
 
 #endif
 #endif

@@ -27,10 +27,11 @@ template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
    template< int EntityDimensions >
 void
-tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
+tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix >::
 assembly( const RealType& time,
           const RealType& tau,
           const Mesh& mesh,
@@ -104,10 +105,11 @@ template< int Dimensions,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
    template< int EntityDimensions >
 void
-tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
+tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix >::
 assembly( const RealType& time,
           const RealType& tau,
           const tnlGrid< Dimensions, Real, Device, Index >& mesh,

@@ -4,7 +4,14 @@ TARGET=TNL
 PREFIX=${HOME}/local
 WITH_CUDA="yes"
 WITH_TESTS="yes"
+
+WITH_CUBLAS="no"
 WITH_TEMPLATE_INSTANTIATION="yes"
+INSTANTIATE_LONG_INT="yes"
+INSTANTIATE_INT="yes"
+INSTANTIATE_LONG_DOUBLE="yes"
+INSTANTIATE_DOUBLE="yes"
+INSTANTIATE_FLOAT="yes"
 CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
@@ -19,7 +26,18 @@ do
         --build=*                      ) BUILD="${option#*=}" ;;
         --with-tests=*                 ) WITH_TESTS="${option#*=}" ;;
         --with-cuda=*                  ) WITH_CUDA="${option#*=}" ;;
+        --with-cublas=*                ) WITH_CUBLAS="${option#*=}" ;;
         --with-templates-instantiation ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
+        --instantiate-long-int=*       ) INSTANTIATE_LONG_INT="${option#*=}" ;;
+        --instantiate-int=*            ) INSTANTIATE_INT="${option#*=}" ;;
+        --instantiate-long-double=*    ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
+        --instantiate-double=*         ) INSTANTIATE_DOUBLE="${option#*=}" ;;
+        --instantiate-float=*          ) INSTANTIATE_FLOAT="${option#*=}" ;;
+        --fast-build                   ) INSTANTIATE_LONG_INT="no"
+                                         INSTANTIATE_INT="yes"
+                                         INSTANTIATE_LONG_DOUBLE="no"
+                                         INSTANTIATE_DOUBLE="yes"
+                                         INSTANTIATE_FLOAT="no" ;;
         --with-cmake=*                 ) CMAKE="${option#*=}" ;;
         --build-jobs=*                 ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
@@ -55,9 +73,15 @@ ${CMAKE} ${ROOT_DIR} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
          -DWITH_CUDA=${WITH_CUDA} \
+         -DWITH_CUBLAS=${WITH_CUBLAS} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DPETSC_DIR=${PETSC_DIR} \
-         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION}
+         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
+         -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \
+         -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
+         -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
+         -DINSTANTIATE_INT=${INSTANTIATE_INT} \
+         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
 
 if test ${CMAKE_ONLY} = "yes";
 then

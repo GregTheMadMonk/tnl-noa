@@ -24,6 +24,7 @@
 #include <core/tnlLogger.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 
 template< typename Mesh,
@@ -223,7 +224,13 @@ assemblyLinearSystem( const RealType& time,
                       Matrix& matrix,
                       DofVectorType& b )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, Matrix > systemAssembler;
+   tnlLinearSystemAssembler< Mesh,
+                             DofVectorType,
+                             DifferentialOperator,
+                             BoundaryCondition,
+                             RightHandSide,
+                             tnlBackwardTimeDiscretisation,
+                             Matrix > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,

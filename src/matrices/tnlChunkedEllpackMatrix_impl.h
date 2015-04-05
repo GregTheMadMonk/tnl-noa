@@ -1326,6 +1326,7 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
       }
 
       template< typename Index >
+      __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
                                      const Index chunkIndex,
                                      const Index chunkSize,

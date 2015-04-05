@@ -23,8 +23,16 @@ template class tnlVector< float, tnlHost, int >;
 template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
 
 template class tnlVector< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlVector< long double, tnlHost, int >;
+#endif
+#ifdef INSTANTIATE_LONG_INT
 template class tnlVector< float, tnlHost, long int >;
 template class tnlVector< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+template class tnlVector< long double, tnlHost, long int >;
+#endif
+#endif
 
 #endif
 

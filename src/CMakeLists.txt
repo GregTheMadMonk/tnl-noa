@@ -35,6 +35,9 @@ set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
 if( BUILD_CUDA )
    CUDA_ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES}
                                                   OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+    if( HAVE_CUBLAS )
+       CUDA_ADD_CUBLAS_TO_TARGET( tnl${debugExt}-${tnlVersion} )
+    endif( HAVE_CUBLAS )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
@@ -51,6 +54,9 @@ IF( BUILD_MPI )
    if( BUILD_CUDA )
       CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
                                                          OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+      if( HAVE_CUBLAS )
+         CUDA_ADD_CUBLAS_TO_TARGET( tnl-mpi${debugExt}-${tnlVersion} )
+      endif( HAVE_CUBLAS )
    else( BUILD_CUDA )
          ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
                       ${tnl_SOURCES} )  

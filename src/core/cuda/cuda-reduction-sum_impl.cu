@@ -52,13 +52,16 @@ template bool reductionOnCudaDevice< tnlParallelReductionSum< double, int > >
                                      const typename tnlParallelReductionSum< double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionSum< double, int> :: ResultType& result );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template bool reductionOnCudaDevice< tnlParallelReductionSum< long double, int > >
                                    ( const tnlParallelReductionSum< long double, int>& operation,
                                      const typename tnlParallelReductionSum< long double, int > :: IndexType size,
                                      const typename tnlParallelReductionSum< long double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionSum< long double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionSum< long double, int> :: ResultType& result );
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
 template bool reductionOnCudaDevice< tnlParallelReductionSum< char, long int > >
                                    ( const tnlParallelReductionSum< char, long int >& operation,
                                      const typename tnlParallelReductionSum< char, long int > :: IndexType size,
@@ -87,11 +90,13 @@ template bool reductionOnCudaDevice< tnlParallelReductionSum< double, long int >
                                      const typename tnlParallelReductionSum< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionSum< double, long int> :: ResultType& result );
 
-/*template bool reductionOnCudaDevice< tnlParallelReductionSum< long double, long int > >
+#ifdef INSTANTIATE_LONG_DOUBLE
+template bool reductionOnCudaDevice< tnlParallelReductionSum< long double, long int > >
                                    ( const tnlParallelReductionSum< long double, long int>& operation,
                                      const typename tnlParallelReductionSum< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionSum< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionSum< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionSum< long double, long int> :: ResultType& result );*/
-                                     
+                                     typename tnlParallelReductionSum< long double, long int> :: ResultType& result );
 #endif                                     
+#endif                                     
+#endif

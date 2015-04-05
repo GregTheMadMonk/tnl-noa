@@ -724,6 +724,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
       template< typename Real,
                 typename Index,
                 int SliceSize >
+      __cuda_callable__
       static void initRowTraverseFast( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
