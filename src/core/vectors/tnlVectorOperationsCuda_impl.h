@@ -19,6 +19,7 @@
 #define TNLVECTOROPERATIONSCUDA_IMPL_H_
 
 #include <core/cuda/cuda-prefix-sum.h>
+#include <core/cuda/tnlCublasWrapper.h>
 
 template< typename Vector >
 void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
@@ -349,6 +350,12 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
               cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
 
    Real result( 0 );
+#ifdef HAVE_CUBLAS
+   if( tnlCublasWrapper< typename Vector1::RealType,
+                         typename Vector2::RealType,
+                         typename Vector1::IndexType >::sdot( v1.getData(), v1.getData(), v1.getSize(), result ) )
+       return result;
+#endif   
    tnlParallelReductionScalarProduct< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
