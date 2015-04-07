@@ -18,6 +18,7 @@
 #ifndef TNLVECTOROPERATIONSCUDA_IMPL_H_
 #define TNLVECTOROPERATIONSCUDA_IMPL_H_
 
+#include <tnlConfig.h>
 #include <core/cuda/cuda-prefix-sum.h>
 #include <core/cuda/tnlCublasWrapper.h>
 
@@ -350,12 +351,13 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
               cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
 
    Real result( 0 );
-#ifdef HAVE_CUBLAS
+#if defined HAVE_CUBLAS && defined HAVE_CUDA
+   cerr << endl << "##############" << endl;
    if( tnlCublasWrapper< typename Vector1::RealType,
                          typename Vector2::RealType,
-                         typename Vector1::IndexType >::sdot( v1.getData(), v1.getData(), v1.getSize(), result ) )
+                         typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )
        return result;
-#endif   
+#endif
    tnlParallelReductionScalarProduct< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
