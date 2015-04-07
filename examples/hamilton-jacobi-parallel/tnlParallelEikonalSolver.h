@@ -112,6 +112,7 @@ public:
 	int*boundaryConditions_cuda;
 	int* unusedCell_cuda;
 	int* calculationsCount_cuda;
+	double* tmpw;
 	//MeshTypeCUDA mesh_cuda, subMesh_cuda;
 	//SchemeDevice scheme_cuda;
 	//double delta_cuda, tau0_cuda, stopTime_cuda,cflCondition_cuda;
@@ -156,7 +157,7 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void initRunCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr);
+__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, bool * ptr2);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronizeCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);

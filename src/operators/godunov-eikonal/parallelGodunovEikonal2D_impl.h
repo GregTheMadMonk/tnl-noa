@@ -145,6 +145,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
 {
 
+
 	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
 		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
@@ -164,6 +165,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	RealType nabla, xb, xf, yb, yf, signui;
 
 	signui = sign(u[cellIndex],epsilon);
+
 
 	if(fabs(u[cellIndex]) < acc) return 0.0;
 
@@ -296,17 +298,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
+
 #ifdef HAVE_CUDA
-__device__ __host__
+__device__
 #endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
+Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
 {
+
 
 	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
@@ -327,8 +330,10 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	RealType nabla, xb, xf, yb, yf, signui;
 
 	signui = sign(u[cellIndex],epsilon);
-
-	if(fabs(u[cellIndex]) < acc) return 0.0;
+#ifdef HAVE_CUDA
+	//printf("%d   :    %d ;;;; %d   :   %d\n",threadIdx.x, coordinates.x(), threadIdx.y,coordinates.y());
+#endif
+	//if(fabs(u[cellIndex]) < acc) return 0.0;
 
 	   if(signui > 0.0)
 	   {
@@ -379,8 +384,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 			   yb = 0.0;
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-		   if(fabs(1.0-nabla) < acc)
-			   return 0.0;
+		  // if(fabs(1.0-nabla) < acc)
+			//   return 0.0;
 		   return signui*(1.0 - nabla);
 	   }
 	   else if (signui < 0.0)
@@ -435,8 +440,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
-		   if(fabs(1.0-nabla) < acc)
-			   return 0.0;
+		  // if(fabs(1.0-nabla) < acc)
+		//	   return 0.0;
 		   return signui*(1.0 - nabla);
 	   }
 	   else

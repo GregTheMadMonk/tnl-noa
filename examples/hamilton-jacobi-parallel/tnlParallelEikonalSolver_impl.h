@@ -113,25 +113,27 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 	if( !initCUDA(parameters, gridRows, gridCols) )
 		return false;
 	}*/
-		cout << "s" << endl;
+		//cout << "s" << endl;
 	cudaMalloc(&(this->cudaSolver), sizeof(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >));
-	cout << "s" << endl;
+	//cout << "s" << endl;
 	cudaMemcpy(this->cudaSolver, this,sizeof(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >), cudaMemcpyHostToDevice);
-	cout << "s" << endl;
+	//cout << "s" << endl;
 	double** tmpdev = NULL;
 	cudaMalloc(&tmpdev, sizeof(double*));
-	double* tmpw;
-	cudaMalloc(&tmpw, this->work_u.getSize()*sizeof(double));
-	initCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, tmpw);
+	//double* tmpw;
+	cudaMalloc(&(this->tmpw), this->work_u.getSize()*sizeof(double));
+	cudaMalloc(&(this->runcuda), sizeof(bool));
+	initCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda));
 	cudaDeviceSynchronize();
-	cout << "s " << endl;
+	//cout << "s " << endl;
 	//cudaMalloc(&(cudaSolver->work_u_cuda), this->work_u.getSize()*sizeof(double));
 	double* tmpu = NULL;
 
 	cudaMemcpy(&tmpu, tmpdev,sizeof(double*), cudaMemcpyDeviceToHost);
-	printf("%p %p \n",tmpu,tmpw);
-	cudaMemcpy(tmpw, this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
-	cout << "s "<< endl;
+	//printf("%p %p \n",tmpu,tmpw);
+	cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
+	//cout << "s "<< endl;
+
 	}
 #endif
 
@@ -168,13 +170,14 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
 	{
-		cout << "pre 1 kernel" << endl;
+//		cout << "pre 1 kernel" << endl;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
 		initRunCUDA<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		cout << "post 1 kernel" << endl;
+//		cout << "post 1 kernel" << endl;
+
 	}
 #endif
 
@@ -186,8 +189,26 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 	else if(this->device == tnlCudaDevice)
 	{
 		cudaDeviceSynchronize();
+
+
+		//double * test = (double*)malloc(this->work_u.getSize()*sizeof(double));
+		//cout << test[0] <<"   " << test[1] <<"   " << test[2] <<"   " << test[3] << endl;
+		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+		//cout << this->tmpw << "   " <<  test[0] <<"   " << test[1] << "   " <<test[2] << "   " <<test[3] << endl;
+
+		checkCudaDevice;
+
 		synchronizeCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
+		//cout << test[0] << "   " <<test[1] <<"   " << test[2] << "   " <<test[3] << endl;
+		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+		//checkCudaDevice;
+		//cout << this->tmpw << "   " <<  test[0] << "   " <<test[1] << "   " <<test[2] <<"   " << test[3] << endl;
+		//free(test);
+
 	}
+
 #endif
 	cout << "Solver initialized." << endl;
 
@@ -281,40 +302,60 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
 	{
+		//cout << "fn" << endl;
 		bool end_cuda = false;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		cudaMalloc(&runcuda,sizeof(bool));
-		cudaMemcpy(runcuda, &run_host, sizeof(bool), cudaMemcpyHostToDevice);
+		checkCudaDevice;
+		//cudaMalloc(&runcuda,sizeof(bool));
+		//cudaMemcpy(runcuda, &run_host, sizeof(bool), cudaMemcpyHostToDevice);
+		//cout << "fn" << endl;
 		bool* tmpb;
+		//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
+		//cudaDeviceSynchronize();
+		//checkCudaDevice;
+		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(bool), cudaMemcpyDeviceToHost);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
+		//cout << "fn" << endl;
+		int i = 1;
 		while (run_host || !end_cuda)
 		{
-			cout << "a" << endl;
-			if(this->boundaryConditions.max() == 0 )
+			cout << "Computing at step "<< i++  << endl;
+			if(run_host == false )
 				end_cuda = true;
 			else
 				end_cuda = false;
-			cout << "a" << endl;
+			//cout << "a" << endl;
 			cudaDeviceSynchronize();
+			checkCudaDevice;
 			runCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,this->n*this->n*sizeof(double)>>>(this->cudaSolver);
-			cout << "a" << endl;
+			//cout << "a" << endl;
 			cudaDeviceSynchronize();
 			synchronizeCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver);
 
-			cout << "a" << endl;
-			run_host = false;
-			cout << "in kernel loop" << run_host << endl;
-			cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(double*), cudaMemcpyHostToDevice);
-			cudaMemcpy(&run_host, tmpb,sizeof(bool), cudaMemcpyDeviceToHost);
-			cout << "in kernel loop" << run_host << endl;
+			//cout << "a" << endl;
+			//run_host = false;
+			//cout << "in kernel loop" << run_host << endl;
+			//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
+			cudaMemcpy(&run_host, (this->runcuda),sizeof(bool), cudaMemcpyDeviceToHost);
+			//cout << "in kernel loop" << run_host << endl;
 		}
-		cout << "b" << endl;
+		//cout << "b" << endl;
 
-		double* tmpu;
-		cudaMemcpy(tmpu, &(cudaSolver->work_u_cuda),sizeof(double*), cudaMemcpyHostToDevice);
-		cudaMemcpy(this->work_u.getData(), tmpu, this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+		//double* tmpu;
+		//cudaMemcpy(tmpu, &(cudaSolver->work_u_cuda),sizeof(double*), cudaMemcpyHostToDevice);
+		//cudaMemcpy(this->work_u.getData(), tmpu, this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+		//cout << this->work_u.getData()[0] << endl;
 
+		//double * test = (double*)malloc(this->work_u.getSize()*sizeof(double));
+		//cout << test[0] << test[1] << test[2] << test[3] << endl;
+		cudaMemcpy(this->work_u.getData()/* test*/, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+		//cout << this->tmpw << "   " <<  test[0] << test[1] << test[2] << test[3] << endl;
+		//free(test);
+
+		cudaDeviceSynchronize();
 	}
 #endif
 	contractGrid();
@@ -322,6 +363,15 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() << endl;
 	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) << endl;
 	cout << "Solver finished" << endl;
+
+#ifdef HAVE_CUDA
+	if(this->device == tnlCudaDevice)
+	{
+		cudaFree(this->runcuda);
+		cudaFree(this->tmpw);
+		cudaFree(this->cudaSolver);
+	}
+#endif
 
 }
 
@@ -943,7 +993,6 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ge
             + (i % caller->gridCols) * caller->n
             + (j/caller->n) * caller->n*caller->gridCols
             + (j % caller->n);
-	printf(" tX: %d, tY : %d, bDx: %d, Total: %d, Index: %d, pntr: %d, pntr2 %d \n", threadIdx.x,threadIdx.y,blockDim.x, j, th,caller->work_u_cuda,a);
 	*a = caller->work_u_cuda[th];
 	//printf("Hi %f \n", *a);
 	//return ret;
@@ -955,7 +1004,9 @@ __device__
 void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::insertSubgridCUDA( double u, const int i )
 {
 
+
 	int j = threadIdx.x + threadIdx.y * blockDim.x;
+	//printf("j = %d, u = %f\n", j,u);
 
 		int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n
 					+ (j/this->n)*this->n*this->gridCols + (j % this->n);
@@ -964,7 +1015,9 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 		{
 			this->work_u_cuda[index] = u;
 			this->unusedCell_cuda[index] = 0;
+
 		}
+
 
 }
 
@@ -980,25 +1033,33 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
 
 	if(l == 0)
+	{
 		tmp = 0;
+		/*for(int o = 0; o < this->n * this->n; o++)
+			printf("%d : %f\n", o, u[o]);*/
+	}
 
 	__syncthreads();
 
 	if(u[0]*u[l] <= 0.0)
-		atomicOr( &tmp, 1);
+		atomicMax( &tmp, 1);
+	__syncthreads();
+	//printf("tmp = %d", tmp);
+
 
 
 
 	__shared__ double value;
 	if(l == 0)
 		value = 0.0;
-
+	__syncthreads();
 	for(int o = 0; o < blockDim.x*blockDim.y; o++)
 	{
 		if(l == o)
 			value=Max(value,fabs(u[l]));
 		__syncthreads();
 	}
+	__syncthreads();
 	//atomicMax(&value,fabs(u[l]))
 
 	if(l == 0)
@@ -1007,7 +1068,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 
 	__syncthreads();
-	if(tmp)
+	if(tmp == 1)
 	{}
 	//north - 1, east - 2, west - 4, south - 8
 	else if(boundaryCondition == 4)
@@ -1030,6 +1091,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 		if(i > 0)
 			u[i*this->n + j] = value;
 	}
+	__syncthreads();
 
    double time = 0.0;
    __shared__ double currentTau;
@@ -1038,34 +1100,43 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
    if(threadIdx.x * threadIdx.y == 0)
    {
 	   currentTau = this->tau0;
-	   maxResidue = 10.0 * this->subMesh.getHx();
+	   maxResidue = 0.0;//10.0 * this->subMesh.getHx();
    }
    double finalTime = this->stopTime;
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
    __syncthreads();
 
+	//printf("%d : %f\n", l, u[l]);
    while( time < finalTime )
    {
+
       /****
        * Compute the RHS
        */
+	   __syncthreads();
 
 
-    	  fu = schemeDevice.getValue( this->subMesh, l, this->subMesh.getCellCoordinates(i), u, time, boundaryCondition );
+    	  fu = schemeHost.getValueDev( this->subMesh, l, this->subMesh.getCellCoordinates(l), u, time, boundaryCondition);
       __syncthreads();
+      //printf("%d : %f\n", l, fu);
 
 
       //atomicMax(&maxResidue,fabs(fu));//maxResidue = fu. absMax();
+    if(l == 0)
+    	maxResidue = 0.0;
+    __syncthreads();
   	for(int o = 0; o < blockDim.x*blockDim.y; o++)
   	{
   		if(l == o)
   			maxResidue=Max(maxResidue,fabs(fu));
   		__syncthreads();
   	}
+  	__syncthreads();
 
 
-      if(threadIdx.x * threadIdx.y == 0)
+
+      if(l == 0)
       {
     	  if( this -> cflCondition * maxResidue != 0.0)
     		  currentTau =  this -> cflCondition / maxResidue;
@@ -1076,13 +1147,16 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
     	  }
 
     	  if( time + currentTau > finalTime ) currentTau = finalTime - time;
-    	  maxResidue = 0.0;
       }
+      __syncthreads();
  //
-      double tau2 = 1.0;
+
+      double tau2 = finalTime;
       if((u[l]+currentTau * fu)*u[l] < 0.0 && fu != 0.0 && u[l] != 0.0 )
     	  tau2 = fabs(u[l]/(2.0*fu));
 
+
+      __syncthreads();
       //atomicMin(&currentTau, tau2);
     	for(int o = 0; o < blockDim.x*blockDim.y; o++)
     	{
@@ -1093,91 +1167,20 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 
 //
+
+
       __syncthreads();
       u[l] += currentTau * fu;
+      //if(l==0)
+    	 // printf("ct %f\n",currentTau);
+
 
 
       time += currentTau;
       __syncthreads();
    }
+	//printf("%d : %f\n", l, u[l]);
 
-}
-
-template< typename SchemeHost, typename SchemeDevice, typename Device >
-__global__
-void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/runCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller)
-{
-	extern __shared__ double u[];
-	int i = blockIdx.y * gridDim.x + blockIdx.x;
-	int l = threadIdx.y * blockDim.x + threadIdx.x;
-
-	if(caller->getSubgridValueCUDA(i) != INT_MAX)
-	{
-		double a;
-		caller->getSubgridCUDA(i,caller, &a);
-		u[l] = a;
-		int bound = caller->getBoundaryConditionCUDA(i);
-
-		if(bound & 1)
-		{
-			caller->runSubgridCUDA(1,u,i);
-			//this->calculationsCount[i]++;
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if(bound & 2)
-		{
-			caller->runSubgridCUDA(2,u,i);
-			//this->calculationsCount[i]++;
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if(bound & 4)
-		{
-			caller->runSubgridCUDA(4,u,i);
-			//this->calculationsCount[i]++;
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if(bound & 8)
-		{
-			caller->runSubgridCUDA(8,u,i);
-			//this->calculationsCount[i]++;
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-
-		if( ((bound & 2) ))
-		{
-			caller->runSubgridCUDA(3,u,i);
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if( ((bound & 4) ))
-		{
-			caller->runSubgridCUDA(5,u,i);
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if( ((bound & 2) ))
-		{
-			caller->runSubgridCUDA(10,u,i);
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-		if(   (bound & 4) )
-		{
-			caller->runSubgridCUDA(12,u,i);
-		}
-		__syncthreads();
-		caller->insertSubgridCUDA(u[l],i);
-
-
-		caller->setBoundaryConditionCUDA(i, 0);
-		caller->setSubgridValueCUDA(i, caller->getSubgridValueCUDA(i) - 1 );
-
-
-	}
 }
 
 
@@ -1230,14 +1233,17 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
 void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/synchronizeCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver) //needs fix ---- maybe not anymore --- but frankly: yeah, it does -- aaaa-and maybe fixed now
 {
+	//printf("I am not an empty kernel!\n");
 	//cout << "Synchronizig..." << endl;
 	int tmp1, tmp2;
 	int grid1, grid2;
 
 	if(cudaSolver->currentStep & 1)
 	{
+		//printf("I am not an empty kernel! 1\n");
 		for(int j = 0; j < cudaSolver->gridRows - 1; j++)
 		{
+			//printf("I am not an empty kernel! 3\n");
 			for (int i = 0; i < cudaSolver->gridCols*cudaSolver->n; i++)
 			{
 				tmp1 = cudaSolver->gridCols*cudaSolver->n*((cudaSolver->n-1)+j*cudaSolver->n) + i;
@@ -1247,6 +1253,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 				if ((fabs(cudaSolver->work_u_cuda[tmp1]) < fabs(cudaSolver->work_u_cuda[tmp2]) - cudaSolver->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
+					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA(tmp1),cudaSolver->getOwnerCUDA(tmp2));
 					cudaSolver->work_u_cuda[tmp2] = cudaSolver->work_u_cuda[tmp1];
 					cudaSolver->unusedCell_cuda[tmp2] = 0;
 					if(grid2 == INT_MAX)
@@ -1258,6 +1265,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 				}
 				else if ((fabs(cudaSolver->work_u_cuda[tmp1]) > fabs(cudaSolver->work_u_cuda[tmp2]) + cudaSolver->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
 				{
+					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA(tmp1),cudaSolver->getOwnerCUDA(tmp2));
 					cudaSolver->work_u_cuda[tmp1] = cudaSolver->work_u_cuda[tmp2];
 					cudaSolver->unusedCell_cuda[tmp1] = 0;
 					if(grid1 == INT_MAX)
@@ -1273,10 +1281,13 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 	}
 	else
 	{
+		//printf("I am not an empty kernel! 2\n");
 		for(int i = 1; i < cudaSolver->gridCols; i++)
 		{
+			//printf("I am not an empty kernel! 4\n");
 			for (int j = 0; j < cudaSolver->gridRows*cudaSolver->n; j++)
 			{
+
 				tmp1 = cudaSolver->gridCols*cudaSolver->n*j + i*cudaSolver->n - 1;
 				tmp2 = cudaSolver->gridCols*cudaSolver->n*j + i*cudaSolver->n ;
 				grid1 = cudaSolver->getSubgridValueCUDA(cudaSolver->getOwnerCUDA(tmp1));
@@ -1284,6 +1295,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 				if ((fabs(cudaSolver->work_u_cuda[tmp1]) < fabs(cudaSolver->work_u_cuda[tmp2]) - cudaSolver->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
+					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA(tmp1),cudaSolver->getOwnerCUDA(tmp2));
 					cudaSolver->work_u_cuda[tmp2] = cudaSolver->work_u_cuda[tmp1];
 					cudaSolver->unusedCell_cuda[tmp2] = 0;
 					if(grid2 == INT_MAX)
@@ -1295,6 +1307,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 				}
 				else if ((fabs(cudaSolver->work_u_cuda[tmp1]) > fabs(cudaSolver->work_u_cuda[tmp2]) + cudaSolver->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
 				{
+					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA(tmp1),cudaSolver->getOwnerCUDA(tmp2));
 					cudaSolver->work_u_cuda[tmp1] = cudaSolver->work_u_cuda[tmp2];
 					cudaSolver->unusedCell_cuda[tmp1] = 0;
 					if(grid1 == INT_MAX)
@@ -1307,21 +1320,25 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			}
 		}
 	}
+	//printf("I am not an empty kernel! 5 cudaSolver->currentStep : %d \n", cudaSolver->currentStep);
 
-
-	cudaSolver->currentStep++;
+	cudaSolver->currentStep = cudaSolver->currentStep + 1;
 	int stepValue = cudaSolver->currentStep + 4;
-	for (int i = 0; i < cudaSolver->subgridValues.getSize(); i++)
+	for (int i = 0; i < cudaSolver->gridRows * cudaSolver->gridCols; i++)
 	{
 		if( cudaSolver->getSubgridValueCUDA(i) == -INT_MAX )
 			cudaSolver->setSubgridValueCUDA(i, stepValue);
 	}
 
 	int maxi = 0;
-	for(int q=0; q < cudaSolver->n*cudaSolver->n;q++)
+	for(int q=0; q < cudaSolver->gridRows*cudaSolver->gridCols;q++)
+	{
+		//printf("%d : %d\n", q, cudaSolver->boundaryConditions_cuda[q]);
 		maxi=Max(maxi,cudaSolver->boundaryConditions_cuda[q]);
-
+	}
+	//printf("I am not an empty kernel! %d\n", maxi);
 	*(cudaSolver->runcuda) = (maxi > 0);
+	//printf("I am not an empty kernel! 7 %d\n", cudaSolver->boundaryConditions_cuda[0]);
 	//cout << "Grid synchronized at step " << (this->currentStep - 1 ) << endl;
 
 }
@@ -1335,7 +1352,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
-void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr )
+void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , bool* ptr2)
 {
 	//cout << "Initializating solver..." << endl;
 	//const tnlString& meshLocation = parameters.getParameter <tnlString>("mesh");
@@ -1377,9 +1394,22 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 	cudaSolver->unusedCell_cuda = (int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(int));
 	cudaSolver->subgridValues_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
 	cudaSolver->boundaryConditions_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
+	cudaSolver->runcuda = ptr2;//(bool*)malloc(sizeof(bool));
+	*(cudaSolver->runcuda) = true;
+	cudaSolver->currentStep = 1;
 	//cudaMemcpy(ptr,&(cudaSolver->work_u_cuda), sizeof(double*),cudaMemcpyDeviceToHost);
 	ptr = cudaSolver->work_u_cuda;
 	printf("GPU memory allocated. %p \n",cudaSolver->work_u_cuda);
+
+	for(int i = 0; i < cudaSolver->gridCols*cudaSolver->gridRows; i++)
+	{
+		for(int j = 0; j < cudaSolver->n*cudaSolver->n; j++)
+			cudaSolver->unusedCell_cuda[i*cudaSolver->n*cudaSolver->n + j] = 1;
+		cudaSolver->subgridValues_cuda[i] = INT_MAX;
+		cudaSolver->boundaryConditions_cuda[i] = 0;
+	}
+
+
 	//cudaSolver->work_u_cuda[50] = 32.153438;
 ////
 ////
@@ -1427,28 +1457,149 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 	double a;
 	caller->getSubgridCUDA(i,caller, &a);
-	printf("%f   %f\n",a , u[l]);
+	//printf("%f   %f\n",a , u[l]);
 	u[l] = a;
-	printf("Hi %f \n", u[l]);
+	//printf("Hi %f \n", u[l]);
 	__syncthreads();
-	printf("hurewrwr %f \n", u[l]);
+	//printf("hurewrwr %f \n", u[l]);
 	if(u[0] * u[l] <= 0.0)
 	{
-		printf("000 \n");
+	//	printf("000 \n");
 		atomicMax( &containsCurve, 1);
 	}
 
 	__syncthreads();
-	printf("hu");
+	//printf("hu");
+	//printf("%d : %f\n", l, u[l]);
 	if(containsCurve)
 	{
+		//printf("have curve \n");
 		caller->runSubgridCUDA(0,u,i);
+		//printf("%d : %f\n", l, u[l]);
 		__syncthreads();
 		caller->insertSubgridCUDA(u[l],i);
-		caller->setSubgridValueCUDA(i, 4);
+		__syncthreads();
+		if(l == 0)
+			caller->setSubgridValueCUDA(i, 4);
 	}
-	printf("das");
 
+
+}
+
+
+
+
+
+template< typename SchemeHost, typename SchemeDevice, typename Device >
+__global__
+void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/runCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller)
+{
+	extern __shared__ double u[];
+	int i = blockIdx.y * gridDim.x + blockIdx.x;
+	int l = threadIdx.y * blockDim.x + threadIdx.x;
+
+	if(i+l == 0)
+		printf("a");
+	if(caller->getSubgridValueCUDA(i) != INT_MAX)
+	{
+		double a;
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		int bound = caller->getBoundaryConditionCUDA(i);
+		if(l == 0)
+			//printf("i = %d, bound = %d\n",i,caller->getSubgridValueCUDA(i));
+		if(bound & 1)
+		{
+			caller->runSubgridCUDA(1,u,i);
+			//this->calculationsCount[i]++;
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if(bound & 2)
+		{
+			caller->runSubgridCUDA(2,u,i);
+			//this->calculationsCount[i]++;
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if(bound & 4)
+		{
+			caller->runSubgridCUDA(4,u,i);
+			//this->calculationsCount[i]++;
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if(bound & 8)
+		{
+			caller->runSubgridCUDA(8,u,i);
+			//this->calculationsCount[i]++;
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+
+		if( ((bound & 2) ))
+		{
+			caller->runSubgridCUDA(3,u,i);
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if( ((bound & 4) ))
+		{
+			caller->runSubgridCUDA(5,u,i);
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if( ((bound & 2) ))
+		{
+			caller->runSubgridCUDA(10,u,i);
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+		__syncthreads();
+		caller->getSubgridCUDA(i,caller, &a);
+		u[l] = a;
+		__syncthreads();
+		if(   (bound & 4) )
+		{
+			caller->runSubgridCUDA(12,u,i);
+		}
+		__syncthreads();
+		caller->insertSubgridCUDA(u[l],i);
+
+
+		caller->setBoundaryConditionCUDA(i, 0);
+		caller->setSubgridValueCUDA(i, caller->getSubgridValueCUDA(i) - 1 );
+
+
+	}
+
+
+	if(i+l == 0)
+		printf("b");
 }
 
 #endif /*HAVE_CUDA*/

@@ -149,16 +149,16 @@ public:
                    const RealType& time,
                    const IndexType boundaryCondition ) const;
 
-    template< typename Vector >
+
  #ifdef HAVE_CUDA
-    __device__ __host__
+    __device__
  #endif
-    Real getValue( const MeshType& mesh,
+    Real getValueDev( const MeshType& mesh,
                    const IndexType cellIndex,
                    const CoordinatesType& coordinates,
                    const RealType* u,
                    const RealType& time,
-                   const IndexType boundaryCondition ) const;
+                   const IndexType boundaryCondition) const;
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
