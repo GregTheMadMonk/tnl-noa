@@ -204,22 +204,25 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          //cout << " i = " << i << " vi = " << vi << endl;
 
          for( IndexType k = 0; k <= i; k++ )
-         {
-            vk. bind( &( _v. getData()[ k * _size ] ), _size );
-            /***
-             * H_{k,i} = ( w, v_k )
-             */
-            RealType H_k_i = _w. scalarProduct( vk );
-            H[ k + i * ( m + 1 ) ] = H_k_i;           
+            H[ k + i * ( m + 1 ) ] = 0.0;
+         for( IndexType l = 0; l < 2; l++ )
+            for( IndexType k = 0; k <= i; k++ )
+            {
+               vk. bind( &( _v. getData()[ k * _size ] ), _size );
+               /***
+                * H_{k,i} = ( w, v_k )
+                */
+               RealType H_k_i = _w. scalarProduct( vk );
+               H[ k + i * ( m + 1 ) ] += H_k_i;           
 
-            /****
-             * w = w - H_{k,i} v_k
-             */
-            _w. addVector( vk, -H_k_i );
-            
-            //cout << "H_ki = " << H_k_i << endl;
-            //cout << "w = " << _w << endl;
-         }
+               /****
+                * w = w - H_{k,i} v_k
+                */
+               _w. addVector( vk, -H_k_i );
+
+               //cout << "H_ki = " << H_k_i << endl;
+               //cout << "w = " << _w << endl;
+            }
          /***
           * H_{i+1,i} = |w|
           */
