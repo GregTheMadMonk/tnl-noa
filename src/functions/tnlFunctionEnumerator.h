@@ -86,12 +86,19 @@ class tnlFunctionEnumerator
                                        const IndexType index )
             {
                typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
-               ( *userData.u )[ index ] =
-                        ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       *userData.time );
+               if( ! *userData.dofVectorCoefficient  )
+                  ( *userData.u )[ index ] =
+                     ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                    *userData.function,
+                                                                                    index,
+                                                                                    *userData.time );
+               else                                                                                            
+                 ( *userData.u )[ index ] =
+                             ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
+                             ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                            *userData.function,
+                                                                                            index,
+                                                                                            *userData.time );
             }
 
       };
@@ -142,13 +149,21 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
             {
                //printf( "Enumerator::processCell mesh =%p \n", &mesh );
                typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
-               ( *userData.u )[ index ] =
-                        ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       coordinates,
-                                                                                       *userData.time );
+               if( ! ( *userData.dofVectorCoefficient ) )
+                  ( *userData.u )[ index ] =
+                     ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                    *userData.function,
+                                                                                    index,
+                                                                                    coordinates,
+                                                                                    *userData.time );
+               else
+                  ( *userData.u )[ index ] =
+                           ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
+                           ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                          *userData.function,
+                                                                                          index,
+                                                                                          coordinates,
+                                                                                          *userData.time );
 
             }
 
@@ -161,13 +176,21 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
                                      const CoordinatesType& coordinates )
             {
                typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
-               ( *userData.u )[ index ] =
-                        ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
-                        ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
-                                                                                       *userData.function,
-                                                                                       index,
-                                                                                       coordinates,
-                                                                                       *userData.time );
+               if( ! ( *userData.dofVectorCoefficient ) )
+                  ( *userData.u )[ index ] =
+                     ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                    *userData.function,
+                                                                                    index,
+                                                                                    coordinates,
+                                                                                    *userData.time );
+               else
+                  ( *userData.u )[ index ] =
+                           ( *userData.dofVectorCoefficient ) * ( *userData.u )[ index ] +
+                           ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
+                                                                                          *userData.function,
+                                                                                          index,
+                                                                                          coordinates,
+                                                                                          *userData.time );
             }
       };
 

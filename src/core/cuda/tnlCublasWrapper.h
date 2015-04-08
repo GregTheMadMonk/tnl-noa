@@ -47,7 +47,6 @@ class tnlCublasWrapper< float, float, Index >
             cublasCreate( &handle );
             cublasSdot( handle, size, v1, 1, v2, 1, &result );
             cublasDestroy( handle );
-            cerr<< "~~~~~~~~~~~~~~~" << endl;
             return false;
         }        
 };
@@ -62,7 +61,6 @@ class tnlCublasWrapper< double, double, Index >
             cublasCreate( &handle );
             cublasDdot( handle, size, v1, 1, v2, 1, &result );
             cublasDestroy( handle );
-            cerr<< "~~~~~~~~~~~~~~~" << endl;
             return false;
         }        
 };

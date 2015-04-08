@@ -352,7 +352,6 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
 
    Real result( 0 );
 #if defined HAVE_CUBLAS && defined HAVE_CUDA
-   cerr << endl << "##############" << endl;
    if( tnlCublasWrapper< typename Vector1::RealType,
                          typename Vector2::RealType,
                          typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )

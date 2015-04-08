@@ -239,6 +239,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
+             ( *userData.b )[ index ] = 0.0;
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                              mesh,
@@ -259,6 +260,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          {
             //printf( "index = %d \n", index );
             // printf("Matrix assembler: Index = %d \n", index );
+            ( *userData.b )[ index ] = 0.0;
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                              mesh,
@@ -267,6 +269,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              *userData.u,
                                                              *userData.b,
                                                              matrixRow );
+            //printf( "BC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
          }
 
 
@@ -324,6 +327,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                          ( *userData.u )[ index ],
                                                          ( *userData.tau ),
                                                          rhs );
+            //printf( "IC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
          }
 
 #ifdef HAVE_CUDA
