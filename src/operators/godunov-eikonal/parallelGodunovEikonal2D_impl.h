@@ -331,7 +331,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 
 	signui = sign(u[cellIndex],epsilon);
 #ifdef HAVE_CUDA
-	//printf("%d   :    %d ;;;; %d   :   %d\n",threadIdx.x, coordinates.x(), threadIdx.y,coordinates.y());
+	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
 #endif
 	//if(fabs(u[cellIndex]) < acc) return 0.0;
 
@@ -351,7 +351,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   else *//*if(boundaryCondition & 2)
 			   xb = 0.0;
 		   else /**/if(coordinates.x() == 0)
-			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<+1,0>( cellIndex )])/hx);
+			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])/hx);
 		   else
 			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])/hx);
 
@@ -388,7 +388,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 			//   return 0.0;
 		   return signui*(1.0 - nabla);
 	   }
-	   else if (signui < 0.0)
+	   else if(signui < 0.0)
 	   {
 
 	/**/  /* if(boundaryCondition & 2)
