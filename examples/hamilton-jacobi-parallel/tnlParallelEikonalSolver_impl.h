@@ -1151,20 +1151,9 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
   	}*/
   	//__syncthreads();
   																													//end reduction
-    __syncthreads();
-	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
-	{
-		if( l < s )
-			sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]) ;
-		__syncthreads();
-	}
-	if(l==0) maxResidue=sharedRes[l];
-
-    sharedTau[l]=currentTau;
-    __syncthreads();
-     // if(l == 0)
-    	  if( this -> cflCondition * maxResidue != 0.0)
-    		  sharedTau[l] =  this -> cflCondition / maxResidue;
+      sharedTau[l]=this -> cflCondition/sharedRes[l];
+      if((u[l]+sharedTau[l] * fu)*u[l] < 0.0)
+    	  sharedTau[l] = fabs(u[l]/(2.0*fu));
 
       if(l == 0)
     	  if(sharedTau[l] > 1.0 * this->subMesh.getHx())
@@ -1172,14 +1161,44 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
       if(l == 1)
     	  if( time + sharedTau[l] > finalTime ) sharedTau[l] = finalTime - time;
+      __syncthreads();
+
+   //   __syncthreads();
+  	/*for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
+  	{
+  		if( l < s )
+  			sharedTau[l] = Min(sharedTau[l],sharedTau[l+s]) ;
+  		__syncthreads();
+  	}
+  	if(l==0) currentTau=sharedTau[l];
+  	__syncthreads();*/
+
+
+	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
+	{
+		if( l < s )
+			sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]);
+		if(l >= blockDim.x*blockDim.y - s)
+			sharedTau[l] = Min(sharedTau[l],sharedTau[l-s]);
+		__syncthreads();
+	}
+	if(l==0)
+	{
+		maxResidue=sharedRes[l];
+		currentTau=sharedTau[blockDim.x*blockDim.y - 1];
+		/*if( this -> cflCondition * maxResidue != 0.0)
+			currentTau = Min(this -> cflCondition / maxResidue, currentTau);*/
+	}
+	__syncthreads();
+
+
 
       //__syncthreads();
  //
 
       //double tau2 = finalTime;
 
-      if((u[l]+sharedTau[l] * fu)*u[l] < 0.0 && fu != 0.0 && u[l] != 0.0 )
-    	  sharedTau[l] = fabs(u[l]/(2.0*fu));
+
 
       	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //start reduction
 
@@ -1196,15 +1215,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 
 
-    __syncthreads();
-	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
-	{
-		if( l < s )
-			sharedTau[l] = Min(sharedTau[l],sharedTau[l+s]) ;
-		__syncthreads();
-	}
-	if(l==0) currentTau=sharedTau[l];
-	__syncthreads();
+
 
 
 //

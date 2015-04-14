@@ -315,63 +315,53 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
 		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
 		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)))
-		 /*and
-		 !(		 (coordinates.y() == 0 or coordinates.y() == mesh.getDimensions().y() - 1)
-				 and
-				 ( coordinates.x() == 0 or coordinates.x() == mesh.getDimensions().x() - 1)
-		  )*/
 		)
 	{
 		return 0.0;
 	}
 
-	RealType acc = hx*hy*hx*hy;
+
+	//RealType acc = hx*hy*hx*hy;
 
 	RealType nabla, xb, xf, yb, yf, signui;
-
 	signui = sign(u[cellIndex],epsilon);
 #ifdef HAVE_CUDA
 	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
 #endif
-	//if(fabs(u[cellIndex]) < acc) return 0.0;
+
+
+
+	   if(coordinates.x() == mesh.getDimensions().x() - 1)
+		   xf = ((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])/hx);
+	   else
+		   xf = ((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])/hx);
+
+	   if(coordinates.x() == 0)
+		   xb = ((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])/hx);
+	   else
+		   xb = ((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])/hx);
+
+	   if(coordinates.y() == mesh.getDimensions().y() - 1)
+		   yf = ((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])/hy);
+	   else
+		   yf = ((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])/hy);
+
+	   if(coordinates.y() == 0)
+		   yb = ((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])/hy);
+	   else
+		   yb = ((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
+
+
 
 	   if(signui > 0.0)
 	   {
-	/**/ /*  if(boundaryCondition & 2)
-			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx;
-		   else *//*if(boundaryCondition & 4)
-			   xf = 0.0;
-		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-			   xf = negativePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])/hx);
-		   else
-			   xf = negativePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])/hx);
+		   xf = negativePart(xf);
 
-	/**/ /*  if(boundaryCondition & 4)
-			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx;
-		   else *//*if(boundaryCondition & 2)
-			   xb = 0.0;
-		   else /**/if(coordinates.x() == 0)
-			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])/hx);
-		   else
-			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])/hx);
+		   xb = positivePart(xb);
 
-	/**/  /* if(boundaryCondition & 1)
-			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy;
-		   else *//*if(boundaryCondition & 8)
-			   yf = 0.0;
-		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-			   yf = negativePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])/hy);
-		   else
-			   yf = negativePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])/hy);
+		   yf = negativePart(yf);
 
-	/**/  /* if(boundaryCondition & 8)
-			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy;
-		   else *//*if(boundaryCondition & 1)
-			   yb = 0.0;
-		   else /**/if(coordinates.y() == 0)
-			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])/hy);
-		   else
-			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
+		   yb = positivePart(yb);
 
 		   if(xb + xf > 0.0)
 			   xf = 0.0;
@@ -383,50 +373,17 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   else
 			   yb = 0.0;
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-		  // if(fabs(1.0-nabla) < acc)
-			//   return 0.0;
-		   return signui*(1.0 - nabla);
 	   }
 	   else if(signui < 0.0)
 	   {
 
-	/**/  /* if(boundaryCondition & 2)
-			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx;
-		   else*//* if(boundaryCondition & 4)
-			   xf = 0.0;
-		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-			   xf = positivePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])/hx);
-		   else
-			   xf = positivePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])/hx);
+		   xb = negativePart(xb);
 
-	/**/  /* if(boundaryCondition & 4)
-			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx;
-		   else*//* if(boundaryCondition & 2)
-			   xb = 0.0;
-		   else /**/if(coordinates.x() == 0)
-			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])/hx);
-		   else
-			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])/hx);
+		   xf = positivePart(xf);
 
-	/**/ /*  if(boundaryCondition & 1)
-			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy;
-		   else *//*if(boundaryCondition & 8)
-			   yf = 0.0;
-		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-			   yf = positivePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])/hy);
-		   else
-			   yf = positivePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])/hy);
+		   yb = negativePart(yb);
 
-	/**/  /* if(boundaryCondition & 8)
-			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy;
-		   else*//* if(boundaryCondition & 1)
-			   yb = 0.0;
-		   else /**/if(coordinates.y() == 0)
-			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])/hy);
-		   else
-			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
-
+		   yf = positivePart(yf);
 
 		   if(xb + xf > 0.0)
 			   xb = 0.0;
@@ -438,16 +395,15 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   else
 			   yf = 0.0;
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
+	   }
 
-		  // if(fabs(1.0-nabla) < acc)
-		//	   return 0.0;
-		   return signui*(1.0 - nabla);
-	   }
-	   else
-	   {
-		   return 0.0;
-	   }
+
+
+	   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
+	   return signui*(1.0 - nabla);
+
+
+
 
 }
 
