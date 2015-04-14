@@ -1058,7 +1058,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 	if(u[0]*u[l] <= 0.0)
 		atomicMax( &tmp, 1);
-	__syncthreads();
+	//__syncthreads();
 	//printf("tmp = %d", tmp);
 
 
@@ -1074,7 +1074,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 			value=Max(value,fabs(u[l]));
 		__syncthreads();
 	}
-	__syncthreads();
+	//__syncthreads();
 	//atomicMax(&value,fabs(u[l]))
 
 	if(l == 0)
@@ -1106,7 +1106,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 		if(i > 0)
 			u[i*this->n + j] = value;
 	}
-	__syncthreads();
+	//__syncthreads();
 
    double time = 0.0;
    __shared__ double currentTau;
@@ -1129,17 +1129,17 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
       /****
        * Compute the RHS
        */
-	   __syncthreads();
+	   //__syncthreads();
 
 
-    	  fu = schemeHost.getValueDev( this->subMesh, l, this->subMesh.getCellCoordinates(l), u, time, boundaryCondition);
-      __syncthreads();
+	   fu = schemeHost.getValueDev( this->subMesh, l, this->subMesh.getCellCoordinates(l), u, time, boundaryCondition);
+	   //__syncthreads();
       //printf("%d : %f\n", l, fu);
 
 
       //atomicMax(&maxResidue,fabs(fu));//maxResidue = fu. absMax();
       sharedRes[l]=fabs(fu);
-    if(l == 0)
+  /*  if(l == 0)
     	maxResidue = 0.0;
     __syncthreads();
     																												//start reduction
@@ -1148,49 +1148,69 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
   		if(l == o)
   			maxResidue=Max(maxResidue,sharedRes[l]);
   		__syncthreads();
-  	}
-  	__syncthreads();
+  	}*/
+  	//__syncthreads();
   																													//end reduction
+    __syncthreads();
+	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
+	{
+		if( l < s )
+			sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]) ;
+		__syncthreads();
+	}
+	if(l==0) maxResidue=sharedRes[l];
 
-
-
+    sharedTau[l]=currentTau;
+    __syncthreads();
+     // if(l == 0)
+    	  if( this -> cflCondition * maxResidue != 0.0)
+    		  sharedTau[l] =  this -> cflCondition / maxResidue;
 
       if(l == 0)
-      {
-    	  if( this -> cflCondition * maxResidue != 0.0)
-    		  currentTau =  this -> cflCondition / maxResidue;
+    	  if(sharedTau[l] > 1.0 * this->subMesh.getHx())
+    		  sharedTau[l] = 1.0 * this->subMesh.getHx();
 
-    	  if(currentTau > 1.0 * this->subMesh.getHx())
-    	  {
-    		  currentTau = 1.0 * this->subMesh.getHx();
-    	  }
+      if(l == 1)
+    	  if( time + sharedTau[l] > finalTime ) sharedTau[l] = finalTime - time;
 
-    	  if( time + currentTau > finalTime ) currentTau = finalTime - time;
-      }
-      __syncthreads();
+      //__syncthreads();
  //
 
       //double tau2 = finalTime;
-      sharedTau[l]= finalTime;
-      if((u[l]+currentTau * fu)*u[l] < 0.0 && fu != 0.0 && u[l] != 0.0 )
+
+      if((u[l]+sharedTau[l] * fu)*u[l] < 0.0 && fu != 0.0 && u[l] != 0.0 )
     	  sharedTau[l] = fabs(u[l]/(2.0*fu));
 
       	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //start reduction
-      __syncthreads();
+
       //atomicMin(&currentTau, tau2);
+     /* if(l==0) currentTau=sharedTau[l];
+      __syncthreads();
     	for(int o = 0; o < blockDim.x*blockDim.y; o++)
     	{
     		if(l == o)
     			currentTau=Min(currentTau,sharedTau[l]);
     		__syncthreads();
-    	}
+    	}*/
     																											//end reduction
+
+
+
+    __syncthreads();
+	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
+	{
+		if( l < s )
+			sharedTau[l] = Min(sharedTau[l],sharedTau[l+s]) ;
+		__syncthreads();
+	}
+	if(l==0) currentTau=sharedTau[l];
+	__syncthreads();
 
 
 //
 
 
-      __syncthreads();
+      //__syncthreads();
       u[l] += currentTau * fu;
       //if(l==0)
     	 // printf("ct %f\n",currentTau);
@@ -1535,7 +1555,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(1,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1544,7 +1564,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(2,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1553,7 +1573,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(4,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1562,7 +1582,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(8,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1574,7 +1594,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(3,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1583,7 +1603,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(5,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1592,7 +1612,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(10,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
@@ -1601,15 +1621,17 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->runSubgridCUDA(12,u,i);
 			__syncthreads();
 			caller->insertSubgridCUDA(u[l],i);
-			__syncthreads();
+			//__syncthreads();
 			caller->getSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
 
 
-		caller->setBoundaryConditionCUDA(i, 0);
-		caller->setSubgridValueCUDA(i, caller->getSubgridValueCUDA(i) - 1 );
-
+		if(l==0)
+		{
+			caller->setBoundaryConditionCUDA(i, 0);
+			caller->setSubgridValueCUDA(i, caller->getSubgridValueCUDA(i) - 1 );
+		}
 
 	}
 
