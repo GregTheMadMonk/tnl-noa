@@ -157,7 +157,7 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void initRunCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, bool * ptr2);
+__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, bool * ptr2, int* ptr3);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronizeCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);

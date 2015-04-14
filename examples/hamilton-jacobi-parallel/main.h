@@ -21,11 +21,15 @@
 #include <operators/godunov-eikonal/parallelGodunovEikonal.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlDevice.h>
+#include <time.h>
 
 typedef MainBuildConfig BuildConfig;
 
 int main( int argc, char* argv[] )
 {
+	time_t start;
+	time_t stop;
+	time(&start);
    tnlParameterContainer parameters;
    tnlConfigDescription configDescription;
    parallelEikonalConfig< BuildConfig >::configSetup( configDescription );
@@ -78,6 +82,9 @@ int main( int argc, char* argv[] )
    }
   // }
 
+   time(&stop);
+   cout << endl;
+   cout << "Running time was: " << difftime(stop,start) << endl;
    return EXIT_SUCCESS;
 }
 

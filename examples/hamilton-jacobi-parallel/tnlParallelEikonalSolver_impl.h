@@ -123,8 +123,15 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 	//double* tmpw;
 	cudaMalloc(&(this->tmpw), this->work_u.getSize()*sizeof(double));
 	cudaMalloc(&(this->runcuda), sizeof(bool));
-	initCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda));
 	cudaDeviceSynchronize();
+	checkCudaDevice;
+	int* tmpUC;
+	cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
+	cudaMemcpy(tmpUC, this->unusedCell.getData(), this->unusedCell.getSize()*sizeof(int), cudaMemcpyHostToDevice);
+
+	initCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC);
+	cudaDeviceSynchronize();
+	checkCudaDevice;
 	//cout << "s " << endl;
 	//cudaMalloc(&(cudaSolver->work_u_cuda), this->work_u.getSize()*sizeof(double));
 	double* tmpu = NULL;
@@ -132,6 +139,8 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 	cudaMemcpy(&tmpu, tmpdev,sizeof(double*), cudaMemcpyDeviceToHost);
 	//printf("%p %p \n",tmpu,tmpw);
 	cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
+	cudaDeviceSynchronize();
+	checkCudaDevice;
 	//cout << "s "<< endl;
 
 	}
@@ -171,6 +180,8 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 	else if(this->device == tnlCudaDevice)
 	{
 //		cout << "pre 1 kernel" << endl;
+		cudaDeviceSynchronize();
+		checkCudaDevice;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
@@ -1362,7 +1373,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
-void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , bool* ptr2)
+void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , bool* ptr2, int* ptr3)
 {
 	//cout << "Initializating solver..." << endl;
 	//const tnlString& meshLocation = parameters.getParameter <tnlString>("mesh");
@@ -1401,7 +1412,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 //	this->gridCols_cuda = gridCols;
 
 	cudaSolver->work_u_cuda = ptr;//(double*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(double));
-	cudaSolver->unusedCell_cuda = (int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(int));
+	cudaSolver->unusedCell_cuda = ptr3;//(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(int));
 	cudaSolver->subgridValues_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
 	cudaSolver->boundaryConditions_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
 	cudaSolver->runcuda = ptr2;//(bool*)malloc(sizeof(bool));
@@ -1413,11 +1424,16 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 
 	for(int i = 0; i < cudaSolver->gridCols*cudaSolver->gridRows; i++)
 	{
-		for(int j = 0; j < cudaSolver->n*cudaSolver->n; j++)
-			cudaSolver->unusedCell_cuda[i*cudaSolver->n*cudaSolver->n + j] = 1;
 		cudaSolver->subgridValues_cuda[i] = INT_MAX;
 		cudaSolver->boundaryConditions_cuda[i] = 0;
 	}
+
+	/*for(long int j = 0; j < cudaSolver->n*cudaSolver->n*cudaSolver->gridCols*cudaSolver->gridRows; j++)
+	{
+		printf("%d\n",j);
+		cudaSolver->unusedCell_cuda[ j] = 1;
+	}*/
+	printf("GPU memory initialized.\n");
 
 
 	//cudaSolver->work_u_cuda[50] = 32.153438;
