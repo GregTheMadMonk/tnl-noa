@@ -993,6 +993,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ge
             + (i % caller->gridCols) * caller->n
             + (j/caller->n) * caller->n*caller->gridCols
             + (j % caller->n);
+	//printf("i= %d,j= %d,th= %d\n",i,j,th);
 	*a = caller->work_u_cuda[th];
 	//printf("Hi %f \n", *a);
 	//return ret;
@@ -1011,6 +1012,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 		int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n
 					+ (j/this->n)*this->n*this->gridCols + (j % this->n);
 
+		//printf("i= %d,j= %d,index= %d\n",i,j,index);
 		if( (fabs(this->work_u_cuda[index]) > fabs(u)) || (this->unusedCell_cuda[index] == 1) )
 		{
 			this->work_u_cuda[index] = u;
