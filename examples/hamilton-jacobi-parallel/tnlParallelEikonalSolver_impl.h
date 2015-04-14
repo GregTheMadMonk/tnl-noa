@@ -1176,15 +1176,15 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
 	{
-		if( l < s )
-			sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]);
+		//if( l < s )
+		//	sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]);
 		if(l >= blockDim.x*blockDim.y - s)
 			sharedTau[l] = Min(sharedTau[l],sharedTau[l-s]);
 		__syncthreads();
 	}
 	if(l==0)
 	{
-		maxResidue=sharedRes[l];
+		//maxResidue=sharedRes[l];
 		currentTau=sharedTau[blockDim.x*blockDim.y - 1];
 		/*if( this -> cflCondition * maxResidue != 0.0)
 			currentTau = Min(this -> cflCondition / maxResidue, currentTau);*/

@@ -323,35 +323,44 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 
 	//RealType acc = hx*hy*hx*hy;
 
-	RealType nabla, xb, xf, yb, yf, signui;
+	RealType nabla,  signui;
 	signui = sign(u[cellIndex],epsilon);
+
 #ifdef HAVE_CUDA
 	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
 #endif
 
+	RealType xb = u[cellIndex];
+	RealType xf = -u[cellIndex];
+	RealType yb = u[cellIndex];
+	RealType yf = -u[cellIndex];
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf = ((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])/hx);
+		   xf += u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
 	   else
-		   xf = ((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])/hx);
+		   xf += u[mesh.template getCellNextToCell<1,0>( cellIndex )];
 
 	   if(coordinates.x() == 0)
-		   xb = ((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])/hx);
+		   xb -= u[mesh.template getCellNextToCell<1,0>( cellIndex )];
 	   else
-		   xb = ((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])/hx);
+		   xb -= u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf = ((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])/hy);
+		   yf += u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
 	   else
-		   yf = ((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])/hy);
+		   yf += u[mesh.template getCellNextToCell<0,1>( cellIndex )];
 
 	   if(coordinates.y() == 0)
-		   yb = ((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])/hy);
+		   yb -= u[mesh.template getCellNextToCell<0,1>( cellIndex )];
 	   else
-		   yb = ((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
+		   yb -= u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
 
 
+	   xb /= hx;
+	   xf /= hx;
+	   yb /= hy;
+	   yf /= hy;
 
 	   if(signui > 0.0)
 	   {
