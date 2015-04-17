@@ -25,6 +25,9 @@
 #include <limits.h>
 #include <core/tnlDevice.h>
 
+
+#include <ctime>
+
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #include <core/tnlCuda.h>
@@ -95,6 +98,10 @@ public:
 	double delta, tau0, stopTime,cflCondition;
 	int gridRows, gridCols, currentStep, n;
 
+	std::clock_t start;
+	double time_diff;
+
+
 	tnlDeviceEnum device;
 
 	tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* getSelf()
@@ -118,11 +125,13 @@ public:
 	//double delta_cuda, tau0_cuda, stopTime_cuda,cflCondition_cuda;
 	//int gridRows_cuda, gridCols_cuda, currentStep_cuda, n_cuda;
 
-	bool* runcuda;
-	bool run_host;
+	int* runcuda;
+	int run_host;
 
 
 	__device__ void getSubgridCUDA( const int i, tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
+
+	__device__ void updateSubgridCUDA( const int i, tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
 
 	__device__ void insertSubgridCUDA( double u, const int i );
 
@@ -157,10 +166,13 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void initRunCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, bool * ptr2, int* ptr3);
+__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, int * ptr2, int* ptr3);
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronizeCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void synchronize2CUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 #endif
 
 #include "tnlParallelEikonalSolver_impl.h"
