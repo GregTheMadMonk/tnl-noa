@@ -45,7 +45,7 @@ template< typename MeshReal,
 Real  parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
-		return arg;
+		return -arg;
 	return 0.0;
 }
 
@@ -62,13 +62,13 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 {
 	if(x > eps)
 		return 1.0;
-	else if (x < -eps)
+	if (x < -eps)
 		return (-1.0);
 
 	if ( eps == 0.0)
 		return 0.0;
 
-	return sin((M_PI*x)/(2.0*eps));
+	return sin(/*(M_PI*x)/(2.0*eps)	*/(M_PI/2.0)*(x/eps));
 }
 
 
@@ -98,7 +98,9 @@ bool parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 
 
 	   hx = originalMesh.getHx();
+	   ihx = 1.0/hx;
 	   hy = originalMesh.getHy();
+	   ihy = 1.0/hy;
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
@@ -207,12 +209,12 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   else
 			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
 
-		   if(xb + xf > 0.0)
+		   if(xb - xf > 0.0)
 			   xf = 0.0;
 		   else
 			   xb = 0.0;
 
-		   if(yb + yf > 0.0)
+		   if(yb - yf > 0.0)
 			   yf = 0.0;
 		   else
 			   yb = 0.0;
@@ -262,15 +264,15 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])/hy);
 
 
-		   if(xb + xf > 0.0)
-			   xb = 0.0;
-		   else
+		   if(xb - xf > 0.0)
 			   xf = 0.0;
-
-		   if(yb + yf > 0.0)
-			   yb = 0.0;
 		   else
+			   xb = 0.0;
+
+		   if(yb - yf > 0.0)
 			   yf = 0.0;
+		   else
+			   yb = 0.0;
 
 		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
@@ -310,7 +312,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
 {
 
-
+/*
 	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
 		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
@@ -320,10 +322,10 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		return 0.0;
 	}
 
-
+*/
 	//RealType acc = hx*hy*hx*hy;
 
-	RealType nabla,  signui;
+	RealType signui;
 	signui = sign(u[cellIndex],epsilon);
 
 #ifdef HAVE_CUDA
@@ -334,6 +336,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	RealType xf = -u[cellIndex];
 	RealType yb = u[cellIndex];
 	RealType yf = -u[cellIndex];
+	RealType a,b;
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
@@ -357,10 +360,10 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   yb -= u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
 
 
-	   xb /= hx;
-	   xf /= hx;
-	   yb /= hy;
-	   yf /= hy;
+	   //xb *= ihx;
+	   //xf *= ihx;
+	  // yb *= ihy;
+	   //yf *= ihy;
 
 	   if(signui > 0.0)
 	   {
@@ -371,16 +374,6 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   yf = negativePart(yf);
 
 		   yb = positivePart(yb);
-
-		   if(xb + xf > 0.0)
-			   xf = 0.0;
-		   else
-			   xb = 0.0;
-
-		   if(yb + yf > 0.0)
-			   yf = 0.0;
-		   else
-			   yb = 0.0;
 
 	   }
 	   else if(signui < 0.0)
@@ -393,27 +386,20 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   yb = negativePart(yb);
 
 		   yf = positivePart(yf);
-
-		   if(xb + xf > 0.0)
-			   xb = 0.0;
-		   else
-			   xf = 0.0;
-
-		   if(yb + yf > 0.0)
-			   yb = 0.0;
-		   else
-			   yf = 0.0;
-
 	   }
 
 
+	   if(xb - xf > 0.0)
+		   a = xb;
+	   else
+		   a = xf;
 
-	   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-	   return signui*(1.0 - nabla);
+	   if(yb - yf > 0.0)
+		   b = yb;
+	   else
+		   b = yf;
 
-
-
-
+	   return signui*(1.0 - sqrt(a*a+b*b)*ihx );
 }
 
 

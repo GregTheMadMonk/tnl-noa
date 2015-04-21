@@ -171,8 +171,8 @@ protected:
 
     DofVectorType dofVector;
 
-    RealType hx;
-    RealType hy;
+    RealType hx, ihx;
+    RealType hy, ihy;
 
     RealType epsilon;
 

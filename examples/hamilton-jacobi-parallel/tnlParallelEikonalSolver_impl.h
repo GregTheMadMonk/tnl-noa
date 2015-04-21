@@ -186,7 +186,7 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
 		checkCudaDevice;
-		initRunCUDA<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
+		initRunCUDA<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 //		cout << "post 1 kernel" << endl;
 
@@ -345,11 +345,11 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
 			checkCudaDevice;
-			//start = std::clock();
-			runCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
-
+			start = std::clock();
+			runCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
+			time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 			//start = std::clock();
 			synchronizeCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
@@ -368,7 +368,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 			cudaMemcpy(&run_host, (this->runcuda),sizeof(int), cudaMemcpyDeviceToHost);
 			//cout << "in kernel loop" << run_host << endl;
 		}
-		//cout << "Solving time was: " << time_diff << endl;
+		cout << "Solving time was: " << time_diff << endl;
 		//cout << "b" << endl;
 
 		//double* tmpu;
@@ -1080,30 +1080,30 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 {
 
 	__shared__ int tmp;
-	double* sharedTau = &u[blockDim.x*blockDim.y];
-	double* sharedRes = &sharedTau[blockDim.x*blockDim.y];
+	//double tmpRes = 0.0;
+	volatile double* sharedTau = &u[blockDim.x*blockDim.y];
 	int i = threadIdx.x;
 	int j = threadIdx.y;
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
+	bool computeFU = !((i == 0 && (boundaryCondition & 4)) or
+			 (i == blockDim.x - 1 && (boundaryCondition & 2)) or
+			 (j == 0 && (boundaryCondition & 8)) or
+			 (j == blockDim.y - 1  && (boundaryCondition & 1)));
 
 	if(l == 0)
 	{
 		tmp = 0;
-		/*for(int o = 0; o < this->n * this->n; o++)
-			printf("%d : %f\n", o, u[o]);*/
+		if(this->getSubgridValueCUDA(subGridID) != this->currentStep + 4)
+			tmp = 1;
 	}
 
 	__syncthreads();
 
 	if(u[0]*u[l] <= 0.0)
 		atomicMax( &tmp, 1);
-	//__syncthreads();
-	//printf("tmp = %d", tmp);
-
-
-
 
 	__shared__ double value;
+
 	if(l == 0)
 		value = 0.0;
 	__syncthreads();
@@ -1111,166 +1111,67 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	{
 		if(l == o)
 			value=Max(value,fabs(u[l]));
-		__syncthreads();
+	      __syncthreads();
 	}
-	//__syncthreads();
-	//atomicMax(&value,fabs(u[l]))
 
 	if(l == 0)
 		value *= Sign(u[0]);
 
-
-
 	__syncthreads();
-	if(tmp == 1)
-	{}
-	//north - 1, east - 2, west - 4, south - 8
-	else if(boundaryCondition == 4)
-	{
-		if(j > 0)
-				u[i*this->n + j] = value;
-	}
-	else if(boundaryCondition == 2)
-	{
-		if(j < this->n - 1)
-			u[i*this->n + j] = value;
-	}
-	else if(boundaryCondition == 1)
-	{
-		if(i < this->n - 1)
-			u[i*this->n + j] = value;
-	}
-	else if(boundaryCondition == 8)
-	{
-		if(i > 0)
-			u[i*this->n + j] = value;
-	}
-	//__syncthreads();
+	if(tmp !=1 && computeFU)
+		u[l] = value;
 
    double time = 0.0;
    __shared__ double currentTau;
-   __shared__ double maxResidue;
+   double cfl = this->cflCondition;
    double fu = 0.0;
    if(threadIdx.x * threadIdx.y == 0)
    {
 	   currentTau = this->tau0;
-	   maxResidue = 0.0;//10.0 * this->subMesh.getHx();
    }
    double finalTime = this->stopTime;
+   __syncthreads();
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
-   __syncthreads();
 
-	//printf("%d : %f\n", l, u[l]);
    while( time < finalTime )
    {
 
-      /****
-       * Compute the RHS
-       */
-	   //__syncthreads();
+	  if(computeFU)
+		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<2,int>(i,j)/*this->subMesh.getCellCoordinates(l)*/, u, time, boundaryCondition);
 
-
-	   fu = schemeHost.getValueDev( this->subMesh, l, this->subMesh.getCellCoordinates(l), u, time, boundaryCondition);
-	   //__syncthreads();
-      //printf("%d : %f\n", l, fu);
-
-
-      //atomicMax(&maxResidue,fabs(fu));//maxResidue = fu. absMax();
-     // sharedRes[l]=fabs(fu);
-  /*  if(l == 0)
-    	maxResidue = 0.0;
-    __syncthreads();
-    																												//start reduction
-  	for(int o = 0; o < blockDim.x*blockDim.y; o++)
-  	{
-  		if(l == o)
-  			maxResidue=Max(maxResidue,sharedRes[l]);
-  		__syncthreads();
-  	}*/
-  	//__syncthreads();
-  																													//end reduction
-      sharedTau[l]=this -> cflCondition/fabs(fu);//sharedRes[l];
-      if((u[l]+sharedTau[l] * fu)*u[l] < 0.0)
-    	  sharedTau[l] = fabs(u[l]/(2.0*fu));
+	  sharedTau[l]=cfl/fabs(fu);
 
       if(l == 0)
-    	  if(sharedTau[l] > 1.0 * this->subMesh.getHx())
-    		  sharedTau[l] = 1.0 * this->subMesh.getHx();
+    	  if(sharedTau[0] > 1.0 * this->subMesh.getHx())	sharedTau[0] = 1.0 * this->subMesh.getHx();
 
-      if(l == 1)
-    	  if( time + sharedTau[l] > finalTime ) sharedTau[l] = finalTime - time;
+      if(l == blockDim.x*blockDim.y - 1)
+    	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
       __syncthreads();
 
-   //   __syncthreads();
-  	/*for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
-  	{
-  		if( l < s )
-  			sharedTau[l] = Min(sharedTau[l],sharedTau[l+s]) ;
-  		__syncthreads();
-  	}
-  	if(l==0) currentTau=sharedTau[l];
-  	__syncthreads();*/
 
-
-	for(unsigned int s = blockDim.x*blockDim.y/2; s>0; s>>=1)
-	{
-		//if( l < s )
-		//	sharedRes[l] = Max(sharedRes[l],sharedRes[l+s]);
-		if(l >= blockDim.x*blockDim.y - s)
-			sharedTau[l] = Min(sharedTau[l],sharedTau[l-s]);
-		__syncthreads();
-	}
-	if(l==0)
-	{
-		//maxResidue=sharedRes[l];
-		currentTau=sharedTau[blockDim.x*blockDim.y - 1];
-		/*if( this -> cflCondition * maxResidue != 0.0)
-			currentTau = Min(this -> cflCondition / maxResidue, currentTau);*/
-	}
+      if((blockDim.x == 16) && (l < 128))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
+      __syncthreads();
+      if((blockDim.x == 16) && (l < 64))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
+      __syncthreads();
+      if(l < 32)    							sharedTau[l] = Min(sharedTau[l],sharedTau[l+32]);
+      //__syncthreads();
+      if(l < 16)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+16]);
+      //__syncthreads();
+      if(l < 8)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+8]);
+     // __syncthreads();
+      if(l < 4)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+4]);
+      //__syncthreads();
+      if(l < 2)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+2]);
+      //__syncthreads();
+      if(l < 1)									currentTau   = Min(sharedTau[l],sharedTau[l+1]);
 	__syncthreads();
 
-
-
-      //__syncthreads();
- //
-
-      //double tau2 = finalTime;
-
-
-
-      	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //start reduction
-
-      //atomicMin(&currentTau, tau2);
-     /* if(l==0) currentTau=sharedTau[l];
-      __syncthreads();
-    	for(int o = 0; o < blockDim.x*blockDim.y; o++)
-    	{
-    		if(l == o)
-    			currentTau=Min(currentTau,sharedTau[l]);
-    		__syncthreads();
-    	}*/
-    																											//end reduction
-
-
-
-
-
-
-//
-
-
-      //__syncthreads();
       u[l] += currentTau * fu;
-      //if(l==0)
-    	 // printf("ct %f\n",currentTau);
-
-
-
       time += currentTau;
       __syncthreads();
    }
-	//printf("%d : %f\n", l, u[l]);
+
 
 }
 
@@ -1697,10 +1598,11 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 	if(caller->getSubgridValueCUDA(i) != INT_MAX)
 	{
 		caller->getSubgridCUDA(i,caller, &u[l]);
-		u[2*blockDim.x*blockDim.y +l] = u[l];
 		int bound = caller->getBoundaryConditionCUDA(i);
 		//if(l == 0)
 			//printf("i = %d, bound = %d\n",i,caller->getSubgridValueCUDA(i));
+		//if(caller->getSubgridValueCUDA(i) == caller->currentStep+4)
+		//{
 		if(bound & 1)
 		{
 			caller->runSubgridCUDA(1,u,i);
@@ -1711,7 +1613,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
-		if(bound & 2)
+		if(bound & 2 )
 		{
 			caller->runSubgridCUDA(2,u,i);
 			__syncthreads();
@@ -1741,10 +1643,11 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
+		//}
 
 
 
-		if( ((bound & 2) ))
+		if( ((bound & 2) || (bound & 1) ))
 		{
 			caller->runSubgridCUDA(3,u,i);
 			__syncthreads();
@@ -1754,7 +1657,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
-		if( ((bound & 4) ))
+		if( ((bound & 4) || (bound & 1) ))
 		{
 			caller->runSubgridCUDA(5,u,i);
 			__syncthreads();
@@ -1764,7 +1667,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
-		if( ((bound & 2) ))
+		if( ((bound & 2) || (bound & 8) ))
 		{
 			caller->runSubgridCUDA(10,u,i);
 			__syncthreads();
@@ -1774,7 +1677,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
-		if(   (bound & 4) )
+		if(   (bound & 4) || (bound & 8) )
 		{
 			caller->runSubgridCUDA(12,u,i);
 			__syncthreads();
