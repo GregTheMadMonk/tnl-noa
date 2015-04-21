@@ -186,7 +186,7 @@ bool tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::in
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
 		checkCudaDevice;
-		initRunCUDA<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
+		initRunCUDA<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 //		cout << "post 1 kernel" << endl;
 
@@ -346,7 +346,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 			cudaDeviceSynchronize();
 			checkCudaDevice;
 			start = std::clock();
-			runCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
+			runCUDA<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
 			time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
@@ -1082,6 +1082,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	__shared__ int tmp;
 	//double tmpRes = 0.0;
 	volatile double* sharedTau = &u[blockDim.x*blockDim.y];
+	volatile double* absVal = &u[2*blockDim.x*blockDim.y];
 	int i = threadIdx.x;
 	int j = threadIdx.y;
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
@@ -1099,27 +1100,42 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 
 	__syncthreads();
 
-	if(u[0]*u[l] <= 0.0)
+	if(!tmp && (u[0]*u[l] <= 0.0))
 		atomicMax( &tmp, 1);
 
+	__syncthreads();
+
 	__shared__ double value;
-
-	if(l == 0)
-		value = 0.0;
-	__syncthreads();
-	for(int o = 0; o < blockDim.x*blockDim.y; o++)
+	if(tmp !=1)
 	{
-		if(l == o)
-			value=Max(value,fabs(u[l]));
+		if(computeFU)
+			absVal[l]=0;
+		else
+			absVal[l] = fabs(u[l]);
+		if(l == 0)
+			value = 0.0;
+		__syncthreads();
+
+	      if((blockDim.x == 16) && (l < 128))		absVal[l] = Max(absVal[l],absVal[l+128]);
 	      __syncthreads();
+	      if((blockDim.x == 16) && (l < 64))		absVal[l] = Max(absVal[l],absVal[l+64]);
+	      __syncthreads();
+	      if(l < 32)    							absVal[l] = Max(absVal[l],absVal[l+32]);
+	      //__syncthreads();
+	      if(l < 16)								absVal[l] = Max(absVal[l],absVal[l+16]);
+	      //__syncthreads();
+	      if(l < 8)									absVal[l] = Max(absVal[l],absVal[l+8]);
+	     // __syncthreads();
+	      if(l < 4)									absVal[l] = Max(absVal[l],absVal[l+4]);
+	      //__syncthreads();
+	      if(l < 2)									absVal[l] = Max(absVal[l],absVal[l+2]);
+	      //__syncthreads();
+	      if(l < 1)									value   = Sign(u[0])*Max(absVal[l],absVal[l+1]);
+		__syncthreads();
+
+		if(computeFU)
+			u[l] = value;
 	}
-
-	if(l == 0)
-		value *= Sign(u[0]);
-
-	__syncthreads();
-	if(tmp !=1 && computeFU)
-		u[l] = value;
 
    double time = 0.0;
    __shared__ double currentTau;
@@ -1624,8 +1640,8 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 		int bound = caller->getBoundaryConditionCUDA(i);
 		//if(l == 0)
 			//printf("i = %d, bound = %d\n",i,caller->getSubgridValueCUDA(i));
-		//if(caller->getSubgridValueCUDA(i) == caller->currentStep+4)
-		//{
+		if(caller->getSubgridValueCUDA(i) == caller->currentStep+4)
+		{
 		if(bound & 1)
 		{
 			caller->runSubgridCUDA(1,u,i);
@@ -1666,7 +1682,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
-		//}
+		}
 
 
 
