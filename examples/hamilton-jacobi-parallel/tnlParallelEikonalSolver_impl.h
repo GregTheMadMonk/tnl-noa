@@ -1080,6 +1080,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 {
 
 	__shared__ int tmp;
+	__shared__ double value;
 	//double tmpRes = 0.0;
 	volatile double* sharedTau = &u[blockDim.x*blockDim.y];
 	volatile double* absVal = &u[2*blockDim.x*blockDim.y];
@@ -1094,26 +1095,23 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	if(l == 0)
 	{
 		tmp = 0;
-		if(this->getSubgridValueCUDA(subGridID) != this->currentStep + 4)
+		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1))*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1);
+		if(this->unusedCell_cuda[centreGID] == 0)
 			tmp = 1;
 	}
-
 	__syncthreads();
 
 	if(!tmp && (u[0]*u[l] <= 0.0))
 		atomicMax( &tmp, 1);
 
 	__syncthreads();
-
-	__shared__ double value;
 	if(tmp !=1)
 	{
 		if(computeFU)
-			absVal[l]=0;
+			absVal[l]=0.0;
 		else
 			absVal[l] = fabs(u[l]);
-		if(l == 0)
-			value = 0.0;
+
 		__syncthreads();
 
 	      if((blockDim.x == 16) && (l < 128))		absVal[l] = Max(absVal[l],absVal[l+128]);
@@ -1121,15 +1119,10 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	      if((blockDim.x == 16) && (l < 64))		absVal[l] = Max(absVal[l],absVal[l+64]);
 	      __syncthreads();
 	      if(l < 32)    							absVal[l] = Max(absVal[l],absVal[l+32]);
-	      //__syncthreads();
 	      if(l < 16)								absVal[l] = Max(absVal[l],absVal[l+16]);
-	      //__syncthreads();
 	      if(l < 8)									absVal[l] = Max(absVal[l],absVal[l+8]);
-	     // __syncthreads();
 	      if(l < 4)									absVal[l] = Max(absVal[l],absVal[l+4]);
-	      //__syncthreads();
 	      if(l < 2)									absVal[l] = Max(absVal[l],absVal[l+2]);
-	      //__syncthreads();
 	      if(l < 1)									value   = Sign(u[0])*Max(absVal[l],absVal[l+1]);
 		__syncthreads();
 
@@ -1171,15 +1164,10 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
       if((blockDim.x == 16) && (l < 64))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
       __syncthreads();
       if(l < 32)    							sharedTau[l] = Min(sharedTau[l],sharedTau[l+32]);
-      //__syncthreads();
       if(l < 16)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+16]);
-      //__syncthreads();
       if(l < 8)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+8]);
-     // __syncthreads();
       if(l < 4)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+4]);
-      //__syncthreads();
       if(l < 2)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+2]);
-      //__syncthreads();
       if(l < 1)									currentTau   = Min(sharedTau[l],sharedTau[l+1]);
 	__syncthreads();
 
