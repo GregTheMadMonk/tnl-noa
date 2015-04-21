@@ -1096,13 +1096,13 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 	{
 		tmp = 0;
 		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1))*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1);
-		if(this->unusedCell_cuda[centreGID] == 0)
+		if(this->unusedCell_cuda[centreGID] == 0 || boundaryCondition == 0)
 			tmp = 1;
 	}
 	__syncthreads();
 
-	if(!tmp && (u[0]*u[l] <= 0.0))
-		atomicMax( &tmp, 1);
+	/*if(!tmp && (u[0]*u[l] <= 0.0))
+		atomicMax( &tmp, 1);*/
 
 	__syncthreads();
 	if(tmp !=1)
@@ -1294,8 +1294,9 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			atomicMax(&newSubgridValue, INT_MAX);
 			atomicMax(&boundary[boundary_index], 1);
 			cudaSolver->work_u_cuda[gid] = u_cmp;
+			u=u_cmp;
 		}
-		__threadfence();
+		//__threadfence();
 		if(threadIdx.y == 0 && (blockIdx.y != 0)/* && (cudaSolver->currentStep & 1)*/)
 		{
 			u_cmp = cudaSolver->work_u_cuda[gid - blockDim.x*gridDim.x];
@@ -1622,7 +1623,7 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 	int i = blockIdx.y * gridDim.x + blockIdx.x;
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
 
-	if(caller->getSubgridValueCUDA(i) != INT_MAX)
+	if(caller->getSubgridValueCUDA(i) != INT_MAX && caller->getSubgridValueCUDA(i) >= 0)
 	{
 		caller->getSubgridCUDA(i,caller, &u[l]);
 		int bound = caller->getBoundaryConditionCUDA(i);
@@ -1714,6 +1715,16 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
+		/*if( bound )
+		{
+			caller->runSubgridCUDA(15,u,i);
+			__syncthreads();
+			//caller->insertSubgridCUDA(u[l],i);
+			//__syncthreads();
+			//caller->getSubgridCUDA(i,caller, &u[l]);
+			caller->updateSubgridCUDA(i,caller, &u[l]);
+			__syncthreads();
+		}*/
 
 
 		if(l==0)
