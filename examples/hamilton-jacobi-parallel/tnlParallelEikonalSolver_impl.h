@@ -1257,31 +1257,52 @@ void /*tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::
 			(threadIdx.x == blockDim.x - 1 	&& blockIdx.x != gridDim.x - 1 	&& !(cudaSolver->currentStep & 1)) 		||
 			(threadIdx.y == blockDim.y - 1 	&& blockIdx.y != gridDim.y - 1 	&& (cudaSolver->currentStep & 1)) 		)
 	{
-		if(threadIdx.x == 0 && !(cudaSolver->currentStep & 1))
+		if(threadIdx.x == 0 /*&& !(cudaSolver->currentStep & 1)*/)
 		{
 			u_cmp = cudaSolver->work_u_cuda[gid - 1];
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA(blockIdx.y*gridDim.x + blockIdx.x - 1);
 			boundary_index = 2;
 		}
-		if(threadIdx.y == 0 && (cudaSolver->currentStep & 1))
+		if(threadIdx.y == 0 /*&& (cudaSolver->currentStep & 1)*/)
 		{
 			u_cmp = cudaSolver->work_u_cuda[gid - blockDim.x*gridDim.x];
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA((blockIdx.y - 1)*gridDim.x + blockIdx.x);
 			boundary_index = 3;
 		}
-		if(threadIdx.x == blockDim.x - 1 && !(cudaSolver->currentStep & 1))
+		if(threadIdx.x == blockDim.x - 1/* && !(cudaSolver->currentStep & 1)*/)
 		{
 			u_cmp = cudaSolver->work_u_cuda[gid + 1];
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA(blockIdx.y*gridDim.x + blockIdx.x + 1);
 			boundary_index = 1;
 		}
-		if(threadIdx.y == blockDim.y - 1 && (cudaSolver->currentStep & 1))
+		if(threadIdx.y == blockDim.y - 1 /*&& (cudaSolver->currentStep & 1)*/)
 		{
 			u_cmp = cudaSolver->work_u_cuda[gid + blockDim.x*gridDim.x];
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA((blockIdx.y + 1)*gridDim.x + blockIdx.x);
 			boundary_index = 0;
 		}
 
+		__threadfence();
+		if((subgridValue == INT_MAX || fabs(u_cmp) + cudaSolver->delta < fabs(u) ) && (subgridValue_cmp != INT_MAX && subgridValue_cmp != -INT_MAX))
+		{
+			cudaSolver->unusedCell_cuda[gid] = 0;
+			atomicMax(&newSubgridValue, INT_MAX);
+			atomicMax(&boundary[boundary_index], 1);
+			cudaSolver->work_u_cuda[gid] = u_cmp;  ////// unsure
+		}
+		__threadfence();
+		if(threadIdx.x == blockDim.x - 1/* && !(cudaSolver->currentStep & 1)*/)
+		{
+			u_cmp = cudaSolver->work_u_cuda[gid + 1];
+			subgridValue_cmp = cudaSolver->getSubgridValueCUDA(blockIdx.y*gridDim.x + blockIdx.x + 1);
+			boundary_index = 1;
+		}
+		if(threadIdx.x == 0 /*&& !(cudaSolver->currentStep & 1)*/)
+		{
+			u_cmp = cudaSolver->work_u_cuda[gid - 1];
+			subgridValue_cmp = cudaSolver->getSubgridValueCUDA(blockIdx.y*gridDim.x + blockIdx.x - 1);
+			boundary_index = 2;
+		}
 		__threadfence();
 		if((subgridValue == INT_MAX || fabs(u_cmp) + cudaSolver->delta < fabs(u) ) && (subgridValue_cmp != INT_MAX && subgridValue_cmp != -INT_MAX))
 		{
