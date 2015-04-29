@@ -25,7 +25,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
 	cout << "a" << endl;
-	this->device = tnlCudaDevice;
+	this->device = tnlHostDevice;
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -243,7 +243,7 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 		else
 			end=false;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for num_threads(3) schedule(dynamic)
+#pragma omp parallel for num_threads(4) schedule(dynamic)
 #endif
 		for(int i = 0; i < this->subgridValues.getSize(); i++)
 		{
@@ -859,6 +859,9 @@ tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::runSubg
 	{
 		if(u[0]*u[i] <= 0.0)
 			tmp=true;
+		int centreGID = (this->n*(subGridID / this->gridRows)+ (this->n >> 1))*(this->n*this->gridCols) + this->n*(subGridID % this->gridRows) + (this->n >> 1);
+		if(this->unusedCell[centreGID] == 0 || boundaryCondition == 0)
+			tmp = true;
 	}
 	//if(this->currentStep + 3 < getSubgridValue(subGridID))
 		//tmp = true;
@@ -1003,6 +1006,7 @@ tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::runSubg
 	solution.setLike(u);
     for( int i = 0; i < u.getSize(); i ++ )
   	{
+    	solution[i]=u[i];
    	}
 	return solution;
 }
