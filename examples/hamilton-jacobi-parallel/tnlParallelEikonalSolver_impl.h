@@ -800,10 +800,13 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 		{
 //			u[l] = value;
 			if(boundaryCondition==FROM_NORTH)
-				u[l] = ;
+				u[l] = u[i + blockDim.x*(blockDim.y-1)];
 			else if(boundaryCondition==FROM_SOUTH)
+				u[l] = u[i];
 			else if(boundaryCondition==FROM_EAST)
+				u[l] = u[blockDim.x-1 + blockDim.x*j];
 			else if(boundaryCondition==FROM_WEST)
+				u[l] = u[blockDim.x*j];
 		}
 	}
 
