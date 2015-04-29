@@ -241,29 +241,21 @@ void tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int>::ru
 				}
 
 
-				if( ((getBoundaryCondition(i) & FROM_EAST) )//|| (getBoundaryCondition(i) & 1))
-					/*	&&(!(getBoundaryCondition(i) & 5) && !(getBoundaryCondition(i) & 10)) */)
+				if( ((getBoundaryCondition(i) & FROM_EAST) ))
 				{
-					//cout << "3 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(3, getSubgrid(i),i), i);
+					insertSubgrid( runSubgrid(FROM_NORTH + FROM_EAST, getSubgrid(i),i), i);
 				}
-				if( ((getBoundaryCondition(i) & FROM_WEST) )//|| (getBoundaryCondition(i) & 1))
-					/*	&&(!(getBoundaryCondition(i) & 3) && !(getBoundaryCondition(i) & 12)) */)
+				if( ((getBoundaryCondition(i) & FROM_WEST) ))
 				{
-					//cout << "5 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(5, getSubgrid(i),i), i);
+					insertSubgrid( runSubgrid(FROM_NORTH + FROM_WEST, getSubgrid(i),i), i);
 				}
-				if( ((getBoundaryCondition(i) & FROM_EAST) )//|| (getBoundaryCondition(i) & 8))
-					/*	&&(!(getBoundaryCondition(i) & 12) && !(getBoundaryCondition(i) & 3))*/ )
+				if( ((getBoundaryCondition(i) & FROM_EAST) ))
 				{
-					//cout << "10 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(10, getSubgrid(i),i), i);
+					insertSubgrid( runSubgrid(FROM_SOUTH + FROM_EAST, getSubgrid(i),i), i);
 				}
-				if(   ((getBoundaryCondition(i) & FROM_WEST) )//|| (getBoundaryCondition(i) & 8))
-					/*&&(!(getBoundaryCondition(i) & 10) && !(getBoundaryCondition(i) & 5)) */)
+				if(   ((getBoundaryCondition(i) & FROM_WEST) ))
 				{
-					//cout << "12 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(12, getSubgrid(i),i), i);
+					insertSubgrid( runSubgrid(FROM_SOUTH + FROM_WEST, getSubgrid(i),i), i);
 				}
 
 				setBoundaryCondition(i, 0);
@@ -1138,28 +1130,28 @@ void runCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, 
 
 		if( ((bound & FROM_EAST) || (bound & FROM_NORTH) ))
 		{
-			caller->runSubgridCUDA(3,u,i);
+			caller->runSubgridCUDA(FROM_NORTH + FROM_EAST,u,i);
 			__syncthreads();
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
 		if( ((bound & FROM_WEST) || (bound & FROM_NORTH) ))
 		{
-			caller->runSubgridCUDA(5,u,i);
+			caller->runSubgridCUDA(FROM_NORTH + FROM_WEST,u,i);
 			__syncthreads();
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
 		if( ((bound & FROM_EAST) || (bound & FROM_SOUTH) ))
 		{
-			caller->runSubgridCUDA(10,u,i);
+			caller->runSubgridCUDA(FROM_SOUTH + FROM_EAST,u,i);
 			__syncthreads();
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
 		}
 		if(   (bound & FROM_WEST) || (bound & FROM_SOUTH) )
 		{
-			caller->runSubgridCUDA(12,u,i);
+			caller->runSubgridCUDA(FROM_SOUTH + FROM_WEST,u,i);
 			__syncthreads();
 			caller->updateSubgridCUDA(i,caller, &u[l]);
 			__syncthreads();
