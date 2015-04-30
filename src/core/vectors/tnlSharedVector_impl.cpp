@@ -19,13 +19,17 @@
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedVector< float, tnlHost, int >;
+#endif
 template class tnlSharedVector< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlSharedVector< long double, tnlHost, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedVector< float, tnlHost, long int >;
+#endif
 template class tnlSharedVector< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlSharedVector< long double, tnlHost, long int >;
@@ -33,14 +37,18 @@ template class tnlSharedVector< long double, tnlHost, long int >;
 #endif
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedVector< float, tnlCuda, int >;
+#endif
 template class tnlSharedVector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlSharedVector< long double, tnlCuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedVector< float, tnlCuda, long int >;
+#endif
 template class tnlSharedVector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlSharedVector< long double, tnlCuda, long int >;

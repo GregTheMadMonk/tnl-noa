@@ -441,14 +441,18 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 
 // TODO: this does not work with CUDA 5.5 - fix it later
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlHost, int >;
+#endif
 extern template class tnlSharedArray< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedArray< long double, tnlHost, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlHost, long int >;
+#endif
 extern template class tnlSharedArray< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedArray< long double, tnlHost, long int >;
@@ -457,9 +461,14 @@ extern template class tnlSharedArray< long double, tnlHost, long int >;
 
 
 #ifdef HAVE_CUDA
-/*extern template class tnlSharedArray< float, tnlCuda, int >;
+/*
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlSharedArray< float, tnlCuda, int >;
+#endif
 extern template class tnlSharedArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlCuda, long int >;
+#endif
 extern template class tnlSharedArray< double, tnlCuda, long int >;*/
 #endif
 

@@ -20,14 +20,18 @@
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedArray< float, tnlCuda, int >;
+#endif
 template class tnlSharedArray< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedArray< long double, tnlCuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 template class tnlSharedArray< float, tnlCuda, long int >;
+#endif
 template class tnlSharedArray< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedArray< long double, tnlCuda, long int >;

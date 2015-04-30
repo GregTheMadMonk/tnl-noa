@@ -349,8 +349,10 @@ void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexT
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlHost, int >;
 extern template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
+#endif
 
 extern template class tnlVector< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
@@ -358,7 +360,9 @@ extern template class tnlVector< long double, tnlHost, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlHost, long int >;
+#endif
 extern template class tnlVector< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlVector< long double, tnlHost, long int >;
@@ -366,14 +370,18 @@ extern template class tnlVector< long double, tnlHost, long int >;
 #endif
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlCuda, int >;
+#endif
 extern template class tnlVector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlVector< long double, tnlCuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlCuda, long int >;
+#endif
 extern template class tnlVector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlVector< long double, tnlCuda, long int >;

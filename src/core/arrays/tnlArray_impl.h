@@ -434,14 +434,18 @@ ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v
 
 // TODO: this does not work with CUDA 5.5 - fix it later
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlArray< float, tnlHost, int >;
+#endif
 extern template class tnlArray< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlArray< long double, tnlHost, long int >;
+template class tnlArray< long double, tnlHost, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlArray< float, tnlHost, long int >;
+#endif
 extern template class tnlArray< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlArray< long double, tnlHost, long int >;
@@ -449,10 +453,15 @@ template class tnlArray< long double, tnlHost, long int >;
 #endif
 
 #ifdef HAVE_CUDA
-/*extern template class tnlArray< float, tnlCuda, int >;
-extern template class tnlArray< double, tnlCuda, int >;
-extern template class tnlArray< float, tnlCuda, long int >;
-extern template class tnlArray< double, tnlCuda, long int >;*/
+/*
+ #ifdef INSTANTIATE_FLOAT
+ extern template class tnlArray< float, tnlCuda, int >;
+ #endif
+ extern template class tnlArray< double, tnlCuda, int >;
+ #ifdef INSTANTIATE_FLOAT
+ extern template class tnlArray< float, tnlCuda, long int >;
+ #endif
+ extern template class tnlArray< double, tnlCuda, long int >;*/
 #endif
 
 #endif

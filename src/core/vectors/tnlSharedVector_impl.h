@@ -355,13 +355,17 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlHost, int >;
+#endif
 extern template class tnlSharedVector< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedVector< long double, tnlHost, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlHost, long int >;
+#endif
 extern template class tnlSharedVector< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedVector< long double, tnlHost, long int >;
@@ -370,13 +374,18 @@ extern template class tnlSharedVector< long double, tnlHost, long int >;
 
 #ifdef HAVE_CUDA
 // TODO: fix this - it does not work with CUDA 5.5
-/*extern template class tnlSharedVector< float, tnlCuda, int >;
+/*
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlSharedVector< float, tnlCuda, int >;
+#endif
 extern template class tnlSharedVector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedVector< long double, tnlCuda, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlCuda, long int >;
+#endif
 extern template class tnlSharedVector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedVector< long double, tnlCuda, long int >;

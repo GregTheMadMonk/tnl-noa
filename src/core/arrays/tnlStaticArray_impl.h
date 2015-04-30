@@ -225,7 +225,9 @@ extern template class tnlStaticArray< 4, int >;
 #ifdef INSTANTIATE_LONG_INT
 extern template class tnlStaticArray< 4, long int >;
 #endif
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlStaticArray< 4, float >;
+#endif
 extern template class tnlStaticArray< 4, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlStaticArray< 4, long double >;

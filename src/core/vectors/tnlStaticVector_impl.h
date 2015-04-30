@@ -202,7 +202,9 @@ tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector<
 
 #ifndef HAVE_CUDA
 // TODO: does not work with CUDA
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlStaticVector< 4, float >;
+#endif
 extern template class tnlStaticVector< 4, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlStaticVector< 4, long double >;
