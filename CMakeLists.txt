@@ -42,9 +42,49 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this              
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
         AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
-        set( CUDA_ADD_EXECUTABLE_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 )
-        set( CUDA_ADD_LIBRARY_OPTIONS -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -shared )
+        set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
+                            -gencode arch=compute_30,code=sm_30
+                            -gencode arch=compute_32,code=sm_32 
+                            -gencode arch=compute_37,code=sm_37 
+                            -gencode arch=compute_37,code=sm_37 
+                            -gencode arch=compute_50,code=sm_50 
+                            -gencode arch=compute_52,code=sm_52 )
+        if( WITH_CUDA_ARCH STREQUAL "all" )
+           set( CUDA_ARCH ${ALL_CUDA_ARCHS} )   
+        else()
+            if( WITH_CUDA_ARCH STREQUAL "auto")
+                ####
+                # Select GPU architecture
+                #
+                set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/cuda-arch-options)
+                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/tools/src/cuda-arch-options.cu)
+                message( "Compiling device-arch-options ..." )
+                file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
+                execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                                 RESULT_VARIABLE CUDA_ARCH_RESULT
+                                 OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
+                                 ERROR_VARIABLE CUDA_ARCH_OUTPUT )
+                execute_process( COMMAND ${CUDA_ARCH_EXECUTABLE}
+                                 OUTPUT_VARIABLE CUDA_ARCH )
+                if( NOT CUDA_ARCH_RESULT )
+                    # strip linebreaks and convert to list delimited with ';'
+                    string( REGEX REPLACE "[\n ]" ";" CUDA_ARCH ${CUDA_ARCH} )
+                    # cache the result
+                    set( CUDA_ARCH ${CUDA_ARCH} CACHE LIST "GPU architecture options" )
+                else()
+                    message( "Failed to detect GPU architecture:\n${CUDA_ARCH_OUTPUT}" )
+                    message( "Using (almost) all GPU architectures as fallback." )
+                    set( CUDA_ARCH ${ALL_CUDA_ARCHS} )
+                endif()
+                message( "GPU architecture options:  ${CUDA_ARCH}" )
+            else()
+                set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
+            endif()
+        endif()
+        set( CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ARCH} )
+        set( CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ARCH} -shared )
         set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared " )
+
 
         ####
         # Check for cuBLAS

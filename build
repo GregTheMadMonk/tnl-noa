@@ -5,6 +5,7 @@ PREFIX=${HOME}/local
 WITH_CUDA="yes"
 WITH_TESTS="yes"
 
+WITH_CUDA_ARCH="auto"
 WITH_CUBLAS="no"
 WITH_TEMPLATE_INSTANTIATION="yes"
 INSTANTIATE_LONG_INT="yes"
@@ -27,6 +28,7 @@ do
         --with-tests=*                 ) WITH_TESTS="${option#*=}" ;;
         --with-cuda=*                  ) WITH_CUDA="${option#*=}" ;;
         --with-cublas=*                ) WITH_CUBLAS="${option#*=}" ;;
+        --with-cuda-arch=*             ) WITH_CUDA_ARCH="${option#*=}";;
         --with-templates-instantiation ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
         --instantiate-long-int=*       ) INSTANTIATE_LONG_INT="${option#*=}" ;;
         --instantiate-int=*            ) INSTANTIATE_INT="${option#*=}" ;;
@@ -37,7 +39,8 @@ do
                                          INSTANTIATE_INT="yes"
                                          INSTANTIATE_LONG_DOUBLE="no"
                                          INSTANTIATE_DOUBLE="yes"
-                                         INSTANTIATE_FLOAT="no" ;;
+                                         INSTANTIATE_FLOAT="no"
+                                         WITH_CUDA_ARCH="auto" ;;
         --with-cmake=*                 ) CMAKE="${option#*=}" ;;
         --build-jobs=*                 ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
@@ -58,6 +61,7 @@ then
     echo "   --build=Debug/Release                 Build type."
     echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default (libcppunit-dev is required)."
     echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
+    echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture."   
     echo "   --with-templates-instantiation=yes/no Some TNL templates are precompiled during the build. 'yes' by default."
     echo "   --with-cmake=CMAKE                    Path to cmake. 'cmake' by default."
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to a number of CPU cores by default."
@@ -73,6 +77,7 @@ ${CMAKE} ${ROOT_DIR} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
          -DWITH_CUDA=${WITH_CUDA} \
+         -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
          -DWITH_CUBLAS=${WITH_CUBLAS} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DPETSC_DIR=${PETSC_DIR} \

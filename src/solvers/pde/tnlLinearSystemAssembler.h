@@ -119,12 +119,12 @@ class tnlLinearSystemAssembler
                                     const IndexType index )
          {
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
-            userData.boundaryConditions->updateLinearSystem( *userData.time,
-                                                            mesh,
-                                                            index,
-                                                            *userData.u,
-                                                            *userData.b,
-                                                            matrixRow );
+            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
+                                                             mesh,
+                                                             index,
+                                                             *userData.u,
+                                                             *userData.b,
+                                                             matrixRow );
          }
 
    };
@@ -241,7 +241,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
             //printf( "index = %d \n", index );
              ( *userData.b )[ index ] = 0.0;
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
-            userData.boundaryConditions->updateLinearSystem( *userData.time,
+            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
                                                              mesh,
                                                              index,
                                                              coordinates,

@@ -100,27 +100,11 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
          solverMonitor->refresh();
    }
 
-   if( std::isnan( this->getResidue() ) )
-   {
-      //cerr << endl << "RES is Nan" << endl;
+   if( std::isnan( this->getResidue() || 
+       this->getIterations() > this->getMaxIterations()  ||
+       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->minIterations ) ) ||
+       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) )
       return false;
-   }
-   if(( this->getResidue() > this->getDivergenceResidue() &&
-         this->getIterations() > this->minIterations ) )
-   {
-      ///cerr << endl << "RES is over the divergence residue." << endl;
-      return false;
-   }
-   if( this->getIterations() > this->getMaxIterations() )
-   {
-      //cerr << endl << "Max. iterations exceeded." << endl;
-      return false;
-   }
-   if( this->getResidue() < this->getConvergenceResidue() )
-   {
-      //cerr << endl << "The solver has. converged." <<  endl;
-      return false;
-   }
    return true;
 }
 

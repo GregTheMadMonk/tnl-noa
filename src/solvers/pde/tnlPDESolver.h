@@ -51,9 +51,13 @@ class tnlPDESolver : public tnlObject
 
    void setProblem( ProblemType& problem );
 
+   void setInitialTime( const RealType& initialT );
+   
+   const RealType& getInitialTime() const;
+   
    bool setFinalTime( const RealType& finalT );
 
-   const RealType& getFinalTine() const;
+   const RealType& getFinalTime() const;
 
    bool setTimeStep( const RealType& timeStep );
 
@@ -87,7 +91,7 @@ class tnlPDESolver : public tnlObject
 
    TimeStepper* timeStepper;
 
-   RealType finalTime, snapshotPeriod, timeStep, timeStepOrder;
+   RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
 
    ProblemType* problem;
 

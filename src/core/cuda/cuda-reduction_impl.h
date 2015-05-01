@@ -47,7 +47,7 @@ template< typename Operation >
 __device__ void reduceAligned( const Operation& operation,
                                typename Operation :: IndexType tid,
                                typename Operation :: IndexType  s,
-                               typename Operation :: ResultType* sdata )
+                               volatile typename Operation :: ResultType* sdata )
 {
    if( tid < s )
    {
@@ -67,7 +67,7 @@ __device__ void reduceNonAligned( const Operation& operation,
                                   typename Operation :: IndexType tid,
                                   typename Operation :: IndexType s,
                                   typename Operation :: IndexType n,
-                                  typename Operation :: ResultType* sdata )
+                                  volatile typename Operation :: ResultType* sdata )
 {
    if( tid < s )
    {
