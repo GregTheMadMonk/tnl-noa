@@ -1,7 +1,13 @@
+ADD_SUBDIRECTORY( nonlinear-diffusion-operators )
+
 SET( headers tnlLinearDiffusion.h
              tnlLinearDiffusion_impl.h
              tnlExactLinearDiffusion.h             
-             tnlExactLinearDiffusion_impl.h )
+             tnlExactLinearDiffusion_impl.h
+	     tnlNonLinearDiffusion.h
+             tnlNonLinearDiffusion_impl.h
+             tnlExactNonLinearDiffusion.h             
+             tnlExactNonLinearDiffusion_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators/diffusion )
 

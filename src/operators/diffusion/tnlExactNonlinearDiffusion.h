@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLEXACTFLOWDIFFUSION_H_
-#define TNLEXACTFLOWDIFFUSION_H_
+#ifndef TNLEXACTNONLINEARDIFFUSION_H_
+#define TNLEXACTNONLINEARDIFFUSION_H_
 
 #include <functions/tnlFunctionType.h>
 
-template< int Dimensions >
-class tnlExactFlowDiffusion
+template< typename OperatorQ, int Dimensions >
+class tnlExactNonlinearDiffusion
 {};
 
-template<>
-class tnlExactFlowDiffusion< 1 >
+template< typename OperatorQ >
+class tnlExactNonlinearDiffusion< OperatorQ, 1 >
 {
    public:
 
@@ -43,14 +43,11 @@ class tnlExactFlowDiffusion< 1 >
 #endif
       static Real getValue( const Function& function,
                             const Vertex& v,
-                            const Real& time = 0.0 )
-      {
-         return 0;
-      }
+                            const Real& time = 0.0 );
 };
 
-template<>
-class tnlExactFlowDiffusion< 2 >
+template< typename OperatorQ >
+class tnlExactNonlinearDiffusion< OperatorQ, 2 >
 {
    public:
 
@@ -62,7 +59,7 @@ class tnlExactFlowDiffusion< 2 >
       template< typename Function, typename Vertex, typename Real >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif
+#endif 
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif      
@@ -71,8 +68,8 @@ class tnlExactFlowDiffusion< 2 >
                             const Real& time = 0.0 );
 };
 
-template<>
-class tnlExactFlowDiffusion< 3 >
+template< typename OperatorQ >
+class tnlExactNonlinearDiffusion< OperatorQ, 3 >
 {
    public:
 
@@ -84,25 +81,22 @@ class tnlExactFlowDiffusion< 3 >
       template< typename Function, typename Vertex, typename Real >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif
+#endif 
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
       static Real getValue( const Function& function,
                             const Vertex& v,
-                            const Real& time = 0.0 )
-      {
-         return 0;
-      }
+                            const Real& time = 0.0 );
 };
 
-template< int Dimensions >
-class tnlFunctionType< tnlExactFlowDiffusion< Dimensions > >
+template< typename OperatorQ, int Dimensions >
+class tnlFunctionType< tnlExactNonlinearDiffusion< OperatorQ, Dimensions > >
 {
    public:
       enum { Type = tnlAnalyticFunction };
 };
 
-#include "tnlExactFlowDiffusion_impl.h"
+#include "tnlExactNonlinearDiffusion_impl.h"
 
-#endif /* TNLEXACTFLOWDIFFUSION_H_ */
+#endif /* TNLEXACTNONLINEARDIFFUSION_H_ */

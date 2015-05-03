@@ -138,6 +138,8 @@ getValue( const Vertex& v,
       return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
       return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 1 )
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    return 0.0;
 }
 
@@ -187,6 +189,12 @@ getValue( const Vertex& v,
       return -2.0 * z / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
       return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * z * z / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
+      return 4.0 * x * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
+      return 4.0 * y * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    return 0.0;
 }
 

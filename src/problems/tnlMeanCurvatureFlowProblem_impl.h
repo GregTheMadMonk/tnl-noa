@@ -99,6 +99,7 @@ bindDofs( const MeshType& mesh,
 {
    const IndexType dofs = mesh.getNumberOfCells();
    this->solution.bind( dofVector.getData(), dofs );
+   differentialOperator.nonlinearDiffusionOperator.operatorQ.bind(solution);
 //   this->differentialOperator.setupDofs(mesh);
 }
 
@@ -127,27 +128,26 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-  template< typename MatrixType >          
+template< typename Matrix >          
 bool
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
-                   MatrixType& matrix )
+                   Matrix& matrix )
 {
-//   const IndexType dofs = this->getDofs( mesh );
-//   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
-//   RowLengthsVectorType rowLengths;
-//   if( ! rowLengths.setSize( dofs ) )
-//      return false;
-//   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowLengthsVectorType > matrixSetter;
-//   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
-//                                                            differentialOperator,
-//                                                            boundaryCondition,
-//                                                            rowLengths );
-//   matrix.setDimensions( dofs, dofs );
-//   if( ! matrix.setRowLengths( rowLengths ) )
-//      return false;
-//   return true;
-//   //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
+   const IndexType dofs = this->getDofs( mesh );
+   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
+   RowLengthsVectorType rowLengths;
+   if( ! rowLengths.setSize( dofs ) )
+      return false;
+   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowLengthsVectorType > matrixSetter;
+   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
+                                                            differentialOperator,
+                                                            boundaryCondition,
+                                                            rowLengths );
+   matrix.setDimensions( dofs, dofs );
+   if( ! matrix.setRowLengths( rowLengths ) )
+      return false;
+   return true;
 }
 
 template< typename Mesh,
@@ -198,6 +198,7 @@ getExplicitRHS( const RealType& time,
    
    //cout << "u = " << u << endl;
    this->bindDofs( mesh, u );
+   differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< Mesh::Dimensions >( time,
                                                         mesh,
@@ -217,7 +218,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename MatrixType >          
+template< typename Matrix >          
 void
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
@@ -225,23 +226,23 @@ assemblyLinearSystem( const RealType& time,
                       const MeshType& mesh,
                       DofVectorType& u,
                       DofVectorType& auxDofs,
-                      MatrixType& matrix,
+                      Matrix& matrix,
                       DofVectorType& b )
 {
-//   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
-//   systemAssembler.template assembly< Mesh::Dimensions >( time,
-//                                                          tau,
-//                                                          mesh,
-//                                                          this->differentialOperator,
-//                                                          this->boundaryCondition,
-//                                                          this->rightHandSide,
-//                                                          u,
-//                                                          matrix,
-//                                                          b );
-//   /*matrix.print( cout );
-//   cout << endl << b << endl;
-//   cout << endl << u << endl;
-//   abort();*/
+   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   systemAssembler.template assembly< Mesh::Dimensions >( time,
+                                                          tau,
+                                                          mesh,
+                                                          this->differentialOperator,
+                                                          this->boundaryCondition,
+                                                          this->rightHandSide,
+                                                          u,
+                                                          matrix,
+                                                          b );
+   /*matrix.print( cout );
+   cout << endl << b << endl;
+   cout << endl << u << endl;
+   abort();*/
 }
 
 #endif /* TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_ */

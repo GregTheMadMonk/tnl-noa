@@ -6,7 +6,7 @@ TARGET = mean-curvature-flow-eoc
 INSTALL_DIR = ${HOME}/local
 CXX = g++
 CUDA_CXX = nvcc
-CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR)  -g -O0
+CXX_FLAGS = -std=gnu++0x -I$(TNL_INCLUDE_DIR)   -O0 -g
 LD_FLAGS = -L$(TNL_INSTALL_DIR) -ltnl-dbg-0.1
 
 SOURCES = tnl-mean-curvature-flow-eoc.cpp
@@ -23,11 +23,11 @@ dist: $(DIST)
 
 install: $(TARGET)
 	cp $(TARGET) $(INSTALL_DIR)/bin
-	cp $(INSTALL_DIR)/share/tnl-0.1/examples/mean-curvature-flow-eoc
+	cp $(INSTALL_DIR)/share/tnl-0.1/examples/mean-curvature-flow
 
 uninstall: $(TARGET)
 	rm -f $(INSTALL_DIR)/bin/$(TARGET) 
-	rm -f $(INSTALL_DIR)/share/tnl-0.1/examples/mean-curvature-flow-eoc
+	rm -f $(INSTALL_DIR)/share/tnl-0.1/examples/mean-curvature-flow
 
 $(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)

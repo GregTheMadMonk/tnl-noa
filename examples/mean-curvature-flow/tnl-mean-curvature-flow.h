@@ -27,10 +27,10 @@
 #include <operators/tnlAnalyticNeumannBoundaryConditions.h>
 #include <operators/tnlNeumannBoundaryConditions.h>
 #include <functions/tnlConstantFunction.h>
-#include <problems/tnlHeatEquationProblem.h>
-
-#include "tnlMeanCurvatureFlowProblem.h"
-#include "tnlMeanCurvatureFlowDiffusion.h"
+#include <problems/tnlMeanCurvatureFlowProblem.h>
+#include <operators/diffusion/tnlNonlinearDiffusion.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -71,7 +71,9 @@ class meanCurvatureFlowSetter
    static bool run( const tnlParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::Dimensions };
-      typedef tnlMeanCurvatureFlowDiffusion< MeshType, Real, Index > ApproximateOperator;
+      typedef tnlOneSideDiffOperatorQForGraph<MeshType, Real, Index, 0> OperatorQ;
+      typedef tnlOneSideDiffNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
+      typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
 

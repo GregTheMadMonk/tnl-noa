@@ -18,15 +18,17 @@
 #ifndef TNLMEANCURVATUREFLOWEOCPROBLEM_H_
 #define TNLMEANCURVATUREFLOWEOCPROBLEM_H_
 
-#include "tnlMeanCurvatureFlowProblem.h"
-
+#include <problems/tnlMeanCurvatureFlowProblem.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlMeanCurvatureFlowDiffusion< Mesh,
-                                                              typename BoundaryCondition::RealType > >
-class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+          typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
+                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQForGraph<Mesh, typename BoundaryCondition::RealType,
+                                                          typename BoundaryCondition::IndexType, 0>, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >, 
+                                                          typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >
+class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > 
 {
    public:
 
@@ -35,6 +37,6 @@ class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh,
       bool setup( const tnlParameterContainer& parameters );
 };
 
-#include "tnlMeanCurvatureFlowEocProblem_impl.h"
+#include <problems/tnlMeanCurvatureFlowEocProblem_impl.h>
 
 #endif /* TNLMEANCURVATUREFLOWEOCPROBLEM_H_ */

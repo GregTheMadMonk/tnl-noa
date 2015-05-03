@@ -18,18 +18,23 @@
 #ifndef TNLMEANCURVATUREFLOWPROBLEM_H_
 #define TNLMEANCURVATUREFLOWPROBLEM_H_
 
-#include "tnlMeanCurvatureFlowDiffusion.h"
+#include <operators/diffusion/tnlNonlinearDiffusion.h>
+#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 #include <problems/tnlPDEProblem.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <matrices/tnlCSRMatrix.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlMeanCurvatureFlowDiffusion< Mesh,
-                                                              typename BoundaryCondition::RealType > >
+          typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
+                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQForGraph<Mesh, typename Mesh::RealType,
+                                                          typename Mesh::IndexType, 0>, typename Mesh::RealType, typename Mesh::IndexType >, 
+                                                          typename Mesh::RealType, typename Mesh::IndexType > >
 class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
                                                      typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                                     typename DifferentialOperator::IndexType >
 {
    public:
 
@@ -37,6 +42,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlCSRMatrix< RealType, DeviceType, IndexType> MatrixType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
@@ -55,10 +61,10 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
                                 DofVectorType& dofs,
                                 DofVectorType& auxDofs );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
-                              MatrixType& matrix );
-
+                              Matrix& matrix );
+      
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshType& mesh,
@@ -76,13 +82,13 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
                            DofVectorType& _u,
                            DofVectorType& _fu );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
                                  DofVectorType& dofs,
                                  DofVectorType& auxDofs,
-                                 MatrixType& matrix,
+                                 Matrix& matrix,
                                  DofVectorType& rightHandSide );
 
 
