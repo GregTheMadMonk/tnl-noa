@@ -18,7 +18,7 @@
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 #ifdef HAVE_CUDA
 
-#include <functions/tnlTestFunction.h>
+#include <functors/tnlTestFunction.h>
 
 template class tnlTestFunction< 1, float, tnlCuda >;
 template class tnlTestFunction< 2, float, tnlCuda >;

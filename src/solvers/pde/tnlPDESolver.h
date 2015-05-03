@@ -30,77 +30,80 @@ class tnlPDESolver : public tnlObject
 {
    public:
 
-   typedef typename TimeStepper::RealType RealType;
-   typedef typename TimeStepper::DeviceType DeviceType;
-   typedef typename TimeStepper::IndexType IndexType;
-   typedef Problem ProblemType;
-   typedef typename ProblemType::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   
-   tnlPDESolver();
+      typedef typename TimeStepper::RealType RealType;
+      typedef typename TimeStepper::DeviceType DeviceType;
+      typedef typename TimeStepper::IndexType IndexType;
+      typedef Problem ProblemType;
+      typedef typename ProblemType::MeshType MeshType;
+      typedef typename ProblemType::DofVectorType DofVectorType;
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+      tnlPDESolver();
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   bool writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   void setTimeStepper( TimeStepper& timeStepper );
+      bool writeProlog( tnlLogger& logger,
+                        const tnlParameterContainer& parameters );
 
-   void setProblem( ProblemType& problem );
+      void setTimeStepper( TimeStepper& timeStepper );
 
-   void setInitialTime( const RealType& initialT );
-   
-   const RealType& getInitialTime() const;
-   
-   bool setFinalTime( const RealType& finalT );
+      void setProblem( ProblemType& problem );
 
-   const RealType& getFinalTime() const;
+      void setInitialTime( const RealType& initialT );
 
-   bool setTimeStep( const RealType& timeStep );
+      const RealType& getInitialTime() const;
 
-   const RealType& getTimeStep() const;
+      bool setFinalTime( const RealType& finalT );
 
-   bool setTimeStepOrder( const RealType& timeStepOrder );
+      const RealType& getFinalTime() const;
 
-   const RealType& getTimeStepOrder() const;
+      bool setTimeStep( const RealType& timeStep );
 
-   bool setSnapshotPeriod( const RealType& period );
-   
-   const RealType& getSnapshotPeriod() const;
+      const RealType& getTimeStep() const;
 
-   void setIoRtTimer( tnlTimerRT& ioRtTimer);
+      bool setTimeStepOrder( const RealType& timeStepOrder );
 
-   void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+      const RealType& getTimeStepOrder() const;
 
-   void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+      bool setSnapshotPeriod( const RealType& period );
 
-   void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+      const RealType& getSnapshotPeriod() const;
 
-   bool solve();
-   
-   bool writeEpilog( tnlLogger& logger ) const;
+      void setIoRtTimer( tnlTimerRT& ioRtTimer);
+
+      void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+
+      void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+
+      void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+
+      bool solve();
+
+      bool writeEpilog( tnlLogger& logger ) const;
 
    protected:
 
-   MeshType mesh;
+      MeshType mesh;
 
-   DofVectorType dofs;
+      DofVectorType dofs;
 
-   DofVectorType auxiliaryDofs;
+      DofVectorType auxiliaryDofs;
 
-   TimeStepper* timeStepper;
+      MeshDependentDataType meshDependentData;
 
-   RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
+      TimeStepper* timeStepper;
 
-   ProblemType* problem;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
 
-   tnlTimerRT *ioRtTimer, *computeRtTimer;
+      ProblemType* problem;
 
-   tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
+      tnlTimerRT *ioRtTimer, *computeRtTimer;
+
+      tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
 
 };
 

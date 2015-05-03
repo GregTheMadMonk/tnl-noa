@@ -79,8 +79,7 @@ setup( const tnlParameterContainer& parameters,
     */
    tnlAssert( problem->getDofs( this->mesh ) != 0, );
    cout << "Allocating dofs ... ";
-   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) ||
-       ! this->auxiliaryDofs.setSize( problem->getAuxiliaryDofs( this->mesh ) ) )
+   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
    {
       cerr << endl;
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
@@ -88,10 +87,13 @@ setup( const tnlParameterContainer& parameters,
    }
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
-   if( this->auxiliaryDofs.getSize() != 0 )
-      this->auxiliaryDofs.setValue( 0.0 );
    this->problem->bindDofs( mesh, this->dofs );
-   this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
+   
+   /****
+    * Set mesh dependent data
+    */
+   this->problem->setMeshDependentData( mesh, this->meshDependentData );
+   this->problem->bindMeshDependentData( mesh, this->meshDependentData );
    
    /***
     * Set-up the initial condition
@@ -330,7 +332,7 @@ solve()
    this->timeStepper->setProblem( * ( this->problem ) );
    this->timeStepper->init( mesh );
    this->problem->bindDofs( mesh, this->dofs );
-   this->problem->bindAuxiliaryDofs( mesh, this->auxiliaryDofs );
+   this->problem->bindMeshDependentData( mesh, this->meshDependentData );
 
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
    {

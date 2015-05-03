@@ -54,6 +54,7 @@ bool tnlIterativeSolver< Real, Index> :: setup( const tnlParameterContainer& par
    this->setConvergenceResidue( parameters.getParameter< double >( "convergence-residue" ) );
    this->setDivergenceResidue( parameters.getParameter< double >( "divergence-residue" ) );
    this->setRefreshRate( parameters.getParameter< int >( "refresh-rate" ) );
+   return true;
 }
 
 template< typename Real, typename Index >
