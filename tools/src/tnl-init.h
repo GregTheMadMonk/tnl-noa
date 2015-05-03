@@ -21,8 +21,8 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
-#include <functions/tnlFunctionDiscretizer.h>
-#include <functions/tnlTestFunction.h>
+#include <functors/tnlFunctionDiscretizer.h>
+#include <functors/tnlTestFunction.h>
 #include <operators/tnlFiniteDifferences.h>
 #include <core/mfilename.h>
 

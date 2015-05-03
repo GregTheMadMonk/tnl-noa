@@ -74,9 +74,7 @@ getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlSparseMatrix< Real, Device, Index >::getPaddingIndex() const
 {
    return this->getColumns();

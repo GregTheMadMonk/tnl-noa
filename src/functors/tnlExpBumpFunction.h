@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSinWaveFunction.h  -  description
+                          tnlExpBumpFunction.h  -  description
                              -------------------
-    begin                : Nov 19, 2013
+    begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,147 +15,145 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSINWAVEFUNCTION_H_
-#define TNLSINWAVEFUNCTION_H_
+#ifndef TNLEXPBUMPFUNCTION_H_
+#define TNLEXPBUMPFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
-template< typename Real = double >
-class tnlSinWaveFunctionBase
+template< typename Real >
+class tnlExpBumpFunctionBase
 {
    public:
 
-   tnlSinWaveFunctionBase();
+      typedef Real RealType;
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   void setWaveLength( const Real& waveLength );
+      void setAmplitude( const RealType& amplitude );
 
-   Real getWaveLength() const;
+      const RealType& getAmplitude() const;
 
-   void setAmplitude( const Real& amplitude );
+      void setSigma( const RealType& sigma );
 
-   Real getAmplitude() const;
-
-   void setPhase( const Real& phase );
-
-   Real getPhase() const;
+      const RealType& getSigma() const;
 
    protected:
 
-   Real waveLength, amplitude, phase, wavesNumber;
-};
-
-template< int Dimensions, typename Real >
-class tnlSinWaveFunction
-{
-};
-
-template< typename Real >
-class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
-{
-   public:
-
-      enum { Dimensions = 1 };
-      typedef tnlStaticVector< 1, Real > VertexType;
-      typedef Real RealType;
-
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
-
-};
-
-template< typename Real >
-class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
-{
-   public:
-
-         enum { Dimensions = 2 };
-         typedef tnlStaticVector< 2, Real > VertexType;
-         typedef Real RealType;
-
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
-};
-
-template< typename Real >
-class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
-{
-   public:
-
-      enum { Dimensions = 3 };
-      typedef tnlStaticVector< 3, Real > VertexType;
-      typedef Real RealType;
-
-
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType amplitude, sigma;
 };
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
+class tnlExpBumpFunction
 {
-   str << "Sin Wave. function: amplitude = " << f.getAmplitude()
-       << " wavelength = " << f.getWaveLength()
-       << " phase = " << f.getPhase();
+};
+
+template< typename Real >
+class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< Real >
+{
+   public:
+
+      enum { Dimensions = 1 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
+
+      static tnlString getType();
+
+      tnlExpBumpFunction();
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder,
+                typename Vertex >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
+#endif   
+   __cuda_callable__ RealType getValue( const Vertex& v,
+                                        const Real& time = 0.0 ) const;
+};
+
+template< typename Real >
+class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< Real >
+{
+   public:
+
+      enum { Dimensions = 2 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
+
+      static tnlString getType();
+
+      tnlExpBumpFunction();
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder,
+                typename Vertex >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
+#endif
+   __cuda_callable__ RealType getValue( const Vertex& v,
+                                        const Real& time = 0.0 ) const;
+};
+
+template< typename Real >
+class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< Real >
+{
+   public:
+
+      enum { Dimensions = 3 };
+      typedef Real RealType;
+      typedef tnlStaticVector< Dimensions, Real > VertexType;
+
+      static tnlString getType();
+
+      tnlExpBumpFunction();
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder,
+                typename Vertex >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
+#endif   
+   __cuda_callable__    RealType getValue( const Vertex& v,
+                                           const Real& time = 0.0 ) const;
+};
+
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+{
+   str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
    return str;
 }
 
 template< int FunctionDimensions,
           typename Real >
-class tnlFunctionType< tnlSinWaveFunction< FunctionDimensions, Real > >
+class tnlFunctionType< tnlExpBumpFunction< FunctionDimensions, Real > >
 {
    public:
 
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <functions/tnlSinWaveFunction_impl.h>
 
-#endif /* TNLSINWAVEFUNCTION_H_ */
+#include <functors/tnlExpBumpFunction_impl.h>
+
+
+#endif /* TNLEXPBUMPFUNCTION_H_ */

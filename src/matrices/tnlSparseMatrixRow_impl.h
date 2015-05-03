@@ -19,9 +19,7 @@
 #define TNLSPARSEMATRIXROW_IMPL_H_
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlSparseMatrixRow< Real, Index >::
 tnlSparseMatrixRow()
 : values( 0 ),
@@ -32,9 +30,7 @@ tnlSparseMatrixRow()
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlSparseMatrixRow< Real, Index >::
 tnlSparseMatrixRow( Index* columns,
                     Real* values,
@@ -48,9 +44,7 @@ tnlSparseMatrixRow( Index* columns,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlSparseMatrixRow< Real, Index >::
 bind( Index* columns,
@@ -65,9 +59,7 @@ bind( Index* columns,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlSparseMatrixRow< Real, Index >::
 setElement( const Index& elementIndex,

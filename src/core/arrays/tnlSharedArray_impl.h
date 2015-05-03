@@ -163,9 +163,7 @@ void tnlSharedArray< Element, Device, Index > :: reset()
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlSharedArray< Element, Device, Index > :: getSize() const
 {
    return this -> size;
@@ -200,9 +198,7 @@ Element tnlSharedArray< Element, Device, Index > :: getElement( Index i ) const
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
@@ -216,9 +212,7 @@ Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),

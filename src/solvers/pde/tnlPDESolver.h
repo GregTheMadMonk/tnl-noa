@@ -22,6 +22,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlSolverMonitor.h>
+#include <core/tnlLogger.h>
 
 template< typename Problem,
           typename TimeStepper >
@@ -80,6 +81,8 @@ class tnlPDESolver : public tnlObject
    void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
 
    bool solve();
+   
+   bool writeEpilog( tnlLogger& logger ) const;
 
    protected:
 

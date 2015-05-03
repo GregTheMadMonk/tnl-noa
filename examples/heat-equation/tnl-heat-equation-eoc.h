@@ -21,7 +21,7 @@
 #include <solvers/tnlSolver.h>
 #include <solvers/tnlFastBuildConfig.h>
 #include <solvers/tnlConfigTags.h>
-#include <functions/tnlTestFunction.h>
+#include <functors/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include <operators/tnlAnalyticDirichletBoundaryConditions.h>

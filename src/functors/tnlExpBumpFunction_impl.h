@@ -18,7 +18,7 @@
 #ifndef TNLEXPBUMPFUNCTION_IMPL_H_
 #define TNLEXPBUMPFUNCTION_IMPL_H_
 
-#include <functions/tnlExpBumpFunction.h>
+#include <functors/tnlExpBumpFunction.h>
 
 template< typename Real >
 bool
@@ -76,9 +76,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
                                          const Real& time ) const
@@ -116,9 +114,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExpBumpFunction< 2, Real >::
 getValue( const Vertex& v,
@@ -162,9 +158,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExpBumpFunction< 3, Real >::
 getValue( const Vertex& v,

@@ -109,7 +109,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlVecto
       rt_timer. Reset();
 
       this -> iterations = 0;
-      //while( rt_timer. GetTime() < time )
+      //while( rt_timer. getTime() < time )
       {
          for( int i = 0; i < this -> maxIterations; i ++ )
          {
@@ -118,7 +118,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlVecto
             this -> iterations ++;
          }
       }
-      this -> time = rt_timer. GetTime();
+      this -> time = rt_timer. getTime();
 
       cusp::array1d< Real, cusp::host_memory > host_b( b );
       host_b = b;

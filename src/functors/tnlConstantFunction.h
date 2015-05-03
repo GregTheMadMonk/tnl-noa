@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< int FunctionDimensions,
           typename Real = double >
@@ -55,16 +55,12 @@ class tnlConstantFunction
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const;
 
    template< typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
    RealType getValue( const Vertex& v,
                       const Real& time = 0.0 ) const
    {
@@ -93,6 +89,6 @@ class tnlFunctionType< tnlConstantFunction< FunctionDimensions, Real > >
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <functions/tnlConstantFunction_impl.h>
+#include <functors/tnlConstantFunction_impl.h>
 
 #endif /* TNLCONSTANTFUNCTION_H_ */

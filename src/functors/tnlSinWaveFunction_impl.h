@@ -18,7 +18,7 @@
 #ifndef TNLSINWAVEFUNCTION_IMPL_H_
 #define TNLSINWAVEFUNCTION_IMPL_H_
 
-#include <functions/tnlSinWaveFunction.h>
+#include <functors/tnlSinWaveFunction.h>
 
 template< typename Real >
 tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
@@ -81,9 +81,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlSinWaveFunction< 1, Real >::
 getValue( const Vertex& v,
@@ -116,9 +114,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlSinWaveFunction< 2, Real >::
 getValue( const Vertex& v,
@@ -148,9 +144,7 @@ template< typename Real >
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlSinWaveFunction< 3, Real >::
 getValue( const Vertex& v,

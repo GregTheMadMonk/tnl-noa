@@ -169,9 +169,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlEllpackMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const Real& value )
@@ -193,9 +191,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const RealType& value,
@@ -291,9 +287,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlEllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                             const IndexType* columnIndexes,
                                                             const RealType* values,
@@ -359,9 +353,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                             const IndexType* columns,
                                                             const RealType* values,
@@ -388,9 +380,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
@@ -430,9 +420,7 @@ Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
@@ -453,9 +441,7 @@ void tnlEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -471,9 +457,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -490,9 +474,7 @@ template< typename Real,
           typename Device,
           typename Index >
   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                      const Vector& vector ) const
 {
@@ -718,9 +700,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowBegin( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -729,9 +709,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowEnd( const tnlEllpackMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -740,9 +718,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getElementStep( const tnlEllpackMatrix< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;
@@ -759,8 +735,5 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
          tnlMatrixVectorProductCuda( matrix, inVector, outVector );
       }
 };
-
-
-
 
 #endif /* TNLELLPACKMATRIX_IMPL_H_ */

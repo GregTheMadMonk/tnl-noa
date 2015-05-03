@@ -37,7 +37,7 @@ template< typename REAL > void benchmarkAddition( long int loops )
       a4 += REAL( 0.1 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 + a2 + a3 + a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -61,7 +61,7 @@ template< typename REAL > void benchmarkMultiplication( const long int loops )
       }
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 * a2 * a3 * a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -83,7 +83,7 @@ template< typename REAL > void benchmarkDivision( long int loops )
       if( a1 < REAL( 0.01 ) ) a1 = a2 = a3 = a4 = REAL( 1.0e9 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 / a2 / a3 / a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -105,7 +105,7 @@ template< typename REAL > void benchmarkSqrt( long int loops )
       if( a1 < REAL( 100.0 ) ) a1 = a2 = a3 = a4 = REAL( 1.0e9 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -126,7 +126,7 @@ template< typename REAL > void benchmarkSin( long int loops )
       a4 = sin( a4 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -148,7 +148,7 @@ template< typename REAL > void benchmarkExp( long int loops )
       if( a1 > REAL( 1.0e9 ) ) a1 = a2 = a3 = a4 = REAL( 1.1 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 
@@ -170,7 +170,7 @@ template< typename REAL > void benchmarkPow( long int loops )
       if( a1 < REAL( 1.0 ) ) a1 = a2 = a3 = a4 = REAL( 1.0e9 );
    }
 
-   double cpu_time = cpu_timer. GetTime();
+   double cpu_time = cpu_timer. getTime();
    cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
 }
 

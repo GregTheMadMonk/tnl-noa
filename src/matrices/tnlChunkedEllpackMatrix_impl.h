@@ -309,9 +309,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setNumberOfChunksInSlice( c
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getNumberOfChunksInSlice() const
 {
    return this->chunksInSlice;
@@ -336,9 +334,7 @@ Index tnlChunkedEllpackMatrix< Real, Device, Index >::getDesiredChunkSize() cons
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getNumberOfSlices() const
 {
    return this->numberOfSlices;
@@ -378,9 +374,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator != ( const tnlChun
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const Real& value )
@@ -401,9 +395,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                                      const IndexType _column,
                                                                      const RealType& _value,
@@ -438,9 +430,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunkFast( const IndexType sliceOffset,
                                                                             const IndexType chunkIndex,
                                                                             const IndexType chunkSize,
@@ -601,9 +591,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunk( const In
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType row,
                                                                  const IndexType* columnIndexes,
                                                                  const RealType* values,
@@ -645,9 +633,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunkFast( const IndexType sliceOffset,
                                                                    const IndexType chunkIndex,
                                                                    const IndexType chunkSize,
@@ -757,9 +743,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunk( const IndexType s
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                    const IndexType* columns,
                                                                    const RealType* values,
@@ -785,9 +769,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRow( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                      const IndexType column ) const
 {
@@ -809,9 +791,7 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const Index
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunkFast( const IndexType sliceOffset,
                                                                             const IndexType chunkIndex,
                                                                             const IndexType chunkSize,
@@ -889,9 +869,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunk( const In
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                                  IndexType* columns,
                                                                  RealType* values ) const
@@ -921,9 +899,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getChunkFast( const IndexType sliceOffset,
                                                                    const IndexType chunkIndex,
                                                                    const IndexType chunkSize,
@@ -945,9 +921,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getChunkFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlChunkedEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -963,9 +937,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlChunkedEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -1039,9 +1011,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                             const Vector& vector ) const
 {
@@ -1072,9 +1042,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::chunkVectorProduct( const IndexType sliceOffset,
                                                                                               const IndexType chunkIndex,
                                                                                               const IndexType chunkSize,
@@ -1386,9 +1354,7 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
       }
       
       template< typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
                                      const Index chunkIndex,
                                      const Index chunkSize,

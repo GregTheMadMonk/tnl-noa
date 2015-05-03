@@ -79,20 +79,20 @@ void tnlIterativeSolverMonitor< Real, Index > :: refresh()
 template< typename Real, typename Index>
 void tnlIterativeSolverMonitor< Real, Index > :: resetTimers()
 {
-   cpuTimer. Reset();
-   rtTimer. Reset();
+   cpuTimer.reset();
+   rtTimer.reset();
 }
 
 template< typename Real, typename Index>
 double tnlIterativeSolverMonitor< Real, Index > :: getCPUTime()
 {
-   return cpuTimer. GetTime();
+   return cpuTimer.getTime();
 }
 
 template< typename Real, typename Index>
 double tnlIterativeSolverMonitor< Real, Index > :: getRealTime()
 {
-   return rtTimer. GetTime();
+   return rtTimer.getTime();
 }
 
 

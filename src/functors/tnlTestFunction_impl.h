@@ -19,10 +19,10 @@
 #define TNLTESTFUNCTION_IMPL_H_
 
 #include <core/tnlCuda.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlExpBumpFunction.h>
-#include <functions/tnlSinBumpsFunction.h>
-#include <functions/tnlSinWaveFunction.h>
+#include <functors/tnlConstantFunction.h>
+#include <functors/tnlExpBumpFunction.h>
+#include <functors/tnlSinBumpsFunction.h>
+#include <functors/tnlSinWaveFunction.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -202,9 +202,7 @@ template< int FunctionDimensions,
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
 getValue( const Vertex& vertex,
@@ -253,9 +251,7 @@ template< int FunctionDimensions,
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
 getTimeDerivative( const Vertex& vertex,

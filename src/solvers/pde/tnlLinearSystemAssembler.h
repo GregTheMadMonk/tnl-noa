@@ -18,7 +18,7 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_H_
 #define TNLLINEARSYSTEMASSEMBLER_H_
 
-#include <functions/tnlFunctionAdapter.h>
+#include <functors/tnlFunctorAdapter.h>
 
 template< typename Real,
           typename DofVector,
@@ -141,7 +141,7 @@ class tnlLinearSystemAssembler
                                     TraverserUserData& userData,
                                     const IndexType index )
          {
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = 0.0;/*( *userData.u )[ index ] +
                      ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                                     *userData.rightHandSide,
@@ -293,7 +293,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
@@ -340,7 +340,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          {
             //printf( "index = %d \n", index );
             // printf("Matrix assembler: Index = %d \n", index );
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
             ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,

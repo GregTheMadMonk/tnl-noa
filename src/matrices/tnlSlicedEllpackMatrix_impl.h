@@ -160,9 +160,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const Real& value )
@@ -186,9 +184,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const RealType& value,
@@ -285,9 +281,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRowFast( const IndexType row,
                                                                              const IndexType* columnIndexes,
                                                                              const RealType* values,
@@ -356,9 +350,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: addRowFast( const IndexType row,
                                                                              const IndexType* columns,
                                                                              const RealType* values,
@@ -387,9 +379,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElementFast( const IndexType row,
                                                                                const IndexType column ) const
 {
@@ -431,9 +421,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowFast( const IndexType row,
                                                                            IndexType* columns,
                                                                            RealType* values ) const
@@ -454,9 +442,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
 tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex )
@@ -474,9 +460,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
 tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex ) const
@@ -495,9 +479,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::rowVectorProduct( const IndexType row,
                                                                                                       const Vector& vector ) const
 {
@@ -823,9 +805,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static void initRowTraverseFast( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
@@ -886,7 +866,5 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
       }
 
 };
-
-
 
 #endif /* TNLSLICEDELLPACKMATRIX_IMPL_H_ */

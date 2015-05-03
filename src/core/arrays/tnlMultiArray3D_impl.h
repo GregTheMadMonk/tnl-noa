@@ -21,9 +21,6 @@
 
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
 tnlMultiArray< 3, Element, Device, Index > :: tnlMultiArray()
 {
 }
@@ -119,9 +116,7 @@ void tnlMultiArray< 3, Element, Device, Index >::reset()
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlMultiArray< 3, Element, Device, Index > :: getDimensions( Index& kSize,
                                                                   Index& jSize,
                                                                   Index& iSize ) const
@@ -132,18 +127,14 @@ void tnlMultiArray< 3, Element, Device, Index > :: getDimensions( Index& kSize,
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const tnlStaticVector< 3, Index >& tnlMultiArray< 3, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMultiArray< 3, Element, Device, Index > :: getElementIndex( const Index k,
                                                                      const Index j,
                                                                      const Index i ) const
@@ -176,9 +167,7 @@ void tnlMultiArray< 3, Element, Device, Index > :: setElement( const Index k,
 
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k,
                                                                         const Index j,
                                                                         const Index i )
@@ -187,9 +176,7 @@ Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlMultiArray< 3, Element, Device, Index > :: operator()( const Index k,
                                                                                const Index j,
                                                                                const Index i ) const

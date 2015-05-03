@@ -50,9 +50,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
@@ -75,9 +73,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -94,9 +90,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
@@ -130,9 +124,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
@@ -171,9 +163,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -190,9 +180,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
@@ -238,9 +226,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
@@ -289,9 +275,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -308,9 +292,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,

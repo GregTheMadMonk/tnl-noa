@@ -21,6 +21,8 @@
 #include <solvers/ode/tnlODESolverMonitor.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlTimerRT.h>
+#include <core/tnlLogger.h>
 
 
 template< typename Problem,
@@ -67,6 +69,8 @@ class tnlExplicitTimeStepper
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );
+   
+   bool writeEpilog( tnlLogger& logger );
 
    protected:
 
@@ -79,6 +83,8 @@ class tnlExplicitTimeStepper
    RealType timeStep;
 
    DofVectorType* auxiliaryDofs;
+   
+   tnlTimerRT explicitUpdaterTimer;
 };
 
 #include <solvers/pde/tnlExplicitTimeStepper_impl.h>

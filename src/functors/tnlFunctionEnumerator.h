@@ -17,7 +17,7 @@
 #ifndef SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_H_
 #define SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_H_
 
-#include <functions/tnlFunctionAdapter.h>
+#include <functors/tnlFunctorAdapter.h>
 
 template< typename Function,
           typename DofVector >
@@ -85,7 +85,7 @@ class tnlFunctionEnumerator
                                        TraverserUserData& userData,
                                        const IndexType index )
             {
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               typedef tnlFunctorAdapter< MeshType, Function > FunctionAdapter;
                if( ! *userData.dofVectorCoefficient  )
                   ( *userData.u )[ index ] =
                      ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
@@ -148,7 +148,7 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
                                      const CoordinatesType& coordinates )
             {
                //printf( "Enumerator::processCell mesh =%p \n", &mesh );
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               typedef tnlFunctorAdapter< MeshType, Function > FunctionAdapter;
                if( ! ( *userData.dofVectorCoefficient ) )
                   ( *userData.u )[ index ] =
                      ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
@@ -175,7 +175,7 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {
-               typedef tnlFunctionAdapter< MeshType, Function > FunctionAdapter;
+               typedef tnlFunctorAdapter< MeshType, Function > FunctionAdapter;
                if( ! ( *userData.dofVectorCoefficient ) )
                   ( *userData.u )[ index ] =
                      ( *userData.functionCoefficient ) * FunctionAdapter::getValue( mesh,
@@ -196,7 +196,7 @@ class tnlFunctionEnumerator< tnlGrid< Dimensions, Real, Device, Index >,
 
 };
 
-#include <functions/tnlFunctionEnumerator_impl.h>
+#include <functors/tnlFunctionEnumerator_impl.h>
 
 
 

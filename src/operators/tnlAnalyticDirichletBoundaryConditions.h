@@ -21,7 +21,7 @@
 
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlParameterContainer.h>
-#include <functions/tnlConstantFunction.h>
+#include <functors/tnlConstantFunction.h>
 #include <core/vectors/tnlSharedVector.h>
 
 template< typename Mesh,
@@ -45,50 +45,44 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
 {
    public:
    
-   typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function, Real, Index > ThisType;
+      typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function, Real, Index > ThisType;
 
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< Dimensions, RealType > VertexType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef tnlStaticVector< Dimensions, RealType > VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
-            
-   bool setup( const tnlParameterContainer& parameters,
-               const tnlString& prefix = "" );
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   void setFunction( const Function& function );
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlString& prefix = "" );
 
-   Function& getFunction();
+      void setFunction( const Function& function );
 
-   const Function& getFunction() const;
+      Function& getFunction();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
+      const Function& getFunction() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+      __cuda_callable__
+      void setBoundaryConditions( const RealType& time,
+                                  const MeshType& mesh,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates,
+                                  DofVectorType& u,
+                                  DofVectorType& fu ) const;
 
-   template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
+      Index getLinearSystemRowLength( const MeshType& mesh,
+                                      const IndexType& index,
+                                      const CoordinatesType& coordinates ) const;
+
+      template< typename MatrixRow >
+      __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -99,7 +93,7 @@ class tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Dev
 
    protected:
 
-   Function function;
+      Function function;
 };
 
 template< typename Mesh,

@@ -310,7 +310,9 @@ void tnlPDESolver< Problem, TimeStepper > :: setComputeCpuTimer( tnlTimerCPU& co
 }
 
 template< typename Problem, typename TimeStepper >
-bool tnlPDESolver< Problem, TimeStepper > :: solve()
+bool
+tnlPDESolver< Problem, TimeStepper >::
+solve()
 {
    tnlAssert( timeStepper != 0,
               cerr << "No time stepper was set in tnlPDESolver with name " << this -> getName() );
@@ -324,7 +326,7 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
    }
    RealType t( this->initialTime );
    IndexType step( 0 );
-   IndexType allSteps = ceil( this->finalTime / this->snapshotPeriod );
+   IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
    this->timeStepper->setProblem( * ( this->problem ) );
    this->timeStepper->init( mesh );
    this->problem->bindDofs( mesh, this->dofs );
@@ -345,10 +347,10 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
       step ++;
       t += tau;
 
-      this->ioRtTimer->Continue();
-      this->ioCpuTimer->Continue();
-      this->computeRtTimer->Stop();
-      this->computeCpuTimer->Stop();
+      this->ioRtTimer->start();
+      this->ioCpuTimer->start();
+      this->computeRtTimer->stop();
+      this->computeCpuTimer->stop();
 
       if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
       {
@@ -356,13 +358,20 @@ bool tnlPDESolver< Problem, TimeStepper > :: solve()
          return false;
       }
 
-      this-> ioRtTimer->Stop();
-      this-> ioCpuTimer->Stop();
-      this-> computeRtTimer->Continue();
-      this-> computeCpuTimer->Continue();
-
+      this-> ioRtTimer->stop();
+      this-> ioCpuTimer->stop();
+      this-> computeRtTimer->start();
+      this-> computeCpuTimer->start();
    }
    return true;
+}
+
+template< typename Problem, typename TimeStepper >
+bool
+tnlPDESolver< Problem, TimeStepper >::
+writeEpilog( tnlLogger& logger ) const
+{
+   return this->timeStepper->writeEpilog( logger );
 }
 
 #endif /* TNLPDESOLVER_IMPL_H_ */

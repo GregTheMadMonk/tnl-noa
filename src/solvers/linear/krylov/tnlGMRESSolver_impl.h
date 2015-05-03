@@ -187,7 +187,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /****
        * Starting m-loop
        */
-      for( IndexType i = 0; i < m && this->getIterations() <= this->getMaxIterations(); i++ )
+      for( IndexType i = 0; i < m && this->nextIteration(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -264,13 +264,13 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
          this->refreshSolverMonitor();
 
-         if( this->getResidue() < this->getConvergenceResidue() )
+         /*if( this->getResidue() < this->getConvergenceResidue() )
          {
             update( i, m, _H, _s, _v, x );
             return true;
          }
          if( ! this->nextIteration() )
-            return false;
+            return false;*/
       }
       update( m - 1, m, _H, _s, _v, x );
 

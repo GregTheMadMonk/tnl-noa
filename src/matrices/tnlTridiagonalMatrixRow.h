@@ -23,30 +23,22 @@ class tnlTridiagonalMatrixRow
 {
    public:
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlTridiagonalMatrixRow();
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlTridiagonalMatrixRow( Real* values,
                                const Index row,
                                const Index columns,
                                const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void bind( Real* values,
                  const Index row,
                  const Index columns,
                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );

@@ -245,7 +245,7 @@ double benchmarkMatrix( const Matrix& matrix,
                         fstream& logFile )
 {
    tnlTimerRT timer;
-   timer.Reset();
+   timer.reset();
    double time( 0.0 );
    int iterations( 0 );
    while( time < stopTime )
@@ -255,7 +255,7 @@ double benchmarkMatrix( const Matrix& matrix,
       if( ( tnlDeviceEnum ) Matrix::DeviceType::DeviceType == tnlCudaDevice )
          cudaThreadSynchronize();
 #endif
-      time = timer.GetTime();
+      time = timer.getTime();
       iterations++;
    }
    const double gflops = computeGflops( nonzeroElements, iterations, time );

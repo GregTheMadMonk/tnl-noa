@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSinBumpsFunction.h  -  description
+                          tnlSinWaveFunction.h  -  description
                              -------------------
-    begin                : Dec 5, 2013
+    begin                : Nov 19, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,60 +15,53 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSINBUMPSFUNCTION_H_
-#define TNLSINBUMPSFUNCTION_H_
+#ifndef TNLSINWAVEFUNCTION_H_
+#define TNLSINWAVEFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
-template< typename Vertex >
-class tnlSinBumpsFunctionBase
+template< typename Real = double >
+class tnlSinWaveFunctionBase
 {
    public:
 
-      typedef Vertex VertexType;
-      typedef typename Vertex::RealType RealType;
-      enum { Dimensions = VertexType::size };
+   tnlSinWaveFunctionBase();
 
-      void setWaveLength( const VertexType& waveLength );
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
-      const VertexType& getWaveLength() const;
+   void setWaveLength( const Real& waveLength );
 
-      void setAmplitude( const RealType& amplitude );
+   Real getWaveLength() const;
 
-      const RealType& getAmplitude() const;
+   void setAmplitude( const Real& amplitude );
 
-      void setPhase( const VertexType& phase );
+   Real getAmplitude() const;
 
-      const VertexType& getPhase() const;
+   void setPhase( const Real& phase );
+
+   Real getPhase() const;
 
    protected:
 
-      RealType amplitude;
-
-      VertexType waveLength, phase;
+   Real waveLength, amplitude, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
-class tnlSinBumpsFunction
+class tnlSinWaveFunction
 {
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
+class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
       enum { Dimensions = 1 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
+      typedef tnlStaticVector< 1, Real > VertexType;
       typedef Real RealType;
-
-      tnlSinBumpsFunction();
-
-      bool setup( const tnlParameterContainer& parameters,
-                const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -81,27 +74,20 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
+
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > >
+class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
-      enum { Dimensions = 2 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
-      typedef Real RealType;
-
-      tnlSinBumpsFunction();
-
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+         enum { Dimensions = 2 };
+         typedef tnlStaticVector< 2, Real > VertexType;
+         typedef Real RealType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -114,27 +100,20 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > >
+class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
 {
    public:
 
       enum { Dimensions = 3 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
+      typedef tnlStaticVector< 3, Real > VertexType;
       typedef Real RealType;
 
-      tnlSinBumpsFunction();
-
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -147,18 +126,16 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 };
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
 {
-   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+   str << "Sin Wave. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()
        << " phase = " << f.getPhase();
    return str;
@@ -166,14 +143,13 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
 
 template< int FunctionDimensions,
           typename Real >
-class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
+class tnlFunctionType< tnlSinWaveFunction< FunctionDimensions, Real > >
 {
    public:
 
       enum { Type = tnlAnalyticFunction };
 };
 
-#include <functions/tnlSinBumpsFunction_impl.h>
+#include <functors/tnlSinWaveFunction_impl.h>
 
-
-#endif /* TNLSINBUMPSFUNCTION_H_ */
+#endif /* TNLSINWAVEFUNCTION_H_ */

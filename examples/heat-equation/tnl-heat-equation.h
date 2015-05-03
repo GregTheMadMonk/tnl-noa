@@ -26,7 +26,7 @@
 #include <operators/tnlDirichletBoundaryConditions.h>
 #include <operators/tnlAnalyticNeumannBoundaryConditions.h>
 #include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
+#include <functors/tnlConstantFunction.h>
 #include <problems/tnlHeatEquationProblem.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;

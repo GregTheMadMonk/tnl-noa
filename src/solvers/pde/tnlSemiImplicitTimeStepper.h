@@ -18,6 +18,9 @@
 #ifndef TNLSEMIIMPLICITTIMESTEPPER_H_
 #define TNLSEMIIMPLICITTIMESTEPPER_H_
 
+#include <core/tnlTimerRT.h>
+#include <core/tnlLogger.h>
+
 template< typename Problem,
           typename LinearSystemSolver >
 class tnlSemiImplicitTimeStepper
@@ -60,6 +63,8 @@ class tnlSemiImplicitTimeStepper
                const MeshType& mesh,
                DofVectorType& dofVector,
                DofVectorType& auxiliaryDofVector );
+   
+   bool writeEpilog( tnlLogger& logger );
 
    protected:
 
@@ -73,6 +78,8 @@ class tnlSemiImplicitTimeStepper
 
    RealType timeStep;
 
+   tnlTimerRT linearSystemAssemblerTimer, linearSystemSolverTimer;
+   
    bool verbose;
 };
 

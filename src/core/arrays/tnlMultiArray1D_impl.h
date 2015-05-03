@@ -19,9 +19,6 @@
 #define TNLMULTIARRAY1D_IMPL_H_
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
 tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
 {
 }
@@ -103,27 +100,21 @@ void tnlMultiArray< 1, Element, Device, Index >::reset()
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
    xSize = this -> dimensions[ 0 ];
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const tnlStaticVector< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
@@ -144,18 +135,14 @@ void tnlMultiArray< 1, Element, Device, Index > :: setElement( const Index i, El
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element )
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( element ) );

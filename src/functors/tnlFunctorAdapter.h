@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFunctionAdapter.h  -  description
+                          tnlFunctorAdapter.h  -  description
                              -------------------
     begin                : Nov 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLFUNCTIONADAPTER_H_
-#define TNLFUNCTIONADAPTER_H_
+#ifndef tnlFunctorAdapter_H_
+#define tnlFunctorAdapter_H_
 
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlConstantFunction.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename Mesh,
           typename Function,
           int FunctionType = tnlFunctionType< Function >::Type >
-class tnlFunctionAdapter
+class tnlFunctorAdapter
 {
 };
 
@@ -34,7 +34,7 @@ class tnlFunctionAdapter
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, tnlGeneralFunction >
+class tnlFunctorAdapter< Mesh, Function, tnlGeneralFunction >
 {
    public:
 
@@ -44,9 +44,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlGeneralFunction >
       typedef typename MeshType::IndexType IndexType;
 
       template< int MeshEntityDimension >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__ 
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -67,7 +65,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlGeneralFunction >
+class tnlFunctorAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlGeneralFunction >
 {
          public:
 
@@ -78,9 +76,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -99,7 +95,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, tnlDiscreteFunction >
+class tnlFunctorAdapter< Mesh, Function, tnlDiscreteFunction >
 {
    public:
 
@@ -109,9 +105,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlDiscreteFunction >
       typedef typename MeshType::IndexType IndexType;
 
       template< int MeshEntityDimension >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -131,7 +125,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlDiscreteFunction >
+class tnlFunctorAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlDiscreteFunction >
 {
    public:
 
@@ -143,9 +137,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
       //template< int MeshEntityDimension >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -164,7 +156,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
+class tnlFunctorAdapter< Mesh, Function, tnlAnalyticFunction >
 {
    public:
 
@@ -174,9 +166,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
       typedef typename MeshType::IndexType IndexType;
 
       template< int MeshEntityDimension >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -196,7 +186,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticFunction >
+class tnlFunctorAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticFunction >
 {
          public:
 
@@ -207,9 +197,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -230,7 +218,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
 template< typename Mesh,
           int FunctionDimensions,
           typename Real >
-class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real >, tnlAnalyticFunction >
+class tnlFunctorAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real >, tnlAnalyticFunction >
 {
    public:
 
@@ -241,9 +229,7 @@ class tnlFunctionAdapter< Mesh, tnlConstantFunction< FunctionDimensions, Real >,
       typedef typename MeshType::VertexType VertexType;
 
       template< int MeshEntityDimension >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -262,7 +248,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
+class tnlFunctorAdapter< tnlGrid< Dimensions, Real, Device, Index >,
                           tnlConstantFunction< Dimensions, Real >,
                           tnlAnalyticFunction >
 {
@@ -275,9 +261,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType index,
@@ -291,4 +275,4 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >,
 
 #endif /* UNDEF */
 
-#endif /* TNLFUNCTIONADAPTER_H_ */
+#endif /* tnlFunctorAdapter_H_ */

@@ -76,9 +76,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() con
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
@@ -127,9 +125,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& 
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlGrid< 2, Real, Device, Index >::CoordinatesType&
 tnlGrid< 2, Real, Device, Index > :: getDimensions() const
 {
@@ -150,9 +146,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlGrid< 2, Real, Device, Index >::VertexType&
 tnlGrid< 2, Real, Device, Index >::getOrigin() const
 {
@@ -162,9 +156,7 @@ tnlGrid< 2, Real, Device, Index >::getOrigin() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
    tnlGrid< 2, Real, Device, Index > :: getProportions() const
 {
@@ -174,9 +166,7 @@ const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
 tnlGrid< 2, Real, Device, Index > :: getCellProportions() const
 {
@@ -186,9 +176,7 @@ tnlGrid< 2, Real, Device, Index > :: getCellProportions() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index > :: getCellIndex( const CoordinatesType& cellCoordinates ) const
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
@@ -206,9 +194,7 @@ Index tnlGrid< 2, Real, Device, Index > :: getCellIndex( const CoordinatesType& 
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlGrid< 2, Real, Device, Index >::CoordinatesType
 tnlGrid< 2, Real, Device, Index >::getCellCoordinates( const Index cellIndex ) const
 {
@@ -223,9 +209,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< int nx, int ny >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index >::getFaceIndex( const CoordinatesType& faceCoordinates ) const
 {
    tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
@@ -255,9 +239,7 @@ Index tnlGrid< 2, Real, Device, Index >::getFaceIndex( const CoordinatesType& fa
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 typename tnlGrid< 2, Real, Device, Index >::CoordinatesType
 tnlGrid< 2, Real, Device, Index >::getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const
 {
@@ -282,9 +264,7 @@ tnlGrid< 2, Real, Device, Index >::getFaceCoordinates( const Index faceIndex, in
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index > :: getVertexIndex( const CoordinatesType& vertexCoordinates ) const
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
@@ -301,9 +281,7 @@ Index tnlGrid< 2, Real, Device, Index > :: getVertexIndex( const CoordinatesType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlGrid< 2, Real, Device, Index > :: CoordinatesType
 tnlGrid< 2, Real, Device, Index > :: getVertexCoordinates( const Index vertexIndex ) const
 {
@@ -319,9 +297,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int dx, int dy >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index >::getCellNextToCell( const IndexType& cellIndex ) const
 {
    const IndexType result = cellIndex + dx + dy * this->getDimensions().x();
@@ -339,9 +315,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int nx, int ny >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index >::getFaceNextToCell( const IndexType& cellIndex ) const
 {
    tnlAssert( nx * ny == 0 && nx + ny != 0,
@@ -366,9 +340,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int nx, int ny >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index >::getCellNextToFace( const IndexType& faceIndex ) const
 {
    tnlAssert( abs( nx ) + abs( ny ) == 1,
@@ -397,9 +369,7 @@ Index tnlGrid< 2, Real, Device, Index >::getCellNextToFace( const IndexType& fac
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHx() const
 {
    return this->hx;
@@ -408,9 +378,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHx() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquare() const
 {
    return this->hxSquare;
@@ -419,9 +387,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquare() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHxInverse() const
 {
    return this->hxInverse;
@@ -430,9 +396,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHxInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquareInverse() const
 {
    return this->hxSquareInverse;
@@ -441,9 +405,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquareInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHy() const
 {
    return this->hy;
@@ -452,9 +414,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHy() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHySquare() const
 {
    return this->hySquare;
@@ -463,9 +423,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHySquare() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHyInverse() const
 {
    return this->hyInverse;
@@ -474,9 +432,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHyInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHySquareInverse() const
 {
    return this->hySquareInverse;
@@ -485,9 +441,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHySquareInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHxHy() const
 {
    return this->hxhy;
@@ -496,9 +450,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHxHy() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Real& tnlGrid< 2, Real, Device, Index > :: getHxHyInverse() const
 {
    return this->hxhyInverse;
@@ -507,9 +459,7 @@ const Real& tnlGrid< 2, Real, Device, Index > :: getHxHyInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->hx, this->hy );
@@ -519,9 +469,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index > :: getCellCenter( const CoordinatesType& cellCoordinates ) const
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
@@ -541,9 +489,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index >::getCellCenter( const IndexType& cellIndex ) const
 {
    tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
@@ -557,9 +503,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< int nx, int ny, typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType& faceCoordinates ) const
 {
    tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
@@ -596,9 +540,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vertex >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index >::getVertex( const CoordinatesType& vertexCoordinates ) const
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
@@ -617,9 +559,7 @@ Vertex tnlGrid< 2, Real, Device, Index >::getVertex( const CoordinatesType& vert
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index > :: getNumberOfCells() const
 {
    return this->numberOfCells;
@@ -630,9 +570,7 @@ template< typename Real,
           typename Index >
    template< int nx,
              int ny >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index > :: getNumberOfFaces() const
 {
    return nx * this->numberOfNxFaces + ny * this->numberOfNyFaces;
@@ -641,9 +579,7 @@ Index tnlGrid< 2, Real, Device, Index > :: getNumberOfFaces() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlGrid< 2, Real, Device, Index > :: getNumberOfVertices() const
 {
    return this->numberOfVertices;
@@ -652,9 +588,7 @@ Index tnlGrid< 2, Real, Device, Index > :: getNumberOfVertices() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlGrid< 2, Real, Device, Index > :: isBoundaryCell( const CoordinatesType& cellCoordinates ) const
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
@@ -676,9 +610,7 @@ bool tnlGrid< 2, Real, Device, Index > :: isBoundaryCell( const CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool
 tnlGrid< 2, Real, Device, Index >::
 isBoundaryCell( const IndexType& cellIndex ) const
@@ -695,9 +627,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int nx, int ny >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 bool tnlGrid< 2, Real, Device, Index > :: isBoundaryFace( const CoordinatesType& faceCoordinates ) const
 {
    tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
@@ -732,9 +662,7 @@ bool tnlGrid< 2, Real, Device, Index > :: isBoundaryFace( const CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlGrid< 2, Real, Device, Index > :: isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,

@@ -67,9 +67,7 @@ class tnlTestFunction
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Real getValue( const Vertex& vertex,
                   const Real& time = 0 ) const;
 
@@ -93,9 +91,7 @@ class tnlTestFunction
              int ZDiffOrder = 0,
              typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const;
 
@@ -148,6 +144,6 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
-#include <functions/tnlTestFunction_impl.h>
+#include <functors/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */

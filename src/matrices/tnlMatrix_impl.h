@@ -67,9 +67,7 @@ bool tnlMatrix< Real, Device, Index >::setLike( const tnlMatrix< Real2, Device2,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMatrix< Real, Device, Index >::getRows() const
 {
    return this->rows;
@@ -78,9 +76,7 @@ Index tnlMatrix< Real, Device, Index >::getRows() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMatrix< Real, Device, Index >::getColumns() const
 {
    return this->columns;
