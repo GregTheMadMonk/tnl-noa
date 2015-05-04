@@ -88,7 +88,7 @@ updateLinearSystem( const RealType& time,
 {
    const RealType aCoef = - tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * mesh.getHxSquareInverse() / 
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1 >( index ), coordinates, u, time );
-   const RealType bCoef = 1 + tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHxSquareInverse() / 
+   const RealType bCoef = tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHxSquareInverse() / 
                           operatorQ.getValue(mesh, index, coordinates, u, time ) + mesh.getHxSquareInverse() / 
                           operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1 >( index ), coordinates, u, time ) );
    const RealType cCoef = - tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * mesh.getHxSquareInverse() / 
@@ -186,7 +186,7 @@ updateLinearSystem( const RealType& time,
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1 >( index ), coordinates, u, time );
    const RealType bCoef = - tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * mesh.getHxSquareInverse() / 
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0 >( index ), coordinates, u, time );
-   const RealType cCoef = 1 + tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHySquareInverse() / 
+   const RealType cCoef = tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHySquareInverse() / 
                        operatorQ.getValue(mesh, index, coordinates, u, time ) + mesh.getHySquareInverse() / 
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1 >( index ), coordinates, u, time )
                        + mesh.getHxSquareInverse() / operatorQ.getValue(mesh, index, coordinates, u, time ) + 
@@ -296,7 +296,7 @@ updateLinearSystem( const RealType& time,
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1,0 >( index ), coordinates, u, time );
    const RealType cCoef = - tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * mesh.getHxSquareInverse() / 
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0,0 >( index ), coordinates, u, time );
-   const RealType dCoef = 1 + tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHySquareInverse() / 
+   const RealType dCoef = tau * operatorQ.getValueStriped(mesh, index, coordinates, u, time ) * ( mesh.getHySquareInverse() / 
                        operatorQ.getValue(mesh, index, coordinates, u, time ) + mesh.getHySquareInverse() / 
                        operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1,0 >( index ), coordinates, u, time )
                        + mesh.getHxSquareInverse() / operatorQ.getValue(mesh, index, coordinates, u, time ) + 

@@ -4,10 +4,10 @@ SET( headers tnlLinearDiffusion.h
              tnlLinearDiffusion_impl.h
              tnlExactLinearDiffusion.h             
              tnlExactLinearDiffusion_impl.h
-	     tnlNonLinearDiffusion.h
-             tnlNonLinearDiffusion_impl.h
-             tnlExactNonLinearDiffusion.h             
-             tnlExactNonLinearDiffusion_impl.h )
+	     tnlNonlinearDiffusion.h
+             tnlNonlinearDiffusion_impl.h
+             tnlExactNonlinearDiffusion.h             
+             tnlExactNonlinearDiffusion_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators/diffusion )
 
