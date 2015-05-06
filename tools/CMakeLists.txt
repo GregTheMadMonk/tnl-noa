@@ -1,8 +1,9 @@
 add_subdirectory (src)
 add_subdirectory (share)
+add_subdirectory (tnl-quickstart)
 
-CONFIGURE_FILE( "tnl-compile.in" "${PROJECT_TOOLS_PATH}/tnl-compile" )
-CONFIGURE_FILE( "tnl-link.in" "${PROJECT_TOOLS_PATH}/tnl-link" )
+CONFIGURE_FILE( "tnl-compile.in" "${PROJECT_TOOLS_PATH}/tnl-compile" @ONLY )
+CONFIGURE_FILE( "tnl-link.in" "${PROJECT_TOOLS_PATH}/tnl-link" @ONLY )
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-compile 
                ${PROJECT_TOOLS_PATH}/tnl-link

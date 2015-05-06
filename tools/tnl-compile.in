@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
 
-echo -I@CMAKE_INSTALL_PREFIX@/include/tnl-@tnlVersion@
+DEBUG_FLAGS = "-DNDEBUG -march=native"
+CUDA_FLAGS = ""
+
+for option in "$@"
+do
+    case $option in
+        --cuda                  ) CUDA_FLAGS="-DHAVE_CUDA -DHAVE_NOT_CXX11 `tnl-cuda-arch`" ;;
+        --debug                 ) DEBUG_FLAGS="-g -O0"
+    esac
+done
+
+echo -I@CMAKE_INSTALL_PREFIX@/include/tnl-@tnlVersion@ ${CUDA_FLAGS}

@@ -101,10 +101,10 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
          solverMonitor->refresh();
    }
 
-   if( std::isnan( this->getResidue() || 
+   if( std::isnan( this->getResidue() ) || 
        this->getIterations() > this->getMaxIterations()  ||
-       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->minIterations ) ) ||
-       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) )
+       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->minIterations ) ||
+       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) ) 
       return false;
    return true;
 }
