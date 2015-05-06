@@ -429,7 +429,7 @@ extern template class tnlArray< float, tnlHost, int >;
 #endif
 extern template class tnlArray< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlArray< long double, tnlHost, int >;
+extern template class tnlArray< long double, tnlHost, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
@@ -438,7 +438,7 @@ extern template class tnlArray< float, tnlHost, long int >;
 #endif
 extern template class tnlArray< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlArray< long double, tnlHost, long int >;
+extern template class tnlArray< long double, tnlHost, long int >;
 #endif
 #endif
 

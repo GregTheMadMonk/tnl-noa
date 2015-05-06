@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo -L@CMAKE_INSTALL_PREFIX@/lib -ltnl-@tnlVersion@

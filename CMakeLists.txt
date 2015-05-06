@@ -58,9 +58,9 @@ if( WITH_CUDA STREQUAL "yes" )
                 ####
                 # Select GPU architecture
                 #
-                set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/cuda-arch-options)
-                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/tools/src/cuda-arch-options.cu)
-                message( "Compiling device-arch-options ..." )
+                set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/tnl-cuda-arch)
+                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/tools/src/tnl-cuda-arch.cu)
+                message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
                 execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
