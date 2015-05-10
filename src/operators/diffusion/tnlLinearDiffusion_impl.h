@@ -1,3 +1,19 @@
+/***************************************************************************
+                          tnlLinearDiffusion_impl.h  -  description
+                             -------------------
+    begin                : Aug 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifndef TNLLINEARDIFFUSION_IMP_H
 #define	TNLLINEARDIFFUSION_IMP_H
@@ -35,7 +51,7 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< - 1 >( cellIndex ) ]
+   return ( u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ]
             - 2.0 * u[ cellIndex ]
             + u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] ) * mesh.getHxSquareInverse();
 }

@@ -80,27 +80,27 @@ class heatEquationSetter
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef tnlAnalyticDirichletBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-            typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+            typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
             SolverStarter solverStarter;
-            return solverStarter.template run< Solver >( parameters );
+            return solverStarter.template run< Problem >( parameters );
          }
          typedef tnlAnalyticNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
          SolverStarter solverStarter;
-         return solverStarter.template run< Solver >( parameters );
+         return solverStarter.template run< Problem >( parameters );
       }
       typedef tnlVector< Real, Device, Index > VectorType;
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef tnlDirichletBoundaryConditions< MeshType, VectorType, Real, Index > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
          SolverStarter solverStarter;
-         return solverStarter.template run< Solver >( parameters );
+         return solverStarter.template run< Problem >( parameters );
       }
       typedef tnlNeumannBoundaryConditions< MeshType, VectorType, Real, Index > BoundaryConditions;
-      typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+      typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
       SolverStarter solverStarter;
-      return solverStarter.template run< Solver >( parameters );
+      return solverStarter.template run< Problem >( parameters );
    };
 };
 

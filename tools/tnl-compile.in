@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBUG_FLAGS="-DNDEBUG -march=native"
+DEBUG_FLAGS="-DNDEBUG" # -march=native"
 CUDA_FLAGS=""
 CXX_STD_FLAGS="-std=c++11"
 

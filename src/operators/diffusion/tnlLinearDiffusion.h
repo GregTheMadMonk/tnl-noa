@@ -1,3 +1,20 @@
+/***************************************************************************
+                          tnlLinearDiffusion.h  -  description
+                             -------------------
+    begin                : Aug 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #ifndef TNLLINEARDIFFUSION_H
 #define	TNLLINEARDIFFUSION_H
 
@@ -27,6 +44,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
+      enum { Dimensions = MeshType::Dimensions };
 
       static tnlString getType();
 
@@ -71,6 +89,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
+      enum { Dimensions = MeshType::Dimensions };
 
       static tnlString getType();
 
@@ -114,6 +133,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
+      enum { Dimensions = MeshType::Dimensions };
 
       static tnlString getType();
 
