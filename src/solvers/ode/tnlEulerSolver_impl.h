@@ -48,7 +48,7 @@ template< typename Problem >
 void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
                                                const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::configSetup( config, prefix );
+   //tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 

@@ -111,7 +111,7 @@ template< typename Problem >
 void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
                                                 const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::configSetup( config, prefix );
+   //tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
