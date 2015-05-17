@@ -430,7 +430,7 @@ print( ostream& str ) const
       case sinWave:
          return printFunction< tnlSinWaveFunction< Dimensions, Real> >( str );
       case cylinder:
-         return printFunction< tnlcylinderFunction< Dimensions, Real> >( str );
+         return printFunction< tnlCylinderFunction< Dimensions, Real> >( str );
    }
    return str;
 }
