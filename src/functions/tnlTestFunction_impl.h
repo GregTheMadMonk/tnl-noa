@@ -23,6 +23,7 @@
 #include <functions/tnlExpBumpFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
 #include <functions/tnlSinWaveFunction.h>
+#include <functions/initial_conditions/tnlCylinderFunction.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -48,6 +49,7 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
+      config.addEntryEnum( "cylinder" );
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
@@ -63,6 +65,7 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder test functions.", 1.0 );
    config.addEntry     < tnlString >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
@@ -153,6 +156,12 @@ setup( const tnlParameterContainer& parameters,
       functionType = sinWave;
       return setupFunction< FunctionType >( parameters );
    }
+   if( testFunction == "cylinder" )
+   {
+      typedef tnlCylinderFunction< Dimensions, Real > FunctionType;
+      functionType = cylinder;
+      return setupFunction< FunctionType >( parameters );
+   }
    cerr << "Unknown function " << testFunction << endl;
    return false;
 }
@@ -187,6 +196,9 @@ operator = ( const tnlTestFunction& function )
          break;
       case sinWave:
          this->copyFunction< tnlSinWaveFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case cylinder:
+         this->copyFunction< tnlCylinderFunction< FunctionDimensions, Real > >( function.function );
          break;
       default:
          tnlAssert( false, );
@@ -241,6 +253,9 @@ getValue( const Vertex& vertex,
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+      case cylinder:
+         return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
       default:
          return 0.0;
    }
@@ -294,6 +309,10 @@ getTimeDerivative( const Vertex& vertex,
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
+      case cylinder:
+         return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
       default:
          return 0.0;
          break;
@@ -340,6 +359,9 @@ deleteFunctions()
          break;
       case sinWave:
          deleteFunction< tnlSinWaveFunction< Dimensions, Real> >();
+         break;
+      case cylinder:
+         deleteFunction< tnlCylinderFunction< Dimensions, Real> >();
          break;
    }
 }
@@ -407,6 +429,8 @@ print( ostream& str ) const
          return printFunction< tnlSinBumpsFunction< Dimensions, Real> >( str );
       case sinWave:
          return printFunction< tnlSinWaveFunction< Dimensions, Real> >( str );
+      case cylinder:
+         return printFunction< tnlcylinderFunction< Dimensions, Real> >( str );
    }
    return str;
 }

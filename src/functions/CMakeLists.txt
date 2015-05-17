@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( initial_conditions )
+
 SET( headers tnlFunctionDiscretizer.h
              tnlFunctionDiscretizer_impl.h
              tnlFunctionAdapter.h
