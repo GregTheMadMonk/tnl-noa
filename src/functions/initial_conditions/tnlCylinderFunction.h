@@ -158,7 +158,7 @@ class tnlFunctionType< tnlCylinderFunction< FunctionDimensions, Real > >
 };
 
 
-#include <functions/tnlCylinderFunction_impl.h>
+#include <functions/initial_conditions/tnlCylinderFunction_impl.h>
 
 
 #endif /* TNLEXPBUMPFUNCTION_H_ */

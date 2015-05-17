@@ -18,7 +18,7 @@
 #ifndef TNLCYLINDERFUNCTION_IMPL_H_
 #define TNLCYLINDERFUNCTION_IMPL_H_
 
-#include <functions/tnlCylinderFunction.h>
+#include <functions/initial_conditions/tnlCylinderFunction.h>
 
 template< typename Real >
 bool
