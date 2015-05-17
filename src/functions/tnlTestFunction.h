@@ -33,7 +33,8 @@ class tnlTestFunction
    enum TestFunctions{ constant,
                        expBump,
                        sinBumps,
-                       sinWave };
+                       sinWave
+		       cylinder };
 
    enum TimeDependence { none,
                          linear,
