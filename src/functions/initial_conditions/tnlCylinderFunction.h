@@ -144,7 +144,7 @@ template< int Dimensions,
           typename Real >
 ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
 {
-   str << "Cylinder.;
+   str << "Cylinder function.";
    return str;
 }
 
