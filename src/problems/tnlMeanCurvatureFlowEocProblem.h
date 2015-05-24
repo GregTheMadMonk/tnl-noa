@@ -19,13 +19,13 @@
 #define TNLMEANCURVATUREFLOWEOCPROBLEM_H_
 
 #include <problems/tnlMeanCurvatureFlowProblem.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
-                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQForGraph<Mesh, typename BoundaryCondition::RealType,
+                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename BoundaryCondition::RealType,
                                                           typename BoundaryCondition::IndexType, 0>, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >, 
                                                           typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >
 class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > 

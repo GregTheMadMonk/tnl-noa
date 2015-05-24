@@ -68,7 +68,7 @@ class meanCurvatureFlowEocSetter
    static bool run( const tnlParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::Dimensions };
-      typedef tnlOneSideDiffOperatorQForGraph<MeshType, Real, Index, 0> OperatorQ;
+      typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef tnlOneSideDiffNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlExactNonlinearDiffusion< tnlExactOperatorQ<Dimensions>, Dimensions > ExactOperator;
