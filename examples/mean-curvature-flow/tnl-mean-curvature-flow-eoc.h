@@ -28,7 +28,7 @@
 #include <problems/tnlMeanCurvatureFlowEocProblem.h>
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 #include <operators/operator-Q/tnlExactOperatorQ.h>
@@ -43,6 +43,7 @@ class meanCurvatureFlowEocConfig
       static void configSetup( tnlConfigDescription& config )
       {
          config.addDelimiter( "Mean Curvature Flow EOC settings:" );
+         config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );
          tnlTestFunction< 2, double >::configSetup( config );
       }

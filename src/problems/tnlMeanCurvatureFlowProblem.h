@@ -21,14 +21,14 @@
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 #include <problems/tnlPDEProblem.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <matrices/tnlCSRMatrix.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
-                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQForGraph<Mesh, typename Mesh::RealType,
+                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename Mesh::RealType,
                                                           typename Mesh::IndexType, 0>, typename Mesh::RealType, typename Mesh::IndexType >, 
                                                           typename Mesh::RealType, typename Mesh::IndexType > >
 class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,

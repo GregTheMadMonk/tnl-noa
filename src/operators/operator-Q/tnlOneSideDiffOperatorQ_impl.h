@@ -1,8 +1,8 @@
 
-#ifndef TNLONESIDEDIFFOPERATORQFORGRAPH_IMPL_H
-#define	TNLONESIDEDIFFOPERATORQFORGRAPH_IMPL_H
+#ifndef TNLONESIDEDIFFOPERATORQ_IMPL_H
+#define	TNLONESIDEDIFFOPERATORQ_IMPL_H
 
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <mesh/tnlGrid.h>
 
 template< typename MeshReal,
@@ -11,10 +11,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 0 >";
@@ -26,13 +26,33 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 1 >";
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+{
+  this->eps = eps;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+{
+  this->eps = eps;
 }
 
 template< typename MeshReal,
@@ -42,7 +62,7 @@ template< typename MeshReal,
         typename Index >
 template< typename Vector >
 Index 
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 bind( Vector& u )
 {
     this->u.bind(u);
@@ -64,7 +84,7 @@ template< typename MeshReal,
    __device__ __host__
 #endif
 void  
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
     CoordinatesType dimensions = mesh.getDimensions();
@@ -85,14 +105,14 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const
 {
-   return sqrt( 1.0 + ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
+   return sqrt( this->eps + ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
           ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) *
           mesh.getHxInverse() * mesh.getHxInverse() );
 }
@@ -107,7 +127,7 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
@@ -127,14 +147,14 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const
 {
-   return sqrt( 1.0 + 0.5*( ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
+   return sqrt( this->eps + 0.5*( ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
           ( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) *
           mesh.getHxInverse() * mesh.getHxInverse() + ( - u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ] + u[ cellIndex ] ) 
           * ( - u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ] + u[ cellIndex ] ) * mesh.getHxInverse() * mesh.getHxInverse() ) );
@@ -150,7 +170,7 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
@@ -166,10 +186,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 0 >";
@@ -181,10 +201,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 1 >";
@@ -195,9 +215,29 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+{
+  this->eps = eps;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+{
+  this->eps = eps;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
 template< typename Vector >
 Index 
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 bind( Vector& u) 
 {
     this->u.bind(u);
@@ -219,7 +259,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 void 
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
     CoordinatesType dimensions = mesh.getDimensions();
@@ -242,14 +282,14 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const
 {
-   return sqrt( 1.0 + ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
+   return sqrt( this->eps + ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
           ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
           * mesh.getHyInverse() * mesh.getHyInverse() + ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
           * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHxInverse() * mesh.getHxInverse() );
@@ -265,7 +305,7 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
@@ -285,14 +325,14 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const
 {
-   return sqrt( 1.0 + 0.5*( ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
+   return sqrt( this->eps + 0.5*( ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
           ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
           * mesh.getHyInverse() * mesh.getHyInverse() + ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
           * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHxInverse() * mesh.getHxInverse()
@@ -312,7 +352,7 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
@@ -328,10 +368,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 0 >";
@@ -343,10 +383,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQForGraph< " ) +
+   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + ", 1 >";
@@ -357,9 +397,29 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+{
+  this->eps = eps;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+void tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+{
+  this->eps = eps;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
 template< typename Vector >
 Index 
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 bind( Vector& u) 
 {
     this->u.bind(u);
@@ -381,7 +441,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 void 
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
     CoordinatesType dimensions = mesh.getDimensions();
@@ -403,7 +463,7 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValue( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
@@ -428,14 +488,14 @@ template< typename Vector >
 __device__ __host__
 #endif
 Real
-tnlOneSideDiffOperatorQForGraph< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const
 {
-   return sqrt( 1.0 + 0.5*( ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
+   return sqrt( this->eps + 0.5*( ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
            ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHyInverse() * mesh.getHyInverse() 
            + ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) 
            * mesh.getHxInverse() * mesh.getHxInverse() + ( - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] + u[ cellIndex ]) 
@@ -447,4 +507,4 @@ getValueStriped( const MeshType& mesh,
            ( - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] + u[ cellIndex ]) * mesh.getHzInverse() * mesh.getHzInverse()
            ) );
 }   
-#endif	/* TNLONESIDEDIFFOPERATORQFORGRAPH_IMPL_H */
+#endif	/* TNLONESIDEDIFFOPERATORQ_IMPL_H */

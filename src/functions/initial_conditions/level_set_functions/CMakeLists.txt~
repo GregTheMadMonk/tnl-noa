@@ -1,4 +1,4 @@
-ADD_SUBDIRECTORY( level_set_functions )
+ADD_SUBDIRECTORY( level_set_conditions )
 
 SET( headers tnlCylinderFunction.h
              tnlCylinderFunction_impl.h  

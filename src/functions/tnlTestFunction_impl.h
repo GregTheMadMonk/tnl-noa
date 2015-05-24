@@ -24,6 +24,10 @@
 #include <functions/tnlSinBumpsFunction.h>
 #include <functions/tnlSinWaveFunction.h>
 #include <functions/initial_conditions/tnlCylinderFunction.h>
+#include <functions/initial_conditions/tnlFlowerpotFunction.h>
+#include <functions/initial_conditions/tnlTwinsFunction.h>
+#include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
+#include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -50,6 +54,10 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
       config.addEntryEnum( "cylinder" );
+      config.addEntryEnum( "flowerpot" );
+      config.addEntryEnum( "twins" );
+      config.addEntryEnum( "pseudoSquare" );
+      config.addEntryEnum( "blob" );
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
@@ -65,7 +73,8 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
-   config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder, flowerpot test functions.", 1.0 );
+  config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
    config.addEntry     < tnlString >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
@@ -162,6 +171,30 @@ setup( const tnlParameterContainer& parameters,
       functionType = cylinder;
       return setupFunction< FunctionType >( parameters );
    }
+   if( testFunction == "flowerpot" )
+   {
+      typedef tnlFlowerpotFunction< Dimensions, Real > FunctionType;
+      functionType = flowerpot;
+      return setupFunction< FunctionType >( parameters );
+   }
+   if( testFunction == "twins" )
+   {
+      typedef tnlTwinsFunction< Dimensions, Real > FunctionType;
+      functionType = twins;
+      return setupFunction< FunctionType >( parameters );
+   }
+   if( testFunction == "pseudoSquare" )
+   {
+      typedef tnlPseudoSquareFunction< Dimensions, Real > FunctionType;
+      functionType = pseudoSquare;
+      return setupFunction< FunctionType >( parameters );
+   }
+   if( testFunction == "blob" )
+   {
+      typedef tnlBlobFunction< Dimensions, Real > FunctionType;
+      functionType = blob;
+      return setupFunction< FunctionType >( parameters );
+   }
    cerr << "Unknown function " << testFunction << endl;
    return false;
 }
@@ -199,6 +232,18 @@ operator = ( const tnlTestFunction& function )
          break;
       case cylinder:
          this->copyFunction< tnlCylinderFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case flowerpot:
+         this->copyFunction< tnlFlowerpotFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case twins:
+         this->copyFunction< tnlTwinsFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case pseudoSquare:
+         this->copyFunction< tnlPseudoSquareFunction< FunctionDimensions, Real > >( function.function );
+         break;
+      case blob:
+         this->copyFunction< tnlBlobFunction< FunctionDimensions, Real > >( function.function );
          break;
       default:
          tnlAssert( false, );
@@ -255,6 +300,18 @@ getValue( const Vertex& vertex,
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
       case cylinder:
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+      case flowerpot:
+         return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+      case twins:
+         return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+      case pseudoSquare:
+         return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+      case blob:
+         return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
       default:
          return 0.0;
@@ -313,6 +370,22 @@ getTimeDerivative( const Vertex& vertex,
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
          break;
+      case flowerpot:
+         return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case twins:
+         return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case pseudoSquare:
+         return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
+      case blob:
+         return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+         break;
       default:
          return 0.0;
          break;
@@ -362,6 +435,18 @@ deleteFunctions()
          break;
       case cylinder:
          deleteFunction< tnlCylinderFunction< Dimensions, Real> >();
+         break;
+      case flowerpot:
+         deleteFunction< tnlFlowerpotFunction< Dimensions, Real> >();
+         break;
+      case twins:
+         deleteFunction< tnlTwinsFunction< Dimensions, Real> >();
+         break;
+      case pseudoSquare:
+         deleteFunction< tnlPseudoSquareFunction< Dimensions, Real> >();
+         break;
+      case blob:
+         deleteFunction< tnlBlobFunction< Dimensions, Real> >();
          break;
    }
 }
@@ -431,6 +516,14 @@ print( ostream& str ) const
          return printFunction< tnlSinWaveFunction< Dimensions, Real> >( str );
       case cylinder:
          return printFunction< tnlCylinderFunction< Dimensions, Real> >( str );
+      case flowerpot:
+         return printFunction< tnlFlowerpotFunction< Dimensions, Real> >( str );
+      case twins:
+         return printFunction< tnlTwinsFunction< Dimensions, Real> >( str );
+      case pseudoSquare:
+         return printFunction< tnlPseudoSquareFunction< Dimensions, Real> >( str );
+      case blob:
+         return printFunction< tnlBlobFunction< Dimensions, Real> >( str );
    }
    return str;
 }

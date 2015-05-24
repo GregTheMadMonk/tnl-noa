@@ -71,6 +71,9 @@ setup( const tnlParameterContainer& parameters )
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
+   
+   differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps(parameters.getParameter< double >("eps"));
+   
    return true;
 }
 

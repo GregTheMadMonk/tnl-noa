@@ -29,7 +29,7 @@
 #include <functions/tnlConstantFunction.h>
 #include <problems/tnlMeanCurvatureFlowProblem.h>
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
@@ -49,6 +49,8 @@ class meanCurvatureFlowConfig
          config.addEntry< tnlString >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
+	 config.addEntry< double >( "right-hand-side-constant", "This sets a value in case of the constant right hand side.", 0.0 );
+	 config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
       };
 };
 
@@ -71,7 +73,7 @@ class meanCurvatureFlowSetter
    static bool run( const tnlParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::Dimensions };
-      typedef tnlOneSideDiffOperatorQForGraph<MeshType, Real, Index, 0> OperatorQ;
+      typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef tnlOneSideDiffNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;

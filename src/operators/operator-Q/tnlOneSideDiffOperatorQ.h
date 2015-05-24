@@ -1,5 +1,5 @@
-#ifndef TNLONESIDEDIFFOPERATORQFORGRAPH_H
-#define	TNLONESIDEDIFFOPERATORQFORGRAPH_H
+#ifndef TNLONESIDEDIFFOPERATORQ_H
+#define	TNLONESIDEDIFFOPERATORQ_H
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
@@ -9,7 +9,7 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType,
           int Precomputation = 0 > 
-class tnlOneSideDiffOperatorQForGraph
+class tnlOneSideDiffOperatorQ
 {
 
 };
@@ -20,7 +20,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
@@ -61,6 +61,12 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 1,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time )const;
+          
+   void setEps(const Real& eps);
+      
+   private:
+   
+   RealType eps;
 };
 
 
@@ -69,7 +75,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
@@ -110,6 +116,12 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 2,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time )const;
+        
+   void setEps(const Real& eps);
+   
+   private:
+   
+   RealType eps;
 };
 
 
@@ -118,7 +130,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
@@ -159,6 +171,12 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 3,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const;
+        
+   void setEps(const Real& eps);
+   
+   private:
+   
+   RealType eps;
 };
 
 
@@ -167,7 +185,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
@@ -206,12 +224,15 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 1,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time ) const;
+          
+   void setEps(const Real& eps);
    
    private:
    
    tnlSharedVector< RealType, DeviceType, IndexType > u;
    tnlVector< RealType, DeviceType, IndexType> q;
    tnlVector< RealType, DeviceType, IndexType> qStriped;
+   RealType eps;
 };
 
 
@@ -220,7 +241,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
@@ -260,12 +281,15 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 2,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time )const;
+          
+   void setEps(const Real& eps);
    
    private:
    
    tnlSharedVector< RealType, DeviceType, IndexType > u;
    tnlVector< RealType, DeviceType, IndexType> q;
    tnlVector< RealType, DeviceType, IndexType> qStriped;
+   RealType eps;
 };
 
 
@@ -274,7 +298,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQForGraph< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
@@ -313,15 +337,18 @@ class tnlOneSideDiffOperatorQForGraph< tnlGrid< 3,MeshReal, Device, MeshIndex >,
           const CoordinatesType& coordinates,
           const Vector& u,
           const Real& time )const;
+          
+   void setEps(const Real& eps);
    
    private:
    
    tnlSharedVector< RealType, DeviceType, IndexType > u;
    tnlVector< RealType, DeviceType, IndexType> q;
    tnlVector< RealType, DeviceType, IndexType> qStriped;
+   RealType eps;
 };
 
-#include <operators/operator-Q/tnlOneSideDiffOperatorQForGraph_impl.h>
+#include <operators/operator-Q/tnlOneSideDiffOperatorQ_impl.h>
 
 
-#endif	/* TNLONESIDEDIFFOPERATORQFORGRAPH_H */
+#endif	/* TNLONESIDEDIFFOPERATORQ_H */

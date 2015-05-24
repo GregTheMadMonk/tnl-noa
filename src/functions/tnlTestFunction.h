@@ -34,7 +34,11 @@ class tnlTestFunction
                        expBump,
                        sinBumps,
                        sinWave,
-		       cylinder };
+		       cylinder,
+		       flowerpot,
+		       twins,
+           pseudoSquare,
+           blob };
 
    enum TimeDependence { none,
                          linear,
