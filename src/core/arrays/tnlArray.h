@@ -61,24 +61,15 @@ class tnlArray : public virtual tnlObject
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getSize() const;
+   __cuda_callable__ Index getSize() const;
 
    void setElement( const Index i, const Element& x );
 
    Element getElement( Index i ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator[] ( Index i );
+   __cuda_callable__ Element& operator[] ( Index i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator[] ( Index i ) const;
+   __cuda_callable__ const Element& operator[] ( Index i ) const;
 
    tnlArray< Element, Device, Index >& operator = ( const tnlArray< Element, Device, Index >& array );
 
@@ -93,15 +84,9 @@ class tnlArray : public virtual tnlObject
 
    void setValue( const Element& e );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element* getData() const;
+   __cuda_callable__ const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element* getData();
+   __cuda_callable__ Element* getData();
 
    /*!
     * Returns true if non-zero size is set.

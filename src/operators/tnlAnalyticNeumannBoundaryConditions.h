@@ -79,9 +79,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIn
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
@@ -89,17 +87,13 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIn
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -135,9 +129,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIn
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__  
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
@@ -145,17 +137,13 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIn
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -191,9 +179,7 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIn
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
@@ -201,17 +187,13 @@ class tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIn
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
                                    const CoordinatesType& coordinates ) const;
 
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,

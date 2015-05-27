@@ -285,4 +285,33 @@ bool tnlMultiVector< 3, Real, Device, Index > :: load( const tnlString& fileName
    return tnlObject :: load( fileName );
 }
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiVector< 3, float,  tnlHost, int >;
+#endif
+extern template class tnlMultiVector< 3, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiVector< 3, float,  tnlHost, long int >;
+#endif
+extern template class tnlMultiVector< 3, double, tnlHost, long int >;
+#endif
+
+#ifdef HAVE_CUDA
+/*#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiVector< 3, float,  tnlCuda, int >;
+#endif
+extern template class tnlMultiVector< 3, double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiVector< 3, float,  tnlCuda, long int >;
+#endif
+extern template class tnlMultiVector< 3, double, tnlCuda, long int >;
+#endif*/
+#endif
+
+#endif
+
+
 #endif /* TNLMULTIVECTOR3D_IMPL_H_ */

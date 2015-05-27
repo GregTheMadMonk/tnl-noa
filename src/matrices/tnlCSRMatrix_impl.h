@@ -130,9 +130,7 @@ void tnlCSRMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const Real& value )
@@ -154,9 +152,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const RealType& value,
@@ -258,9 +254,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
@@ -310,9 +304,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
@@ -338,9 +330,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlCSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
@@ -377,9 +367,7 @@ Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
@@ -397,9 +385,7 @@ void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
 tnlCSRMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -415,9 +401,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
 tnlCSRMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -434,9 +418,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                  const Vector& vector ) const
 {
@@ -591,9 +573,7 @@ void tnlCSRMatrix< Real, Device, Index >::setCudaKernelType( const SPMVCudaKerne
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlCSRMatrix< Real, Device, Index >::SPMVCudaKernel tnlCSRMatrix< Real, Device, Index >::getCudaKernelType() const
 {
    return this->spmvCudaKernel;
@@ -626,9 +606,7 @@ void tnlCSRMatrix< Real, Device, Index >::setHybridModeSplit( const IndexType hy
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlCSRMatrix< Real, Device, Index >::getHybridModeSplit() const
 {
    return this->hybridModeSplit;
@@ -648,7 +626,7 @@ void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& in
                                                               const IndexType warpEnd,
                                                               const IndexType inWarpIdx ) const
 {
-   Real* aux = getSharedMemory< Real >();
+   volatile Real* aux = getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
@@ -672,8 +650,6 @@ void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& in
          if( inWarpIdx < 2 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 2 ];
       if( warpSize >= 2 )
          if( inWarpIdx < 1 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 1 ];
-      __syncthreads(); // TODO: I am not sure why - aux must be volatile
-
       if( inWarpIdx == 0 )
          outVector[ row ] = aux[ threadIdx.x ];
    }

@@ -50,9 +50,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    IndexType getMaxRowLength() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getPaddingIndex() const;
 
    void reset();

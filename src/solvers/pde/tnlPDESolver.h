@@ -22,6 +22,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlSolverMonitor.h>
+#include <core/tnlLogger.h>
 
 template< typename Problem,
           typename TimeStepper >
@@ -29,71 +30,78 @@ class tnlPDESolver : public tnlObject
 {
    public:
 
-   typedef typename TimeStepper::RealType RealType;
-   typedef typename TimeStepper::DeviceType DeviceType;
-   typedef typename TimeStepper::IndexType IndexType;
-   typedef Problem ProblemType;
-   typedef typename ProblemType::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   
-   tnlPDESolver();
+      typedef typename TimeStepper::RealType RealType;
+      typedef typename TimeStepper::DeviceType DeviceType;
+      typedef typename TimeStepper::IndexType IndexType;
+      typedef Problem ProblemType;
+      typedef typename ProblemType::MeshType MeshType;
+      typedef typename ProblemType::DofVectorType DofVectorType;
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+      tnlPDESolver();
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   bool writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   void setTimeStepper( TimeStepper& timeStepper );
+      bool writeProlog( tnlLogger& logger,
+                        const tnlParameterContainer& parameters );
 
-   void setProblem( ProblemType& problem );
+      void setTimeStepper( TimeStepper& timeStepper );
 
-   bool setFinalTime( const RealType& finalT );
+      void setProblem( ProblemType& problem );
 
-   const RealType& getFinalTine() const;
+      void setInitialTime( const RealType& initialT );
 
-   bool setTimeStep( const RealType& timeStep );
+      const RealType& getInitialTime() const;
 
-   const RealType& getTimeStep() const;
+      bool setFinalTime( const RealType& finalT );
 
-   bool setTimeStepOrder( const RealType& timeStepOrder );
+      const RealType& getFinalTime() const;
 
-   const RealType& getTimeStepOrder() const;
+      bool setTimeStep( const RealType& timeStep );
 
-   bool setSnapshotPeriod( const RealType& period );
-   
-   const RealType& getSnapshotPeriod() const;
+      const RealType& getTimeStep() const;
 
-   void setIoRtTimer( tnlTimerRT& ioRtTimer);
+      bool setTimeStepOrder( const RealType& timeStepOrder );
 
-   void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+      const RealType& getTimeStepOrder() const;
 
-   void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+      bool setSnapshotPeriod( const RealType& period );
 
-   void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+      const RealType& getSnapshotPeriod() const;
 
-   bool solve();
+      void setIoRtTimer( tnlTimerRT& ioRtTimer);
+
+      void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+
+      void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+
+      void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+
+      bool solve();
+
+      bool writeEpilog( tnlLogger& logger ) const;
 
    protected:
 
-   MeshType mesh;
+      MeshType mesh;
 
-   DofVectorType dofs;
+      DofVectorType dofs;
 
-   DofVectorType auxiliaryDofs;
+      MeshDependentDataType meshDependentData;
 
-   TimeStepper* timeStepper;
+      TimeStepper* timeStepper;
 
-   RealType finalTime, snapshotPeriod, timeStep, timeStepOrder;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
 
-   ProblemType* problem;
+      ProblemType* problem;
 
-   tnlTimerRT *ioRtTimer, *computeRtTimer;
+      tnlTimerRT *ioRtTimer, *computeRtTimer;
 
-   tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
+      tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
 
 };
 

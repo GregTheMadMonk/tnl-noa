@@ -48,7 +48,7 @@ bool transferBenchmark( const int size,
    for( int i = 0; i < cycles; i ++ )
       host_vector2 = host_vector;
 
-   double time = timer. GetTime();
+   double time = timer. getTime();
    double giga_byte = ( double ) ( 1 << 30 );
    host_to_host_band_width = bytes / giga_byte / time;
 
@@ -58,7 +58,7 @@ bool transferBenchmark( const int size,
    for( int i = 0; i < cycles; i ++ )
       device_vector = host_vector;
 
-   time = timer. GetTime();
+   time = timer. getTime();
    host_to_device_band_width = bytes / giga_byte / time;
 
    cout << "Transfering " << bytes / mega_byte << " MB from HOST to DEVICE took " << time << " seconds. Bandwidth is " << host_to_device_band_width << " GB/s." << endl;
@@ -67,7 +67,7 @@ bool transferBenchmark( const int size,
    for( int i = 0; i < cycles; i ++ )
       host_vector2 = device_vector;
 
-   time = timer. GetTime();
+   time = timer. getTime();
    device_to_host_band_width = bytes / giga_byte / time;
 
    cout << "Transfering " << bytes / mega_byte << " MB from DEVICE to HOST took " << time << " seconds. Bandwidth is " << device_to_host_band_width << " GB/s." << endl;
@@ -77,7 +77,7 @@ bool transferBenchmark( const int size,
       device_vector2 = device_vector;
 
 
-   time = timer. GetTime();
+   time = timer. getTime();
 
    // Since we read and write tha data back we process twice as many bytes.
    bytes *= 2;
@@ -241,7 +241,7 @@ void reductionBenchmark( const int size,
 
       }
    }
-   const double time = timer. GetTime();
+   const double time = timer. getTime();
    double giga_byte = ( double ) ( 1 << 30 );
    long int mega_byte = 1 << 20;
    long int bytes_reduced = size * sizeof( T ) * reducing_cycles * 3;

@@ -122,7 +122,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
    if( this -> verbosity > 0 )
    {
       int cpu_time = 0;
-      if( this -> cpu_timer ) cpu_time = this -> cpu_timer -> GetTime( 0, this -> solver_comm );
+      if( this -> cpu_timer ) cpu_time = this -> cpu_timer -> getTime( 0, this -> solver_comm );
       if( MPIGetRank() != 0 ) return;
       // TODO: add EST
       //cout << " EST: " << estimated;
@@ -131,7 +131,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
       if( this -> cpu_timer )
          cout << " CPU: " << setw( 8 ) << cpu_time;
       if( this -> rt_timer )
-         cout << " ELA: " << setw( 8 ) << this -> rt_timer -> GetTime();
+         cout << " ELA: " << setw( 8 ) << this -> rt_timer -> getTime();
       cout << "   \r" << flush;
    }
 };

@@ -21,6 +21,8 @@
 #include <solvers/ode/tnlODESolverMonitor.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlTimerRT.h>
+#include <core/tnlLogger.h>
 
 
 template< typename Problem,
@@ -36,6 +38,7 @@ class tnlExplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
    tnlExplicitTimeStepper();
 
@@ -61,12 +64,14 @@ class tnlExplicitTimeStepper
                const RealType& stopTime,
                const MeshType& mesh,
                DofVectorType& dofVector,
-               DofVectorType& auxiliaryDofVector );
+               MeshDependentDataType& meshDependentData );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );
+   
+   bool writeEpilog( tnlLogger& logger );
 
    protected:
 
@@ -78,7 +83,9 @@ class tnlExplicitTimeStepper
 
    RealType timeStep;
 
-   DofVectorType* auxiliaryDofs;
+   MeshDependentDataType* meshDependentData;
+   
+   tnlTimerRT explicitUpdaterTimer;
 };
 
 #include <solvers/pde/tnlExplicitTimeStepper_impl.h>

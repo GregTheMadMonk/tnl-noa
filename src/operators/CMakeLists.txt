@@ -14,7 +14,9 @@ SET( headers tnlFiniteDifferences.h
              tnlNeumannBoundaryConditions_impl.h
              tnlAnalyticNeumannBoundaryConditions.h
              tnlAnalyticNeumannBoundaryConditions_impl.h
-             tnlExactOperatorEvaluator.h )
+             tnlExactOperatorEvaluator.h
+             tnlOperatorEnumerator.h
+             tnlOperatorEnumerator_impl.h )
              
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators )
 

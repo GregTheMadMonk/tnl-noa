@@ -73,6 +73,8 @@ init( const MeshType& mesh )
    }
    if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
       return false;
+   this->linearSystemAssemblerTimer.reset();
+   this->linearSystemSolverTimer.reset();
    return true;
 }
 
@@ -134,7 +136,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
@@ -147,40 +149,55 @@ solve( const RealType& time,
                                        currentTau,
                                        mesh,
                                        dofVector,
-                                       auxiliaryDofVector ) )
+                                       meshDependentData ) )
       {
          cerr << endl << "Preiteration failed." << endl;
          return false;
       }
       if( verbose )
          cout << "                                                                  Assembling the linear system ... \r" << flush;
+      this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
                                            mesh,
                                            dofVector,
-                                           auxiliaryDofVector,
+                                           meshDependentData,
                                            this->matrix,
                                            this->rightHandSide );
+      this->linearSystemAssemblerTimer.stop();
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
+      this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
          cerr << endl << "The linear system solver did not converge." << endl;
          return false;
       }
+      this->linearSystemSolverTimer.stop();
       //if( verbose )
       //   cout << endl;
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
                                         dofVector,
-                                        auxiliaryDofVector ) )
+                                        meshDependentData ) )
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;
       }
       t += currentTau;
    }
+   return true;
+}
+
+template< typename Problem,
+          typename LinearSystemSolver >
+bool
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+writeEpilog( tnlLogger& logger )
+{
+   logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
+   logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
    return true;
 }
 

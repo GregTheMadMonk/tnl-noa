@@ -49,181 +49,113 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    void setDimensions( const CoordinatesType& );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const VertexType& getOrigin() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const VertexType& getProportions() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const VertexType& getCellProportions() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
 
    template< int nx, int ny, int nz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny, int& nz ) const;
 
    template< int dx, int dy, int dz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getEdgeIndex( const CoordinatesType& edgeCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    CoordinatesType getEdgeCoordinates( const Index edgeIndex, int& dx, int& dy, int& dz ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
 
    template< int dx, int dy, int dz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getCellNextToCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getFaceNextToCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getCellNextToFace( const IndexType& cellIndex ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHx() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxSquare() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxSquareInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHy() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHySquare() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHyInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHySquareInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHz() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHzSquare() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHzInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHzSquareInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxHy() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxHz() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHyHz() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxHyInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHxHzInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const RealType& getHyHzInverse() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getSmallestSpaceStep() const;
 
    /****
@@ -234,9 +166,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #else
    template< typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
 
 #ifdef HAVE_NOT_CXX11
@@ -244,9 +174,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #else
    template< typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
 #ifdef HAVE_NOT_CXX11
@@ -254,9 +182,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #else
    template< int nx, int ny, int nz, typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
 
 #ifdef HAVE_NOT_CXX11
@@ -264,9 +190,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #else
    template< int dx, int dy, int dz, typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
 
 #ifdef HAVE_NOT_CXX11
@@ -274,14 +198,10 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 #else
    template< typename Vertex = VertexType >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getNumberOfCells() const;
 
 #ifdef HAVE_NOT_CXX11
@@ -293,9 +213,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
              int ny = 1,
              int nz = 1 >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getNumberOfFaces() const;
 
 #ifdef HAVE_NOT_CXX11
@@ -307,41 +225,27 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
              int dy = 1,
              int dz = 1 >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getNumberOfEdges() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getNumberOfVertices() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool isBoundaryCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
 
    template< int dx, int dy, int dz >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >

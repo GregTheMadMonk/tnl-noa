@@ -6,8 +6,8 @@ ADD_SUBDIRECTORY( preconditioners )
 
 SET( headers tnlIterativeSolver.h
              tnlIterativeSolver_impl.h
-             tnlConfigTags.h
-             tnlFastBuildConfig.h
+             tnlBuildConfigTags.h
+             tnlFastBuildConfigTag.h
              tnlMeshTypeResolver.h
              tnlMeshTypeResolver_impl.h
              tnlSolver.h

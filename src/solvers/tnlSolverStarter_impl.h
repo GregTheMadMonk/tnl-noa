@@ -516,17 +516,17 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                                     const tnlParameterContainer& parameters,
                                                     TimeStepper& timeStepper )
 {
-   this->totalCpuTimer. Reset();
-   this->totalRtTimer. Reset();
+   this->totalCpuTimer.reset();
+   this->totalRtTimer.reset();
 
    /****
     * Set-up the PDE solver
     */
    tnlPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
+   solver.setTimeStepper( timeStepper );
    if( ! solver.setup( parameters ) )
       return false;
-   solver.setTimeStepper( timeStepper );
 
    /****
     * Write a prolog
@@ -560,16 +560,16 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up timers
     */
-   this->computeRtTimer. Reset();
-   this->computeCpuTimer. Reset();
-   this->ioRtTimer. Reset();
-   this->ioRtTimer. Stop();
-   this->ioCpuTimer. Reset();
-   this->ioCpuTimer. Stop();
-   solver.setComputeRtTimer( this -> computeRtTimer );
-   solver.setComputeCpuTimer( this -> computeCpuTimer );
-   solver.setIoRtTimer( this -> ioRtTimer );
-   solver.setIoCpuTimer( this -> ioCpuTimer );
+   this->computeRtTimer.reset();
+   this->computeCpuTimer.reset();
+   this->ioRtTimer.reset();
+   this->ioRtTimer.stop();
+   this->ioCpuTimer.reset();
+   this->ioCpuTimer.stop();
+   solver.setComputeRtTimer( this->computeRtTimer );
+   solver.setComputeCpuTimer( this->computeCpuTimer );
+   solver.setIoRtTimer( this->ioRtTimer );
+   solver.setIoCpuTimer( this->ioCpuTimer );
 
    /****
     * Start the solver
@@ -597,16 +597,16 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Stop timers
     */
-   this->computeRtTimer.Stop();
-   this->computeCpuTimer.Stop();
-   this->totalCpuTimer.Stop();
-   this->totalRtTimer.Stop();
+   this->computeRtTimer.stop();
+   this->computeCpuTimer.stop();
+   this->totalCpuTimer.stop();
+   this->totalRtTimer.stop();
 
    /****
     * Write an epilog
     */
    if( verbose )
-      writeEpilog( cout );
+      writeEpilog( cout, solver );
    if( haveLogFile )
    {
       fstream logFile;
@@ -618,7 +618,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       }
       else
       {
-         writeEpilog( logFile );
+         writeEpilog( logFile, solver );
          logFile.close();
       }
    }
@@ -626,18 +626,21 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 }
 
 template< typename ConfigTag >
-bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
+   template< typename Solver >
+bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& solver  )
 {
    tnlLogger logger( logWidth, str );
    logger.writeCurrentTime( "Finished at:" );
-   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. GetTime() );
-   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. GetTime() );
-   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. GetTime() );
-   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. GetTime() );
-   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. GetTime() );
-   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. GetTime() );
+   if( ! solver.writeEpilog( logger ) )
+      return false;
+   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. getTime() );
+   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. getTime() );
+   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. getTime() );
+   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. getTime() );
+   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. getTime() );
+   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. getTime() );
    char buf[ 256 ];
-   sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. GetTime() ) / this -> totalRtTimer. GetTime() );
+   sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. getTime() ) / this -> totalRtTimer. getTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
    return true;

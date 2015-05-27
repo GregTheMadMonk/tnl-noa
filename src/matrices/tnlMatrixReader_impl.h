@@ -126,8 +126,8 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
-           << " -> " << timer.GetTime()
-           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " -> " << timer.getTime()
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
@@ -144,8 +144,6 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
    bool dimensionsLine( false );
    lineNumber = 0;
    tnlTimerRT timer;
-   IndexType currentRow, currentColumn;
-   RealType value;
    while( line.getLine( file ) )
    {
       lineNumber++;
@@ -314,8 +312,8 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Counting the matrix elements ... " << numberOfElements / 1000
-           << " thousands  -> " << timer.GetTime()
-           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " thousands  -> " << timer.getTime()
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
@@ -357,8 +355,8 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
-              << " -> " << timer.GetTime()
-              << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+              << " -> " << timer.getTime()
+              << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 

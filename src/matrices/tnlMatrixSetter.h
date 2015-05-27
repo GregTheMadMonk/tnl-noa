@@ -67,9 +67,7 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimension >
-#ifdef HAVE_CUDA
-         __device__ __host__
-#endif
+         __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index )
@@ -85,9 +83,7 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimensions >
-#ifdef HAVE_CUDA
-         __device__ __host__
-#endif
+         __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index )
@@ -131,9 +127,7 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-#ifdef HAVE_CUDA
-         __device__ __host__
-#endif
+         __cuda_callable__
          static void processCell( const MeshType& mesh,
                                   TraversalUserData& userData,
                                   const IndexType index,
@@ -143,15 +137,25 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                      userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
          }
 
+         __cuda_callable__
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+             //printf("Matrix setter: Index = %d \n", index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
+
    };
 
    class TraversalInteriorEntitiesProcessor
    {
       public:
 
-#ifdef HAVE_CUDA
-         __device__ __host__
-#endif
+         __cuda_callable__
          static void processCell( const MeshType& mesh,
                                   TraversalUserData& userData,
                                   const IndexType index,
@@ -160,6 +164,18 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
             ( *userData.rowLengths )[ index ] =
                      userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
          }
+         
+         __cuda_callable__
+         static void processFace( const MeshType& mesh,
+                                  TraversalUserData& userData,
+                                  const IndexType index,
+                                  const CoordinatesType& coordinates )
+         {
+            // printf("Matrix setter: Index = %d \n", index );
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+         
 
    };
 

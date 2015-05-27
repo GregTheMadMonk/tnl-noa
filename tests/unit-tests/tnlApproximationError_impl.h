@@ -20,7 +20,7 @@
 
 #include <mesh/tnlTraverser.h>
 #include <core/vectors/tnlVector.h>
-#include <functions/tnlFunctionDiscretizer.h>
+#include <functors/tnlFunctionDiscretizer.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>

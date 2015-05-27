@@ -32,13 +32,13 @@ class tnlTimerCPU
 
    tnlTimerCPU();
 
-   void Reset();
+   void reset();
    
-   void Stop();
+   void stop();
 
-   void Continue();
+   void start();
 
-   double GetTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
+   double getTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
       
    protected:
 

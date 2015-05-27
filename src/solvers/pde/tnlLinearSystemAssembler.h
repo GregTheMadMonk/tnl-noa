@@ -18,7 +18,7 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_H_
 #define TNLLINEARSYSTEMASSEMBLER_H_
 
-#include <functions/tnlFunctionAdapter.h>
+#include <functors/tnlFunctorAdapter.h>
 
 template< typename Real,
           typename DofVector,
@@ -26,7 +26,7 @@ template< typename Real,
           typename BoundaryConditions,
           typename RightHandSide,
           typename Matrix >
-class tnlLinearSystemAssemblerTraversalUserData
+class tnlLinearSystemAssemblerTraverserUserData
 {
    public:
       typedef Matrix MatrixType;
@@ -48,7 +48,7 @@ class tnlLinearSystemAssemblerTraversalUserData
 
       const Real* timeDiscretisationCoefficient;
 
-      tnlLinearSystemAssemblerTraversalUserData( const Real& time,
+      tnlLinearSystemAssemblerTraverserUserData( const Real& time,
                                                  const Real& tau,
                                                  const Real& timeDiscretisationCoefficient,
                                                  const DifferentialOperator& differentialOperator,
@@ -78,6 +78,7 @@ template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
 class tnlLinearSystemAssembler
 {
@@ -87,12 +88,12 @@ class tnlLinearSystemAssembler
    typedef typename DofVector::DeviceType DeviceType;
    typedef typename DofVector::IndexType IndexType;
    typedef Matrix MatrixType;
-   typedef tnlLinearSystemAssemblerTraversalUserData< RealType,
+   typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
-                                                      MatrixType > TraversalUserData;
+                                                      MatrixType > TraverserUserData;
 
    template< int EntityDimensions >
    void assembly( const RealType& time,
@@ -105,7 +106,7 @@ class tnlLinearSystemAssembler
                   MatrixType& matrix,
                   DofVector& b ) const;
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
@@ -114,21 +115,21 @@ class tnlLinearSystemAssembler
          __host__ __device__
 #endif
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const IndexType index )
          {
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
-            userData.boundaryConditions->updateLinearSystem( *userData.time,
-                                                            mesh,
-                                                            index,
-                                                            *userData.u,
-                                                            *userData.b,
-                                                            matrixRow );
+            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
+                                                             mesh,
+                                                             index,
+                                                             *userData.u,
+                                                             *userData.b,
+                                                             matrixRow );
          }
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
 
@@ -137,15 +138,15 @@ class tnlLinearSystemAssembler
          __host__ __device__
 #endif
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const IndexType index )
          {
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.u )[ index ] +
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+            ( *userData.b )[ index ] = 0.0;/*( *userData.u )[ index ] +
                      ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                                     *userData.rightHandSide,
                                                                     index,
-                                                                    *userData.time );
+                                                                    *userData.time );*/
 
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -155,7 +156,18 @@ class tnlLinearSystemAssembler
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            userData.matrix->addElement( index, index, 1.0, 1.0 );
+            //userData.matrix->addElement( index, index, 1.0, 1.0 );
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
+            
          }
    };
 };
@@ -168,12 +180,14 @@ template< int Dimensions,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
+          typename TimeDiscretisation,
           typename Matrix >
 class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                 DofVector,
                                 DifferentialOperator,
                                 BoundaryConditions,
                                 RightHandSide,
+                                TimeDiscretisation,
                                 Matrix >
 {
    public:
@@ -183,12 +197,12 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    typedef typename DofVector::IndexType IndexType;
    typedef Matrix MatrixType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef tnlLinearSystemAssemblerTraversalUserData< RealType,
+   typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
                                                       DofVector,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
-                                                      MatrixType > TraversalUserData;
+                                                      MatrixType > TraverserUserData;
 
    tnlLinearSystemAssembler()
    : timeDiscretisationCoefficient( 1.0 ){}
@@ -212,7 +226,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
       this->timeDiscretisationCoefficient = c;
    }
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
@@ -220,13 +234,14 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
+             ( *userData.b )[ index ] = 0.0;
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
-            userData.boundaryConditions->updateLinearSystem( *userData.time,
+            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
                                                              mesh,
                                                              index,
                                                              coordinates,
@@ -239,11 +254,13 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
+            // printf("Matrix assembler: Index = %d \n", index );
+            ( *userData.b )[ index ] = 0.0;
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                              mesh,
@@ -252,12 +269,13 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              *userData.u,
                                                              *userData.b,
                                                              matrixRow );
+            //printf( "BC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
          }
 
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
 
@@ -270,18 +288,18 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __host__ __device__
 #endif
          static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
                                                              coordinates,
-                                                             *userData.time );
+                                                             *userData.time );*/
             
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -292,29 +310,43 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            if( *userData.timeDiscretisationCoefficient != 0.0 )
+            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,
                                                 *userData.timeDiscretisationCoefficient,
-                                                1.0 );
+                                                1.0 );*/
+            
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
+            //printf( "IC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
          }
 
 #ifdef HAVE_CUDA
          __host__ __device__
 #endif
          static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
+                                  TraverserUserData& userData,
                                   const IndexType index,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = ( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
+            // printf("Matrix assembler: Index = %d \n", index );
+            typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
                                   ( *userData.tau ) * FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
                                                              coordinates,
-                                                             *userData.time );
+                                                             *userData.time );*/
 
             typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
@@ -325,11 +357,23 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                *userData.u,
                                                                *userData.b,
                                                                matrixRow );
-            if( *userData.timeDiscretisationCoefficient != 0.0 )
+            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,
                                                 *userData.timeDiscretisationCoefficient,
-                                                1.0 );
+                                                1.0 );*/
+            
+            const RealType& rhs = FunctionAdapter::getValue( mesh,
+                                                             *userData.rightHandSide,
+                                                             index,
+                                                             coordinates,
+                                                             *userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
+                                                         ( *userData.b )[ index ],
+                                                         index,
+                                                         ( *userData.u )[ index ],
+                                                         ( *userData.tau ),
+                                                         rhs );
 
          }
    };

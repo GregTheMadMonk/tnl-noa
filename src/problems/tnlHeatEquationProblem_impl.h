@@ -24,6 +24,7 @@
 #include <core/tnlLogger.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 
 template< typename Mesh,
@@ -108,7 +109,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
-                     DofVectorType& auxiliaryDofs )
+                     MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -124,14 +125,14 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename MatrixType >          
+   template< typename Matrix >          
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
-                   MatrixType& matrix )
+                   Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
+   typedef typename Matrix::RowLengthsVector RowLengthsVectorType;
    RowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
@@ -157,7 +158,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
               DofVectorType& dofs,
-              DofVectorType& auxiliaryDofs )
+              MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
@@ -180,6 +181,7 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
+                MeshDependentDataType& meshDependentData,
                 DofVectorType& fu )
 {
    /****
@@ -212,18 +214,24 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename MatrixType >          
+    template< typename Matrix >          
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
                       DofVectorType& u,
-                      DofVectorType& auxDofs,
-                      MatrixType& matrix,
+                      MeshDependentDataType& meshDependentData,
+                      Matrix& matrix,
                       DofVectorType& b )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh,
+                             DofVectorType,
+                             DifferentialOperator,
+                             BoundaryCondition,
+                             RightHandSide,
+                             tnlBackwardTimeDiscretisation,
+                             Matrix > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,
@@ -236,6 +244,26 @@ assemblyLinearSystem( const RealType& time,
    /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;
+   abort();*/
+   /*cout << "Matrix multiplication test ..." << endl;
+   tnlVector< RealType, DeviceType, IndexType > y;
+   y.setLike( u );
+   tnlTimerRT timer;
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      matrix.vectorProduct( u, y );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << "Scalar product test ..." << endl;
+   timer.reset();
+   RealType a;
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      a = y.scalarProduct( u );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << endl;
    abort();*/
 }
 

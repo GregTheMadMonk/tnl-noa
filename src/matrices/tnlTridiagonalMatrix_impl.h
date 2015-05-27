@@ -189,9 +189,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::setValue( const RealType& v )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlTridiagonalMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                                   const IndexType column,
                                                                   const RealType& value )
@@ -214,9 +212,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setElement( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlTridiagonalMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                                   const IndexType column,
                                                                   const RealType& value,
@@ -243,9 +239,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addElement( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlTridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType row,
                                                               const IndexType* columns,
                                                               const RealType* values,
@@ -276,9 +270,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlTridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType row,
                                                               const IndexType* columns,
                                                               const RealType* values,
@@ -329,9 +321,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlTridiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                   const IndexType column ) const
 {
@@ -354,9 +344,7 @@ Real tnlTridiagonalMatrix< Real, Device, Index >::getElement( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlTridiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                               IndexType* columns,
                                                               RealType* values ) const
@@ -377,9 +365,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
 tnlTridiagonalMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -399,9 +385,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
 tnlTridiagonalMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -414,9 +398,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlTridiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                          const Vector& vector ) const
 {
@@ -547,9 +529,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlTridiagonalMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                        const IndexType row,
                                                                        Vector& x,
@@ -625,9 +605,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                     const IndexType column ) const
 {
@@ -647,6 +625,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
       typedef tnlHost Device;
 
       template< typename Index >
+      __cuda_callable__
       static Index getElementIndex( const Index rows,
                                     const Index row,
                                     const Index column )
@@ -657,6 +636,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
       template< typename Vector,
                 typename Index,
                 typename ValuesType  >
+      __cuda_callable__
       static typename Vector::RealType rowVectorProduct( const Index rows,
                                                          const ValuesType& values,
                                                          const Index row,
@@ -695,9 +675,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
       typedef tnlCuda Device;
 
       template< typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getElementIndex( const Index rows,
                                     const Index row,
                                     const Index column )
@@ -708,9 +686,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
       template< typename Vector,
                 typename Index,
                 typename ValuesType >
-#ifdef HAVE_CUDA
-      __device__
-#endif
+      __cuda_callable__
       static typename Vector::RealType rowVectorProduct( const Index rows,
                                                          const ValuesType& values,
                                                          const Index row,

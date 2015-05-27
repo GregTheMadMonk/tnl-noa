@@ -50,6 +50,31 @@ __device__ inline  double tnlCudaMin( const double& a,
    return fmin( a, b );
 }
 
+template< class T > __device__ T tnlCudaMin( volatile const T& a,
+                                             volatile const T& b )
+{
+   return a < b ? a : b;
+}
+
+__device__ inline int tnlCudaMin( volatile const int& a,
+                                  volatile const int& b )
+{
+   return min( a, b );
+}
+
+__device__ inline  float tnlCudaMin( volatile const float& a,
+                                     volatile const float& b )
+{
+   return fminf( a, b );
+}
+
+__device__ inline  double tnlCudaMin( volatile const double& a,
+                                      volatile const double& b )
+{
+   return fmin( a, b );
+}
+
+
 /***
  * This function returns maximum of two numbers stored on the device.
  */
@@ -73,6 +98,30 @@ __device__  inline float tnlCudaMax( const float& a,
 
 __device__  inline double tnlCudaMax( const double& a,
                                       const double& b )
+{
+   return fmax( a, b );
+}
+
+template< class T > __device__ T tnlCudaMax( volatile const T& a,
+                                             volatile const T& b )
+{
+   return a > b ? a : b;
+}
+
+__device__  inline int tnlCudaMax( volatile const int& a,
+                                   volatile const int& b )
+{
+   return max( a, b );
+}
+
+__device__  inline float tnlCudaMax( volatile const float& a,
+                                     volatile const float& b )
+{
+   return fmaxf( a, b );
+}
+
+__device__  inline double tnlCudaMax( volatile const double& a,
+                                      volatile const double& b )
 {
    return fmax( a, b );
 }
@@ -104,6 +153,32 @@ __device__  inline long double tnlCudaAbs( const long double& a )
 {
    return fabs( ( double ) a );
 }
+
+__device__  inline int tnlCudaAbs( volatile const int& a )
+{
+   return abs( a );
+}
+
+__device__  inline long int tnlCudaAbs( volatile const long int& a )
+{
+   return abs( a );
+}
+
+__device__  inline float tnlCudaAbs( volatile const float& a )
+{
+   return fabs( a );
+}
+
+__device__  inline double tnlCudaAbs( volatile const double& a )
+{
+   return fabs( a );
+}
+
+__device__  inline long double tnlCudaAbs( volatile const long double& a )
+{
+   return fabs( ( double ) a );
+}
+
 
 template< typename Type1, typename Type2 >
 __device__ Type1 tnlCudaPow( const Type1& x, const Type2& power )
@@ -173,7 +248,7 @@ class tnlParallelReductionSum
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -261,7 +336,7 @@ class tnlParallelReductionMin
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
    };
@@ -330,7 +405,7 @@ class tnlParallelReductionMax
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
    };
@@ -399,7 +474,7 @@ class tnlParallelReductionAbsSum
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -468,9 +543,10 @@ class tnlParallelReductionAbsMin
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
-      return tnlCudaMin( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
+      volatile ResultType aux = tnlCudaAbs( data[ idx2 ] );
+      return tnlCudaMin( data[ idx1 ],  aux );
    };
 #endif
 };
@@ -537,9 +613,10 @@ class tnlParallelReductionAbsMax
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
-      return tnlCudaMax( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
+      volatile ResultType aux = tnlCudaAbs( data[ idx2 ] );
+      return tnlCudaMax( data[ idx1 ], aux );
    };
 #endif
 };
@@ -606,7 +683,7 @@ class tnlParallelReductionLogicalAnd
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] && data[ idx2 ];
    };
@@ -676,7 +753,7 @@ class tnlParallelReductionLogicalOr
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] || data[ idx2 ];
    };
@@ -752,7 +829,7 @@ class tnlParallelReductionLpNorm
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -827,7 +904,7 @@ class tnlParallelReductionEqualities
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] && data[ idx2 ];
    };
@@ -898,7 +975,7 @@ class tnlParallelReductionInequalities
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] && data[ idx2 ];
    };
@@ -954,7 +1031,7 @@ class tnlParallelReductionScalarProduct
                                                  const RealType* data3 ) const
    {
       return data1[ idx1 ] +
-             ( data2[ idx2 ] * data2[ idx2] ) +
+             ( data2[ idx2 ] * data3[ idx2] ) +
              ( data2[ idx3 ] * data3[ idx3] );
    };
 
@@ -969,7 +1046,7 @@ class tnlParallelReductionScalarProduct
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -1039,7 +1116,7 @@ class tnlParallelReductionDiffSum
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -1110,7 +1187,7 @@ class tnlParallelReductionDiffMin
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
    };
@@ -1182,7 +1259,7 @@ class tnlParallelReductionDiffMax
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
    };
@@ -1254,7 +1331,7 @@ class tnlParallelReductionDiffAbsSum
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };
@@ -1327,7 +1404,7 @@ class tnlParallelReductionDiffAbsMin
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       //return tnlCudaMin( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
@@ -1401,7 +1478,7 @@ class tnlParallelReductionDiffAbsMax
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       //return tnlCudaMax( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
@@ -1479,7 +1556,7 @@ class tnlParallelReductionDiffLpNorm
 
    __device__ ResultType commonReductionOnDevice( const IndexType idx1,
                                                   const IndexType idx2,
-                                                  const ResultType* data ) const
+                                                  volatile const ResultType* data ) const
    {
       return data[ idx1 ] + data[ idx2 ];
    };

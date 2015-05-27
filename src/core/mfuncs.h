@@ -20,29 +20,24 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <core/tnlCuda.h>
 
 template< typename Type1, typename Type2 >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Type1 Min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
 template< typename Type1, typename Type2 >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Type1 Max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
 
 template< typename Type >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void Swap( Type& a, Type& b )
 {
    Type tmp( a );
@@ -51,9 +46,7 @@ void Swap( Type& a, Type& b )
 };
 
 template< class T >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 T Sign( const T& a )
 {
    if( a < ( T ) 0 ) return -1;
@@ -62,9 +55,7 @@ T Sign( const T& a )
 };
 
 template< class T >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 T tnlAbs( const T& n )
 {
    if( n < ( T ) 0 )
@@ -99,9 +90,7 @@ inline int roundUpDivision( const int num, const int div )
    return num / div + ( num % div != 0 );
 }
 
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 inline int roundToMultiple( int number, int multiple )
 {
    return multiple*( number/ multiple + ( number % multiple != 0 ) );

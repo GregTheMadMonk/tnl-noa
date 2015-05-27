@@ -94,23 +94,17 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setNumberOfChunksInSlice( const IndexType chunksInSlice );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getNumberOfChunksInSlice() const;
 
    void setDesiredChunkSize( const IndexType desiredChunkSize );
 
    IndexType getDesiredChunkSize() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getNumberOfSlices() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -119,9 +113,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -133,9 +125,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -147,9 +137,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const IndexType elements );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -163,18 +151,14 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -183,20 +167,14 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;*/
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -257,9 +235,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                            RealType& value,
                            RealType& thisElementMultiplicator );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementToChunkFast( const IndexType sliceOffset,
                                const IndexType chunkIndex,
                                const IndexType chunkSize,
@@ -267,9 +243,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                                RealType& value,
                                RealType& thisElementMultiplicator );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void setChunkFast( const IndexType sliceOffset,
                       const IndexType chunkIndex,
                       const IndexType chunkSize,
@@ -290,9 +264,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                            const IndexType column,
                            RealType& value ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool getElementInChunkFast( const IndexType sliceOffset,
                                const IndexType chunkIndex,
                                const IndexType chunkSize,
@@ -305,9 +277,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                   IndexType* columns,
                   RealType* values ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getChunkFast( const IndexType sliceOffset,
                       const IndexType chunkIndex,
                       const IndexType chunkSize,
@@ -315,9 +285,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                       RealType* values ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType chunkVectorProduct( const IndexType sliceOffset,
                                                  const IndexType chunkIndex,
                                                  const IndexType chunkSize,

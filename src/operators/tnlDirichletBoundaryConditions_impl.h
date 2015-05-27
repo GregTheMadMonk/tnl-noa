@@ -90,9 +90,7 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
@@ -113,9 +111,7 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -133,9 +129,7 @@ template< int Dimensions,
           typename Real,
           typename Index >
    template< typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,

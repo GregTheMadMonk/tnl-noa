@@ -19,9 +19,7 @@
 #define TNLMULTIDIAGONALMATRIXROW_IMPL_H_
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlMultidiagonalMatrixRow< Real, Index >::
 tnlMultidiagonalMatrixRow()
 : values( 0 ),
@@ -34,9 +32,7 @@ tnlMultidiagonalMatrixRow()
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlMultidiagonalMatrixRow< Real, Index >::
 tnlMultidiagonalMatrixRow( Real* values,
                            Index* diagonals,
@@ -54,9 +50,7 @@ tnlMultidiagonalMatrixRow( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlMultidiagonalMatrixRow< Real, Index >::
 bind( Real* values,
@@ -75,9 +69,7 @@ bind( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlMultidiagonalMatrixRow< Real, Index >::
 setElement( const Index& elementIndex,

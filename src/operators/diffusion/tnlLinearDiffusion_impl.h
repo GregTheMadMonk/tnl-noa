@@ -1,3 +1,19 @@
+/***************************************************************************
+                          tnlLinearDiffusion_impl.h  -  description
+                             -------------------
+    begin                : Aug 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifndef TNLLINEARDIFFUSION_IMP_H
 #define	TNLLINEARDIFFUSION_IMP_H
@@ -26,9 +42,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
@@ -37,7 +51,7 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< - 1 >( cellIndex ) ]
+   return ( u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ]
             - 2.0 * u[ cellIndex ]
             + u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] ) * mesh.getHxSquareInverse();
 }
@@ -47,9 +61,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -65,9 +77,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
@@ -107,9 +117,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -126,9 +134,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
@@ -151,9 +157,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
@@ -196,9 +200,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
@@ -223,9 +225,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -241,9 +241,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
@@ -266,7 +264,5 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, mesh.template getCellNextToCell< 0, 1, 0 >( index ),   -lambdaY );
    matrixRow.setElement( 6, mesh.template getCellNextToCell< 0, 0, 1 >( index ),   -lambdaZ );
 }
-
-
 
 #endif	/* TNLLINEARDIFFUSION_IMP_H */

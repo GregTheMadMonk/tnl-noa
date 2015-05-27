@@ -39,7 +39,7 @@ tnlSORSolver< Matrix, Preconditioner >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
 }
 

@@ -97,9 +97,7 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
@@ -120,9 +118,7 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
@@ -140,9 +136,7 @@ template< int Dimensions,
           typename Real,
           typename Index >
    template< typename MatrixRow >          
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,

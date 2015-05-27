@@ -7,6 +7,8 @@ SET( headers tnlPDESolver.h
              tnlSemiImplicitTimeStepper.h
              tnlSemiImplicitTimeStepper_impl.h
              tnlLinearSystemAssembler.h
-             tnlLinearSystemAssembler_impl.h  )
+             tnlLinearSystemAssembler_impl.h
+             tnlBackwardTimeDiscretisation.h
+             tnlNoTimeDiscretisation.h  )
              
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/pde )

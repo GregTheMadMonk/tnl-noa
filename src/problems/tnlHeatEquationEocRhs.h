@@ -18,7 +18,7 @@
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename ExactOperator,
           typename TestFunction >
@@ -39,9 +39,7 @@ class tnlHeatEquationEocRhs
 
       template< typename Vertex,
                 typename Real >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       Real getValue( const Vertex& vertex,
                      const Real& time ) const
       {

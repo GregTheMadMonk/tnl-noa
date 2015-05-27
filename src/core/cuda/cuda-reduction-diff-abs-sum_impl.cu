@@ -52,13 +52,16 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< double, int
                                      const typename tnlParallelReductionDiffAbsSum< double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffAbsSum< double, int> :: ResultType& result );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< long double, int > >
                                    ( const tnlParallelReductionDiffAbsSum< long double, int>& operation,
                                      const typename tnlParallelReductionDiffAbsSum< long double, int > :: IndexType size,
                                      const typename tnlParallelReductionDiffAbsSum< long double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionDiffAbsSum< long double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffAbsSum< long double, int> :: ResultType& result );
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
 template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< char, long int > >
                                    ( const tnlParallelReductionDiffAbsSum< char, long int >& operation,
                                      const typename tnlParallelReductionDiffAbsSum< char, long int > :: IndexType size,
@@ -87,11 +90,13 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< double, lon
                                      const typename tnlParallelReductionDiffAbsSum< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffAbsSum< double, long int> :: ResultType& result );
 
-/*template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< long double, long int > >
+#ifdef INSTANTIATE_LONG_DOUBLE
+template bool reductionOnCudaDevice< tnlParallelReductionDiffAbsSum< long double, long int > >
                                    ( const tnlParallelReductionDiffAbsSum< long double, long int>& operation,
                                      const typename tnlParallelReductionDiffAbsSum< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionDiffAbsSum< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionDiffAbsSum< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionDiffAbsSum< long double, long int> :: ResultType& result );*/
-
+                                     typename tnlParallelReductionDiffAbsSum< long double, long int> :: ResultType& result );
+#endif
 #endif                                     
+#endif

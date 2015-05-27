@@ -41,7 +41,7 @@ void tnlODESolverMonitor< RealType, IndexType> :: refresh()
        /*double flops = ( double ) tnl_flops_counter. getFlops();
        if( flops )
        {
-         cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> GetTime();
+         cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> getTime();
        }*/
        cout << "   \r" << flush;
     }
