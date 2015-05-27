@@ -35,7 +35,7 @@ tnlPDESolver()
   computeCpuTimer( 0 )
 {
    this->dofs.setName( "dofs" );
-   this->auxiliaryDofs.setName( "auxiliaryDofs" );
+   this->meshDependentData.setName( "meshDependentData" );
 }
 
 template< typename Problem,
@@ -87,20 +87,20 @@ setup( const tnlParameterContainer& parameters,
    }
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
-   this->problem->bindDofs( mesh, this->dofs );
+   this->problem->bindDofs( this->mesh, this->dofs );
    
    /****
     * Set mesh dependent data
     */
-   this->problem->setMeshDependentData( mesh, this->meshDependentData );
-   this->problem->bindMeshDependentData( mesh, this->meshDependentData );
+   this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
+   this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
    
    /***
     * Set-up the initial condition
     */
    cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, mesh, this->dofs, this->auxiliaryDofs ) )
+   if( ! this->problem->setInitialCondition( parameters, this->mesh, this->dofs, this->meshDependentData ) )
       return false;
    cout << " [ OK ]" << endl;
 
@@ -329,22 +329,24 @@ solve()
    RealType t( this->initialTime );
    IndexType step( 0 );
    IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
-   this->timeStepper->setProblem( * ( this->problem ) );
-   this->timeStepper->init( mesh );
-   this->problem->bindDofs( mesh, this->dofs );
-   this->problem->bindMeshDependentData( mesh, this->meshDependentData );
 
-   if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
+   if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
    }
-   timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
+
+   /****
+    * Initialize the time stepper
+    */
+   this->timeStepper->setProblem( * ( this->problem ) );
+   this->timeStepper->init( this->mesh );
+   this->timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {
       RealType tau = Min( this -> snapshotPeriod,
                           this -> finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->auxiliaryDofs ) )
+      if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->meshDependentData ) )
          return false;
       step ++;
       t += tau;
@@ -354,7 +356,7 @@ solve()
       this->computeRtTimer->stop();
       this->computeCpuTimer->stop();
 
-      if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->auxiliaryDofs ) )
+      if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;

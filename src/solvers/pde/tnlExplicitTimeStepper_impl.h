@@ -110,7 +110,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->odeSolver, );
    this->odeSolver->setTau( this -> timeStep );
@@ -120,7 +120,7 @@ solve( const RealType& time,
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->mesh = &mesh;
-   this->auxiliaryDofs = &auxiliaryDofVector;
+   this->meshDependentData = &meshDependentData;
    return this->odeSolver->solve( dofVector );
 }
 
@@ -137,20 +137,20 @@ getExplicitRHS( const RealType& time,
                                     tau,
                                     *( this->mesh),
                                     u,
-                                    *( this->auxiliaryDofs ) ) )
+                                    *( this->meshDependentData ) ) )
    {
       cerr << endl << "Preiteration failed." << endl;
       return;
       //return false; // TODO: throw exception
    }
    this->explicitUpdaterTimer.start();   
-   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu );
+   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
    if( ! this->problem->postIterate( time,
                                      tau,
                                      *( this->mesh ),
                                      u,
-                                     *( this->auxiliaryDofs ) ) )
+                                     *( this->meshDependentData ) ) )
    {
       cerr << endl << "Postiteration failed." << endl;
       return;

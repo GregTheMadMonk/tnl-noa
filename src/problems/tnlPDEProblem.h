@@ -61,14 +61,13 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
                        const RealType& tau,
                        const MeshType& mesh,
                        DofVectorType& dofs,
-                       DofVectorType& auxDofs );
+                       MeshDependentDataType& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshType& mesh,
                         DofVectorType& dofs,
-                        DofVectorType& auxDofs );
-
+                        MeshDependentDataType& meshDependentData );
 
       tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
 

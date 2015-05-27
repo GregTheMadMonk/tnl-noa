@@ -19,7 +19,7 @@
 #define TNLSOLVERCONFIG_IMPL_H_
 
 #include <tnlConfig.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <solvers/tnlDummyProblem.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>

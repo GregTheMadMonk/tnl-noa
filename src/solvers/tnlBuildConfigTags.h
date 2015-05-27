@@ -20,7 +20,7 @@
 
 #include <mesh/tnlGrid.h>
 
-class tnlDefaultConfigTag{};
+class tnlDefaultBuildConfigTag{};
 
 /****
  * All devices are enabled by default. Those which are not available

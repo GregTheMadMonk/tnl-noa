@@ -38,6 +38,7 @@ class tnlExplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
    tnlExplicitTimeStepper();
 
@@ -63,7 +64,7 @@ class tnlExplicitTimeStepper
                const RealType& stopTime,
                const MeshType& mesh,
                DofVectorType& dofVector,
-               DofVectorType& auxiliaryDofVector );
+               MeshDependentDataType& meshDependentData );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -82,7 +83,7 @@ class tnlExplicitTimeStepper
 
    RealType timeStep;
 
-   DofVectorType* auxiliaryDofs;
+   MeshDependentDataType* meshDependentData;
    
    tnlTimerRT explicitUpdaterTimer;
 };

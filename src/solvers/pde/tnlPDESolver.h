@@ -91,8 +91,6 @@ class tnlPDESolver : public tnlObject
 
       DofVectorType dofs;
 
-      DofVectorType auxiliaryDofs;
-
       MeshDependentDataType meshDependentData;
 
       TimeStepper* timeStepper;

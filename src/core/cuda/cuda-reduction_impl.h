@@ -282,8 +282,8 @@ typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
    typedef typename Operation :: RealType RealType;
    typedef typename Operation :: ResultType ResultType;
 
-   const IndexType desBlockSize( 512 );
-   const IndexType desGridSize( 2048 );
+   const IndexType desBlockSize( 256 );
+   const IndexType desGridSize( 65536 );
    dim3 blockSize( 0 ), gridSize( 0 );
 
    /***

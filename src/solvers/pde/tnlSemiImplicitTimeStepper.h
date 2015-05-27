@@ -33,6 +33,7 @@ class tnlSemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename ProblemType::MatrixType MatrixType;
 
@@ -62,7 +63,7 @@ class tnlSemiImplicitTimeStepper
                const RealType& stopTime,
                const MeshType& mesh,
                DofVectorType& dofVector,
-               DofVectorType& auxiliaryDofVector );
+               MeshDependentDataType& meshDependentData );
    
    bool writeEpilog( tnlLogger& logger );
 

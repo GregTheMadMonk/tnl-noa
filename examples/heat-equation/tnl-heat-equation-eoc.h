@@ -19,8 +19,8 @@
 #define TNL_HEAT_EQUATION_EOC_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlFastBuildConfigTag.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <functors/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
@@ -28,7 +28,7 @@
 #include <problems/tnlHeatEquationEocRhs.h>
 #include <problems/tnlHeatEquationEocProblem.h>
 
-//typedef tnlDefaultConfigTag BuildConfig;
+//typedef tnlDefaultBuildConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 
 template< typename ConfigTag >

@@ -20,7 +20,7 @@
 
 #include <core/tnlObject.h>
 #include <config/tnlParameterContainer.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename ConfigTag >

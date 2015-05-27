@@ -18,7 +18,7 @@
 #ifndef TNLFASTBUILDCONFIG_H_
 #define TNLFASTBUILDCONFIG_H_
 
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 
 class tnlFastBuildConfig
 {

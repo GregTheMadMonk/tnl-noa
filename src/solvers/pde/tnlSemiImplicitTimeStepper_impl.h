@@ -136,7 +136,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
@@ -149,7 +149,7 @@ solve( const RealType& time,
                                        currentTau,
                                        mesh,
                                        dofVector,
-                                       auxiliaryDofVector ) )
+                                       meshDependentData ) )
       {
          cerr << endl << "Preiteration failed." << endl;
          return false;
@@ -161,7 +161,7 @@ solve( const RealType& time,
                                            currentTau,
                                            mesh,
                                            dofVector,
-                                           auxiliaryDofVector,
+                                           meshDependentData,
                                            this->matrix,
                                            this->rightHandSide );
       this->linearSystemAssemblerTimer.stop();
@@ -180,7 +180,7 @@ solve( const RealType& time,
                                         currentTau,
                                         mesh,
                                         dofVector,
-                                        auxiliaryDofVector ) )
+                                        meshDependentData ) )
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;

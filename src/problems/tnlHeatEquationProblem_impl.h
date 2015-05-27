@@ -109,7 +109,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
-                     DofVectorType& auxiliaryDofs )
+                     MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -158,7 +158,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
               DofVectorType& dofs,
-              DofVectorType& auxiliaryDofs )
+              MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
@@ -181,6 +181,7 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
+                MeshDependentDataType& meshDependentData,
                 DofVectorType& fu )
 {
    /****
@@ -220,7 +221,7 @@ assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
                       DofVectorType& u,
-                      DofVectorType& auxDofs,
+                      MeshDependentDataType& meshDependentData,
                       Matrix& matrix,
                       DofVectorType& b )
 {
@@ -243,6 +244,26 @@ assemblyLinearSystem( const RealType& time,
    /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;
+   abort();*/
+   /*cout << "Matrix multiplication test ..." << endl;
+   tnlVector< RealType, DeviceType, IndexType > y;
+   y.setLike( u );
+   tnlTimerRT timer;
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      matrix.vectorProduct( u, y );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << "Scalar product test ..." << endl;
+   timer.reset();
+   RealType a;
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      a = y.scalarProduct( u );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << endl;
    abort();*/
 }
 

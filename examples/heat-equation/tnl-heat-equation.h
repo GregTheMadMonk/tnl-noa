@@ -19,8 +19,8 @@
 #define TNL_HEAT_EQUATION_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlFastBuildConfigTag.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
@@ -29,7 +29,7 @@
 #include <functors/tnlConstantFunction.h>
 #include <problems/tnlHeatEquationProblem.h>
 
-//typedef tnlDefaultConfigTag BuildConfig;
+//typedef tnlDefaultBuildConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 
 template< typename ConfigTag >
@@ -106,8 +106,7 @@ class heatEquationSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< heatEquationSetter, heatEquationConfig, BuildConfig > solver;
-   if( ! solver. run( argc, argv ) )
+   if( ! tnlSolver< heatEquationSetter, heatEquationConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

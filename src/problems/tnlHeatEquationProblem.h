@@ -42,6 +42,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
+      using typename BaseType::MeshDependentDataType;
 
       static tnlString getTypeStatic();
 
@@ -55,7 +56,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       bool setInitialCondition( const tnlParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
-                                DofVectorType& auxDofs );
+                                MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
@@ -65,7 +66,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                          const IndexType& step,
                          const MeshType& mesh,
                          DofVectorType& dofs,
-                         DofVectorType& auxDofs );
+                         MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshType& mesh ) const;
 
@@ -76,6 +77,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
+                           MeshDependentDataType& meshDependentData,
                            DofVectorType& _fu );
 
       template< typename Matrix >
@@ -83,7 +85,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                                  const RealType& tau,
                                  const MeshType& mesh,
                                  DofVectorType& dofs,
-                                 DofVectorType& auxDofs,
+                                 MeshDependentDataType& meshDependentData,
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide );
 

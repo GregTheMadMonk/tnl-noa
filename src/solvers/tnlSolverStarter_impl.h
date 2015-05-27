@@ -524,9 +524,9 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    tnlPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
+   solver.setTimeStepper( timeStepper );
    if( ! solver.setup( parameters ) )
       return false;
-   solver.setTimeStepper( timeStepper );
 
    /****
     * Write a prolog
