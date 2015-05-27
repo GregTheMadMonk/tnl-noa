@@ -167,6 +167,25 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Traversing boundary vertices
     */
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+
+   for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
+   {
+      coordinates.y() = 0;
+      EntitiesProcessor::processVertex( grid, userData, grid.getVertexIndex( coordinates ), coordinates );
+      coordinates.y() = ySize;
+      EntitiesProcessor::processVertex( grid, userData, grid.getVertexIndex( coordinates ), coordinates );
+   }
+   for( coordinates.y() = 1; coordinates.y() <= ySize; coordinates.y() ++ )
+   {
+      coordinates.x() = 0;
+      EntitiesProcessor::processVertex( grid, userData, grid.getVertexIndex( coordinates ), coordinates );
+      coordinates.x() = xSize;
+      EntitiesProcessor::processVertex( grid, userData, grid.getVertexIndex( coordinates ), coordinates );
+   }
+   
 }
 
 template< typename Real,
@@ -181,8 +200,20 @@ processInteriorEntities( const GridType& grid,
    /****
     * Traversing interior vertices
     */
-}
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
 
+#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+#endif
+   for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
+      for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
+      {
+         const IndexType index = grid.getVertexIndex( coordinates );
+         EntitiesProcessor::processVertex( grid, userData, index, coordinates );
+      }  
+}
 
 /***
  *
@@ -331,6 +362,71 @@ __global__ void tnlTraverserGrid2DInteriorFaces( const tnlGrid< 2, Real, tnlCuda
    }
 }
 
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename EntitiesProcessor >
+__global__ void tnlTraverserGrid2DBoundaryVertices( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
+                                                    UserData* userData,
+                                                    const Index gridXIdx,
+                                                    const Index gridYIdx )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   const IndexType& xSize = grid->getDimensions().x();
+   const IndexType& ySize = grid->getDimensions().y();
+
+   CoordinatesType vertexCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
+                                      ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y );
+
+   if( vertexCoordinates.x() <= grid->getDimensions().x() &&
+       vertexCoordinates.y() <= grid->getDimensions().y() )
+   {
+      if( grid->isBoundaryVertex( vertexCoordinates ) )
+      {
+         EntitiesProcessor::processVertex( *grid,
+                                           *userData,
+                                           grid->getVertexIndex( vertexCoordinates ),
+                                           vertexCoordinates );
+      }
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename UserData,
+          typename EntitiesProcessor >
+__global__ void tnlTraverserGrid2DInteriorVertices( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
+                                                    UserData* userData,
+                                                    const Index gridXIdx,
+                                                    const Index gridYIdx )
+{
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+
+   const IndexType& xSize = grid->getDimensions().x();
+   const IndexType& ySize = grid->getDimensions().y();
+
+   CoordinatesType vertexCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x,
+                                      ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y );
+
+   if( vertexCoordinates.x() <= grid->getDimensions().x() &&
+       vertexCoordinates.y() <= grid->getDimensions().y() )
+   {
+      if( ! grid->isBoundaryVertex( vertexCoordinates ) )
+      {
+         EntitiesProcessor::processVertex( *grid,
+                                           *userData,
+                                           grid->getVertexIndex( vertexCoordinates ),
+                                           vertexCoordinates );
+      }
+   }
+}
 
 
 #endif
@@ -555,9 +651,33 @@ tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
 processBoundaryEntities( const GridType& grid,
                          UserData& userData ) const
 {
+#ifdef HAVE_CUDA
    /****
-    * Boundary interior vertices
+    * Traversing boundary vertices    
     */
+   GridType* kernelGrid = tnlCuda::passToDevice( grid );
+   UserData* kernelUserData = tnlCuda::passToDevice( userData );
+
+   dim3 cudaBlockSize( 16, 16 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x() + 1, cudaBlockSize.x );
+   cudaBlocks.y = tnlCuda::getNumberOfBlocks( grid.getDimensions().y() + 1, cudaBlockSize.y );
+   const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
+   const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+      {
+         tnlTraverserGrid2DBoundaryVertices< Real, Index, UserData, EntitiesProcessor >
+                                           <<< cudaBlocks, cudaBlockSize >>>
+                                          ( kernelGrid,
+                                            kernelUserData,
+                                            gridXIdx,
+                                            gridYIdx );
+         checkCudaDevice;
+      }
+   cudaThreadSynchronize();   
+#endif
 }
 
 
@@ -570,9 +690,33 @@ tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 0 >::
 processInteriorEntities( const GridType& grid,
                          UserData& userData ) const
 {
+#ifdef HAVE_CUDA
    /****
-    * Traversing interior vertices
+    * Traversing interior vertices    
     */
+   GridType* kernelGrid = tnlCuda::passToDevice( grid );
+   UserData* kernelUserData = tnlCuda::passToDevice( userData );
+
+   dim3 cudaBlockSize( 16, 16 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = tnlCuda::getNumberOfBlocks( grid.getDimensions().x() + 1, cudaBlockSize.x );
+   cudaBlocks.y = tnlCuda::getNumberOfBlocks( grid.getDimensions().y() + 1, cudaBlockSize.y );
+   const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
+   const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+
+   for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+      {
+         tnlTraverserGrid2DInteriorVertices< Real, Index, UserData, EntitiesProcessor >
+                                           <<< cudaBlocks, cudaBlockSize >>>
+                                          ( kernelGrid,
+                                            kernelUserData,
+                                            gridXIdx,
+                                            gridYIdx );
+         checkCudaDevice;
+      }
+   cudaThreadSynchronize();   
+#endif
 }
 
 
