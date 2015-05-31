@@ -25,12 +25,15 @@ int main( int argc, char* argv[] )
     tnlTimerRT timer;
     const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
-    cout << "Benchmarking memory bandwidth when transfering int ..." << endl;
+    cout << "Benchmarking memory bandwidth: ";
 
     const int size = 1 << 22;
     
-    tnlVector< int, tnlHost > hostVector;
-    tnlVector< int, tnlCuda > deviceVector;
+    typedef tnlVector< double, tnlHost > HostVector;
+    typedef tnlVector< double, tnlCuda > CudaVector;
+
+    HostVector hostVector;
+    CudaVector deviceVector;
     hostVector.setSize( size );
     deviceVector.setSize( size );
 
@@ -40,13 +43,35 @@ int main( int argc, char* argv[] )
     timer.reset();
     timer.start();
     deviceVector = hostVector;
-    timer.stop();
-    
+    timer.stop();    
     double bandwidth = ( double ) ( size ) * sizeof( int ) / timer.getTime() / oneGB;
-
     cout << bandwidth << " GB/sec." << endl;
 
    
+    
+    HostVector hostVector2;
+    CudaVector deviceVector2;
+    hostVector2.setLike( hostVector );
+    deviceVector2.setLike( deviceVector );
+    hostVector2.setValue( 1.0 );
+    deviceVector2.setValue( 1.0 );
+    cout << "Benchmarking vector addition on CPU: ";
+    timer.reset();
+    timer.start();
+    hostVector.addVector( hostVector2 );
+    timer.stop();
+    double hostTime = timer.getTime();
+
+
+
+
+
+
+
+
+
+
+
 #endif
    return EXIT_SUCCESS;
 }

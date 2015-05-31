@@ -4,7 +4,7 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 
-__author__ = "oberhuber"
+__author__ = "Tomas Oberhuber"
 __date__ = "$May 6, 2015 8:40:59 PM$"
 
 
