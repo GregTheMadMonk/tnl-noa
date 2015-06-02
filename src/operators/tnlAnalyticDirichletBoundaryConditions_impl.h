@@ -135,7 +135,7 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
-   template< typename MatrixRow >          
+   template< typename Matrix >          
 __cuda_callable__
 void
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -145,8 +145,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    matrixRow.setElement( 0, index, 1.0 );
    b[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
 }

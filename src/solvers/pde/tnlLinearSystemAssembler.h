@@ -118,13 +118,12 @@ class tnlLinearSystemAssembler
                                     TraverserUserData& userData,
                                     const IndexType index )
          {
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
                                                              mesh,
                                                              index,
                                                              *userData.u,
                                                              *userData.b,
-                                                             matrixRow );
+                                                             *userData.matrix );
          }
 
    };
@@ -148,14 +147,13 @@ class tnlLinearSystemAssembler
                                                                     index,
                                                                     *userData.time );*/
 
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
                                                                *userData.tau,
                                                                mesh,
                                                                index,
                                                                *userData.u,
                                                                *userData.b,
-                                                               matrixRow );
+                                                               *userData.matrix );
             //userData.matrix->addElement( index, index, 1.0, 1.0 );
             const RealType& rhs = FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
@@ -239,15 +237,14 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                   const CoordinatesType& coordinates )
          {
             //printf( "index = %d \n", index );
-             ( *userData.b )[ index ] = 0.0;
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
+             ( *userData.b )[ index ] = 0.0;           
             userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
                                                              mesh,
                                                              index,
                                                              coordinates,
                                                              *userData.u,
                                                              *userData.b,
-                                                             matrixRow );
+                                                             *userData.matrix );
          }
 
 #ifdef HAVE_CUDA
@@ -261,14 +258,13 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
             //printf( "index = %d \n", index );
             // printf("Matrix assembler: Index = %d \n", index );
             ( *userData.b )[ index ] = 0.0;
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.boundaryConditions->updateLinearSystem( *userData.time,
                                                              mesh,
                                                              index,
                                                              coordinates,
                                                              *userData.u,
                                                              *userData.b,
-                                                             matrixRow );
+                                                             *userData.matrix );
             //printf( "BC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
          }
 
@@ -301,7 +297,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              coordinates,
                                                              *userData.time );*/
             
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
                                                                *userData.tau,
                                                                mesh,
@@ -309,7 +304,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                coordinates,
                                                                *userData.u,
                                                                *userData.b,
-                                                               matrixRow );
+                                                               *userData.matrix );
             /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,
@@ -348,7 +343,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                              coordinates,
                                                              *userData.time );*/
 
-            typename MatrixType::MatrixRow matrixRow = userData.matrix->getRow( index );
             userData.differentialOperator->updateLinearSystem( *userData.time,
                                                                *userData.tau,
                                                                mesh,
@@ -356,7 +350,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                                coordinates,
                                                                *userData.u,
                                                                *userData.b,
-                                                               matrixRow );
+                                                               *userData.matrix );
             /*if( *userData.timeDiscretisationCoefficient != 0.0 )
                userData.matrix->addElementFast( index,
                                                 index,

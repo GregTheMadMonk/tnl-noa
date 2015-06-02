@@ -76,7 +76,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename MatrixRow >
+   template< typename Vector, typename Matrix >
 __cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
@@ -87,8 +87,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    //printf( "tau = %f lambda = %f dx_sqr = %f dx = %f, \n", tau, lambdaX, mesh.getHxSquareInverse(), mesh.getHx() );
    matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ),     - lambdaX );
@@ -156,7 +157,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename MatrixRow >
+   template< typename Vector, typename Matrix >
 __cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
@@ -167,8 +168,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
    matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -lambdaY );
@@ -240,7 +242,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename MatrixRow >
+   template< typename Vector, typename Matrix >
 __cuda_callable__
 void
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
@@ -251,8 +253,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
    const RealType lambdaZ = tau * mesh.getHzSquareInverse();

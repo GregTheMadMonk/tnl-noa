@@ -112,7 +112,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -122,8 +122,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
@@ -205,7 +206,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -215,8 +216,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {
@@ -320,7 +322,7 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -330,8 +332,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
    if( coordinates.x() == 0 )
    {

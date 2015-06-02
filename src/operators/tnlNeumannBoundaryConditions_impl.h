@@ -89,7 +89,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
@@ -99,8 +99,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index, 1.0 );
@@ -179,7 +180,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
@@ -189,8 +190,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
@@ -291,7 +293,7 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename MatrixRow >
+   template< typename Matrix >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
@@ -301,8 +303,9 @@ updateLinearSystem( const RealType& time,
                     const CoordinatesType& coordinates,
                     DofVectorType& u,
                     DofVectorType& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    if( coordinates.x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
