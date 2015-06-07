@@ -19,14 +19,13 @@
 #define TNL_MEAN_CURVATIVE_FLOW_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlFastBuildConfigTag.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
 #include <operators/tnlAnalyticNeumannBoundaryConditions.h>
 #include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
+#include <functors/tnlConstantFunction.h>
 #include <problems/tnlMeanCurvatureFlowProblem.h>
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
