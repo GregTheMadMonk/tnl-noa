@@ -8,4 +8,4 @@ SET( headers tnlCylinderFunction.h
              tnlTwinsFunction_impl.h             
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functions/initial_conditions )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functors/initial_conditions )

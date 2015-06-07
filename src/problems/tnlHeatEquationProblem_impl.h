@@ -181,8 +181,8 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
-                MeshDependentDataType& meshDependentData,
-                DofVectorType& fu )
+                DofVectorType& fu,
+		MeshDependentDataType& meshDependentData )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
