@@ -18,7 +18,7 @@
 #ifndef TNLMEANCURVATUREFLOWEOCRHS_H_
 #define TNLMEANCURVATUREFLOWEOCRHS_H_
 
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename ExactOperator,
           typename TestFunction >

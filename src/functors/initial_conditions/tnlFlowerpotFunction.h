@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLCYLINDERFUNCTION_H_
-#define TNLCYLINDERFUNCTION_H_
+#ifndef TNLFLOWERPOTFUNCTION_H_
+#define TNLFLOWERPOTFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename Real >
-class tnlCylinderFunctionBase
+class tnlFlowerpotFunctionBase
 {
    public:
 
@@ -38,17 +38,17 @@ class tnlCylinderFunctionBase
 
    protected:
 
-      RealType amplitude, sigma;
+      RealType diameter;
 };
 
 template< int Dimensions,
           typename Real >
-class tnlCylinderFunction
+class tnlFlowerpotFunction
 {
 };
 
 template< typename Real >
-class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real >
+class tnlFlowerpotFunction< 1, Real > : public tnlFlowerpotFunctionBase< Real >
 {
    public:
 
@@ -58,7 +58,7 @@ class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlCylinderFunction();
+      tnlFlowerpotFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -79,7 +79,7 @@ class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real >
 };
 
 template< typename Real >
-class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real >
+class tnlFlowerpotFunction< 2, Real > : public tnlFlowerpotFunctionBase< Real >
 {
    public:
 
@@ -89,7 +89,7 @@ class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlCylinderFunction();
+      tnlFlowerpotFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -110,7 +110,7 @@ class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real >
 };
 
 template< typename Real >
-class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real >
+class tnlFlowerpotFunction< 3, Real > : public tnlFlowerpotFunctionBase< Real >
 {
    public:
 
@@ -120,7 +120,7 @@ class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlCylinderFunction();
+      tnlFlowerpotFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -142,15 +142,15 @@ class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlFlowerpotFunction< Dimensions, Real >& f )
 {
-   str << "Cylinder.;
+   str << "Flowerpot function.";
    return str;
 }
 
 template< int FunctionDimensions,
           typename Real >
-class tnlFunctionType< tnlCylinderFunction< FunctionDimensions, Real > >
+class tnlFunctionType< tnlFlowerpotFunction< FunctionDimensions, Real > >
 {
    public:
 
@@ -158,7 +158,7 @@ class tnlFunctionType< tnlCylinderFunction< FunctionDimensions, Real > >
 };
 
 
-#include <functions/tnlCylinderFunction_impl.h>
+#include <functors/initial_conditions/tnlFlowerpotFunction_impl.h>
 
 
-#endif /* TNLEXPBUMPFUNCTION_H_ */
+#endif /* TNLFLOWERPOTFUNCTION_H_ */

@@ -4,7 +4,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< int Dimensions >
 class tnlExactOperatorQ

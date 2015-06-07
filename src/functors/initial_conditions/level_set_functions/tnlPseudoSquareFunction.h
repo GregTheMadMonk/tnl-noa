@@ -20,7 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename Real >
 class tnlPseudoSquareFunctionBase
@@ -72,10 +72,6 @@ class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< R
 #endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-                         
-   protected:
-
-      RealType height;
 };
 
 template< typename Real >
@@ -107,10 +103,6 @@ class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< R
 #endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-                         
-   protected:
-
-      RealType height;
 };
 
 template< typename Real >
@@ -142,10 +134,6 @@ class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< R
 #endif
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
-
-   protected:
-
-      RealType height;
 };
 
 template< int Dimensions,
@@ -166,7 +154,7 @@ class tnlFunctionType< tnlPseudoSquareFunction< FunctionDimensions, Real > >
 };
 
 
-#include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction_impl.h>
+#include <functors/initial_conditions/level_set_functions/tnlPseudoSquareFunction_impl.h>
 
 
 #endif /* TNLPSEUDOSQUAREFUNCTION_H_ */

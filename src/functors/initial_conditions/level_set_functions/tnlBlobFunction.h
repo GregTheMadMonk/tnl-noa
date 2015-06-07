@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPSEUDOSQUAREFUNCTION_H_
-#define TNLPSEUDOSQUAREFUNCTION_H_
+#ifndef TNLBLOBFUNCTION_H_
+#define TNLBLOBFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename Real >
-class tnlPseudoSquareFunctionBase
+class tnlBlobFunctionBase
 {
    public:
 
@@ -32,19 +32,19 @@ class tnlPseudoSquareFunctionBase
       bool setup( const tnlParameterContainer& parameters,
                  const tnlString& prefix = "" );
 
-   protected:
+     protected:
 
       RealType height;
 };
 
 template< int Dimensions,
           typename Real >
-class tnlPseudoSquareFunction
+class tnlBlobFunction
 {
 };
 
 template< typename Real >
-class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< Real >
+class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real >
 {
    public:
 
@@ -54,7 +54,7 @@ class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< R
 
       static tnlString getType();
 
-      tnlPseudoSquareFunction();
+      tnlBlobFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -75,7 +75,7 @@ class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< R
 };
 
 template< typename Real >
-class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< Real >
+class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real >
 {
    public:
 
@@ -85,7 +85,7 @@ class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< R
 
       static tnlString getType();
 
-      tnlPseudoSquareFunction();
+      tnlBlobFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -106,7 +106,7 @@ class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< R
 };
 
 template< typename Real >
-class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< Real >
+class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real >
 {
    public:
 
@@ -116,7 +116,7 @@ class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< R
 
       static tnlString getType();
 
-      tnlPseudoSquareFunction();
+      tnlBlobFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -138,7 +138,7 @@ class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< R
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlPseudoSquareFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlBlobFunction< Dimensions, Real >& f )
 {
    str << "Level-set pseudo square function.";
    return str;
@@ -146,7 +146,7 @@ ostream& operator << ( ostream& str, const tnlPseudoSquareFunction< Dimensions, 
 
 template< int FunctionDimensions,
           typename Real >
-class tnlFunctionType< tnlPseudoSquareFunction< FunctionDimensions, Real > >
+class tnlFunctionType< tnlBlobFunction< FunctionDimensions, Real > >
 {
    public:
 
@@ -154,7 +154,7 @@ class tnlFunctionType< tnlPseudoSquareFunction< FunctionDimensions, Real > >
 };
 
 
-#include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction_impl.h>
+#include <functors/initial_conditions/level_set_functions/tnlBlobFunction_impl.h>
 
 
-#endif /* TNLPSEUDOSQUAREFUNCTION_H_ */
+#endif /* TNLBLOBFUNCTION_H_ */

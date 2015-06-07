@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLBLOBFUNCTION_H_
-#define TNLBLOBFUNCTION_H_
+#ifndef TNLCYLINDERFUNCTION_H_
+#define TNLCYLINDERFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename Real >
-class tnlBlobFunctionBase
+class tnlCylinderFunctionBase
 {
    public:
 
@@ -32,19 +32,23 @@ class tnlBlobFunctionBase
       bool setup( const tnlParameterContainer& parameters,
                  const tnlString& prefix = "" );
 
-     protected:
+      void setDiameter( const RealType& sigma );
 
-      RealType height;
+      const RealType& getDiameter() const;
+
+   protected:
+
+      RealType diameter;
 };
 
 template< int Dimensions,
           typename Real >
-class tnlBlobFunction
+class tnlCylinderFunction
 {
 };
 
 template< typename Real >
-class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real >
+class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real >
 {
    public:
 
@@ -54,7 +58,7 @@ class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlBlobFunction();
+      tnlCylinderFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -75,7 +79,7 @@ class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real >
 };
 
 template< typename Real >
-class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real >
+class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real >
 {
    public:
 
@@ -85,7 +89,7 @@ class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlBlobFunction();
+      tnlCylinderFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -106,7 +110,7 @@ class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real >
 };
 
 template< typename Real >
-class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real >
+class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real >
 {
    public:
 
@@ -116,7 +120,7 @@ class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real >
 
       static tnlString getType();
 
-      tnlBlobFunction();
+      tnlCylinderFunction();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -138,15 +142,15 @@ class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlBlobFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlCylinderFunction< Dimensions, Real >& f )
 {
-   str << "Level-set pseudo square function.";
+   str << "Cylinder function.";
    return str;
 }
 
 template< int FunctionDimensions,
           typename Real >
-class tnlFunctionType< tnlBlobFunction< FunctionDimensions, Real > >
+class tnlFunctionType< tnlCylinderFunction< FunctionDimensions, Real > >
 {
    public:
 
@@ -154,7 +158,7 @@ class tnlFunctionType< tnlBlobFunction< FunctionDimensions, Real > >
 };
 
 
-#include <functions/initial_conditions/level_set_functions/tnlBlobFunction_impl.h>
+#include <functions/initial_conditions/tnlCylinderFunction_impl.h>
 
 
-#endif /* TNLBLOBFUNCTION_H_ */
+#endif /* TNLEXPBUMPFUNCTION_H_ */

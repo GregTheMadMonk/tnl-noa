@@ -38,8 +38,10 @@ tnlMeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, Differen
 setup( const tnlParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters ) ||
-       ! this->rightHandSide.setup( parameters ) )
+       ! this->rightHandSide.setup( parameters ) || 
+       ! this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps(parameters.getParameter< double >("eps")) )
       return false;
+   
    return true;
 }
 

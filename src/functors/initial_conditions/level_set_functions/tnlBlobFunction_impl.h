@@ -18,7 +18,7 @@
 #ifndef TNLBLOBFUNCTION_IMPL_H_
 #define TNLBLOBFUNCTION_IMPL_H_
 
-#include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
+#include <functors/initial_conditions/level_set_functions/tnlBlobFunction.h>
 
 template< typename Real >
 bool

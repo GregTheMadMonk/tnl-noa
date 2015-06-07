@@ -18,7 +18,7 @@
 #ifndef TNLEXACTNONLINEARDIFFUSION_H_
 #define TNLEXACTNONLINEARDIFFUSION_H_
 
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename OperatorQ, int Dimensions >
 class tnlExactNonlinearDiffusion

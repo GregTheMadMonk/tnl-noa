@@ -18,11 +18,11 @@
 #ifndef TNLPSEUDOSQUAREFUNCTION_IMPL_H_
 #define TNLPSEUDOSQUAREFUNCTION_IMPL_H_
 
-#include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
+#include <functors/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
 
 template< typename Real >
 bool
-tnlPseudoSquareFunction< Real >::
+tnlPseudoSquareFunctionBase< Real >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {

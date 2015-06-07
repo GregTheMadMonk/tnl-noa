@@ -23,11 +23,11 @@
 #include <functors/tnlExpBumpFunction.h>
 #include <functors/tnlSinBumpsFunction.h>
 #include <functors/tnlSinWaveFunction.h>
-#include <functions/initial_conditions/tnlCylinderFunction.h>
-#include <functions/initial_conditions/tnlFlowerpotFunction.h>
-#include <functions/initial_conditions/tnlTwinsFunction.h>
-#include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
-#include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
+#include <functors/initial_conditions/tnlCylinderFunction.h>
+#include <functors/initial_conditions/tnlFlowerpotFunction.h>
+#include <functors/initial_conditions/tnlTwinsFunction.h>
+#include <functors/initial_conditions/level_set_functions/tnlBlobFunction.h>
+#include <functors/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
 
 template< int FunctionDimensions,
           typename Real,

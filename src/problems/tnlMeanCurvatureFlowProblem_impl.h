@@ -24,6 +24,7 @@
 #include <core/tnlLogger.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 #include "tnlMeanCurvatureFlowProblem.h"
 
@@ -69,10 +70,9 @@ tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 setup( const tnlParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) ||
+       ! this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps( parameters.getParameter< double >( "eps" ) ) )
       return false;
-   
-   differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps(parameters.getParameter< double >("eps"));
    
    return true;
 }
@@ -115,7 +115,7 @@ tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
-                     DofVectorType& auxiliaryDofs )
+                     MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -163,7 +163,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
               DofVectorType& dofs,
-              DofVectorType& auxiliaryDofs )
+              MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
@@ -186,7 +186,8 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
-                DofVectorType& fu )
+                DofVectorType& fu,
+		MeshDependentDataType& meshDependentData )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
@@ -228,11 +229,17 @@ assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
                       DofVectorType& u,
-                      DofVectorType& auxDofs,
+                      MeshDependentDataType& meshDependentData,
                       Matrix& matrix,
                       DofVectorType& b )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh, 
+			     DofVectorType, 
+			     DifferentialOperator, 
+			     BoundaryCondition, 
+			     RightHandSide, 
+			     tnlBackwardTimeDiscretisation, 
+			     MatrixType > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,

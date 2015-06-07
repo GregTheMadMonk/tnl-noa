@@ -40,9 +40,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,
@@ -50,9 +52,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,
@@ -215,9 +219,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,
@@ -225,9 +231,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,
@@ -397,9 +405,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,
@@ -407,9 +417,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
+  
+  return true;
 }
 
 template< typename MeshReal,

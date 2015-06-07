@@ -62,7 +62,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time )const;
           
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
       
    private:
    
@@ -117,7 +117,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time )const;
         
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
    
    private:
    
@@ -172,7 +172,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time ) const;
         
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
    
    private:
    
@@ -225,7 +225,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time ) const;
           
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
    
    private:
    
@@ -282,7 +282,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time )const;
           
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
    
    private:
    
@@ -338,7 +338,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
           const Vector& u,
           const Real& time )const;
           
-   void setEps(const Real& eps);
+   bool setEps(const Real& eps);
    
    private:
    
