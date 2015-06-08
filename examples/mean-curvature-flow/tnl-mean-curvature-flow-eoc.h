@@ -29,8 +29,10 @@
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
 #include <operators/operator-Q/tnlExactOperatorQ.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
@@ -45,7 +47,7 @@ class meanCurvatureFlowEocConfig
          config.addDelimiter( "Mean Curvature Flow EOC settings:" );
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );
-         tnlTestFunction< 2, double >::configSetup( config );
+         tnlTestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -68,8 +70,8 @@ class meanCurvatureFlowEocSetter
    static bool run( const tnlParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::Dimensions };
-      typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> OperatorQ;
-      typedef tnlOneSideDiffNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
+      typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
+      typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlExactNonlinearDiffusion< tnlExactOperatorQ<Dimensions>, Dimensions > ExactOperator;
       typedef tnlTestFunction< MeshType::Dimensions, Real, Device > TestFunction;
