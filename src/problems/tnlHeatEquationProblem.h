@@ -77,17 +77,17 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
-                           MeshDependentDataType& meshDependentData,
-                           DofVectorType& _fu );
+			   DofVectorType& _fu,
+                           MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
-                                 DofVectorType& dofs,
-                                 MeshDependentDataType& meshDependentData,
+                                 DofVectorType& dofs,                                 
                                  Matrix& matrix,
-                                 DofVectorType& rightHandSide );
+                                 DofVectorType& rightHandSide,
+				 MeshDependentDataType& meshDependentData );
 
 
       protected:

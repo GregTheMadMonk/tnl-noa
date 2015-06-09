@@ -181,8 +181,8 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
-                MeshDependentDataType& meshDependentData,
-                DofVectorType& fu )
+		DofVectorType& fu,
+                MeshDependentDataType& meshDependentData )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
@@ -220,10 +220,10 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
-                      DofVectorType& u,
-                      MeshDependentDataType& meshDependentData,
+                      DofVectorType& u,                      
                       Matrix& matrix,
-                      DofVectorType& b )
+                      DofVectorType& b,
+		      MeshDependentDataType& meshDependentData )
 {
    tnlLinearSystemAssembler< Mesh,
                              DofVectorType,

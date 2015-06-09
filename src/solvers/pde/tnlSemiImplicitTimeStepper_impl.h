@@ -161,9 +161,9 @@ solve( const RealType& time,
                                            currentTau,
                                            mesh,
                                            dofVector,
-                                           meshDependentData,
                                            this->matrix,
-                                           this->rightHandSide );
+                                           this->rightHandSide,
+                                           meshDependentData );
       this->linearSystemAssemblerTimer.stop();
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
