@@ -746,6 +746,7 @@ def generateRunScript( problemBaseName ):
     file.write( "tnl-init --test-function sin-wave \\\n" ) 
     file.write( "         --output-file init.tnl\n" ) 
     file.write( "./" + problemBaseName + " --time-discretisation explicit \\\n" ) 
+    file.write( "              --boundary-conditions-constant 0 \\\n" )
     file.write( "              --discrete-solver merson \\\n" ) 
     file.write( "              --snapshot-period 0.01 \\\n" ) 
     file.write( "              --final-time 1.0\n" ) 
