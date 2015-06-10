@@ -374,7 +374,7 @@ addVectors( Vector1& v,
 }
 
 
-template< typename Vector1, typename Vector2 >
+/*template< typename Vector1, typename Vector2 >
 void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZ( Vector1& y,
                                                         const Vector2& x,
                                                         const typename Vector1 :: RealType& alpha,
@@ -417,7 +417,7 @@ void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZPlusY( Vector1& y,
    const Index n = y. getSize();
    for( Index i = 0; i < n; i ++ )
       y[ i ] += alpha * x[ i ] + beta *  z[ i ];
-}
+}*/
 
 template< typename Vector >
 void tnlVectorOperations< tnlHost >::computePrefixSum( Vector& v,

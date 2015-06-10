@@ -53,7 +53,9 @@ class tnlConstSharedArray : public tnlObject
               const Index _size );
 
    template< typename Array >
-   void bind( const Array& array );
+   void bind( const Array& array,
+              IndexType index = 0,
+              IndexType size = 0 );
 
    void swap( tnlConstSharedArray< Element, Device, Index >& array );
 

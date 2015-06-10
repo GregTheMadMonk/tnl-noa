@@ -117,10 +117,19 @@ void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
 template< typename Element,
           typename Device,
           typename Index >
-void tnlSharedArray< Element, Device, Index > :: bind( tnlArray< Element, Device, Index >& array )
+   template< typename Array >
+void tnlSharedArray< Element, Device, Index > :: bind( Array& array,
+                                                       IndexType index,
+                                                       IndexType size )
 {
-   this->size = array. getSize();
-   this->data = array. getData();
+   tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+                    "Attempt to bind arrays between different devices." );
+   this->data = &( array. getData()[ index ] );
+   if( ! size )
+      this->size = array. getSize();
+   else
+      this->size = size;
+   
 };
 
 template< typename Element,

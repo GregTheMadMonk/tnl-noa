@@ -64,7 +64,10 @@ class tnlSharedArray : public tnlObject
    void bind( Element* _data,
               const Index _size );
 
-   void bind( tnlArray< Element, Device, Index >& array );
+   template< typename Array >
+   void bind( Array& array,
+              IndexType index = 0,
+              IndexType size = 0 );
 
    template< int Size >
    void bind( tnlStaticArray< Size, Element >& array );

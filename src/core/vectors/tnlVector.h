@@ -77,6 +77,8 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    // TODO: implement
    //tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   //tnlVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    Real max() const;
 

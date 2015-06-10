@@ -529,7 +529,7 @@ __global__ void vectorAlphaXPlusBetaYCudaKernel( Real* y,
 }
 #endif
 
-template< typename Vector1, typename Vector2 >
+/*template< typename Vector1, typename Vector2 >
 void tnlVectorOperations< tnlCuda > :: alphaXPlusBetaY( Vector1& y,
                                                         const Vector2& x,
                                                         const typename Vector1::RealType& alpha,
@@ -665,7 +665,7 @@ void tnlVectorOperations< tnlCuda > :: alphaXPlusBetaZPlusY( Vector1& y,
    #else
       tnlCudaSupportMissingMessage;;
    #endif
-}
+}*/
 
 template< typename Vector >
 void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
