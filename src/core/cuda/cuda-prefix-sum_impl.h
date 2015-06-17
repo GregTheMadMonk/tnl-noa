@@ -163,13 +163,14 @@ __global__ void cudaSecondPhaseBlockPrefixSum( const Operation operation,
 {
    if( blockIdx. x > 0 )
    {
-      const DataType shift = operation.commonReductionOnDevice( gridShift, auxArray[ blockIdx. x - 1 ] );
+      DataType shift( gridShift );
+      operation.commonReductionOnDevice( shift, auxArray[ blockIdx. x - 1 ] );
 
       const Index readOffset = blockIdx. x * elementsInBlock;
       Index readIdx = threadIdx. x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
       {
-         operation.performInPlace( data[ readIdx + readOffset ], shift );
+         operation.commonReductionOnDevice( data[ readIdx + readOffset ], shift );
          readIdx += blockDim. x;
       }
    }

@@ -29,6 +29,7 @@
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/mfuncs.h>
 #include <core/cuda/tnlCudaReductionBuffer.h>
+#include <core/cuda/tnlCudaReduction.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <core/tnlTimerRT.h>
@@ -42,191 +43,30 @@ using namespace std;
  * are reduced on CPU. The constant must not be larger
  * than maximal CUDA grid size.
  */
-const int minGPUReductionDataSize = 256; //2048;//65536; //16384;//1024;//256;
+const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
 static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
 
-/***
- * The parallel reduction of one vector.
- *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction2
- *          to call this kernel then doing it by yourself.
- *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
- *
- * The kernel parameters:
- * @param size is the number of all element to reduce - not just in one block.
- * @param deviceInput input data which we want to reduce
- * @param deviceOutput an array to which we write the result of reduction.
- *                     Each block of the grid writes one element in this array
- *                     (i.e. the size of this array equals the number of CUDA blocks).
- */
-template < typename Operation, int blockSize, bool isSizePow2 >
+
+template< typename Operation, int blockSize, bool isSizePow2 >
 __global__ void tnlCUDAReductionKernel( const Operation operation,
                                         const typename Operation :: IndexType size,
-                                        const typename Operation :: RealType* deviceInput,
-                                        const typename Operation :: RealType* deviceInput2,
-                                        typename Operation :: ResultType* deviceOutput )
+                                        const typename Operation :: RealType* input1,
+                                        const typename Operation :: RealType* input2,
+                                        typename Operation :: ResultType* output )
 {
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-   
-   typedef typename Operation :: IndexType IndexType;
-   typedef typename Operation :: RealType RealType;
-   typedef typename Operation :: ResultType ResultType;
-
-   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );
-
-   /***
-    * Get thread id (tid) and global thread id (gid).
-    * gridSize is the number of element processed by all blocks at the
-    * same time.
-    */
-   IndexType tid = threadIdx. x;
-   IndexType gid = blockIdx. x * blockDim. x + threadIdx. x;
-   IndexType gridSize = blockDim. x * gridDim.x;
-
-   sdata[ tid ] = operation.initialValue();
-   /***
-    * Read data into the shared memory. We start with the
-    * sequential reduction.
-    */
-   while( gid + 4 * gridSize < size )
-   {
-      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
-      operation.firstReduction( sdata[ tid ], gid + gridSize,     deviceInput, deviceInput2 );
-      operation.firstReduction( sdata[ tid ], gid + 2 * gridSize, deviceInput, deviceInput2 );
-      operation.firstReduction( sdata[ tid ], gid + 3 * gridSize, deviceInput, deviceInput2 );
-      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
-      //sdata[ tid ] += deviceInput[ gid + gridSize ] * deviceInput[ gid + gridSize ];
-      //sdata[ tid ] += deviceInput[ gid + 2 * gridSize ] * deviceInput[ gid + 2 * gridSize ];
-      //sdata[ tid ] += deviceInput[ gid + 3 * gridSize ] * deviceInput[ gid + 3 * gridSize ];
-      gid += 4*gridSize;
-   }
-   while( gid + 2 * gridSize < size )
-   {
-      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
-      operation.firstReduction( sdata[ tid ], gid + gridSize,     deviceInput, deviceInput2 );
-
-      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
-      //sdata[ tid ] += deviceInput[ gid + gridSize ] * deviceInput[ gid + gridSize ];
-      gid += 2*gridSize;
-   }
-   while( gid < size )
-   {
-      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
-      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
-      gid += gridSize;
-   }
-   __syncthreads();
-    
-   
-   //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
-   
-   //return;
-   /***
-    *  Perform the parallel reduction.
-    */
-   if( blockSize >= 1024 )
-   {
-      if( tid < 512 )
-         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 512 ] );
-         sdata[ tid ] += sdata[ tid + 512 ];
-      __syncthreads();
-   }
-   if( blockSize >= 512 )
-   {
-      if( tid < 256 )
-         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 256 ] );
-         sdata[ tid ] += sdata[ tid + 256 ];
-      __syncthreads();
-   }
-   if( blockSize >= 256 )
-   {
-      if( tid < 128 )
-         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 128 ] );
-         sdata[ tid ] += sdata[ tid + 128 ];
-      __syncthreads();
-      //printf( "2: tid %d data %f \n", tid, sdata[ tid ] );
-   }
-   
-   if( blockSize >= 128 )
-   {
-      if( tid <  64 )
-         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 64 ] );
-         sdata[ tid ] += sdata[ tid + 64 ];
-      __syncthreads();
-      //printf( "3: tid %d data %f \n", tid, sdata[ tid ] );
-   }
-   
-
-   /***
-    * This runs in one warp so it is synchronized implicitly.
-    */
-   if( tid < 32 )
-   {
-      volatile ResultType* vsdata = sdata;
-      if( blockSize >= 64 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 32 ] );
-         vsdata[ tid ] += vsdata[ tid + 32 ];
-         //__syncthreads();
-         //printf( "4: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-      if( blockSize >= 32 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 16 ] );
-         vsdata[ tid ] += vsdata[ tid + 16 ];
-         //__syncthreads();
-         //printf( "5: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-      if( blockSize >= 16 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 8 ] );
-         vsdata[ tid ] += vsdata[ tid + 8 ];
-         //__syncthreads();
-         //printf( "6: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-      if( blockSize >=  8 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 4 ] );
-         vsdata[ tid ] += vsdata[ tid + 4 ];
-         //__syncthreads();
-         //printf( "7: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-      if( blockSize >=  4 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 2 ] );
-         vsdata[ tid ] += vsdata[ tid + 2 ];
-         //__syncthreads();
-         //printf( "8: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-      if( blockSize >=  2 )
-      {
-         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 1 ] );
-         vsdata[ tid ] += vsdata[ tid + 1 ];
-         //__syncthreads();
-         //printf( "9: tid %d data %f \n", tid, sdata[ tid ] );
-      }
-   }
-
-   /***
-    * Store the result back in the global memory.
-    */
-   if( tid == 0 )
-   {
-      //printf( "Block %d result = %f \n", blockIdx.x, sdata[ 0 ] );
-      deviceOutput[ blockIdx. x ] = sdata[ 0 ];
-   }
-}
+   typedef tnlCUDAReduction< Operation, blockSize, isSizePow2 > Reduction;
+   Reduction::reduce( operation, size, input1, input2, output );
+};
 
 template< typename Operation >
-typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
-                                                    const typename Operation :: IndexType size,
-                                                    const typename Operation :: RealType* input1,
-                                                    const typename Operation :: RealType* input2,
-                                                    typename Operation :: ResultType*& output)
+typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
+                                                  const typename Operation::IndexType size,
+                                                  const typename Operation::RealType* input1,
+                                                  const typename Operation::RealType* input2,
+                                                  typename Operation::ResultType*& output)
 {
    typedef typename Operation :: IndexType IndexType;
    typedef typename Operation :: RealType RealType;
@@ -364,10 +204,10 @@ bool reductionOnCudaDevice( const Operation& operation,
 {
 #ifdef HAVE_CUDA
 
-   typedef typename Operation :: IndexType IndexType;
-   typedef typename Operation :: RealType RealType;
-   typedef typename Operation :: ResultType ResultType;
-   typedef typename Operation :: LaterReductionOperation LaterReductionOperation;
+   typedef typename Operation::IndexType IndexType;
+   typedef typename Operation::RealType RealType;
+   typedef typename Operation::ResultType ResultType;
+   typedef typename Operation::LaterReductionOperation LaterReductionOperation;
    
    /***
     * First check if the input array(s) is/are large enough for the reduction on GPU.
@@ -430,8 +270,6 @@ bool reductionOnCudaDevice( const Operation& operation,
    timer.reset();
    timer.start();
 #endif      
-   //for( IndexType i = 0; i < reducedSize; i ++ )
-   //   cout << resultArray[ i ] << ", ";
    result = laterReductionOperation. initialValueOnHost( 0, resultArray, ( ResultType* ) 0 );
    for( IndexType i = 1; i < reducedSize; i ++ )
       result = laterReductionOperation. reduceOnHost( i, result, resultArray, ( ResultType*) 0 );

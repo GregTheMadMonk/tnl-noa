@@ -20,6 +20,7 @@
 
 #include <limits.h>
 #include <float.h>
+#include <cstdio>
 #include <core/tnlAssert.h>
 
 template< typename T > T tnlMinValue(){ tnlAssert( false,)};
