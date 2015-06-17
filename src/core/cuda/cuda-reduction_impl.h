@@ -18,6 +18,8 @@
 #ifndef CUDA_REDUCTION_IMPL_H_
 #define CUDA_REDUCTION_IMPL_H_
 
+//#define CUDA_REDUCTION_PROFILING
+
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
@@ -25,64 +27,26 @@
 #include <core/tnlAssert.h>
 #include <core/cuda/reduction-operations.h>
 #include <core/arrays/tnlArrayOperations.h>
+#include <core/mfuncs.h>
+#include <core/cuda/tnlCudaReductionBuffer.h>
+
+#ifdef CUDA_REDUCTION_PROFILING
+#include <core/tnlTimerRT.h>
+#endif
 
 using namespace std;
 
 
 /****
- * This constant says that arrays smaller than its value
- * are going to be reduced on CPU.
+ * Arrays smaller than the following constant
+ * are reduced on CPU. The constant must not be larger
+ * than maximal CUDA grid size.
  */
-const int maxGPUReductionDataSize = 256;
+const int minGPUReductionDataSize = 256; //2048;//65536; //16384;//1024;//256;
+
+static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
-
-
-/***
- * For each thread in block with thread ID smaller then s this function reduces
- * data elements with indecis tid and tid + s. Here we assume that for each
- * tid the tid + s element also exists i.e. we have even number of elements.
- */
-template< typename Operation >
-__device__ void reduceAligned( const Operation& operation,
-                               typename Operation :: IndexType tid,
-                               typename Operation :: IndexType  s,
-                               volatile typename Operation :: ResultType* sdata )
-{
-   if( tid < s )
-   {
-      sdata[ tid ] = operation. commonReductionOnDevice( tid, tid + s, sdata );
-   }
-}
-
-
-/***
- * For each thread in block with thread ID smaller then s this function reduces
- * data elements with indices tid and tid + s. This is a modified version of
- * the previous algorithm. This one works even for odd number of elements but
- * it is a bit slower.
- */
-template< typename Operation >
-__device__ void reduceNonAligned( const Operation& operation,
-                                  typename Operation :: IndexType tid,
-                                  typename Operation :: IndexType s,
-                                  typename Operation :: IndexType n,
-                                  volatile typename Operation :: ResultType* sdata )
-{
-   if( tid < s )
-   {
-      sdata[ tid ] = operation. commonReductionOnDevice( tid, tid + s, sdata );
-   }
-   /* This is for the case when we have odd number of elements.
-    * The last one will be reduced using the thread with ID 0.
-    */
-   if( s > 32 )
-      __syncthreads();
-   if( 2 * s < n && tid == n - 1 )
-   {
-      sdata[ 0 ] = operation. commonReductionOnDevice( 0, tid, sdata );
-   }
-}
 
 /***
  * The parallel reduction of one vector.
@@ -99,7 +63,7 @@ __device__ void reduceNonAligned( const Operation& operation,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < typename Operation, int blockSize >
+template < typename Operation, int blockSize, bool isSizePow2 >
 __global__ void tnlCUDAReductionKernel( const Operation operation,
                                         const typename Operation :: IndexType size,
                                         const typename Operation :: RealType* deviceInput,
@@ -116,151 +80,134 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
 
    /***
     * Get thread id (tid) and global thread id (gid).
-    * lastTId is the last relevant thread id in this block.
     * gridSize is the number of element processed by all blocks at the
     * same time.
     */
    IndexType tid = threadIdx. x;
-   IndexType gid = 2 * blockIdx. x * blockDim. x + threadIdx. x;
-   IndexType lastTId = size - 2 * blockIdx. x * blockDim. x;
-   IndexType gridSize = 2 * blockDim. x * gridDim.x;
+   IndexType gid = blockIdx. x * blockDim. x + threadIdx. x;
+   IndexType gridSize = blockDim. x * gridDim.x;
 
+   sdata[ tid ] = operation.initialValue();
    /***
     * Read data into the shared memory. We start with the
     * sequential reduction.
     */
-   if( gid + blockDim. x < size )
-      sdata[ tid ] = operation. initialValueOnDevice( gid, gid + blockDim. x, deviceInput, deviceInput2 );
-   else if( gid < size )
-      sdata[ tid ] = operation. initialValueOnDevice( gid, deviceInput, deviceInput2 );
-
-   gid += gridSize;
-   while( gid + blockDim. x < size )
+   while( gid + 4 * gridSize < size )
    {
-      sdata[ tid ] = operation. firstReductionOnDevice( tid, gid, gid + blockDim. x, sdata, deviceInput, deviceInput2 );
+      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
+      operation.firstReduction( sdata[ tid ], gid + gridSize,     deviceInput, deviceInput2 );
+      operation.firstReduction( sdata[ tid ], gid + 2 * gridSize, deviceInput, deviceInput2 );
+      operation.firstReduction( sdata[ tid ], gid + 3 * gridSize, deviceInput, deviceInput2 );
+      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
+      //sdata[ tid ] += deviceInput[ gid + gridSize ] * deviceInput[ gid + gridSize ];
+      //sdata[ tid ] += deviceInput[ gid + 2 * gridSize ] * deviceInput[ gid + 2 * gridSize ];
+      //sdata[ tid ] += deviceInput[ gid + 3 * gridSize ] * deviceInput[ gid + 3 * gridSize ];
+      gid += 4*gridSize;
+   }
+   while( gid + 2 * gridSize < size )
+   {
+      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
+      operation.firstReduction( sdata[ tid ], gid + gridSize,     deviceInput, deviceInput2 );
+
+      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
+      //sdata[ tid ] += deviceInput[ gid + gridSize ] * deviceInput[ gid + gridSize ];
+      gid += 2*gridSize;
+   }
+   while( gid < size )
+   {
+      operation.firstReduction( sdata[ tid ], gid,                deviceInput, deviceInput2 );
+      //sdata[ tid ] += deviceInput[ gid ] * deviceInput[ gid ];
       gid += gridSize;
    }
-   if( gid < size )
-      sdata[ tid ] = operation. firstReductionOnDevice( tid, gid, sdata, deviceInput, deviceInput2 );
    __syncthreads();
-
-   unsigned int n = lastTId < blockDim. x ? lastTId : blockDim. x;
-
+    
+   
+   //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
+   
+   //return;
    /***
     *  Perform the parallel reduction.
-    *  We reduce the data with step s which is one half of the elements to reduce.
-    *  Each thread with ID < s reduce elements tid and tid + s. The result is stored
-    *  in shared memory in sdata 0 .. s. We set s = s / 2 ( i.e. s >>= 1) and repeat
-    *  the algorithm again until s = 1.
-    *  We also separate the case when the blockDim. x is power of 2 and the algorithm
-    *  can be written in more efficient way without some conditions.
     */
-   if( n == 128 || n ==  64 || n ==  32 || n ==  16 ||
-       n ==   8 || n ==   4 || n ==   2 || n == 256 ||
-       n == 512 )
+   if( blockSize >= 1024 )
    {
-      if( blockSize >= 512 )
-      {
-         if( tid < 256 )
-            reduceAligned( operation, tid, 256, sdata );
-         __syncthreads();
-      }
-      if( blockSize >= 256 )
-      {
-         if( tid < 128 )
-            reduceAligned( operation, tid, 128, sdata );
-         __syncthreads();
-      }
-      if( blockSize >= 128 )
-      {
-         if( tid <  64 )
-            reduceAligned( operation, tid, 64, sdata );
-         __syncthreads();
-      }
-
-      /***
-       * This runs in one warp so it is synchronised implicitly.
-       */
-      if (tid < 32)
-      {
-         if( blockSize >= 64 )
-            reduceAligned( operation, tid, 32, sdata );
-         if( blockSize >= 32 )
-            reduceAligned( operation, tid, 16, sdata );
-         if( blockSize >= 16 )
-            reduceAligned( operation, tid,  8, sdata );
-         if( blockSize >=  8 )
-            reduceAligned( operation, tid,  4, sdata );
-         if( blockSize >=  4 )
-            reduceAligned( operation, tid,  2, sdata );
-         if( blockSize >=  2 )
-            reduceAligned( operation, tid,  1, sdata );
-      }
+      if( tid < 512 )
+         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 512 ] );
+         sdata[ tid ] += sdata[ tid + 512 ];
+      __syncthreads();
    }
-   else
+   if( blockSize >= 512 )
    {
-      unsigned int s;
-      if( n >= 512 )
+      if( tid < 256 )
+         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 256 ] );
+         sdata[ tid ] += sdata[ tid + 256 ];
+      __syncthreads();
+   }
+   if( blockSize >= 256 )
+   {
+      if( tid < 128 )
+         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 128 ] );
+         sdata[ tid ] += sdata[ tid + 128 ];
+      __syncthreads();
+      //printf( "2: tid %d data %f \n", tid, sdata[ tid ] );
+   }
+   
+   if( blockSize >= 128 )
+   {
+      if( tid <  64 )
+         //sdata[ tid ] = operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 64 ] );
+         sdata[ tid ] += sdata[ tid + 64 ];
+      __syncthreads();
+      //printf( "3: tid %d data %f \n", tid, sdata[ tid ] );
+   }
+   
+
+   /***
+    * This runs in one warp so it is synchronized implicitly.
+    */
+   if( tid < 32 )
+   {
+      volatile ResultType* vsdata = sdata;
+      if( blockSize >= 64 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-         __syncthreads();
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 32 ] );
+         vsdata[ tid ] += vsdata[ tid + 32 ];
+         //__syncthreads();
+         //printf( "4: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( n >= 256 )
+      if( blockSize >= 32 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-         __syncthreads();
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 16 ] );
+         vsdata[ tid ] += vsdata[ tid + 16 ];
+         //__syncthreads();
+         //printf( "5: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( n >= 128 )
+      if( blockSize >= 16 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-         __syncthreads();
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 8 ] );
+         vsdata[ tid ] += vsdata[ tid + 8 ];
+         //__syncthreads();
+         //printf( "6: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( n >= 64 )
+      if( blockSize >=  8 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-         __syncthreads();
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 4 ] );
+         vsdata[ tid ] += vsdata[ tid + 4 ];
+         //__syncthreads();
+         //printf( "7: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( n >= 32 )
+      if( blockSize >=  4 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-         __syncthreads();
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 2 ] );
+         vsdata[ tid ] += vsdata[ tid + 2 ];
+         //__syncthreads();
+         //printf( "8: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      /***
-       * This runs in one warp so it is synchronised implicitly.
-       */
-      if( n >= 16 )
+      if( blockSize >=  2 )
       {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-      }
-      if( n >= 8 )
-      {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-      }
-      if( n >= 4 )
-      {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
-      }
-      if( n >= 2 )
-      {
-         s = n / 2;
-         reduceNonAligned( operation, tid, s, n, sdata );
-         n = s;
+         //vsdata[ tid ] = operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 1 ] );
+         vsdata[ tid ] += vsdata[ tid + 1 ];
+         //__syncthreads();
+         //printf( "9: tid %d data %f \n", tid, sdata[ tid ] );
       }
    }
 
@@ -268,7 +215,10 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
     * Store the result back in the global memory.
     */
    if( tid == 0 )
+   {
+      //printf( "Block %d result = %f \n", blockIdx.x, sdata[ 0 ] );
       deviceOutput[ blockIdx. x ] = sdata[ 0 ];
+   }
 }
 
 template< typename Operation >
@@ -281,75 +231,126 @@ typename Operation :: IndexType reduceOnCudaDevice( const Operation& operation,
    typedef typename Operation :: IndexType IndexType;
    typedef typename Operation :: RealType RealType;
    typedef typename Operation :: ResultType ResultType;
-
-   const IndexType desBlockSize( 256 );
-   const IndexType desGridSize( 65536 );
-   dim3 blockSize( 0 ), gridSize( 0 );
-
-   /***
-    * Compute the CUDA block size aligned to the power of two.
-    */
-   blockSize. x = :: Min( size, desBlockSize );
-   IndexType alignedBlockSize = 1;
-   while( alignedBlockSize < blockSize. x ) alignedBlockSize <<= 1;
-   blockSize. x = alignedBlockSize;
-   //const IndexType numberOfBlocks = tnlCuda::getNumberOfBlocks( size / 2, blockSize.x );
    
-   //gridSize. x = Min( ( IndexType ) ( size / blockSize. x + 1 ) / 2, desGridSize );
-   gridSize. x = Min( tnlCuda::getNumberOfBlocks( size / 2, blockSize.x ), desGridSize );
+   const IndexType desGridSize( minGPUReductionDataSize );   
+   dim3 blockSize( 256 ), gridSize( 0 );
+   
+   gridSize. x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
-   if( ! output &&
-       ! tnlArrayOperations< tnlCuda >::allocateMemory( output, :: Max( ( IndexType ) 1, size / desBlockSize ) ) )
-         return false;
+   /*#ifdef CUDA_REDUCTION_PROFILING
+      tnlTimerRT timer;
+      timer.reset();
+      timer.start();
+   #endif */     
+   
+   if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
+      return false;
+   output = cudaReductionBuffer.template getData< ResultType >();
+      
 
-   IndexType shmem = blockSize. x * sizeof( ResultType );
+   IndexType shmem = blockSize.x * sizeof( ResultType );
    /***
     * Depending on the blockSize we generate appropriate template instance.
     */
-   switch( blockSize. x )
-   {
-      case 512:
-         tnlCUDAReductionKernel< Operation, 512 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case 256:
-         tnlCUDAReductionKernel< Operation, 256 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case 128:
-         tnlCUDAReductionKernel< Operation, 128 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  64:
-         tnlCUDAReductionKernel< Operation,  64 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  32:
-         tnlCUDAReductionKernel< Operation,  32 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  16:
-         tnlCUDAReductionKernel< Operation,  16 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-     case   8:
-         tnlCUDAReductionKernel< Operation,   8 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case   4:
-         tnlCUDAReductionKernel< Operation,   4 >
-        <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-        break;
-      case   2:
-         tnlCUDAReductionKernel< Operation,   2 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case   1:
-         tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-      default:
-         tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+
+   if( isPow2( size ) )
+   {      
+      switch( blockSize.x )         
+      {
+         case 512:
+            tnlCUDAReductionKernel< Operation, 512, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 256:
+            tnlCUDAReductionKernel< Operation, 256, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 128:
+            tnlCUDAReductionKernel< Operation, 128, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  64:
+            tnlCUDAReductionKernel< Operation,  64, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  32:
+            tnlCUDAReductionKernel< Operation,  32, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  16:
+            tnlCUDAReductionKernel< Operation,  16, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+        case   8:
+            tnlCUDAReductionKernel< Operation,   8, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   4:
+            tnlCUDAReductionKernel< Operation,   4, true >
+           <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+           break;
+         case   2:
+            tnlCUDAReductionKernel< Operation,   2, true >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   1:
+            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+         default:
+            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+      }
    }
-   checkCudaDevice;
+   else
+   {
+      switch( blockSize.x )
+      {
+         case 512:
+            tnlCUDAReductionKernel< Operation, 512, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 256:
+            tnlCUDAReductionKernel< Operation, 256, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case 128:
+            tnlCUDAReductionKernel< Operation, 128, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  64:
+            tnlCUDAReductionKernel< Operation,  64, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  32:
+            tnlCUDAReductionKernel< Operation,  32, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case  16:
+            tnlCUDAReductionKernel< Operation,  16, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+        case   8:
+            tnlCUDAReductionKernel< Operation,   8, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   4:
+            tnlCUDAReductionKernel< Operation,   4, false >
+           <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+           break;
+         case   2:
+            tnlCUDAReductionKernel< Operation,   2, false >
+            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+            break;
+         case   1:
+            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+         default:
+            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+      }
+   }
+   //checkCudaDevice;
+   /*#ifdef CUDA_REDUCTION_PROFILING
+      //cudaThreadSynchronize();
+      timer.stop();
+      cout << "   Main reduction on GPU took " << timer.getTime() << " sec. " << endl;
+   #endif   */      
    return gridSize. x;
 }
 #endif
@@ -367,14 +368,14 @@ bool reductionOnCudaDevice( const Operation& operation,
    typedef typename Operation :: RealType RealType;
    typedef typename Operation :: ResultType ResultType;
    typedef typename Operation :: LaterReductionOperation LaterReductionOperation;
-
+   
    /***
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
-    */
-   RealType hostArray1[ maxGPUReductionDataSize ];
-   RealType hostArray2[ maxGPUReductionDataSize ];
-   if( size <= maxGPUReductionDataSize )
+    */   
+   RealType hostArray1[ minGPUReductionDataSize ];
+   RealType hostArray2[ minGPUReductionDataSize ];
+   if( size <= minGPUReductionDataSize )
    {
       if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
@@ -390,49 +391,55 @@ bool reductionOnCudaDevice( const Operation& operation,
    /****
     * Reduce the data on the CUDA device.
     */
-   ResultType* deviceAux1( 0 ), *deviceAux2( 0 );
+#ifdef CUDA_REDUCTION_PROFILING
+   tnlTimerRT timer;
+   timer.reset();
+   timer.start();
+#endif   
+   ResultType* deviceAux1( 0 );
    IndexType reducedSize = reduceOnCudaDevice( operation,
                                                size,
                                                deviceInput1,
                                                deviceInput2,
                                                deviceAux1 );
-
-   LaterReductionOperation laterReductionOperation;
-   while( reducedSize > maxGPUReductionDataSize )
-   {
-      reducedSize = reduceOnCudaDevice( laterReductionOperation,
-                                        reducedSize,
-                                        deviceAux1,
-                                        ( ResultType* ) 0,
-                                        deviceAux2 );
-      if( ! checkCudaDevice )
-          return false;
-      Swap( deviceAux1, deviceAux2 );
-   }
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.stop();
+   cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << endl;
+#endif      
 
    /***
     * Transfer the reduced data from device to host.
     */
-   ResultType resultArray[ maxGPUReductionDataSize ];
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.reset();
+   timer.start();
+#endif   
+   ResultType resultArray[ minGPUReductionDataSize ];
    if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
+#ifdef CUDA_REDUCTION_PROFILING   
+   timer.stop();
+   cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << endl;
+#endif   
 
    /***
     * Reduce the data on the host system.
     */
+   LaterReductionOperation laterReductionOperation;
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.reset();
+   timer.start();
+#endif      
    //for( IndexType i = 0; i < reducedSize; i ++ )
    //   cout << resultArray[ i ] << ", ";
    result = laterReductionOperation. initialValueOnHost( 0, resultArray, ( ResultType* ) 0 );
    for( IndexType i = 1; i < reducedSize; i ++ )
       result = laterReductionOperation. reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
-
-   /****
-    * Free the memory allocated on the device.
-    */
-   if( deviceAux1 && ! tnlArrayOperations< tnlCuda >::freeMemory( deviceAux1 ) )
-      return false;
-   if( deviceAux2 && ! tnlArrayOperations< tnlCuda >::freeMemory( deviceAux2 ) )
-      return false;
+#ifdef CUDA_REDUCTION_PROFILING
+   cudaThreadSynchronize();
+   timer.stop();
+   cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << endl;
+#endif 
    return checkCudaDevice;
 #else
    tnlCudaSupportMissingMessage;;

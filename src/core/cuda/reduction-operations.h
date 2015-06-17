@@ -18,6 +18,9 @@
 #ifndef REDUCTION_OPERATIONS_H_
 #define REDUCTION_OPERATIONS_H_
 
+#include <core/tnlConstants.h>
+#include <core/tnlCuda.h>
+
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #include <core/mfuncs.h>
@@ -211,6 +214,17 @@ class tnlParallelReductionSum
    {
       return current + data1[ idx ];
    };
+   
+   __cuda_callable__ ResultType initialValue() const { return 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+      result += data1[ index ];
+   }
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -258,12 +272,14 @@ class tnlParallelReductionSum
    {
       return a + b;
    };
-
-
-   __device__ RealType identity() const
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& a,
+                                                  volatile const ResultType& b ) const
    {
-      return 0;
+      return a + b;
    };
+
+   
 
    __device__ void performInPlace( ResultType& a,
                                    const ResultType& b ) const
@@ -299,6 +315,15 @@ class tnlParallelReductionMin
       return Min( current, data1[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return tnlMaxValue< ResultType>(); };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -340,6 +365,20 @@ class tnlParallelReductionMin
    {
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+
 #endif
 };
 
@@ -368,6 +407,15 @@ class tnlParallelReductionMax
       return Max( current, data1[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return tnlMinValue< ResultType>(); };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -409,6 +457,18 @@ class tnlParallelReductionMax
    {
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };   
 #endif
 };
 
@@ -437,6 +497,16 @@ class tnlParallelReductionAbsSum
       return current + tnlAbs( data1[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -478,6 +548,20 @@ class tnlParallelReductionAbsSum
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   
 #endif
 };
 
@@ -506,6 +590,15 @@ class tnlParallelReductionAbsMin
       return Min( current, tnlAbs( data1[ idx ] ) );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return tnlMaxValue< ResultType>(); };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -548,6 +641,20 @@ class tnlParallelReductionAbsMin
       volatile ResultType aux = tnlCudaAbs( data[ idx2 ] );
       return tnlCudaMin( data[ idx1 ],  aux );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+   
 #endif
 };
 
@@ -576,6 +683,16 @@ class tnlParallelReductionAbsMax
       return Max( current, tnlAbs( data1[ idx ] ) );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -618,6 +735,20 @@ class tnlParallelReductionAbsMax
       volatile ResultType aux = tnlCudaAbs( data[ idx2 ] );
       return tnlCudaMax( data[ idx1 ], aux );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+   
+   
 #endif
 };
 
@@ -646,6 +777,16 @@ class tnlParallelReductionLogicalAnd
       return current && data1[ idx ];
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) true; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -687,6 +828,20 @@ class tnlParallelReductionLogicalAnd
    {
       return data[ idx1 ] && data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+   
+
 #endif
 };
 
@@ -715,6 +870,16 @@ class tnlParallelReductionLogicalOr
    {
       return current || data1[ idx ];
    };
+   
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) false; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+
 
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
@@ -757,6 +922,20 @@ class tnlParallelReductionLogicalOr
    {
       return data[ idx1 ] || data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 || data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 || data2;
+   };
+   
+   
 #endif
 };
 
@@ -790,6 +969,16 @@ class tnlParallelReductionLpNorm
       return current + pow( tnlAbs( data1[ idx ] ), p );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -833,6 +1022,20 @@ class tnlParallelReductionLpNorm
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   
 #endif
 
    protected:
@@ -865,6 +1068,16 @@ class tnlParallelReductionEqualities
       return current && ( data1[ idx ] == data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) true; }; 
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -908,6 +1121,20 @@ class tnlParallelReductionEqualities
    {
       return data[ idx1 ] && data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+
+   
 #endif
 };
 
@@ -936,6 +1163,16 @@ class tnlParallelReductionInequalities
       return current && ( data1[ idx ] != data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) false; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -979,6 +1216,20 @@ class tnlParallelReductionInequalities
    {
       return data[ idx1 ] && data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 && data2;
+   };
+   
+   
 #endif
 };
 
@@ -1007,6 +1258,17 @@ class tnlParallelReductionScalarProduct
       return current + ( data1[ idx ] * data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ inline void firstReduction( ResultType& result, 
+                                                 const IndexType index,
+                                                 const RealType* data1,
+                                                 const RealType* data2 ) const
+   {
+      result += data1[ index ] * data2[ index ];
+   }
+
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1050,6 +1312,19 @@ class tnlParallelReductionScalarProduct
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+
 #endif
 };
 
@@ -1077,6 +1352,17 @@ class tnlParallelReductionDiffSum
    {
       return current + ( data1[ idx ] - data2[ idx ] );
    };
+   
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };   
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1120,6 +1406,20 @@ class tnlParallelReductionDiffSum
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+
 #endif
 };
 
@@ -1148,6 +1448,16 @@ class tnlParallelReductionDiffMin
       return Min( current, data1[ idx ] - data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return tnlMaxValue< ResultType>(); };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1191,6 +1501,20 @@ class tnlParallelReductionDiffMin
    {
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+
 #endif
 };
 
@@ -1219,6 +1543,16 @@ class tnlParallelReductionDiffMax
       return Max( current, data1[ idx ] - data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1263,6 +1597,20 @@ class tnlParallelReductionDiffMax
    {
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+
+   
 #endif
 };
 
@@ -1291,6 +1639,16 @@ class tnlParallelReductionDiffAbsSum
       return current + tnlAbs( data1[ idx ] - data2[ idx ] );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1335,6 +1693,20 @@ class tnlParallelReductionDiffAbsSum
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   
 #endif
 };
 
@@ -1363,6 +1735,16 @@ class tnlParallelReductionDiffAbsMin
       return Min( current, tnlAbs( data1[ idx ] - data2[ idx ] ) );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return tnlMaxValue< ResultType>(); };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1409,6 +1791,20 @@ class tnlParallelReductionDiffAbsMin
       //return tnlCudaMin( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
       return tnlCudaMin( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMin( data1, data2 );
+   };
+
+   
 #endif
 };
 
@@ -1437,6 +1833,16 @@ class tnlParallelReductionDiffAbsMax
       return Max( current, tnlAbs( data1[ idx ] - data2[ idx ] ) );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1483,6 +1889,20 @@ class tnlParallelReductionDiffAbsMax
       //return tnlCudaMax( data[ idx1 ], tnlCudaAbs( data[ idx2 ] ) );
       return tnlCudaMax( data[ idx1 ], data[ idx2 ] );
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return tnlCudaMax( data1, data2 );
+   };
+
+   
 #endif
 };
 
@@ -1516,6 +1936,16 @@ class tnlParallelReductionDiffLpNorm
       return current + pow( tnlAbs( data1[ idx ] - data2[ idx ] ), p );
    };
 
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void firstReduction( ResultType& result, 
+                                          const IndexType index,
+                                          const RealType* data1,
+                                          const RealType* data2 ) const
+   {
+   }
+   
+   
 #ifdef HAVE_CUDA
    __device__ ResultType initialValueOnDevice( const IndexType idx1,
                                                const IndexType idx2,
@@ -1560,6 +1990,20 @@ class tnlParallelReductionDiffLpNorm
    {
       return data[ idx1 ] + data[ idx2 ];
    };
+   
+   __device__ ResultType commonReductionOnDevice( const ResultType& data1,
+                                                  const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+   
+   __device__ ResultType commonReductionOnDevice( volatile const ResultType& data1,
+                                                  volatile const ResultType& data2 ) const
+   {
+      return data1 + data2;
+   };
+
+   
 #endif
 
    protected:

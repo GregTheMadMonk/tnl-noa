@@ -351,12 +351,12 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
               cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
 
    Real result( 0 );
-#if defined HAVE_CUBLAS && defined HAVE_CUDA
+/*#if defined HAVE_CUBLAS && defined HAVE_CUDA
    if( tnlCublasWrapper< typename Vector1::RealType,
                          typename Vector2::RealType,
                          typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )
        return result;
-#endif
+#endif*/
    tnlParallelReductionScalarProduct< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),

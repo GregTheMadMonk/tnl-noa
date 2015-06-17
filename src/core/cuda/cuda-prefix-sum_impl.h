@@ -53,7 +53,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( prefixSumType == exclusivePrefixSum )
    {
       if( idx == 0 )
-         sharedData[ 0 ] = operation.identity();
+         sharedData[ 0 ] = operation.initialValue();
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
          sharedData[ tnlCuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
@@ -129,7 +129,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    while( idx < elementsInBlock && blockOffset + idx < size )
    {
       const Index chunkIdx = idx / chunkSize;
-      DataType chunkShift( operation.identity() );
+      DataType chunkShift( operation.initialValue() );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
       operation.performInPlace( sharedData[ tnlCuda::getInterleaving( idx ) ], chunkShift );

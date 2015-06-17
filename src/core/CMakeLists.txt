@@ -4,10 +4,11 @@ ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
 
 set (headers tnlAssert.h               
+             tnlConstants.h
              tnlCurve.h
-      	    tnlCuda.h
-  		       tnlDataElement.h
-  		       tnlDevice.h
+      	     tnlCuda.h
+             tnlDataElement.h
+  	     tnlDevice.h
   		       tnlDynamicTypeTag.h
   		       tnlFeature.h
   		       tnlFile.h 

@@ -96,6 +96,17 @@ inline int roundToMultiple( int number, int multiple )
    return multiple*( number/ multiple + ( number % multiple != 0 ) );
 }
 
+__cuda_callable__
+inline bool isPow2( int x )
+{
+   return ( x & ( x - 1 ) == 0 );
+}
+
+__cuda_callable__
+inline bool isPow2( long int x )
+{
+   return ( x & ( x - 1 ) == 0 );
+}
 
 /*template< typename T >
 void swap( T& a, T& b)

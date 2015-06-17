@@ -24,6 +24,13 @@
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
 
+#ifdef HAVE_CUDA
+#define __cuda_callable__ __device__ __host__
+#else
+#define __cuda_callable__
+#endif
+
+
 class tnlCuda
 {
    public:
@@ -32,36 +39,20 @@ class tnlCuda
 
    static tnlString getDeviceType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline tnlDeviceEnum getDevice();
+   __cuda_callable__ static inline tnlDeviceEnum getDevice();
 
+   __cuda_callable__ static inline int getMaxGridSize();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline int getMaxGridSize();
+   __cuda_callable__ static inline int getMaxBlockSize();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline int getMaxBlockSize();
-
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline int getWarpSize();
+   __cuda_callable__ static inline int getWarpSize();
 
 #ifdef HAVE_CUDA
    template< typename Index >
    __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
 #endif
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline int getNumberOfSharedMemoryBanks();
+   __cuda_callable__ static inline int getNumberOfSharedMemoryBanks();
 
    static int getGPUTransferBufferSize();
 
@@ -107,11 +98,6 @@ class tnlCuda
 #define tnlCudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
 
-#ifdef HAVE_CUDA
-#define __cuda_callable__ __device__ __host__
-#else
-#define __cuda_callable__
-#endif
 
 // TODO: This would be nice in tnlCuda but C++ standard does not allow it.
 #ifdef HAVE_CUDA
