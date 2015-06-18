@@ -37,27 +37,25 @@
 
 using namespace std;
 
-
 /****
  * Arrays smaller than the following constant
  * are reduced on CPU. The constant must not be larger
  * than maximal CUDA grid size.
  */
-const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
+const int minGPUReductionDataSize = 128;//65536; //16384;//1024;//256;
 
 static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
 
-
-template< typename Operation, int blockSize, bool isSizePow2 >
+template< typename Operation, int blockSize >
 __global__ void tnlCUDAReductionKernel( const Operation operation,
                                         const typename Operation :: IndexType size,
                                         const typename Operation :: RealType* input1,
                                         const typename Operation :: RealType* input2,
                                         typename Operation :: ResultType* output )
 {
-   typedef tnlCUDAReduction< Operation, blockSize, isSizePow2 > Reduction;
+   typedef tnlCUDAReduction< Operation, blockSize > Reduction;
    Reduction::reduce( operation, size, input1, input2, output );
 };
 
@@ -73,124 +71,61 @@ typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
    typedef typename Operation :: ResultType ResultType;
    
    const IndexType desGridSize( minGPUReductionDataSize );   
-   dim3 blockSize( 256 ), gridSize( 0 );
-   
+   dim3 blockSize( 256 ), gridSize( 0 );   
    gridSize. x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
-
-   /*#ifdef CUDA_REDUCTION_PROFILING
-      tnlTimerRT timer;
-      timer.reset();
-      timer.start();
-   #endif */     
    
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
-   output = cudaReductionBuffer.template getData< ResultType >();
-      
-
+   output = cudaReductionBuffer.template getData< ResultType >();      
    IndexType shmem = blockSize.x * sizeof( ResultType );
+   
    /***
     * Depending on the blockSize we generate appropriate template instance.
     */
-
-   if( isPow2( size ) )
-   {      
-      switch( blockSize.x )         
-      {
-         case 512:
-            tnlCUDAReductionKernel< Operation, 512, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 256:
-            tnlCUDAReductionKernel< Operation, 256, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 128:
-            tnlCUDAReductionKernel< Operation, 128, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  64:
-            tnlCUDAReductionKernel< Operation,  64, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  32:
-            tnlCUDAReductionKernel< Operation,  32, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  16:
-            tnlCUDAReductionKernel< Operation,  16, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-        case   8:
-            tnlCUDAReductionKernel< Operation,   8, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   4:
-            tnlCUDAReductionKernel< Operation,   4, true >
-           <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-           break;
-         case   2:
-            tnlCUDAReductionKernel< Operation,   2, true >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   1:
-            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-         default:
-            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-      }
-   }
-   else
+   switch( blockSize.x )         
    {
-      switch( blockSize.x )
-      {
-         case 512:
-            tnlCUDAReductionKernel< Operation, 512, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 256:
-            tnlCUDAReductionKernel< Operation, 256, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case 128:
-            tnlCUDAReductionKernel< Operation, 128, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  64:
-            tnlCUDAReductionKernel< Operation,  64, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  32:
-            tnlCUDAReductionKernel< Operation,  32, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case  16:
-            tnlCUDAReductionKernel< Operation,  16, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-        case   8:
-            tnlCUDAReductionKernel< Operation,   8, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   4:
-            tnlCUDAReductionKernel< Operation,   4, false >
-           <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-           break;
-         case   2:
-            tnlCUDAReductionKernel< Operation,   2, false >
-            <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-            break;
-         case   1:
-            tnlAssert( false, cerr << "blockSize should not be 1." << endl );
-         default:
-            tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-      }
+      case 512:
+         tnlCUDAReductionKernel< Operation, 512 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case 256:
+         tnlCUDAReductionKernel< Operation, 256 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case 128:
+         tnlCUDAReductionKernel< Operation, 128 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  64:
+         tnlCUDAReductionKernel< Operation,  64 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  32:
+         tnlCUDAReductionKernel< Operation,  32 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case  16:
+         tnlCUDAReductionKernel< Operation,  16 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+     case   8:
+         tnlCUDAReductionKernel< Operation,   8 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case   4:
+         tnlCUDAReductionKernel< Operation,   4 >
+        <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+        break;
+      case   2:
+         tnlCUDAReductionKernel< Operation,   2 >
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
+      case   1:
+         tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+      default:
+         tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
    //checkCudaDevice;
-   /*#ifdef CUDA_REDUCTION_PROFILING
-      //cudaThreadSynchronize();
-      timer.stop();
-      cout << "   Main reduction on GPU took " << timer.getTime() << " sec. " << endl;
-   #endif   */      
    return gridSize. x;
 }
 #endif
@@ -222,62 +157,64 @@ bool reductionOnCudaDevice( const Operation& operation,
       if( deviceInput2 && ! 
           tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
-      result = operation. initialValueOnHost( 0, hostArray1, hostArray2 );
-      for( IndexType i = 1; i < size; i ++ )
-         result = operation. reduceOnHost( i, result, hostArray1, hostArray2 );
+      result = operation.initialValue();
+      for( IndexType i = 0; i < size; i ++ )
+         result = operation.reduceOnHost( i, result, hostArray1, hostArray2 );
       return true;
    }
 
+   #ifdef CUDA_REDUCTION_PROFILING
+      tnlTimerRT timer;
+      timer.reset();
+      timer.start();
+   #endif   
+
    /****
     * Reduce the data on the CUDA device.
-    */
-#ifdef CUDA_REDUCTION_PROFILING
-   tnlTimerRT timer;
-   timer.reset();
-   timer.start();
-#endif   
+    */      
    ResultType* deviceAux1( 0 );
    IndexType reducedSize = reduceOnCudaDevice( operation,
                                                size,
                                                deviceInput1,
                                                deviceInput2,
                                                deviceAux1 );
-#ifdef CUDA_REDUCTION_PROFILING
-   timer.stop();
-   cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << endl;
-#endif      
+   #ifdef CUDA_REDUCTION_PROFILING
+      timer.stop();
+      cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << endl;
+      timer.reset();
+      timer.start();
+   #endif   
 
    /***
     * Transfer the reduced data from device to host.
     */
-#ifdef CUDA_REDUCTION_PROFILING
-   timer.reset();
-   timer.start();
-#endif   
    ResultType resultArray[ minGPUReductionDataSize ];
    if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
-#ifdef CUDA_REDUCTION_PROFILING   
-   timer.stop();
-   cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << endl;
-#endif   
+   
+   #ifdef CUDA_REDUCTION_PROFILING   
+      timer.stop();
+      cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << endl;
+   #endif   
 
+   #ifdef CUDA_REDUCTION_PROFILING
+      timer.reset();
+      timer.start();
+   #endif      
+   
    /***
     * Reduce the data on the host system.
-    */
+    */    
    LaterReductionOperation laterReductionOperation;
-#ifdef CUDA_REDUCTION_PROFILING
-   timer.reset();
-   timer.start();
-#endif      
-   result = laterReductionOperation. initialValueOnHost( 0, resultArray, ( ResultType* ) 0 );
-   for( IndexType i = 1; i < reducedSize; i ++ )
-      result = laterReductionOperation. reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
-#ifdef CUDA_REDUCTION_PROFILING
-   cudaThreadSynchronize();
-   timer.stop();
-   cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << endl;
-#endif 
+   result = laterReductionOperation. initialValue();
+   for( IndexType i = 0; i < reducedSize; i ++ )
+      result = laterReductionOperation.reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
+   
+   #ifdef CUDA_REDUCTION_PROFILING
+      timer.stop();
+      cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << endl;
+   #endif 
+   
    return checkCudaDevice;
 #else
    tnlCudaSupportMissingMessage;;

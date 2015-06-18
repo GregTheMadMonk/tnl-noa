@@ -20,7 +20,7 @@
 
 #ifdef HAVE_CUDA
 
-template< typename Operation, int blockSize, bool isSizePow2 >
+template< typename Operation, int blockSize >
 class tnlCUDAReduction
 {
    public:
@@ -37,8 +37,8 @@ class tnlCUDAReduction
                                      ResultType* output );
 };
       
-/*template< typename Real, typename Index, int blockSize, bool isSizePow2 >
-class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize, isSizePow2 >
+/*template< typename Real, typename Index, int blockSize >
+class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
 {
    public:
       

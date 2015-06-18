@@ -100,20 +100,19 @@ int main( int argc, char* argv[] )
     cout << bandwidth << " GB/sec." << endl;
     */
 
-    Real resultHost, resultDevice;
-    cout << "Benchmarking scalar product on CPU: ";
-    timer.reset();
-    timer.start();
-    for( int i = 0; i < loops; i++ )
-      resultHost = hostVector.scalarProduct( hostVector2 );
-    timer.stop();
-    bandwidth = 2 * datasetSize / timer.getTime();
-    cout << bandwidth << " GB/sec." << endl;
+   Real resultHost, resultDevice;
+   cout << "Benchmarking scalar product on CPU: ";
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+     resultHost = hostVector.scalarProduct( hostVector2 );
+   timer.stop();
+   bandwidth = 2 * datasetSize / timer.getTime();
+   cout << bandwidth << " GB/sec." << endl;
     
    cout << "Benchmarking scalar product on GPU: " << endl;
    timer.reset();
    timer.start();
-   cout << "Time: " << timer.getTime() << endl;
    for( int i = 0; i < loops; i++ )
       resultDevice = deviceVector.scalarProduct( deviceVector );
    cout << "Time: " << timer.getTime() << endl;
@@ -144,6 +143,31 @@ int main( int argc, char* argv[] )
    cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
 #endif    
 #endif
+   
+   cout << "Benchmarking prefix-sum on CPU ..." << endl;
+   timer.reset();
+   timer.start();
+   hostVector.computePrefixSum();
+   cout << "Time: " << timer.getTime() << endl;
+   timer.stop();
+   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   
+   cout << "Benchmarking prefix-sum on GPU ..." << endl;
+   timer.reset();
+   timer.start();
+   deviceVector.computePrefixSum();
+   cout << "Time: " << timer.getTime() << endl;
+   timer.stop();
+   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+
+   for( int i = 0; i < size; i++ )
+      if( hostVector.getElement( i ) != deviceVector.getElement( i ) )
+      {
+         cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << deviceVector.getElement( i ) << endl;
+      }
+
    return EXIT_SUCCESS;
 }
 

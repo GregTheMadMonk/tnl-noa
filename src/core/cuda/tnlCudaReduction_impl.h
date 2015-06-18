@@ -18,10 +18,10 @@
 #ifndef TNLCUDAREDUCTION_IMPL_H
 #define	TNLCUDAREDUCTION_IMPL_H
 
-template< typename Operation, int blockSize, bool isSizePow2 >      
+template< typename Operation, int blockSize >      
 __device__
 void
-tnlCUDAReduction< Operation, blockSize, isSizePow2 >::
+tnlCUDAReduction< Operation, blockSize >::
 reduce( const Operation operation,
         const IndexType size,
         const RealType* input1,
@@ -154,10 +154,10 @@ reduce( const Operation operation,
 
 #ifdef UNDEF
 
-template< typename Real, typename Index, int blockSize, bool isSizePow2 >      
+template< typename Real, typename Index, int blockSize >      
 __device__
 void
-tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize, isSizePow2 >::
+tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
 reduce( const Operation operation,
         const IndexType size,
         const RealType* input1,
