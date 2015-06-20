@@ -33,6 +33,7 @@ class tnlCudaReductionBuffer
 #ifdef HAVE_CUDA         
          if( size > this->size )
          {
+            if( data ) cudaFree( data );
             this->size = size;
             if( cudaMalloc( ( void** ) &this->data, size ) != cudaSuccess )
             {

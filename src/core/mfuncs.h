@@ -79,12 +79,14 @@ inline double tnlAbs( const double& d )
 };
 
 template< typename Real >
+__cuda_callable__
 bool isSmall( const Real& v,
               const Real& tolerance = 1.0e-5 )
 {
    return ( -tolerance <= v && v <= tolerance );
 }
 
+__cuda_callable__
 inline int roundUpDivision( const int num, const int div )
 {
    return num / div + ( num % div != 0 );
@@ -107,15 +109,6 @@ inline bool isPow2( long int x )
 {
    return ( x & ( x - 1 ) == 0 );
 }
-
-/*template< typename T >
-void swap( T& a, T& b)
-{
-   T aux;
-   aux = a;
-   a = b;
-   b = aux;
-}*/
 
 
 #endif

@@ -147,7 +147,7 @@ reduce( const Operation operation,
    if( tid == 0 )
    {
       //printf( "Block %d result = %f \n", blockIdx.x, sdata[ 0 ] );
-      output[ blockIdx. x ] = sdata[ 0 ];
+      output[ blockIdx.x ] = sdata[ 0 ];
    }
 
 }
@@ -286,7 +286,7 @@ reduce( const Operation operation,
    if( tid == 0 )
    {
       //printf( "Block %d result = %f \n", blockIdx.x, sdata[ 0 ] );
-      output[ blockIdx. x ] = sdata[ 0 ];
+      output[ blockIdx.x ] = sdata[ 0 ];
    }
 }
 

@@ -66,14 +66,15 @@ typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
                                                   const typename Operation::RealType* input2,
                                                   typename Operation::ResultType*& output)
 {
-   typedef typename Operation :: IndexType IndexType;
-   typedef typename Operation :: RealType RealType;
-   typedef typename Operation :: ResultType ResultType;
+   typedef typename Operation::IndexType IndexType;
+   typedef typename Operation::RealType RealType;
+   typedef typename Operation::ResultType ResultType;
    
    const IndexType desGridSize( minGPUReductionDataSize );   
    dim3 blockSize( 256 ), gridSize( 0 );   
-   gridSize. x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+   gridSize.x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
    
+   //tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
    output = cudaReductionBuffer.template getData< ResultType >();      
