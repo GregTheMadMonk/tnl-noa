@@ -49,13 +49,14 @@ bool renderFunction( const tnlParameterContainer& parameters )
    DiscreteFunctionType discreteFunction;
    if( ! discreteFunction.setSize( mesh.getNumberOfCells() ) )
       return false;
-
-   double time( 0.0 );
+   
    double finalTime = parameters.getParameter< double >( "final-time" );
+   double initialTime = parameters.getParameter< double >( "initial-time" );
    double tau = parameters.getParameter< double >( "snapshot-period" );
    bool numericalDifferentiation = parameters.getParameter< bool >( "numerical-differentiation" );
    int step( 0 );
-   const int steps = tau > 0 ? ceil( finalTime / tau ): 0;
+   double time( initialTime );
+   const int steps = tau > 0 ? ceil( ( finalTime - initialTime ) / tau ): 0;
 
    while( step <= steps )
    {

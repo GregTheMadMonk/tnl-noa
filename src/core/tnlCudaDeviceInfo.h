@@ -1,8 +1,8 @@
 /***************************************************************************
-                          navierStokesSolverMonitor_impl.h  -  description
+                          tnlCudaDeviceInfo.h  -  description
                              -------------------
-    begin                : Mar 13, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jun 21, 2015
+    copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,29 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_
-#define TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_
+#ifndef TNLCUDADEVICEINFO_H
+#define	TNLCUDADEVICEINFO_H
 
-#include <fstream>
+#include <core/tnlCuda.h>
 
-using namespace std;
-
-template< typename Real, typename Index >
-navierStokesSolverMonitor< Real, Index > :: navierStokesSolverMonitor()
+class tnlCudaDeviceInfo
 {
-}
+   public:
+      
+      static int getNumberOfDevices();
+      
+      static tnlString getDeviceName( int deviceNum );
+      
+      static int getClockRate( int deviceNum );
+      
+      static int getGlobalMemory( int deviceNum );
 
-template< typename Real, typename Index >
-void navierStokesSolverMonitor< Real, Index > :: refresh()
-{
-   if( this -> verbose > 0 && this -> refresRate % this -> refreshRate == 0 )
-   {
-      cout << "V=( " << uMax
-           << " , " << uAvg
-           << " ) E=( " << eMax
-           << ", " << eAvg << " ) ";
-   }
-   tnlODESolverMonitor< Real, Index > :: refresh();
-}
+      static int getMemoryClockRate( int deviceNum );
 
-#endif /* TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_ */
+      static bool getECCEnabled( int deviceNum );
+
+      static int getCudaMultiprocessors( int deviceNum );      
+      
+};
+
+
+
+
+#endif	/* TNLCUDADEVICEINFO_H */
+

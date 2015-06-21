@@ -26,6 +26,7 @@ class tnlSolverMonitor
    virtual void refresh() = 0;
 
    ~tnlSolverMonitor() {};
+      
 };
 
 

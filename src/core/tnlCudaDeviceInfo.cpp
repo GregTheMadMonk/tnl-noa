@@ -1,8 +1,8 @@
 /***************************************************************************
-                          navierStokesSolverMonitor_impl.h  -  description
+                          tnlCudaDeviceInfo.cpp  -  description
                              -------------------
-    begin                : Mar 13, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jun 21, 2015
+    copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,29 +15,56 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_
-#define TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_
+#ifndef HAVE_CUDA
 
-#include <fstream>
+#include <core/tnlCudaDeviceInfo.h>
 
-using namespace std;
-
-template< typename Real, typename Index >
-navierStokesSolverMonitor< Real, Index > :: navierStokesSolverMonitor()
+int
+tnlCudaDeviceInfo::
+getNumberOfDevices()
 {
+   return -1;
+}
+      
+tnlString
+tnlCudaDeviceInfo::
+getDeviceName( int deviceNum )
+{
+   return tnlString( "" );
+}
+      
+int
+tnlCudaDeviceInfo::
+getClockRate( int deviceNum )
+{
+   return 0;
+}
+      
+int
+tnlCudaDeviceInfo::
+getGlobalMemory( int deviceNum )
+{
+   return 0;
 }
 
-template< typename Real, typename Index >
-void navierStokesSolverMonitor< Real, Index > :: refresh()
+int
+getMemoryClockRate( int deviceNum )
 {
-   if( this -> verbose > 0 && this -> refresRate % this -> refreshRate == 0 )
-   {
-      cout << "V=( " << uMax
-           << " , " << uAvg
-           << " ) E=( " << eMax
-           << ", " << eAvg << " ) ";
-   }
-   tnlODESolverMonitor< Real, Index > :: refresh();
+   return 0;
 }
 
-#endif /* TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_ */
+bool
+tnlCudaDeviceInfo::
+getECCEnabled( int deviceNum )
+{
+   return 0;
+}
+
+int
+tnlCudaDeviceInfo::
+getCudaMultiprocessors( int deviceNum )
+{
+   return 0;
+}
+
+#endif

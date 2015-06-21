@@ -517,8 +517,8 @@ Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() = " << this->getDimensions().y()
                       << " this->getName() = " << this->getName(); );
-      return Vertex( this->origin.x() + faceCoordinates.x() * this->cellProportions().x(),
-                     this->origin.y() + ( faceCoordinates.y() + 0.5 ) * this->cellProportions().y() );
+      return Vertex( this->origin.x() + faceCoordinates.x() * this->cellProportions.x(),
+                     this->origin.y() + ( faceCoordinates.y() + 0.5 ) * this->cellProportions.y() );
    }
    if( ny )
    {
@@ -530,8 +530,8 @@ Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType
                  cerr << "faceCoordinates.y() = " << faceCoordinates.y()
                       << " this->getDimensions().y() + 1 = " << this->getDimensions().y() + 1
                       << " this->getName() = " << this->getName(); );
-      return Vertex( this->origin.x() + ( faceCoordinates.x() + 0.5 ) * this->cellProportions().x(),
-                     this->origin.y() + faceCoordinates.y() * this->cellProportions().y() );
+      return Vertex( this->origin.x() + ( faceCoordinates.x() + 0.5 ) * this->cellProportions.x(),
+                     this->origin.y() + faceCoordinates.y() * this->cellProportions.y() );
    }
 }
 

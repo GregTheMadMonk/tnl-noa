@@ -919,9 +919,7 @@ void tnlDenseMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlDenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {

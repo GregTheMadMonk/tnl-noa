@@ -7,28 +7,29 @@ set (headers tnlAssert.h
              tnlConstants.h
              tnlCurve.h
       	     tnlCuda.h
+             tnlCudaDeviceInfo.h
              tnlDataElement.h
   	     tnlDevice.h
-  		       tnlDynamicTypeTag.h
-  		       tnlFeature.h
-  		       tnlFile.h 
-  		       tnlFlopsCounter.h
-   		    tnlHost.h 
-   		    tnlIndexedSet.h
-   		    tnlList.h
-   		    tnlLogger.h 
-   		    tnlObject.h 
-   		    tnlStack.h
-   		    tnlStaticFor.h
-   		    tnlStatistics.h 
-   		    tnlString.h 
-   		    tnlReal.h
-   		    tnlTimerCPU.h  
-   		    tnlTimerRT.h    
-   		    mfilename.h 
-   		    mfuncs.h 
-   		    mpi-supp.h 
-   		    param-types.h
+             tnlDynamicTypeTag.h
+             tnlFeature.h
+             tnlFile.h 
+             tnlFlopsCounter.h
+             tnlHost.h 
+             tnlIndexedSet.h
+             tnlList.h
+             tnlLogger.h 
+             tnlObject.h 
+             tnlStack.h
+             tnlStaticFor.h
+             tnlStatistics.h 
+             tnlString.h 
+             tnlReal.h
+             tnlTimerCPU.h  
+             tnlTimerRT.h    
+             mfilename.h 
+             mfuncs.h 
+             mpi-supp.h 
+             param-types.h
              tnlCuda_impl.h
              tnlLogger_impl.h 
              tnlIndexedSet_impl.h )
@@ -56,6 +57,7 @@ IF( BUILD_CUDA )
         ${tnl_core_vectors_CUDA__SOURCES}
         ${common_SOURCES} 
         ${CURRENT_DIR}/tnlCuda.cu
+        ${CURRENT_DIR}/tnlCudaDeviceInfo.cu
         PARENT_SCOPE )
 ENDIF()    
 

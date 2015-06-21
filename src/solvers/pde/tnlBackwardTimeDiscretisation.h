@@ -37,7 +37,7 @@ class tnlBackwardTimeDiscretisation
         {
             b += u + tau * rhs;
             matrix.addElementFast( index, index, 1.0, 1.0 );
-        };
+        }
 };
 
 #endif	/* TNLBACKWARDTIMEDISCRETISATION_H */

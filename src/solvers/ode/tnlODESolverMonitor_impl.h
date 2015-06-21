@@ -28,7 +28,7 @@ tnlODESolverMonitor< RealType, IndexType> :: tnlODESolverMonitor()
 template< typename RealType, typename IndexType >
 void tnlODESolverMonitor< RealType, IndexType> :: refresh()
 {
-   if( this -> verbose > 0 && this -> refreshing % this -> outputPeriod == 0 )
+   if( this -> verbose > 0 && this -> getIterations() % this -> refreshRate == 0 )
    {
       // TODO: add EST
       //cout << " EST: " << estimated;

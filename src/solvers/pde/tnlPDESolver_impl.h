@@ -128,7 +128,7 @@ writeProlog( tnlLogger& logger,
    mesh.writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", "time-step", parameters );
+   logger.writeParameter< double >( "Initial time step:", this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -140,12 +140,16 @@ writeProlog( tnlLogger& logger,
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
    if( solverName == "gmres" )
       logger.writeParameter< int >( "Restarting:", "gmres-restarting", parameters, 1 );
+   logger.writeParameter< double >( "Convergence residue:", "convergence-residue", parameters );
+   logger.writeParameter< double >( "Divergence residue:", "divergence-residue", parameters );
+   logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
+   logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
    logger.writeParameter< tnlString >( "Real type:", "real-type", parameters, 0 );
    logger.writeParameter< tnlString >( "Index type:", "index-type", parameters, 0 );
    logger.writeParameter< tnlString >( "Device:", "device", parameters, 0 );
    logger.writeSeparator();
-   logger.writeSystemInformation();
+   logger.writeSystemInformation( parameters );
    logger.writeSeparator();
    logger.writeCurrentTime( "Started at:" );
    return true;

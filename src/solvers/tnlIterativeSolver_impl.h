@@ -202,6 +202,7 @@ void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor()
    {
       this -> solverMonitor -> setIterations( this -> getIterations() );
       this -> solverMonitor -> setResidue( this -> getResidue() );
+      this -> solverMonitor -> setRefreshRate( this-> refreshRate );
       this -> solverMonitor -> refresh();
    }
 }
