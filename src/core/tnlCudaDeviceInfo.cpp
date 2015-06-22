@@ -32,7 +32,21 @@ getDeviceName( int deviceNum )
 {
    return tnlString( "" );
 }
+
+int
+tnlCudaDeviceInfo::
+getArchitectureMajor( int deviceNum )
+{
+    return 0;
+}
       
+int
+tnlCudaDeviceInfo::
+getArchitectureMinor( int deviceNum )
+{
+    return 0;
+}
+
 int
 tnlCudaDeviceInfo::
 getClockRate( int deviceNum )
@@ -66,5 +80,20 @@ getCudaMultiprocessors( int deviceNum )
 {
    return 0;
 }
+
+int
+tnlCudaDeviceInfo::
+getCudaCoresPerMultiprocessors( int deviceNum )
+{
+   return 0;
+}
+
+int
+tnlCudaDeviceInfo::
+getCudaCores( int deviceNum )
+{
+   return 0;
+}
+
 
 #endif

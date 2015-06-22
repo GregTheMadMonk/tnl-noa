@@ -145,6 +145,9 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
       {
          writeParameter< int >( "Device no.", i, 1 );       
          writeParameter< tnlString >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
+         tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
+                                tnlString( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
+         writeParameter< tnlString >( "Architecture", deviceArch, 2 );
          double clockRate = ( double ) tnlCudaDeviceInfo::getClockRate( i ) / 1.0e3;
          writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
          double globalMemory = ( double ) tnlCudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
@@ -152,7 +155,7 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
          double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
          writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
          writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );
-         writeParameter< int >( "CUDA multiprocessors", tnlCudaDeviceInfo::getCudaMultiprocessors( i ), 2 );
+         writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );
       }
     }
    file. close();

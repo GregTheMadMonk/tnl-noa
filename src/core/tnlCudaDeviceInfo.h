@@ -28,6 +28,10 @@ class tnlCudaDeviceInfo
       
       static tnlString getDeviceName( int deviceNum );
       
+      static int getArchitectureMajor( int deviceNum );
+      
+      static int getArchitectureMinor( int deviceNum );
+      
       static int getClockRate( int deviceNum );
       
       static int getGlobalMemory( int deviceNum );
@@ -37,6 +41,10 @@ class tnlCudaDeviceInfo
       static bool getECCEnabled( int deviceNum );
 
       static int getCudaMultiprocessors( int deviceNum );      
+      
+      static int getCudaCoresPerMultiprocessors( int deviceNum );      
+      
+      static int getCudaCores( int deviceNum );      
       
 };
 
