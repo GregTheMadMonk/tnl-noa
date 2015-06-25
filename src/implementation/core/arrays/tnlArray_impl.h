@@ -28,6 +28,22 @@
 
 using namespace std;
 
+#ifdef HAVE_CUDA
+__device__ 
+inline double atomicAdd(double* address, double val)
+{
+    unsigned long long int* address_as_ull = ( unsigned long long int* ) address;
+    unsigned long long int old = *address_as_ull, assumed;
+    do 
+    {
+        assumed = old;
+        old = atomicCAS(address_as_ull, assumed, __double_as_longlong(val + __longlong_as_double( assumed ) ) );
+    } 
+    while( assumed != old );
+    return __longlong_as_double( old );
+}
+#endif
+
 template< typename Element,
            typename Device,
            typename Index >
@@ -411,6 +427,15 @@ ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v
    str << " ]";
    return str;
 }
+
+#ifdef HAVE_CUDA
+template< typename Element, typename Device, typename Index >
+__device__
+void tnlArray< Element, Device, Index >::add( const IndexType pos, const ElementType& val ) const
+{
+    atomicAdd( &this->data[ pos ], val );
+}
+#endif
 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
