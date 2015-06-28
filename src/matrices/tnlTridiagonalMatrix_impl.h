@@ -67,7 +67,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlTridiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
       return false;
@@ -662,6 +662,9 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }

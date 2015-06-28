@@ -183,7 +183,9 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       /****
        * p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
        */
-      RealType residue = computeBICGStabNewP( p, r, beta, omega, Ap );
+      p.addVectors( r, 1.0, Ap, -beta * omega, beta );
+      RealType residue = r.lpNorm( 2.0 );
+      //RealType residue = computeBICGStabNewP( p, r, beta, omega, Ap );
 
       residue /= bNorm;
       this->setResidue( residue );
@@ -213,64 +215,12 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: setSize( IndexType size )
        ! As. setSize( size ) ||
        ! M_tmp. setSize( size ) )
    {
-      cerr << "I am not able to allocated all supporting arrays for the BICGStab solver." << endl;
+      cerr << "I am not able to allocate all supporting arrays for the BICGStab solver." << endl;
       return false;
    }
    return true;
 
 };
-
-template< typename RealType,
-          typename Vector >
-RealType computeBICGStabNewPHost( Vector& p,
-                                  const Vector&r,
-                                  const RealType& beta,
-                                  const RealType& omega,
-                                  const Vector& Ap )
-{
-   typedef typename Vector :: IndexType IndexType;
-   const IndexType& size = p. getSize();
-   RealType residue( 0.0 );
-   for( IndexType i = 0; i < size; i ++ )
-   {
-      p[ i ] = r[ i ] + beta * ( p[ i ] - omega * Ap[ i ] );
-      residue += r[ i ] * r[ i ];
-   }
-   return residue;
-}
-
-template< typename RealType,
-          typename Vector >
-RealType computeBICGStabNewPCuda( Vector& p,
-                                  const Vector&r,
-                                  const RealType& beta,
-                                  const RealType& omega,
-                                  const Vector& Ap )
-{
-   abort();
-}
-
-
-template< typename RealType,
-          typename Vector >
-RealType computeBICGStabNewP( Vector& p,
-                              const Vector&r,
-                              const RealType& beta,
-                              const RealType& omega,
-                              const Vector& Ap )
-{
-   typedef typename Vector::DeviceType DeviceType;
-   tnlAssert( DeviceType::getDevice() == tnlHostDevice ||
-              DeviceType::getDevice() == tnlCudaDevice, );
-   switch( DeviceType::getDevice() )
-   {
-      case tnlHostDevice:
-         return computeBICGStabNewPHost( p, r, beta, omega, Ap );
-      case tnlCudaDevice:
-         return computeBICGStabNewPCuda( p, r, beta, omega, Ap );
-   }
-   return 0.0;
-}
 
 
 #endif

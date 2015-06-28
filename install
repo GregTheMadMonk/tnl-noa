@@ -5,8 +5,7 @@ BUILD_RELEASE="yes"
 
 OPTIONS=""
 
-CMAKE_TEST=`which cmake`
-echo ${CMAKE_TEST}
+CMAKE_TEST=`which cmake`    
 if test x${CMAKE_TEST} = "x";
 then
     echo "Cmake is not installed on your system. Please install it by:"

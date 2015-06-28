@@ -32,7 +32,7 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef tnlEllpackMatrix< Real, Device, Index > ThisType;
@@ -50,9 +50,9 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
-   bool setConstantRowLengths( const IndexType& rowLengths );
+   bool setConstantCompressedRowsLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -69,7 +69,7 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    /*template< typename Matrix >
    bool copyFrom( const Matrix& matrix,
-                  const RowLengthsVector& rowLengths );*/
+                  const CompressedRowsLengthsVector& rowLengths );*/
 
    __cuda_callable__
    bool setElementFast( const IndexType row,

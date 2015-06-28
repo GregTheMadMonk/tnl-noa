@@ -18,6 +18,7 @@
 #ifndef TNLCUDADEVICEINFO_H
 #define	TNLCUDADEVICEINFO_H
 
+#include <stdlib.h>
 #include <core/tnlCuda.h>
 
 class tnlCudaDeviceInfo
@@ -34,7 +35,7 @@ class tnlCudaDeviceInfo
       
       static int getClockRate( int deviceNum );
       
-      static int getGlobalMemory( int deviceNum );
+      static size_t getGlobalMemory( int deviceNum );
 
       static int getMemoryClockRate( int deviceNum );
 

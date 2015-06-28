@@ -61,7 +61,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlChunkedEllpackMatrix< Real, Device, Index > ThisType;
    typedef tnlChunkedEllpackMatrix< Real, tnlHost, Index > HostType;
    typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > CudaType;
@@ -77,7 +77,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -224,7 +224,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths );
 
-   bool setSlice( const RowLengthsVector& rowLengths,
+   bool setSlice( const CompressedRowsLengthsVector& rowLengths,
                   const IndexType sliceIdx,
                   IndexType& elementsToAllocation );
 

@@ -35,7 +35,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlCSRMatrix< Real, Device, Index > ThisType;
    typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
    typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
@@ -54,7 +54,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

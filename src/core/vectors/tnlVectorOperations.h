@@ -107,27 +107,6 @@ class tnlVectorOperations< tnlHost >
                            const typename Vector3::RealType& multiplicator2,
                            const typename Vector1::RealType& thisMultiplicator = 1.0 );
 
-
-   /*template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaY( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZ( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const Vector2& z,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZPlusY( Vector1& y,
-                                     const Vector2& x,
-                                     const typename Vector1::RealType& alpha,
-                                     const Vector2& z,
-                                     const typename Vector1::RealType& beta );*/
-
    template< typename Vector >
    static void computePrefixSum( Vector& v,
                                  const typename Vector::IndexType begin,
@@ -221,26 +200,6 @@ class tnlVectorOperations< tnlCuda >
                            const typename Vector3::RealType& multiplicator2,
                            const typename Vector1::RealType& thisMultiplicator = 1.0 );
    
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaY( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZ( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const Vector2& z,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZPlusY( Vector1& y,
-                                     const Vector2& x,
-                                     const typename Vector1::RealType& alpha,
-                                     const Vector2& z,
-                                     const typename Vector1::RealType& beta );
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,

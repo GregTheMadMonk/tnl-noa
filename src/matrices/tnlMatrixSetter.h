@@ -20,7 +20,7 @@
 
 template< typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RowLengthsVector >
+          typename CompressedRowsLengthsVector >
 class tnlMatrixSetterTraversalUserData
 {
    public:
@@ -29,11 +29,11 @@ class tnlMatrixSetterTraversalUserData
 
       const BoundaryConditions* boundaryConditions;
 
-      RowLengthsVector* rowLengths;
+      CompressedRowsLengthsVector* rowLengths;
 
       tnlMatrixSetterTraversalUserData( const DifferentialOperator& differentialOperator,
                                         const BoundaryConditions& boundaryConditions,
-                                        RowLengthsVector& rowLengths )
+                                        CompressedRowsLengthsVector& rowLengths )
       : differentialOperator( &differentialOperator ),
         boundaryConditions( &boundaryConditions ),
         rowLengths( &rowLengths )
@@ -44,22 +44,22 @@ class tnlMatrixSetterTraversalUserData
 template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RowLengthsVector >
+          typename CompressedRowsLengthsVector >
 class tnlMatrixSetter
 {
    public:
    typedef Mesh MeshType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename RowLengthsVector::RealType IndexType;
+   typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef tnlMatrixSetterTraversalUserData< DifferentialOperator,
                                              BoundaryConditions,
-                                             RowLengthsVector > TraversalUserData;
+                                             CompressedRowsLengthsVector > TraversalUserData;
 
    template< int EntityDimensions >
-   void getRowLengths( const MeshType& mesh,
+   void getCompressedRowsLengths( const MeshType& mesh,
                        DifferentialOperator& differentialOperator,
                        BoundaryConditions& boundaryConditions,
-                       RowLengthsVector& rowLengths ) const;
+                       CompressedRowsLengthsVector& rowLengths ) const;
 
 
    class TraversalBoundaryEntitiesProcessor
@@ -102,26 +102,26 @@ template< int Dimensions,
           typename Index,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename RowLengthsVector >
+          typename CompressedRowsLengthsVector >
 class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                        DifferentialOperator,
                        BoundaryConditions,
-                       RowLengthsVector >
+                       CompressedRowsLengthsVector >
 {
    public:
    typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename RowLengthsVector::RealType IndexType;
+   typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef tnlMatrixSetterTraversalUserData< DifferentialOperator,
                                              BoundaryConditions,
-                                             RowLengthsVector > TraversalUserData;
+                                             CompressedRowsLengthsVector > TraversalUserData;
 
    template< int EntityDimensions >
-   void getRowLengths( const MeshType& mesh,
+   void getCompressedRowsLengths( const MeshType& mesh,
                        const DifferentialOperator& differentialOperator,
                        const BoundaryConditions& boundaryConditions,
-                       RowLengthsVector& rowLengths ) const;
+                       CompressedRowsLengthsVector& rowLengths ) const;
 
    class TraversalBoundaryEntitiesProcessor
    {

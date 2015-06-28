@@ -36,7 +36,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
    typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
    typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
@@ -59,7 +59,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored

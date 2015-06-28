@@ -72,7 +72,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    tnlAssert( this->getRows() > 0, );
    tnlAssert( this->getColumns() > 0, );
@@ -84,7 +84,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVec
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::setConstantRowLengths( const IndexType& rowLengths )
+bool tnlEllpackMatrix< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
 {
    tnlAssert( rowLengths > 0,
               cerr << " rowLengths = " << rowLengths );
@@ -161,7 +161,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::operator != ( const tnlEllpackMatr
           typename Index >
    template< typename Matrix >
 bool tnlEllpackMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                        const RowLengthsVector& rowLengths )
+                                                        const CompressedRowsLengthsVector& rowLengths )
 {
    return tnlMatrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
 }*/
@@ -686,6 +686,9 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }

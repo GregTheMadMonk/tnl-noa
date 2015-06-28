@@ -65,7 +65,7 @@ getClockRate( int deviceNum )
     return properties.clockRate;
 }
       
-int
+size_t
 tnlCudaDeviceInfo::
 getGlobalMemory( int deviceNum )
 {

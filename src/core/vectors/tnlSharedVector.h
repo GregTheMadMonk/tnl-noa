@@ -78,6 +78,10 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    template< typename Vector >
    tnlSharedVector< Real, Device, Index >& operator += ( const Vector& vector );
+   
+   tnlSharedVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   tnlSharedVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    //bool save( tnlFile& file ) const;
 

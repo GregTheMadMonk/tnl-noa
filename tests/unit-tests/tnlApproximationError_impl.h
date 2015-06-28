@@ -95,10 +95,10 @@ getError( const Mesh& mesh,
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
-   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
+   typedef typename MatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
    Vector functionData, exactData, approximateData;
    MatrixType matrix;
-   RowLengthsVectorType rowLengths;
+   CompressedRowsLengthsVectorType rowLengths;
    BoundaryConditionsType boundaryConditions;
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
@@ -113,13 +113,13 @@ getError( const Mesh& mesh,
 
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
-   tnlMatrixSetter< MeshType, ApproximateOperator, BoundaryConditionsType, RowLengthsVectorType > matrixSetter;
-   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
+   tnlMatrixSetter< MeshType, ApproximateOperator, BoundaryConditionsType, CompressedRowsLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
                                                             approximateOperator,
                                                             boundaryConditions,
                                                             rowLengths );
    matrix.setDimensions( entities, entities );
-   if( ! matrix.setRowLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return;
 
    tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, MatrixType > systemAssembler;

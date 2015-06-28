@@ -38,7 +38,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef tnlEllpackMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;

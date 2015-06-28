@@ -220,14 +220,14 @@ class tnlParallelReductionSum
    
 #ifdef HAVE_CUDA
 
-   __device__ ResultType commonReductionOnDevice( ResultType& result,
-                                                  const ResultType& data ) const
+   __device__ void commonReductionOnDevice( ResultType& result,
+                                            const ResultType& data ) const
    {
       result += data;
    };
    
-   __device__ ResultType commonReductionOnDevice( volatile ResultType& result,
-                                                  volatile const ResultType& data ) const
+   __device__ void commonReductionOnDevice( volatile ResultType& result,
+                                            volatile const ResultType& data ) const
    {
       result += data;
    };
@@ -264,14 +264,14 @@ class tnlParallelReductionMin
    }
    
 #ifdef HAVE_CUDA   
-   __device__ ResultType commonReductionOnDevice( ResultType& result,
-                                                  const ResultType& data ) const
+   __device__ void commonReductionOnDevice( ResultType& result,
+                                            const ResultType& data ) const
    {
       result = tnlCudaMin( result, data );
    };
    
-   __device__ ResultType commonReductionOnDevice( volatile ResultType& result,
-                                                  volatile const ResultType& data ) const
+   __device__ void commonReductionOnDevice( volatile ResultType& result,
+                                            volatile const ResultType& data ) const
    {
       result = tnlCudaMin( result, data );
    };
@@ -309,14 +309,14 @@ class tnlParallelReductionMax
    }   
    
 #ifdef HAVE_CUDA   
-   __device__ ResultType commonReductionOnDevice( ResultType& result,
-                                                  const ResultType& data ) const
+   __device__ void commonReductionOnDevice( ResultType& result,
+                                            const ResultType& data ) const
    {
       result = tnlCudaMax( result, data );
    };
 
-   __device__ ResultType commonReductionOnDevice( volatile ResultType& result,
-                                                  volatile const ResultType& data ) const
+   __device__ void commonReductionOnDevice( volatile ResultType& result,
+                                            volatile const ResultType& data ) const
    {
       result = tnlCudaMax( result, data );
    };   
@@ -353,14 +353,14 @@ class tnlParallelReductionLogicalAnd
    
    
 #ifdef HAVE_CUDA   
-   __device__ ResultType commonReductionOnDevice( ResultType& result,
-                                                  const ResultType& data ) const
+   __device__ void commonReductionOnDevice( ResultType& result,
+                                            const ResultType& data ) const
    {
       result = result && data;
    };
    
-   __device__ ResultType commonReductionOnDevice( volatile ResultType& result,
-                                                  volatile const ResultType& data ) const
+   __device__ void commonReductionOnDevice( volatile ResultType& result,
+                                            volatile const ResultType& data ) const
    {
       result = result && data;
    };
@@ -400,14 +400,14 @@ class tnlParallelReductionLogicalOr
 
 
 #ifdef HAVE_CUDA   
-   __device__ ResultType commonReductionOnDevice( ResultType& result,
-                                                  const ResultType& data ) const
+   __device__ void commonReductionOnDevice( ResultType& result,
+                                            const ResultType& data ) const
    {
       result = result || data;
    };
    
-   __device__ ResultType commonReductionOnDevice( volatile ResultType& result,
-                                                  volatile const ResultType& data ) const
+   __device__ void commonReductionOnDevice( volatile ResultType& result,
+                                            volatile const ResultType& data ) const
    {
       result = result || data;
    };

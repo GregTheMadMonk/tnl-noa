@@ -162,6 +162,25 @@ tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator +
 template< typename Real,
           typename Device,
           typename Index >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator *= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator /= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   return *this;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real tnlVector< Real, Device, Index > :: max() const
 {
    return tnlVectorOperations< Device > :: getVectorMax( *this );

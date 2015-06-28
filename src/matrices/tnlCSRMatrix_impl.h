@@ -23,6 +23,14 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfuncs.h>
 
+#ifdef HAVE_CUSPARSE
+#include <cusparse.h>
+
+template< typename Real, typename Index >
+class tnlCusparseCSRWrapper {};
+#endif
+
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -69,7 +77,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlCSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is
@@ -715,6 +723,9 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif         
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
@@ -825,6 +836,89 @@ void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& 
 }
 
 
+#ifdef HAVE_CUSPARSE
+template<>
+class tnlCusparseCSRWrapper< float, int >
+{
+   public:
+      
+      typedef float Real;
+      typedef int Index;
+      
+      static void vectorProduct( const Index rows,
+                                 const Index columns,
+                                 const Index nnz,
+                                 const Real* values,
+                                 const Index* columnIndexes,
+                                 const Index* rowPointers,
+                                 const Real* x,
+                                 Real* y )
+      {
+         cusparseHandle_t   cusparseHandle;
+         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseCreate( &cusparseHandle );
+         cusparseCreateMatDescr( &cusparseMatDescr );
+         cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
+         cusparseSetMatIndexBase( cusparseMatDescr, CUSPARSE_INDEX_BASE_ZERO );
+         Real alpha( 1.0 ), beta( 0.0 );
+         cusparseScsrmv( cusparseHandle,
+                         CUSPARSE_OPERATION_NON_TRANSPOSE,
+                         rows,
+                         columns,
+                         nnz,
+                         &alpha,
+                         cusparseMatDescr,
+                         values,
+                         rowPointers,
+                         columnIndexes,
+                         x,
+                         &beta,
+                         y );
+      };
+};
+
+template<>
+class tnlCusparseCSRWrapper< double, int >
+{
+   public:
+      
+      typedef double Real;
+      typedef int Index;
+      
+      static void vectorProduct( const Index rows,
+                                 const Index columns,
+                                 const Index nnz,
+                                 const Real* values,
+                                 const Index* columnIndexes,
+                                 const Index* rowPointers,
+                                 const Real* x,
+                                 Real* y )
+      {
+         cusparseHandle_t   cusparseHandle;
+         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseCreate( &cusparseHandle );
+         cusparseCreateMatDescr( &cusparseMatDescr );
+         cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
+         cusparseSetMatIndexBase( cusparseMatDescr, CUSPARSE_INDEX_BASE_ZERO );
+         Real alpha( 1.0 ), beta( 0.0 );
+         cusparseDcsrmv( cusparseHandle,
+                         CUSPARSE_OPERATION_NON_TRANSPOSE,
+                         rows,
+                         columns,
+                         nnz,
+                         &alpha,
+                         cusparseMatDescr,
+                         values,
+                         rowPointers,
+                         columnIndexes,
+                         x,
+                         &beta,
+                         y );
+      };
+};
+
+#endif
+
 template<>
 class tnlCSRMatrixDeviceDependentCode< tnlCuda >
 {
@@ -840,10 +934,22 @@ class tnlCSRMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_CUSPARSE         
+         tnlCusparseCSRWrapper< Real, Index >::vectorProduct( matrix.getRows(),
+                                                              matrix.getColumns(),
+                                                              matrix.values.getSize(),
+                                                              matrix.values.getData(),
+                                                              matrix.columnIndexes.getData(),
+                                                              matrix.rowPointers.getData(),
+                                                              inVector.getData(),
+                                                              outVector.getData() );
+#else
          tnlCSRMatrixVectorProductCuda( matrix, inVector, outVector );
+#endif         
       }
 
 };
+
 
 
 #endif /* TNLCSRMATRIX_IMPL_H_ */

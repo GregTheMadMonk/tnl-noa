@@ -31,7 +31,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef tnlVector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef tnlMatrix< Real, Device, Index > BaseType;
@@ -39,7 +39,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlSparseMatrix();
 
-   virtual bool setRowLengths( const RowLengthsVector& rowLengths ) = 0;
+   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlSparseMatrix< Real2, Device2, Index2 >& matrix );

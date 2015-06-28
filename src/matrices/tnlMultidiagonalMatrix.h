@@ -33,7 +33,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
    typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
    typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
@@ -50,7 +50,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

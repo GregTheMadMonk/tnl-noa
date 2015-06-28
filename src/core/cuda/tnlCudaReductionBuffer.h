@@ -18,19 +18,22 @@
 #ifndef TNLCUDAREDUCTIONBUFFER_H
 #define	TNLCUDAREDUCTIONBUFFER_H
 
+#include <stdlib.h>
+
 #include <core/tnlCuda.h>
 
 class tnlCudaReductionBuffer
 {
    public:
-      inline tnlCudaReductionBuffer( size_t size = 0 ): data( 0 ), size( 0 )
+      inline static tnlCudaReductionBuffer& getInstance( size_t size = 0 )
       {
-         if( size != 0 ) setSize( size );
+         static tnlCudaReductionBuffer instance( size );
+         return instance;
       }
-      
+
       inline bool setSize( size_t size )
       {
-#ifdef HAVE_CUDA         
+#ifdef HAVE_CUDA
          if( size > this->size )
          {
             if( data ) cudaFree( data );
@@ -46,23 +49,45 @@ class tnlCudaReductionBuffer
             return true;
 #else
          return false;
-#endif         
+#endif
       }
-      
+
       template< typename Type >
       Type* getData() { return ( Type* ) this->data; }
-      
-      inline ~tnlCudaReductionBuffer()
+
+   private:
+      // stop the compiler generating methods of copy the object
+      tnlCudaReductionBuffer( tnlCudaReductionBuffer const& copy );            // Not Implemented
+      tnlCudaReductionBuffer& operator=( tnlCudaReductionBuffer const& copy ); // Not Implemented
+
+      // private constructor of the singleton
+      inline tnlCudaReductionBuffer( size_t size = 0 ): data( 0 ), size( 0 )
       {
-#ifdef HAVE_CUDA         
-         if( data ) cudaFree( data );
-#endif         
+#ifdef HAVE_CUDA
+         if( size != 0 ) setSize( size );
+         atexit( tnlCudaReductionBuffer::free_atexit );
+#endif
       }
-      
+
+      inline static void free_atexit( void )
+      {
+         tnlCudaReductionBuffer::getInstance().free();
+      }
+
    protected:
-      
+      inline void free( void )
+      {
+#ifdef HAVE_CUDA
+         if( data )
+         {
+            cudaFree( data );
+            data = 0;
+         }
+#endif
+      }
+
       void* data;
-      
+
       size_t size;
 };
 

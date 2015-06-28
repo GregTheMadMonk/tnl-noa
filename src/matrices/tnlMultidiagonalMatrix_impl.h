@@ -75,7 +75,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlMultidiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    /****
     * TODO: implement some check here similar to the one in the tridiagonal matrix
@@ -745,6 +745,9 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }

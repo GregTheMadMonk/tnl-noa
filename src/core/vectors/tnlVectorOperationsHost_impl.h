@@ -18,6 +18,7 @@
 #ifndef TNLVECTOROPERATIONSHOST_IMPL_H_
 #define TNLVECTOROPERATIONSHOST_IMPL_H_
 
+static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this threshold
 
 template< typename Vector >
 void tnlVectorOperations< tnlHost >::addElement( Vector& v,
@@ -313,6 +314,9 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
 
    Real result = 0;
    const Index n = v1. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif     
    for( Index i = 0; i < n; i ++ )
       result += v1[ i ] * v2[ i ];
    return result;
@@ -372,52 +376,6 @@ addVectors( Vector1& v,
       for( Index i = 0; i < n; i ++ )
          v[ i ] = thisMultiplicator * v[ i ] * multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }
-
-
-/*template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZ( Vector1& y,
-                                                        const Vector2& x,
-                                                        const typename Vector1 :: RealType& alpha,
-                                                        const Vector2& z,
-                                                        const typename Vector1 :: RealType& beta )
-{
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
-
-   tnlAssert( x. getSize() > 0,
-              cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
-   tnlAssert( x. getSize() == z. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << z. getName() );
-
-
-   const Index n = y. getSize();
-   for( Index i = 0; i < n; i ++ )
-      y[ i ] = alpha * x[ i ] + beta *  z[ i ];
-}
-
-template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlHost > :: alphaXPlusBetaZPlusY( Vector1& y,
-                                                             const Vector2& x,
-                                                             const typename Vector1 :: RealType& alpha,
-                                                             const Vector2& z,
-                                                             const typename Vector1 :: RealType& beta )
-{
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
-
-   tnlAssert( x. getSize() > 0,
-              cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
-   tnlAssert( x. getSize() == z. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << z. getName() );
-
-   const Index n = y. getSize();
-   for( Index i = 0; i < n; i ++ )
-      y[ i ] += alpha * x[ i ] + beta *  z[ i ];
-}*/
 
 template< typename Vector >
 void tnlVectorOperations< tnlHost >::computePrefixSum( Vector& v,

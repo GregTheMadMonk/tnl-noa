@@ -151,7 +151,7 @@ template< typename Real,
    template< typename Vector >
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
-   alphaXPlusBetaY( -1.0, vector, 1.0 );
+   this->addVector( vector, -1.0 );
    return ( *this );
 }
 
@@ -161,8 +161,26 @@ template< typename Real,
    template< typename Vector >
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
-   alphaXPlusBetaY( 1.0, vector, 1.0 );
+   this->addVector( vector );
    return ( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator *= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator /= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, 1.0/ c );
+   return *this;
 }
 
 template< typename Real,

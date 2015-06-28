@@ -44,7 +44,7 @@ using namespace std;
  */
 const int minGPUReductionDataSize = 128;//65536; //16384;//1024;//256;
 
-static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
+//static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
 
@@ -73,6 +73,9 @@ typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
    const IndexType desGridSize( minGPUReductionDataSize );   
    dim3 blockSize( 256 ), gridSize( 0 );   
    gridSize.x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+  
+   // create reference to the reduction buffer singleton and set default size
+   tnlCudaReductionBuffer & cudaReductionBuffer = tnlCudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
    
    //tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )

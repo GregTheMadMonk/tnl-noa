@@ -132,17 +132,17 @@ setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::RowLengthsVector RowLengthsVectorType;
-   RowLengthsVectorType rowLengths;
+   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
+   CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowLengthsVectorType > matrixSetter;
-   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
+   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
                                                             differentialOperator,
                                                             boundaryCondition,
                                                             rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setRowLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return false;
    return true;
    //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );

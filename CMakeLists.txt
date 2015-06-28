@@ -41,13 +41,12 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
-        set(CUSPARSE_LIBRARY /usr/local/cuda/lib64/libcusparse.so) # TODO: fix this              
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
         AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
-                            -gencode arch=compute_37,code=sm_37 
+                            -gencode arch=compute_35,code=sm_35 
                             -gencode arch=compute_37,code=sm_37 
                             -gencode arch=compute_50,code=sm_50 
                             -gencode arch=compute_52,code=sm_52 )
@@ -85,8 +84,7 @@ if( WITH_CUDA STREQUAL "yes" )
         endif()
         set( CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ARCH} )
         set( CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ARCH} -shared )
-        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared " )
-
+        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
 
         ####
         # Check for cuBLAS
@@ -127,6 +125,7 @@ if( WITH_CUDA STREQUAL "yes" )
                message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
                set( HAVE_CUSPARSE "#define HAVE_CUSPARSE" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
+               set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
            endif()            
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
    
@@ -143,9 +142,8 @@ endif( WITH_CUDA STREQUAL "yes" )
 #
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
-   #AddCompilerFlag( "-DHAVE_OPENMP -fopenmp" )
+   message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
-# TODO: finish this
 endif()
 
 ####
@@ -183,9 +181,6 @@ else()
     include_directories( ${SYS_RESOURCE_INCLUDE_DIR}/tnl-${tnlVersion} )
     set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H" )
 endif()
-
-  
-
 
 ####
 # Check for cppunit

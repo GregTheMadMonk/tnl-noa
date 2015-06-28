@@ -78,7 +78,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setLike( const tnlDenseMatrix< Real2
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlDenseMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlDenseMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    return true;
 }
@@ -946,6 +946,9 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
