@@ -60,6 +60,17 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
    writeParameter< char* >( "Host name:", host_name );
    writeParameter< char* >( "Architecture:", uts. machine );
    fstream file;
+   file.open( "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", ios::in );
+   int maxCpuFreq( 0 );
+   if( file )
+   {
+      char line[ 1024 ];
+      file.getline( line, 1024 );
+      maxCpuFreq = atoi( line );
+   }
+   else
+       cerr << "Unable to read information from /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq." << endl;
+   file.close();
    file. open( "/proc/cpuinfo", ios :: in );
    if( file )
    {
@@ -104,7 +115,7 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
             while( line[ i ] != ':' && line[ i ] ) i ++;
             siblings = atoi( &line[ i + 1 ] );
          }
-         if( strncmp( line, "cpu MHz", strlen( "cpu MHz" ) ) == 0 )
+         /*if( strncmp( line, "cpu MHz", strlen( "cpu MHz" ) ) == 0 )
          {
             i = strlen( "cpu MHz" );
             while( line[ i ] != ':' && line[ i ] ) i ++;
@@ -112,7 +123,7 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
             Mhz.setString( &line[ i + 1 ] );
             //writeParameter< char * >( "CPU MHz:", cpu_mhz );
             continue;
-         }
+         }*/
          if( strncmp( line, "cache size", strlen( "cache size" ) ) == 0 )
          {
             i = strlen( "cache size" );
@@ -128,14 +139,12 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
       writeParameter< tnlString >( "Model name:", modelName, 1 );
       writeParameter< int >( "Cores:", cores, 1 );
       writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-      writeParameter< tnlString >( "Clock rate (in MHz):", Mhz, 1 );
+      writeParameter< tnlString >( "Max clock rate (in MHz):", maxCpuFreq / 1000, 1 );
       writeParameter< tnlString >( "Cache:", cache, 1 );
     }
    else
-   {
       cerr << "Unable to read information from /proc/cpuinfo." << endl;
-      return false;
-   }
+   file.close();
    if( parameters.getParameter< tnlString >( "device" ) == "cuda" )
    {      
       int devices = tnlCudaDeviceInfo::getNumberOfDevices();
@@ -143,22 +152,21 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
       writeParameter< int >( "Number of devices", devices,1 );
       for( int i = 0; i < devices; i++ )
       {
-         writeParameter< int >( "Device no.", i, 1 );       
-         writeParameter< tnlString >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
-         tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
+        writeParameter< int >( "Device no.", i, 1 );       
+        writeParameter< tnlString >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
+        tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
-         writeParameter< tnlString >( "Architecture", deviceArch, 2 );
-         double clockRate = ( double ) tnlCudaDeviceInfo::getClockRate( i ) / 1.0e3;
-         writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
-         double globalMemory = ( double ) tnlCudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
-         writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );         
-         double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
-         writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
-         writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );
-         writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );
+        writeParameter< tnlString >( "Architecture", deviceArch, 2 );
+        writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );         
+        double clockRate = ( double ) tnlCudaDeviceInfo::getClockRate( i ) / 1.0e3;
+        writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
+        double globalMemory = ( double ) tnlCudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
+        writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );         
+        double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
+        writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
+        writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );         
       }
-    }
-   file. close();
+   }
    writeParameter< char* >( "System:", uts. sysname );
    writeParameter< char* >( "Release:", uts. release );
    writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );

@@ -723,10 +723,14 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+         const Index rows = matrix.getRows();
+         const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
+         const InVector* inVectorPtr = &inVector;
+         OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for
+#pragma omp parallel for private( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static )
 #endif         
-         for( Index row = 0; row < matrix.getRows(); row ++ )
+         for( Index row = 0; row < rows; row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
 
