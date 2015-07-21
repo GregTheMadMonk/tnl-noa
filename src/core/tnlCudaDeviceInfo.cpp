@@ -62,6 +62,7 @@ getGlobalMemory( int deviceNum )
 }
 
 int
+tnlCudaDeviceInfo::
 getMemoryClockRate( int deviceNum )
 {
    return 0;

@@ -20,7 +20,11 @@ set( tnl_view_SOURCES tnl-view.cpp
                       tnl-view.h )
                       
 set( tnl_diff_SOURCES tnl-diff.cpp
-                      tnl-diff.h )                      
+                      tnl-diff.h ) 
+
+set( tnl_dicom_reader_SOURCES tnl-dicom-reader.cpp )
+
+set( tnl_image_converter_SOURCES tnl-image-converter.cpp )
 
 ADD_EXECUTABLE(tnl-grid-setup${debugExt} ${tnl_grid_setup_SOURCES})
 target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -36,6 +40,13 @@ target_link_libraries (tnl-view${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-diff${debugExt} ${tnl_diff_SOURCES})
 target_link_libraries (tnl-diff${debugExt} tnl${debugExt}-${tnlVersion} )
+
+ADD_EXECUTABLE(tnl-dicom-reader${debugExt} ${tnl_dicom_reader_SOURCES})
+target_link_libraries (tnl-dicom-reader${debugExt} tnl${debugExt}-${tnlVersion} )
+
+ADD_EXECUTABLE(tnl-image-converter${debugExt} ${tnl_image_converter_SOURCES})
+target_link_libraries (tnl-image-converter${debugExt} tnl${debugExt}-${tnlVersion} )
+
 
 ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} ${tnlfunctionsbenchmarksources} )
 target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -56,6 +67,8 @@ INSTALL( TARGETS tnl-init${debugExt}
                  tnl-diff${debugExt}
                  tnl-grid-setup${debugExt}
                  tnl-mesh-convert${debugExt}
+                 tnl-dicom-reader${debugExt}
+                 tnl-image-converter${debugExt}
                  tnl-curve2gnuplot${debugExt}
 #                 tnl-matrix-convert${debugExt}
          RUNTIME DESTINATION bin

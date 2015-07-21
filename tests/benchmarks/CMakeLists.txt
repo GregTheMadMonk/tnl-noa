@@ -21,6 +21,7 @@ ELSE()
     SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
     SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
     TARGET_LINK_LIBRARIES( tnl-benchmark-spmv${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers${debugExt} tnl${debugExt}-${tnlVersion} )
 ENDIF()
 
 if( BUILD_CUDA )                                                              

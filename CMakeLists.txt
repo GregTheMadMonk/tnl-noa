@@ -155,6 +155,23 @@ endif()
 #    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
 #endif()
 
+find_package( DCMTK )
+if( DCMTK_FOUND )
+   set( HAVE_DCMTK_H "#define HAVE_DCMTK_H" )
+   include_directories( ${DCMTK_INCLUDE_DIRS} )
+else()
+   set( HAVE_DCMTK_H "//#define HAVE_DCMTK_H" )
+endif()
+
+find_package( PNG )
+if( PNG_FOUND )      
+   set( HAVE_PNG_H "#define HAVE_PNG_H" )
+   include_directories( ${PNG_INCLUDE_DIRS} )
+else()
+   set( HAVE_PNG_H "//#define HAVE_PNG_H" )
+endif()
+
+
 ####
 # Check for some system header
 #

@@ -2,6 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
+ADD_SUBDIRECTORY( io )
 
 set (headers tnlAssert.h               
              tnlConstants.h
@@ -67,6 +68,7 @@ set( tnl_core_SOURCES
      ${tnl_core_cuda_SOURCES}
      ${tnl_core_vectors_SOURCES}
      ${common_SOURCES}
+     ${CURRENT_DIR}/tnlCudaDeviceInfo.cpp
      PARENT_SCOPE )
     
 
