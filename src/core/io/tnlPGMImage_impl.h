@@ -21,6 +21,13 @@
 #include <cstring>
 #include <core/io/tnlPGMImage.h>
 
+template< typename Index >
+tnlPGMImage< Index >::
+tnlPGMImage() : 
+   binary( false ), colors( 0 )
+{
+}
+
 
 template< typename Index >
 bool
@@ -42,12 +49,13 @@ open( const tnlString& fileName )
       return false;
    }
 
-   if( strcmp( magicNumber, "P5" ) != 2 &&
-       strcmp( magicNumber, "P2" ) != 2 )
+   cout << magicNumber << endl;
+   if( strcmp( magicNumber, "P5" ) != 0 &&
+       strcmp( magicNumber, "P2" ) != 0 )
       return false;
-   bool binary( false );
-   if( strcmp( magicNumber, "P5" ) == 2 )
-      binary = true;
+   
+   if( strcmp( magicNumber, "P5" ) == 0 )
+      this->binary = true;
 
    char line[ 1024 ];
    while( fread( line, sizeof( char ), 1, file ) &&
@@ -58,10 +66,9 @@ open( const tnlString& fileName )
              line[ 0 ] != '\n' );
    else fseek( file, -1, SEEK_CUR );
 
-   Index width, height, colors;
-   fscanf( file, "%d %d\n", &width, &height );
-   fscanf( file, "%d\n", &colors );
-
+   fscanf( file, "%d %d\n", &this->width, &this->height );
+   fscanf( file, "%d\n", &this->colors );
+   return true;
 }
 
 

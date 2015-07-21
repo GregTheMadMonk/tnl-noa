@@ -27,8 +27,16 @@ class tnlPGMImage : public tnlImage< Index >
    public:
       
       typedef Index IndexType;
+      
+      tnlPGMImage();
        
       bool open( const tnlString& fileName );
+      
+      protected:
+         
+         bool binary;
+         
+         IndexType colors;
       
     
 };
