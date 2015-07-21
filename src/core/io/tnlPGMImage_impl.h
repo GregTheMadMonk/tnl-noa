@@ -24,10 +24,9 @@
 template< typename Index >
 tnlPGMImage< Index >::
 tnlPGMImage() : 
-   binary( false ), colors( 0 )
+   binary( false ), maxColors( 0 )
 {
 }
-
 
 template< typename Index >
 bool
@@ -49,7 +48,6 @@ open( const tnlString& fileName )
       return false;
    }
 
-   cout << magicNumber << endl;
    if( strcmp( magicNumber, "P5" ) != 0 &&
        strcmp( magicNumber, "P2" ) != 0 )
       return false;
@@ -67,7 +65,7 @@ open( const tnlString& fileName )
    else fseek( file, -1, SEEK_CUR );
 
    fscanf( file, "%d %d\n", &this->width, &this->height );
-   fscanf( file, "%d\n", &this->colors );
+   fscanf( file, "%d\n", &this->maxColors );
    return true;
 }
 

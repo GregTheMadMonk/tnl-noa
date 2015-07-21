@@ -36,9 +36,7 @@ class tnlPGMImage : public tnlImage< Index >
          
          bool binary;
          
-         IndexType colors;
-      
-    
+         IndexType maxColors;          
 };
 
 #include <core/io/tnlPGMImage_impl.h>
