@@ -24,22 +24,15 @@
 template< typename Index >
 tnlPGMImage< Index >::
 tnlPGMImage() : 
-   binary( false ), maxColors( 0 )
+   binary( false ), maxColors( 0 ), fileOpen( false )
 {
 }
 
 template< typename Index >
 bool
 tnlPGMImage< Index >::
-open( const tnlString& fileName )
+readHeader( FILE* file )
 {
-   FILE* file = fopen( fileName.getString(), "r" );
-   if( ! file )
-   {
-      cerr << "Unable to open the file " << fileName << endl;
-      return false;
-   }
-
    char magicNumber[ 3 ];
    magicNumber[ 2 ] = 0;
    if( fread( magicNumber, sizeof( char ), 2, file ) != 2 )
@@ -66,9 +59,72 @@ open( const tnlString& fileName )
 
    fscanf( file, "%d %d\n", &this->width, &this->height );
    fscanf( file, "%d\n", &this->maxColors );
+   return true;   
+}
+
+template< typename Index >
+bool
+tnlPGMImage< Index >::
+openForRead( const tnlString& fileName )
+{
+   this->file = fopen( fileName.getString(), "r" );
+   if( ! this->file )
+   {
+      cerr << "Unable to open the file " << fileName << endl;
+      return false;
+   }
+   this->fileOpen = true;
+   if( ! readHeader( this->file ) )
+      return false;
    return true;
 }
 
+template< typename Index >
+   template< typename Real,
+             typename Device,
+             typename Vector >
+bool
+tnlPGMImage< Index >::
+read( const tnlRegionOfInterest< Index > roi,
+      const tnlGrid< 2, Real, Device, Index >& grid,
+      Vector& vector )
+{
+   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+   
+   Index i, j;
+   for( i = 0; i < this->height; i ++ )
+      for( j = 0; j < this->width; j ++ )
+      {
+         int col;
+         if( this->binary ) col = getc( this->file );
+         else fscanf( this->file, "%d", &col );
+         if( roi.isIn( i, j ) )
+         {
+            Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+                                                                  roi.getBottom() - 1 - i ) );
+            vector.setElement( cellIndex, ( Real ) col / ( Real ) this->maxColors );
+         }
+      }
+   return true;
+}
+
+template< typename Index >
+void
+tnlPGMImage< Index >::
+close()
+{
+   if( this->fileOpen )
+      fclose( file );
+   this->fileOpen = false;
+}
+
+template< typename Index >
+tnlPGMImage< Index >::
+~tnlPGMImage()
+{
+   close();
+}
 
 #endif	/* TNLPGMIMAGE_IMPL_H */
 

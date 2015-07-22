@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlPGMImage.h  -  description
+                          tnlRegionOfInterest.h  -  description
                              -------------------
-    begin                : Jul 20, 2015
+    begin                : Jul 22, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,49 +15,46 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPGMIMAGE_H
-#define	TNLPGMIMAGE_H
+#ifndef TNLREGIONOFINTEREST_H
+#define	TNLREGIONOFINTEREST_H
 
-#include <core/tnlString.h>
+#include <config/tnlParameterContainer.h>
+#include <mesh/tnlGrid.h>
 #include <core/io/tnlImage.h>
-#include <core/io/tnlRegionOfInterest.h>
+
 
 template< typename Index = int >
-class tnlPGMImage : public tnlImage< Index >
+class tnlRegionOfInterest
 {
    public:
       
-      typedef Index IndexType;
+      tnlRegionOfInterest();
       
-      tnlPGMImage();
-       
-      bool openForRead( const tnlString& fileName );
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlImage< Index >* image );
       
-      template< typename Real,
-                typename Device,
-                typename Vector >
-      bool read( const tnlRegionOfInterest< Index > roi,
-                 const tnlGrid< 2, Real, Device, Index >& grid,
-                 Vector& vector );
+      bool check( const tnlImage< Index >* image ) const;
       
-      void close();
+      Index getTop() const;
       
-      ~tnlPGMImage();
+      Index getBottom() const;
       
-      protected:
-         
-         bool readHeader( FILE* file );
-         
-         bool binary;
-         
-         IndexType maxColors;
-         
-         FILE* file;
-         
-         bool fileOpen;
+      Index getLeft() const;
+      
+      Index getRight() const;
+      
+      Index getWidth() const;
+      
+      Index getHeight() const;
+      
+      bool isIn( const Index row, const Index column ) const;
+      
+   protected:
+      
+      Index top, bottom, left, right;
 };
 
-#include <core/io/tnlPGMImage_impl.h>
+#include <core/io/tnlRegionOfInterest_impl.h>
 
-#endif	/* TNLPGMIMAGE_H */
+#endif	/* TNLREGIONOFINTEREST_H */
 

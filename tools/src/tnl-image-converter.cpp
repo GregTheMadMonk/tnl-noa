@@ -20,11 +20,13 @@
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
 #include <core/io/tnlPGMImage.h>
+#include <core/io/tnlRegionOfInterest.h>
 
 void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addRequiredList < tnlString >( "input-files",   "Input files with images." );
+   config.addRequiredList < tnlString >( "input-images",  "Input files with images." );
+   config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
    config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
@@ -41,73 +43,15 @@ bool resolveRoi( const tnlParameterContainer& parameters,
                  int& right,
                  int& left )
 {
-    const int roiTop    = parameters.getParameter< int >( "roi-top" );
-    const int roiBottom = parameters.getParameter< int >( "roi-bottom" );
-    const int roiRight  = parameters.getParameter< int >( "roi-right" );
-    const int roiLeft   = parameters.getParameter< int >( "roi-left" );
-    
-    if( roiLeft == -1 )
-        left = 0;
-    else
-    {
-        if( roiLeft >= image->getWidth() )
-        {
-            cerr << "ROI left column is larger than image width ( " << image->getWidth() << ")." << cerr;
-            return false;
-        }
-        left = roiLeft;
-    }
-    
-    if( roiRight == -1 )
-        right = image->getWidth();
-    else
-    {
-        if( roiRight >= image->getWidth() )
-        {
-            cerr << "ROI right column is larger than image width ( " << image->getWidth() << ")." << cerr;
-            return false;
-        }
-        right = roiRight;
-    }
-    
-    if( roiTop == -1 )
-        top = 0;
-    else
-    {
-        if( roiTop >= image->getHeight() )
-        {
-            cerr << "ROI top line is larger than image height ( " << image->getHeight() << ")." << cerr;
-            return false;
-        }
-        top = roiTop;
-    }
-    
-    if( roiBottom == -1 )
-        bottom = image->getHeight();
-    else
-    {
-        if( roiBottom >= image->getHeight() )
-        {
-            cerr << "ROI bottom line is larger than image height ( " << image->getHeight() << ")." << cerr;
-            return false;
-        }
-        bottom = roiBottom;
-    }
-    return true;
 }
 
 template< typename Index,
           typename Grid >
-bool setGrid( const tnlParameterContainer& parameters,
-              const tnlImage< Index >* image,
+bool setGrid( const tnlRegionOfInterest< Index >& roi,
               Grid& grid,
               bool verbose = false )
 {
-    int top, bottom, right, left;
-    if( ! resolveRoi( parameters, image, top, bottom, right, left ) )
-        return false;
-    
-    grid.setDimensions( right - left, bottom - top );
+    grid.setDimensions( roi.getWidth(), roi.getHeight() );
     typename Grid::VertexType origin, proportions;
     origin.x() = 0.0;
     origin.y() = 0.0;
@@ -122,26 +66,6 @@ bool setGrid( const tnlParameterContainer& parameters,
     return true;
 }
 
-template< typename Index,
-          typename Grid >
-bool checkGrid( const tnlParameterContainer& parameters,
-                const tnlImage< Index >* image,
-                Grid& grid )
-{
-    int top, bottom, right, left;
-    if( ! resolveRoi( parameters, image, top, bottom, right, left ) )
-        return false;
-    
-    const int width = right - left;
-    const int height = bottom - top;
-    if( grid.getDimensions().x() == width &&
-        grid.getDimensions().y() == height )
-        return true;
-    else
-        return false;
-}
-
-
 template< typename Image,
           typename Grid,
           typename Vector >
@@ -154,30 +78,41 @@ bool readImage( const Image& image,
 
 bool processImages( const tnlParameterContainer& parameters )
 {
-    const tnlList< tnlString >& inputFiles = parameters.getParameter< tnlList< tnlString > >( "input-files" );
-
+    const tnlList< tnlString >& inputImages = parameters.getParameter< tnlList< tnlString > >( "input-images" );
+    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
+    
     bool verbose = parameters.getParameter< bool >( "verbose" );
     
     tnlGrid< 2, double, tnlHost, int > grid;
     tnlVector< double, tnlHost, int > vector;
-    for( int i = 0; i < inputFiles.getSize(); i++ )
+    tnlRegionOfInterest< int > roi;
+    for( int i = 0; i < inputImages.getSize(); i++ )
     {
-        const tnlString& fileName = inputFiles[ i ];
+        const tnlString& fileName = inputImages[ i ];
         cout << "Processing image file " << fileName << "... ";
         tnlPGMImage< int > pgmImage;
-        if( pgmImage.open( fileName ) )
+        if( pgmImage.openForRead( fileName ) )
         {
             cout << "PGM format detected ...";
             if( i == 0 )
-                if( ! setGrid( parameters, &pgmImage, grid, verbose ) )
+            {
+                if( ! roi.setup( parameters, &pgmImage ) )
                     return false;
-                else
-                    vector.setSize( grid.getNumberOfCells() );
+                setGrid( roi, grid, verbose );
+                vector.setSize( grid.getNumberOfCells() );
+                cout << "Writing grid to file " << meshFile << endl;
+                grid.save( meshFile );
+            }
             else 
-                if( ! checkGrid( parameters, &pgmImage, grid ) )
+                if( ! roi.check( &pgmImage ) )
                     return false;
-            if( ! pgmImage.read( vector ) )
+            if( ! pgmImage.read( roi, grid, vector ) )
                 return false;
+            tnlString outputFileName( fileName );
+            RemoveFileExtension( outputFileName );
+            outputFileName += ".tnl";
+            cout << "Writing image data to " << outputFileName << endl;
+            vector.save( outputFileName );
         }
     }
 }
