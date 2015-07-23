@@ -25,7 +25,9 @@
 void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addRequiredList < tnlString >( "input-images",  "Input files with images." );
+   config.addList < tnlString >( "input-images",  "Input images for conversion to .tnl files." );
+   config.addList < tnlString >( "input-files",   "Input .tnl files for conversion to images." );
+   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "png" );   
    config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
@@ -33,16 +35,6 @@ void configSetup( tnlConfigDescription& config )
    config.addEntry        < int >      ( "roi-left",      "Left (smaller number) column of the region of interest.", -1 );
    config.addEntry        < int >      ( "roi-right",     "Right (larger number) column of the region of interest.", -1 );
    config.addEntry        < bool >      ( "verbose",       "Set the verbosity of the program.", true );
-}
-
-template< typename Index >
-bool resolveRoi( const tnlParameterContainer& parameters,
-                 const tnlImage< Index >* image,
-                 int& top,
-                 int& bottom,
-                 int& right,
-                 int& left )
-{
 }
 
 template< typename Index,
@@ -66,21 +58,10 @@ bool setGrid( const tnlRegionOfInterest< Index >& roi,
     return true;
 }
 
-template< typename Image,
-          typename Grid,
-          typename Vector >
-bool readImage( const Image& image,
-                const Grid& grid,
-                Vector& vector )
-{
-    
-}
-
 bool processImages( const tnlParameterContainer& parameters )
 {
     const tnlList< tnlString >& inputImages = parameters.getParameter< tnlList< tnlString > >( "input-images" );
-    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
-    
+    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
     bool verbose = parameters.getParameter< bool >( "verbose" );
     
     tnlGrid< 2, double, tnlHost, int > grid;
@@ -117,6 +98,37 @@ bool processImages( const tnlParameterContainer& parameters )
     }
 }
 
+bool processTNLFiles( const tnlParameterContainer& parameters )
+{
+   const tnlList< tnlString >& inputFiles = parameters.getParameter< tnlList< tnlString > >( "input-files" );
+   const tnlString& imageFormat = parameters.getParameter< tnlString >( "image-format" );
+   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
+   bool verbose = parameters.getParameter< bool >( "verbose" );
+    
+   tnlGrid< 2, double, tnlHost, int > grid;
+   if( ! grid.load( meshFile ) )
+   {
+      cerr << "I am not able to load the mesh file " << meshFile << "." << endl;
+      return false;
+   }
+   tnlVector< double, tnlHost, int > vector;
+   for( int i = 0; i < inputFiles.getSize(); i++ )
+   {
+      const tnlString& fileName = inputFiles[ i ];
+      cout << "Processing file " << fileName << "... ";
+      if( ! vector.load( fileName ) )
+      {
+         cerr << "I am not able to load data from a file " << fileName << "." << endl;
+         return false;
+      }
+      if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
+      {
+         tnlPGMImage< int > image;
+         
+      }
+   }     
+}
+
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
@@ -124,7 +136,16 @@ int main( int argc, char* argv[] )
    configSetup( conf_desc );
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
-   if( ! processImages( parameters ) )
+   if( ! parameters.checkParameter( "input-images" ) &&
+       ! parameters.checkParameter( "input-files") )
+   {
+       cerr << "Neither input images nor input .tnl files are given." << endl;
+       return EXIT_FAILURE;
+   }
+   if( parameters.checkParameter( "input-images" ) && ! processImages( parameters ) )
       return EXIT_FAILURE;
+   if( parameters.checkParameter( "input-files" ) && ! processTNLFiles( parameters ) )
+      return EXIT_FAILURE;
+
    return EXIT_SUCCESS;
 }

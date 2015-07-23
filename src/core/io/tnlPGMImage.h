@@ -40,13 +40,31 @@ class tnlPGMImage : public tnlImage< Index >
                  const tnlGrid< 2, Real, Device, Index >& grid,
                  Vector& vector );
       
+      template< typename Real,
+                typename Device >
+      bool openForWrite( const tnlString& fileName,
+                         tnlGrid< 2, Real, Device, Index >& grid,
+                         bool binary = true );
+      
+      template< typename Real,
+                typename Device,
+                typename Vector >
+      bool write( const tnlGrid< 2, Real, Device, Index >& grid,
+                  Vector& vector );
+
+      
       void close();
       
       ~tnlPGMImage();
       
       protected:
          
-         bool readHeader( FILE* file );
+         bool readHeader();
+         
+         template< typename Real,
+                   typename Device >
+         bool writeHeader( const tnlGrid< 2, Real, Device, Index >& grid,
+                           bool binary );
          
          bool binary;
          
