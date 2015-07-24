@@ -45,7 +45,7 @@ ADD_EXECUTABLE(tnl-dicom-reader${debugExt} ${tnl_dicom_reader_SOURCES})
 target_link_libraries (tnl-dicom-reader${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-image-converter${debugExt} ${tnl_image_converter_SOURCES})
-target_link_libraries (tnl-image-converter${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-image-converter${debugExt} tnl${debugExt}-${tnlVersion} ${PNG_LIBRARIES})
 
 
 ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} ${tnlfunctionsbenchmarksources} )

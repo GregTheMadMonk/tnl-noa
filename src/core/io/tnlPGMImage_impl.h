@@ -67,6 +67,7 @@ bool
 tnlPGMImage< Index >::
 openForRead( const tnlString& fileName )
 {
+   this->close();
    this->file = fopen( fileName.getString(), "r" );
    if( ! this->file )
    {
@@ -135,6 +136,7 @@ openForWrite( const tnlString& fileName,
               tnlGrid< 2, Real, Device, Index >& grid,
               bool binary )
 {
+   this->close();
    this->file = fopen( fileName.getString(), "w" );
    if( ! this->file )
    {
@@ -144,6 +146,7 @@ openForWrite( const tnlString& fileName,
    this->fileOpen = true;
    if( ! writeHeader( grid, binary ) )
       return false;
+   this->binary = binary;
    return true;
 }
 
@@ -166,8 +169,9 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
          Index cellIndex = grid.getCellIndex( CoordinatesType( j,
                                               grid.getDimensions().y() - 1 - i ) );
 
-         int color = 255 * vector.getElement( cellIndex );
-         if( this->binary ) putc( this->file, color );
+         char color = 255 * vector.getElement( cellIndex );
+         //cout << color << " " << endl;
+         if( this->binary ) putc( color, this->file );
          else fprintf( this->file, "%d ", &color );
       }
    return true;

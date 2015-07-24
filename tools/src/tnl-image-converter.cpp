@@ -20,6 +20,7 @@
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
 #include <core/io/tnlPGMImage.h>
+#include <core/io/tnlPNGImage.h>
 #include <core/io/tnlRegionOfInterest.h>
 
 void configSetup( tnlConfigDescription& config )
@@ -27,7 +28,7 @@ void configSetup( tnlConfigDescription& config )
    config.addDelimiter( "General parameters" );
    config.addList < tnlString >( "input-images",  "Input images for conversion to .tnl files." );
    config.addList < tnlString >( "input-files",   "Input .tnl files for conversion to images." );
-   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "png" );   
+   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "pgm" );   
    config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
@@ -94,6 +95,34 @@ bool processImages( const tnlParameterContainer& parameters )
             outputFileName += ".tnl";
             cout << "Writing image data to " << outputFileName << endl;
             vector.save( outputFileName );
+            pgmImage.close();
+            continue;
+        }
+        tnlPNGImage< int > pngImage;
+        if( pngImage.openForRead( fileName ) )
+        {
+            cout << "PNG format detected ...";
+            if( i == 0 )
+            {
+                if( ! roi.setup( parameters, &pngImage ) )
+                    return false;
+                setGrid( roi, grid, verbose );
+                vector.setSize( grid.getNumberOfCells() );
+                cout << "Writing grid to file " << meshFile << endl;
+                grid.save( meshFile );
+            }
+            else 
+                if( ! roi.check( &pgmImage ) )
+                    return false;
+            if( ! pngImage.read( roi, grid, vector ) )
+                return false;
+            tnlString outputFileName( fileName );
+            RemoveFileExtension( outputFileName );
+            outputFileName += ".tnl";
+            cout << "Writing image data to " << outputFileName << endl;
+            vector.save( outputFileName );
+            pgmImage.close();
+            continue;
         }
     }
 }
@@ -124,7 +153,12 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
          tnlPGMImage< int > image;
-         
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".pgm";
+         image.openForWrite( outputFileName, grid, true );
+         image.write( grid, vector );
+         image.close();
       }
    }     
 }

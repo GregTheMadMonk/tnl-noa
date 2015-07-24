@@ -171,6 +171,14 @@ else()
    set( HAVE_PNG_H "//#define HAVE_PNG_H" )
 endif()
 
+find_package( JPEG )
+if( JPEG_FOUND )      
+   set( HAVE_JPEG_H "#define HAVE_JPEG_H" )
+   include_directories( ${JPEG_INCLUDE_DIRS} )
+else()
+   set( HAVE_JPEG_H "//#define HAVE_JPEG_H" )
+endif()
+
 
 ####
 # Check for some system header
