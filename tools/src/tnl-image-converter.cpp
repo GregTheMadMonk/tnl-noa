@@ -21,6 +21,7 @@
 #include <mesh/tnlGrid.h>
 #include <core/io/tnlPGMImage.h>
 #include <core/io/tnlPNGImage.h>
+#include <core/io/tnlJPEGImage.h>
 #include <core/io/tnlRegionOfInterest.h>
 
 void configSetup( tnlConfigDescription& config )
@@ -70,61 +71,87 @@ bool processImages( const tnlParameterContainer& parameters )
     tnlRegionOfInterest< int > roi;
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
-        const tnlString& fileName = inputImages[ i ];
-        cout << "Processing image file " << fileName << "... ";
-        tnlPGMImage< int > pgmImage;
-        if( pgmImage.openForRead( fileName ) )
-        {
-            cout << "PGM format detected ...";
-            if( i == 0 )
-            {
-                if( ! roi.setup( parameters, &pgmImage ) )
-                    return false;
-                setGrid( roi, grid, verbose );
-                vector.setSize( grid.getNumberOfCells() );
-                cout << "Writing grid to file " << meshFile << endl;
-                grid.save( meshFile );
-            }
-            else 
-                if( ! roi.check( &pgmImage ) )
-                    return false;
-            if( ! pgmImage.read( roi, grid, vector ) )
-                return false;
-            tnlString outputFileName( fileName );
-            RemoveFileExtension( outputFileName );
-            outputFileName += ".tnl";
-            cout << "Writing image data to " << outputFileName << endl;
-            vector.save( outputFileName );
-            pgmImage.close();
-            continue;
-        }
-        tnlPNGImage< int > pngImage;
-        if( pngImage.openForRead( fileName ) )
-        {
-            cout << "PNG format detected ...";
-            if( i == 0 )
-            {
-                if( ! roi.setup( parameters, &pngImage ) )
-                    return false;
-                setGrid( roi, grid, verbose );
-                vector.setSize( grid.getNumberOfCells() );
-                cout << "Writing grid to file " << meshFile << endl;
-                grid.save( meshFile );
-            }
-            else 
-                if( ! roi.check( &pgmImage ) )
-                    return false;
-            if( ! pngImage.read( roi, grid, vector ) )
-                return false;
-            tnlString outputFileName( fileName );
-            RemoveFileExtension( outputFileName );
-            outputFileName += ".tnl";
-            cout << "Writing image data to " << outputFileName << endl;
-            vector.save( outputFileName );
-            pgmImage.close();
-            continue;
-        }
-    }
+      const tnlString& fileName = inputImages[ i ];
+      cout << "Processing image file " << fileName << "... ";
+      tnlPGMImage< int > pgmImage;
+      if( pgmImage.openForRead( fileName ) )
+      {
+         cout << "PGM format detected ...";
+         if( i == 0 )
+         {
+            if( ! roi.setup( parameters, &pgmImage ) )
+               return false;
+            setGrid( roi, grid, verbose );
+            vector.setSize( grid.getNumberOfCells() );
+            cout << "Writing grid to file " << meshFile << endl;
+            grid.save( meshFile );
+         }
+         else 
+            if( ! roi.check( &pgmImage ) )
+               return false;
+         if( ! pgmImage.read( roi, grid, vector ) )
+            return false;
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".tnl";
+         cout << "Writing image data to " << outputFileName << endl;
+         vector.save( outputFileName );
+         pgmImage.close();
+         continue;
+      }
+      tnlPNGImage< int > pngImage;
+      if( pngImage.openForRead( fileName ) )
+      {
+         cout << "PNG format detected ...";
+         if( i == 0 )
+         {
+            if( ! roi.setup( parameters, &pngImage ) )
+               return false;
+            setGrid( roi, grid, verbose );
+            vector.setSize( grid.getNumberOfCells() );
+            cout << "Writing grid to file " << meshFile << endl;
+            grid.save( meshFile );
+         }
+         else 
+            if( ! roi.check( &pgmImage ) )
+               return false;
+         if( ! pngImage.read( roi, grid, vector ) )
+            return false;
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".tnl";
+         cout << "Writing image data to " << outputFileName << endl;
+         vector.save( outputFileName );
+         pgmImage.close();
+         continue;
+      }
+      tnlJPEGImage< int > jpegImage;
+      if( jpegImage.openForRead( fileName ) )
+      {
+         cout << "JPEG format detected ...";
+         if( i == 0 )
+         {
+            if( ! roi.setup( parameters, &pngImage ) )
+               return false;
+            setGrid( roi, grid, verbose );
+            vector.setSize( grid.getNumberOfCells() );
+            cout << "Writing grid to file " << meshFile << endl;
+            grid.save( meshFile );
+         }
+         else 
+            if( ! roi.check( &pgmImage ) )
+               return false;
+         if( ! pngImage.read( roi, grid, vector ) )
+            return false;
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".tnl";
+         cout << "Writing image data to " << outputFileName << endl;
+         vector.save( outputFileName );
+         pgmImage.close();
+         continue;
+      }
+   }
 }
 
 bool processTNLFiles( const tnlParameterContainer& parameters )
@@ -157,6 +184,17 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
          RemoveFileExtension( outputFileName );
          outputFileName += ".pgm";
          image.openForWrite( outputFileName, grid, true );
+         image.write( grid, vector );
+         image.close();
+         continue;
+      }
+      if( imageFormat == "png" )
+      {
+         tnlPNGImage< int > image;
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".png";
+         image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
          image.close();
       }

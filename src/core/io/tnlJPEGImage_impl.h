@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlPNGImage_impl.h  -  description
+                          tnlJPEGImage_impl.h  -  description
                              -------------------
-    begin                : Jul 24, 2015
+    begin                : Jul 25, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,21 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPNGIMAGE_IMPL_H
-#define	TNLPNGIMAGE_IMPL_H
+#ifndef TNLJPEGIMAGE_IMPL_H
+#define	TNLJPEGIMAGE_IMPL_H
 
-#include "tnlPNGImage.h"
+#include <core/io/tnlJPEGImage.h"
 
 template< typename Index >
-tnlPNGImage< Index >::
-tnlPNGImage() : 
+tnlJPEGImage< Index >::
+tnlJPEGImage() : 
    fileOpen( false )
 {
 }
 
 template< typename Index >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 readHeader()
 {
 #ifdef HAVE_PNG_H
@@ -106,7 +106,7 @@ readHeader()
 
 template< typename Index >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 openForRead( const tnlString& fileName )
 {
    this->close();
@@ -127,7 +127,7 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 read( const tnlRegionOfInterest< Index > roi,
       const tnlGrid< 2, Real, Device, Index >& grid,
       Vector& vector )
@@ -218,7 +218,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_PNG_H
@@ -276,7 +276,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 openForWrite( const tnlString& fileName,
               tnlGrid< 2, Real, Device, Index >& grid )
 {
@@ -298,7 +298,7 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
@@ -338,7 +338,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 
 template< typename Index >
 void
-tnlPNGImage< Index >::
+tnlJPEGImage< Index >::
 close()
 {
    if( this->fileOpen )
@@ -347,12 +347,13 @@ close()
 }
 
 template< typename Index >
-tnlPNGImage< Index >::
-~tnlPNGImage()
+tnlJPEGImage< Index >::
+~tnlJPEGImage()
 {
    close();
 }
 
 
-#endif	/* TNLPNGIMAGE_IMPL_H */
+
+#endif	/* TNLJPEGIMAGE_IMPL_H */
 

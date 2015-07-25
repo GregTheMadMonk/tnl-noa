@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlPNGImage.h  -  description
+                          tnlJPEGImage.h  -  description
                              -------------------
-    begin                : Jul 24, 2015
+    begin                : Jul 25, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPNGIMAGE_H
-#define	TNLPNGIMAGE_H
+#ifndef TNLJPEGIMAGE_H
+#define	TNLJPEGIMAGE_H
 
 #include <tnlConfig.h>
 
-#ifdef HAVE_PNG_H
-#include <png.h>
+#ifdef HAVE_JPEG_H
+#include <jpeglib.h>
 #endif
 
 #include <core/tnlString.h>
@@ -29,13 +29,13 @@
 #include <core/io/tnlRegionOfInterest.h>
 
 template< typename Index = int >
-class tnlPNGImage : public tnlImage< Index >
+class tnlJPEGImage : public tnlImage< Index >
 {
    public:
       
       typedef Index IndexType;
       
-      tnlPNGImage();
+      tnlJPEGImage();
        
       bool openForRead( const tnlString& fileName );
       
@@ -59,7 +59,7 @@ class tnlPNGImage : public tnlImage< Index >
       
       void close();
       
-      ~tnlPNGImage();
+      ~tnlJPEGImage();
       
    protected:
       
@@ -73,16 +73,19 @@ class tnlPNGImage : public tnlImage< Index >
 
       bool fileOpen;
 
-#ifdef HAVE_PNG_H      
-      png_structp png_ptr;
-
-      png_infop info_ptr, end_info;
+#ifdef HAVE_JPEG_H
+      struct my_error_mgr
+      {
+         jpeg_error_mgr pub;
+         jmp_buf setjmp_buffer;
+      };
       
-      png_byte color_type, bit_depth;
+      jpeg_decompress_struct cinfo;
 #endif         
 };
 
-#include <core/io/tnlPNGImage_impl.h>
+#include <core/io/tnlJPEGImage_impl.h>
 
-#endif	/* TNLPNGIMAGE_H */
+
+#endif	/* TNLJPEGIMAGE_H */
 

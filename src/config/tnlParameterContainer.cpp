@@ -184,7 +184,7 @@ parseCommandLine( int argc, char* argv[],
       if( strcmp( _option, "--help" ) == 0 )
       {
           config_description.printUsage( argv[ 0 ] );
-          continue;
+          return true;
       }
       const char* option = _option + 2;
       const tnlConfigEntryBase* entry;
