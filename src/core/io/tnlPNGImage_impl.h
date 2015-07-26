@@ -18,7 +18,7 @@
 #ifndef TNLPNGIMAGE_IMPL_H
 #define	TNLPNGIMAGE_IMPL_H
 
-#include "tnlPNGImage.h"
+#include <core/io/tnlPNGImage.h>
 
 template< typename Index >
 tnlPNGImage< Index >::
@@ -99,7 +99,7 @@ readHeader()
    cout << this->height << " x " << this->width << endl;
    return true;   
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
 #endif   
 }
@@ -160,7 +160,7 @@ read( const tnlRegionOfInterest< Index > roi,
          Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
                                               roi.getBottom() - 1 - i ) );
          unsigned char char_color[ 4 ];
-         unsigned int int_color[ 4 ];
+         unsigned short int int_color[ 4 ];
          switch( this->color_type )
          {
             case PNG_COLOR_TYPE_GRAY:
@@ -180,9 +180,10 @@ read( const tnlRegionOfInterest< Index > roi,
             case PNG_COLOR_TYPE_RGB:
                if( this->bit_depth == 8 )
                {
-                  char_color[ 0 ] = row_pointers[ i ][ 3 * j ];
-                  char_color[ 1 ] = row_pointers[ i ][ 3 * j + 1 ];
-                  char_color[ 2 ] = row_pointers[ i ][ 3 * j + 2 ];
+                  unsigned char* row = ( unsigned char* ) row_pointers[ i ];
+                  char_color[ 0 ] = row[ 3 * j ];
+                  char_color[ 1 ] = row[ 3 * j + 1 ];
+                  char_color[ 2 ] = row[ 3 * j + 2 ];
                   Real r = char_color[ 0 ] / ( Real ) 255.0;
                   Real g = char_color[ 1 ] / ( Real ) 255.0;
                   Real b = char_color[ 2 ] / ( Real ) 255.0;
@@ -191,9 +192,10 @@ read( const tnlRegionOfInterest< Index > roi,
                }
                if( this->bit_depth == 16 )
                {
-                  int_color[ 0 ] = row_pointers[ i ][ 3 * j ];
-                  int_color[ 1 ] = row_pointers[ i ][ 3 * j + 1 ];
-                  int_color[ 2 ] = row_pointers[ i ][ 3 * j + 2 ];
+                  unsigned short int* row = ( unsigned short int* ) row_pointers[ i ];
+                  int_color[ 0 ] = row[ 3 * j ];
+                  int_color[ 1 ] = row[ 3 * j + 1 ];
+                  int_color[ 2 ] = row[ 3 * j + 2 ];
                   Real r = int_color[ 0 ] / ( Real ) 65535.0;
                   Real g = int_color[ 1 ] / ( Real ) 66355.0;
                   Real b = int_color[ 2 ] / ( Real ) 65535.0;
@@ -209,7 +211,7 @@ read( const tnlRegionOfInterest< Index > roi,
    }
    return true;
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
 #endif      
 }
@@ -302,6 +304,7 @@ tnlPNGImage< Index >::
 write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
+#ifdef HAVE_PNG_H   
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
    
@@ -329,10 +332,11 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
       }
       png_write_row( this->png_ptr, row );
    }
-   //png_set_rows( this->png_ptr, this->info_ptr, row_pointers );
-   //png_write_png( this->png_ptr, this->info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
    delete[] row;
    return true;
+#else
+   return false;
+#endif   
 }
 
 

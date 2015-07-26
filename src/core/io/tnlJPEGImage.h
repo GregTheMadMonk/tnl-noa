@@ -28,6 +28,14 @@
 #include <core/io/tnlImage.h>
 #include <core/io/tnlRegionOfInterest.h>
 
+#ifdef HAVE_JPEG_H      
+struct my_error_mgr
+{
+   jpeg_error_mgr pub;
+   jmp_buf setjmp_buffer;
+};
+#endif
+
 template< typename Index = int >
 class tnlJPEGImage : public tnlImage< Index >
 {
@@ -73,14 +81,11 @@ class tnlJPEGImage : public tnlImage< Index >
 
       bool fileOpen;
 
-#ifdef HAVE_JPEG_H
-      struct my_error_mgr
-      {
-         jpeg_error_mgr pub;
-         jmp_buf setjmp_buffer;
-      };
-      
+#ifdef HAVE_JPEG_H      
+      my_error_mgr jerr;
       jpeg_decompress_struct cinfo;
+      int components;
+      J_COLOR_SPACE color_space;
 #endif         
 };
 

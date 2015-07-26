@@ -131,7 +131,7 @@ bool processImages( const tnlParameterContainer& parameters )
          cout << "JPEG format detected ...";
          if( i == 0 )
          {
-            if( ! roi.setup( parameters, &pngImage ) )
+            if( ! roi.setup( parameters, &jpegImage ) )
                return false;
             setGrid( roi, grid, verbose );
             vector.setSize( grid.getNumberOfCells() );
@@ -139,9 +139,9 @@ bool processImages( const tnlParameterContainer& parameters )
             grid.save( meshFile );
          }
          else 
-            if( ! roi.check( &pgmImage ) )
+            if( ! roi.check( &jpegImage ) )
                return false;
-         if( ! pngImage.read( roi, grid, vector ) )
+         if( ! jpegImage.read( roi, grid, vector ) )
             return false;
          tnlString outputFileName( fileName );
          RemoveFileExtension( outputFileName );

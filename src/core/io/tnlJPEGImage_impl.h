@@ -18,7 +18,21 @@
 #ifndef TNLJPEGIMAGE_IMPL_H
 #define	TNLJPEGIMAGE_IMPL_H
 
-#include <core/io/tnlJPEGImage.h"
+#include <core/io/tnlJPEGImage.h>
+#include <setjmp.h>
+
+inline void my_error_exit( j_common_ptr cinfo )
+{
+  /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
+  my_error_mgr* myerr = ( my_error_mgr* ) cinfo->err;
+
+  /* Always display the message. */
+  /* We could postpone this until after returning, if we chose. */
+  ( *cinfo->err->output_message )( cinfo );
+
+  /* Return control to the setjmp point */
+  longjmp( myerr->setjmp_buffer, 1 );
+}
 
 template< typename Index >
 tnlJPEGImage< Index >::
@@ -32,74 +46,34 @@ bool
 tnlJPEGImage< Index >::
 readHeader()
 {
-#ifdef HAVE_PNG_H
-   /***
-    * Check if it is a PNG image.
-    */
-   const int headerSize( 8 );
-   png_byte header[ headerSize ];
-   if( fread( header, sizeof( char ), headerSize, this->file ) != headerSize )
-   {
-      cerr << "I am not able to read PNG image header." << endl;
-      return false;
-   }
-   bool isPNG = !png_sig_cmp( header, 0, headerSize );
-   if( ! isPNG )
-      return false;
+#ifdef HAVE_JPEG_H
+   this->cinfo.err = jpeg_std_error(&jerr.pub);
+   this->jerr.pub.error_exit = my_error_exit; 
    
-   /****
-    * Allocate necessary memory
-    */
-   this->png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING,
-                                           NULL,
-                                           NULL,
-                                           NULL );
-   if( !this->png_ptr )
-      return false;
-
-   this->info_ptr = png_create_info_struct( this->png_ptr );
-   if( !this->info_ptr )
-   {
-      png_destroy_read_struct( &this->png_ptr,
-                              ( png_infopp ) NULL,
-                              ( png_infopp ) NULL );
-      return false;
-   }
-
-   this->end_info = png_create_info_struct( this->png_ptr );
-   if( !this->end_info )
-   {
-      png_destroy_read_struct( &this->png_ptr,
-                               &this->info_ptr,
-                               ( png_infopp ) NULL );
-      return false;
-   }
-
    /***
-    * Prepare the long jump back from libpng.
+    * Prepare the long jump back from libjpeg.
     */
-   if( setjmp(png_jmpbuf( this->png_ptr ) ) )
+   if( setjmp( jerr.setjmp_buffer ) )
    {
-      png_destroy_read_struct( &this->png_ptr,
-                               &this->info_ptr,
-                               &end_info );
+       /****
+        * If we get here, the JPEG code has signaled an error.
+        * We need to clean up the JPEG object, close the input file, and return.
+        */
+      jpeg_destroy_decompress( &this->cinfo );
       return false;
    }
-   png_init_io( this->png_ptr, this->file );
-   png_set_sig_bytes( this->png_ptr, headerSize );
    
-   /****
-    * Read the header
-    */
-   png_read_png( this->png_ptr, this->info_ptr, PNG_TRANSFORM_IDENTITY, NULL );
-   this->height = ( Index ) png_get_image_height( this->png_ptr, this->info_ptr );
-   this->width = ( Index ) png_get_image_width( this->png_ptr, this->info_ptr );
-   this->bit_depth = png_get_bit_depth( this->png_ptr, this->info_ptr );
-   this->color_type = png_get_color_type( this->png_ptr, this->info_ptr );
-   cout << this->height << " x " << this->width << endl;
-   return true;   
+   jpeg_create_decompress( &this->cinfo );
+   jpeg_stdio_src( &this->cinfo, this->file );
+   if( jpeg_read_header( &this->cinfo, true ) != JPEG_HEADER_OK )
+      return false;
+   this->height = this->cinfo.image_height;
+   this->width = this->cinfo.image_width;
+   this->components = this->cinfo.num_components; 
+   //this->color_space = this->cinfo.jpeg_color_space;
+   //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << endl;
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
 #endif   
 }
@@ -137,21 +111,29 @@ read( const tnlRegionOfInterest< Index > roi,
    typedef typename GridType::CoordinatesType CoordinatesType;
    
    /***
-    * Prepare the long jump back from libpng.
+    * Prepare the long jump back from libjpeg.
     */
-   if( setjmp(png_jmpbuf( this->png_ptr ) ) )
+   if( setjmp( jerr.setjmp_buffer ) )
    {
-      png_destroy_read_struct( &this->png_ptr,
-                               &this->info_ptr,
-                               &this->end_info );
+       /****
+        * If we get here, the JPEG code has signaled an error.
+        * We need to clean up the JPEG object, close the input file, and return.
+        */
+      jpeg_destroy_decompress( &this->cinfo );
       return false;
    }
-   
-   png_bytepp row_pointers = png_get_rows( this->png_ptr, this->info_ptr );
+      
+   jpeg_start_decompress( &this->cinfo );
+   int row_stride = this->cinfo.output_width * this->cinfo.output_components;
+   JSAMPARRAY row = ( *( this->cinfo.mem->alloc_sarray ) )( ( j_common_ptr ) &this->cinfo,
+                                                            JPOOL_IMAGE,
+                                                            row_stride,
+                                                            1 );	
    
    Index i, j;
-   for( i = 0; i < this->height; i ++ )
+   while( this->cinfo.output_scanline < this->cinfo.output_height)
    {
+      jpeg_read_scanlines( &this->cinfo, row, 1 );
       for( j = 0; j < this->width; j ++ )
       {
          if( !roi.isIn( i, j ) )
@@ -161,55 +143,33 @@ read( const tnlRegionOfInterest< Index > roi,
                                               roi.getBottom() - 1 - i ) );
          unsigned char char_color[ 4 ];
          unsigned int int_color[ 4 ];
-         switch( this->color_type )
+         Real value, r, g, b;
+         switch( this->components )
          {
-            case PNG_COLOR_TYPE_GRAY:
-               if( this->bit_depth == 8 )
-               {
-                  char_color[ 0 ] = row_pointers[ i ][ j ];
-                  Real value = char_color[ 0 ] / ( Real ) 255.0;
-                  vector.setElement( cellIndex, value );
-               }
-               if( this->bit_depth == 16 )
-               {
-                  int_color[ 0 ] = row_pointers[ i ][ j ];
-                  Real value = int_color[ 0 ] / ( Real ) 65535.0;
-                  vector.setElement( cellIndex, value );
-               }
+            case 1:
+               char_color[ 0 ] = row[ 0 ][ j ];
+               value = char_color[ 0 ] / ( Real ) 255.0;
+               vector.setElement( cellIndex, value );
                break;
-            case PNG_COLOR_TYPE_RGB:
-               if( this->bit_depth == 8 )
-               {
-                  char_color[ 0 ] = row_pointers[ i ][ 3 * j ];
-                  char_color[ 1 ] = row_pointers[ i ][ 3 * j + 1 ];
-                  char_color[ 2 ] = row_pointers[ i ][ 3 * j + 2 ];
-                  Real r = char_color[ 0 ] / ( Real ) 255.0;
-                  Real g = char_color[ 1 ] / ( Real ) 255.0;
-                  Real b = char_color[ 2 ] / ( Real ) 255.0;
-                  Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cellIndex, value );
-               }
-               if( this->bit_depth == 16 )
-               {
-                  int_color[ 0 ] = row_pointers[ i ][ 3 * j ];
-                  int_color[ 1 ] = row_pointers[ i ][ 3 * j + 1 ];
-                  int_color[ 2 ] = row_pointers[ i ][ 3 * j + 2 ];
-                  Real r = int_color[ 0 ] / ( Real ) 65535.0;
-                  Real g = int_color[ 1 ] / ( Real ) 66355.0;
-                  Real b = int_color[ 2 ] / ( Real ) 65535.0;
-                  Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cellIndex, value );
-               }
+            case 3:
+               char_color[ 0 ] = row[ 0 ][ 3 * j ];
+               char_color[ 1 ] = row[ 0 ][ 3 * j + 1 ];
+               char_color[ 2 ] = row[ 0 ][ 3 * j + 2 ];
+               r = char_color[ 0 ] / ( Real ) 255.0;
+               g = char_color[ 1 ] / ( Real ) 255.0;
+               b = char_color[ 2 ] / ( Real ) 255.0;
+               value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+               vector.setElement( cellIndex, value );
                break;
             default:
-               cerr << "Unknown PNG color type." << endl;
+               cerr << "Unknown JPEG color type." << endl;
                return false;
          }
       }
    }
    return true;
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
 #endif      
 }
@@ -221,51 +181,7 @@ bool
 tnlJPEGImage< Index >::
 writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 {
-#ifdef HAVE_PNG_H
-   this->png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING,
-                                            NULL,
-                                            NULL,
-                                            NULL );
-   if( !png_ptr )
-      return false;
-
-   this->info_ptr = png_create_info_struct( this->png_ptr );
-   if( !this->info_ptr )
-   {
-      png_destroy_write_struct( &this->png_ptr,
-                                NULL);
-      return false;
-   }
-   
-   /***
-    * Prepare the long jump back from libpng.
-    */
-   if( setjmp(png_jmpbuf( this->png_ptr ) ) )
-   {
-      png_destroy_read_struct( &this->png_ptr,
-                               &this->info_ptr,
-                               &this->end_info );
-      return false;
-   }
-
-   /****
-    * Set the zlib compression level
-    */
-   //png_set_compression_level( this->png_ptr, Z_BEST_COMPRESSION );
-   
-   const int bitDepth( 8 );
-   png_set_IHDR( this->png_ptr,
-                 this->info_ptr,
-                 grid.getDimensions().x(),
-                 grid.getDimensions().y(),
-                 8, //bitDepth, 
-                 PNG_COLOR_TYPE_GRAY,
-                 PNG_INTERLACE_NONE,
-                 PNG_COMPRESSION_TYPE_DEFAULT,
-                 PNG_FILTER_TYPE_DEFAULT );
-   png_init_io( this->png_ptr, this->file );
-   png_write_info( png_ptr, info_ptr );
-   
+#ifdef HAVE_JPEG_H
 #else
    cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
