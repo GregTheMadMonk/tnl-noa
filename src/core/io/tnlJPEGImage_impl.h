@@ -130,7 +130,7 @@ read( const tnlRegionOfInterest< Index > roi,
                                                             row_stride,
                                                             1 );	
    
-   Index i, j;
+   Index i( 0 ), j;
    while( this->cinfo.output_scanline < this->cinfo.output_height)
    {
       jpeg_read_scanlines( &this->cinfo, row, 1 );
@@ -166,6 +166,7 @@ read( const tnlRegionOfInterest< Index > roi,
                return false;
          }
       }
+      i++;
    }
    return true;
 #else
@@ -182,8 +183,17 @@ tnlJPEGImage< Index >::
 writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_JPEG_H
+   this->cinfo.err = jpeg_std_error( &this->jerr.pub );
+   jpeg_create_compress( &this->cinfo );
+   jpeg_stdio_dest( &this->cinfo, this->file );
+   this->cinfo.image_width = grid.getDimensions().x();
+   this->cinfo.image_height = grid.getDimensions().y();
+   this->cinfo.input_components = 1;
+   this->cinfo.in_color_space = JCS_GRAYSCALE;
+   jpeg_set_defaults( &this->cinfo );
+   jpeg_start_compress( &this->cinfo, true );
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
 #endif    
 }
@@ -220,34 +230,26 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 {
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-   
-   /***
-    * Prepare the long jump back from libpng.
-    */
-   if( setjmp(png_jmpbuf( this->png_ptr ) ) )
-   {
-      png_destroy_read_struct( &this->png_ptr,
-                               &this->info_ptr,
-                               &this->end_info );
-      return false;
-   }
-              
-   Index i, j;
-   png_bytep row = new png_byte[ 3 * grid.getDimensions().x() ];
-   for( i = 0; i < grid.getDimensions().y(); i ++ )
+                 
+   Index i( 0 ), j;
+   JSAMPROW row[1];
+   row[ 0 ] = new char[ grid.getDimensions().x() ];
+   // JSAMPLE is unsigned char
+   while( this->cinfo.next_scanline < this->cinfo.image_height )
    {
       for( j = 0; j < grid.getDimensions().x(); j ++ )
       {
          Index cellIndex = grid.getCellIndex( CoordinatesType( j,
                                               grid.getDimensions().y() - 1 - i ) );
 
-         row[ j ] = 255 * vector.getElement( cellIndex );         
+         row[ 0 ][ j ] = 255 * vector.getElement( cellIndex );         
       }
-      png_write_row( this->png_ptr, row );
-   }
-   //png_set_rows( this->png_ptr, this->info_ptr, row_pointers );
-   //png_write_png( this->png_ptr, this->info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-   delete[] row;
+      jpeg_write_scanlines( &this->cinfo, row, 1 );
+      i++;
+   }   
+   jpeg_finish_compress( &this->cinfo );
+   jpeg_destroy_compress( &this->cinfo );
+   delete[] row[ 0 ];
    return true;
 }
 
