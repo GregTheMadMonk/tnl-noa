@@ -21,6 +21,7 @@
 #include <core/io/tnlJPEGImage.h>
 #include <setjmp.h>
 
+#ifdef HAVE_JPEG_H
 inline void my_error_exit( j_common_ptr cinfo )
 {
   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
@@ -33,6 +34,7 @@ inline void my_error_exit( j_common_ptr cinfo )
   /* Return control to the setjmp point */
   longjmp( myerr->setjmp_buffer, 1 );
 }
+#endif
 
 template< typename Index >
 tnlJPEGImage< Index >::
@@ -47,7 +49,7 @@ tnlJPEGImage< Index >::
 readHeader()
 {
 #ifdef HAVE_JPEG_H
-   this->cinfo.err = jpeg_std_error(&jerr.pub);
+   this->decinfo.err = jpeg_std_error(&jerr.pub);
    this->jerr.pub.error_exit = my_error_exit; 
    
    /***
@@ -59,17 +61,17 @@ readHeader()
         * If we get here, the JPEG code has signaled an error.
         * We need to clean up the JPEG object, close the input file, and return.
         */
-      jpeg_destroy_decompress( &this->cinfo );
+      jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
    
-   jpeg_create_decompress( &this->cinfo );
-   jpeg_stdio_src( &this->cinfo, this->file );
-   if( jpeg_read_header( &this->cinfo, true ) != JPEG_HEADER_OK )
+   jpeg_create_decompress( &this->decinfo );
+   jpeg_stdio_src( &this->decinfo, this->file );
+   if( jpeg_read_header( &this->decinfo, true ) != JPEG_HEADER_OK )
       return false;
-   this->height = this->cinfo.image_height;
-   this->width = this->cinfo.image_width;
-   this->components = this->cinfo.num_components; 
+   this->height = this->decinfo.image_height;
+   this->width = this->decinfo.image_width;
+   this->components = this->decinfo.num_components; 
    //this->color_space = this->cinfo.jpeg_color_space;
    //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << endl;
 #else
@@ -119,21 +121,21 @@ read( const tnlRegionOfInterest< Index > roi,
         * If we get here, the JPEG code has signaled an error.
         * We need to clean up the JPEG object, close the input file, and return.
         */
-      jpeg_destroy_decompress( &this->cinfo );
+      jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
       
-   jpeg_start_decompress( &this->cinfo );
-   int row_stride = this->cinfo.output_width * this->cinfo.output_components;
-   JSAMPARRAY row = ( *( this->cinfo.mem->alloc_sarray ) )( ( j_common_ptr ) &this->cinfo,
-                                                            JPOOL_IMAGE,
-                                                            row_stride,
-                                                            1 );	
+   jpeg_start_decompress( &this->decinfo );
+   int row_stride = this->decinfo.output_width * this->decinfo.output_components;
+   JSAMPARRAY row = ( *( this->decinfo.mem->alloc_sarray ) )( ( j_common_ptr ) &this->decinfo,
+                                                              JPOOL_IMAGE,
+                                                              row_stride,
+                                                              1 );	
    
    Index i( 0 ), j;
-   while( this->cinfo.output_scanline < this->cinfo.output_height)
+   while( this->decinfo.output_scanline < this->decinfo.output_height)
    {
-      jpeg_read_scanlines( &this->cinfo, row, 1 );
+      jpeg_read_scanlines( &this->decinfo, row, 1 );
       for( j = 0; j < this->width; j ++ )
       {
          if( !roi.isIn( i, j ) )
@@ -230,10 +232,11 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 {
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-                 
+
+#ifdef HAVE_JPEG_H   
    Index i( 0 ), j;
    JSAMPROW row[1];
-   row[ 0 ] = new char[ grid.getDimensions().x() ];
+   row[ 0 ] = new JSAMPLE[ grid.getDimensions().x() ];
    // JSAMPLE is unsigned char
    while( this->cinfo.next_scanline < this->cinfo.image_height )
    {
@@ -251,6 +254,9 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
    jpeg_destroy_compress( &this->cinfo );
    delete[] row[ 0 ];
    return true;
+#else
+   return false;
+#endif   
 }
 
 

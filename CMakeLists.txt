@@ -169,6 +169,7 @@ if( PNG_FOUND )
    include_directories( ${PNG_INCLUDE_DIRS} )
 else()
    set( HAVE_PNG_H "//#define HAVE_PNG_H" )
+   set( PNG_LIBRARIES "" )
 endif()
 
 find_package( JPEG )
@@ -177,6 +178,7 @@ if( JPEG_FOUND )
    include_directories( ${JPEG_INCLUDE_DIRS} )
 else()
    set( HAVE_JPEG_H "//#define HAVE_JPEG_H" )
+   set( JPEG_LIBRARIES "" )
 endif()
 
 

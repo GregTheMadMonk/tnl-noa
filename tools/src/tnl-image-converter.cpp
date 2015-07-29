@@ -198,6 +198,17 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
          image.write( grid, vector );
          image.close();
       }
+      if( imageFormat == "jpg" )
+      {
+         tnlJPEGImage< int > image;
+         tnlString outputFileName( fileName );
+         RemoveFileExtension( outputFileName );
+         outputFileName += ".jpg";
+         image.openForWrite( outputFileName, grid );
+         image.write( grid, vector );
+         image.close();
+      }
+
    }     
 }
 

@@ -83,7 +83,8 @@ class tnlJPEGImage : public tnlImage< Index >
 
 #ifdef HAVE_JPEG_H      
       my_error_mgr jerr;
-      jpeg_decompress_struct cinfo;
+      jpeg_decompress_struct decinfo;
+      jpeg_compress_struct cinfo;
       int components;
       J_COLOR_SPACE color_space;
 #endif         
