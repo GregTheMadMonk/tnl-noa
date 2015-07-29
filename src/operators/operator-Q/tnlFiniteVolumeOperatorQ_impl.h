@@ -497,19 +497,19 @@ boundaryDerivative( const MeshType& mesh,
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
             return mesh.getHxInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
+            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
+            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,-1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,-1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.getHxInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
+            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,0,1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.getHxInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
+            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,0,-1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,0,-1 >( cellIndex ) ] );
     }
@@ -520,19 +520,19 @@ boundaryDerivative( const MeshType& mesh,
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
             return mesh.getHyInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
+            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 1,-1,0 >( cellIndex ) ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
+            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< -1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,-1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.getHyInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
+            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 0,1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 0,-1,1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.getHyInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
+            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 0,1,-1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 0,-1,-1 >( cellIndex ) ] );
     }
@@ -543,19 +543,19 @@ boundaryDerivative( const MeshType& mesh,
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
             return mesh.getHzInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
+            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 1,0,-1 >( cellIndex ) ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
+            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< -1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< -1,0,-1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
+            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 0,1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 0,1,-1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.125 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
+            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
                    u[ mesh.template getCellNextToCell< 0,-1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
                    u[ mesh.template getCellNextToCell< 0,-1,-1 >( cellIndex ) ] );
     }

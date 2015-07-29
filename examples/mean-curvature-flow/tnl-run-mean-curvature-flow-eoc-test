@@ -1,23 +1,22 @@
 #!/bin/bash
 
 device="host"
-dimensions="2D"
-sizes2D="16 32"
-testFunctions="sin-bumps"
-snapshotPeriod=0.1
-finalTime=0.3
+dimensions="3D"
+sizes3D="16 32 64"
+testFunctions="exp-bump sin-wave sin-bumps"
+snapshotPeriod=0.001
+finalTime=0.01
 timeDependence="cosine"
 solverName="mean-curvature-flow-eoc"
 #solverName="gdb --args tnl-heat-equation-eoc-test-dbg"
-#
 
 setupTestFunction()
 {
    testFunction=$1
 #   if test x${testFunction} = "xexp-bump";
 #   then
-      origin=0
-      proportions=1
+      origin=2
+      proportions=2
       amplitude=1.0
       waveLength=1.0
       waveLengthX=1.0
@@ -31,7 +30,7 @@ setupTestFunction()
       phaseX=0.0
       phaseY=0.0
       phaseZ=0.0
-      sigma=0.5
+      sigma=1
 #   fi
 }
 
@@ -86,11 +85,11 @@ solve()
                  --time-step 1 \
                  --time-step-order 2 \
                  --discrete-solver ${discreteSolver} \
-                 --merson-adaptivity 1.0e-7 \
+                 --merson-adaptivity 1.0e-10 \
                  --sor-omega 1.95 \
-                 --gmres-restarting 20 \
-                 --min-iterations 20 \
-                 --convergence-residue 1.0e-12 \
+                 --gmres-restarting 20  \
+                 --min-iterations 50 \
+                 --convergence-residue 1.0e-14 \
                  --test-function ${testFunction}\
                  --amplitude ${amplitude} \
                  --wave-length ${waveLength} \
@@ -197,4 +196,3 @@ runTest()
 }
 
 runTest
- 

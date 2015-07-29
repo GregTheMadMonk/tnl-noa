@@ -290,12 +290,12 @@ updateLinearSystem( const RealType& time,
                        mesh.getHxSquareInverse() / operatorQ.getValue(mesh, index, coordinates, u, time, -1, 0, 0 )
                        + mesh.getHySquareInverse() / operatorQ.getValue(mesh, index, coordinates, u, time, 0, -1, 0 ) + 
                        mesh.getHzSquareInverse() / operatorQ.getValue(mesh, index, coordinates, u, time, 0, 0, -1 ) );
-   const RealType eCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time, 1, 0, 0 ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, index, coordinates, u, time );
-   const RealType fCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time, 0, 1, 0 ) * mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, index, coordinates, u, time );
-   const RealType gCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time, 0, 0, 1 ) * mesh.getHzSquareInverse() / 
-                       operatorQ.getValue(mesh, index, coordinates, u, time );
+   const RealType eCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time ) * mesh.getHxSquareInverse() / 
+                       operatorQ.getValue(mesh, index, coordinates, u, time, 1, 0, 0 );
+   const RealType fCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time ) * mesh.getHySquareInverse() / 
+                       operatorQ.getValue(mesh, index, coordinates, u, time, 0, 1, 0 );
+   const RealType gCoef = - tau * operatorQ.getValue(mesh, index, coordinates, u, time  * mesh.getHzSquareInverse() / 
+                       operatorQ.getValue(mesh, index, coordinates, u, time, 0, 0, 1 );
    matrixRow.setElement( 0, mesh.template getCellNextToCell< 0,0,-1 >( index ),     aCoef );
    matrixRow.setElement( 1, mesh.template getCellNextToCell< 0,-1,0 >( index ),     bCoef );
    matrixRow.setElement( 2, mesh.template getCellNextToCell< -1,0,0 >( index ),     cCoef );
