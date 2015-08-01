@@ -1,4 +1,7 @@
-#include "DicomSeries.h"
+#include <core/io/DicomSeries.h>
+#include <core/io/SeriesInfoObj.h>
+#include <dirent.h>
+
 
 int findLastIndexOf(tnlString &str, char * const c)
 {
@@ -20,7 +23,7 @@ int filter(const struct dirent *dire)
     return 1;
 }
 
-DicomSeries::DicomSeries(char* filePath)
+inline DicomSeries::DicomSeries( const char* filePath)
 {
     fileList = new tnlList<tnlString *>();
     dicomImage = 0;
@@ -35,7 +38,7 @@ DicomSeries::DicomSeries(char* filePath)
         isLoaded = true;
 }
 
-DicomSeries::~DicomSeries()
+inline DicomSeries::~DicomSeries()
 {
     fileList->DeepEraseAll();
     delete fileList;
@@ -43,7 +46,7 @@ DicomSeries::~DicomSeries()
     int length = dicomSeriesHeaders.getSize();
     for(int i = 0; i < length; i++)
     {
-        DicomHeader *header = dicomSeriesHeaders[i];
+        tnlDicomHeader *header = dicomSeriesHeaders[i];
         delete header;
         header = 0;
     }
@@ -55,15 +58,15 @@ DicomSeries::~DicomSeries()
         delete pixelData;
 }
 
-bool DicomSeries::retrieveFileList(char *filePath)
+inline bool DicomSeries::retrieveFileList( const char *filePath)
 {
     tnlString filePathString(filePath);
     tnlString suffix(filePath, filePathString.getLength() - 3);
-    char *ima = "ima";
-    char *dcm = "dcm";
+    //char *ima = "ima";
+    //char *dcm = "dcm";
 
     //check DICOM files
-    if(!(*(suffix.getString()) == *ima) & !(*(suffix.getString()) == *dcm))
+    if( suffix != "ima" && suffix != "dcm" )
         return false;
 
     int fileNamePosition = findLastIndexOf(filePathString,"/");
@@ -112,10 +115,10 @@ bool DicomSeries::retrieveFileList(char *filePath)
     return true;
 }
 
-bool DicomSeries::loadImage(char *filePath, int number)
+inline bool DicomSeries::loadImage(char *filePath, int number)
 {
     //load header
-    DicomHeader *header = new DicomHeader();
+    tnlDicomHeader *header = new tnlDicomHeader();
     dicomSeriesHeaders.setSize(fileList->getSize());
     dicomSeriesHeaders.setElement(number,header);
     if(!header->loadFromFile(filePath))
@@ -124,8 +127,8 @@ bool DicomSeries::loadImage(char *filePath, int number)
     }
 
     //check series UID
-    const char *seriesUID = dicomSeriesHeaders.operator [](0)->getSeriesInfoObj().getSeriesInstanceUID();
-    if(strcmp(seriesUID, header->getSeriesInfoObj().getSeriesInstanceUID()) != 0)
+    const tnlString& seriesUID = dicomSeriesHeaders.operator [](0)->getSeriesInfoObj().getSeriesInstanceUID();
+    if( seriesUID != header->getSeriesInfoObj().getSeriesInstanceUID() )
     {
         return false;
     }
@@ -158,7 +161,7 @@ bool DicomSeries::loadImage(char *filePath, int number)
         else if (EIS_MissingAttribute)
         {
             //bitmap is propably old ARC/NEMA format
-            cerr << "Error: cannot load DICOM image(ACR/NEMA??) (" << DicomImage::getString (dicomImage->getStatus()) << ")" << endl;
+            cerr << "Error: cannot load DICOM image(ACR/NEMA) (" << DicomImage::getString (dicomImage->getStatus()) << ")" << endl;
 
             delete dicomImage;
             dicomImage = NULL;
@@ -250,7 +253,7 @@ bool DicomSeries::loadImage(char *filePath, int number)
 }
 
 
-bool DicomSeries::loadDicomSeries(char *filePath)
+inline bool DicomSeries::loadDicomSeries( const char *filePath )
 {
     //load list of files
     if(!retrieveFileList(filePath))
@@ -268,66 +271,66 @@ bool DicomSeries::loadDicomSeries(char *filePath)
     return true;
 }
 
-int DicomSeries::getImagesCount()
+inline int DicomSeries::getImagesCount()
 {
     return imagesInfo.imagesCount;
 }
 
-const Uint16 *DicomSeries::getData()
+inline const Uint16 *DicomSeries::getData()
 {
     return pixelData;
 }
 
-int DicomSeries::getWidth()
+inline int DicomSeries::getWidth()
 {
     return imagesInfo.width;
 }
 
-int DicomSeries::getHeight()
+inline int DicomSeries::getHeight()
 {
     return imagesInfo.height;
 }
 
-int DicomSeries::getColorCount()
+inline int DicomSeries::getColorCount()
 {
     return imagesInfo.colorsCount;
 }
 
-int DicomSeries::getBitsPerSampleCount()
+inline int DicomSeries::getBitsPerSampleCount()
 {
     return imagesInfo.bps;
 }
 
-int DicomSeries::getMinColorValue()
+inline int DicomSeries::getMinColorValue()
 {
     return imagesInfo.minColorValue;
 }
 
-WindowCenterWidth DicomSeries::getWindowDefaults()
+inline WindowCenterWidth DicomSeries::getWindowDefaults()
 {
     return imagesInfo.window;
 }
 
-int DicomSeries::getMaxColorValue()
+inline int DicomSeries::getMaxColorValue()
 {
     return imagesInfo.maxColorValue;
 }
 
-void DicomSeries::freeData()
+inline void DicomSeries::freeData()
 {
     if (pixelData)
         delete pixelData;
     pixelData = NULL;
 }
 
-DicomHeader &DicomSeries::getHeader(int image)
+inline tnlDicomHeader &DicomSeries::getHeader(int image)
 {
     //check user argument
     if((image > 0) | (image <= dicomSeriesHeaders.getSize()))
         return *dicomSeriesHeaders.getElement(image);
 }
 
-bool DicomSeries::isDicomSeriesLoaded()
+inline bool DicomSeries::isDicomSeriesLoaded()
 {
     return isLoaded;
 }

@@ -1,6 +1,9 @@
-#include "DicomHeader.h"
+#include <core/io/DicomHeader.h>
+#include <core/io/SeriesInfoObj.h>
+#include <core/io/PatientInfoObj.h>
+#include <core/io/ImageInfoObj.h>
 
-DicomHeader::DicomHeader()
+inline tnlDicomHeader::tnlDicomHeader()
 {
     fileFormat = new DcmFileFormat();
     isLoaded = false;
@@ -9,7 +12,7 @@ DicomHeader::DicomHeader()
     seriesInfoObj = new SeriesInfoObj(*this);
 }
 
-DicomHeader::~DicomHeader()
+inline tnlDicomHeader::~tnlDicomHeader()
 {
     delete imageInfoObj;
     delete patientInfoObj;
@@ -17,7 +20,7 @@ DicomHeader::~DicomHeader()
     delete fileFormat;
 }
 
-bool DicomHeader::loadFromFile(const char *fileName)
+inline bool tnlDicomHeader::loadFromFile(const char *fileName)
 {
     OFCondition status = fileFormat->loadFile(fileName);
     if(status.good())
@@ -29,21 +32,22 @@ bool DicomHeader::loadFromFile(const char *fileName)
     return false;
 }
 
-DcmFileFormat &DicomHeader::getFileFormat()
+inline DcmFileFormat &tnlDicomHeader::getFileFormat()
 {
     return *fileFormat;
 }
 
-ImageInfoObj &DicomHeader::getImageInfoObj()
+inline ImageInfoObj &tnlDicomHeader::getImageInfoObj()
 {
     return *imageInfoObj;
 }
 
-PatientInfoObj &DicomHeader::getPatientInfoObj()
+inline PatientInfoObj &tnlDicomHeader::getPatientInfoObj()
 {
     return *patientInfoObj;
 }
-SeriesInfoObj &DicomHeader::getSeriesInfoObj()
+
+inline SeriesInfoObj &tnlDicomHeader::getSeriesInfoObj()
 {
     return *seriesInfoObj;
 }

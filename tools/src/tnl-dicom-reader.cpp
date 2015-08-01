@@ -15,27 +15,42 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <tnlConfig.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/io/DicomSeries.h>
 
 void setupConfig( tnlConfigDescription& config )
 {
-/*   config.addEntry< tnlString >( "mesh", "Input mesh file.", "mesh.tnl" );
-   config.addRequiredEntry< tnlList< tnlString > >( "input-files", "The first set of the input files." );
-   config.addEntry< tnlString >( "output-file", "File for the output data.", "tnl-diff.log" );
-   config.addEntry< tnlString >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
-      config.addEntryEnum< tnlString >( "couples" );
-      config.addEntryEnum< tnlString >( "sequence" );
-      config.addEntryEnum< tnlString >( "halves" );
-   config.addEntry< bool >( "write-difference", "Write difference grid function.", false );
-   config.addEntry< bool >( "write-exact-curve", "Write exact curve with given radius.", false );
-   config.addEntry< int >( "edges-skip", "Width of the edges that will be skipped - not included into the error norms.", 0 );
-   config.addEntry< bool >( "write-graph", "Draws a graph in the Gnuplot format of the dependence of the error norm on t.", true );
-   config.addEntry< bool >( "write-log-graph", "Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.", true );
-   config.addEntry< double >( "snapshot-period", "The period between consecutive snapshots.", 0.0 );
-   config.addEntry< int >( "verbose", "Sets verbosity.", 1 );
- */
+   config.addDelimiter( "General parameters" );
+   config.addList         < tnlString >( "dicom-files",   "Input DICOM files." );
+   config.addList         < tnlString >( "dicom-series",   "Input DICOM series." );
+   config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
+   config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
+   config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
+   config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
+   config.addEntry        < int >      ( "roi-left",      "Left (smaller number) column of the region of interest.", -1 );
+   config.addEntry        < int >      ( "roi-right",     "Right (larger number) column of the region of interest.", -1 );
+   config.addEntry        < bool >     ( "verbose",       "Set the verbosity of the program.", true );   
 }
+
+#ifdef HAVE_DCMTK_H
+bool processDicomFiles( const tnlParameterContainer& parameters )
+{
+   
+}
+
+bool processDicomSeries( const tnlParameterContainer& parameters )
+{
+   const tnlList< tnlString >& dicomSeries = parameters.getParameter< tnlList< tnlString > >( "dicom-series" );
+   
+   for( int i = 0; i < dicomSeries.getSize(); i++ )
+   {
+      const tnlString& series = dicomSeries[ i ];
+      DicomSeries( series.getString() );
+   }
+}
+#endif
 
 int main( int argc, char* argv[] )
 {
@@ -45,6 +60,21 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
-      return 1;
+      return EXIT_FAILURE;
+   }   
+   if( ! parameters.checkParameter( "dicom-files" ) &&
+       ! parameters.checkParameter( "dicom-series") )
+   {
+       cerr << "Neither DICOM series nor DICOM files are given." << endl;
+       return EXIT_FAILURE;
    }
+#ifdef HAVE_DCMTK_H   
+   if( parameters.checkParameter( "dicom-files" ) && ! processDicomFiles( parameters ) )
+      return EXIT_FAILURE;
+   if( parameters.checkParameter( "dicom-series" ) && ! processDicomSeries( parameters ) )
+      return EXIT_FAILURE;   
+   return EXIT_SUCCESS;
+#else
+   cerr << "TNL was not compiled with DCMTK support." << endl;
+#endif   
 }

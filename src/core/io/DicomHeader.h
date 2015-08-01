@@ -19,11 +19,17 @@
 #ifndef TNLDICOMHEADER_H
 #define TNLDICOMHEADER_H
 
+#include <tnlConfig.h>
+
+#ifdef HAVE_DCMTK_H
+#define HAVE_CONFIG_H
 #include <dcmtk/dcmdata/dcfilefo.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
-#include "ImageInfoObj.h"
-#include "PatientInfoObj.h"
-#include "SeriesInfoObj.h"
+#endif
+
+class SeriesInfoObj;
+class PatientInfoObj;
+class ImageInfoObj;
 
 /***
  * Class provides acces to the DICOM file header (contains complete
@@ -34,18 +40,21 @@ class tnlDicomHeader
 {
    public:
       
-      tnlDicomHeader();
-      virtual ~tnlDicomHeader();
+      inline tnlDicomHeader();
+      
+      inline virtual ~tnlDicomHeader();
 
-      DcmFileFormat &getFileFormat();
+#ifdef HAVE_DCMTK_H      
+      inline DcmFileFormat &getFileFormat();
+#endif
       
-      ImageInfoObj &getImageInfoObj();
+      inline ImageInfoObj &getImageInfoObj();
       
-      PatientInfoObj &getPatientInfoObj();
+      inline PatientInfoObj &getPatientInfoObj();
       
-      SeriesInfoObj &getSeriesInfoObj();
+      inline SeriesInfoObj &getSeriesInfoObj();
 
-      bool loadFromFile( const char* fileName );
+      inline bool loadFromFile( const char* fileName );
 
    protected:
       
@@ -55,9 +64,13 @@ class tnlDicomHeader
       
       SeriesInfoObj *seriesInfoObj;
 
+#ifdef HAVE_DCMTK_H      
       DcmFileFormat *fileFormat;
+#endif
       
       bool isLoaded;
 };
+
+#include <core/io/DicomHeader_impl.h>
 
 #endif // TNLDICOMHEADER_H

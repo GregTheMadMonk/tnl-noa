@@ -46,6 +46,9 @@ endif( BUILD_CUDA )
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 
                        SOVERSION 0 
                        VERSION ${tnlVersion} )
+TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} 
+                       ${DCMTK_LIBRARIES})
+
 
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 
@@ -65,10 +68,12 @@ IF( BUILD_MPI )
    SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} PROPERTIES
                           SOVERSION 0 
                           VERSION ${tnlVersion} ) 
+#   SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} 
+#                          LINK_INTERFACE_LIBRARIES "")
+
    
    TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} 
-                            ${MPI_LIBRARIES} )
-   
+                          ${MPI_LIBRARIES} )
    INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )
                                                                 
 ENDIF()

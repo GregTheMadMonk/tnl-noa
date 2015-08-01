@@ -46,6 +46,7 @@ do
         --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
         --verbose                      ) VERBOSE="VERBOSE=1" ;;
         --root-dir=*                   ) ROOT_DIR="${option#*=}" ;;
+        --dcmtk-dir=*                  ) DCMTK_DIR="${option#*=}" ;;
         --help                         ) HELP="yes" ;;
         *                              ) 
            echo "Unknown option ${option}. Use --help for more information."
@@ -67,6 +68,7 @@ then
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to a number of CPU cores by default."
     echo "   --verbose                             It enables verbose build."
     echo "   --root-dir=PATH                       Path to the TNL source code root dir."
+    echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir."
     echo "   --help                                Write this help."
     exit 1
 fi
@@ -81,6 +83,7 @@ ${CMAKE} ${ROOT_DIR} \
          -DWITH_CUBLAS=${WITH_CUBLAS} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DPETSC_DIR=${PETSC_DIR} \
+         -DDCMTK_DIR=${DCMTK_DIR} \
          -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
          -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \
          -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
