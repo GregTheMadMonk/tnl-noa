@@ -19,10 +19,10 @@
 #include <config/tnlParameterContainer.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
-#include <core/io/tnlPGMImage.h>
-#include <core/io/tnlPNGImage.h>
-#include <core/io/tnlJPEGImage.h>
-#include <core/io/tnlRegionOfInterest.h>
+#include <core/images/tnlPGMImage.h>
+#include <core/images/tnlPNGImage.h>
+#include <core/images/tnlJPEGImage.h>
+#include <core/images/tnlRegionOfInterest.h>
 
 void configSetup( tnlConfigDescription& config )
 {

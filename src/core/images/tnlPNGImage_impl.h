@@ -18,7 +18,7 @@
 #ifndef TNLPNGIMAGE_IMPL_H
 #define	TNLPNGIMAGE_IMPL_H
 
-#include <core/io/tnlPNGImage.h>
+#include <core/images/tnlPNGImage.h>
 
 template< typename Index >
 tnlPNGImage< Index >::

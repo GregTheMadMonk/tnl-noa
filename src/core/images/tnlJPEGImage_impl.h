@@ -18,7 +18,7 @@
 #ifndef TNLJPEGIMAGE_IMPL_H
 #define	TNLJPEGIMAGE_IMPL_H
 
-#include <core/io/tnlJPEGImage.h>
+#include <core/images/tnlJPEGImage.h>
 #include <setjmp.h>
 
 #ifdef HAVE_JPEG_H

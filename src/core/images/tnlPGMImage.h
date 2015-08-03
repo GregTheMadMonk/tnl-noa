@@ -19,8 +19,8 @@
 #define	TNLPGMIMAGE_H
 
 #include <core/tnlString.h>
-#include <core/io/tnlImage.h>
-#include <core/io/tnlRegionOfInterest.h>
+#include <core/images/tnlImage.h>
+#include <core/images/tnlRegionOfInterest.h>
 
 template< typename Index = int >
 class tnlPGMImage : public tnlImage< Index >
@@ -75,7 +75,7 @@ class tnlPGMImage : public tnlImage< Index >
          bool fileOpen;
 };
 
-#include <core/io/tnlPGMImage_impl.h>
+#include <core/images/tnlPGMImage_impl.h>
 
 #endif	/* TNLPGMIMAGE_H */
 

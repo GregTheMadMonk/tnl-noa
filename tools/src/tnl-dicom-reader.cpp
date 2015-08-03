@@ -18,7 +18,7 @@
 #include <tnlConfig.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <core/io/DicomSeries.h>
+#include <core/images/tnlDicomSeries.h>
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -47,7 +47,7 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
    for( int i = 0; i < dicomSeries.getSize(); i++ )
    {
       const tnlString& series = dicomSeries[ i ];
-      DicomSeries( series.getString() );
+      tnlDicomSeries( series.getString() );
    }
 }
 #endif

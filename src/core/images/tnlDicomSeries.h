@@ -3,10 +3,11 @@
                              -------------------
     begin                : Jul 31, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
-
-   Tomas Oberhuber  tomas.oberhuber@fjfi.cvut.cz
-   Jiri Kafka       kafka9@seznam.cz
-
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
+  
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,7 +26,7 @@
 #include <core/tnlList.h>
 #include <core/tnlString.h>
 #include <core/param-types.h>
-#include <core/io/DicomHeader.h>
+#include <core/images/tnlDicomHeader.h>
 #include <tnlConfig.h>
 
 
@@ -58,13 +59,13 @@ struct ImagesInfo
  * DICOM serie (searches the directory of the file). Call isDicomSeriesLoaded()
  * function to check if the load was successful.
  */
-class DicomSeries
+class tnlDicomSeries
 {
    public:
       
-      inline DicomSeries( const char *filePath );
+      inline tnlDicomSeries( const char *filePath );
        
-      inline virtual ~DicomSeries();
+      inline virtual ~tnlDicomSeries();
 
       inline int getImagesCount();
        
@@ -115,6 +116,6 @@ class DicomSeries
       ImagesInfo imagesInfo;
 };
 
-#include <core/io/DicomSeries_impl.h>
+#include <core/images/tnlDicomSeries_impl.h>
 
 #endif // TNLDICOMSERIES_H

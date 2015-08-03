@@ -1,5 +1,25 @@
-#include <core/io/DicomSeries.h>
-#include <core/io/SeriesInfoObj.h>
+/***************************************************************************
+                          tnlDicomSeries_impl.h  -  description
+                             -------------------
+    begin                : Jul 19, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include <core/images/tnlDicomSeries.h>
+#include <core/images/tnlDicomSeriesInfo.h>
 #include <dirent.h>
 
 
@@ -23,7 +43,7 @@ int filter(const struct dirent *dire)
     return 1;
 }
 
-inline DicomSeries::DicomSeries( const char* filePath)
+inline tnlDicomSeries::tnlDicomSeries( const char* filePath)
 {
     fileList = new tnlList<tnlString *>();
     dicomImage = 0;
@@ -38,7 +58,7 @@ inline DicomSeries::DicomSeries( const char* filePath)
         isLoaded = true;
 }
 
-inline DicomSeries::~DicomSeries()
+inline tnlDicomSeries::~tnlDicomSeries()
 {
     fileList->DeepEraseAll();
     delete fileList;
@@ -58,7 +78,7 @@ inline DicomSeries::~DicomSeries()
         delete pixelData;
 }
 
-inline bool DicomSeries::retrieveFileList( const char *filePath)
+inline bool tnlDicomSeries::retrieveFileList( const char *filePath)
 {
     tnlString filePathString(filePath);
     tnlString suffix(filePath, filePathString.getLength() - 3);
@@ -115,7 +135,7 @@ inline bool DicomSeries::retrieveFileList( const char *filePath)
     return true;
 }
 
-inline bool DicomSeries::loadImage(char *filePath, int number)
+inline bool tnlDicomSeries::loadImage(char *filePath, int number)
 {
     //load header
     tnlDicomHeader *header = new tnlDicomHeader();
@@ -127,8 +147,8 @@ inline bool DicomSeries::loadImage(char *filePath, int number)
     }
 
     //check series UID
-    const tnlString& seriesUID = dicomSeriesHeaders.operator [](0)->getSeriesInfoObj().getSeriesInstanceUID();
-    if( seriesUID != header->getSeriesInfoObj().getSeriesInstanceUID() )
+    const tnlString& seriesUID = dicomSeriesHeaders.operator [](0)->getSeriesInfo().getSeriesInstanceUID();
+    if( seriesUID != header->getSeriesInfo().getSeriesInstanceUID() )
     {
         return false;
     }
@@ -253,7 +273,7 @@ inline bool DicomSeries::loadImage(char *filePath, int number)
 }
 
 
-inline bool DicomSeries::loadDicomSeries( const char *filePath )
+inline bool tnlDicomSeries::loadDicomSeries( const char *filePath )
 {
     //load list of files
     if(!retrieveFileList(filePath))
@@ -271,66 +291,66 @@ inline bool DicomSeries::loadDicomSeries( const char *filePath )
     return true;
 }
 
-inline int DicomSeries::getImagesCount()
+inline int tnlDicomSeries::getImagesCount()
 {
     return imagesInfo.imagesCount;
 }
 
-inline const Uint16 *DicomSeries::getData()
+inline const Uint16 *tnlDicomSeries::getData()
 {
     return pixelData;
 }
 
-inline int DicomSeries::getWidth()
+inline int tnlDicomSeries::getWidth()
 {
     return imagesInfo.width;
 }
 
-inline int DicomSeries::getHeight()
+inline int tnlDicomSeries::getHeight()
 {
     return imagesInfo.height;
 }
 
-inline int DicomSeries::getColorCount()
+inline int tnlDicomSeries::getColorCount()
 {
     return imagesInfo.colorsCount;
 }
 
-inline int DicomSeries::getBitsPerSampleCount()
+inline int tnlDicomSeries::getBitsPerSampleCount()
 {
     return imagesInfo.bps;
 }
 
-inline int DicomSeries::getMinColorValue()
+inline int tnlDicomSeries::getMinColorValue()
 {
     return imagesInfo.minColorValue;
 }
 
-inline WindowCenterWidth DicomSeries::getWindowDefaults()
+inline WindowCenterWidth tnlDicomSeries::getWindowDefaults()
 {
     return imagesInfo.window;
 }
 
-inline int DicomSeries::getMaxColorValue()
+inline int tnlDicomSeries::getMaxColorValue()
 {
     return imagesInfo.maxColorValue;
 }
 
-inline void DicomSeries::freeData()
+inline void tnlDicomSeries::freeData()
 {
     if (pixelData)
         delete pixelData;
     pixelData = NULL;
 }
 
-inline tnlDicomHeader &DicomSeries::getHeader(int image)
+inline tnlDicomHeader &tnlDicomSeries::getHeader(int image)
 {
     //check user argument
     if((image > 0) | (image <= dicomSeriesHeaders.getSize()))
         return *dicomSeriesHeaders.getElement(image);
 }
 
-inline bool DicomSeries::isDicomSeriesLoaded()
+inline bool tnlDicomSeries::isDicomSeriesLoaded()
 {
     return isLoaded;
 }

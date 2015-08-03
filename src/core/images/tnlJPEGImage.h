@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlPNGImage.h  -  description
+                          tnlJPEGImage.h  -  description
                              -------------------
-    begin                : Jul 24, 2015
+    begin                : Jul 25, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,27 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPNGIMAGE_H
-#define	TNLPNGIMAGE_H
+#ifndef TNLJPEGIMAGE_H
+#define	TNLJPEGIMAGE_H
 
 #include <tnlConfig.h>
 
-#ifdef HAVE_PNG_H
-#include <png.h>
+#ifdef HAVE_JPEG_H
+#include <jpeglib.h>
 #endif
 
 #include <core/tnlString.h>
-#include <core/io/tnlImage.h>
-#include <core/io/tnlRegionOfInterest.h>
+#include <core/images/tnlImage.h>
+#include <core/images/tnlRegionOfInterest.h>
+
+#ifdef HAVE_JPEG_H      
+struct my_error_mgr
+{
+   jpeg_error_mgr pub;
+   jmp_buf setjmp_buffer;
+};
+#endif
 
 template< typename Index = int >
-class tnlPNGImage : public tnlImage< Index >
+class tnlJPEGImage : public tnlImage< Index >
 {
    public:
       
       typedef Index IndexType;
       
-      tnlPNGImage();
+      tnlJPEGImage();
        
       bool openForRead( const tnlString& fileName );
       
@@ -59,7 +67,7 @@ class tnlPNGImage : public tnlImage< Index >
       
       void close();
       
-      ~tnlPNGImage();
+      ~tnlJPEGImage();
       
    protected:
       
@@ -73,16 +81,17 @@ class tnlPNGImage : public tnlImage< Index >
 
       bool fileOpen;
 
-#ifdef HAVE_PNG_H      
-      png_structp png_ptr;
-
-      png_infop info_ptr, end_info;
-      
-      png_byte color_type, bit_depth;
+#ifdef HAVE_JPEG_H      
+      my_error_mgr jerr;
+      jpeg_decompress_struct decinfo;
+      jpeg_compress_struct cinfo;
+      int components;
+      J_COLOR_SPACE color_space;
 #endif         
 };
 
-#include <core/io/tnlPNGImage_impl.h>
+#include <core/images/tnlJPEGImage_impl.h>
 
-#endif	/* TNLPNGIMAGE_H */
+
+#endif	/* TNLJPEGIMAGE_H */
 

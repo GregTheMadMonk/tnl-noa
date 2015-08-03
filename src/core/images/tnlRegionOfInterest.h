@@ -20,7 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlGrid.h>
-#include <core/io/tnlImage.h>
+#include <core/images/tnlImage.h>
 
 
 template< typename Index = int >
@@ -54,7 +54,7 @@ class tnlRegionOfInterest
       Index top, bottom, left, right;
 };
 
-#include <core/io/tnlRegionOfInterest_impl.h>
+#include <core/images/tnlRegionOfInterest_impl.h>
 
 #endif	/* TNLREGIONOFINTEREST_H */
 

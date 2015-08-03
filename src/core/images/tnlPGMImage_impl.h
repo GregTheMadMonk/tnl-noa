@@ -19,7 +19,7 @@
 #define	TNLPGMIMAGE_IMPL_H
 
 #include <cstring>
-#include <core/io/tnlPGMImage.h>
+#include <core/images/tnlPGMImage.h>
 
 template< typename Index >
 tnlPGMImage< Index >::

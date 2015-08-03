@@ -1,5 +1,25 @@
-#ifndef SERIESINFOOBJ_H
-#define SERIESINFOOBJ_H
+/***************************************************************************
+                          tnlDicomSeries.h  -  description
+                             -------------------
+    begin                : Jul 19, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef TNLDICOMSERIESINFO_H
+#define TNLDICOMSERIESINFO_H
 
 #include <core/tnlString.h>
 #include <tnlConfig.h>
@@ -17,13 +37,13 @@ class tnlDicomHeader;
  * SeriesInfoObj class stores selected informations about DICOM series.
  * (accesses information via tnlDicomHeader class)
  */
-class SeriesInfoObj
+class tnlDicomSeriesInfo
 {
    public:
       
-       inline SeriesInfoObj( tnlDicomHeader &dicomHeader );
+       inline tnlDicomSeriesInfo( tnlDicomHeader &dicomHeader );
        
-       inline virtual ~SeriesInfoObj();
+       inline virtual ~tnlDicomSeriesInfo();
 
        inline const tnlString& getModality();
        
@@ -90,6 +110,6 @@ class SeriesInfoObj
        tnlString acquisitionTime;
 };
 
-#include <core/io/SeriesInfoObj_impl.h>
+#include <core/images/tnlDicomSeriesInfo_impl.h>
 
 #endif // SERIESINFOOBJ_H

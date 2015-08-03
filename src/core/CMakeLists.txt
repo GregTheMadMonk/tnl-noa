@@ -2,7 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
-ADD_SUBDIRECTORY( io )
+ADD_SUBDIRECTORY( images )
 
 set (headers tnlAssert.h               
              tnlConstants.h

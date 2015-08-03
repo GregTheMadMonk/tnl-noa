@@ -1,18 +1,38 @@
-#include "SeriesInfoObj.h"
-#include <core/io/DicomHeader.h>
+/***************************************************************************
+                          tnlDicomSeriesInfo_impl.h  -  description
+                             -------------------
+    begin                : Jul 19, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include <core/images/tnlDicomSeriesInfo.h>
+#include <core/images/tnlDicomHeader.h>
 #include <stdio.h>
 
-inline SeriesInfoObj::SeriesInfoObj( tnlDicomHeader &dicomHeader)
+inline tnlDicomSeriesInfo::tnlDicomSeriesInfo( tnlDicomHeader &dicomHeader)
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
 }
 
-inline SeriesInfoObj::~SeriesInfoObj()
+inline tnlDicomSeriesInfo::~tnlDicomSeriesInfo()
 {
 }
 
-inline bool SeriesInfoObj::retrieveInfo()
+inline bool tnlDicomSeriesInfo::retrieveInfo()
 {
    OFString str;    
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_Modality, str );
@@ -73,84 +93,84 @@ inline bool SeriesInfoObj::retrieveInfo()
     return 0;
 }
 
-inline const tnlString& SeriesInfoObj::getModality()
+inline const tnlString& tnlDicomSeriesInfo::getModality()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->modality;
 }
 
-inline const tnlString& SeriesInfoObj::getStudyInstanceUID()
+inline const tnlString& tnlDicomSeriesInfo::getStudyInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->studyInstanceUID;
 }
 
-inline const tnlString& SeriesInfoObj::getSeriesInstanceUID()
+inline const tnlString& tnlDicomSeriesInfo::getSeriesInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesInstanceUID;
 }
 
-inline const tnlString& SeriesInfoObj::getSeriesNumber()
+inline const tnlString& tnlDicomSeriesInfo::getSeriesNumber()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesNumber;
 }
 
-inline const tnlString& SeriesInfoObj::getSeriesDescription()
+inline const tnlString& tnlDicomSeriesInfo::getSeriesDescription()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDescription;
 }
 
-inline const tnlString& SeriesInfoObj::getSeriesDate()
+inline const tnlString& tnlDicomSeriesInfo::getSeriesDate()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDate;
 }
 
-inline const tnlString& SeriesInfoObj::getSeriesTime()
+inline const tnlString& tnlDicomSeriesInfo::getSeriesTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesTime;
 }
 
-inline const tnlString& SeriesInfoObj::getPerformingPhysiciansName()
+inline const tnlString& tnlDicomSeriesInfo::getPerformingPhysiciansName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysiciansName;
 }
 
-inline const tnlString& SeriesInfoObj::getPerformingPhysicianIdentificationSequence()
+inline const tnlString& tnlDicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysicianIdentificationSequence;
 }
 
-inline const tnlString& SeriesInfoObj::getOperatorsName()
+inline const tnlString& tnlDicomSeriesInfo::getOperatorsName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorsName;
 }
 
-inline const tnlString& SeriesInfoObj::getOperatorIdentificationSequence()
+inline const tnlString& tnlDicomSeriesInfo::getOperatorIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorIdentificationSequence;
 }
 
-inline const tnlString& SeriesInfoObj::getAcquisitionTime()
+inline const tnlString& tnlDicomSeriesInfo::getAcquisitionTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();

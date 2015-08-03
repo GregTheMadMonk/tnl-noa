@@ -2,9 +2,11 @@
                           tnlDicomHeader.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Jiri Kafka,
-                                       Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
+    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,9 +29,9 @@
 #include <dcmtk/dcmdata/dcdeftag.h>
 #endif
 
-class SeriesInfoObj;
-class PatientInfoObj;
-class ImageInfoObj;
+class tnlDicomSeriesInfo;
+class tnlDicomPatientInfo;
+class tnlDicomImageInfo;
 
 /***
  * Class provides acces to the DICOM file header (contains complete
@@ -48,21 +50,21 @@ class tnlDicomHeader
       inline DcmFileFormat &getFileFormat();
 #endif
       
-      inline ImageInfoObj &getImageInfoObj();
+      inline tnlDicomImageInfo &getImageInfo();
       
-      inline PatientInfoObj &getPatientInfoObj();
+      inline tnlDicomPatientInfo &getPatientInfo();
       
-      inline SeriesInfoObj &getSeriesInfoObj();
+      inline tnlDicomSeriesInfo &getSeriesInfo();
 
       inline bool loadFromFile( const char* fileName );
 
    protected:
       
-      ImageInfoObj *imageInfoObj;
+      tnlDicomImageInfo *imageInfoObj;
       
-      PatientInfoObj *patientInfoObj;
+      tnlDicomPatientInfo *patientInfoObj;
       
-      SeriesInfoObj *seriesInfoObj;
+      tnlDicomSeriesInfo *seriesInfoObj;
 
 #ifdef HAVE_DCMTK_H      
       DcmFileFormat *fileFormat;
@@ -71,6 +73,6 @@ class tnlDicomHeader
       bool isLoaded;
 };
 
-#include <core/io/DicomHeader_impl.h>
+#include <core/images/tnlDicomHeader_impl.h>
 
 #endif // TNLDICOMHEADER_H

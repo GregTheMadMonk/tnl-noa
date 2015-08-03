@@ -1,18 +1,38 @@
-#include "ImageInfoObj.h"
-#include "DicomHeader.h"
+/***************************************************************************
+                          tnlDicomImageInfo_impl.h  -  description
+                             -------------------
+    begin                : Jul 19, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
+     
+     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
+     Jiri Kafka          kafka9@seznam.cz
+     Pavel Neskudla
+ ***************************************************************************/
 
-inline ImageInfoObj::ImageInfoObj( tnlDicomHeader& dicomHeader )
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "tnlDicomImageInfo.h"
+#include "tnlDicomHeader.h"
+
+inline tnlDicomImageInfo::tnlDicomImageInfo( tnlDicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
     depth = 0;
 }
 
-inline ImageInfoObj::~ImageInfoObj()
+inline tnlDicomImageInfo::~tnlDicomImageInfo()
 {
 }
 
-inline bool ImageInfoObj::retrieveInfo()
+inline bool tnlDicomImageInfo::retrieveInfo()
 {
 
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_ImagePositionPatient,imagePositionToPatient.x,0);
@@ -40,42 +60,42 @@ inline bool ImageInfoObj::retrieveInfo()
    return 0;
 }
 
-inline ImagePositionToPatient ImageInfoObj::getImagePositionToPatient()
+inline ImagePositionToPatient tnlDicomImageInfo::getImagePositionToPatient()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return imagePositionToPatient;
 }
 
-inline ImageOrientationToPatient ImageInfoObj::getImageOrientationToPatient()
+inline ImageOrientationToPatient tnlDicomImageInfo::getImageOrientationToPatient()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return imageOrientationToPatient;
 }
 
-inline double ImageInfoObj::getSliceThickness()
+inline double tnlDicomImageInfo::getSliceThickness()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sliceThickness;
 }
 
-inline double ImageInfoObj::getSliceLocation()
+inline double tnlDicomImageInfo::getSliceLocation()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sliceLocation;
 }
 
-inline PixelSpacing ImageInfoObj::getPixelSpacing()
+inline PixelSpacing tnlDicomImageInfo::getPixelSpacing()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return pixelSpacing;
 }
 
-inline int ImageInfoObj::getNumberOfSlices()
+inline int tnlDicomImageInfo::getNumberOfSlices()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
