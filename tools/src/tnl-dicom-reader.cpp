@@ -42,12 +42,28 @@ bool processDicomFiles( const tnlParameterContainer& parameters )
 
 bool processDicomSeries( const tnlParameterContainer& parameters )
 {
-   const tnlList< tnlString >& dicomSeries = parameters.getParameter< tnlList< tnlString > >( "dicom-series" );
-   
-   for( int i = 0; i < dicomSeries.getSize(); i++ )
+   const tnlList< tnlString >& dicomSeriesNames = parameters.getParameter< tnlList< tnlString > >( "dicom-series" );
+   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
+   bool verbose = parameters.getParameter< bool >( "verbose" );
+
+   tnlGrid< 2, double, tnlHost, int > grid;
+   tnlVector< double, tnlHost, int > vector;
+   tnlRegionOfInterest< int > roi;   
+   for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {
-      const tnlString& series = dicomSeries[ i ];
-      tnlDicomSeries( series.getString() );
+      const tnlString& seriesName = dicomSeriesNames[ i ];
+      tnlDicomSeries dicomSeries( seriesName.getString() );
+      if( i == 0 )
+      {
+         if( ! roi.setup( parameters, &dicomSeries ) )
+            return false;
+         roi.setGrid( grid, verbose );
+         vector.setSize( grid.getNumberOfCells() );
+         cout << "Writing grid to file " << meshFile << endl;
+         grid.save( meshFile );
+
+      }
+      
    }
 }
 #endif

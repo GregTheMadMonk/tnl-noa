@@ -43,7 +43,7 @@ int filter(const struct dirent *dire)
     return 1;
 }
 
-inline tnlDicomSeries::tnlDicomSeries( const char* filePath)
+inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
 {
     fileList = new tnlList<tnlString *>();
     dicomImage = 0;
@@ -52,7 +52,7 @@ inline tnlDicomSeries::tnlDicomSeries( const char* filePath)
     imagesInfo.maxColorValue = 0;
     imagesInfo.minColorValue = 128000;
 
-    if(!loadDicomSeries(filePath))
+    if( !loadDicomSeries( filePath ) )
         isLoaded = false;
     else
         isLoaded = true;
@@ -78,10 +78,10 @@ inline tnlDicomSeries::~tnlDicomSeries()
         delete pixelData;
 }
 
-inline bool tnlDicomSeries::retrieveFileList( const char *filePath)
+inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
 {
     tnlString filePathString(filePath);
-    tnlString suffix(filePath, filePathString.getLength() - 3);
+    tnlString suffix(filePath.getString(), filePathString.getLength() - 3);
     //char *ima = "ima";
     //char *dcm = "dcm";
 
@@ -92,8 +92,8 @@ inline bool tnlDicomSeries::retrieveFileList( const char *filePath)
     int fileNamePosition = findLastIndexOf(filePathString,"/");
 
     //parse file path
-    tnlString fileName(filePath, fileNamePosition);
-    tnlString directoryPath(filePath, 0, filePathString.getLength() - fileNamePosition);
+    tnlString fileName(filePath.getString(), fileNamePosition);
+    tnlString directoryPath(filePath.getString(), 0, filePathString.getLength() - fileNamePosition);
 
     int separatorPosition = findLastIndexOf(fileName, "_");
     if (separatorPosition == -1)
@@ -135,41 +135,37 @@ inline bool tnlDicomSeries::retrieveFileList( const char *filePath)
     return true;
 }
 
-inline bool tnlDicomSeries::loadImage(char *filePath, int number)
+inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 {
-    //load header
-    tnlDicomHeader *header = new tnlDicomHeader();
-    dicomSeriesHeaders.setSize(fileList->getSize());
-    dicomSeriesHeaders.setElement(number,header);
-    if(!header->loadFromFile(filePath))
-    {
-        return false;
-    }
+   //load header
+   tnlDicomHeader *header = new tnlDicomHeader();
+   dicomSeriesHeaders.setSize( fileList->getSize() );
+   dicomSeriesHeaders.setElement( number, header );
+   if( !header->loadFromFile( filePath ) )
+      return false;
 
-    //check series UID
-    const tnlString& seriesUID = dicomSeriesHeaders.operator [](0)->getSeriesInfo().getSeriesInstanceUID();
-    if( seriesUID != header->getSeriesInfo().getSeriesInstanceUID() )
-    {
-        return false;
-    }
+   //check series UID
+   const tnlString& seriesUID = dicomSeriesHeaders[ 0 ]->getSeriesInfo().getSeriesInstanceUID();
+   if( seriesUID != header->getSeriesInfo().getSeriesInstanceUID() )
+      return false;
 
-    //load image
-    if(dicomImage) delete dicomImage;
-    dicomImage = NULL;
+   //load image
+   if( dicomImage ) delete dicomImage;
+   dicomImage = NULL;
 
-    dicomImage = new DicomImage(filePath);
+   dicomImage = new DicomImage( filePath.getString() );
 
-    if(dicomImage->getFrameCount() > 1)
-    {
-        cout << filePath <<" not supported format-Dicom Image has more than one frame";
-        return false;
-    }
+   if(dicomImage->getFrameCount() > 1)
+   {
+      cout << filePath <<" not supported format-Dicom Image has more than one frame";
+      return false;
+   }
 
-    if(!dicomImage->isMonochrome())
-    {
-        cout << filePath <<" not supported format--Dicom Image is not monochrome";
-        return false;
-    }
+   if(!dicomImage->isMonochrome())
+   {
+      cout << filePath <<" not supported format--Dicom Image is not monochrome";
+      return false;
+   }
 
     if (dicomImage != NULL)
     {
@@ -198,18 +194,18 @@ inline bool tnlDicomSeries::loadImage(char *filePath, int number)
 
     if(number == 0)
     {
-        imagesInfo.height = dicomImage->getHeight();
+        this->height = dicomImage->getHeight();
     }
-    else if(dicomImage->getHeight() != imagesInfo.height)
+    else if(dicomImage->getHeight() != this->height)
     {
         cerr << filePath <<" image has bad height value\n";
     }
 
     if(number == 0)
     {
-        imagesInfo.width = dicomImage->getWidth ();
+        this->width = dicomImage->getWidth ();
     }
-    else if(dicomImage->getWidth() != imagesInfo.width)
+    else if(dicomImage->getWidth() != this->width)
     {
         cerr << filePath <<" image has bad width value\n";
     }
@@ -218,14 +214,14 @@ inline bool tnlDicomSeries::loadImage(char *filePath, int number)
     {
         imagesInfo.bps = dicomImage->getDepth ();
     }
-    else if(dicomImage->getDepth() != imagesInfo.bps)
+    else if( dicomImage->getDepth() != imagesInfo.bps )
     {
         cerr << filePath <<" image has bad bps value\n";
     }
 
     //update vales
     double min, max;
-    dicomImage->getMinMaxValues(min, max);
+    dicomImage->getMinMaxValues( min, max );
     if(imagesInfo.minColorValue > min)
     {
         imagesInfo.minColorValue = min;
@@ -248,7 +244,7 @@ inline bool tnlDicomSeries::loadImage(char *filePath, int number)
     }
     else
     {//check image size for compatibility
-        if (imagesInfo.frameSize != size)
+        if( imagesInfo.frameSize != size )
         {
             cerr << filePath << " image has bad frame size value\n";
             return false;
@@ -266,29 +262,29 @@ inline bool tnlDicomSeries::loadImage(char *filePath, int number)
     dicomImage->getOutputData(target,size,16);
     imagesInfo.imagesCount++;
 
-    //delete image object - data are stored separatedly
+    //delete image object - data are stored separately
     delete dicomImage;
     dicomImage = NULL;
     return true;
 }
 
 
-inline bool tnlDicomSeries::loadDicomSeries( const char *filePath )
+inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
 {
-    //load list of files
-    if(!retrieveFileList(filePath))
-        return false;
+   //load list of files
+   if( !retrieveFileList( filePath ) )
+      return false;
 
-    //load images
-    int imagesCountToLoad = fileList->getSize();
-    for (int i=0; i < imagesCountToLoad ;i++)
-    {
-         if(!loadImage((fileList->operator [](i))->getString(),i))
-         {
-             cerr << (fileList->operator [](i))->getString() << " skipped";
-         }
-     }
-    return true;
+   //load images
+   int imagesCountToLoad = fileList->getSize();
+   for( int i=0; i < imagesCountToLoad; i++ )
+   {
+      if( !loadImage( ( ( *fileList )[ i ] )->getString(),i ) )
+      {
+         cerr << ( ( *fileList )[ i ] )->getString() << " skipped";
+      }
+   }
+   return true;
 }
 
 inline int tnlDicomSeries::getImagesCount()
@@ -299,16 +295,6 @@ inline int tnlDicomSeries::getImagesCount()
 inline const Uint16 *tnlDicomSeries::getData()
 {
     return pixelData;
-}
-
-inline int tnlDicomSeries::getWidth()
-{
-    return imagesInfo.width;
-}
-
-inline int tnlDicomSeries::getHeight()
-{
-    return imagesInfo.height;
 }
 
 inline int tnlDicomSeries::getColorCount()

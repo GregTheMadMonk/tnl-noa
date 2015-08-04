@@ -47,6 +47,10 @@ class tnlRegionOfInterest
       
       Index getHeight() const;
       
+      template< typename Grid >
+         bool setGrid( Grid& grid,
+                       bool verbose = false );
+      
       bool isIn( const Index row, const Index column ) const;
       
    protected:

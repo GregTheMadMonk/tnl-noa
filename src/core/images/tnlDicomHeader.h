@@ -56,7 +56,7 @@ class tnlDicomHeader
       
       inline tnlDicomSeriesInfo &getSeriesInfo();
 
-      inline bool loadFromFile( const char* fileName );
+      inline bool loadFromFile( const tnlString& fileName );
 
    protected:
       

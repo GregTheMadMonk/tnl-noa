@@ -39,26 +39,6 @@ void configSetup( tnlConfigDescription& config )
    config.addEntry        < bool >      ( "verbose",       "Set the verbosity of the program.", true );
 }
 
-template< typename Index,
-          typename Grid >
-bool setGrid( const tnlRegionOfInterest< Index >& roi,
-              Grid& grid,
-              bool verbose = false )
-{
-    grid.setDimensions( roi.getWidth(), roi.getHeight() );
-    typename Grid::VertexType origin, proportions;
-    origin.x() = 0.0;
-    origin.y() = 0.0;
-    proportions.x() = 1.0;
-    proportions.y() = ( double ) grid.getDimensions().x() / ( double ) grid.getDimensions().y();
-    grid.setDomain( origin, proportions );
-    if( verbose )
-    {
-        cout << "Setting grid to dimensions " << grid.getDimensions() << 
-                " and proportions " << grid.getProportions() << endl;
-    }
-    return true;
-}
 
 bool processImages( const tnlParameterContainer& parameters )
 {
@@ -81,7 +61,7 @@ bool processImages( const tnlParameterContainer& parameters )
          {
             if( ! roi.setup( parameters, &pgmImage ) )
                return false;
-            setGrid( roi, grid, verbose );
+            roi.setGrid( grid, verbose );
             vector.setSize( grid.getNumberOfCells() );
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );
@@ -107,7 +87,7 @@ bool processImages( const tnlParameterContainer& parameters )
          {
             if( ! roi.setup( parameters, &pngImage ) )
                return false;
-            setGrid( roi, grid, verbose );
+            roi.setGrid( grid, verbose );
             vector.setSize( grid.getNumberOfCells() );
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );
@@ -133,7 +113,7 @@ bool processImages( const tnlParameterContainer& parameters )
          {
             if( ! roi.setup( parameters, &jpegImage ) )
                return false;
-            setGrid( roi, grid, verbose );
+            roi.setGrid( grid, verbose );
             vector.setSize( grid.getNumberOfCells() );
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );

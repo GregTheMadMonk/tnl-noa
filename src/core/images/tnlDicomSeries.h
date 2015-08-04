@@ -26,7 +26,10 @@
 #include <core/tnlList.h>
 #include <core/tnlString.h>
 #include <core/param-types.h>
+#include <core/images/tnlImage.h>
 #include <core/images/tnlDicomHeader.h>
+#include <core/images/tnlRegionOfInterest.h>
+#include <mesh/tnlGrid.h>
 #include <tnlConfig.h>
 
 
@@ -49,7 +52,7 @@ struct WindowCenterWidth
 
 struct ImagesInfo
 {
-    int width, height, imagesCount, frameUintsCount, bps, colorsCount, mainFrameIndex,
+    int imagesCount, frameUintsCount, bps, colorsCount, mainFrameIndex,
         frameSize, maxColorValue, minColorValue;
     WindowCenterWidth window;
 };
@@ -59,23 +62,24 @@ struct ImagesInfo
  * DICOM serie (searches the directory of the file). Call isDicomSeriesLoaded()
  * function to check if the load was successful.
  */
-class tnlDicomSeries
+class tnlDicomSeries : public tnlImage< int >
 {
    public:
       
-      inline tnlDicomSeries( const char *filePath );
+      inline tnlDicomSeries( const tnlString& filePath );
        
       inline virtual ~tnlDicomSeries();
 
       inline int getImagesCount();
+            
+      template< typename Vector >
+      bool getImage( const int imageIdx,
+                     const tnlRegionOfInterest< int > roi,
+                     Vector& vector );
        
 #ifdef HAVE_DCMTK_H       
       inline const Uint16 *getData();
 #endif       
-       
-      inline int getWidth();
-       
-      inline int getHeight();
        
       inline int getColorCount();
        
@@ -95,11 +99,11 @@ class tnlDicomSeries
 
    private:
       
-      bool loadDicomSeries( const char *filePath );
+      bool loadDicomSeries( const tnlString& filePath );
        
-      bool retrieveFileList( const char *filePath );
+      bool retrieveFileList( const tnlString& filePath );
        
-      bool loadImage( char *filePath, int number );
+      bool loadImage( const tnlString& filePath, int number );
 
       tnlList<tnlString *> *fileList;
        

@@ -40,9 +40,9 @@ inline tnlDicomHeader::~tnlDicomHeader()
     delete fileFormat;
 }
 
-inline bool tnlDicomHeader::loadFromFile(const char *fileName)
+inline bool tnlDicomHeader::loadFromFile( const tnlString& fileName )
 {
-    OFCondition status = fileFormat->loadFile(fileName);
+    OFCondition status = fileFormat->loadFile( fileName.getString() );
     if(status.good())
     {
         isLoaded = true;

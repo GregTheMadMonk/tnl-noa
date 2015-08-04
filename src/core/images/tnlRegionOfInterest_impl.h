@@ -162,6 +162,29 @@ getHeight() const
 }
 
 template< typename Index >
+   template< typename Grid >
+bool
+tnlRegionOfInterest< Index >::
+setGrid( Grid& grid,
+         bool verbose )
+{
+    grid.setDimensions( this->getWidth(), this->getHeight() );
+    typename Grid::VertexType origin, proportions;
+    origin.x() = 0.0;
+    origin.y() = 0.0;
+    proportions.x() = 1.0;
+    proportions.y() = ( double ) grid.getDimensions().x() / ( double ) grid.getDimensions().y();
+    grid.setDomain( origin, proportions );
+    if( verbose )
+    {
+        cout << "Setting grid to dimensions " << grid.getDimensions() << 
+                " and proportions " << grid.getProportions() << endl;
+    }
+    return true;
+}
+
+
+template< typename Index >
 bool
 tnlRegionOfInterest< Index >::
 isIn( const Index row, const Index column ) const
