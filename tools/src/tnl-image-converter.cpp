@@ -195,14 +195,18 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   configSetup( conf_desc );
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
+   tnlConfigDescription configDescription;
+   configSetup( configDescription );
+   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
+   {
+      configDescription.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
+   }
    if( ! parameters.checkParameter( "input-images" ) &&
        ! parameters.checkParameter( "input-files") )
    {
        cerr << "Neither input images nor input .tnl files are given." << endl;
+       configDescription.printUsage( argv[ 0 ] );
        return EXIT_FAILURE;
    }
    if( parameters.checkParameter( "input-images" ) && ! processImages( parameters ) )

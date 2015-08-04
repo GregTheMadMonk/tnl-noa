@@ -78,61 +78,102 @@ inline tnlDicomSeries::~tnlDicomSeries()
         delete pixelData;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector >
+bool
+tnlDicomSeries::
+getImage( const int imageIdx,
+          const tnlGrid< 2, Real, Device, Index >& grid,
+          const tnlRegionOfInterest< int > roi,
+          Vector& vector )
+{
+   const Uint16* imageData = this->getData( imageIdx );
+   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef typename GridType::CoordinatesType CoordinatesType;
+   
+   Index i, j;
+   int position( 0 );
+   for( i = 0; i < this->height; i ++ )
+   {
+      for( j = 0; j < this->width; j ++ )
+      {
+         if( roi.isIn( i, j ) )
+         {
+            Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+                                                                  roi.getBottom() - 1 - i ) );
+            Uint16 col = imageData[ position ];
+            vector.setElement( cellIndex, ( Real ) col / ( Real ) this->getMaxColorValue() );
+            cout << vector.getElement( cellIndex ) << " ";
+         }
+         position++;
+      }
+      cout << endl;
+   }
+   return true;
+}
+
 inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
 {
     tnlString filePathString(filePath);
     tnlString suffix(filePath.getString(), filePathString.getLength() - 3);
-    //char *ima = "ima";
-    //char *dcm = "dcm";
 
-    //check DICOM files
-    if( suffix != "ima" && suffix != "dcm" )
-        return false;
+    /***
+     * Check DICOM files
+     */
+   if( suffix != "ima" && suffix != "dcm" )
+   {
+       cerr << "The given file is not a DICOM file." << endl;
+      return false;
+   }
 
-    int fileNamePosition = findLastIndexOf(filePathString,"/");
+   int fileNamePosition = findLastIndexOf(filePathString,"/");
 
-    //parse file path
-    tnlString fileName(filePath.getString(), fileNamePosition);
-    tnlString directoryPath(filePath.getString(), 0, filePathString.getLength() - fileNamePosition);
+   /***
+    * Parse file path
+    */
+   tnlString fileName(filePath.getString(), fileNamePosition);
+   tnlString directoryPath(filePath.getString(), 0, filePathString.getLength() - fileNamePosition);
 
-    int separatorPosition = findLastIndexOf(fileName, "_");
-    if (separatorPosition == -1)
-    {
-        //try another separator
-        separatorPosition = findLastIndexOf(fileName, "-");
-    }
-    if (separatorPosition == -1)
-            return false;
-    else
-    {
-        //numbered files
-        tnlString fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
+   int separatorPosition = findLastIndexOf(fileName, "_");
+   if (separatorPosition == -1)
+   {
+      //try another separator
+      separatorPosition = findLastIndexOf(fileName, "-");
+   }
+   if( separatorPosition == -1 )
+      return false;
+   else
+   {
+      //numbered files
+      tnlString fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
 
-        struct dirent **dirp;
-        tnlList<tnlString *> files;
+      struct dirent **dirp;
+      tnlList<tnlString *> files;
 
-        //scan and sort directory
-        int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);
-        for(int i = 0 ; i < ndirs; ++i)
-        {
-            files.Append(new tnlString((char *)dirp[i]->d_name));
-            delete dirp[i];
-        }
+      //scan and sort directory
+      int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);
+      for(int i = 0 ; i < ndirs; ++i)
+      {
+         files.Append(new tnlString((char *)dirp[i]->d_name));
+         delete dirp[i];
+      }
 
-        for (int i = 0; i < files.getSize(); i++)
-        {
-            tnlString *file = new tnlString(files[i]->getString());
+      for (int i = 0; i < files.getSize(); i++)
+      {
+         tnlString *file = new tnlString(files[i]->getString());
 
-            //check if file prefix contained
-            if (strstr(file->getString(), fileNamePrefix.getString()))
-            {
-                fileList->Append(new tnlString(directoryPath.operator +(*file)));
-            }
-            delete file;
-            delete files[i];
-        }
-    }
-    return true;
+         //check if file prefix contained
+         if (strstr(file->getString(), fileNamePrefix.getString()))
+         {
+            fileList->Append(new tnlString(directoryPath.operator +(*file)));
+         }
+         delete file;
+         delete files[i];
+      }
+   }
+   return true;
 }
 
 inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
@@ -271,9 +312,14 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 
 inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
 {
-   //load list of files
-   if( !retrieveFileList( filePath ) )
+   /***
+    * Load list of files
+    */
+   if( ! retrieveFileList( filePath ) )
+   {
+      cerr << "I am not able to retrieve the files of the DICOM series in " << filePath << "." << endl;
       return false;
+   }
 
    //load images
    int imagesCountToLoad = fileList->getSize();
@@ -292,9 +338,9 @@ inline int tnlDicomSeries::getImagesCount()
     return imagesInfo.imagesCount;
 }
 
-inline const Uint16 *tnlDicomSeries::getData()
+inline const Uint16 *tnlDicomSeries::getData( int imageNumber )
 {
-    return pixelData;
+    return &pixelData[ imageNumber * imagesInfo.frameUintsCount ];
 }
 
 inline int tnlDicomSeries::getColorCount()

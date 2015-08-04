@@ -72,13 +72,17 @@ class tnlDicomSeries : public tnlImage< int >
 
       inline int getImagesCount();
             
-      template< typename Vector >
+      template< typename Real,
+                typename Device,
+                typename Index,
+                typename Vector >
       bool getImage( const int imageIdx,
+                     const tnlGrid< 2, Real, Device, Index >& grid,
                      const tnlRegionOfInterest< int > roi,
                      Vector& vector );
        
 #ifdef HAVE_DCMTK_H       
-      inline const Uint16 *getData();
+      inline const Uint16 *getData( int imageNumber = 0 );
 #endif       
        
       inline int getColorCount();

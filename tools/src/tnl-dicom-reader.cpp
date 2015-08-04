@@ -19,6 +19,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/images/tnlDicomSeries.h>
+#include <core/mfilename.h>
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -52,7 +53,12 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {
       const tnlString& seriesName = dicomSeriesNames[ i ];
+      cout << "Reading a file " << seriesName << endl;   
       tnlDicomSeries dicomSeries( seriesName.getString() );
+      if( !dicomSeries.isDicomSeriesLoaded() )
+      {
+         cerr << "Loading of the DICOM series " << seriesName << " failed." << endl;
+      }
       if( i == 0 )
       {
          if( ! roi.setup( parameters, &dicomSeries ) )
@@ -61,9 +67,16 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
          vector.setSize( grid.getNumberOfCells() );
          cout << "Writing grid to file " << meshFile << endl;
          grid.save( meshFile );
-
       }
-      
+      cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << endl;
+      for( int imageIdx = 0; imageIdx < dicomSeries.getImagesCount(); imageIdx++ )
+      {
+         dicomSeries.getImage( imageIdx, grid, roi, vector );
+         tnlString fileName;
+         FileNameBaseNumberEnding( seriesName.getString(), imageIdx, 2, ".tnl", fileName );
+         cout << "Writing file " << fileName << " ... " << endl;
+         vector.save( fileName );
+      }      
    }
 }
 #endif
@@ -71,17 +84,18 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
-   setupConfig( conf_desc );
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
+   tnlConfigDescription configDescription;
+   setupConfig( configDescription );
+   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
    {
-      conf_desc.printUsage( argv[ 0 ] );
+      configDescription.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }   
    if( ! parameters.checkParameter( "dicom-files" ) &&
        ! parameters.checkParameter( "dicom-series") )
    {
        cerr << "Neither DICOM series nor DICOM files are given." << endl;
+       configDescription.printUsage( argv[ 0 ] );
        return EXIT_FAILURE;
    }
 #ifdef HAVE_DCMTK_H   
