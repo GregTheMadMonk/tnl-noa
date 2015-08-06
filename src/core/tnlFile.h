@@ -207,14 +207,14 @@ bool tnlFile :: read( Type* buffer,
             return false;
          }
 
-         if( cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
-                         host_buffer,
-                         transfer * sizeof( Type ),
-                         cudaMemcpyHostToDevice ) != cudaSuccess )
+         cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
+                     host_buffer,
+                     transfer * sizeof( Type ),
+                     cudaMemcpyHostToDevice );
+         if( ! checkCudaDevice )
          {
             cerr << "Transfer of data from the CUDA device to the file " << this -> fileName
                  << " failed." << endl;
-            checkCudaDevice;
             free( host_buffer );
             return false;
          }
@@ -290,13 +290,14 @@ bool tnlFile ::  write( const Type* buffer,
          while( this->writtenElements < elements )
          {
             Index transfer = :: Min( elements - this->writtenElements, host_buffer_size );
-            if( cudaMemcpy( host_buffer,
-                            ( void* ) & ( buffer[ this->writtenElements ] ),
-                            transfer * sizeof( Type ),
-                            cudaMemcpyDeviceToHost ) != cudaSuccess )
+            cudaMemcpy( host_buffer,
+                       ( void* ) & ( buffer[ this->writtenElements ] ),
+                       transfer * sizeof( Type ),
+                       cudaMemcpyDeviceToHost );
+            if( ! checkCudaDevice )
             {
-               checkCudaDevice;
-               cerr << "CUDA error." << endl;
+               cerr << "Transfer of data from the file " << this -> fileName
+                    << " to the CUDA device failed." << endl;
                free( host_buffer );
                return false;
             }

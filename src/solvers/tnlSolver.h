@@ -18,17 +18,18 @@
 #ifndef TNLSOLVER_H_
 #define TNLSOLVER_H_
 
-#include <solvers/tnlDefaultSolverConfig.h>
+#include <solvers/tnlBuildConfigTags.h>
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig = tnlDefaultSolverConfig<> >
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          template< typename ConfTag > class ProblemConfig,
+          typename ConfigTag = tnlDefaultBuildConfigTag >
 class tnlSolver
 {
    public:
-   bool run( const char* configFileName, int argc, char* argv[] );
+   static bool run( int argc, char* argv[] );
 
    protected:
 };
 
-#include <implementation/solvers/tnlSolver_impl.h>
+#include <solvers/tnlSolver_impl.h>
 #endif /* TNLSOLVER_H_ */

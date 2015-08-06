@@ -33,6 +33,7 @@ class tnlSORSolver : public tnlObject,
                      public tnlIterativeSolver< typename Matrix :: RealType,
                                                 typename Matrix :: IndexType >
 {
+   public:
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
@@ -40,12 +41,16 @@ class tnlSORSolver : public tnlObject,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
 
-   public:
 
    tnlSORSolver();
 
    tnlString getType() const;
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setOmega( const RealType& omega );
 
@@ -77,49 +82,6 @@ class tnlSORSolver : public tnlObject,
 
 };
 
-#include <implementation/solvers/linear/stationary/tnlSORSolver_impl.h>
-
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlMultidiagonalMatrix.h>
-
-
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, long int > >;
-
-/*extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
-
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
-
-
-#ifdef HAVE_CUDA
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
-
-// TODO: fix this
-/*
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
-*/
-
-/*
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;
-*/
-#endif
+#include <solvers/linear/stationary/tnlSORSolver_impl.h>
 
 #endif

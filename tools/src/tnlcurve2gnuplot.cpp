@@ -22,26 +22,35 @@
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
 
+void setupConfig( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addRequiredList< tnlString >(  "input-files", "Input files." );
+   config.addList< tnlString >( "output-files", "Output files." );
+   config.addEntry< int >( "output-step", "Decrease number of the output curve nodes." );
+   config.addEntry< tnlString >( "output-file-format", "Output file format. Can be gnuplot.", "gnuplot" );
+}
+
 //--------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
-      return 1;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   
+   setupConfig( conf_desc );
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
 
-   tnlList< tnlString > input_files = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   tnlList< tnlString > input_files = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    tnlList< tnlString > output_files;
-   if( ! parameters. GetParameter< tnlList< tnlString > >( "output-files", output_files ) )
+   if( ! parameters. getParameter< tnlList< tnlString > >( "output-files", output_files ) )
       cout << "No output files were given." << endl;
    int output_step( 1 );
-   parameters. GetParameter< int >( "output-step", output_step );
-   tnlString output_file_format = parameters. GetParameter< tnlString >( "output-file-format" );
+   parameters. getParameter< int >( "output-step", output_step );
+   tnlString output_file_format = parameters. getParameter< tnlString >( "output-file-format" );
 
    int size = input_files. getSize();
    /*if( size != output_files. getSize() )

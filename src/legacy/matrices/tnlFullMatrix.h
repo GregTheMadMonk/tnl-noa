@@ -97,7 +97,7 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlFullMatrix< Real, Device, Index > :: getType() const
 {
    Real t;
-   return tnlString( "tnlFullMatrix< " ) + tnlString( GetParameterType( t ) ) + tnlString( " >" );
+   return tnlString( "tnlFullMatrix< " ) + tnlString( getType( t ) ) + tnlString( " >" );
 };
 
 template< typename Real, typename Device, typename Index >

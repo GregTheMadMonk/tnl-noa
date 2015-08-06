@@ -1,52 +1,100 @@
 #!/bin/bash
 
-TARGET=TNL
-INSTALL_PREFIX=${HOME}/local
-WITH_CUDA=no
-WITH_CUSPARSE=no
-CUDA_ARCHITECTURE=2.0
-TEMPLATE_EXPLICIT_INSTANTIATION=yes
-WITH_PROFILING=yes
-#VERBOSE="VERBOSE=1"
+BUILD_DEBUG="yes"
+BUILD_RELEASE="yes"
 
-CMAKE="cmake"
-CPUS=`grep -c processor /proc/cpuinfo`
-#CPUS="1"
+OPTIONS=""
 
-
-echo "Building $TARGET using $CPUS processors."
-
-if [ ! -d Debug ];
+CMAKE_TEST=`which cmake`    
+if test x${CMAKE_TEST} = "x";
 then
-   mkdir Debug
-fi
-if [ ! -d Release ];
-then
-   mkdir Release
+    echo "Cmake is not installed on your system. Please install it by:"
+    echo ""
+    echo "   sudo apt-get install cmake     on Ubuntu and Debian based systems"
+    echo "   sudo yum install cmake         on RedHat, Fedora or CentOS"
+    echo "   sudo zypper install cmake      on OpenSuse"
+    echo ""
+    echo "You may also install it from the source code at:"
+    echo " http://www.cmake.org/download/"
+    exit 1
 fi
 
-cd Debug
-${CMAKE} .. -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_INSTALL_PREFIX=${HOME}/local \
-            -DWITH_PROFILING=${WITH_PROFILING} \
-            -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} \
-            -DWITH_CUDA=${WITH_CUDA} \
-            -DWITH_CUSPARSE=${WITH_CUSPARSE} \
-            -DPETSC_DIR=${PETSC_DIR} \
-            -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
-make -j${CPUS} ${VERBOSE}
-make -j${CPUS} test
-make -j${CPUS} install
+for option in "$@"
+do
+    case $option in
+        --no-debug                    ) BUILD_DEBUG="no" ;;
+        --no-release                  ) BUILD_RELEASE="no" ;;        
+        *                             ) OPTIONS="${OPTIONS} ${option}" ;;
+    esac
+done
 
-cd ../Release
-${CMAKE} .. -DCMAKE_INSTALL_PREFIX=${HOME}/local \
-            -DWITH_PROFILING=${WITH_PROFILING} \
-            -DCUDA_ARCHITECTURE=${CUDA_ARCHITECTURE} \
-            -DWITH_CUDA=${WITH_CUDA} \
-            -DWITH_CUSPARSE=${WITH_CUSPARSE} \
-            -DPETSC_DIR=${PETSC_DIR} \
-            -DWITH_TEMPLATE_EXPLICIT_INSTANTIATION=${TEMPLATE_EXPLICIT_INSTANTIATION}
-make -j${CPUS} ${VERBOSE}
-make -j${CPUS} test
-make -j${CPUS} install
+if test ${BUILD_DEBUG} = "yes";
+then
+    if [ ! -d Debug ];
+    then
+       mkdir Debug
+    fi
+    cd Debug
+    ../build --root-dir=.. --build=Debug ${OPTIONS}
+    if test $? != 0;
+    then
+       exit 1
+    fi
+    make install
+    cd ..
+fi
+
+if test ${BUILD_RELEASE} = "yes";
+then
+    if [ ! -d Release ];
+    then
+       mkdir Release
+    fi
+    cd Release
+    ../build --root-dir=.. --build=Release ${OPTIONS}
+    if test $? != 0;
+    then
+        exit 1
+    fi
+    make install
+    cd ..
+fi
+
+TNL_TEST=`which tnl-bindir`
+
+if test x${TNL_TEST} = x;
+then
+    echo ""
+    echo "WARNING !!!"
+    echo ""
+    echo "Your system does not see TNL which was installed right now."
+    echo "You need to add it to your system variables PATH and LD_LIBRARY_PATH."
+    echo "Add the following to your .bashrc file:"
+    echo ""
+    
+    PREFIX=${HOME}/local
+    for option in "$@"
+    do
+        case $option in
+            --prefix=*                     ) PREFIX="${option#*=}" ;;
+        esac
+    done
+
+    echo "if test x\${PATH} = x;"
+    echo "then"
+    echo "   PATH=${PREFIX}/bin"
+    echo "else"
+    echo "   PATH=\${PATH}:${PREFIX}/bin"
+    echo "fi"
+    echo "if test x\${LD_LIBRARY_PATH} = x;"
+    echo "then"
+    echo "   LD_LIBRARY_PATH=${PREFIX}/lib"
+    echo "else"
+    echo "   LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${PREFIX}/lib"
+    echo "fi"
+    echo "export PATH"
+    echo "export LD_LIBRARY_PATH"
+fi
+
+exit 0
 

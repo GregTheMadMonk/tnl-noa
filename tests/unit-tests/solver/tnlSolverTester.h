@@ -47,7 +47,7 @@ class tnlSolverTesterProblem
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const { };
 
-   bool init( const tnlParameterContainer& parameters ) { this -> dofVector. setSize( 100 ); return true; };
+   bool setup( const tnlParameterContainer& parameters ) { this -> dofVector. setSize( 100 ); return true; };
 
    bool setInitialCondition( const tnlParameterContainer& parameters ) { return true; };
 
@@ -76,7 +76,7 @@ class tnlSolverTesterSetter
              typename IndexType >
    bool run( const tnlParameterContainer& parameters ) const
    {
-      int dimensions = parameters. GetParameter< int >( "dimensions" );
+      int dimensions = parameters. getParameter< int >( "dimensions" );
       if( dimensions <= 0 || dimensions > 3 )
       {
          cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;

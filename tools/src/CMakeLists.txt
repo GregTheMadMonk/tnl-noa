@@ -1,10 +1,3 @@
-SET( tnlerrnormssources tnl-err-norms.h
-                        tnl-err-norms.cpp
-                        compare-objects.h )
-
-SET( tnlgridviewsources tnl-grid-view.cpp
-                        tnl-grid-view.h  )
-                     
 SET( tnlcurve2gnuplotsources tnlcurve2gnuplot.cpp )
 
 SET( tnlfunctionsbenchmarksources functions-benchmark.cpp
@@ -20,8 +13,8 @@ set( tnl_mesh_convert_SOURCES tnl-mesh-convert.cpp
                             tnl-mesh-convert.h )
                             
                             
-set( tnl_discrete_SOURCES tnl-discrete.cpp
-                          tnl-discrete.h )
+set( tnl_init_SOURCES tnl-init.cpp
+                      tnl-init.h )
 
 set( tnl_view_SOURCES tnl-view.cpp
                       tnl-view.h )
@@ -35,8 +28,8 @@ target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
 ADD_EXECUTABLE(tnl-mesh-convert${debugExt} ${tnl_mesh_convert_SOURCES})
 target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-discrete${debugExt} ${tnl_discrete_SOURCES})
-target_link_libraries (tnl-discrete${debugExt} tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-init${debugExt} ${tnl_init_SOURCES})
+target_link_libraries (tnl-init${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-view${debugExt} ${tnl_view_SOURCES})
 target_link_libraries (tnl-view${debugExt} tnl${debugExt}-${tnlVersion} )
@@ -47,21 +40,18 @@ target_link_libraries (tnl-diff${debugExt} tnl${debugExt}-${tnlVersion} )
 ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} ${tnlfunctionsbenchmarksources} )
 target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-err-norms${debugExt} ${tnlerrnormssources})
-target_link_libraries (tnl-err-norms${debugExt} tnl${debugExt}-${tnlVersion} )
-
-#ADD_EXECUTABLE(tnl-grid-view${debugExt} ${tnlgridviewsources})
-#target_link_libraries (tnl-grid-view${debugExt} tnl${debugExt}-${tnlVersion} )
-
 ADD_EXECUTABLE(tnl-curve2gnuplot${debugExt} ${tnlcurve2gnuplotsources})
 target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion} )
 
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( tnl-cuda-arch${debugExt} tnl-cuda-arch.cu
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
+    SET_TARGET_PROPERTIES( tnl-cuda-arch${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
+ENDIF()
 #ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
 #target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
-INSTALL( TARGETS tnl-err-norms${debugExt}
-#                 tnl-grid-view${debugExt}
-                 tnl-discrete${debugExt}
+INSTALL( TARGETS tnl-init${debugExt}
                  tnl-view${debugExt}
                  tnl-diff${debugExt}
                  tnl-grid-setup${debugExt}
@@ -71,6 +61,14 @@ INSTALL( TARGETS tnl-err-norms${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
          
-INSTALL( FILES tnl-err2eoc.py
+IF( BUILD_CUDA )
+   INSTALL( TARGETS tnl-cuda-arch${debugExt}
+            RUNTIME DESTINATION bin
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+ENDIF()
+
+INSTALL( FILES tnl-err2eoc
+               tnl-time-series2png
+               tnl-eoc-test-log
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )         

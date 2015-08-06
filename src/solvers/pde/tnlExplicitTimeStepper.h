@@ -19,6 +19,11 @@
 #define TNLEXPLICITTIMESTEPPER_H_
 
 #include <solvers/ode/tnlODESolverMonitor.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
+#include <core/tnlTimerRT.h>
+#include <core/tnlLogger.h>
+
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -27,13 +32,23 @@ class tnlExplicitTimeStepper
    public:
 
    typedef Problem ProblemType;
-   typedef OdeSolver< ProblemType > OdeSolverType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
-   typedef typename ProblemType :: DofVectorType DofVectorType;
+   typedef OdeSolver< tnlExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
+   typedef typename Problem::RealType RealType;
+   typedef typename Problem::DeviceType DeviceType;
+   typedef typename Problem::IndexType IndexType;
+   typedef typename Problem::MeshType MeshType;
+   typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
    tnlExplicitTimeStepper();
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
+   bool init( const MeshType& mesh );
 
    void setSolver( OdeSolverType& odeSolver );
 
@@ -41,12 +56,22 @@ class tnlExplicitTimeStepper
 
    ProblemType* getProblem() const;
 
-   bool setTau( const RealType& tau );
+   bool setTimeStep( const RealType& tau );
 
-   const RealType& getTau() const;
+   const RealType& getTimeStep() const;
 
    bool solve( const RealType& time,
-               const RealType& stopTime );
+               const RealType& stopTime,
+               const MeshType& mesh,
+               DofVectorType& dofVector,
+               MeshDependentDataType& meshDependentData );
+
+   void getExplicitRHS( const RealType& time,
+                        const RealType& tau,
+                        DofVectorType& _u,
+                        DofVectorType& _fu );
+   
+   bool writeEpilog( tnlLogger& logger );
 
    protected:
 
@@ -54,9 +79,15 @@ class tnlExplicitTimeStepper
 
    Problem* problem;
 
-   RealType tau;
+   const MeshType* mesh;
+
+   RealType timeStep;
+
+   MeshDependentDataType* meshDependentData;
+   
+   tnlTimerRT explicitUpdaterTimer;
 };
 
-#include <implementation/solvers/pde/tnlExplicitTimeStepper_impl.h>
+#include <solvers/pde/tnlExplicitTimeStepper_impl.h>
 
 #endif /* TNLEXPLICITTIMESTEPPER_H_ */

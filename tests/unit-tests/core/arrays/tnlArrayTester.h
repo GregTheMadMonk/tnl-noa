@@ -42,7 +42,7 @@ class testingClassForArrayTester
       };
 };
 
-tnlString GetParameterType( const testingClassForArrayTester& c )
+tnlString getType( const testingClassForArrayTester& c )
 {
    return tnlString( "testingClassForArrayTester" );
 };
@@ -68,7 +68,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCaller( "testSetSize", &ArrayTester::testSetSize ) );
       suiteOfTests -> addTest( new TestCaller( "testSetGetElement", &ArrayTester::testSetGetElement ) );
       suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &ArrayTester::testComparisonOperator ) );
-      suiteOfTests -> addTest( new TestCaller( "testEquivalenceOperator", &ArrayTester::testEquivalenceOperator ) );
+      suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &ArrayTester::testAssignmentOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testGetSize", &ArrayTester::testGetSize ) );
       suiteOfTests -> addTest( new TestCaller( "testReset", &ArrayTester::testReset ) );
       suiteOfTests -> addTest( new TestCaller( "testSetSizeAndDestructor", &ArrayTester::testSetSizeAndDestructor ) );
@@ -138,19 +138,34 @@ class tnlArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( ! ( u == w ) );
    };
 
-   void testEquivalenceOperator()
+   void testAssignmentOperator()
    {
       tnlArray< ElementType, Device, IndexType > u;
       tnlArray< ElementType, Device, IndexType > v;
-      u. setName( "tnlArrayTester :: testEquivalenceOperator :: u" );
-      v. setName( "tnlArrayTester :: testEquivalenceOperator :: v" );
+      u. setName( "tnlArrayTester :: testAssignmentOperator :: u" );
+      v. setName( "tnlArrayTester :: testAssignmentOperator :: v" );
       u. setSize( 10 );
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, i );
       v = u;
-      //CPPUNIT_ASSERT( u == v );
-      //CPPUNIT_ASSERT( ! ( u != v ) );
+      CPPUNIT_ASSERT( u == v );
+      CPPUNIT_ASSERT( v == u );
+      CPPUNIT_ASSERT( ! ( u != v ) );
+      CPPUNIT_ASSERT( ! ( v != u ) );
+
+      v.setValue( 0 );
+      tnlArray< ElementType, tnlHost, IndexType > w;
+      w.setSize( 10 );
+      w = u;
+
+      CPPUNIT_ASSERT( u == w );
+      CPPUNIT_ASSERT( ! ( u != w ) );
+
+      v.setValue( 0 );
+      v = w;
+      CPPUNIT_ASSERT( v == w );
+      CPPUNIT_ASSERT( ! ( v != w ) );
    };
 
    void testGetSize()

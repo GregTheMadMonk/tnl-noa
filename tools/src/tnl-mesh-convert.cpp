@@ -15,25 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef HAVE_NOT_CXX11
 #include "tnl-mesh-convert.h"
+#endif
 #include "tnlConfig.h"
 #include <config/tnlParameterContainer.h>
 
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-mesh-convert.cfg.desc";
 
+void configSetup( tnlConfigDescription& config )
+{
+   config.addDelimiter                            ( "General settings:" );
+   config.addEntry< tnlString >( "output-file", "Output binary file in TNL format.", "mesh.tnl" );
+   config.addEntry< int >( "verbose", "Set the verbosity of the program.", 1 );
+   
+   config.addDelimiter                            ( "The mesh description:" );
+   config.addEntry< tnlString >( "input-mesh-file", "Input file with the mesh." );
+   config.addEntry< tnlString >( "mesh-name", "The mesh name.", "tnl-mesh" ); 
+}
+
 int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
-      return EXIT_FAILURE;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   
+   configSetup( conf_desc );
+
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
+#ifndef HAVE_NOT_CXX11
    if( ! convertMesh( parameters ) )
       return EXIT_FAILURE;
+#endif
    return EXIT_SUCCESS;
 }
 

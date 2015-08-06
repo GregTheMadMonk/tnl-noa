@@ -20,7 +20,11 @@
 
 #include <core/tnlHost.h>
 #include <matrices/tnlMatrix.h>
+#include <matrices/tnlDenseMatrixRow.h>
 #include <core/arrays/tnlArray.h>
+
+template< typename Device >
+class tnlDenseMatrixDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -32,8 +36,13 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
+   typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
+   typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlMatrix< Real, Device, Index > BaseType;
+   typedef tnlDenseMatrixRow< Real, Index > MatrixRow;
+
 
    tnlDenseMatrix();
 
@@ -50,13 +59,15 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored
     * in a given row.
     */
    IndexType getRowLength( const IndexType row ) const;
+
+   IndexType getMaxRowLength() const;
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -66,9 +77,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    void setValue( const RealType& v );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -77,9 +86,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -90,9 +97,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -103,9 +108,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 const RealType* values,
                 const IndexType elements );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -118,36 +121,36 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 const IndexType elements,
                 const RealType& thisRowMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Real getElementFast( const IndexType row,
                         const IndexType column ) const;
 
    Real getElement( const IndexType row,
                     const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
 
-   void getRow( const IndexType row,
+   /*void getRow( const IndexType row,
                 IndexType* columns,
-                RealType* values ) const;
+                RealType* values ) const;*/
+
+   __cuda_callable__
+   MatrixRow getRow( const IndexType rowIndex );
+
+   __cuda_callable__
+   const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
-   template< typename Vector >
-   void vectorProduct( const Vector& inVector,
-                       Vector& outVector ) const;
+   template< typename InVector, typename OutVector >
+   void vectorProduct( const InVector& inVector,
+                       OutVector& outVector ) const;
 
    template< typename Matrix >
    void addMatrix( const Matrix& matrix,
@@ -196,15 +199,15 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    protected:
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
+   typedef tnlDenseMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class tnlDenseMatrixDeviceDependentCode< DeviceType >;
 
 };
 
-#include <implementation/matrices/tnlDenseMatrix_impl.h>
+#include <matrices/tnlDenseMatrix_impl.h>
 
 #endif /* TNLDENSEMATRIX_H_ */

@@ -26,6 +26,8 @@ class tnlHost
 {
    public:
 
+   enum { DeviceType = tnlHostDevice };
+
    static tnlString getDeviceType();
 
 #ifdef HAVE_CUDA

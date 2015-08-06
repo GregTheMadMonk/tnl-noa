@@ -26,13 +26,13 @@ class tnlTimerRT
 
    tnlTimerRT();
 
-   void Reset();
+   void reset();
 
-   void Stop();
+   void stop();
 
-   void Continue();
+   void start();
 
-   double GetTime();
+   double getTime();
 
    protected:
 
@@ -43,5 +43,5 @@ class tnlTimerRT
    bool stop_state;
 };
 
-extern tnlTimerRT default_mcore_rt_timer;
+extern tnlTimerRT defaultRTTimer;
 #endif

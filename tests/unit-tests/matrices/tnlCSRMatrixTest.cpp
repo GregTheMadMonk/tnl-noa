@@ -19,16 +19,17 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
-#include "tnlCSRMatrixTester.h"
+#include "tnlSparseMatrixTester.h"
+#include "matrices/tnlCSRMatrix.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlCSRMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlHost, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlHost, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlHost, long int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlHost, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

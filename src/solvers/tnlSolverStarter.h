@@ -23,6 +23,7 @@
 #include <core/tnlTimerCPU.h>
 #include <ostream>
 
+template< typename ConfigTag >
 class tnlSolverStarter
 {
    public:
@@ -30,43 +31,17 @@ class tnlSolverStarter
    tnlSolverStarter();
 
    template< typename Problem >
-   bool run( const tnlParameterContainer& parameters );
+   static bool run( const tnlParameterContainer& parameters );
 
-   template< typename Problem >
-   bool setDiscreteSolver( Problem& problem,
-                           const tnlParameterContainer& parameters );
-
-   template< typename Problem,
-             template < typename > class DiscreteSolver >
-   bool setExplicitTimeDiscretisation( Problem& problem,
-                                       const tnlParameterContainer& parameters,
-                                       DiscreteSolver< Problem >& solver );
-
-   template< typename Problem,
-             typename DiscreteSolver >
-   bool setSemiImplicitTimeDiscretisation( Problem& problem,
-                                           const tnlParameterContainer& parameters,
-                                           DiscreteSolver& solver);
-
-   template< typename Problem >
-   bool writeProlog( ostream& str,
-                     const tnlParameterContainer& parameters,
-                     const Problem& problem );
+   template< typename Solver >
+   bool writeEpilog( ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,
                       const tnlParameterContainer& parameters,
                       TimeStepper& timeStepper );
 
-   bool writeEpilog( ostream& str );
-
    protected:
-
-   template< typename IterativeSolver >
-   bool setIterativeSolver( IterativeSolver& solver,
-                            const tnlParameterContainer& parameters ) const;
-
-   int verbose;
 
    int logWidth;
 
@@ -75,6 +50,6 @@ class tnlSolverStarter
    tnlTimerCPU ioCpuTimer, computeCpuTimer, totalCpuTimer;
 };
 
-#include <implementation/solvers/tnlSolverStarter_impl.h>
+#include <solvers/tnlSolverStarter_impl.h>
 
 #endif /* TNLSOLVERSTARTER_H_ */

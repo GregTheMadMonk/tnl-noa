@@ -30,28 +30,28 @@ class tnlGnuplotWriter
                          const Element& d )
       {
          str << d;
-      };
+      }
 
       template< typename Real >
       static void write( std::ostream& str,
                          const tnlStaticVector< 1, Real >& d )
       {
          str << d.x() << " ";
-      };
+      }
 
       template< typename Real >
       static void write( std::ostream& str,
                          const tnlStaticVector< 2, Real >& d )
       {
          str << d.x() << " " << d.y() << " ";
-      };
+      }
 
       template< typename Real >
       static void write( std::ostream& str,
                          const tnlStaticVector< 3, Real >& d )
       {
          str << d.x() << " " << d.y() << " " << d. z() << " ";
-      };
+      }
 
 };
 

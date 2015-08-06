@@ -20,17 +20,19 @@
 
 #include <iomanip>
 #include <config/tnlParameterContainer.h>
+#include <core/mfilename.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlStaticVector.h>
 
 template< typename Mesh, typename Element, typename Real, typename Index >
 bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameters )
 {
-   bool verbose = parameters. GetParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. GetParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. GetParameter< tnlString >( "output-file" );
-   double tau = parameters. GetParameter< double >( "tau" );
+   bool verbose = parameters. getParameter< bool >( "verbose" );
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
+   tnlString mode = parameters. getParameter< tnlString >( "mode" );
+   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
+   bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
    fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
@@ -40,11 +42,14 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
       return false;
    }
    outputFile << "#";
-   if( tau != 0 )
-      outputFile << std::setw( 5 ) << "Time";
-   outputFile << std::setw( 16 ) << "L1 diff."
-              << std::setw( 16 ) << "L2 diff."
-              << std::setw( 16 ) << "Max. diff." << endl;
+   outputFile << std::setw( 6 ) << "Time";
+   outputFile << std::setw( 18 ) << "L1 diff."
+              << std::setw( 18 ) << "L2 diff."
+              << std::setw( 18 ) << "Max. diff."
+              << std::setw( 18 ) << "Total L1 diff."
+              << std::setw( 18 ) << "Total L2 diff."
+              << std::setw( 18 ) << "Total Max. diff."
+              << endl;
    if( verbose )
       cout << endl;
 
@@ -69,8 +74,7 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
             outputFile.close();
             return false;
          }
-         if( tau != 0.0 )
-            outputFile << std::setw( 6 ) << i/2 * tau << " ";
+         outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
       if( mode == "sequence" )
@@ -94,8 +98,7 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
             outputFile.close();
             return false;
          }
-         if( tau != 0.0 )
-            outputFile << std::setw( 6 ) << ( i - 1 ) * tau << " ";
+         outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
       {
@@ -111,30 +114,42 @@ bool computeDifference( const Mesh& mesh, const tnlParameterContainer& parameter
             outputFile.close();
             return false;
          }
-         if( tau != 0.0 )
-            outputFile << std::setw( 6 ) << ( i - half ) * tau << " ";
+         //if( snapshotPeriod != 0.0 )
+         outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
       Real l1Diff = mesh.getDifferenceLpNorm( v1, v2, 1.0 );
       Real l2Diff = mesh.getDifferenceLpNorm( v1, v2, 2.0 );
       Real maxDiff = mesh.getDifferenceAbsMax( v1, v2 );
-      outputFile << std::setw( 16 ) << l1Diff
-                 << std::setw( 16 ) << l2Diff
-                 << std::setw( 16 ) << maxDiff << endl;
-      if( tau != 0.0 )
+      if( snapshotPeriod != 0.0 )
       {
-         totalL1Diff += tau * l1Diff;
-         totalL2Diff += tau * l2Diff * l2Diff;
-         totalMaxDiff = Max( totalMaxDiff, maxDiff );
-         cout << totalL2Diff << endl;
+         totalL1Diff += snapshotPeriod * l1Diff;
+         totalL2Diff += snapshotPeriod * l2Diff * l2Diff;
       }
-   }
-   if( tau != 0 )
-   {
-      outputFile << endl << "# Total differences:" << endl << endl;
-      outputFile << std::setw( 8 ) << " "
-                 << std::setw( 16 ) << totalL1Diff
-                 << std::setw( 16 ) << sqrt( totalL2Diff )
-                 << std::setw( 16 ) << totalMaxDiff << endl;
+      else
+      {
+         totalL1Diff += l1Diff;
+         totalL2Diff += l2Diff * l2Diff;
+      }
+      totalMaxDiff = Max( totalMaxDiff, maxDiff );
+      outputFile << std::setw( 18 ) << l1Diff
+                 << std::setw( 18 ) << l2Diff
+                 << std::setw( 18 ) << maxDiff
+                 << std::setw( 18 ) << totalL1Diff
+                 << std::setw( 18 ) << sqrt( totalL2Diff )
+                 << std::setw( 18 ) << totalMaxDiff << endl;
+
+      if( writeDifference )
+      {
+         tnlString differenceFileName;
+         differenceFileName = inputFiles[ i ];
+         RemoveFileExtension( differenceFileName );
+         differenceFileName += ".diff.tnl";
+         tnlVector< Real, tnlHost, Index > diff;
+         diff.setLike( v1 );
+         diff = v1;
+         diff -= v2;
+         diff.save( differenceFileName );
+      }
    }
    outputFile.close();
 
@@ -253,14 +268,14 @@ bool setElementType( const Mesh& mesh,
 template< typename Mesh >
 bool processFiles( const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    tnlString& inputFile = inputFiles[ 0 ];
 
    /****
     * Reading the mesh
     */
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
 
    Mesh mesh;
    if( meshFile != "" )

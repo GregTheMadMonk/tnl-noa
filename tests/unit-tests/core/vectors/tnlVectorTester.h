@@ -61,8 +61,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "testDifferenceSum", &TesterType::testDifferenceSum ) );
       suiteOfTests -> addTest( new TestCallerType( "testScalarMultiplication", &TesterType::testScalarMultiplication ) );
       suiteOfTests -> addTest( new TestCallerType( "testScalarProduct", &TesterType::testScalarProduct ) );
-      suiteOfTests -> addTest( new TestCallerType( "testalphaXPlusY", &TesterType::testalphaXPlusY ) );
-      suiteOfTests -> addTest( new TestCallerType( "testalphaXPlusY", &TesterType::testalphaXPlusY ) );
+      suiteOfTests -> addTest( new TestCallerType( "addVectorTest", &TesterType::addVectorTest ) );
       return suiteOfTests;
    }
 
@@ -233,7 +232,7 @@ class tnlVectorTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( v1. scalarProduct( v2 ) == 0.0 );
    };
 
-   void testalphaXPlusY()
+   void addVectorTest()
    {
       tnlVector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
@@ -243,25 +242,11 @@ class tnlVectorTester : public CppUnit :: TestCase
          v1.setElement( i, i );
          v2.setElement( i, 2.0 * i );
       }
-      v1. alphaXPlusY( 2.0, v2 );
+      v1. addVector( v2, 2.0 );
       for( int i = 0; i < 10; i ++ )
          CPPUNIT_ASSERT( v1. getElement( i ) == 5.0 * i );
    };
 
-   void testSaxmy()
-   {
-      tnlVector< RealType, Device, IndexType > v1, v2;
-      v1. setSize( 10 );
-      v2. setSize( 10 );
-      for( int i = 0; i < 10; i ++ )
-      {
-         v1.setElement( i, i );
-         v2.setElement( i, 2.0 * i );
-      }
-      v1. saxmy( 2.0, v2 );
-      for( int i = 0; i < 10; i ++ )
-         CPPUNIT_ASSERT( v1. getElement( i ) == 3.0 * i );
-   };
 };
 
 #else /* HAVE_CPPUNIT */

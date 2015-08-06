@@ -32,18 +32,19 @@ class tnlMatrix : public virtual tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< IndexType, DeviceType, IndexType > RowLengthsVector;
+   typedef tnlVector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef tnlVector< RealType, DeviceType, IndexType > ValuesVector;
 
    tnlMatrix();
 
    virtual bool setDimensions( const IndexType rows,
                                const IndexType columns );
 
-   virtual bool setRowLengths( const RowLengthsVector& rowLengths ) = 0;
+   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowsLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMatrix< Real2, Device2, Index2 >& matrix );
@@ -54,14 +55,10 @@ class tnlMatrix : public virtual tnlObject
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getRows() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getColumns() const;
 
    /****
@@ -93,11 +90,17 @@ class tnlMatrix : public virtual tnlObject
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   virtual void getRow( const IndexType row,
-                        IndexType* columns,
-                        RealType* values ) const = 0;
-
    tnlMatrix< RealType, DeviceType, IndexType >& operator = ( const tnlMatrix< RealType, DeviceType, IndexType >& );
+
+   template< typename Matrix >
+   bool operator == ( const Matrix& matrix ) const;
+
+   template< typename Matrix >
+   bool operator != ( const Matrix& matrix ) const;
+
+   template< typename Matrix >
+   bool copyFrom( const Matrix& matrix,
+                  const CompressedRowsLengthsVector& rowLengths );
 
    virtual bool save( tnlFile& file ) const;
 
@@ -111,7 +114,7 @@ class tnlMatrix : public virtual tnlObject
 
    public: // TODO: remove this
 
-   tnlVector< Real, Device, Index > values;
+   ValuesVector values;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -121,6 +124,14 @@ ostream& operator << ( ostream& str, const tnlMatrix< Real, Device, Index >& m )
    return str;
 }
 
-#include <implementation/matrices/tnlMatrix_impl.h>
+template< typename Matrix,
+          typename InVector,
+          typename OutVector >
+void tnlMatrixVectorProductCuda( const Matrix& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector );
+
+
+#include <matrices/tnlMatrix_impl.h>
 
 #endif /* TNLMATRIX_H_ */

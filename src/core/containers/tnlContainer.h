@@ -18,8 +18,8 @@
 #ifndef TNLCONTAINER_H_
 #define TNLCONTAINER_H_
 
-#include<core/tnlObject.h>
-#include<core/arrays/tnlArray.h>
+#include <core/tnlObject.h>
+#include <core/arrays/tnlArray.h>
 
 template< typename Element, typename Device = tnlHost, typename Index = int >
 class tnlContainer : public tnlObject
@@ -59,6 +59,6 @@ class tnlContainer : public tnlObject
    tnlArray< Element, Device, Index > data;
 };
 
-#include<implementation/core/containers/tnlContainer_impl.h>
+#include <core/containers/tnlContainer_impl.h>
 
 #endif /* TNLCONTAINER_H_ */

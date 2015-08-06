@@ -1,12 +1,12 @@
 SET( EXTRA_DIST tnlDebugParser.y 
-	            tnlDebugScanner.l 
+	             tnlDebugScanner.l 
                 create-tnl-debug-parser )      
 
 SET(headers tnlDbgDataElement.h 
-	        tnlDebugEntry.h 
-	        tnlDebugGroup.h 
-	        tnlDebugParserbase.h 
-	        tnlDebugParser.h 
+	         tnlDebugEntry.h 
+	         tnlDebugGroup.h 
+	         tnlDebugParserbase.h 
+	         tnlDebugParser.h 
             tnlDebug.h 
             tnlDebugScanner.h 
             tnlDebugStructure.h )

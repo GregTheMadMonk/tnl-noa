@@ -126,7 +126,7 @@ const tnlString& tnlEllpackMatrix< Real, tnlHost, Index > :: getMatrixClass() co
 template< typename Real, typename Index >
 tnlString tnlEllpackMatrix< Real, tnlHost, Index > :: getType() const
 {
-   return tnlString( "tnlEllpackMatrix< ") + tnlString( GetParameterType( Real( 0.0 ) ) ) + tnlString( ", tnlHost >" );
+   return tnlString( "tnlEllpackMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlHost >" );
 };
 
 template< typename Real, typename Index >

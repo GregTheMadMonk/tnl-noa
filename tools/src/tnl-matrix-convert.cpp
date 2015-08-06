@@ -33,19 +33,19 @@ int main( int argc, char* argv[] )
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
 
-   if( conf_desc. ParseConfigDescription( configFile ) != 0 )
+   if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
-   if( ! ParseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
-      conf_desc. PrintUsage( argv[ 0 ] );
+      conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString input_file = parameters. GetParameter< tnlString >( "input-file" );
-   tnlString output_file = parameters. GetParameter< tnlString >( "output-file" );
-   tnlString output_matrix_format = parameters. GetParameter< tnlString >( "output-matrix-format" );
-   tnlString precision = parameters. GetParameter< tnlString >( "precision" );
-   int verbose = parameters. GetParameter< int >( "verbose");
-   bool verify = parameters. GetParameter< bool >( "verify");
+   tnlString input_file = parameters. getParameter< tnlString >( "input-file" );
+   tnlString output_file = parameters. getParameter< tnlString >( "output-file" );
+   tnlString output_matrix_format = parameters. getParameter< tnlString >( "output-matrix-format" );
+   tnlString precision = parameters. getParameter< tnlString >( "precision" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   bool verify = parameters. getParameter< bool >( "verify");
 
    if( verbose )
       cout << "Processing file " << input_file << " ... " << endl;

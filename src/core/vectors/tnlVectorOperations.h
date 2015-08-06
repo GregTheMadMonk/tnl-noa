@@ -18,7 +18,6 @@
 #ifndef TNLVECTOROPERATIONS_H_
 #define TNLVECTOROPERATIONS_H_
 
-#include <core/tnlCuda.h>
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 #include <core/tnlHost.h>
@@ -95,29 +94,18 @@ class tnlVectorOperations< tnlHost >
                                                          const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void alphaXPlusY( Vector1& y,
-                            const Vector2& x,
-                            const typename Vector1::RealType& alpha );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaY( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZ( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const Vector2& z,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZPlusY( Vector1& y,
-                                     const Vector2& x,
-                                     const typename Vector1::RealType& alpha,
-                                     const Vector2& z,
-                                     const typename Vector1::RealType& beta );
+   static void addVector( Vector1& y,
+                          const Vector2& v,
+                          const typename Vector2::RealType& multiplicator,
+                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
+   
+   template< typename Vector1, typename Vector2, typename Vector3 >
+   static void addVectors( Vector1& v,
+                           const Vector2& v1,
+                           const typename Vector2::RealType& multiplicator1,
+                           const Vector3& v2,
+                           const typename Vector3::RealType& multiplicator2,
+                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,
@@ -199,29 +187,19 @@ class tnlVectorOperations< tnlCuda >
                                                          const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
-   static void alphaXPlusY( Vector1& y,
-                            const Vector2& x,
-                            const typename Vector1::RealType& alpha );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaY( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZ( Vector1& y,
-                                const Vector2& x,
-                                const typename Vector1::RealType& alpha,
-                                const Vector2& z,
-                                const typename Vector1::RealType& beta );
-
-   template< typename Vector1, typename Vector2 >
-   static void alphaXPlusBetaZPlusY( Vector1& y,
-                                     const Vector2& x,
-                                     const typename Vector1::RealType& alpha,
-                                     const Vector2& z,
-                                     const typename Vector1::RealType& beta );
+   static void addVector( Vector1& y,
+                          const Vector2& x,
+                          const typename Vector2::RealType& alpha,
+                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
+   
+   template< typename Vector1, typename Vector2, typename Vector3 >
+   static void addVectors( Vector1& v,
+                           const Vector2& v1,
+                           const typename Vector2::RealType& multiplicator1,
+                           const Vector3& v2,
+                           const typename Vector3::RealType& multiplicator2,
+                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
+   
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,
@@ -234,7 +212,7 @@ class tnlVectorOperations< tnlCuda >
                                           const typename Vector::IndexType end );
 };
 
-#include <implementation/core/vectors/tnlVectorOperationsHost_impl.h>
-#include <implementation/core/vectors/tnlVectorOperationsCuda_impl.h>
+#include <core/vectors/tnlVectorOperationsHost_impl.h>
+#include <core/vectors/tnlVectorOperationsCuda_impl.h>
 
 #endif /* TNLVECTOROPERATIONS_H_ */

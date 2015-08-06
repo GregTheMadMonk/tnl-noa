@@ -2,9 +2,16 @@ set( ENABLE_CODECOVERAGE )
 
 SET( headers matrix-formats-test.h )
 
-ADD_EXECUTABLE( tnl-test-matrix-formats${mpiExt}${debugExt} ${headers} matrix-formats-test.cpp )
+if( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( tnl-test-matrix-formats${mpiExt}${debugExt} ${headers} matrix-formats-test.cu
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
+else()
+   ADD_EXECUTABLE( tnl-test-matrix-formats${mpiExt}${debugExt} ${headers} matrix-formats-test.cpp )                                                                   
+endif()
+
 TARGET_LINK_LIBRARIES( tnl-test-matrix-formats${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                    tnl${mpiExt}${debugExt}-0.1 )
+
 
 INSTALL( TARGETS tnl-test-matrix-formats${debugExt}
          RUNTIME DESTINATION bin

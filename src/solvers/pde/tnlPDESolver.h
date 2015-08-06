@@ -19,7 +19,10 @@
 #define TNLPDESOLVER_H_
 
 #include <core/tnlObject.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <solvers/tnlSolverMonitor.h>
+#include <core/tnlLogger.h>
 
 template< typename Problem,
           typename TimeStepper >
@@ -27,49 +30,81 @@ class tnlPDESolver : public tnlObject
 {
    public:
 
-   typedef typename TimeStepper :: RealType RealType;
-   typedef typename TimeStepper :: DeviceType DeviceType;
-   typedef typename TimeStepper :: IndexType IndexType;
-   typedef typename TimeStepper :: ProblemType ProblemType;
-   
-   tnlPDESolver();
+      typedef typename TimeStepper::RealType RealType;
+      typedef typename TimeStepper::DeviceType DeviceType;
+      typedef typename TimeStepper::IndexType IndexType;
+      typedef Problem ProblemType;
+      typedef typename ProblemType::MeshType MeshType;
+      typedef typename ProblemType::DofVectorType DofVectorType;
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
-   void setTimeStepper( TimeStepper& timeStepper );
+      tnlPDESolver();
 
-   void setProblem( ProblemType& problem );
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   bool setFinalTime( const RealType& finalT );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   const RealType& getFinalTine() const;
+      bool writeProlog( tnlLogger& logger,
+                        const tnlParameterContainer& parameters );
 
-   bool setSnapshotTau( const RealType& tau );
-   
-   const RealType& getSnapshotTau() const;
+      void setTimeStepper( TimeStepper& timeStepper );
 
-   void setIoRtTimer( tnlTimerRT& ioRtTimer);
+      void setProblem( ProblemType& problem );
 
-   void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+      void setInitialTime( const RealType& initialT );
 
-   void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+      const RealType& getInitialTime() const;
 
-   void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+      bool setFinalTime( const RealType& finalT );
 
-   bool solve();
+      const RealType& getFinalTime() const;
+
+      bool setTimeStep( const RealType& timeStep );
+
+      const RealType& getTimeStep() const;
+
+      bool setTimeStepOrder( const RealType& timeStepOrder );
+
+      const RealType& getTimeStepOrder() const;
+
+      bool setSnapshotPeriod( const RealType& period );
+
+      const RealType& getSnapshotPeriod() const;
+
+      void setIoRtTimer( tnlTimerRT& ioRtTimer);
+
+      void setComputeRtTimer( tnlTimerRT& computeRtTimer );
+
+      void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
+
+      void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+
+      bool solve();
+
+      bool writeEpilog( tnlLogger& logger ) const;
 
    protected:
 
-   TimeStepper* timeStepper;
+      MeshType mesh;
 
-   RealType finalTime, snapshotTau;
+      DofVectorType dofs;
 
-   ProblemType* problem;
+      MeshDependentDataType meshDependentData;
 
-   tnlTimerRT *ioRtTimer, *computeRtTimer;
+      TimeStepper* timeStepper;
 
-   tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
+
+      ProblemType* problem;
+
+      tnlTimerRT *ioRtTimer, *computeRtTimer;
+
+      tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
 
 };
 
-#include <implementation/solvers/pde/tnlPDESolver_impl.h>
+#include <solvers/pde/tnlPDESolver_impl.h>
 
 #endif /* TNLPDESOLVER_H_ */

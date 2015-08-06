@@ -19,6 +19,8 @@
 #define TNLSHAREDVECTOR_H_
 
 #include <core/arrays/tnlSharedArray.h>
+#include <core/vectors/tnlVector.h>
+#include <functors/tnlFunctionType.h>
 
 class tnlHost;
 
@@ -32,10 +34,26 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlSharedVector< Real, tnlHost, Index > HostType;
+   typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
 
-   tnlString getType() const;
+
+   tnlSharedVector();
+
+   tnlSharedVector( Real* data,
+                    const Index size );
+
+   tnlSharedVector( tnlVector< Real, Device, Index >& vector );
+
+   tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
+
+   static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );
@@ -54,6 +72,16 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    template< typename Vector >
    bool operator != ( const Vector& array ) const;
+
+   template< typename Vector >
+   tnlSharedVector< Real, Device, Index >& operator -= ( const Vector& vector );
+
+   template< typename Vector >
+   tnlSharedVector< Real, Device, Index >& operator += ( const Vector& vector );
+   
+   tnlSharedVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   tnlSharedVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    //bool save( tnlFile& file ) const;
 
@@ -97,28 +125,17 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    //! Computes Y = alpha * X + Y.
    template< typename Vector >
-   void alphaXPlusY( const Real& alpha,
-                     const Vector& x );
+   void addVector( const Vector& x,
+                   const Real& alpha = 1.0,
+                   const Real& thisMultiplicator = 1.0 );
 
-   //! Computes Y = alpha * X + beta * Y.
+   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >
-   void alphaXPlusBetaY( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta );
-
-   //! Computes Y = alpha * X + beta * Z
-   template< typename Vector >
-   void alphaXPlusBetaZ( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta,
-                         const Vector& z );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   template< typename Vector >
-   void alphaXPlusBetaZPlusY( const Real& alpha,
-                              const Vector& x,
-                              const Real& beta,
-                              const Vector& z );
+   void addVectors( const Vector& v1,
+                    const Real& multiplicator1,
+                    const Vector& v2,
+                    const Real& multiplicator2,
+                    const Real& thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 
@@ -130,22 +147,16 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
 };
 
-#include <implementation/core/vectors/tnlSharedVector_impl.h>
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlFunctionType< tnlSharedVector< Real, Device, Index > >
+{
+   public:
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+      enum { Type = tnlDiscreteFunction };
+};
 
-extern template class tnlSharedVector< float, tnlHost, int >;
-extern template class tnlSharedVector< double, tnlHost, int >;
-extern template class tnlSharedVector< float, tnlHost, long int >;
-extern template class tnlSharedVector< double, tnlHost, long int >;
-
-#ifdef HAVE_CUDA
-extern template class tnlSharedVector< float, tnlCuda, int >;
-extern template class tnlSharedVector< double, tnlCuda, int >;
-extern template class tnlSharedVector< float, tnlCuda, long int >;
-extern template class tnlSharedVector< double, tnlCuda, long int >;
-#endif
-
-#endif
+#include <core/vectors/tnlSharedVector_impl.h>
 
 #endif /* TNLSHAREDVECTOR_H_ */

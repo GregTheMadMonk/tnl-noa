@@ -47,6 +47,12 @@ class tnlCGSolver : public tnlObject,
    
    tnlString getType() const;
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
    void setMatrix( const MatrixType& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
@@ -73,6 +79,6 @@ class tnlCGSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <implementation/solvers/linear/krylov/tnlCGSolver_impl.h>
+#include <solvers/linear/krylov/tnlCGSolver_impl.h>
 
 #endif

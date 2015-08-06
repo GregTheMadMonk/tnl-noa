@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include "mpi-supp.h"
 
 using namespace :: std;
@@ -104,10 +105,10 @@ class tnlString
    tnlString& operator += ( const tnlString& str );
  
    //! Operator +
-   tnlString operator + ( const tnlString& str );
+   tnlString operator + ( const tnlString& str ) const;
 
    //! Operator +
-   tnlString operator + ( const char* str );
+   tnlString operator + ( const char* str ) const;
 
    //! Comparison operator 
    bool operator == ( const tnlString& str ) const;
@@ -126,6 +127,9 @@ class tnlString
 
    //! Return length of the string
    int getLength() const;
+
+   void replace( const tnlString& pattern,
+                 const tnlString& replaceWith );
 
    // TODO: remove
    //! Write to a binary file
@@ -153,8 +157,20 @@ class tnlString
    friend ostream& operator << ( ostream& stream, const tnlString& str );
 };
 
-inline tnlString GetParameterType( const tnlString& ) { return tnlString( "tnlString" ); };
-
 ostream& operator << ( ostream& stream, const tnlString& str );
+
+template< typename T >
+tnlString convertToString( const T& value )
+{
+   std::stringstream str;
+   str << value;
+   return tnlString( str.str().data() );
+};
+
+template<> inline tnlString convertToString( const bool& b )
+{
+   if( b ) return "true";
+   return "false";
+}
 
 #endif

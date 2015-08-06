@@ -37,29 +37,29 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 1, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 1, Element, tnlCuda, Index > CudaType;
 
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
+
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index iSize );
 
    bool setDimensions( const tnlStaticVector< 1, Index >& dimensions );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void getDimensions( Index& iSize ) const;
+   __cuda_callable__ void getDimensions( Index& iSize ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const tnlStaticVector< 1, Index >& getDimensions() const;
+   __cuda_callable__ const tnlStaticVector< 1, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -67,10 +67,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getElementIndex( const Index i ) const;
+   __cuda_callable__ Index getElementIndex( const Index i ) const;
 
    void setElement( const Index i, Element value );
 
@@ -82,15 +79,9 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    Element getElement( const Index i ) const;
 
    //! Operator for accessing elements of the array.
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator()( const Index i );
+   __cuda_callable__ Element& operator()( const Index i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator()( const Index i ) const;
+   __cuda_callable__ const Element& operator()( const Index i ) const;
 
 
    template< typename MultiArray >
@@ -127,29 +118,29 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 2, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 2, Element, tnlCuda, Index > CudaType;
 
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
+
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index jSize, const Index iSize );
 
    bool setDimensions( const tnlStaticVector< 2, Index >& dimensions );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void getDimensions( Index& jSize, Index& iSize ) const;
+   __cuda_callable__ void getDimensions( Index& jSize, Index& iSize ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const tnlStaticVector< 2, Index >& getDimensions() const;
+   __cuda_callable__ const tnlStaticVector< 2, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -157,10 +148,7 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getElementIndex( const Index j, const Index i ) const;
+   __cuda_callable__ Index getElementIndex( const Index j, const Index i ) const;
 
    void setElement( const Index j, const Index i, Element value );
 
@@ -176,15 +164,9 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
     *  used to access elements of arrays in different address space
     *  (GPU device usually).
     */
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator()( const Index j, const Index i );
+   __cuda_callable__ Element& operator()( const Index j, const Index i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator()( const Index j, const Index i ) const;
+   __cuda_callable__ const Element& operator()( const Index j, const Index i ) const;
 
    template< typename MultiArray >
    bool operator == ( const MultiArray& array ) const;
@@ -221,29 +203,29 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 3, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 3, Element, tnlCuda, Index > CudaType;
 
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
+
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
    bool setDimensions( const tnlStaticVector< 3, Index >& dimensions );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void getDimensions( Index& k, Index& j, Index& iSize ) const;
+   __cuda_callable__ void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const tnlStaticVector< 3, Index >& getDimensions() const;
+   __cuda_callable__ const tnlStaticVector< 3, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -251,10 +233,7 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getElementIndex( const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
    void setElement( const Index k, const Index j, const Index i, Element value );
 
@@ -270,15 +249,9 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
     *  used to access elements of arrays in different adress space
     *  (GPU device usualy).
     */
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator()( const Index k, const Index j, const Index i );
+   __cuda_callable__ Element& operator()( const Index k, const Index j, const Index i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator()( const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ const Element& operator()( const Index k, const Index j, const Index i ) const;
 
    template< typename MultiArray >
    bool operator == ( const MultiArray& array ) const;
@@ -315,29 +288,29 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlMultiArray< 4, Element, tnlHost, Index > HostType;
+   typedef tnlMultiArray< 4, Element, tnlCuda, Index > CudaType;
 
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
+
    tnlMultiArray();
 
    tnlMultiArray( const tnlString& name );
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
    bool setDimensions( const tnlStaticVector< 4, Index >& dimensions );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
+   __cuda_callable__ void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const tnlStaticVector< 4, Index >& getDimensions() const;
+   __cuda_callable__ const tnlStaticVector< 4, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -345,10 +318,7 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
    void setElement( const Index l, const Index k, const Index j, const Index i, Element value );
 
@@ -364,15 +334,9 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
     *  used to access elements of arrays in different adress space
     *  (GPU device usualy).
     */
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator()( const Index l, const Index k, const Index j, const Index i );
+   __cuda_callable__ Element& operator()( const Index l, const Index k, const Index j, const Index i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
 
    template< typename MultiArray >
    bool operator == ( const MultiArray& array ) const;
@@ -413,46 +377,90 @@ template< typename Element, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 
-#include <implementation/core/arrays/tnlMultiArray1D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray2D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray3D_impl.h>
-#include <implementation/core/arrays/tnlMultiArray4D_impl.h>
+#include <core/arrays/tnlMultiArray1D_impl.h>
+#include <core/arrays/tnlMultiArray2D_impl.h>
+#include <core/arrays/tnlMultiArray3D_impl.h>
+#include <core/arrays/tnlMultiArray4D_impl.h>
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 1, float,  tnlHost, int >;
+#endif
 extern template class tnlMultiArray< 1, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 1, float,  tnlHost, long int >;
+#endif
 extern template class tnlMultiArray< 1, double, tnlHost, long int >;
-extern template class tnlMultiArray< 2, float,  tnlHost, int >;
-extern template class tnlMultiArray< 2, double, tnlHost, int >;
-extern template class tnlMultiArray< 2, float,  tnlHost, long int >;
-extern template class tnlMultiArray< 2, double, tnlHost, long int >;
-extern template class tnlMultiArray< 3, float,  tnlHost, int >;
-extern template class tnlMultiArray< 3, double, tnlHost, int >;
-extern template class tnlMultiArray< 3, float,  tnlHost, long int >;
-extern template class tnlMultiArray< 3, double, tnlHost, long int >;
-extern template class tnlMultiArray< 4, float,  tnlHost, int >;
-extern template class tnlMultiArray< 4, double, tnlHost, int >;
-extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
-extern template class tnlMultiArray< 4, double, tnlHost, long int >;
+#endif
 
-// TODO: There are problems with nvlink - it maght be better in later versions
-/*extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 2, float,  tnlHost, int >;
+#endif
+extern template class tnlMultiArray< 2, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 2, float,  tnlHost, long int >;
+#endif
+extern template class tnlMultiArray< 2, double, tnlHost, long int >;
+#endif
+
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 3, float,  tnlHost, int >;
+#endif
+extern template class tnlMultiArray< 3, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 3, float,  tnlHost, long int >;
+#endif
+extern template class tnlMultiArray< 3, double, tnlHost, long int >;
+#endif
+
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 4, float,  tnlHost, int >;
+#endif
+extern template class tnlMultiArray< 4, double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
+#endif
+extern template class tnlMultiArray< 4, double, tnlHost, long int >;
+#endif
+
+// TODO: There are problems with nvlink - it might be better in later versions
+/*
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
+#endif
 extern template class tnlMultiArray< 1, double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 1, float,  tnlCuda, long int >;
+#endif
 extern template class tnlMultiArray< 1, double, tnlCuda, long int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 2, float,  tnlCuda, int >;
+#endif
 extern template class tnlMultiArray< 2, double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 2, float,  tnlCuda, long int >;
+#endif
 extern template class tnlMultiArray< 2, double, tnlCuda, long int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 3, float,  tnlCuda, int >;
+#endif
 extern template class tnlMultiArray< 3, double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 3, float,  tnlCuda, long int >;
+#endif
 extern template class tnlMultiArray< 3, double, tnlCuda, long int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 4, float,  tnlCuda, int >;
+#endif
 extern template class tnlMultiArray< 4, double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlMultiArray< 4, float,  tnlCuda, long int >;
+#endif
 extern template class tnlMultiArray< 4, double, tnlCuda, long int >;*/
 
 #endif

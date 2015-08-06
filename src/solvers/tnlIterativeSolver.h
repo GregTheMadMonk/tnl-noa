@@ -18,6 +18,8 @@
 #ifndef TNLITERATIVESOLVER_H_
 #define TNLITERATIVESOLVER_H_
 
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 
 template< typename Real, typename Index >
@@ -27,23 +29,29 @@ class tnlIterativeSolver
 
    tnlIterativeSolver();
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
    void setMaxIterations( const Index& maxIterations );
 
    const Index& getMaxIterations() const;
 
-   void resetIterations();
+   void setMinIterations( const Index& minIterations );
 
-   bool nextIteration();
+   const Index& getMinIterations() const;
 
    const Index& getIterations() const;
 
-   void setMaxResidue( const Real& maxResidue );
+   void setConvergenceResidue( const Real& convergenceResidue );
 
-   const Real& getMaxResidue() const;
+   const Real& getConvergenceResidue() const;
 
-   void setMinResidue( const Real& minResidue );
+   void setDivergenceResidue( const Real& divergenceResidue );
 
-   const Real& getMinResidue() const;
+   const Real& getDivergenceResidue() const;
 
    void setResidue( const Real& residue );
 
@@ -53,20 +61,29 @@ class tnlIterativeSolver
 
    void setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor );
 
+   void resetIterations();
+
+   bool nextIteration();
+
+   bool checkConvergence();
+
    void refreshSolverMonitor();
+
 
    protected:
 
    Index maxIterations;
 
+   Index minIterations;
+
    Index currentIteration;
 
-   Real maxResidue;
+   Real convergenceResidue;
 
    /****
-    * If the current residue is over minResidue the solver is stopped.
+    * If the current residue is over divergenceResidue the solver is stopped.
     */
-   Real minResidue;
+   Real divergenceResidue;
 
    Real currentResidue;
 
@@ -75,6 +92,6 @@ class tnlIterativeSolver
    Index refreshRate;
 };
 
-#include <implementation/solvers/tnlIterativeSolver_impl.h>
+#include <solvers/tnlIterativeSolver_impl.h>
 
 #endif /* TNLITERATIVESOLVER_H_ */

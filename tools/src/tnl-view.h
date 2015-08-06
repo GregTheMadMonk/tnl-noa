@@ -52,8 +52,8 @@ bool convertObject( const Mesh& mesh,
                     const tnlList< tnlString >& parsedObjectType,
                     const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
    tnlString outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -79,17 +79,16 @@ bool convertObject( const Mesh& mesh,
       tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      tnlGrid< Dimensions, Real, tnlHost, Index > grid;
-      grid. setDimensions( multiVector. getDimensions() );
-      grid. setOrigin( tnlStaticVector< Dimensions, Real >( 0.0 ) );
-      grid. setProportions( tnlStaticVector< Dimensions, Real >( 1.0 ) );
-      const Real spaceStep = grid. getParametricStep(). x();
-      grid. setParametricStep( tnlStaticVector< Dimensions, Real >( spaceStep ) );
+      typedef tnlGrid< Dimensions, Real, tnlHost, Index > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
+      grid. setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
+      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
+      const Real spaceStep = grid. getCellProportions(). x();
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
-   if( verbose )
-      cout << "[ OK ].  \r";
    return true;
 }
 
@@ -229,8 +228,8 @@ bool setElementType( const Mesh& mesh,
 template< typename Mesh >
 bool processFiles( const tnlParameterContainer& parameters )
 {
-   int verbose = parameters. GetParameter< int >( "verbose");
-   tnlString meshFile = parameters. GetParameter< tnlString >( "mesh" );
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
 
    Mesh mesh;
    if( meshFile != "" )
@@ -241,22 +240,26 @@ bool processFiles( const tnlParameterContainer& parameters )
       }
    mesh. writeMesh( "mesh.asy", "asymptote" );
 
-   bool checkOutputFile = parameters. GetParameter< bool >( "check-output-file" );
-   tnlList< tnlString > inputFiles = parameters. GetParameter< tnlList< tnlString > >( "input-files" );
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif
+   bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
+   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
+   bool error( false );
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
          cout << "Processing file " << inputFiles[ i ] << " ... " << flush;
 
-      tnlString outputFormat = parameters. GetParameter< tnlString >( "output-format" );
+      tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
       tnlString outputFileName;
       if( ! getOutputFileName( inputFiles[ i ],
                                outputFormat,
                                outputFileName ) )
-         return false;
+      {
+         error = true;
+         continue;
+      }
       if( checkOutputFile && fileExists( outputFileName ) )
       {
          if( verbose )
@@ -276,13 +279,18 @@ bool processFiles( const tnlParameterContainer& parameters )
          if( ! parseObjectType( objectType, parsedObjectType ) )
          {
             cerr << "Unable to parse object type " << objectType << "." << endl;
-            return false;
+            error = true;
+            continue;
          }
          setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+         if( verbose )
+            cout << "[ OK ].  " << endl;
+
       }
    }
    if( verbose )
       cout << endl;
+   return ! error;
 }
 
 

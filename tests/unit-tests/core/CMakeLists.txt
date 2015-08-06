@@ -12,7 +12,8 @@ set( headers tnlFileTester.h
              tnlCommunicatorTester.h )
 
 ADD_EXECUTABLE( tnlObjectTest${mpiExt}${debugExt} ${headers} tnlObjectTest.cpp )
-TARGET_LINK_LIBRARIES( tnlObjectTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+SET_TARGET_PROPERTIES( tnlObjectTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TEST_FLAGS}" )
+TARGET_LINK_LIBRARIES( tnlObjectTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES} ${LD_TEST_FLAGS}
                                                            tnl${mpiExt}${debugExt}-0.1 )
 
 ADD_EXECUTABLE( tnlStringTest${mpiExt}${debugExt} ${headers} tnlStringTest.cpp )

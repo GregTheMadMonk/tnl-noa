@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+DEBUG=""
+
+for option in "$@"
+do
+    case $option in
+        --debug                  ) DEBUG="-dbg"
+    esac
+done
+
+echo -L@CMAKE_INSTALL_PREFIX@/lib -ltnl${DEBUG}-@tnlVersion@ @CUSPARSE_LIBRARY@

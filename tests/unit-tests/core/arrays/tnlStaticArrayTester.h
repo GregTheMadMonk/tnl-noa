@@ -40,7 +40,7 @@ class testingClassForStaticArrayTester
       };
 };
 
-tnlString GetParameterType( const testingClassForStaticArrayTester& c )
+tnlString getType( const testingClassForStaticArrayTester& c )
 {
    return tnlString( "testingClassForStaticArrayTester" );
 };
@@ -213,11 +213,6 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    }
 };
 
-
-
-#else /* HAVE_CPPUNIT */
-template< int Size, typename ElementType >
-class tnlStaticArrayTester{};
 #endif /* HAVE_CPPUNIT */
 
 

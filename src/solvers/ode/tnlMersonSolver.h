@@ -19,6 +19,7 @@
 #define tnlMersonSolverH
 
 #include <math.h>
+#include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 
 template< class Problem >
@@ -35,6 +36,12 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    tnlMersonSolver();
 
    tnlString getType() const;
+
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
    void setAdaptivity( const RealType& a );
 
@@ -62,10 +69,12 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
 
    DofVectorType k1, k2, k3, k4, k5, kAux;
 
-   //! This controls the accuracy of the solver
+   /****
+    * This controls the accuracy of the solver
+    */
    RealType adaptivity;
 };
 
-#include <implementation/solvers/ode/tnlMersonSolver_impl.h>
+#include <solvers/ode/tnlMersonSolver_impl.h>
 
 #endif

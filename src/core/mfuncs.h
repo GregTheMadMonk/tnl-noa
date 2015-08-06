@@ -20,25 +20,34 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <core/tnlCuda.h>
 
-template< typename Type1, typename Type2 > Type1 Min( const Type1& a, const Type2& b )
+template< typename Type1, typename Type2 >
+__cuda_callable__
+Type1 Min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
-template< typename Type1, typename Type2 > Type1 Max( const Type1& a, const Type2& b )
+template< typename Type1, typename Type2 >
+__cuda_callable__
+Type1 Max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
 
-template< typename Type > void Swap( Type& a, Type& b )
+template< typename Type >
+__cuda_callable__
+void Swap( Type& a, Type& b )
 {
    Type tmp( a );
    a = b;
    b = tmp;
 };
 
-template< class T > T Sign( const T& a )
+template< class T >
+__cuda_callable__
+T Sign( const T& a )
 {
    if( a < ( T ) 0 ) return -1;
    if( a == ( T ) 0 ) return 0;
@@ -46,6 +55,7 @@ template< class T > T Sign( const T& a )
 };
 
 template< class T >
+__cuda_callable__
 T tnlAbs( const T& n )
 {
    if( n < ( T ) 0 )
@@ -69,24 +79,36 @@ inline double tnlAbs( const double& d )
 };
 
 template< typename Real >
+__cuda_callable__
 bool isSmall( const Real& v,
               const Real& tolerance = 1.0e-5 )
 {
    return ( -tolerance <= v && v <= tolerance );
 }
 
+__cuda_callable__
 inline int roundUpDivision( const int num, const int div )
 {
    return num / div + ( num % div != 0 );
 }
-/*template< typename T >
-void swap( T& a, T& b)
+
+__cuda_callable__
+inline int roundToMultiple( int number, int multiple )
 {
-   T aux;
-   aux = a;
-   a = b;
-   b = aux;
-}*/
+   return multiple*( number/ multiple + ( number % multiple != 0 ) );
+}
+
+__cuda_callable__
+inline bool isPow2( int x )
+{
+   return ( x & ( x - 1 ) == 0 );
+}
+
+__cuda_callable__
+inline bool isPow2( long int x )
+{
+   return ( x & ( x - 1 ) == 0 );
+}
 
 
 #endif

@@ -47,6 +47,12 @@ class tnlGMRESSolver : public tnlObject,
 
    tnlString getType() const;
 
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
+
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
+
    void setRestarting( IndexType rest );
 
    void setMatrix( const MatrixType& matrix );
@@ -99,7 +105,7 @@ class tnlGMRESSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <implementation/solvers/linear/krylov/tnlGMRESSolver_impl.h>
+#include <solvers/linear/krylov/tnlGMRESSolver_impl.h>
 
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
@@ -122,10 +128,11 @@ extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, l
 
 
 #ifdef HAVE_CUDA
-extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
+// TODO: fix this - does not work with CUDA 5.5
+/*extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;*/
 
 /*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
 extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;

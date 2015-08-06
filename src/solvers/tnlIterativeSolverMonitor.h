@@ -41,6 +41,8 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    const RealType& getResidue() const;
 
    void setVerbose( const Index& verbose );
+   
+   void setRefreshRate( const IndexType& refreshRate );
 
    virtual void refresh();
 
@@ -58,7 +60,7 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
 
    IndexType refreshing;
 
-   IndexType outputPeriod;
+   IndexType refreshRate;
 
    IndexType verbose;
 
@@ -67,6 +69,6 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    tnlTimerRT rtTimer;
 };
 
-#include <implementation/solvers/tnlIterativeSolverMonitor_impl.h>
+#include <solvers/tnlIterativeSolverMonitor_impl.h>
 
 #endif /* TNLITERATIVESOLVERMONITOR_H_ */

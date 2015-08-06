@@ -260,7 +260,7 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlCSRMatrix< ") +
-           tnlString( getParameterType< Real >() ) +
+           tnlString( ::getType< Real >() ) +
            tnlString( ", " ) +
            Device :: getDeviceType() +
            tnlString( " >" );

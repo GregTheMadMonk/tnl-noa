@@ -25,9 +25,9 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
-#include <schemes/euler/fvm/tnlLaxFridrichs.h>
-#include <schemes/gradient/tnlCentralFDMGradient.h>
-#include <schemes/diffusion/tnlLinearDiffusion.h>
+#include <operators/euler/fvm/tnlLaxFridrichs.h>
+#include <operators/gradient/tnlCentralFDMGradient.h>
+#include <operators/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlLinearGridGeometry.h>
 #include <solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
 
@@ -82,7 +82,7 @@ class navierStokesSolver
    bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
                   const tnlParameterContainer& parameters ) const;
 
-   bool init( const tnlParameterContainer& parameters );
+   bool setup( const tnlParameterContainer& parameters );
 
    bool setInitialCondition( const tnlParameterContainer& parameters );
 

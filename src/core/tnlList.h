@@ -24,7 +24,7 @@
 #include <core/tnlDataElement.h>
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
-#include "param-types.h"
+#include <core/param-types.h>
 
 using namespace :: std;
 
@@ -89,6 +89,11 @@ template< class T > class tnlList
 
    //! Destructor
    ~tnlList() { reset(); };
+
+   static tnlString getType()
+   {
+      return tnlString( "tnlList< " ) + ::getType< T >() +  tnlString( " >" );
+   };
 
    //! If the list is empty return 'true'
    bool isEmpty() const { return ! size; };
@@ -349,7 +354,7 @@ template< class T > class tnlList
    bool Load( tnlFile& file )
    {
 #ifdef HAVE_NOT_CXX11
-      EraseAll();
+      reset();
       int _size;
       file. read< int, tnlHost >( &_size );
       if( _size < 0 )
@@ -389,7 +394,7 @@ template< class T > class tnlList
    bool DeepLoad( tnlFile& file )
    {
 #ifdef HAVE_NOT_CXX11
-      EraseAll();
+      reset();
       int _size;
       file. read< int, tnlHost >( &_size );
       if( _size < 0 )
@@ -425,11 +430,6 @@ template< class T > class tnlList
    
 };
 
-template< typename T > tnlString GetParameterType( const tnlList< T >& )
-{
-   T t;
-   return tnlString( "mList< " ) + GetParameterType( t ) +  tnlString( " >" ); 
-};
 
 template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list )
 {

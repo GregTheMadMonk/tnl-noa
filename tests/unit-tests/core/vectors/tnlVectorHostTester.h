@@ -34,7 +34,7 @@ class testingClass
 
 };
 
-tnlString GetParameterType( const testingClass& c )
+tnlString getType( const testingClass& c )
 {
    return tnlString( "testingClass" );
 };

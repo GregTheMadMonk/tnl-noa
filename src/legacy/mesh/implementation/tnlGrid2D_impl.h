@@ -140,11 +140,11 @@ tnlString tnlGridOld< 2, Real, Device, Index > :: getType() const
    return tnlString( "tnlGridOld< ") +
           tnlString( "2" ) +
           tnlString( ", " ) +
-          tnlString( getParameterType< Real >() ) +
+          tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( getParameterType< Index >() ) +
+          tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
 

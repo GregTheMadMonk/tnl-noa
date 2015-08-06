@@ -1,0 +1,17 @@
+#!/usr/bin/env bash 
+
+PYTHON=`which python3`
+TNL_BINDIR=`tnl-bindir`
+
+if test x${PYTHON} = x;
+then 
+    echo "It seems that Python 3 is not install on your system."
+    echo "You may install it as follows:"
+    echo ""
+    echo "In Ubuntu: sudo apt-get install python3"
+    echo "In OpenSuse:"
+    echo "In CentOS:"
+else
+${PYTHON} ${TNL_BINDIR}/tnl-quickstart.py
+fi
+

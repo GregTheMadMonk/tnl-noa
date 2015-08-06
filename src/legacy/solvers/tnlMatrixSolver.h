@@ -80,9 +80,9 @@ tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const tnlString& name
   iteration( 0 ),
   residue( 0.0 ),
   solver_comm( MPI_COMM_WORLD ),
-  verbosity( 0 ),
-  cpu_timer( &default_mcore_cpu_timer ),
-  rt_timer( &default_mcore_rt_timer )
+  verbosity( 0 )/*,
+  cpu_timer( &defaultCPUTimer ),
+  rt_timer( &default_mcore_rt_timer )*/
 {
 };
 
@@ -122,7 +122,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
    if( this -> verbosity > 0 )
    {
       int cpu_time = 0;
-      if( this -> cpu_timer ) cpu_time = this -> cpu_timer -> GetTime( 0, this -> solver_comm );
+      if( this -> cpu_timer ) cpu_time = this -> cpu_timer -> getTime( 0, this -> solver_comm );
       if( MPIGetRank() != 0 ) return;
       // TODO: add EST
       //cout << " EST: " << estimated;
@@ -131,7 +131,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
       if( this -> cpu_timer )
          cout << " CPU: " << setw( 8 ) << cpu_time;
       if( this -> rt_timer )
-         cout << " ELA: " << setw( 8 ) << this -> rt_timer -> GetTime();
+         cout << " ELA: " << setw( 8 ) << this -> rt_timer -> getTime();
       cout << "   \r" << flush;
    }
 };

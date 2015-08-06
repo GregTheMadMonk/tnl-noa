@@ -22,7 +22,7 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <diff/tnlMPIMesh.h>
+#include <legacy/diff/tnlMPIMesh.h>
 
 
 #ifdef HAVE_CUDA

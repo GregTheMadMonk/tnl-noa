@@ -256,11 +256,11 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlRgCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlRgCSRMatrix< ") +
-          tnlString( GetParameterType( Real( 0.0 ) ) ) +
+          tnlString( getType( Real( 0.0 ) ) ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          GetParameterType( Index( 0 ) ) +
+          getType( Index( 0 ) ) +
           tnlString( " >" );
    // TODO: add value of useAdaptiveGroupSize
 };

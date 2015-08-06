@@ -20,38 +20,18 @@
 
 #include <core/tnlObject.h>
 #include <config/tnlParameterContainer.h>
+#include <solvers/tnlBuildConfigTags.h>
 
-template< template< typename MeshType, typename SolverStarter > class ProblemSetter,
-          typename SolverConfig >
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename ConfigTag >
 class tnlSolverInitiator : public tnlObject
 {
    public:
 
-   bool run( const char* configFileName, int argc, char* argv[] );
+   static bool run( const tnlParameterContainer& parameters );
 
-   virtual bool checkSupportedRealTypes( const tnlString& realType,
-                                         const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedIndexTypes( const tnlString& indexType,
-                                          const tnlParameterContainer& parameters ) const;
-
-   virtual bool checkSupportedDevices( const tnlString& device,
-                                       const tnlParameterContainer& parameters ) const;
-
-   protected:
-
-   bool setRealType( const tnlParameterContainer& parameters ) const;
-
-   template< typename RealType >
-   bool setIndexType( const tnlParameterContainer& parameters ) const;
-
-   template< typename RealType,
-             typename IndexType >
-   bool setDeviceType( const tnlParameterContainer& parameters ) const;
-
-   int verbose;
 };
 
-#include <implementation/solvers/tnlSolverInitiator_impl.h>
+#include <solvers/tnlSolverInitiator_impl.h>
 
 #endif /* TNLSOLVERINITIATOR_H_ */

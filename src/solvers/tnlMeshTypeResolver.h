@@ -20,31 +20,34 @@
 
 #include <config/tnlParameterContainer.h>
 
-template< bool ResolveMesh,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
+          typename ConfigTag,
+          bool ResolveMesh = tnlConfigTagMeshResolve< ConfigTag >::enabled >
 class tnlMeshTypeResolver
 {
 };
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-class tnlMeshTypeResolver< false, Real, Device, Index, ProblemSetter >
+          typename ConfigTag >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
 
    static bool run( const tnlParameterContainer& parameters );
 };
 
-template< typename Real,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
           typename Device,
           typename Index,
-          template< typename MeshType, typename SolverStarter > class ProblemSetter >
-class tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >
+          typename ConfigTag  >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
    public:
 
@@ -70,17 +73,13 @@ class tnlMeshTypeResolver< true, Real, Device, Index, ProblemSetter >
    static bool resolveMeshType( const tnlParameterContainer& parameters,
                                 const tnlList< tnlString >& parsedMeshType );
 
-   template< int MeshDimensions,
-             typename MeshRealType,
-             typename MeshIndexType >
-   static bool resolveGridGeometryType( const tnlParameterContainer& parameters,
-                                        const tnlList< tnlString >& parsedMeshType );
+
 
    template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
     friend class tnlMeshTypeResolverDimensionsSupportChecker;
 };
 
-template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
+/*template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
 class tnlMeshTypeResolverDimensionsSupportChecker
 {
 };
@@ -101,10 +100,8 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeRe
 
    static bool checkDimensions( const tnlParameterContainer& parameters,
                                 const tnlList< tnlString >& parsedMeshType );
-};
+};*/
 
-
-
-#include <implementation/solvers/tnlMeshTypeResolver_impl.h>
+#include <solvers/tnlMeshTypeResolver_impl.h>
 
 #endif /* TNLMESHTYPERESOLVER_H_ */

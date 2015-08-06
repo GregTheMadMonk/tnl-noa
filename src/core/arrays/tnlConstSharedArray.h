@@ -36,32 +36,36 @@ class tnlConstSharedArray : public tnlObject
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlConstSharedArray< Element, tnlHost, Index > HostType;
+   typedef tnlConstSharedArray< Element, tnlCuda, Index > CudaType;
 
    tnlConstSharedArray();
 
-   tnlString getType() const;
+   static tnlString getType();
+
+   tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void bind( const Element* _data,
               const Index _size );
 
    template< typename Array >
-   void bind( const Array& array );
+   void bind( const Array& array,
+              IndexType index = 0,
+              IndexType size = 0 );
 
    void swap( tnlConstSharedArray< Element, Device, Index >& array );
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getSize() const;
+   __cuda_callable__ Index getSize() const;
 
    Element getElement( Index i ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator[] ( Index i ) const;
+   __cuda_callable__ const Element& operator[] ( Index i ) const;
 
    tnlConstSharedArray< Element, Device, Index >& operator = ( const tnlConstSharedArray< Element, Device, Index >& array );
 
@@ -74,10 +78,7 @@ class tnlConstSharedArray : public tnlObject
    template< typename Array >
    bool operator != ( const Array& array ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element* getData() const;
+   __cuda_callable__ const Element* getData() const;
 
    /****
     * Returns true if non-zero size is set.
@@ -114,6 +115,6 @@ class tnlConstSharedArray : public tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlConstSharedArray< Element, Device, Index >& v );
 
-#include <implementation/core/arrays/tnlConstSharedArray_impl.h>
+#include <core/arrays/tnlConstSharedArray_impl.h>
 
 #endif /* TNLCONSTSHAREDARRAY_H_ */

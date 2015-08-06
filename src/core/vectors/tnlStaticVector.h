@@ -404,10 +404,10 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
 template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
 
-#include <implementation/core/vectors/tnlStaticVector_impl.h>
-#include <implementation/core/vectors/tnlStaticVector1D_impl.h>
-#include <implementation/core/vectors/tnlStaticVector2D_impl.h>
-#include <implementation/core/vectors/tnlStaticVector3D_impl.h>
+#include <core/vectors/tnlStaticVector_impl.h>
+#include <core/vectors/tnlStaticVector1D_impl.h>
+#include <core/vectors/tnlStaticVector2D_impl.h>
+#include <core/vectors/tnlStaticVector3D_impl.h>
 
 // TODO: move to some other source file
 
@@ -453,4 +453,20 @@ Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
    return 0.5 * sqrt( tnlScalarProduct( v, v ) );
 };
 
+template< typename Real >
+Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
+                      const tnlStaticVector< 3, Real >& b,
+                      const tnlStaticVector< 3, Real >& c )
+{
+   tnlStaticVector< 3, Real > u1, u2;
+   u1. x() = b. x() - a. x();
+   u1. y() = b. y() - a. y();
+   u1. z() = 0.0;
+   u2. x() = c. x() - a. x();
+   u2. y() = c. y() - a. y();
+   u2. z() = 0;
+
+   const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
+   return 0.5 * sqrt( tnlScalarProduct( v, v ) );
+};
 #endif /* TNLSTATICVECTOR_H_ */

@@ -19,6 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
+#include <functors/tnlFunctionType.h>
 
 class tnlHost;
 
@@ -32,6 +33,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlVector< Real, tnlHost, Index > HostType;
+   typedef tnlVector< Real, tnlCuda, Index > CudaType;
+
 
    tnlVector();
 
@@ -42,6 +46,10 @@ class tnlVector : public tnlArray< Real, Device, Index >
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
+
+   static tnlString getSerializationType();
+
+   virtual tnlString getSerializationTypeVirtual() const;
 
    void addElement( const IndexType i,
                     const RealType& value );
@@ -56,10 +64,20 @@ class tnlVector : public tnlArray< Real, Device, Index >
    tnlVector< Real, Device, Index >& operator = ( const Vector& vector );
 
    template< typename Vector >
-   bool operator == ( const Vector& array ) const;
+   bool operator == ( const Vector& vector ) const;
 
    template< typename Vector >
-   bool operator != ( const Vector& array ) const;
+   bool operator != ( const Vector& vector ) const;
+
+   template< typename Vector >
+   tnlVector< Real, Device, Index >& operator -= ( const Vector& vector );
+
+   template< typename Vector >
+   tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
+
+   tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   tnlVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    Real max() const;
 
@@ -97,30 +115,20 @@ class tnlVector : public tnlArray< Real, Device, Index >
    template< typename Vector >
    Real scalarProduct( const Vector& v );
 
-   //! Computes Y = alpha * X + Y.
+   //! Computes this = thisMultiplicator * this + multiplicator * v.
    template< typename Vector >
-   void alphaXPlusY( const Real& alpha,
-                     const Vector& x );
+   void addVector( const Vector& v,
+                   const Real& multiplicator = 1.0,
+                   const Real& thisMultiplicator = 1.0 );
 
-   //! Computes Y = alpha * X + beta * Y.
-   template< typename Vector >
-   void alphaXPlusBetaY( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta );
 
-   //! Computes Y = alpha * X + beta * Z
+   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >
-   void alphaXPlusBetaZ( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta,
-                         const Vector& z );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   template< typename Vector >
-   void alphaXPlusBetaZPlusY( const Real& alpha,
-                              const Vector& x,
-                              const Real& beta,
-                              const Vector& z );
+   void addVectors( const Vector& v1,
+                    const Real& multiplicator1,
+                    const Vector& v2,
+                    const Real& multiplicator2,
+                    const Real& thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 
@@ -131,6 +139,16 @@ class tnlVector : public tnlArray< Real, Device, Index >
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 };
 
-#include <implementation/core/vectors/tnlVector_impl.h>
+template< typename Real,
+          typename Device,
+          typename Index >
+class tnlFunctionType< tnlVector< Real, Device, Index > >
+{
+   public:
+
+      enum { Type = tnlDiscreteFunction };
+};
+
+#include <core/vectors/tnlVector_impl.h>
 
 #endif /* TNLVECTOR_H_ */

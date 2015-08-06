@@ -26,21 +26,24 @@
 template< typename RealType, typename IndexType >
 bool setupGrid( const tnlParameterContainer& parameters )
 {
-   tnlString gridName = parameters. GetParameter< tnlString >( "grid-name" );
-   tnlString outputFile = parameters. GetParameter< tnlString >( "output-file" );
-   int dimensions = parameters. GetParameter< int >( "dimensions" );
-   cout << "Writing the grid to the file " << outputFile << " .... ";
+   tnlString gridName = parameters. getParameter< tnlString >( "grid-name" );
+   tnlString outputFile = parameters. getParameter< tnlString >( "output-file" );
+   int dimensions = parameters. getParameter< int >( "dimensions" );
    if( dimensions == 1 )
    {
-      RealType originX = parameters. GetParameter< double >( "origin-x" );
-      RealType proportionsX = parameters. GetParameter< double >( "proportions-x" );
-      IndexType sizeX = parameters. GetParameter< int >( "size-x" );
+      RealType originX = parameters. getParameter< double >( "origin-x" );
+      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
+      IndexType sizeX = parameters. getParameter< int >( "size-x" );
+      cout << "Setting dimensions to  ... " << sizeX << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 1, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 1, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 1, RealType >( originX ) );
-      grid.setProportions( tnlStaticVector< 1, RealType >( proportionsX ) );
-      grid.setDimensions( tnlStaticVector< 1, IndexType >( sizeX ) );
+      grid.setDomain( VertexType( originX ), VertexType( proportionsX ) );
+      grid.setDimensions( CoordinatesType( sizeX ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -49,18 +52,22 @@ bool setupGrid( const tnlParameterContainer& parameters )
    }
    if( dimensions == 2 )
    {
-      RealType originX = parameters. GetParameter< double >( "origin-x" );
-      RealType originY = parameters. GetParameter< double >( "origin-y" );
-      RealType proportionsX = parameters. GetParameter< double >( "proportions-x" );
-      RealType proportionsY = parameters. GetParameter< double >( "proportions-y" );
-      IndexType sizeX = parameters. GetParameter< int >( "size-x" );
-      IndexType sizeY = parameters. GetParameter< int >( "size-y" );
+      RealType originX = parameters. getParameter< double >( "origin-x" );
+      RealType originY = parameters. getParameter< double >( "origin-y" );
+      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
+      RealType proportionsY = parameters. getParameter< double >( "proportions-y" );
+      IndexType sizeX = parameters. getParameter< int >( "size-x" );
+      IndexType sizeY = parameters. getParameter< int >( "size-y" );
+      cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 2, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 2, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 2, RealType >( originX, originY ) );
-      grid.setProportions( tnlStaticVector< 2, RealType >( proportionsX, proportionsY ) );
-      grid.setDimensions( tnlStaticVector< 2, IndexType >( sizeX, sizeY ) );
+      grid.setDomain( VertexType( originX, originY ), VertexType( proportionsX, proportionsY ) );
+      grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -69,21 +76,25 @@ bool setupGrid( const tnlParameterContainer& parameters )
    }
    if( dimensions == 3 )
    {
-      RealType originX = parameters. GetParameter< double >( "origin-x" );
-      RealType originY = parameters. GetParameter< double >( "origin-y" );
-      RealType originZ = parameters. GetParameter< double >( "origin-z" );
-      RealType proportionsX = parameters. GetParameter< double >( "proportions-x" );
-      RealType proportionsY = parameters. GetParameter< double >( "proportions-y" );
-      RealType proportionsZ = parameters. GetParameter< double >( "proportions-z" );
-      IndexType sizeX = parameters. GetParameter< int >( "size-x" );
-      IndexType sizeY = parameters. GetParameter< int >( "size-y" );
-      IndexType sizeZ = parameters. GetParameter< int >( "size-z" );
+      RealType originX = parameters. getParameter< double >( "origin-x" );
+      RealType originY = parameters. getParameter< double >( "origin-y" );
+      RealType originZ = parameters. getParameter< double >( "origin-z" );
+      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
+      RealType proportionsY = parameters. getParameter< double >( "proportions-y" );
+      RealType proportionsZ = parameters. getParameter< double >( "proportions-z" );
+      IndexType sizeX = parameters. getParameter< int >( "size-x" );
+      IndexType sizeY = parameters. getParameter< int >( "size-y" );
+      IndexType sizeZ = parameters. getParameter< int >( "size-z" );
+      cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << "x" << sizeZ << endl;
+      cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      tnlGrid< 3, RealType, tnlHost, IndexType > grid;
+      typedef tnlGrid< 3, RealType, tnlHost, IndexType > GridType;
+      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      GridType grid;
       grid.setName( gridName );
-      grid.setOrigin( tnlStaticVector< 3, RealType >( originX, originY, originZ ) );
-      grid.setProportions( tnlStaticVector< 3, RealType >( proportionsX, proportionsY, proportionsZ ) );
-      grid.setDimensions( tnlStaticVector< 3, IndexType >( sizeX, sizeY, sizeZ ) );
+      grid.setDomain( VertexType( originX, originY, originZ ), VertexType( proportionsX, proportionsY, proportionsZ ) );
+      grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );
       if( ! grid.save( outputFile ) )
       {
          cerr << "[ FAILED ] " << endl;
@@ -97,8 +108,8 @@ bool setupGrid( const tnlParameterContainer& parameters )
 template< typename RealType >
 bool resolveIndexType( const tnlParameterContainer& parameters )
 {
-   const tnlString& indexType = parameters. GetParameter< tnlString >( "index-type" );
-   cout << "Setting  to  ... " << indexType << endl;
+   const tnlString& indexType = parameters. getParameter< tnlString >( "index-type" );
+   cout << "Setting index type to  ... " << indexType << endl;
    if( indexType == "int" )
       return setupGrid< RealType, int >( parameters );
    if( indexType == "long int" )
@@ -109,7 +120,7 @@ bool resolveIndexType( const tnlParameterContainer& parameters )
 
 bool resolveRealType( const tnlParameterContainer& parameters )
 {
-   tnlString realType = parameters. GetParameter< tnlString >( "real-type" );
+   tnlString realType = parameters. getParameter< tnlString >( "real-type" );
    cout << "Setting real type to   ... " << realType << endl;
    if( realType == "float" )
       return resolveIndexType< float >( parameters );

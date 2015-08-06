@@ -1,36 +1,24 @@
+TODO: v tnlMeshResolver se provadi preklad pro vsechny mozne sablonove parametry => prorezat
+
+TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
+
+TODO: doplnit mesh travelsals pro jine mesh entity nez cell
+TODO: implementace maticovych resicu
+      * Gaussova eliminace
+      * SOR metoda
+      * Jacobiho metoda
+      * TFQMR metoda
+      * IDR metody 
+
+TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. V pripade hran gridu, by ty v sobe mohly mit i orientaci.
+      Asi by to bylo vyhodne i pro site se smisenym typem entit. 
+
 TODO: implementovat tridu tnlFileName pro generovani jmen souboru
 
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 
 
-TODO: implementovat tridu tnlParabolicSolver pro odvozovani resicu k casove promennym uloham
+TODO: vyjimky 
 
-
-TODO: objekt pro osetreni chyb - zavedeni funkce tnlGetError
-      - mozna dat do tnlObject priznak, zda je objekt ok nebo 
-        v nefunkcnim stavu   
-
-TODO: implementovat casovace merici jen cas resicu
-
-     
-TODO: implementovat maticovy format COO - mimo jine by se dal vyuzit k rychlejsimu parsovani mtx souboru
-
-TODO: implementovat metodu tnlObject passToDevice, ktera vytvori obraz daneho objektu na GPU.
-      Vrati ukazatel na tridu, ktetou lze pouzivat v kernelech. To by melo zjednodusti psani kernelu a
-      priblizit je kodu pro CPU.
-
-TODO: Zkusit z tnlExplicitSolver udelat tnlTimeSolver, od nej odvodit tnlEulerSolver, tnlMersonSolver a
-      tnlParabolicSolver. Objekt by obsahoval i metodu pro ukladani stavu v prubehu vypoctu. 
-      
-TODO: - odvodit tnlArray primo z tnlArrayManager
-      - tnlGrid prejmenovat na tnlGridOfNodes
-      - zavest tnlGrid podle tnlMesh - tj. bude to pouze popis site bez sitove fce.
-      - po prepsani vsech schemat se tnlGridOfNodes zrusi
-      - zavest tnlObjectArray pro pole objektu - rozdil je v tom, ze treba save a load bude volat pro kazdy element
-        jeho metodu save a load apod.           
-      
-DONE: Nahradit mGrid2D, mGrid3D za mGrid obecne dimenze 
-
-DONE: trida tnlArray - misto tnlLongVector a tnlField (nebo postavenou na tnlLongVector)
-      template< typename REAL, int DIM, tnlDevice >
-DONE: do tnlGrid pridat metodu pro osetreni Dirichletovych a Neumannovych o.p.           
+TODO: prubezne ukladani vysledku behem vypoctu 
+                 
