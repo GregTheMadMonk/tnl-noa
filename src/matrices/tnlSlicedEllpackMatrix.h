@@ -2,7 +2,7 @@
                           tnlSlicedEllpackMatrix.h  -  description
                              -------------------
     begin                : Dec 8, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,6 +14,17 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Vacata Jan
+ * 
+ * The algorithm/method was published in:
+ *  Oberhuber T., Suzuki A., Vacata J., New Row-grouped CSR format for storing
+ *  the sparse matrices on GPU with implementation in CUDA, Acta Technica, 2011,
+ *  vol. 56, no. 4, pp. 447-466.
+ */
 
 #ifndef TNLSLICEDELLPACKMATRIX_H_
 #define TNLSLICEDELLPACKMATRIX_H_

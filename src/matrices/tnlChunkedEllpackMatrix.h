@@ -2,7 +2,7 @@
                           tnlChunkedEllpackMatrix.h  -  description
                              -------------------
     begin                : Dec 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,6 +14,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Heller Martin
+ * 
+ * The algorithm/method was published in:
+ * Heller M., Oberhuber T., Improved Row-grouped CSR Format for Storing of
+ * Sparse Matrices on GPU, Proceedings of Algoritmy 2012, 2012, Handlovičová A.,
+ * Minarechová Z. and Ševčovič D. (ed.), pages 282-290.
+ */
+
 
 #ifndef TNLCHUNKEDELLPACKMATRIX_H_
 #define TNLCHUNKEDELLPACKMATRIX_H_

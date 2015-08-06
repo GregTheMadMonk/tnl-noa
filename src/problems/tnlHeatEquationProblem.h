@@ -2,7 +2,7 @@
                           tnlHeatEquationProblem.h  -  description
                              -------------------
     begin                : Feb 23, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,6 +14,13 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 
 #ifndef TNLHEATEQUATIONPROBLEM_H_
 #define TNLHEATEQUATIONPROBLEM_H_

@@ -2,7 +2,7 @@
                           tnlHeatEquationEocRhs.h  -  description
                              -------------------
     begin                : Sep 8, 2014
-    copyright            : (C) 2014 by oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,6 +14,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
 
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_

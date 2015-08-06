@@ -1,3 +1,17 @@
+###############################################################################
+#                      Cmake project script for TNL
+#                             -------------------
+#    begin               : Dec 8, 2010
+#    copyright           : (C) 2010 by Tomas Oberhuber et al.
+#    email               : tomas.oberhuber@fjfi.cvut.cz
+#
+###############################################################################
+#
+# Authors:
+# Tomas Oberhuber
+# Vladimir Klement
+# Jakub Klinkovsky
+
 cmake_minimum_required( VERSION 2.8.10 )
 
 project( tnl )
