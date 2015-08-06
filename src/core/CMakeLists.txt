@@ -67,6 +67,7 @@ set( tnl_core_SOURCES
      ${tnl_core_cuda_SOURCES}
      ${tnl_core_vectors_SOURCES}
      ${common_SOURCES}
+     ${CURRENT_DIR}/tnlCudaDeviceInfo.cpp
      PARENT_SCOPE )
     
 
