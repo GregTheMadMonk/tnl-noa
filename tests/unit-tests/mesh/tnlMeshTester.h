@@ -120,11 +120,11 @@ class tnlMeshTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMeshTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfTrianglesTest", &TesterType::regularMeshOfTrianglesTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfQuadrilateralsTest", &TesterType::regularMeshOfQuadrilateralsTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfHexahedronsTest", &TesterType::regularMeshOfHexahedronsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
+      suiteOfTests->addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfTrianglesTest", &TesterType::regularMeshOfTrianglesTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfQuadrilateralsTest", &TesterType::regularMeshOfQuadrilateralsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfHexahedronsTest", &TesterType::regularMeshOfHexahedronsTest ) );
       return suiteOfTests;
    }
 

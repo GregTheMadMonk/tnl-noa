@@ -31,7 +31,7 @@ class tnlMeshWriterVTKLegacy
    public:
 
    template< typename MeshType >
-   static bool writeMesh( const tnlString& fileName,
+   static bool write( const tnlString& fileName,
                           MeshType& mesh,
                           bool verbose )
    {
@@ -51,20 +51,25 @@ class tnlMeshWriterVTKLegacy
       outputFile << setprecision( 6 );
       outputFile << fixed;
 
-      if( ! writeHeader( outputFile, mesh ) )
+      if( ! writeMesh( outputFile, mesh, verbose ) )
          return false;
    }
 
    template< typename MeshType >
-   static bool writeHeader( ostream& file,
-                            MeshType& mesh,
-                            bool verbose )
+   static bool writeMesh( ostream& file,
+                          MeshType& mesh,
+                          bool verbose )
    {
-      file << "# vtk DataFile Version 2.0\n";
-      file << m_name << "\n";
-      file << "ASCII\n";
-      file << "DATASET UNSTRUCTURED_GRID\n";
-      file << "\n";
+      file << "# vtk DataFile Version 2.0" << endl;
+      file << "TNL Mesh" << endl;
+      file << "ASCII" << endl;
+      file << "DATASET UNSTRUCTURED_GRID" << endl;
+      file << endl;
+      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " float" << endl;
+      for( int i = 0; i < mesh.template getNumberOfEntities< 0 >(); i++ )
+      {
+         file << mesh.template getEntity< 0 >( i ).getPoint();
+      }
    }
 
 

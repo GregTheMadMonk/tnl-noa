@@ -96,8 +96,9 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
                                                             IndexType index,
                                                             IndexType size )
 {
-   tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
-                    "Attempt to bind arrays between different devices." );
+   // TODO: This does not work for static arrays.
+   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //                 "Attempt to bind arrays between different devices." );
    this->data = &( array. getData()[ index ] );
    if( ! size )
       this->size = array. getSize();

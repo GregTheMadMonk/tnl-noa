@@ -331,7 +331,7 @@ Index tnlGrid< 2, Real, Device, Index >::getFaceNextToCell( const IndexType& cel
               cerr << " cellIndex = " << cellIndex
                    << " nx = " << nx
                    << " ny = " << ny
-                   << " this->getNumberOfCells() = " << ( this->template getNumberOfCells< 1, 1 >() )
+                   << " this->getNumberOfCells() = " << ( this->getNumberOfCells() )
                    << " this->getName() " << this->getName(); );
    return result;
 }

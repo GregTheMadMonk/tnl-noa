@@ -20,6 +20,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlMeshReaderNetgen.h>
+#include <mesh/tnlMeshWriterVTKLegacy.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
@@ -31,14 +32,16 @@
 template< int Dimensions >
 bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-mesh-file" );
-   const tnlString fileExt = getFileExtension( inputFileName );
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   const tnlString& outputFileName = parameters.getParameter< tnlString >( "output-file" );
+   const tnlString inputFileExt = getFileExtension( inputFileName );
+   const tnlString outputFileExt = getFileExtension( outputFileName );
 
    if( Dimensions == 2 )
    {
       typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTag > > MeshType;
       MeshType mesh;
-      if( fileExt == "ng" &&
+      if( inputFileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
       tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTriangleTag > > meshInitializer;
@@ -48,13 +51,21 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
       if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
          return false;
       tnlString outputFile;
-      if( parameters.GetParameter< tnlString >( "output-file", outputFile ) )
-      {
-         cout << "Writing the 2D mesh to the file " << outputFile << "." << endl;
+      cout << "Writing the 2D mesh to the file " << outputFile << "." << endl;
+      if( outputFileExt == "tnl" )
+      {         
          if( ! mesh.save( outputFile ) )
          {
-            cerr << "I am not able to safe the mesh into the file " << outputFile << "." << endl;
+            cerr << "I am not able to write the mesh into the file " << outputFile << "." << endl;
             return false;
+         }
+      }
+      if( outputFileExt == "vtk" )
+      {
+         if( ! tnlMeshWriterVTKLegacy::write( outputFileName, mesh, true ) )
+         {
+            cerr << "I am not able to write the mesh into the file " << outputFile << "." << endl;
+            return false;         
          }
       }
    }
@@ -62,7 +73,7 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
    {
       typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTag > > MeshType;
       MeshType mesh;
-      if( fileExt == "ng" &&
+      if( inputFileExt == "ng" &&
           ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
          return false;
       tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTetrahedronTag > > meshInitializer;
@@ -88,23 +99,22 @@ bool readMeshWithDimensions( const tnlParameterContainer& parameters )
 
 bool convertMesh( const tnlParameterContainer& parameters )
 {
-   tnlString inputFileName;
-   if( parameters.getParameter( "input-mesh-file", inputFileName ) )
+   tnlString inputFileName = parameters.getParameter< tnlString >( "input-file" );
+
+   const tnlString fileExt = getFileExtension( inputFileName );
+   if( fileExt == "ng" )
    {
-      const tnlString fileExt = getFileExtension( inputFileName );
-      if( fileExt == "ng" )
-      {
-         int dimensions;
-         if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName, dimensions ) )
-            return false;
-         if( dimensions == 2 &&
-             ! readMeshWithDimensions< 2 >( parameters ) )
-            return false;
-         if( dimensions == 3 &&
-             ! readMeshWithDimensions< 3 >( parameters ) )
-            return false;
-      }
+      int dimensions;
+      if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName, dimensions ) )
+         return false;
+      if( dimensions == 2 &&
+          ! readMeshWithDimensions< 2 >( parameters ) )
+         return false;
+      if( dimensions == 3 &&
+          ! readMeshWithDimensions< 3 >( parameters ) )
+         return false;
    }
+
    return true;
 }
 
