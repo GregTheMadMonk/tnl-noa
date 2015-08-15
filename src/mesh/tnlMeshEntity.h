@@ -22,7 +22,7 @@
 #include <core/tnlDynamicTypeTag.h>
 #include <mesh/tnlMeshEntityId.h>
 #include <mesh/traits/tnlMeshTraits.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 #include <mesh/topologies/tnlMeshVertexTag.h>
 #include <mesh/layers/tnlMeshSubentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
@@ -105,10 +105,11 @@ class tnlMeshEntity
    template< int Dimensions >
    struct SubentitiesTraits
    {
-      typedef tnlDimensionsTraits< Dimensions >                 DimensionsTraits;
+      static_assert( Dimensions < meshDimensions, "Asking for subentities with more or the same number of dimensions then the mesh itself." );
+      typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
       typedef tnlMeshSubentitiesTraits< ConfigTag,
                                         EntityTag,
-                                        DimensionsTraits >      SubentityTraits;
+                                        DimensionsTag >      SubentityTraits;
       typedef typename SubentityTraits::ContainerType           ContainerType;
       typedef typename SubentityTraits::SharedContainerType     SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
@@ -116,9 +117,10 @@ class tnlMeshEntity
 
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
-      enum { available = tnlMeshSubentityStorage< ConfigTag,
+      /*enum { available = tnlMeshSubentityStorage< ConfigTag,
                                                   EntityTag,
-                                                  Dimensions >::enabled };
+                                                  Dimensions >::enabled };*/
+      static const bool available = ConfigTag::template subentityStorage( EntityTag(), Dimensions );
       enum { subentitiesCount = SubentityTraits::count };
    };
 
@@ -138,13 +140,14 @@ class tnlMeshEntity
    void setSubentityIndex( const typename SubentitiesTraits< Dimensions >::LocalIndexType localIndex,
                            const typename SubentitiesTraits< Dimensions >::GlobalIndexType globalIndex )
    {
+      static_assert( SubentitiesTraits< Dimensions >::available, "You try to set subentity which is not configured for storage." );
       tnlAssert( 0 <= localIndex &&
                  localIndex < SubentitiesTraits< Dimensions >::subentitiesCount,
                  cerr << "localIndex = " << localIndex
                       << " subentitiesCount = "
                       << SubentitiesTraits< Dimensions >::subentitiesCount );
       typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
-      SubentityBaseType::setSubentityIndex( tnlDimensionsTraits< Dimensions >(),
+      SubentityBaseType::setSubentityIndex( tnlDimensionsTag< Dimensions >(),
                                             localIndex,
                                             globalIndex );
    }
@@ -153,13 +156,14 @@ class tnlMeshEntity
    typename SubentitiesTraits< Dimensions >::GlobalIndexType
       getSubentityIndex( const typename SubentitiesTraits< Dimensions >::LocalIndexType localIndex) const
       {
+         static_assert( SubentitiesTraits< Dimensions >::available, "You try to get subentity which is not configured for storage." );
          tnlAssert( 0 <= localIndex &&
                     localIndex < SubentitiesTraits< Dimensions >::subentitiesCount,
                     cerr << "localIndex = " << localIndex
                          << " subentitiesCount = "
                          << SubentitiesTraits< Dimensions >::subentitiesCount );
          typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
-         return SubentityBaseType::getSubentityIndex( tnlDimensionsTraits< Dimensions >(),
+         return SubentityBaseType::getSubentityIndex( tnlDimensionsTag< Dimensions >(),
                                                       localIndex );
       }
 
@@ -167,16 +171,18 @@ class tnlMeshEntity
       typename SubentitiesTraits< Dimensions >::SharedContainerType&
          getSubentitiesIndices()
    {
+      static_assert( SubentitiesTraits< Dimensions >::available, "You try to get subentities which are not configured for storage." );
       typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
-      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       const typename SubentitiesTraits< Dimensions >::SharedContainerType&
          getSubentitiesIndices() const
    {
+      static_assert( SubentitiesTraits< Dimensions >::available, "You try to set subentities which are not configured for storage." );
       typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
-      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    /****
@@ -185,47 +191,52 @@ class tnlMeshEntity
    template< int Dimensions >
    struct SuperentitiesTraits
    {
-      typedef tnlDimensionsTraits< Dimensions >                 DimensionsTraits;
+      static_assert( Dimensions <= meshDimensions, "Asking for subentities with more dimensions then the mesh itself." );
+      typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
       typedef tnlMeshSuperentitiesTraits< ConfigTag,
                                           EntityTag,
-                                          DimensionsTraits >    SuperentityTraits;
+                                          DimensionsTag >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
       typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
-      enum { available = tnlMeshSuperentityStorage< ConfigTag,
+      /*enum { available = tnlMeshSuperentityStorage< ConfigTag,
                                                     EntityTag,
-                                                    Dimensions >::enabled };
+                                                    Dimensions >::enabled };*/
+      static const bool available = ConfigTag::template superentityStorage( EntityTag(), Dimensions );
    };
 
    template< int Dimensions >
    bool setNumberOfSuperentities( const typename SuperentitiesTraits< Dimensions >::LocalIndexType size )
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to set number of superentities which are not configured for storage." );
       tnlAssert( size >= 0,
                  cerr << "size = " << size << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTraits< Dimensions >(),
+      return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTag< Dimensions >(),
                                                             size );
    }
 
    template< int Dimensions >
    typename SuperentitiesTraits< Dimensions >::LocalIndexType getNumberOfSuperentities() const
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get number of superentities which are not configured for storage." );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
    void setSuperentityIndex( const typename SuperentitiesTraits< Dimensions >::LocalIndexType localIndex,
                              const typename SuperentitiesTraits< Dimensions >::GlobalIndexType globalIndex )
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to set superentity which is not configured for storage." );
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      SuperentityBaseType::setSuperentityIndex( tnlDimensionsTraits< Dimensions >(),
+      SuperentityBaseType::setSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                 localIndex,
                                                 globalIndex );
    }
@@ -234,26 +245,29 @@ class tnlMeshEntity
    typename SuperentitiesTraits< Dimensions >::GlobalIndexType 
       getSuperentityIndex( const typename SuperentitiesTraits< Dimensions >::LocalIndexType localIndex ) const
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get superentity which is not configured for storage." );
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTraits< Dimensions >(),
+      return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                        localIndex );
    }
 
    template< int Dimensions >
       typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get superentities which are not configured for storage." );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices() const
    {
+      static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get superentities which are not configured for storage." );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    /****
@@ -370,19 +384,20 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    template< int Dimensions >
    struct SuperentitiesTraits
    {
-      typedef tnlDimensionsTraits< Dimensions >                 DimensionsTraits;
+      typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
       typedef tnlMeshSuperentitiesTraits< ConfigTag,
                                           tnlMeshVertexTag,
-                                          DimensionsTraits >    SuperentityTraits;
+                                          DimensionsTag >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
       typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
       typedef int                                               LocalIndexType;
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
-      enum { available = tnlMeshSuperentityStorage< ConfigTag,
+      /*enum { available = tnlMeshSuperentityStorage< ConfigTag,
                                                     tnlMeshVertexTag,
-                                                    Dimensions >::enabled };
+                                                    Dimensions >::enabled };*/
+      static const bool available = ConfigTag::template superentityStorage< tnlMeshVertexTag >( Dimensions );
    };
    template< int Dimensions >
    bool setNumberOfSuperentities( const typename SuperentitiesTraits< Dimensions >::LocalIndexType size )
@@ -390,7 +405,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       tnlAssert( size >= 0,
                  cerr << "size = " << size << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTraits< Dimensions >(),
+      return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTag< Dimensions >(),
                                                             size );
    }
 
@@ -398,21 +413,21 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    typename SuperentitiesTraits< Dimensions >::LocalIndexType getNumberOfSuperentities() const
    {
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
    {
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndeces() const
    {
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTraits< Dimensions >() );
+      return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
@@ -423,7 +438,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      SuperentityBaseType::setSuperentityIndex( tnlDimensionsTraits< Dimensions >(),
+      SuperentityBaseType::setSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                 localIndex,
                                                 globalIndex );
    }
@@ -436,7 +451,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
       typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
-      return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTraits< Dimensions >(),
+      return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                        localIndex );
    }
 

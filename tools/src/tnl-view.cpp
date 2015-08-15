@@ -119,7 +119,7 @@ int main( int argc, char* argv[] )
       /*tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
-         typedef tnlMeshTriangleTag CellTag;
+         typedef tnlMeshTriangleTag CellType;
       };
       tnlMesh< MeshConfig > mesh;
       if( ! mesh.load( meshFile ) )

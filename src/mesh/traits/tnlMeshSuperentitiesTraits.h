@@ -28,12 +28,13 @@
 
 template< typename ConfigTag,
           typename EntityTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshSuperentitiesTraits
 {
-   enum { storageEnabled = tnlMeshSuperentityStorage< ConfigTag,
+   /*enum { storageEnabled = tnlMeshSuperentityStorage< ConfigTag,
                                                       EntityTag,
-                                                      DimensionsTraits::value >::enabled };
+                                                      DimensionsTag::value >::enabled };*/
+   static const bool storageEnabled = ConfigTag::template superentityStorage< EntityTag >( EntityTag(), DimensionsTag::value );
 
    typedef typename ConfigTag::GlobalIndexType                              GlobalIndexType;
    typedef typename ConfigTag::LocalIndexType                               LocalIndexType;
@@ -43,10 +44,10 @@ class tnlMeshSuperentitiesTraits
    typedef tnlMeshEntity< ConfigTag, EntityTag >                            EntityType;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Tag                        SuperentityTag;
+                             DimensionsTag >::Tag                        SuperentityTag;
    typedef typename
       tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTraits >::Type                       SuperentityType;
+                             DimensionsTag >::Type                       SuperentityType;
 
    typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
 

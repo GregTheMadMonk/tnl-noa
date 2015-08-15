@@ -19,27 +19,27 @@
 #define TNLMESHINTEGRITYCHECKERLAYER_H_
 
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlStorageTraits.h>
 
 template< typename MeshType,
-          typename DimensionsTraits,
+          typename DimensionsTag,
           typename EntityStorageTag = typename tnlMeshEntitiesTraits< typename MeshType::Config,
-                                                                      DimensionsTraits >::EntityStorageTag >
+                                                                      DimensionsTag >::EntityStorageTag >
 class tnlMeshIntegrityCheckerLayer;
 
 template< typename MeshType,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshIntegrityCheckerLayer< MeshType,
-                                    DimensionsTraits,
+                                    DimensionsTag,
                                     tnlStorageTraits< true > >
    : public tnlMeshIntegrityCheckerLayer< MeshType,
-                                          typename DimensionsTraits::Previous >
+                                          typename DimensionsTag::Decrement >
 {
    public:
       typedef tnlMeshIntegrityCheckerLayer< MeshType, 
-                                            typename DimensionsTraits::Previous >     BaseType;
-      enum { dimensions = DimensionsTraits::value };
+                                            typename DimensionsTag::Decrement >     BaseType;
+      enum { dimensions = DimensionsTag::value };
 
       static bool checkEntities( const MeshType& mesh )
       {         
@@ -61,7 +61,7 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 
 template< typename MeshType >
 class tnlMeshIntegrityCheckerLayer< MeshType,
-                                    tnlDimensionsTraits< 0 >,
+                                    tnlDimensionsTag< 0 >,
                                     tnlStorageTraits< true > >
 {
    public:
@@ -85,19 +85,19 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 };
 
 template< typename MeshType,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshIntegrityCheckerLayer< MeshType,
-                                    DimensionsTraits,
+                                    DimensionsTag,
                                     tnlStorageTraits< false > >
    : public tnlMeshIntegrityCheckerLayer< MeshType,
-                                          typename DimensionsTraits::Previous >
+                                          typename DimensionsTag::Decrement >
 {
 
 };
 
 template< typename MeshType >
 class tnlMeshIntegrityCheckerLayer< MeshType,
-                                    tnlDimensionsTraits< 0 >,
+                                    tnlDimensionsTag< 0 >,
                                     tnlStorageTraits< false > >
 {
 

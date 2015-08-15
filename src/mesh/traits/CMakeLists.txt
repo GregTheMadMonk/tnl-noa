@@ -1,5 +1,4 @@
-SET( headers tnlDimensionsTraits.h
-             tnlMeshTraits.h
+SET( headers tnlMeshTraits.h
              tnlStorageTraits.h
              tnlMeshEntitiesTraits.h
              tnlMeshEntitiesTag.h

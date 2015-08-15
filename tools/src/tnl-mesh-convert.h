@@ -29,72 +29,85 @@
 #include <mesh/tnlMeshIntegrityChecker.h>
 #include <core/mfilename.h>
 
-template< int Dimensions >
-bool readMeshWithDimensions( const tnlParameterContainer& parameters )
+template< typename MeshReader,
+          typename MeshType >
+bool convertMesh( const tnlParameterContainer& parameters )
 {
    const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
    const tnlString& outputFileName = parameters.getParameter< tnlString >( "output-file" );
-   const tnlString inputFileExt = getFileExtension( inputFileName );
    const tnlString outputFileExt = getFileExtension( outputFileName );
 
-   if( Dimensions == 2 )
-   {
-      typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTag > > MeshType;
-      MeshType mesh;
-      if( inputFileExt == "ng" &&
-          ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
-         return false;
-      tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTriangleTag > > meshInitializer;
-      meshInitializer.setVerbose( true );
-      if( ! meshInitializer.initMesh( mesh ) )
-         return false;
-      if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
-         return false;
-      tnlString outputFile;
-      cout << "Writing the 2D mesh to the file " << outputFile << "." << endl;
-      if( outputFileExt == "tnl" )
-      {         
-         if( ! mesh.save( outputFile ) )
-         {
-            cerr << "I am not able to write the mesh into the file " << outputFile << "." << endl;
-            return false;
-         }
-      }
-      if( outputFileExt == "vtk" )
+   MeshType mesh;
+   if( ! MeshReader::readMesh( inputFileName, mesh, true ) )
+      return false;
+   tnlMeshInitializer< typename MeshType::Config > meshInitializer;
+   meshInitializer.setVerbose( true );
+   if( ! meshInitializer.initMesh( mesh ) )
+      return false;
+   if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
+      return false;
+   cout << "Writing the mesh to a file " << outputFileName << "." << endl;
+   if( outputFileExt == "tnl" )
+   {         
+      if( ! mesh.save( outputFileName ) )
       {
-         if( ! tnlMeshWriterVTKLegacy::write( outputFileName, mesh, true ) )
-         {
-            cerr << "I am not able to write the mesh into the file " << outputFile << "." << endl;
-            return false;         
-         }
+         cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
+         return false;
       }
    }
-   if( Dimensions == 3 )
+   if( outputFileExt == "vtk" )
    {
-      typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTag > > MeshType;
-      MeshType mesh;
-      if( inputFileExt == "ng" &&
-          ! tnlMeshReaderNetgen::readMesh<>( inputFileName, mesh, true ) )
-         return false;
-      tnlMeshInitializer< tnlMeshConfigBase< tnlMeshTetrahedronTag > > meshInitializer;
-      meshInitializer.setVerbose( true );
-      if( ! meshInitializer.initMesh( mesh ) )
-         return false;
-      if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
-         return false;
-      tnlString outputFile;
-      if( parameters.getParameter< tnlString >( "output-file", outputFile ) )
+      if( ! tnlMeshWriterVTKLegacy::write( outputFileName, mesh, true ) )
       {
-         cout << "Writing the 3D mesh to the file " << outputFile << "." << endl;
-         if( ! mesh.save( outputFile ) )
-         {
-            cerr << "I am not able to safe the mesh into the file " << outputFile << "." << endl;
-            return false;
-         }
+         cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
+         return false;         
       }
-   }
+      return true;
+   }   
+}
 
-   return true;
+bool readNetgenMesh( const tnlParameterContainer& parameters )
+{
+   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   
+   tnlMeshReaderNetgen meshReader;
+   if( ! meshReader.detectMesh( inputFileName ) )
+      return false;
+
+   cout << "Reading mesh with " << meshReader.getDimensions() << " dimensions..." << endl;
+   
+   if( meshReader.getDimensions() == 2 )
+   {
+      if( meshReader.getVerticesInCell() == 3 )
+      {
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTag > > MeshType;
+         cout << "Mesh consisting of triangles was detected ... " << endl;
+         return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
+      }
+      if( meshReader.getVerticesInCell() == 4 )
+      {
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshQuadrilateralTag > > MeshType;
+         cout << "Mesh consisting of quadrilaterals was detected ... " << endl;
+         return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
+      }            
+   }
+   if( meshReader.getDimensions() == 3 )
+   {
+      if( meshReader.getVerticesInCell() == 4 )
+      {
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTag > > MeshType;
+         cout << "Mesh consisting of tetrahedrons was detected ... " << endl;
+         return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
+      }
+      if( meshReader.getVerticesInCell() == 8 )
+      {
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshHexahedronTag > > MeshType;
+         cout << "Mesh consisting of hexahedrons was detected ... " << endl;
+         return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
+      }
+   }
+   cerr << "Wrong mesh dimensions were detected ( " << meshReader.getDimensions() << " )." << endl;
+   return false;
 }
 
 bool convertMesh( const tnlParameterContainer& parameters )
@@ -103,19 +116,8 @@ bool convertMesh( const tnlParameterContainer& parameters )
 
    const tnlString fileExt = getFileExtension( inputFileName );
    if( fileExt == "ng" )
-   {
-      int dimensions;
-      if( ! tnlMeshReaderNetgen::detectDimensions( inputFileName, dimensions ) )
-         return false;
-      if( dimensions == 2 &&
-          ! readMeshWithDimensions< 2 >( parameters ) )
-         return false;
-      if( dimensions == 3 &&
-          ! readMeshWithDimensions< 3 >( parameters ) )
-         return false;
-   }
-
-   return true;
+      return readNetgenMesh( parameters );
 }
+
 
 #endif /* TNL_MESH_CONVERT_H_ */

@@ -35,72 +35,44 @@
 #include <mesh/topologies/tnlMeshHexahedronTag.h>
 #include <mesh/tnlMeshInitializer.h>
 
-typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleMeshConfig;
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshVertexTag, Dimensions >
+class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTag >
 {
-   enum { enabled = true };
+   public:
+
+      static constexpr bool entityStorage( int dimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshEdgeTag, Dimensions >
+class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilateralTag >
 {
-   enum { enabled = true };
-};
- 
-typedef tnlMeshConfigBase< tnlMeshQuadrilateralTag, 2, double, int, int, void > TestQuadrilateralMeshConfig;
+   public:
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
-{
-   enum { enabled = true };
+      static constexpr bool entityStorage( int dimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
+class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTag >
 {
-   enum { enabled = true };
+   public:
+
+      static constexpr bool entityStorage( int dimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, double, int, int, void > TestTetrahedronMeshConfig;
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshVertexTag, Dimensions >
+class TestHexahedronMeshConfig : public tnlMeshConfigBase< tnlMeshHexahedronTag >
 {
-   enum { enabled = true };
-};
+   public:
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
-{
-   enum { enabled = true };
-};
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
-{
-    enum { enabled = true };
-};
-
-typedef tnlMeshConfigBase< tnlMeshHexahedronTag, 3, double, int, int, void > TestHexahedronMeshConfig;
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshVertexTag, Dimensions >
-{
-  enum { enabled = true };
-};
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
-{
-  enum { enabled = true };
-};
-
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
-{
-   enum { enabled = true };
+      static constexpr bool entityStorage( int dimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return true; };
+      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
 template< typename RealType, typename Device, typename IndexType >

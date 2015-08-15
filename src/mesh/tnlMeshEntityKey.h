@@ -20,7 +20,7 @@
 
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/traits/tnlMeshSubentitiesTraits.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 
 /****
  * Unique identification of a mesh entity by its vertices.
@@ -36,7 +36,7 @@ class tnlMeshEntityKey
    typedef typename
       tnlMeshSubentitiesTraits< ConfigTag,
                                 EntityTag,
-                                tnlDimensionsTraits< 0 > >::ContainerType ContainerType;
+                                tnlDimensionsTag< 0 > >::ContainerType ContainerType;
 
    public:
 

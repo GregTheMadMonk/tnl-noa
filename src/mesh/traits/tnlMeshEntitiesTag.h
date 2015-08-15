@@ -22,22 +22,22 @@
 #include <mesh/traits/tnlMeshTraits.h>
 
 template< typename ConfigTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshEntitiesTag
 {
    public:
 
-   typedef typename tnlSubentities< typename ConfigTag::CellTag,
-                                    DimensionsTraits::value >::Tag Tag;
+   typedef typename tnlSubentities< typename ConfigTag::CellType,
+                                    DimensionsTag::value >::Tag Tag;
 };
 
 template< typename ConfigTag >
 class tnlMeshEntitiesTag< ConfigTag,
-                          typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
+                          typename tnlMeshTraits< ConfigTag >::DimensionsTag >
 {
    public:
 
-   typedef typename ConfigTag::CellTag Tag;
+   typedef typename ConfigTag::CellType Tag;
 };
 
 

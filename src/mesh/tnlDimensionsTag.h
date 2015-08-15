@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDimensionsTraits.h  -  description
+                          tnlDimensionsTag.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,28 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLDIMENSIONSTRAITS_H_
-#define TNLDIMENSIONSTRAITS_H_
+#ifndef TNLDIMENSIONSTAG_H_
+#define TNLDIMENSIONSTAG_H_
 
 #include <core/tnlAssert.h>
 
 template< int Dimensions >
-class tnlDimensionsTraits
+class tnlDimensionsTag
 {
    public:
 
-   enum { value = Dimensions };
+      static const int value = Dimensions;
 
-   typedef tnlDimensionsTraits< Dimensions - 1 > Previous;
+      typedef tnlDimensionsTag< Dimensions - 1 > Decrement;
 
-   tnlStaticAssert( value >= 0, "The value of the dimensions cannot be negative." );
+      tnlStaticAssert( value >= 0, "The value of the dimensions cannot be negative." );
 };
 
 template<>
-class tnlDimensionsTraits< 0 >
+class tnlDimensionsTag< 0 >
 {
    public:
-   enum { value = 0 };
+   
+      static const int value = 0;
 };
 
-#endif /* TNLDIMENSIONSTRAITS_H_ */
+#endif /* TNLDIMENSIONSTAG_H_ */

@@ -19,7 +19,7 @@
 #define TNLMESHTRAITS_H_
 
 #include <core/vectors/tnlStaticVector.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 
 template< typename ConfigTag,
           typename EntityTag >
@@ -30,13 +30,13 @@ class tnlMeshTraits
 {
    public:
 
-   enum { meshDimensions = ConfigTag::CellTag::dimensions };
+   enum { meshDimensions = ConfigTag::CellType::dimensions };
 
    enum { worldDimensions = ConfigTag::worldDimensions };
 
-   typedef tnlDimensionsTraits< meshDimensions >                            DimensionsTraits;
+   typedef tnlDimensionsTag< meshDimensions >                            DimensionsTag;
    typedef tnlStaticVector< worldDimensions, typename ConfigTag::RealType > PointType;
-   typedef tnlMeshEntity< ConfigTag, typename ConfigTag::CellTag >          CellType;
+   typedef tnlMeshEntity< ConfigTag, typename ConfigTag::CellType >          CellType;
 };
 
 

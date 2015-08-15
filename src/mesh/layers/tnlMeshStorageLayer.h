@@ -23,38 +23,38 @@
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
 
-template< typename DimensionsTraits,
+template< typename DimensionsTag,
           typename Device,
           typename ConfigTag,
           typename EntityStorageTag = typename tnlMeshEntitiesTraits< ConfigTag,
-                                                                      DimensionsTraits >::EntityStorageTag >
+                                                                      DimensionsTag >::EntityStorageTag >
 class tnlMeshStorageTag;
 
 template< typename ConfigTag,
-          typename DimensionsTraits,
+          typename DimensionsTag,
           typename EntityStorageTag = typename tnlMeshEntitiesTraits< ConfigTag,
-                                                                      DimensionsTraits >::EntityStorageTag >
+                                                                      DimensionsTag >::EntityStorageTag >
 class tnlMeshStorageLayer;
 
 
 template< typename ConfigTag >
 class tnlMeshStorageLayers
    : public tnlMeshStorageLayer< ConfigTag,
-                                 typename tnlMeshTraits< ConfigTag >::DimensionsTraits >
+                                 typename tnlMeshTraits< ConfigTag >::DimensionsTag >
 {};
 
 
 template< typename ConfigTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshStorageLayer< ConfigTag,
-                           DimensionsTraits,
+                           DimensionsTag,
                            tnlStorageTraits< true > >
-   : public tnlMeshStorageLayer< ConfigTag, typename DimensionsTraits::Previous >
+   : public tnlMeshStorageLayer< ConfigTag, typename DimensionsTag::Decrement >
 {
    typedef tnlMeshStorageLayer< ConfigTag,
-                                typename DimensionsTraits::Previous >   BaseType;
+                                typename DimensionsTag::Decrement >   BaseType;
 
-   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >         Tag;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >         Tag;
    typedef typename Tag::ContainerType                                  ContainerType;
    typedef typename Tag::SharedContainerType                            SharedContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
@@ -70,16 +70,16 @@ class tnlMeshStorageLayer< ConfigTag,
 
    tnlMeshStorageLayer()
    {
-      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::entities" );
-      this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
+      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::entities" );
+      this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::sharedEntities" );
    }
 
    /*~tnlMeshStorageLayer()
    {
-      cout << "Destroying mesh storage layer with " << DimensionsTraits::value << " dimensions and " << this->entities.getSize() << " entities." << endl;
+      cout << "Destroying mesh storage layer with " << DimensionsTag::value << " dimensions and " << this->entities.getSize() << " entities." << endl;
    }*/
 
-   bool setNumberOfEntities( DimensionsTraits, const GlobalIndexType size )
+   bool setNumberOfEntities( DimensionsTag, const GlobalIndexType size )
    {
       if( ! this->entities.setSize( size ) )
          return false;
@@ -87,36 +87,36 @@ class tnlMeshStorageLayer< ConfigTag,
       return true;
    }
 
-   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
+   GlobalIndexType getNumberOfEntities( DimensionsTag ) const
    {
       return this->entities.getSize();
    }
 
-   void setEntity( DimensionsTraits,
+   void setEntity( DimensionsTag,
                    const GlobalIndexType entityIndex,
                    const EntityType& entity ) const
    {
       this->entities.setElement( entityIndex, entity );
    }
 
-   EntityType& getEntity( DimensionsTraits,
+   EntityType& getEntity( DimensionsTag,
                           const GlobalIndexType entityIndex )
    {
       return this->entities[ entityIndex ];
    }
 
-   const EntityType& getEntity( DimensionsTraits,
+   const EntityType& getEntity( DimensionsTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->entities[ entityIndex ];
    }
 
-   SharedContainerType& getEntities( DimensionsTraits )
+   SharedContainerType& getEntities( DimensionsTag )
    {
       return this->sharedEntities;
    }
 
-   const SharedContainerType& getEntities( DimensionsTraits ) const
+   const SharedContainerType& getEntities( DimensionsTag ) const
    {
       return this->sharedEntities;
    }
@@ -126,7 +126,7 @@ class tnlMeshStorageLayer< ConfigTag,
       if( ! BaseType::save( file ) ||
           ! this->entities.save( file ) )
       {
-         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
+         cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
          return false;
       }
       return true;
@@ -134,11 +134,11 @@ class tnlMeshStorageLayer< ConfigTag,
 
    bool load( tnlFile& file )
    {
-      //cout << "Loading mesh layer with dimensions " << DimensionsTraits::value << endl;
+      //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << endl;
       if( ! BaseType::load( file ) ||
           ! this->entities.load( file ) )
       {
-         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
+         cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
          return false;
       }
       this->sharedEntities.bind( this->entities );
@@ -148,7 +148,7 @@ class tnlMeshStorageLayer< ConfigTag,
    void print( ostream& str ) const
    {
       BaseType::print( str );
-      str << "The entities with " << DimensionsTraits::value << " dimensions are: " << endl;
+      str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
       for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
       {
          str << i << " ";
@@ -170,24 +170,24 @@ class tnlMeshStorageLayer< ConfigTag,
 };
 
 template< typename ConfigTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshStorageLayer< ConfigTag,
-                           DimensionsTraits,
+                           DimensionsTag,
                            tnlStorageTraits< false > >
    : public tnlMeshStorageLayer< ConfigTag,
-                                 typename DimensionsTraits::Previous >
+                                 typename DimensionsTag::Decrement >
 {
 };
 
 template< typename ConfigTag >
 class tnlMeshStorageLayer< ConfigTag,
-                           tnlDimensionsTraits< 0 >,
+                           tnlDimensionsTag< 0 >,
                            tnlStorageTraits< true > >
 {
-   typedef tnlDimensionsTraits< 0 >                        DimensionsTraits;
+   typedef tnlDimensionsTag< 0 >                        DimensionsTag;
 
    typedef tnlMeshEntitiesTraits< ConfigTag,
-                                  DimensionsTraits >       Tag;
+                                  DimensionsTag >       Tag;
    typedef typename Tag::ContainerType                     ContainerType;
    typedef typename Tag::SharedContainerType               SharedContainerType;
    typedef typename ContainerType::IndexType               GlobalIndexType;
@@ -198,13 +198,13 @@ class tnlMeshStorageLayer< ConfigTag,
 
    tnlMeshStorageLayer()
    {
-      this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
-      this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
+      this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::vertices" );
+      this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::sharedVertices" );
    }
 
    /*~tnlMeshStorageLayer()
    {
-        cout << "mesh storage layer: dimensions = " << DimensionsTraits::value << " entities = " << this->vertices.getSize() << endl;
+        cout << "mesh storage layer: dimensions = " << DimensionsTag::value << " entities = " << this->vertices.getSize() << endl;
    }*/
 
 
@@ -248,43 +248,43 @@ class tnlMeshStorageLayer< ConfigTag,
     * This is only for the completeness and compatibility
     * with higher dimensions entities storage layers.
     */
-   bool setNumberOfEntities( DimensionsTraits,
+   bool setNumberOfEntities( DimensionsTag,
                              const GlobalIndexType size )
    {
       return this->vertices.setSize( size );
    }
 
-   GlobalIndexType getNumberOfEntities( DimensionsTraits ) const
+   GlobalIndexType getNumberOfEntities( DimensionsTag ) const
    {
       return this->vertices.getSize();
    }
 
-   void setEntity( DimensionsTraits,
+   void setEntity( DimensionsTag,
                    const GlobalIndexType entityIndex,
                    const VertexType& entity ) const
    {
       this->vertices.setElement( entityIndex, entity );
    }
 
-   VertexType& getEntity( DimensionsTraits,
+   VertexType& getEntity( DimensionsTag,
                           const GlobalIndexType entityIndex )
    {
       return this->vertices[ entityIndex ];
    }
 
    
-   const VertexType& getEntity( DimensionsTraits,
+   const VertexType& getEntity( DimensionsTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->vertices.getElement( entityIndex );
    }
 
-   SharedContainerType& getEntities( DimensionsTraits )
+   SharedContainerType& getEntities( DimensionsTag )
    {
       return this->sharedVertices;
    }
 
-   const SharedContainerType& getEntities( DimensionsTraits ) const
+   const SharedContainerType& getEntities( DimensionsTag ) const
    {
       return this->sharedVertices;
    }
@@ -293,7 +293,7 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       if( ! this->vertices.save( file ) )
       {
-         cerr << "Saving of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
+         cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
          return false;
       }
       return true;
@@ -303,7 +303,7 @@ class tnlMeshStorageLayer< ConfigTag,
    {
       if( ! this->vertices.load( file ) )
       {
-         cerr << "Loading of the mesh entities with " << DimensionsTraits::value << " dimensions failed." << endl;
+         cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
          return false;
       }
       this->sharedVertices.bind( this->vertices );
@@ -336,7 +336,7 @@ class tnlMeshStorageLayer< ConfigTag,
  */
 template< typename ConfigTag >
 class tnlMeshStorageLayer< ConfigTag,
-                           tnlDimensionsTraits< 0 >,
+                           tnlDimensionsTag< 0 >,
                            tnlStorageTraits< false > >
 {
    protected:

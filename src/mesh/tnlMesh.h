@@ -21,17 +21,18 @@
 #include <core/tnlObject.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/layers/tnlMeshStorageLayer.h>
+#include <mesh/config/tnlMeshConfigValidator.h>
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class tnlMesh : public tnlObject,
-                public tnlMeshStorageLayers< ConfigTag >
+                public tnlMeshStorageLayers< MeshConfig >
 {
-   typedef tnlMeshStorageLayers< ConfigTag >                BaseType;
+   typedef tnlMeshStorageLayers< MeshConfig >                BaseType;
 
    public:
-   typedef ConfigTag                                        Config;
-   typedef typename tnlMeshTraits< ConfigTag >::PointType   PointType;
-   enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+   typedef MeshConfig                                        Config;
+   typedef typename tnlMeshTraits< MeshConfig >::PointType   PointType;
+   enum { dimensions = tnlMeshTraits< MeshConfig >::meshDimensions };
 
    /*~tnlMesh()
    {
@@ -40,7 +41,7 @@ class tnlMesh : public tnlObject,
 
    static tnlString getType()
    {
-      return tnlString( "tnlMesh< ") + ConfigTag::getType() + " >";
+      return tnlString( "tnlMesh< ") + MeshConfig::getType() + " >";
    }
 
    virtual tnlString getTypeVirtual() const
@@ -76,15 +77,16 @@ class tnlMesh : public tnlObject,
    template< int Dimensions >
    struct EntitiesTraits
    {
-      typedef tnlDimensionsTraits< Dimensions >                       DimensionsTraits;
-      typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTraits >    MeshEntitiesTraits;
+      typedef tnlDimensionsTag< Dimensions >                       DimensionsTag;
+      typedef tnlMeshEntitiesTraits< MeshConfig, DimensionsTag >    MeshEntitiesTraits;
       typedef typename MeshEntitiesTraits::Type                       Type;
       typedef typename MeshEntitiesTraits::ContainerType              ContainerType;
       typedef typename MeshEntitiesTraits::SharedContainerType        SharedContainerType;
       typedef typename ContainerType::IndexType                       GlobalIndexType;
       typedef typename ContainerType::ElementType                     EntityType;
-      enum { available = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
+      static const bool available = MeshConfig::entityStorage( Dimensions );
    };
+   typedef EntitiesTraits< dimensions > CellTraits;
 
    using BaseType::setNumberOfVertices;
    using BaseType::getNumberOfVertices;
@@ -100,74 +102,74 @@ class tnlMesh : public tnlObject,
    template< int Dimensions >
    bool setNumberOfEntities( typename EntitiesTraits< Dimensions >::GlobalIndexType size )
    {
-      return BaseType::setNumberOfEntities( tnlDimensionsTraits< Dimensions >(), size );
+      return BaseType::setNumberOfEntities( tnlDimensionsTag< Dimensions >(), size );
    }
 
    template< int Dimensions >
    typename EntitiesTraits< Dimensions >::GlobalIndexType getNumberOfEntities() const
    {
-      return BaseType::getNumberOfEntities( tnlDimensionsTraits< Dimensions >() );
+      return BaseType::getNumberOfEntities( tnlDimensionsTag< Dimensions >() );
    }
 
    bool setNumberOfCells( typename EntitiesTraits< dimensions >::GlobalIndexType size )
    {
-      return BaseType::setNumberOfEntities( tnlDimensionsTraits< dimensions >(), size );
+      return BaseType::setNumberOfEntities( tnlDimensionsTag< dimensions >(), size );
    }
 
    typename EntitiesTraits< dimensions >::GlobalIndexType getNumberOfCells() const
    {
-      return BaseType::getNumberOfEntities( tnlDimensionsTraits< dimensions >() );
+      return BaseType::getNumberOfEntities( tnlDimensionsTag< dimensions >() );
    }
 
    template< int Dimensions >
       typename EntitiesTraits< Dimensions >::EntityType&
          getEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex )
    {
-      return BaseType::getEntity( tnlDimensionsTraits< Dimensions >(), entityIndex );
+      return BaseType::getEntity( tnlDimensionsTag< Dimensions >(), entityIndex );
    }
 
    template< int Dimensions >
       const typename EntitiesTraits< Dimensions >::EntityType&
          getEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex ) const
    {
-      return BaseType::getEntity( tnlDimensionsTraits< Dimensions >(), entityIndex );
+      return BaseType::getEntity( tnlDimensionsTag< Dimensions >(), entityIndex );
    }
 
    template< int Dimensions >
       void setEntity( const typename EntitiesTraits< Dimensions >::GlobalIndexType entityIndex,
                       const typename EntitiesTraits< Dimensions >::EntityType& entity )
    {
-      BaseType::setEntity( tnlDimensionsTraits< Dimensions >(), entityIndex, entity );
+      BaseType::setEntity( tnlDimensionsTag< Dimensions >(), entityIndex, entity );
    }
 
    template< int Dimensions >
    typename EntitiesTraits< Dimensions >::SharedContainerType& getEntities()
    {
-      return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
+      return BaseType::getEntities( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
    const typename EntitiesTraits< Dimensions >::SharedContainerType& getEntities() const
    {
-      return BaseType::getEntities( tnlDimensionsTraits< Dimensions >() );
+      return BaseType::getEntities( tnlDimensionsTag< Dimensions >() );
    }
 
    typename EntitiesTraits< dimensions >::EntityType&
       getCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex )
    {
-      return BaseType::getEntity( tnlDimensionsTraits< dimensions >(), entityIndex );
+      return BaseType::getEntity( tnlDimensionsTag< dimensions >(), entityIndex );
    }
 
    const typename EntitiesTraits< dimensions >::EntityType&
       getCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex ) const
    {
-      return BaseType::getEntity( tnlDimensionsTraits< dimensions >(), entityIndex );
+      return BaseType::getEntity( tnlDimensionsTag< dimensions >(), entityIndex );
    }
 
    void setCell( const typename EntitiesTraits< dimensions >::GlobalIndexType entityIndex,
                  const typename EntitiesTraits< dimensions >::EntityType& entity )
    {
-      BaseType::setEntity( tnlDimensionsTraits< dimensions >(), entityIndex, entity );
+      BaseType::setEntity( tnlDimensionsTag< dimensions >(), entityIndex, entity );
    }
 
    void print( ostream& str ) const
@@ -184,9 +186,7 @@ class tnlMesh : public tnlObject,
 
    void init();
 
-   tnlStaticAssert( dimensions > 0, "The mesh dimesnions must be greater than 0." );
-   tnlStaticAssert( EntitiesTraits< 0 >::available, "Vertices must always be stored" );
-   tnlStaticAssert( EntitiesTraits< dimensions >::available, "Cells must always be stored" );
+   tnlMeshConfigValidator< MeshConfig > configValidator;
 };
 
 

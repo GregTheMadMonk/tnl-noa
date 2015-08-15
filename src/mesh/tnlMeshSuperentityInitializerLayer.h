@@ -19,7 +19,7 @@
 #define TNLMESHSUPERENTITYINITIALIZERLAYER_H_
 
 #include <mesh/traits/tnlStorageTraits.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 
 template< typename ConfigTag,
           typename EntityTag >
@@ -40,11 +40,11 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           tnlStorageTraits< true > >
    : public tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                 EntityTag,
-                                                typename DimensionsTag::Previous >
+                                                typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                EntityTag,
-                                               typename DimensionsTag::Previous >      BaseType;
+                                               typename DimensionsTag::Decrement >      BaseType;
 
    typedef typename tnlMeshSuperentitiesTraits< ConfigTag,
                                                 EntityTag,
@@ -85,7 +85,7 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           tnlStorageTraits< false > >
    : public tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                 EntityTag,
-                                                typename DimensionsTag::Previous >
+                                                typename DimensionsTag::Decrement >
 {
 };
 
@@ -93,7 +93,7 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           EntityTag,
-                                          tnlDimensionsTraits< EntityTag::dimensions >,
+                                          tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< true > >
 {
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
@@ -107,7 +107,7 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           EntityTag,
-                                          tnlDimensionsTraits< EntityTag::dimensions >,
+                                          tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< false > >
 {
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;

@@ -24,7 +24,37 @@
 #include <sstream>
 #include <iomanip>
 
+#include <mesh/topologies/tnlMeshTriangleTag.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
+#include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/topologies/tnlMeshHexahedronTag.h>
+#include <mesh/tnlMeshEntity.h>
+
+
 using namespace std;
+
+enum tnlVTKMeshEntities { tnlVTKVertex = 1,
+                          tnlVTKPolyVertex = 2,
+                          tnlVTKLine = 3,
+                          tnlVTKPolyLine = 4,
+                          tnlVTKTriangle = 5,
+                          tnlVTKTriangleStrip = 6,
+                          tnlVTKPolygon = 7,
+                          tnlVTKPixel = 8,
+                          tnlVTKQuad = 9,
+                          tnlVTKTetra = 10,
+                          tnlVTKVoxel = 11,
+                          tnlVTKHexahedron = 12,
+                          tnlVTKWedge = 13,
+                          tnlVTKPyramid = 14 };
+
+template< typename MeshEntity >
+struct tnlMeshEntityVTKType{};
+
+template< typename ConfigTag > struct tnlMeshEntityVTKType< tnlMeshEntity< ConfigTag, tnlMeshTriangleTag > >     { enum { VTKType = tnlVTKTriangle }; };
+template< typename ConfigTag > struct tnlMeshEntityVTKType< tnlMeshEntity< ConfigTag, tnlMeshQuadrilateralTag > >{ enum { VTKType = tnlVTKQuad }; };
+template< typename ConfigTag > struct tnlMeshEntityVTKType< tnlMeshEntity< ConfigTag, tnlMeshTetrahedronTag > >  { enum { VTKType = tnlVTKTetra }; };
+template< typename ConfigTag > struct tnlMeshEntityVTKType< tnlMeshEntity< ConfigTag, tnlMeshHexahedronTag > >   { enum { VTKType = tnlVTKHexahedron }; };
 
 class tnlMeshWriterVTKLegacy
 {
@@ -32,8 +62,8 @@ class tnlMeshWriterVTKLegacy
 
    template< typename MeshType >
    static bool write( const tnlString& fileName,
-                          MeshType& mesh,
-                          bool verbose )
+                      MeshType& mesh,
+                      bool verbose )
    {
       if( MeshType::dimensions > 3 )
       {
@@ -60,16 +90,43 @@ class tnlMeshWriterVTKLegacy
                           MeshType& mesh,
                           bool verbose )
    {
+      typedef typename MeshType::CellTraits MeshEntitiesTraits;
+      typedef typename MeshEntitiesTraits::Type CellType;
       file << "# vtk DataFile Version 2.0" << endl;
       file << "TNL Mesh" << endl;
       file << "ASCII" << endl;
       file << "DATASET UNSTRUCTURED_GRID" << endl;
       file << endl;
-      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " float" << endl;
+      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " double" << endl;
       for( int i = 0; i < mesh.template getNumberOfEntities< 0 >(); i++ )
       {
-         file << mesh.template getEntity< 0 >( i ).getPoint();
+         mesh.template getEntity< 0 >( i ).getPoint().write( file );
+         for( int j = MeshType::dimensions; j < 3; j++ )
+            file << " 0.0";
+         file << endl;
       }
+      file << endl;
+      file << "CELLS " << mesh.template getNumberOfCells();
+      long int listSize( 0 );
+      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )
+         listSize += mesh.getCell( i ).template getNumberOfSubentities< 0 >() + 1;
+      file << " " << listSize << endl;
+      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )
+      {
+         int numberOfVertices = mesh.getCell( i ).template getNumberOfSubentities< 0 >();
+         file << numberOfVertices << " ";
+         for( int j = 0; j < numberOfVertices - 1; j++ )
+            file << mesh.getCell( i ).template getSubentityIndex< 0 >( j ) << " ";
+         file << mesh.getCell( i ).template getSubentityIndex< 0 >( numberOfVertices - 1 ) << endl;
+      }
+      file << endl;
+      file << "CELL_TYPES " <<  mesh.template getNumberOfCells() << endl;      
+      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )      
+      {
+         file << tnlMeshEntityVTKType< CellType >::VTKType << endl;
+      }
+      file << endl;
+      return true;
    }
 
 

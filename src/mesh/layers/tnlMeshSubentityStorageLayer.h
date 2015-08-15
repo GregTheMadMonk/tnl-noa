@@ -19,14 +19,14 @@
 #define TNLMESHSUBENTITYSTORAGELAYER_H_
 
 #include <core/tnlFile.h>
-#include <mesh/traits/tnlDimensionsTraits.h>
+#include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshSubentitiesTraits.h>
 
 template< typename ConfigTag,
           typename EntityTag,
           typename DimensionTraits,
-          typename SubentityStorageTag =
+          typename SubentityStorageTag = 
                    typename tnlMeshSubentitiesTraits< ConfigTag,
                                                       EntityTag,
                                                       DimensionTraits >::SubentityStorageTag >
@@ -38,29 +38,29 @@ template< typename ConfigTag,
 class tnlMeshSubentityStorageLayers
    : public tnlMeshSubentityStorageLayer< ConfigTag,
                                           EntityTag,
-                                          tnlDimensionsTraits< EntityTag::dimensions - 1 > >
+                                          tnlDimensionsTag< EntityTag::dimensions - 1 > >
 {
 };
 
 
 template< typename ConfigTag,
           typename EntityTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshSubentityStorageLayer< ConfigTag,
                                     EntityTag,
-                                    DimensionsTraits,
+                                    DimensionsTag,
                                     tnlStorageTraits< true > >
    : public tnlMeshSubentityStorageLayer< ConfigTag,
                                           EntityTag,
-                                          typename DimensionsTraits::Previous >
+                                          typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSubentityStorageLayer< ConfigTag,
                                          EntityTag,
-                                         typename DimensionsTraits::Previous > BaseType;
+                                         typename DimensionsTag::Decrement > BaseType;
 
    typedef tnlMeshSubentitiesTraits< ConfigTag,
                                      EntityTag,
-                                     DimensionsTraits > SubentityTraits;
+                                     DimensionsTag > SubentityTraits;
 
    protected:
 
@@ -79,7 +79,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    /*~tnlMeshSubentityStorageLayer()
    {
-      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
+      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
    }*/
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -94,7 +94,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
       {
-         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
+         cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
       return true;
@@ -105,7 +105,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
       {
-         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
+         cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
@@ -116,7 +116,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       BaseType::print( str );
       str << endl;
-      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << subentitiesIndices << ".";
+      str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentitiesIndices << ".";
    }
 
    bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
@@ -135,26 +135,26 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    /****
     * Define setter/getter for the current level of the subentities
     */
-   void setSubentityIndex( DimensionsTraits,
+   void setSubentityIndex( DimensionsTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
       this->subentitiesIndices[ localIndex ] = globalIndex;
    }
 
-   GlobalIndexType getSubentityIndex( DimensionsTraits,
+   GlobalIndexType getSubentityIndex( DimensionsTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->subentitiesIndices[ localIndex ];
    }
 
-   SharedContainerType& getSubentitiesIndices( DimensionsTraits )
+   SharedContainerType& getSubentitiesIndices( DimensionsTag )
    {
       tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
       return this->sharedSubentitiesIndices;
    }
 
-   const SharedContainerType& getSubentitiesIndices( DimensionsTraits ) const
+   const SharedContainerType& getSubentitiesIndices( DimensionsTag ) const
    {
       tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
       return this->sharedSubentitiesIndices;
@@ -170,14 +170,14 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
 template< typename ConfigTag,
           typename EntityTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshSubentityStorageLayer< ConfigTag,
                                     EntityTag,
-                                    DimensionsTraits,
+                                    DimensionsTag,
                                     tnlStorageTraits< false > >
    : public tnlMeshSubentityStorageLayer< ConfigTag,
                                           EntityTag,
-                                          typename DimensionsTraits::Previous >
+                                          typename DimensionsTag::Decrement >
 {
 };
 
@@ -186,14 +186,14 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSubentityStorageLayer< ConfigTag,
                                     EntityTag,
-                                    tnlDimensionsTraits< 0 >,
+                                    tnlDimensionsTag< 0 >,
                                     tnlStorageTraits< true > >
 {
-   typedef tnlDimensionsTraits< 0 >                           DimensionsTraits;
+   typedef tnlDimensionsTag< 0 >                           DimensionsTag;
 
    typedef tnlMeshSubentitiesTraits< ConfigTag,
                                      EntityTag,
-                                     DimensionsTraits > SubentityTraits;
+                                     DimensionsTag > SubentityTraits;
 
    protected:
 
@@ -210,7 +210,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    /*~tnlMeshSubentityStorageLayer()
    {
-      cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTraits::value << " dimensions." << endl;
+      cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
    }*/
 
 
@@ -224,7 +224,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! this->verticesIndices.save( file ) )
       {
-         cerr << "Saving of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
+         cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
       return true;
@@ -234,7 +234,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       if( ! this->verticesIndices.load( file ) )
       {
-         cerr << "Loading of the entity subentities layer with " << DimensionsTraits::value << " failed." << endl;
+         cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
       this->sharedVerticesIndices.bind( this->verticesIndices );
@@ -243,7 +243,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    void print( ostream& str ) const
    {
-      str << "\t Subentities with " << DimensionsTraits::value << " dimensions are: " << this->verticesIndices << ".";
+      str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << this->verticesIndices << ".";
    }
 
    bool operator==( const tnlMeshSubentityStorageLayer& layer  ) const
@@ -251,25 +251,25 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return ( verticesIndices == layer.verticesIndices );
    }
 
-   GlobalIndexType getSubentityIndex( DimensionsTraits,
+   GlobalIndexType getSubentityIndex( DimensionsTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->verticesIndices[ localIndex ];
    }
-   void setSubentityIndex( DimensionsTraits,
+   void setSubentityIndex( DimensionsTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
       this->verticesIndices[ localIndex ] = globalIndex;
    }
 
-   SharedContainerType& getSubentitiesIndices( DimensionsTraits )
+   SharedContainerType& getSubentitiesIndices( DimensionsTag )
    {
       tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
       return this->sharedVerticesIndices;
    }
 
-   const SharedContainerType& getSubentitiesIndices( DimensionsTraits ) const
+   const SharedContainerType& getSubentitiesIndices( DimensionsTag ) const
    {
       tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
       return this->sharedVerticesIndices;
@@ -286,7 +286,7 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshSubentityStorageLayer< ConfigTag,
                                     EntityTag,
-                                    tnlDimensionsTraits< 0 >,
+                                    tnlDimensionsTag< 0 >,
                                     tnlStorageTraits< false > >
 {
    public:

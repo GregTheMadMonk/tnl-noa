@@ -31,20 +31,42 @@
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
     
-typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleEntityTag;
+//typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleEntityTag;
 typedef tnlMeshConfigBase< tnlMeshEdgeTag, 2, double, int, int, void > TestEdgeEntityTag;
 typedef tnlMeshConfigBase< tnlMeshVertexTag, 2, double, int, int, void > TestVertexEntityTag;
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshVertexTag, Dimensions >
+class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTag >
 {
-   enum { enabled = true };
+   public:
+      
+      template< typename MeshEntity >
+      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      {
+         return true;
+      }  
+      
+      template< typename MeshEntity >
+      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      {
+         return true;
+      }  
 };
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshEdgeTag, Dimensions >
+class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTag >
 {
-   enum { enabled = true };
+   public:
+      
+      template< typename MeshEntity >
+      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      {
+         return true;
+      }  
+      
+      template< typename MeshEntity >
+      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      {
+         return true;
+      }  
 };
 
 template< typename RealType, typename Device, typename IndexType >
@@ -155,7 +177,10 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void triangleMeshEntityTest()
    {
-      typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
+
+      static_assert( TriangleMeshEntityType::SubentitiesTraits< 1 >::available, "Testing triangular mesh does not store edges as required." );
+      static_assert( TriangleMeshEntityType::SubentitiesTraits< 0 >::available, "" );
       typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestVertexEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
@@ -213,13 +238,13 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void tetrahedronMeshEntityTest()
    {
-      typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTag;
+      //typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTag;
       typedef tnlMeshConfigBase< tnlMeshTriangleTag, 3, RealType, IndexType, IndexType, void > TestTriangleEntityTag;
       typedef tnlMeshConfigBase< tnlMeshEdgeTag, 3, RealType, IndexType, IndexType, void > TestEdgeEntityTag;
       typedef tnlMeshConfigBase< tnlMeshVertexTag, 3, RealType, IndexType, IndexType, void > TestVertexEntityTag;
 
-      typedef tnlMeshEntity< TestTetrahedronEntityTag, tnlMeshTetrahedronTag > TetrahedronMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTetrahedronTag > TetrahedronMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
       typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestVertexEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
@@ -339,9 +364,9 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
    void twoTrianglesTest()
    {
 
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
        typedef typename VertexMeshEntityType::PointType PointType;
        CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
 

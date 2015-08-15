@@ -32,22 +32,65 @@ template< typename Cell,
           typename Id = void >
 struct tnlMeshConfigBase
 {
-   typedef Cell        CellTag;
+   typedef Cell        CellType;
    typedef Real        RealType;
    typedef GlobalIndex GlobalIndexType;
    typedef LocalIndex  LocalIndexType;
    typedef Id          IdType;
 
-   enum { worldDimensions = WorldDimensions };
+   static const int worldDimensions = WorldDimensions;
+   static const int cellDimensions = Cell::dimensions;
 
    static tnlString getType()
    {
       return tnlString( "tnlMeshConfigBase< >");
    };
+   
+   /****
+    * Storage of mesh entities.
+    */
+	static constexpr bool entityStorage( int dimensions )
+	{
+      /****
+       *  Vertices and cells must always be stored
+       */ 
+		return ( dimensions == 0 || dimensions == cellDimensions );
+	}
+   
+   /****
+    *  Storage of subentities of mesh entities
+    */
+	template< typename MeshEntity >
+	static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions )
+	{
+      /****
+       *  Vertices must always be stored
+       */
+		return ( SubentityDimensions == 0 );
+	}
 
-   tnlStaticAssert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
+	/****
+    * Storage of subentity orientations of mesh entities
+    */
+	template< typename MeshEntity >
+	static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions )
+	{
+		return false;
+	}
+
+	/****
+    *  Storage of superentities of mesh entities
+    */
+	template< typename MeshEntity >
+	static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions )
+	{
+		return false;
+	}
+   
+   static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
+#ifdef UNDEF
 /****
  * Explicit storage of all mesh entities by default.
  * To disable it, write your own specialization with given
@@ -84,5 +127,7 @@ struct tnlMeshSuperentityStorage
 {
    enum { enabled = false };
 };
+
+#endif
 
 #endif /* TNLMESHCONFIGBASE_H_ */

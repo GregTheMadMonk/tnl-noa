@@ -26,16 +26,17 @@
 #include <mesh/tnlMeshEntityKey.h>
 
 template< typename ConfigTag,
-          typename DimensionsTraits >
+          typename DimensionsTag >
 class tnlMeshEntitiesTraits
-{
-   enum { storageEnabled = tnlMeshEntityStorage< ConfigTag,
-                                                 DimensionsTraits::value>::enabled };
+{   
+   /*enum { storageEnabled = tnlMeshEntityStorage< ConfigTag,
+                                                 DimensionsTag::value>::enabled };*/
+   static const bool storageEnabled = ConfigTag::entityStorage( DimensionsTag::value );
 
    typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
    typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
    typedef typename tnlMeshEntitiesTag< ConfigTag,
-                                        DimensionsTraits >::Tag   EntityTag;
+                                        DimensionsTag >::Tag   EntityTag;
    typedef tnlMeshEntityKey< ConfigTag, EntityTag >               Key;
 
    public:

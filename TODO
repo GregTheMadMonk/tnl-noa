@@ -1,8 +1,13 @@
+TODO: Mesh
+ * vsechny traits zkusit presunout do jednotneho MeshTraits, tj. temer MeshConfigTraits ale pojmenovat jako MeshTraits
+ * zrusit tnlDimesnionsTag
+ * prejmenovat Tagy v topologies na Topology zrejme
+ * zrusit tnlStorageTraits
+
 TODO: v tnlMeshResolver se provadi preklad pro vsechny mozne sablonove parametry => prorezat
 
 TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
 
-TODO: doplnit mesh travelsals pro jine mesh entity nez cell
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda

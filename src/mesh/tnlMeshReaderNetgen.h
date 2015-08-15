@@ -28,8 +28,10 @@ class tnlMeshReaderNetgen
 {
    public:
 
-   static bool detectDimensions( const tnlString& fileName,
-                                 int& dimensions )
+      tnlMeshReaderNetgen()
+      : dimensions( 0 ){}
+      
+   bool detectMesh( const tnlString& fileName )
    {
       fstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -52,6 +54,11 @@ class tnlMeshReaderNetgen
       if( ! inputFile )
          return false;
       getline( inputFile, line );
+      iss.str( line );
+      long int numberOfVertices;
+      iss >> numberOfVertices;
+      
+      //cout << "There are " << numberOfVertices << " vertices." << endl;
 
       /****
        * Read the first vertex and compute number of components
@@ -59,14 +66,60 @@ class tnlMeshReaderNetgen
       if( ! inputFile )
          return false;
       getline( inputFile, line );
+      iss.clear();
       iss.str( line );
-      dimensions = -1;
+      this->dimensions = -1;
       while( iss )
       {
          double aux;
          iss >> aux;
-         dimensions++;
+         this->dimensions++;
       }
+      
+      /****
+       * Skip vertices
+       */
+      long int verticesRead( 1 );
+      while( verticesRead < numberOfVertices )
+      {
+         getline( inputFile, line );
+         if( ! inputFile )
+         {
+            cerr << "The mesh file " << fileName << " is probably corrupted, some vertices are missing." << endl;
+            return false;
+         }
+         verticesRead++;
+      }
+      
+      /****
+       * Skip whitespaces
+       */
+      inputFile >> ws;
+         
+      /****
+       * Get number of cells
+       */
+      long int numberOfCells;
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      iss >> numberOfCells;
+      //cout << "There are " << numberOfCells << " cells." << endl;
+      
+      /****
+       * Get number of vertices in a cell
+       */
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      this->verticesInCell = -2;
+      while( iss )
+      {
+         int aux;
+         iss >> aux;
+         this->verticesInCell++;
+      }
+      //cout << "There are " << this->verticesInCell << " vertices in cell ..." << endl;
       return true;
    }
 
@@ -156,7 +209,7 @@ class tnlMeshReaderNetgen
           iss.str( line );
           int subdomainIndex;
           iss >> subdomainIndex;
-          for( int cellVertex = 0; cellVertex < dimensions + 1; cellVertex++ )
+          for( int cellVertex = 0; cellVertex < mesh.getCell( i ).getNumberOfVertices(); cellVertex++ )
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
@@ -170,8 +223,19 @@ class tnlMeshReaderNetgen
        return true;
    }
 
+   int getDimensions() const 
+   {
+      return this->dimensions;      
+   }
+   
+   int getVerticesInCell() const
+   {
+      return this->verticesInCell;
+   }
+   
    protected:
 
+      int dimensions, verticesInCell;
 
 };
 

@@ -270,6 +270,14 @@ void tnlStaticArray< 3, Element >::sort()
       Swap( data[ 0 ], data[ 1 ] );
 }
 
+template< typename Element >
+ostream& tnlStaticArray< 3, Element >::write( ostream& str, const char* separator ) const
+{
+   str << data[ 0 ] << separator << data[ 1 ] << separator << data[ 2 ];
+   return str;
+}
+
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 // TODO: it does not work with CUDA
