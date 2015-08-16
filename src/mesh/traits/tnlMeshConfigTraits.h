@@ -18,6 +18,7 @@
 #ifndef TNLMESHCONFIGTRAITS_H
 #define	TNLMESHCONFIGTRAITS_H
 
+#include <core/tnlHost.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 #include <mesh/traits/tnlMeshSubentitiesTraits.h>
 #include <mesh/traits/tnlMeshSuperentitiesTraits.h>
@@ -43,10 +44,10 @@ class tnlMeshConfigTraits
       typedef EntitySeed<TConfig, TCellTopology>                                TCellSeed;*/
 
       // TODO: to asi presunout do implementace, stejne to bude vazane na TNL
-      typedef tnlArrayArray< GlobalIndexType, GlobalIndexType >                 GlobalIdArrayType;
-      typedef tnlSharedArray< GlobalIndexType, LocalIndexType >                 IdArrayAccessorType;
-      typedef tnlSharedArray< LocalIndexType, LocalIndexType >                  IdPermutationArrayAccessorType;
-      typedef tnlArray< Point, GlobalIndexType>                                 PointArrayType;
+      typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >             GlobalIdArrayType;
+      typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >        IdArrayAccessorType;
+      typedef tnlSharedArray< LocalIndexType, tnlHost, LocalIndexType >         IdPermutationArrayAccessorType;
+      typedef tnlArray< Point, tnlHost, GlobalIndexType>                        PointArrayType;
       //typedef tnlArray<TCellSeed, TGlobalIndex>                         TCellSeedArray;
 
       template< typename Dimensions > using EntityTraits = 
@@ -55,7 +56,7 @@ class tnlMeshConfigTraits
       template< typename MeshEntity, typename SubDimensions > using SubentityTraits =
          tnlMeshSubentitiesTraits< MeshConfig, MeshEntity, SubDimensions >;
       
-      template< typename MeshEntityy, typename SuperDimensions > using SuperentityTraits =
+      template< typename MeshEntity, typename SuperDimensions > using SuperentityTraits =
          tnlMeshSuperentitiesTraits< MeshConfig, MeshEntity, SuperDimensions >;
 };
 

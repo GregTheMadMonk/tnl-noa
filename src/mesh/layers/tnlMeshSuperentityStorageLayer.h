@@ -22,6 +22,7 @@
 #include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
+#include <mesh/traits/tnlMeshConfigTraits.h>
 #include <mesh/traits/tnlMeshSuperentitiesTraits.h>
 
 template< typename ConfigTag,
@@ -173,11 +174,20 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
                 superentitiesIndices == layer.superentitiesIndices );
     }
 
-    private:
+    private:              
 
     ContainerType superentitiesIndices;
 
     SharedContainerType sharedSuperentitiesIndices;
+    
+   // TODO: this is only for the mesh initializer - fix it
+   public:
+              
+      using BaseType::superentityIdsArray;               
+      typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      {
+         return this->superentitiesIndices;
+      }
 };
 
 template< typename ConfigTag,
@@ -251,7 +261,13 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    {
       return true;
    }
-
+   
+   template< typename SuperDimensionsTag >
+   typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+   {
+      tnlAssert( false, );
+      //return this->superentitiesIndices;
+   }
 };
 
 template< typename ConfigTag,
@@ -309,6 +325,14 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    {
       return true;
    }
+   
+   template< typename SuperDimensionsTag >
+   typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+   {
+      tnlAssert( false, );
+      //return this->superentitiesIndices;
+   }
+
 };
 
 #endif /* TNLMESHSUPERENTITYSTORAGELAYER_H_ */

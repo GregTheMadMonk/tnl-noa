@@ -456,7 +456,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
          
-       vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
+       /*vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
@@ -467,7 +467,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
        vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
        vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
+       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );*/
 
        CPPUNIT_ASSERT( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >() == 2 );
        CPPUNIT_ASSERT( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ) == 2 );
@@ -482,12 +482,12 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
        CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ) == 1 );
 
-       edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
+       /*edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
        edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
-       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
+       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );*/
 
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
+       /*CPPUNIT_ASSERT( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
+       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );*/
     };
 
 };

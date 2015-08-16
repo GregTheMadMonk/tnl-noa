@@ -1,6 +1,7 @@
 TODO: Mesh
  * vsechny traits zkusit presunout do jednotneho MeshTraits, tj. temer MeshConfigTraits ale pojmenovat jako MeshTraits
- * zrusit tnlDimesnionsTag
+ * omezit tnlDimesnionsTag - asi to ale nepujde
+   - ale pozor na konstrukce jako BaseType::superentityIdsArray< SuperDimensionTag >( DimensionsTag ); ( v tnlMesh.h)
  * prejmenovat Tagy v topologies na Topology zrejme
  * zrusit tnlStorageTraits
 

@@ -47,7 +47,7 @@ class tnlMeshInitializer
    public:
 
    tnlMeshInitializer()
-   : verbose( false )
+   : verbose( false ), mesh( 0 )
    {}
 
    void setVerbose( bool verbose )
@@ -58,6 +58,7 @@ class tnlMeshInitializer
    bool initMesh( MeshType& mesh )
    {
       //cout << "======= Starting mesh initiation ========" << endl;
+      this->mesh = &mesh;
       this->setMesh( mesh );
       if( ! this->checkCells() )
          return false;
@@ -70,11 +71,34 @@ class tnlMeshInitializer
       return true;
    }
 
+   template< typename SuperDimensionsTag, typename MeshEntity>
+	static typename tnlMeshConfigTraits< ConfigTag >::IdArrayAccessorType& superentityIdsArray( MeshEntity& entity )
+	{
+		return entity.template superentityIdsArray< SuperDimensionsTag >();
+	}
+   
+   template< typename DimensionsTag >
+	typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag>::ContainerType& meshEntitiesArray()
+   {
+      return mesh->template entitiesArray< DimensionsTag >();
+   }
+   
+   template< typename DimensionsTag, typename SuperDimensionsTag >
+	typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& meshSuperentityIdsArray()
+   {
+      return mesh->template superentityIdsArray< DimensionsTag, SuperDimensionsTag >();
+   }
+   
    protected:
 
    bool verbose;
+   
+   MeshType* mesh;
 };
 
+/****
+ * Mesh initializer layer for cells
+ */
 template< typename ConfigTag >
 class tnlMeshInitializerLayer< ConfigTag,
                                typename tnlMeshTraits< ConfigTag >::DimensionsTag,
@@ -155,7 +179,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType& meshInitializer )
    {
-      //cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
+      cout << " Initiating cells..." << endl;
       for( typename CellInitializerContainerType::IndexType i = 0;
            i < cellInitializerContainer.getSize();
            i++ )
@@ -164,14 +188,23 @@ class tnlMeshInitializerLayer< ConfigTag,
          cellInitializerContainer[ i ].initEntity( meshInitializer );
       }
       cellInitializerContainer.reset();
+      //cout << "Initiating superentities ...." << endl;
+      //superentityInitializer.initSuperentities( meshInitializer );
       BaseType::initEntities( meshInitializer );
    }
 
    private:
-   CellInitializerContainerType cellInitializerContainer;
+      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
+                                                   typename tnlMeshConfigTraits< ConfigTag >::CellType,
+                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
+
+      CellInitializerContainerType cellInitializerContainer;
+      SuperentityInitializer superentityInitializer;
 };
 
-
+/****
+ * Mesh initializer layer for other mesh entities than cells
+ */
 template< typename ConfigTag,
           typename DimensionsTag >
 class tnlMeshInitializerLayer< ConfigTag,
@@ -245,7 +278,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    void initEntities( InitializerType &meshInitializer )
    {
-      //cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
+      cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
       //cout << " Container with entities with " << DimensionsTag::value << " dimensions has: " << endl << this->uniqueContainer << endl;
       const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
       this->getMesh().template setNumberOfEntities< DimensionsTag::value >( numberOfEntities );
@@ -266,15 +299,24 @@ class tnlMeshInitializerLayer< ConfigTag,
       }
 
       entityInitializerContainer.reset();
-
+      cout << "Initiating superentities..." << endl;
+      superentityInitializer.initSuperentities( meshInitializer );
       BaseType::initEntities( meshInitializer );
    }
 
    private:
-   UniqueContainerType uniqueContainer;
-   EntityInitializerContainerType entityInitializerContainer;
+      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
+                                                   EntityTag,
+                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
+      
+      SuperentityInitializer superentityInitializer;
+      UniqueContainerType uniqueContainer;
+      EntityInitializerContainerType entityInitializerContainer;
 };
 
+/****
+ * Mesh initializer layer for entities not being stored
+ */
 template< typename ConfigTag,
           typename DimensionsTag >
 class tnlMeshInitializerLayer< ConfigTag,
@@ -284,7 +326,9 @@ class tnlMeshInitializerLayer< ConfigTag,
                                      typename DimensionsTag::Decrement >
 {};
 
-
+/****
+ * Mesh initializer layer for vertices
+ */
 template< typename ConfigTag >
 class tnlMeshInitializerLayer< ConfigTag,
                                tnlDimensionsTag< 0 >,
@@ -350,13 +394,20 @@ class tnlMeshInitializerLayer< ConfigTag,
          vertexInitializer.init( vertexContainer[ i ], i );
          vertexInitializer.initEntity( meshInitializer );
       }
+      superentityInitializer.initSuperentities( meshInitializer );
       vertexInitializerContainer.reset();
    }
 
    private:
-   VertexInitializerContainerType vertexInitializerContainer;
+      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
+                                                   typename tnlMeshConfigTraits< ConfigTag >::CellType,
+                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
+      
+      SuperentityInitializer superentityInitializer;
 
-   MeshType* mesh;
+      VertexInitializerContainerType vertexInitializerContainer;
+
+      MeshType* mesh;
 };
 
 

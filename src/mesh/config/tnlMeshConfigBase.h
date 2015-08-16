@@ -54,7 +54,8 @@ struct tnlMeshConfigBase
       /****
        *  Vertices and cells must always be stored
        */ 
-		return ( dimensions == 0 || dimensions == cellDimensions );
+      return true;
+		//return ( dimensions == 0 || dimensions == cellDimensions );
 	}
    
    /****
@@ -66,7 +67,8 @@ struct tnlMeshConfigBase
       /****
        *  Vertices must always be stored
        */
-		return ( SubentityDimensions == 0 );
+      return true;
+		//return ( SubentityDimensions == 0 );
 	}
 
 	/****

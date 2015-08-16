@@ -22,6 +22,10 @@
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 #include <mesh/traits/tnlStorageTraits.h>
+#include <mesh/traits/tnlMeshConfigTraits.h>
+
+template< typename MeshConfig >
+class tnlMesh;
 
 template< typename DimensionsTag,
           typename Device,
@@ -41,7 +45,8 @@ template< typename ConfigTag >
 class tnlMeshStorageLayers
    : public tnlMeshStorageLayer< ConfigTag,
                                  typename tnlMeshTraits< ConfigTag >::DimensionsTag >
-{};
+{
+};
 
 
 template< typename ConfigTag,
@@ -49,18 +54,23 @@ template< typename ConfigTag,
 class tnlMeshStorageLayer< ConfigTag,
                            DimensionsTag,
                            tnlStorageTraits< true > >
-   : public tnlMeshStorageLayer< ConfigTag, typename DimensionsTag::Decrement >
+   : public tnlMeshStorageLayer< ConfigTag, typename DimensionsTag::Decrement >,
+     public tnlMeshSuperentityStorageLayers< ConfigTag, 
+                                             typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >
 {
+   public:
+
    typedef tnlMeshStorageLayer< ConfigTag,
                                 typename DimensionsTag::Decrement >   BaseType;
-
+   typedef tnlMeshSuperentityStorageLayers< ConfigTag, 
+                                            typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag > SuperentityStorageBaseType;
+   
    typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >         Tag;
    typedef typename Tag::ContainerType                                  ContainerType;
    typedef typename Tag::SharedContainerType                            SharedContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
    typedef typename ContainerType::ElementType                          EntityType;
 
-   protected:
 
    using BaseType::setNumberOfEntities;
    using BaseType::getNumberOfEntities;
@@ -164,9 +174,27 @@ class tnlMeshStorageLayer< ConfigTag,
 
 
    protected:
-   ContainerType entities;
+      ContainerType entities;
 
-   SharedContainerType sharedEntities;
+      SharedContainerType sharedEntities;
+   
+   // TODO: this is only for the mesh initializer - fix it
+   public:
+
+      using BaseType::entitiesArray;
+      
+      typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::ContainerType& entitiesArray( DimensionsTag )
+      {
+         return entities; 
+      }
+              
+      using BaseType::superentityIdsArray;
+	
+      template< typename SuperDimensionsTag >
+      typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      {
+         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
+      }
 };
 
 template< typename ConfigTag,
@@ -182,9 +210,18 @@ class tnlMeshStorageLayer< ConfigTag,
 template< typename ConfigTag >
 class tnlMeshStorageLayer< ConfigTag,
                            tnlDimensionsTag< 0 >,
-                           tnlStorageTraits< true > >
+                           tnlStorageTraits< true > > :
+   public tnlMeshSuperentityStorageLayers< ConfigTag, 
+                                           tnlMeshVertexTag >
+
 {
+   public:
+
    typedef tnlDimensionsTag< 0 >                        DimensionsTag;
+   
+   typedef tnlMeshSuperentityStorageLayers< ConfigTag, 
+                                            tnlMeshVertexTag > SuperentityStorageBaseType;
+
 
    typedef tnlMeshEntitiesTraits< ConfigTag,
                                   DimensionsTag >       Tag;
@@ -194,7 +231,6 @@ class tnlMeshStorageLayer< ConfigTag,
    typedef typename ContainerType::ElementType             VertexType;
    typedef typename VertexType::PointType                  PointType;
 
-   protected:
 
    tnlMeshStorageLayer()
    {
@@ -329,6 +365,22 @@ class tnlMeshStorageLayer< ConfigTag,
    ContainerType vertices;
 
    SharedContainerType sharedVertices;
+   
+   // TODO: this is only for the mesh initializer - fix it
+   public:
+      
+      typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::ContainerType& entitiesArray( DimensionsTag )
+      {
+         return vertices; 
+      }
+
+      
+      template< typename SuperDimensionsTag >
+      typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      {
+         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
+      }
+
 };
 
 /****
@@ -341,7 +393,7 @@ class tnlMeshStorageLayer< ConfigTag,
 {
    protected:
 
-   void setNumberOfEntities();
+   void setNumberOfEntities();   
 };
 
 

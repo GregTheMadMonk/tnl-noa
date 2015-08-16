@@ -20,10 +20,10 @@
 
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/tnlDimensionsTag.h>
+#include <algorithm>
 
-template< typename ConfigTag,
-          typename EntityTag >
-class tnlMeshEntityInitializer;
+template< typename ConfigTag >
+class tnlMeshInitializer;
 
 template< typename ConfigTag,
           typename EntityTag,
@@ -46,34 +46,59 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                EntityTag,
                                                typename DimensionsTag::Decrement >      BaseType;
 
-   typedef typename tnlMeshSuperentitiesTraits< ConfigTag,
-                                                EntityTag,
-                                                DimensionsTag >::GrowableContainerType GrowableContainerType;
-   typedef typename GrowableContainerType::ElementType                                 GlobalIndexType;
+   typedef tnlDimensionsTag< EntityTag::dimensions >                                    EntityDimensions;
+	
+   typedef typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType                 GlobalIdArrayType;
 
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                            EntityInitializerType;
+      
+   typedef typename tnlMeshConfigTraits< ConfigTag >::GlobalIndexType                   GlobalIndexType;
+   typedef tnlMeshInitializer< ConfigTag >                                              MeshInitializer;
 
-   public:
+   public:      
+      using BaseType::addSuperentity;
+	   
+      void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
+      {
+           indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
+      }
 
-   using BaseType::addSuperentity;
-   void addSuperentity( DimensionsTag, GlobalIndexType entityIndex )
-   {
-      superentityContainer.Append( entityIndex );
-   }
+      void initSuperentities( MeshInitializer& meshInitializer )
+      {
+         std::sort( indexPairs.begin(),
+                    indexPairs.end(),
+                    []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
 
-   protected:
-   void initSuperentities( EntityInitializerType& entityInitializer )
-   {
-      entityInitializer.setNumberOfSuperentities( DimensionsTag(), 
-                                                  superentityContainer.getSize() );
-      superentityContainer.toArray( entityInitializer.getSuperentityContainer( DimensionsTag()) );
-      superentityContainer.reset();
+         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
+         superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
+         GlobalIndexType currentBegin = 0;
+         GlobalIndexType lastEntityIndex = 0;
+         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
+         {
+            superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
 
-      BaseType::initSuperentities( entityInitializer );
-   }
+            if( indexPairs[ i ].entityIndex != lastEntityIndex )
+            {
+               meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
+               currentBegin = i;
+               lastEntityIndex = indexPairs[ i ].entityIndex;
+            }
+         }
+
+         meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
+         indexPairs.clear();
+
+         BaseType::initSuperentities( meshInitializer );
+      }
 
    private:
-   GrowableContainerType superentityContainer;
+      struct IndexPair
+      {
+         GlobalIndexType entityIndex;
+         GlobalIndexType superentityIndex;
+      };
+
+      std::vector< IndexPair > indexPairs;
+   
 };
 
 template< typename ConfigTag,
@@ -96,11 +121,11 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< true > >
 {
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
    
-   protected:
+   public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( EntityInitializerType& ) {}
+   void initSuperentities( MeshInitializerType& ) {}
 };
 
 template< typename ConfigTag,
@@ -110,11 +135,11 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                           tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< false > >
 {
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
 
-   protected:
+   public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( EntityInitializerType& ) {}
+   void initSuperentities( MeshInitializerType& ) {}
 };
 
 
