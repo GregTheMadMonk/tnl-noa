@@ -25,18 +25,25 @@ template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshEntity;
 
-template< typename ConfigTag >
+template< typename MeshConfig,
+          typename Device = tnlHost >
 class tnlMeshTraits
 {
    public:
+      
+      static const int meshDimensions = MeshConfig::CellType::dimensions;
+      static const int worldDimensions = MeshConfig::worldDimensions;
 
-   enum { meshDimensions = ConfigTag::CellType::dimensions };
-
-   enum { worldDimensions = ConfigTag::worldDimensions };
-
-   typedef tnlDimensionsTag< meshDimensions >                            DimensionsTag;
-   typedef tnlStaticVector< worldDimensions, typename ConfigTag::RealType > PointType;
-   typedef tnlMeshEntity< ConfigTag, typename ConfigTag::CellType >          CellType;
+      typedef Device                                                               DeviceType;
+      typedef typename MeshConfig::GlobalIndexTyp                                  GlobalIndexType;
+	   typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
+      
+      typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
+      typedef tnlMeshEntity< MeshConfig, typename MeshConfig::CellType >           CellType;
+      typedef typename CellType::SeedType                                          CellSeedType;
+      
+      typedef tnlArray< PointType, tnlHost, GlobalIndexType >                      PointArrayType;
+	   typedef tnlArray< CellSeedType, tnlHost, GlobalIndexType >                   CellSeedArrayType;
 };
 
 

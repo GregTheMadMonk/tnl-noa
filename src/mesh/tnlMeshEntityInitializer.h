@@ -80,20 +80,12 @@ class tnlMeshEntityInitializer
 
    tnlMeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
 
-   void init( EntityType& entity, GlobalIndexType entityIndex )
-   {
-      this->entity = &entity;
-      this->entityIndex = entityIndex;
-   }
-
-   void initEntity( InitializerType &meshInitializer )
+   void initEntity( EntityType& entity, GlobalIndexType entityIndex, InitializerType &meshInitializer )
    {
       tnlAssert( this->entity, );
 
       this->entity->setId( entityIndex );
-
-      initSuperentities();
-      initSubentities( meshInitializer );
+      initSubentities( entity, entityIndex, meshInitializer );
       //cout << " Entity initiation done ... " << endl;
    }
 
@@ -148,17 +140,17 @@ class tnlMeshEntityInitializer
    EntityType *entity;
    GlobalIndexType entityIndex;
 
-   void initSubentities( InitializerType& meshInitializer )
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, InitializerType& meshInitializer )
    {
       //cout << "   Initiating subentities of entity ... " << endl;
       SubentityBaseType::initSubentities( *this, meshInitializer );
    }
 
-   void initSuperentities()
+   /*void initSuperentities()
    {
       //cout << "   Initiating superentities..." << endl;
       //SuperentityBaseType::initSuperentities( *this) ;
-   }
+   }*/
 
    template< typename SubentityDimensionTag >
    class SubentitiesCreator
@@ -246,16 +238,16 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >/*
 
    static tnlString getType() {};
 
-   void init( EntityType& entity, GlobalIndexType entityIndex )
+   /*void init( EntityType& entity, GlobalIndexType entityIndex )
    {
       this->entity = &entity;
       this->entityIndex = entityIndex;
-   }
+   }*/
 
-   void initEntity(InitializerType &meshInitializer)
+   void initEntity( EntityType& entity, GlobalIndexType entityIndex, InitializerType &meshInitializer )
    {
       this->entity->setId( this->entityIndex );
-      initSuperentities();
+      //initSuperentities();
       //cout << "Vertex initiation done ... " << endl;
    }
 
@@ -280,11 +272,11 @@ class tnlMeshEntityInitializer< ConfigTag, tnlMeshVertexTag >/*
    EntityType *entity;
    GlobalIndexType entityIndex;
 
-   void initSuperentities()
+   /*void initSuperentities()
    {
       //cout << "    Initiating superentities of vertex ..." << endl;
       //SuperentityBaseType::initSuperentities(*this);
-   }
+   }*/
 };
 
 /****
@@ -315,9 +307,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    typedef tnlMeshInitializer< ConfigTag >                                                     InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                    EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                        EntityDimensionsTag;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType& entityInitializer,
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType& entityInitializer,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
@@ -332,6 +325,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
          GlobalIndexType subentityIndex = meshInitializer.findEntityIndex( subentities[ i ] );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();
          subentityContainer[ i ] = subentityIndex;
+         meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex);
          //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
          //meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTag(), superentityIndex );
       }
@@ -362,12 +356,14 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    typedef typename tnlMeshSubentitiesTraits< ConfigTag,
                                               EntityTag,
                                               DimensionsTag >::SharedContainerType             SharedContainerType;
+   typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
    typedef tnlMeshInitializer< ConfigTag >                                                     InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                    EntityInitializerType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template tnlMeshEntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType& entityInitializer,
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType& entityInitializer,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
@@ -378,7 +374,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
            i < subentityContainer.getSize();
            i++ )
       {
-         subentityContainer[ i ] = meshInitializer.findEntityIndex( subentities[ i ] );
+         subentityContainer[ i ] = meshInitializer.findEntityIndex( subentities[ i ] );         
          //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
       }
 
@@ -413,9 +409,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    typedef tnlMeshInitializer< ConfigTag >                                                   InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                  EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                      EntityDimensionsTag;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template tnlMeshEntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType& entityInitializer,
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType& entityInitializer,
                          InitializerType& meshInitializer )
    {
       SubentityContainerType subentities;
@@ -429,7 +426,8 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
          GlobalIndexType subentityIndex = meshInitializer.findEntityIndex( subentities[ i ] );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();
          //cout << "       NOT setting " << i << "-th subentity to " << subentityIndex << endl;
-         meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTag(), superentityIndex );
+         //meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex);
+         //meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTag(), superentityIndex );
       }
       BaseType::initSubentities( entityInitializer, meshInitializer );
    }
@@ -467,9 +465,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    typedef tnlMeshInitializer< ConfigTag >                           InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >          EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >              EntityDimensionsTag;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType &entityInitializer,
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType &entityInitializer,
                          InitializerType &meshInitializer )
    {
       //cout << "      Initiating subentities with " << DimensionsTag::value << " dimensions..." << endl;
@@ -498,10 +497,17 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    typedef tnlMeshInitializer< ConfigTag >         InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag,
                                      EntityTag >   EntityInitializerType;
+   typedef tnlDimensionsTag< 0 >                   DimensionsTag;
+   typedef tnlMeshSubentitiesTraits< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTag >                 SubentitiesTraits;
+   typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
+   typedef typename SharedContainerType::ElementType                 GlobalIndexType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template tnlMeshEntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
    
-   void initSubentities( EntityInitializerType&, InitializerType& ) {}
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType&, InitializerType& ) {}
 };
 
 template< typename ConfigTag,
@@ -514,9 +520,16 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 {
    typedef tnlMeshInitializer< ConfigTag >                  InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlDimensionsTag< 0 >                   DimensionsTag;
+   typedef tnlMeshSubentitiesTraits< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTag >                 SubentitiesTraits;
+   typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
+   typedef typename SharedContainerType::ElementType                 GlobalIndexType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template tnlMeshEntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType&, InitializerType& ) {}
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType&, InitializerType& ) {}
 };
 
 template< typename ConfigTag,
@@ -529,9 +542,16 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 {
    typedef tnlMeshInitializer< ConfigTag >                  InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlDimensionsTag< 0 >                   DimensionsTag;
+   typedef tnlMeshSubentitiesTraits< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTag >                 SubentitiesTraits;
+   typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
+   typedef typename SharedContainerType::ElementType                 GlobalIndexType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template tnlMeshEntityTraits< DimensionsTag >::Type         EntityType;
 
    protected:
-   void initSubentities( EntityInitializerType&,
+   void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType&,
                          InitializerType& ) {}
 };
 

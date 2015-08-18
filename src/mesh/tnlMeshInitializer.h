@@ -169,7 +169,7 @@ class tnlMeshInitializerLayer< ConfigTag,
             cout << "  Creating the cell number " << cell << "            \r " << flush;
          CellInitializerType& cellInitializer = cellInitializerContainer[ cell ];
 
-         cellInitializer.init( this->getMesh().getCell( cell ), cell );
+         //cellInitializer.init( this->getMesh().getCell( cell ), cell );
          BaseType::createEntitiesFromCells( cellInitializer );
       }
       if( verbose )
@@ -185,7 +185,7 @@ class tnlMeshInitializerLayer< ConfigTag,
            i++ )
       {
          //cout << "  Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
-         cellInitializerContainer[ i ].initEntity( meshInitializer );
+         //cellInitializerContainer[ i ].initEntity( meshInitializer );
       }
       cellInitializerContainer.reset();
       //cout << "Initiating superentities ...." << endl;
@@ -195,7 +195,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    private:
       typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   typename tnlMeshConfigTraits< ConfigTag >::CellType,
+                                                   EntityTag,
                                                    typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
 
       CellInitializerContainerType cellInitializerContainer;
@@ -294,12 +294,13 @@ class tnlMeshInitializerLayer< ConfigTag,
          //cout << "Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
          EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
          //cout << "Initiating with entity " << this->getMesh().template getEntity< DimensionsTag::value >( i ) << endl;
-         entityInitializer.init( this->getMesh().template getEntity< DimensionsTag::value >( i ), i );
-         entityInitializer.initEntity( meshInitializer );
+         //entityInitializer.init( this->getMesh().template getEntity< DimensionsTag::value >( i ), i );
+         //entityInitializer.initEntity( meshInitializer );
       }
 
       entityInitializerContainer.reset();
-      cout << "Initiating superentities..." << endl;
+      cout << "Initiating superentities for entities with " << DimensionsTag::value << " dimensions ..." << endl;
+      cout << "Storage is " << tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, typename tnlMeshTraits< ConfigTag >::DimensionsTag >::SuperentityStorageTag::enabled << endl;
       superentityInitializer.initSuperentities( meshInitializer );
       BaseType::initEntities( meshInitializer );
    }
@@ -391,16 +392,18 @@ class tnlMeshInitializerLayer< ConfigTag,
       {
          //cout << "Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
          VertexInitializerType& vertexInitializer = vertexInitializerContainer[ i ];
-         vertexInitializer.init( vertexContainer[ i ], i );
-         vertexInitializer.initEntity( meshInitializer );
+         //vertexInitializer.init( vertexContainer[ i ], i );
+         //vertexInitializer.initEntity( meshInitializer );
       }
+      cout << "Initiating superentities for entities with " << DimensionsTag::value << " dimensions ..." << endl;
+      cout << "Storage is " << tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, typename tnlMeshTraits< ConfigTag >::DimensionsTag >::SuperentityStorageTag::enabled << endl;
       superentityInitializer.initSuperentities( meshInitializer );
       vertexInitializerContainer.reset();
    }
 
    private:
       typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   typename tnlMeshConfigTraits< ConfigTag >::CellType,
+                                                   EntityTag,
                                                    typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
       
       SuperentityInitializer superentityInitializer;

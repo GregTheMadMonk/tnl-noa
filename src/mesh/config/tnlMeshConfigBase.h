@@ -86,7 +86,8 @@ struct tnlMeshConfigBase
 	template< typename MeshEntity >
 	static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions )
 	{
-		return false;
+      return true;
+		//return false;
 	}
    
    static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );

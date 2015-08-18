@@ -22,6 +22,8 @@
 #include <istream>
 #include <sstream>
 
+#include <mesh/tnlMeshBuilder.h>
+
 using namespace std;
 
 class tnlMeshReaderNetgen
@@ -138,6 +140,7 @@ class tnlMeshReaderNetgen
          return false;
       }
 
+      tnlMeshBuilder< MeshType > meshBuilder;
       string line;
       istringstream iss;
 
@@ -154,15 +157,15 @@ class tnlMeshReaderNetgen
       getline( inputFile, line );
       iss.str( line );
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
-      VertexIndexType numberOfVertices;
-      iss >> numberOfVertices;
-      if( ! mesh.setNumberOfVertices( numberOfVertices ) )
+      VertexIndexType pointsCount;
+      iss >> pointsCount;
+      if( ! meshBuilder.setPointCount( pointsCount ) )
       {
-         cerr << "I am not able to allocate enough memory for " << numberOfVertices << " vertices." << endl;
+         cerr << "I am not able to allocate enough memory for " << pointsCount << " vertices." << endl;
          return false;
       }
 
-      for( VertexIndexType i = 0; i < numberOfVertices; i++ )
+      for( VertexIndexType i = 0; i < pointsCount; i++ )
       {
          getline( inputFile, line );
          iss.clear();
@@ -170,10 +173,10 @@ class tnlMeshReaderNetgen
          PointType p;
          for( int d = 0; d < dimensions; d++ )
             iss >> p[ d ];
-         mesh.setVertex( i, p );
+         meshBuilder.setPoint( i, p );
          if( verbose )
-            cout << numberOfVertices << " vertices expected ... " << i+1 << "/" << numberOfVertices << "        \r" << flush;
-         const PointType& point = mesh.getVertex( i ).getPoint();
+            cout << pointsCount << " vertices expected ... " << i+1 << "/" << pointsCount << "        \r" << flush;
+         //const PointType& point = mesh.getVertex( i ).getPoint();
       }
       if( verbose )
          cout << endl;
@@ -197,7 +200,7 @@ class tnlMeshReaderNetgen
        iss.str( line );
        CellIndexType numberOfCells=atoi( line.data() );
        //iss >> numberOfCells; // TODO: I do not know why this does not work
-       if( ! mesh.template setNumberOfEntities< dimensions >( numberOfCells ) )
+       if( ! meshBuilder.setCellsCount( numberOfCells ) )
        {
           cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << endl;
           return false;

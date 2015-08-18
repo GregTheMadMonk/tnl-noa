@@ -62,8 +62,10 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
            indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
       }
 
+      using BaseType::initSuperentities;
       void initSuperentities( MeshInitializer& meshInitializer )
       {
+         cerr << "####" << endl;
          std::sort( indexPairs.begin(),
                     indexPairs.end(),
                     []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
@@ -72,10 +74,12 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
+         cout << "There are " << superentityIdsArray.getSize() << " superentities..." << endl;
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
-
+            
+            cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << endl;
             if( indexPairs[ i ].entityIndex != lastEntityIndex )
             {
                meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
@@ -112,6 +116,15 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
                                                 EntityTag,
                                                 typename DimensionsTag::Decrement >
 {
+   typedef tnlMeshSuperentityInitializerLayer< ConfigTag,
+                                                EntityTag,
+                                                typename DimensionsTag::Decrement > BaseType;
+   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
+   
+   public:
+   void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
+   using BaseType::initSuperentities;
+   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;} 
 };
 
 template< typename ConfigTag,
@@ -125,7 +138,7 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
    
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( MeshInitializerType& ) {}
+   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;}
 };
 
 template< typename ConfigTag,
@@ -139,7 +152,7 @@ class tnlMeshSuperentityInitializerLayer< ConfigTag,
 
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( MeshInitializerType& ) {}
+   void initSuperentities( MeshInitializerType& ) { cerr << "***" << endl;}
 };
 
 
