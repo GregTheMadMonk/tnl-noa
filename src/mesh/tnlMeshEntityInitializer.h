@@ -325,7 +325,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
          GlobalIndexType subentityIndex = meshInitializer.findEntityIndex( subentities[ i ] );
          GlobalIndexType superentityIndex = entityInitializer.getEntityIndex();
          subentityContainer[ i ] = subentityIndex;
-         meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex);
+         //meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex);
          //cout << "       Setting " << i << "-th subentity to " << subentityContainer[ i ] << endl;
          //meshInitializer.getEntityInitializer( DimensionsTag(), subentityIndex ).addSuperentity( EntityDimensionsTag(), superentityIndex );
       }
