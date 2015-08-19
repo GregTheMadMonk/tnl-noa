@@ -27,16 +27,16 @@ class tnlMeshBuilder
 
    public:
       typedef Mesh                                     MeshType;
-      typedef MeshType::MeshTraits                     MeshTraits;
-	   typedef typename MeshTraits::GlobalIndexType     GlobalIndexType;
-	   typedef typename MeshTraits::LocalIndexType      LocalIndexType;
-	   typedef typename MeshTraits::PointType           PointType;
-	   typedef typename MeshTraits::CellType            CellType;
-	   typedef typename MeshTraits::CellSeedType        CellSeedType;
+      typedef typename MeshType::MeshTraits                     MeshTraits;
+      typedef typename MeshTraits::GlobalIndexType     GlobalIndexType;
+      typedef typename MeshTraits::LocalIndexType      LocalIndexType;
+      typedef typename MeshTraits::PointType           PointType;
+      typedef typename MeshTraits::CellType            CellType;
+      typedef typename MeshTraits::CellSeedType        CellSeedType;
 
    bool setPointsCount( const GlobalIndexType& points )
    {
-      tnlAssert( 0 <= pointsCount, cerr << "pointsCount = " << points );
+      tnlAssert( 0 <= points, cerr << "pointsCount = " << points );
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );

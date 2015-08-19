@@ -24,6 +24,7 @@
 #include <mesh/traits/tnlMeshEntitiesTag.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/tnlMeshEntityKey.h>
+#include <mesh/tnlMeshEntitySeed.h>
 
 template< typename ConfigTag,
           typename DimensionsTag >
@@ -36,13 +37,14 @@ class tnlMeshEntitiesTraits
    typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
    typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
    typedef typename tnlMeshEntitiesTag< ConfigTag,
-                                        DimensionsTag >::Tag   EntityTag;
+                                        DimensionsTag >::Tag      EntityTag;
    typedef tnlMeshEntityKey< ConfigTag, EntityTag >               Key;
 
    public:
 
    typedef EntityTag                                              Tag;
    typedef tnlMeshEntity< ConfigTag, Tag >                        Type;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >              SeedType;
 
    typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
 

@@ -18,10 +18,16 @@
 #ifndef TNLMESHENTITYSEED_H
 #define	TNLMESHENTITYSEED_H
 
+#include <mesh/traits/tnlMeshConfigTraits.h>
+
+template< typename MeshConfig >
+class tnlMeshConfigTraits;
+
 template< typename MeshConfig,
           typename EntityTopology >
 class tnlMeshEntitySeed
 {
+   typedef tnlMeshConfigTraits< MeshConfig >      MeshConfigTraits;
 	typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > > SubvertexTraits;
 
    public:

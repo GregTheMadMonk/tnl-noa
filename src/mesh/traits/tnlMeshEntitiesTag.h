@@ -18,8 +18,8 @@
 #ifndef TNLMESHENTITIESTAG_H_
 #define TNLMESHENTITIESTAG_H_
 
-#include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/traits/tnlMeshTraits.h>
+#include <mesh/topologies/tnlMeshEntityTopology.h>
 
 template< typename ConfigTag,
           typename DimensionsTag >

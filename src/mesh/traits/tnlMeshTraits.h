@@ -19,6 +19,7 @@
 #define TNLMESHTRAITS_H_
 
 #include <core/vectors/tnlStaticVector.h>
+#include <core/arrays/tnlArray.h>
 #include <mesh/tnlDimensionsTag.h>
 
 template< typename ConfigTag,
@@ -33,9 +34,11 @@ class tnlMeshTraits
       
       static const int meshDimensions = MeshConfig::CellType::dimensions;
       static const int worldDimensions = MeshConfig::worldDimensions;
+      
+      typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
 
       typedef Device                                                               DeviceType;
-      typedef typename MeshConfig::GlobalIndexTyp                                  GlobalIndexType;
+      typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
 	   typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
       
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
