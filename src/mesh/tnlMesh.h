@@ -20,8 +20,10 @@
 
 #include <core/tnlObject.h>
 #include <mesh/tnlMeshEntity.h>
+#include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/layers/tnlMeshStorageLayer.h>
 #include <mesh/config/tnlMeshConfigValidator.h>
+#include <mesh/tnlMeshInitializer.h>
 
 template< typename MeshConfig >
 class tnlMesh : public tnlObject,
@@ -29,6 +31,7 @@ class tnlMesh : public tnlObject,
 {
    public:
    typedef MeshConfig                                        Config;
+   typedef tnlMeshTraits< MeshConfig >                       MeshTraits;
    typedef typename tnlMeshTraits< MeshConfig >::PointType   PointType;
    enum { dimensions = tnlMeshTraits< MeshConfig >::meshDimensions };
 
@@ -193,9 +196,18 @@ class tnlMesh : public tnlObject,
       return entitiesStorage.template superentityIdsArray< SuperDimensionsTag >( DimensionsTag() ); 
    }
    
+   typedef typename tnlMeshConfigTraits< MeshConfig>::PointArrayType    PointArrayType;
+   typedef typename tnlMeshTraits< MeshConfig>::CellSeedArrayType CellSeedArrayType;
+
+   bool init( const PointArrayType& points,
+              const CellSeedArrayType& cellSeeds )
+   {
+      tnlMeshInitializer< MeshConfig> meshInitializer;
+      return meshInitializer.createMesh( points, cellSeeds, *this );
+   }
+   
    protected:
       
-      void init();
       
       tnlMeshStorageLayers< MeshConfig > entitiesStorage;
 

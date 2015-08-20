@@ -28,41 +28,47 @@ template< typename MeshConfig,
 class tnlMeshEntitySeed
 {
    typedef tnlMeshConfigTraits< MeshConfig >      MeshConfigTraits;
-	typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > > SubvertexTraits;
+   typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > > SubvertexTraits;
 
    public:
-	   typedef typename tnlMeshConfigTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
-	   typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
-	   //typedef typename tnlMeshConfigTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
-      typedef typename SubvertexTraits::IdArrayType                                                            IdArrayType;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
+      typedef typename SubvertexTraits::ContainerType                                                          IdArrayType;
 
-	   static constexpr LocalIndexType getCornersCount()
-	   {
-		   return SubvertexTraits::Count;
-	   }
+      static tnlString getType() { return tnlString( "tnlMeshEntitySeed<>" ); }
+      
+      static constexpr LocalIndexType getCornersCount()
+      {
+         return SubvertexTraits::count;
+      }
 
-	   void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
-	   {
-		   tnlAssert( 0 <= cornerIndex && cornerIndex < getCornersCount(), cerr << "cornerIndex = " << cornerIndex );
-		   tnlAssert( 0 <= pointIndex, cerr << "pointIndex = " << pointIndex );
+      void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
+      {
+         tnlAssert( 0 <= cornerIndex && cornerIndex < getCornersCount(), cerr << "cornerIndex = " << cornerIndex );
+         tnlAssert( 0 <= pointIndex, cerr << "pointIndex = " << pointIndex );
 
-		   this->cornerIds[ cornerIndex ] = pointIndex;
-	   }
+         this->cornerIds[ cornerIndex ] = pointIndex;
+      }
 
-      IdArrayType& getCornerIds()
-	   {
-		   return this->cornerIds;
-	   }
+      IdArrayAccessorType& getCornerIds()
+      {
+         IdArrayAccessorType accessor;
+         accessor.bind( this->corners.getData(), this->corners.getSize() );
+         return accessor;
+      }
 
       
-	   const IdArrayType& getCornerIds() const
-	   {
-		   return this->cornerIds;
-	   }
+      const IdArrayAccessorType& getCornerIds() const
+      {
+         IdArrayAccessorType accessor;
+         accessor.bind( this->corners.getData(), this->corners.getSize() );
+         return accessor;
+      }
 
    private:
 	
-	   IdArrayType cornerIds;
+      IdArrayType cornerIds;
 };
 
 #endif	/* TNLMESHENTITYSEED_H */

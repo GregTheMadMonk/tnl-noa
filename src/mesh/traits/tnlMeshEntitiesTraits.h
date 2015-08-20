@@ -26,6 +26,10 @@
 #include <mesh/tnlMeshEntityKey.h>
 #include <mesh/tnlMeshEntitySeed.h>
 
+template< typename MeshConfig,
+          typename EntityTopology >
+class tnlMeshEntitySeed;
+
 template< typename ConfigTag,
           typename DimensionsTag >
 class tnlMeshEntitiesTraits
@@ -38,7 +42,7 @@ class tnlMeshEntitiesTraits
    typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
    typedef typename tnlMeshEntitiesTag< ConfigTag,
                                         DimensionsTag >::Tag      EntityTag;
-   typedef tnlMeshEntityKey< ConfigTag, EntityTag >               Key;
+   typedef tnlMeshEntitySeedKey< ConfigTag, EntityTag >               Key;
 
    public:
 
@@ -51,6 +55,7 @@ class tnlMeshEntitiesTraits
    typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
    typedef tnlSharedArray< Type, tnlHost, GlobalIndexType >       SharedContainerType;
    typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
+   typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >        SeedIndexedSetType;
 
    typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
 };

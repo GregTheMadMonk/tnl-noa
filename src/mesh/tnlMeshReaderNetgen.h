@@ -131,6 +131,8 @@ class tnlMeshReaderNetgen
                          bool verbose )
    {
       typedef typename MeshType::PointType PointType;
+      typedef tnlMeshBuilder< MeshType > MeshBuilder;
+      
       const int dimensions = PointType::size;
 
       fstream inputFile( fileName.getString() );
@@ -140,7 +142,7 @@ class tnlMeshReaderNetgen
          return false;
       }
 
-      tnlMeshBuilder< MeshType > meshBuilder;
+      MeshBuilder meshBuilder;
       string line;
       istringstream iss;
 
@@ -159,7 +161,7 @@ class tnlMeshReaderNetgen
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
       VertexIndexType pointsCount;
       iss >> pointsCount;
-      if( ! meshBuilder.setPointCount( pointsCount ) )
+      if( ! meshBuilder.setPointsCount( pointsCount ) )
       {
          cerr << "I am not able to allocate enough memory for " << pointsCount << " vertices." << endl;
          return false;
@@ -173,6 +175,7 @@ class tnlMeshReaderNetgen
          PointType p;
          for( int d = 0; d < dimensions; d++ )
             iss >> p[ d ];
+         cout << "Setting point number " << i << " of " << pointsCount << endl;
          meshBuilder.setPoint( i, p );
          if( verbose )
             cout << pointsCount << " vertices expected ... " << i+1 << "/" << pointsCount << "        \r" << flush;
@@ -212,17 +215,20 @@ class tnlMeshReaderNetgen
           iss.str( line );
           int subdomainIndex;
           iss >> subdomainIndex;
-          for( int cellVertex = 0; cellVertex < mesh.getCell( i ).getNumberOfVertices(); cellVertex++ )
+          cout << "Setting cell number " << i << " of " << numberOfCells << endl;
+          typedef typename MeshBuilder::CellSeedType CellSeedType;
+          for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
-             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx - 1 );
+             meshBuilder.getCellSeed( i ).setCornerId( cellVertex, vertexIdx - 1 );
           }
           if( verbose )
              cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << flush;
        }
        if( verbose )
           cout << endl;
+       meshBuilder.build( mesh );
        return true;
    }
 

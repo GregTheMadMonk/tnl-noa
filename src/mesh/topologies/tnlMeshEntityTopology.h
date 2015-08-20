@@ -20,7 +20,9 @@
 
 template< typename MeshEntityTag,
           int SubentityDimension >
-struct tnlSubentities;
+struct tnlSubentities
+{
+};
 
 
 template< typename MeshEntityTag,

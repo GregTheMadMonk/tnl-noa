@@ -39,16 +39,15 @@ class tnlMeshConfigTraits
 
       typedef tnlDimensionsTag< meshDimensions >                                MeshDimensions;
       typedef typename tnlMeshTraits< MeshConfig >::PointType                   Point;
-      /*typedef Entity<TConfig, TVertexTopology>                                  TVertex;
-      typedef Entity<TConfig, TCellTopology>                                    TCell;
-      typedef EntitySeed<TConfig, TCellTopology>                                TCellSeed;*/
+      //typedef Entity<TConfig, TVertexTopology>                                  TVertex;     
+      typedef tnlMeshEntitySeed< MeshConfig, CellType >                         CellSeed;
 
       // TODO: to asi presunout do implementace, stejne to bude vazane na TNL
       typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >             GlobalIdArrayType;
       typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >        IdArrayAccessorType;
       typedef tnlSharedArray< LocalIndexType, tnlHost, LocalIndexType >         IdPermutationArrayAccessorType;
       typedef tnlArray< Point, tnlHost, GlobalIndexType>                        PointArrayType;
-      //typedef tnlArray<TCellSeed, TGlobalIndex>                         TCellSeedArray;
+      typedef tnlArray< CellSeed, tnlHost, GlobalIndexType >                    CellSeedArrayType;
 
       template< typename Dimensions > using EntityTraits = 
          tnlMeshEntitiesTraits< MeshConfig, Dimensions >;

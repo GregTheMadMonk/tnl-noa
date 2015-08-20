@@ -27,7 +27,7 @@ class tnlMeshBuilder
 
    public:
       typedef Mesh                                     MeshType;
-      typedef typename MeshType::MeshTraits                     MeshTraits;
+      typedef typename MeshType::MeshTraits            MeshTraits;
       typedef typename MeshTraits::GlobalIndexType     GlobalIndexType;
       typedef typename MeshTraits::LocalIndexType      LocalIndexType;
       typedef typename MeshTraits::PointType           PointType;
@@ -46,74 +46,74 @@ class tnlMeshBuilder
    bool setCellsCount( const GlobalIndexType& cellsCount )
    {
       tnlAssert( 0 <= cellsCount, cerr << "cellsCount = " << cellsCount );
-      this->cellCount.setSize( cellsCount );
+      this->cellSeeds.setSize( cellsCount );
       return true;
    }
    
-	GlobalIndexType getPointsCount() const { return this->points.getSize(); }
+   GlobalIndexType getPointsCount() const { return this->points.getSize(); }
 	
    GlobalIndexType getCellsCount() const  { return this->cellSeeds.getSize(); }
 
-	void setPoint( GlobalIndexType index,
-                  const PointType& point )
-	{
-		tnlAssert( 0 <= index && index < getPointsCount(), cerr << "Index = " << index );
+   void setPoint( GlobalIndexType index,
+                 const PointType& point )
+   {
+	tnlAssert( 0 <= index && index < getPointsCount(), cerr << "Index = " << index );
 
-		this->points[ index ] = point;
-		this->pointsSet[ index ] = true;
-	}
+        this->points[ index ] = point;
+        this->pointsSet[ index ] = true;
+   }
 
-	CellSeedType& getCellSeed( GlobalIndexType index )
-	{
-		tnlAssert( 0 <= index && index < getCellsCount(), cerr << "Index = " << index );
+   CellSeedType& getCellSeed( GlobalIndexType index )
+   {
+      tnlAssert( 0 <= index && index < getCellsCount(), cerr << "Index = " << index );
+  
+      return this->cellSeeds[ index ];
+   }
 
-		return this->cellSeeds[ index ];
-	}
-
-	bool build( MeshType& mesh ) const
-	{
-		if( ! this->validate() )
+   bool build( MeshType& mesh ) const
+   {
+      if( ! this->validate() )
          return false;
-		if( ! mesh.init( this->points, this->cellSeeds ) )
+      if( ! mesh.init( this->points, this->cellSeeds ) )
          return false;
-		return true;
-	}
+      return true;
+   }
 
    private:
-	   typedef typename MeshTraits::PointArrayType    PointArrayType;
-	   typedef typename MeshTraits::CellSeedArrayType CellSeedArrayType;
+      typedef typename MeshTraits::PointArrayType    PointArrayType;
+      typedef typename MeshTraits::CellSeedArrayType CellSeedArrayType;
 
-	void validate() const
-	{
-		if( !allPointsSet() )
+   bool validate() const
+   {
+      if( !allPointsSet() )
       {
          cerr << "Mesh builder error: Not all points were set." << endl;
          return false;
       }
 
-		for( GlobalIndexType i = 0; i < getCellsCount(); i++ )
-		{
-			auto cornerIds = this->cellSeeds[ i ].getCornerIds();
-			for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
-				if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
+      for( GlobalIndexType i = 0; i < getCellsCount(); i++ )
+      {
+         auto cornerIds = this->cellSeeds[ i ].getCornerIds();
+         for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
+            if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
             {
                cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << endl;
                return false;
             }
-		}
-	}
+         }
+      }
 
-	bool allPointsSet() const
-	{
-		for( GlobalIndexType i = 0; i < this->points.getSize(); i++ )
-			if (! this->pointsSet[ i ] )
-				return false;
-		return true;
-	}
+      bool allPointsSet() const
+      {
+         for( GlobalIndexType i = 0; i < this->points.getSize(); i++ )
+            if (! this->pointsSet[ i ] )
+               return false;
+            return true;
+      }
 
-	PointArrayType points;
-	CellSeedArrayType cellSeeds;
-	tnlArray< bool, GlobalIndexType > pointsSet;
+      PointArrayType points;
+      CellSeedArrayType cellSeeds;
+      tnlArray< bool, tnlHost, GlobalIndexType > pointsSet;
 };
 
 #endif	/* TNLMESHBUILDER_H */

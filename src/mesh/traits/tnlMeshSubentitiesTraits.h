@@ -23,6 +23,7 @@
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
+#include <mesh/tnlMeshEntitySeed.h>
 
 template< typename ConfigTag,
           typename EntityTag,
@@ -42,6 +43,7 @@ public:
    typedef tnlMeshEntity< ConfigTag, EntityTag >                 EntityType;
    typedef typename Tag::Tag                                     SubentityTag;
    typedef tnlMeshEntity< ConfigTag, SubentityTag >              SubentityType;
+   typedef tnlMeshEntitySeed< ConfigTag, SubentityTag >          Seed;
 
    typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 
@@ -52,6 +54,8 @@ public:
                            tnlHost,
                            LocalIndexType >                      SharedContainerType;
    typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
+   typedef tnlStaticArray< count, Seed >                         SeedArrayType;
+	//typedef tnlStaticArray<TOrientation, TLocalIndex, COUNT> TOrientationArray;
 
    template< LocalIndexType subentityIndex,
              LocalIndexType subentityVertexIndex >
@@ -62,6 +66,8 @@ public:
                                          subentityIndex,
                                          subentityVertexIndex>::index };
    };
+   
+   static_assert( EntityTag::dimensions > DimensionsTag::value, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 

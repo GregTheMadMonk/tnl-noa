@@ -40,12 +40,12 @@ bool convertMesh( const tnlParameterContainer& parameters )
    MeshType mesh;
    if( ! MeshReader::readMesh( inputFileName, mesh, true ) )
       return false;
-   tnlMeshInitializer< typename MeshType::Config > meshInitializer;
+   /*tnlMeshInitializer< typename MeshType::Config > meshInitializer;
    meshInitializer.setVerbose( true );
    if( ! meshInitializer.initMesh( mesh ) )
       return false;
    if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
-      return false;
+      return false;*/
    cout << "Writing the mesh to a file " << outputFileName << "." << endl;
    if( outputFileExt == "tnl" )
    {         

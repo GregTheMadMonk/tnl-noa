@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshEntityKey.h  -  description
+                          tnlMeshEntitySeedKey.h  -  description
                              -------------------
     begin                : Feb 13, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,12 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHENTITYKEY_H_
-#define TNLMESHENTITYKEY_H_
+#ifndef TNLMESHENTITYSEEDKEY_H_
+#define TNLMESHENTITYSEEDKEY_H_
 
-#include <mesh/tnlMeshEntity.h>
-#include <mesh/traits/tnlMeshSubentitiesTraits.h>
 #include <mesh/tnlDimensionsTag.h>
+
+template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshEntitySeed;
+
+template< typename ConfigTag,
+          typename EntityTag,
+          typename DimensionsTag >
+class tnlMeshSubentitiesTraits;
 
 /****
  * Unique identification of a mesh entity by its vertices.
@@ -28,10 +35,10 @@
  */
 template< typename ConfigTag,
           typename EntityTag >
-class tnlMeshEntityKey
+class tnlMeshEntitySeedKey
 {
    typedef
-      tnlMeshEntity< ConfigTag, EntityTag >                               EntityType;
+      tnlMeshEntitySeed< ConfigTag, EntityTag >                               EntitySeedType;
 
    typedef typename
       tnlMeshSubentitiesTraits< ConfigTag,
@@ -40,25 +47,25 @@ class tnlMeshEntityKey
 
    public:
 
-   explicit tnlMeshEntityKey( const EntityType& entity )
+   explicit tnlMeshEntitySeedKey( const EntitySeedType& entitySeed )
    {
       for( typename ContainerType::IndexType i = 0; 
-           i < ContainerType::size;
+           i < entitySeed.getCornersCount();
            i++ )
-         vertexIDs[ i ] = entity.template getSubentityIndex<0>( i );
-      vertexIDs.sort( );
+         this->sortedCorners[ i ] = entitySeed.getCornerIds()[ i ];
+      sortedCorners.sort( );
    }
 
-   bool operator<( const tnlMeshEntityKey& other ) const
+   bool operator<( const tnlMeshEntitySeedKey& other ) const
    {
       for( typename ContainerType::IndexType i = 0;
            i < ContainerType::size;
            i++)
       {
-         if( vertexIDs[ i ] < other.vertexIDs[ i ] )
+         if( sortedCorners[ i ] < other.sortedCorners[ i ] )
             return true;
          else
-            if( vertexIDs[ i ] > other.vertexIDs[ i ] )
+            if( sortedCorners[ i ] > other.sortedCorners[ i ] )
                return false;
       }
       return false;
@@ -66,8 +73,8 @@ class tnlMeshEntityKey
 
    private:
 
-   ContainerType vertexIDs;
+   ContainerType sortedCorners;
 };
 
 
-#endif /* TNLMESHENTITYKEY_H_ */
+#endif /* TNLMESHENTITYKSEEDEY_H_ */

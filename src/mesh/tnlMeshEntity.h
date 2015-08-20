@@ -27,6 +27,7 @@
 #include <mesh/layers/tnlMeshSubentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
+#include <mesh/tnlMeshEntitySeed.h>
 
 template< typename ConfigTag,
           typename EntityTag >
@@ -97,6 +98,7 @@ class tnlMeshEntity
     */
    typedef ConfigTag                                            MeshConfigTag;
    typedef EntityTag                                            Tag;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >            SeedType;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
