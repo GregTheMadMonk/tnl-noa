@@ -27,7 +27,7 @@ class tnlMeshSubentitySeedsCreator
 {
 	typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
 	typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionsTag > SubentityTraits;
-	typedef typename SubentityTraits::EntityType                                                              Subtopology;
+	typedef typename SubentityTraits::SubentityTag                                                              Subtopology;
 	typedef typename tnlMeshConfigTraits< MeshConfig >::IdArrayAccessorType                                   IdArrayAccessorType;
 	typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< Subtopology, tnlDimensionsTag< 0 > >     SubentityVertexTraits;
 
@@ -71,7 +71,7 @@ class tnlMeshSubentitySeedsCreator
                public:
                   static void exec( SubentitySeed &subentitySeed, IdArrayAccessorType vertexIds )
                   {
-                     static const LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::INDEX;
+                     static const LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
                      subentitySeed.setCornerId( subentityVertexIndex, vertexIds[ VERTEX_INDEX ] );
                   }
             };

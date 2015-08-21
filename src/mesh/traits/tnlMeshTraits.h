@@ -22,9 +22,15 @@
 #include <core/arrays/tnlArray.h>
 #include <mesh/tnlDimensionsTag.h>
 
+
 template< typename ConfigTag,
           typename EntityTag >
 class tnlMeshEntity;
+
+template< typename ConfigTag,
+          typename EntityTag >
+class tnlMeshEntitySeed;
+
 
 template< typename MeshConfig,
           typename Device = tnlHost >
@@ -32,21 +38,22 @@ class tnlMeshTraits
 {
    public:
       
-      static const int meshDimensions = MeshConfig::CellType::dimensions;
+      static const int meshDimensions = MeshConfig::CellTopology::dimensions;
       static const int worldDimensions = MeshConfig::worldDimensions;
       
       typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
 
       typedef Device                                                               DeviceType;
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
-	   typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
+      typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
       
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
-      typedef tnlMeshEntity< MeshConfig, typename MeshConfig::CellType >           CellType;
-      typedef typename CellType::SeedType                                          CellSeedType;
+      typedef typename MeshConfig::CellTopology                                    CellTopology;
+      typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellEntity;
+      typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
       
       typedef tnlArray< PointType, tnlHost, GlobalIndexType >                      PointArrayType;
-	   typedef tnlArray< CellSeedType, tnlHost, GlobalIndexType >                   CellSeedArrayType;
+      typedef tnlArray< CellSeedType, tnlHost, GlobalIndexType >                   CellSeedArrayType;
 };
 
 

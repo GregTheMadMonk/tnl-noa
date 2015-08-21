@@ -31,7 +31,7 @@ class tnlMeshBuilder
       typedef typename MeshTraits::GlobalIndexType     GlobalIndexType;
       typedef typename MeshTraits::LocalIndexType      LocalIndexType;
       typedef typename MeshTraits::PointType           PointType;
-      typedef typename MeshTraits::CellType            CellType;
+      typedef typename MeshTraits::CellTopology        CellTopology;
       typedef typename MeshTraits::CellSeedType        CellSeedType;
 
    bool setPointsCount( const GlobalIndexType& points )

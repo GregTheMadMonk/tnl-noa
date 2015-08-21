@@ -144,7 +144,7 @@ class tnlMeshTester : public CppUnit :: TestCase
        mesh.getEntity< 2 >( 1 ).setVertexIndex( 2, 3 );
 
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
-       meshInitializer.initMesh( mesh );
+       //meshInitializer.initMesh( mesh );
 
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
@@ -318,7 +318,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       mesh.getEntities< 3 >()[ 17 ].getVerticesIndices()[ 3 ] = 10;
                  
       tnlMeshInitializer< TestTetrahedronMeshConfig > meshInitializer;
-      meshInitializer.initMesh( mesh );
+      //meshInitializer.initMesh( mesh );
 
       CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
@@ -371,7 +371,7 @@ class tnlMeshTester : public CppUnit :: TestCase
          }
 
       tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
-      meshInitializer.initMesh( mesh );
+      //meshInitializer.initMesh( mesh );
       CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
@@ -421,7 +421,7 @@ class tnlMeshTester : public CppUnit :: TestCase
          }
 
       tnlMeshInitializer< TestQuadrilateralMeshConfig > meshInitializer;
-      meshInitializer.initMesh( mesh );
+      //meshInitializer.initMesh( mesh );
       CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
@@ -483,7 +483,7 @@ class tnlMeshTester : public CppUnit :: TestCase
             }
 
       tnlMeshInitializer< TestHexahedronMeshConfig > meshInitializer;
-      meshInitializer.initMesh( mesh );
+      //meshInitializer.initMesh( mesh );
       /*CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/

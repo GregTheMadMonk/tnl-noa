@@ -51,7 +51,7 @@ class tnlMeshEntitySeed
          this->cornerIds[ cornerIndex ] = pointIndex;
       }
 
-      IdArrayAccessorType& getCornerIds()
+      IdArrayAccessorType getCornerIds()
       {
          IdArrayAccessorType accessor;
          accessor.bind( this->corners.getData(), this->corners.getSize() );
@@ -59,10 +59,10 @@ class tnlMeshEntitySeed
       }
 
       
-      const IdArrayAccessorType& getCornerIds() const
+      const IdArrayAccessorType getCornerIds() const
       {
          IdArrayAccessorType accessor;
-         accessor.bind( this->corners.getData(), this->corners.getSize() );
+         accessor.bind( this->cornerIds.getData(), this->cornerIds.getSize() );
          return accessor;
       }
 

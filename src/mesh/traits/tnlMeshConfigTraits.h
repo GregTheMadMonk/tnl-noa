@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #ifndef TNLMESHCONFIGTRAITS_H
-#define	TNLMESHCONFIGTRAITS_H
+#define TNLMESHCONFIGTRAITS_H
 
 #include <core/tnlHost.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
@@ -27,7 +27,7 @@ template< typename MeshConfig >
 class tnlMeshConfigTraits
 {
    public:
-      static const int meshDimensions = MeshConfig::CellType::dimensions;
+      static const int meshDimensions = MeshConfig::CellTopology::dimensions;
       static const int worldDimensions = MeshConfig::worldDimensions;
 
       typedef typename MeshConfig::RealType                                     RealType;
@@ -35,16 +35,16 @@ class tnlMeshConfigTraits
       typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
       typedef typename tnlMeshEntitiesTag< MeshConfig, 
                                            tnlDimensionsTag< 0 > >::Tag         VertexType;
-      typedef typename MeshConfig::CellType                                     CellType;
+      typedef typename MeshConfig::CellTopology                                 CellTopology;
 
       typedef tnlDimensionsTag< meshDimensions >                                MeshDimensions;
       typedef typename tnlMeshTraits< MeshConfig >::PointType                   Point;
       //typedef Entity<TConfig, TVertexTopology>                                  TVertex;     
-      typedef tnlMeshEntitySeed< MeshConfig, CellType >                         CellSeed;
+      typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                         CellSeed;
 
       // TODO: to asi presunout do implementace, stejne to bude vazane na TNL
       typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >             GlobalIdArrayType;
-      typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >        IdArrayAccessorType;
+      typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >   IdArrayAccessorType;
       typedef tnlSharedArray< LocalIndexType, tnlHost, LocalIndexType >         IdPermutationArrayAccessorType;
       typedef tnlArray< Point, tnlHost, GlobalIndexType>                        PointArrayType;
       typedef tnlArray< CellSeed, tnlHost, GlobalIndexType >                    CellSeedArrayType;

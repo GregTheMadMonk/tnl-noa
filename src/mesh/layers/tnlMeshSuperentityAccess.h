@@ -73,14 +73,20 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
 template< typename MeshConfig,
           typename MeshEntity,
           typename Dimensions >
-class tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, Dimensions, tnlStorageTraits< false > > :
+class tnlMeshSuperentityAccessLayer< MeshConfig,
+                                     MeshEntity,
+                                     Dimensions,
+                                     tnlStorageTraits< false > > :
    public tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
 {
 };
 
 template< typename MeshConfig,
           typename MeshEntity >
-class tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, tnlDimensionsTag< MeshEntity::dimensions >, tnlStorageTraits< false > >
+class tnlMeshSuperentityAccessLayer< MeshConfig,
+                                     MeshEntity,
+                                     tnlDimensionsTag< MeshEntity::dimensions >,
+                                     tnlStorageTraits< false > >
 {
    protected:
 	   /***
@@ -92,7 +98,10 @@ class tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, tnlDimensionsTag< M
 
 template< typename MeshConfig,
           typename MeshEntity >
-class tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, tnlDimensionsTag< MeshEntity::dimensions >, tnlStorageTraits< true > >
+class tnlMeshSuperentityAccessLayer< MeshConfig,
+                                     MeshEntity,
+                                     tnlDimensionsTag< MeshEntity::dimensions >,
+                                     tnlStorageTraits< true > >
 {
    protected:
 	   /***

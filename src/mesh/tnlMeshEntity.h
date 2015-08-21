@@ -348,6 +348,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
     */
    typedef ConfigTag         MeshConfigTag;
    typedef tnlMeshVertexTag  Tag;
+   typedef tnlMeshEntitySeed< ConfigTag, tnlMeshVertexTag >            SeedType;
    typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
    enum { dimensions = Tag::dimensions };
    enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
@@ -382,7 +383,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
    bool operator==( const tnlMeshEntity& entity ) const
    {
-      return ( tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
+      return ( //tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
                tnlMeshEntityId< typename ConfigTag::IdType,
                                 typename ConfigTag::GlobalIndexType >::operator==( entity ) &&
                point == entity.point );

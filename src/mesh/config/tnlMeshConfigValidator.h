@@ -79,19 +79,19 @@ class tnlMeshConfigValidatorLayer< MeshConfig, 0 >
 
 template< typename MeshConfig >
 class tnlMeshConfigValidatorLayerCell :
-   public tnlMeshConfigValidatorLayer< MeshConfig, MeshConfig::CellType::dimensions - 1 >//,
+   public tnlMeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >//,
 //   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, typename MeshConfig::CellType, MeshConfig::CellType::dimensions - 1 >
 {
-	typedef typename MeshConfig::CellType    CellType;
- 	static const int dimensions =  CellType::dimensions;
+	typedef typename MeshConfig::CellTopology    CellTopology;
+ 	static const int dimensions =  CellTopology::dimensions;
 
-	static_assert( !MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( CellType(), 0 ), "subvertices of all stored entities must be stored");
+	static_assert( !MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( CellTopology(), 0 ), "subvertices of all stored entities must be stored");
 };
 
 template<typename MeshConfig >
 class tnlMeshConfigValidator : public tnlMeshConfigValidatorLayerCell< MeshConfig >
 {
-	static const int meshDimensions = MeshConfig::CellType::dimensions;
+	static const int meshDimensions = MeshConfig::CellTopology::dimensions;
 
 	static_assert(1 <= meshDimensions, "zero dimensional meshes are not supported");
 	static_assert( meshDimensions <= MeshConfig::worldDimensions, "world dimension must not be less than mesh dimension");

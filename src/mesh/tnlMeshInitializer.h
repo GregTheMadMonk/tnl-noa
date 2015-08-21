@@ -122,7 +122,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef typename Tag::Tag                                            EntityTag;
    typedef typename Tag::ContainerType                                  ContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::CellType          CellType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::CellTopology      CellTopology;
 
    typedef tnlMeshInitializer< ConfigTag >                              InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >             CellInitializerType;
@@ -249,11 +249,11 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef typename Tag::ContainerType                                     ContainerType;
    typedef typename Tag::UniqueContainerType                               UniqueContainerType;
    typedef typename ContainerType::IndexType                               GlobalIndexType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::CellType          CellType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::CellTopology          CellTopology;
 
    typedef tnlMeshInitializer< ConfigTag >                                 InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag,
-                                     typename ConfigTag::CellType >         CellInitializerType;
+                                     typename ConfigTag::CellTopology >         CellInitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                EntityInitializerType;
    typedef tnlArray< EntityInitializerType, tnlHost, GlobalIndexType >     EntityInitializerContainerType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;
@@ -261,7 +261,7 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    typedef typename
       tnlMeshSubentitiesTraits< ConfigTag,
-                                typename ConfigTag::CellType,
+                                typename ConfigTag::CellTopology,
                                 DimensionsTag >::SubentityContainerType SubentitiesContainerType;
 
    public:
@@ -286,7 +286,7 @@ class tnlMeshInitializerLayer< ConfigTag,
    
    void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
    {
-      typedef tnlMeshSubentitySeedsCreator< ConfigTag, CellType, DimensionsTag >  SubentitySeedsCreator;
+      typedef tnlMeshSubentitySeedsCreator< ConfigTag, CellTopology, DimensionsTag >  SubentitySeedsCreator;
       for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )         
       {
          //SubentitySeedsCreator::create( cellSeeds[ i ], this->seedsIndexedSet );
@@ -294,7 +294,7 @@ class tnlMeshInitializerLayer< ConfigTag,
          SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
          for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
          {
-            tnlMeshEntitySeed< tnlMeshConfigBase< CellType >, EntityTag >& entitySeed = subentytiSeeds[ j ];
+            tnlMeshEntitySeed< tnlMeshConfigBase< CellTopology >, EntityTag >& entitySeed = subentytiSeeds[ j ];
             this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
          }
       }
@@ -498,11 +498,11 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef typename Tag::SharedContainerType                           SharedContainerType;
    typedef typename ContainerType::IndexType                           GlobalIndexType;
 
-   typedef typename tnlMeshTraits< ConfigTag >::CellType               CellType;
+   typedef typename tnlMeshTraits< ConfigTag >::CellTopology           CellTopology;
 
    typedef tnlMeshInitializer< ConfigTag >                             InitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, 
-                                     typename ConfigTag::CellType >     CellInitializerType;
+                                     typename ConfigTag::CellTopology >     CellInitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >            VertexInitializerType;
    typedef tnlArray< VertexInitializerType, tnlHost, GlobalIndexType > VertexInitializerContainerType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;

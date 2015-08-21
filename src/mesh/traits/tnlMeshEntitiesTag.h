@@ -27,7 +27,7 @@ class tnlMeshEntitiesTag
 {
    public:
 
-   typedef typename tnlSubentities< typename ConfigTag::CellType,
+   typedef typename tnlSubentities< typename ConfigTag::CellTopology,
                                     DimensionsTag::value >::Tag Tag;
 };
 
@@ -37,7 +37,7 @@ class tnlMeshEntitiesTag< ConfigTag,
 {
    public:
 
-   typedef typename ConfigTag::CellType Tag;
+   typedef typename ConfigTag::CellTopology Tag;
 };
 
 

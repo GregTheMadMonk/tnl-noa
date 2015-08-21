@@ -32,7 +32,7 @@ template< typename Cell,
           typename Id = void >
 struct tnlMeshConfigBase
 {
-   typedef Cell        CellType;
+   typedef Cell        CellTopology;
    typedef Real        RealType;
    typedef GlobalIndex GlobalIndexType;
    typedef LocalIndex  LocalIndexType;
