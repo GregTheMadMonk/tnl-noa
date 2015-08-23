@@ -26,6 +26,7 @@
 #include <mesh/tnlMesh.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/tnlMeshSubentitySeedCreator.h>
+#include <mesh/tnlMeshSuperentityStorageInitializer.h>
 
 template< typename ConfigTag,
           typename DimensionsTag,
@@ -73,19 +74,25 @@ class tnlMeshInitializer
       BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
 		//BaseType::createEntityReferenceOrientations();
       cout << "====== Initiating entities ==============" << endl;
-      //BaseType::initEntities(*this, points, cellSeeds);
+      BaseType::initEntities( *this, points, cellSeeds );
       
       return true;
    }
-
+   
+   template<typename SubDimensionsTag, typename EntityType >
+   static typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< typename EntityType::Tag, SubDimensionsTag >::IdArrayType& subentityIdsArray( EntityType& entity )
+   {
+      return entity.template subentityIdsArray< SubDimensionsTag >();
+   }
+   
    template< typename SuperDimensionsTag, typename MeshEntity>
-	static typename tnlMeshConfigTraits< ConfigTag >::IdArrayAccessorType& superentityIdsArray( MeshEntity& entity )
-	{
-		return entity.template superentityIdsArray< SuperDimensionsTag >();
-	}
+   static typename tnlMeshConfigTraits< ConfigTag >::IdArrayAccessorType& superentityIdsArray( MeshEntity& entity )
+   {
+      return entity.template superentityIdsArray< SuperDimensionsTag >();
+   }
    
    template< typename DimensionsTag >
-	typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag>::ContainerType& meshEntitiesArray()
+   typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag>::ContainerType& meshEntitiesArray()
    {
       return mesh->template entitiesArray< DimensionsTag >();
    }
@@ -94,6 +101,17 @@ class tnlMeshInitializer
 	typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& meshSuperentityIdsArray()
    {
       return mesh->template superentityIdsArray< DimensionsTag, SuperDimensionsTag >();
+   }
+   
+   static void setVertexPoint( typename MeshType::VertexType& vertex, const typename MeshType::PointType& point )
+   {
+      vertex.setPoint( point );
+   }
+   
+   template< typename DimensionsTag >
+   tnlMeshSuperentityStorageInitializer< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >& getSuperentityInitializer()
+   {
+      return BaseType::getSuperentityInitializer( DimensionsTag() );
    }
    
    protected:
@@ -118,109 +136,87 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef tnlMeshInitializerLayer< ConfigTag,
                                     typename DimensionsTag::Decrement >   BaseType;
 
-   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >         Tag;
-   typedef typename Tag::Tag                                            EntityTag;
-   typedef typename Tag::ContainerType                                  ContainerType;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >            EntityTraits;
+   typedef typename EntityTraits::Tag                                            EntityTag;
+   typedef typename EntityTraits::ContainerType                                  ContainerType;
    typedef typename ContainerType::IndexType                            GlobalIndexType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::CellTopology      CellTopology;
+   typedef typename EntityTraits::ContainerType                          EntityArrayType;
 
    typedef tnlMeshInitializer< ConfigTag >                              InitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >             EntityInitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >             CellInitializerType;
    typedef tnlArray< CellInitializerType, tnlHost, GlobalIndexType >    CellInitializerContainerType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::LocalIndexType    LocalIndexType;
+   typedef typename tnlMeshTraits< ConfigTag >::PointArrayType          PointArrayType;
+   typedef tnlMeshEntitySeed< ConfigTag, CellTopology >                 SeedType;
+   typedef  tnlMeshSuperentityStorageInitializer< ConfigTag, EntityTag >  SuperentityInitializerType;
 
    public:
-   using BaseType::getEntityInitializer;
-   CellInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
-   {
-      //return cellInitializerContainer[ index ];
-   }
-
-   protected:
-      
-   void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
-   {
-      /*typedef tnlMeshSubentitySeedsCreator< ConfigTag, CellType, DimensionsTag >  SubentitySeedsCreator;
-      for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )         
+      using BaseType::getEntityInitializer;
+      CellInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
       {
-         //typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
-         //SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
-         SubentitySeedsCreator::create( cellSeeds[ i ], this->seedsIndexedSet );
-      }*/
-      BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
-   }
-      
-
-   bool checkCells()
-   {
-      typedef typename tnlMeshEntity< ConfigTag, EntityTag >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
-      const GlobalIndexType numberOfVertices( this->getMesh().getNumberOfVertices() );
-      for( GlobalIndexType cell = 0;
-           cell < this->getMesh().getNumberOfCells();
-           cell++ )
-         for( LocalIndexType i = 0;
-              i < this->getMesh().getCell( cell ).getNumberOfVertices();
-              i++ )
-         {
-            if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
-            {
-               cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << endl;
-               return false;
-            }
-            if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
-            {
-               cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
-                    << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
-                    << "is higher than the number of all vertices ( " << numberOfVertices
-                    << " )." << endl;
-               return false;
-            }
-         }
-      return true;
-   }
-
-   void createEntitiesFromCells( bool verbose )
-   {
-      //cout << " Creating entities with " << DimensionsTag::value << " dimensions..." << endl;
-      /*cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
-      for( GlobalIndexType cell = 0;
-           cell < this->getMesh().getNumberOfCells();
-           cell++ )
-      {
-         if( verbose )
-            cout << "  Creating the cell number " << cell << "            \r " << flush;
-         CellInitializerType& cellInitializer = cellInitializerContainer[ cell ];
-
-         //cellInitializer.init( this->getMesh().getCell( cell ), cell );
-         BaseType::createEntitiesFromCells( cellInitializer );
+         //return cellInitializerContainer[ index ];
       }
-      if( verbose )
-         cout << endl;*/
 
-   }
-
-   void initEntities( InitializerType& meshInitializer )
-   {
-      /*cout << " Initiating cells..." << endl;
-      for( typename CellInitializerContainerType::IndexType i = 0;
-           i < cellInitializerContainer.getSize();
-           i++ )
+      void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
       {
-         //cout << "  Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
-         //cellInitializerContainer[ i ].initEntity( meshInitializer );
+         BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
       }
-      cellInitializerContainer.reset();
-      //cout << "Initiating superentities ...." << endl;
-      //superentityInitializer.initSuperentities( meshInitializer );
-      BaseType::initEntities( meshInitializer );*/
-   }
+
+      void initEntities( InitializerType &initializer, const PointArrayType &points, const CellSeedArrayType &cellSeeds)
+      {
+         EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
+         entityArray.setSize( cellSeeds.getSize() );
+         for( GlobalIndexType i = 0; i < entityArray.getSize(); i++ )
+            EntityInitializerType::initEntity( entityArray[i], i, cellSeeds[i], initializer );
+
+         BaseType::initEntities( initializer, points );
+      }
+
+      using BaseType::findEntitySeedIndex;
+      GlobalIndexType findEntitySeedIndex( const SeedType& seed ) const
+      {
+         return this->seedsIndexedSet.find( seed );
+      }
+
+      using BaseType::getSuperentityInitializer;
+      SuperentityInitializerType& getSuperentityInitializer( DimensionsTag )
+      {
+         return this->superentityInitializer;
+      }
+   
+      bool checkCells()
+      {
+         typedef typename tnlMeshEntity< ConfigTag, EntityTag >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
+         const GlobalIndexType numberOfVertices( this->getMesh().getNumberOfVertices() );
+         for( GlobalIndexType cell = 0;
+              cell < this->getMesh().getNumberOfCells();
+              cell++ )
+            for( LocalIndexType i = 0;
+                 i < this->getMesh().getCell( cell ).getNumberOfVertices();
+                 i++ )
+            {
+               if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
+               {
+                  cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << endl;
+                  return false;
+               }
+               if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
+               {
+                  cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
+                       << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
+                       << "is higher than the number of all vertices ( " << numberOfVertices
+                       << " )." << endl;
+                  return false;
+               }
+            }
+         return true;
+      }
 
    private:
-      typedef  typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
-      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   EntityTag,
-                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializerType;
+      typedef  typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;      
 
       //CellInitializerContainerType cellInitializerContainer;
       //SuperentityInitializer superentityInitializer;
@@ -256,8 +252,15 @@ class tnlMeshInitializerLayer< ConfigTag,
                                      typename ConfigTag::CellTopology >         CellInitializerType;
    typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                EntityInitializerType;
    typedef tnlArray< EntityInitializerType, tnlHost, GlobalIndexType >     EntityInitializerContainerType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::LocalIndexType    LocalIndexType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType    CellSeedArrayType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::LocalIndexType       LocalIndexType;
+   typedef typename tnlMeshTraits< ConfigTag >::PointArrayType          PointArrayType;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >            EntityTraits;
+   typedef typename EntityTraits::ContainerType                          EntityArrayType;
+   typedef typename EntityTraits::SeedArrayType                          SeedArrayType;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                 SeedType;
+   typedef  tnlMeshSuperentityStorageInitializer< ConfigTag, EntityTag >  SuperentityInitializerType;
+
 
    typedef typename
       tnlMeshSubentitiesTraits< ConfigTag,
@@ -266,107 +269,65 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    public:
 
-   using BaseType::findEntityIndex;
-   GlobalIndexType findEntityIndex( EntityType &entity ) const
-   {
-      /*GlobalIndexType idx;
-      bool entityFound = uniqueContainer.find( entity, idx );
-      tnlAssert( entityFound,
-                 cerr << " entity = " << entity << endl; );
-      return idx;*/
-   }
-
-   using BaseType::getEntityInitializer;
-   EntityInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
-   {
-      //return entityInitializerContainer[ index ];
-   }
-
-   protected:
-   
-   void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
-   {
-      typedef tnlMeshSubentitySeedsCreator< ConfigTag, CellTopology, DimensionsTag >  SubentitySeedsCreator;
-      for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )         
+      using BaseType::getEntityInitializer;
+      EntityInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
       {
-         //SubentitySeedsCreator::create( cellSeeds[ i ], this->seedsIndexedSet );
-         typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
-         SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
-         for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
+         //return entityInitializerContainer[ index ];
+      }
+
+      void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
+      {
+         typedef tnlMeshSubentitySeedsCreator< ConfigTag, CellTopology, DimensionsTag >  SubentitySeedsCreator;
+         //cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )         
          {
-            tnlMeshEntitySeed< tnlMeshConfigBase< CellTopology >, EntityTag >& entitySeed = subentytiSeeds[ j ];
-            this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
+            //cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << endl;
+            typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
+            SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
+            for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
+            {
+               //cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << endl;
+               //tnlMeshEntitySeed< tnlMeshConfigBase< CellTopology >, EntityTag >& entitySeed = subentytiSeeds[ j ];
+               this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
+            }
          }
+         BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
       }
-      BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
-   }
 
-   void createEntitiesFromCells( const CellInitializerType& cellInitializer )
-   {
-     /* //cout << " Creating entities with " << DimensionsTag::value << " dimensions..." << endl;
-      SubentitiesContainerType subentities;
-      cellInitializer.template createSubentities< DimensionsTag >( subentities );
-      for( typename SubentitiesContainerType::IndexType i = 0;
-           i < subentities.getSize();
-           i++ )
+      using BaseType::findEntitySeedIndex;
+      GlobalIndexType findEntitySeedIndex( const SeedType& seed ) const
       {
-         //cout << "      Inserting subentity " << endl << subentities[ i ] << endl;
-         uniqueContainer.insert( subentities[ i ] );
+         GlobalIndexType index;
+         this->seedsIndexedSet.find( seed, index );
+         return index;
       }
-      //cout << " Container with entities with " << DimensionsTag::value << " dimensions has: " << endl << this->uniqueContainer << endl;
-      BaseType::createEntitiesFromCells( cellInitializer );
-      */
-   }
-
-   void createEntityInitializers()
-   {
-      //entityInitializerContainer.setSize( uniqueContainer.getSize() );
-      //BaseType::createEntityInitializers();
-   }
-
-   void initEntities( InitializerType &meshInitializer )
-   {
-      /* cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
-      //cout << " Container with entities with " << DimensionsTag::value << " dimensions has: " << endl << this->uniqueContainer << endl;
-      const GlobalIndexType numberOfEntities = uniqueContainer.getSize();
-      this->getMesh().template setNumberOfEntities< DimensionsTag::value >( numberOfEntities );
-      uniqueContainer.toArray( this->getMesh().template getEntities< DimensionsTag::value >() );
-      uniqueContainer.reset();
-      //cout << "  this->getMesh().template getEntities< DimensionsTag::value >() has: " << this->getMesh().template getEntities< DimensionsTag::value >() << endl;
-
-      //ContainerType& entityContainer = this->getMesh().entityContainer(DimensionsTag());
-      for( GlobalIndexType i = 0;
-           i < numberOfEntities;
-           i++)
+      
+      using BaseType::getSuperentityInitializer;
+      SuperentityInitializerType& getSuperentityInitializer( DimensionsTag )
       {
-         //cout << "Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
-         EntityInitializerType& entityInitializer = entityInitializerContainer[ i ];
-         //cout << "Initiating with entity " << this->getMesh().template getEntity< DimensionsTag::value >( i ) << endl;
-         //entityInitializer.init( this->getMesh().template getEntity< DimensionsTag::value >( i ), i );
-         //entityInitializer.initEntity( meshInitializer );
+         return this->superentityInitializer;
       }
 
-      entityInitializerContainer.reset();
-      cout << "Initiating superentities for entities with " << DimensionsTag::value << " dimensions ..." << endl;
-      cout << "Storage is " << tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, typename tnlMeshTraits< ConfigTag >::DimensionsTag >::SuperentityStorageTag::enabled << endl;
-      superentityInitializer.initSuperentities( meshInitializer );
-      BaseType::initEntities( meshInitializer );
-      */
-   }
+      void initEntities( InitializerType& initializer, const PointArrayType& points )
+      {
+         EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
+         entityArray.setSize( this->seedsIndexedSet.getSize() );
+         SeedArrayType seedsArray;
+         this->seedsIndexedSet.toArray( seedsArray );
+         for( GlobalIndexType i = 0; i < this->seedsIndexedSet.getSize(); i++ )
+         {
+            EntityInitializerType::initEntity( entityArray[ i ], i, seedsArray[ i ], initializer );
+         }
+         this->seedsIndexedSet.reset();
+
+         this->superentityInitializer.initSuperentities( initializer );
+
+         BaseType::initEntities(initializer, points);
+      }
 
    private:
-      /*typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   EntityTag,
-                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
-      
-      SuperentityInitializer superentityInitializer;
-      UniqueContainerType uniqueContainer;
-      EntityInitializerContainerType entityInitializerContainer;*/
       
       typedef  typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
-      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   EntityTag,
-                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializerType;
       SeedIndexedSet seedsIndexedSet;
       SuperentityInitializerType superentityInitializer;
 };
@@ -382,104 +343,6 @@ class tnlMeshInitializerLayer< ConfigTag,
    : public tnlMeshInitializerLayer< ConfigTag,
                                      typename DimensionsTag::Decrement >
 {};
-
-/****
- * Mesh initializer layer for vertices
- */
-/*template< typename ConfigTag >
-class tnlMeshInitializerLayer< ConfigTag,
-                               tnlDimensionsTag< tnlMeshConfigTraits< ConfigTag >::meshDimensions  >,
-                               tnlStorageTraits< true > > :
-   public tnlMeshInitializerLayer< ConfigTag, typename tnlDimensionsTag< tnlMeshConfigTraits< ConfigTag >::meshDimensions >::Decrement >
-{
-   typedef tnlMeshInitializerLayer< ConfigTag, typename tnlDimensionsTag< tnlMeshConfigTraits< ConfigTag >::meshDimensions >::Decrement > BaseType;
-   
-   typedef tnlMesh< ConfigTag >                                        MeshType;
-   typedef tnlDimensionsTag< tnlMeshConfigTraits< ConfigTag >::meshDimensions  >    DimensionsTag;
-
-   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >        Tag;
-   typedef typename Tag::Tag                                           EntityTag;
-   typedef typename Tag::ContainerType                                 ContainerType;
-   typedef typename Tag::SharedContainerType                           SharedContainerType;
-   typedef typename ContainerType::IndexType                           GlobalIndexType;
-
-   typedef typename tnlMeshTraits< ConfigTag >::CellType               CellType;
-
-   typedef tnlMeshInitializer< ConfigTag >                             InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, 
-                                     typename ConfigTag::CellType >     CellInitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >            VertexInitializerType;
-   typedef tnlArray< VertexInitializerType, tnlHost, GlobalIndexType > VertexInitializerContainerType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::LocalIndexType    LocalIndexType;
-
-   public:
-
-   void setMesh( MeshType& mesh )
-   {
-      this->mesh = &mesh;
-   }
-
-   MeshType& getMesh()
-   {
-      tnlAssert( this->mesh, );
-      return *( this->mesh );
-   }
-
-   VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
-   {
-      tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
-               cerr << " index = " << index
-                    << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << endl; );
-      return vertexInitializerContainer[ index ];
-   }
-
-   protected:
-      
-   void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
-   {
-      BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
-   };
-      
-   void findEntityIndex() const                               {} // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
-   void createEntitiesFromCells( const CellInitializerType& ) {}
-
-   void createEntityInitializers()
-   {
-      vertexInitializerContainer.setSize( this->getMesh().template getNumberOfEntities< DimensionsTag::value >() );
-   }
-
-   void initEntities( InitializerType& meshInitializer )
-   {
-      //cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
-      SharedContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTag::value >();
-      for( GlobalIndexType i = 0;
-           i < vertexContainer.getSize();
-           i++ )
-      {
-         //cout << "Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
-         VertexInitializerType& vertexInitializer = vertexInitializerContainer[ i ];
-         //vertexInitializer.init( vertexContainer[ i ], i );
-         //vertexInitializer.initEntity( meshInitializer );
-      }
-      cout << "Initiating superentities for entities with " << DimensionsTag::value << " dimensions ..." << endl;
-      cout << "Storage is " << tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, typename tnlMeshTraits< ConfigTag >::DimensionsTag >::SuperentityStorageTag::enabled << endl;
-      superentityInitializer.initSuperentities( meshInitializer );
-      vertexInitializerContainer.reset();
-   }
-
-   private:
-      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   EntityTag,
-                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
-      
-      SuperentityInitializer superentityInitializer;
-
-      VertexInitializerContainerType vertexInitializerContainer;
-
-      MeshType* mesh;
-};*/
-
 
 /****
  * Mesh initializer layer for vertices
@@ -507,65 +370,62 @@ class tnlMeshInitializerLayer< ConfigTag,
    typedef tnlArray< VertexInitializerType, tnlHost, GlobalIndexType > VertexInitializerContainerType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::CellSeedArrayType CellSeedArrayType;
    typedef typename tnlMeshConfigTraits< ConfigTag >::LocalIndexType    LocalIndexType;
+   typedef typename tnlMeshTraits< ConfigTag >::PointArrayType           PointArrayType;
+   typedef tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >            EntityTraits;
+   typedef typename EntityTraits::ContainerType                          EntityArrayType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                EntityInitializerType;
+   typedef  tnlMeshSuperentityStorageInitializer< ConfigTag, EntityTag >  SuperentityInitializerType;
 
    public:
 
-   void setMesh( MeshType& mesh )
-   {
-      this->mesh = &mesh;
-   }
-
-   MeshType& getMesh()
-   {
-      tnlAssert( this->mesh, );
-      return *( this->mesh );
-   }
-
-   VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
-   {
-      tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
-               cerr << " index = " << index
-                    << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << endl; );
-      return vertexInitializerContainer[ index ];
-   }
-
-   protected:
-      
-   void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds ){};
-      
-   void findEntityIndex() const                               {} // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
-   void createEntitiesFromCells( const CellInitializerType& ) {}
-
-   void createEntityInitializers()
-   {
-      vertexInitializerContainer.setSize( this->getMesh().template getNumberOfEntities< DimensionsTag::value >() );
-   }
-
-   void initEntities( InitializerType& meshInitializer )
-   {
-      //cout << " Initiating entities with " << DimensionsTag::value << " dimensions..." << endl;
-      SharedContainerType& vertexContainer = this->getMesh().template getEntities< DimensionsTag::value >();
-      for( GlobalIndexType i = 0;
-           i < vertexContainer.getSize();
-           i++ )
+      void setMesh( MeshType& mesh )
       {
-         //cout << "Initiating entity " << i << " with " << DimensionsTag::value << " dimensions..." << endl;
-         VertexInitializerType& vertexInitializer = vertexInitializerContainer[ i ];
-         //vertexInitializer.init( vertexContainer[ i ], i );
-         //vertexInitializer.initEntity( meshInitializer );
+         this->mesh = &mesh;
       }
-      cout << "Initiating superentities for entities with " << DimensionsTag::value << " dimensions ..." << endl;
-      cout << "Storage is " << tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, typename tnlMeshTraits< ConfigTag >::DimensionsTag >::SuperentityStorageTag::enabled << endl;
-      superentityInitializer.initSuperentities( meshInitializer );
-      vertexInitializerContainer.reset();
-   }
+
+      MeshType& getMesh()
+      {
+         tnlAssert( this->mesh, );
+         return *( this->mesh );
+      }
+
+      VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
+      {
+         tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
+                  cerr << " index = " << index
+                       << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << endl; );
+         return vertexInitializerContainer[ index ];
+      }
+      
+      void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds ){};
+      
+      void initEntities( InitializerType& initializer, const PointArrayType& points )
+      {
+         EntityArrayType &vertexArray = initializer.template meshEntitiesArray< DimensionsTag >();
+         vertexArray.setSize( points.getSize() );
+         for( GlobalIndexType i = 0; i < vertexArray.getSize(); i++ )
+            EntityInitializerType::setVertexPoint( vertexArray[i], points[i], initializer );
+
+         superentityInitializer.initSuperentities( initializer );
+      }
+         
+      void findEntitySeedIndex() const                               {} // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
+
+      void createEntityInitializers()
+      {
+         vertexInitializerContainer.setSize( this->getMesh().template getNumberOfEntities< DimensionsTag::value >() );
+      }
+      
+      SuperentityInitializerType& getSuperentityInitializer( DimensionsTag )
+      {
+         return this->superentityInitializer;
+      }
+
+
 
    private:
-      typedef  tnlMeshSuperentityInitializerLayer< ConfigTag,
-                                                   EntityTag,
-                                                   typename tnlMeshTraits< ConfigTag >::DimensionsTag >  SuperentityInitializer;
       
-      SuperentityInitializer superentityInitializer;
+      SuperentityInitializerType superentityInitializer;
 
       VertexInitializerContainerType vertexInitializerContainer;
 

@@ -21,6 +21,7 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <core/arrays/tnlArray.h>
 #include <mesh/tnlDimensionsTag.h>
+#include <mesh/topologies/tnlMeshVertexTag.h>
 
 
 template< typename ConfigTag,
@@ -48,6 +49,7 @@ class tnlMeshTraits
       typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
       
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
+      typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTag >                        VertexType;
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellEntity;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;

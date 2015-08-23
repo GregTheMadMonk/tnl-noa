@@ -71,5 +71,12 @@ class tnlMeshEntitySeed
       IdArrayType cornerIds;
 };
 
+template< typename MeshConfig, typename EntityTopology >
+ostream& operator << ( ostream& str, const tnlMeshEntitySeed< MeshConfig, EntityTopology >& e )
+{
+   str << e.getCornerIds();
+   return str;
+};
+
 #endif	/* TNLMESHENTITYSEED_H */
 

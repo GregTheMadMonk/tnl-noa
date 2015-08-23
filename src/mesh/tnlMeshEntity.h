@@ -38,10 +38,25 @@ class tnlMeshEntity
                              typename ConfigTag::GlobalIndexType >
 {
    public:
+
+   /****
+    * Entity typedefs
+    */
+   typedef ConfigTag                                            MeshConfigTag;
+   typedef EntityTag                                            Tag;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >            SeedType;
+   enum { dimensions = Tag::dimensions };
+   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
       
-      // TODO: This is only because of STD lib bug in tnlIndexedSet
-      tnlMeshEntity( const tnlMeshEntity& entyti ) {}
-      tnlMeshEntity() {}
+      
+   tnlMeshEntity( const SeedType& entitySeed )
+   {
+      typedef typename SeedType::LocalIndexType LocalIndexType;
+      for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
+         this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );         
+   }
+   
+   tnlMeshEntity() {}
 
    static tnlString getType()
    {
@@ -91,16 +106,6 @@ class tnlMeshEntity
                tnlMeshEntityId< typename ConfigTag::IdType,
                                 typename ConfigTag::GlobalIndexType >::operator==( entity ) );
    }
-
-
-   /****
-    * Entity typedefs
-    */
-   typedef ConfigTag                                            MeshConfigTag;
-   typedef EntityTag                                            Tag;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >            SeedType;
-   enum { dimensions = Tag::dimensions };
-   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
    /****
     * Subentities
@@ -309,12 +314,20 @@ class tnlMeshEntity
    // TODO: This is only for the mesh initializer, fix this
    typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >                     SuperentityAccessBase;
    typedef typename tnlMeshConfigTraits< ConfigTag>::IdArrayAccessorType        IdArrayAccessorType;
+   typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >                SubentityStorageLayers;
+   
+   template< typename DimensionsTag >
+   typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType& subentityIdsArray()
+   {
+      return SubentityStorageLayers::subentityIdsArray( DimensionsTag() );
+   }
    
    template<typename DimensionsTag >
-	IdArrayAccessorType& superentityIdsArray()
-	{
-		return SuperentityAccessBase::superentityIdsArray( DimensionsTag());
-	}
+   IdArrayAccessorType& superentityIdsArray()
+   {
+      return SuperentityAccessBase::superentityIdsArray( DimensionsTag());
+   }
+      
 };
 
 template< typename ConfigTag >
@@ -325,70 +338,75 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 {
    public:
 
-      // TODO: This is only because of STD lib bug in tnlIndexedSet
-      tnlMeshEntity( const tnlMeshEntity& entyti ) {}
-      tnlMeshEntity() {}
+      /****
+       * The entity typedefs
+       */
+      typedef ConfigTag         MeshConfigTag;
+      typedef tnlMeshVertexTag  Tag;
+      typedef tnlMeshEntitySeed< ConfigTag, tnlMeshVertexTag >            SeedType;
+      typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
+      enum { dimensions = Tag::dimensions };
+      enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+
+      /*tnlMeshEntity( const SeedType & entytiSeed )
+      {
+         typedef typename SeedType::LocalIndexType LocalIndexType;
+         for( LocalIndexType i = 0; i < entytiSeed.getCornerIds().getSize(); i++ )
+            this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );         
+      }*/
+
 
       
-   static tnlString getType()
-   {
-      return tnlString( "tnlMesh< " ) +
-                        //ConfigTag::getType() + ", " +
-                        //EntityTag::getType() + ", " +
-                        " >";
-   }
+      static tnlString getType()
+      {
+         return tnlString( "tnlMesh< " ) +
+                           //ConfigTag::getType() + ", " +
+                           //EntityTag::getType() + ", " +
+                           " >";
+      }
 
-   tnlString getTypeVirtual() const
-   {
-      return this->getType();
-   }
+      tnlString getTypeVirtual() const
+      {
+         return this->getType();
+      }
 
-   /****
-    * The entity typedefs
-    */
-   typedef ConfigTag         MeshConfigTag;
-   typedef tnlMeshVertexTag  Tag;
-   typedef tnlMeshEntitySeed< ConfigTag, tnlMeshVertexTag >            SeedType;
-   typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
-   enum { dimensions = Tag::dimensions };
-   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
-   /*~tnlMeshEntity()
-   {
-      cerr << "   Destroying entity with " << tnlMeshVertexTag::dimensions << " dimensions..." << endl;
-   }*/
+      /*~tnlMeshEntity()
+      {
+         cerr << "   Destroying entity with " << tnlMeshVertexTag::dimensions << " dimensions..." << endl;
+      }*/
 
-   bool save( tnlFile& file ) const
-   {
-      if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::save( file ) ||
-          ! point.save( file ) )
-         return false;
-      return true;
-   }
+      bool save( tnlFile& file ) const
+      {
+         if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::save( file ) ||
+             ! point.save( file ) )
+            return false;
+         return true;
+      }
 
-   bool load( tnlFile& file )
-   {
-      if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
-          ! point.load( file ) )
-         return false;
-      return true;
-   }
+      bool load( tnlFile& file )
+      {
+         if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+             ! point.load( file ) )
+            return false;
+         return true;
+      }
 
-   void print( ostream& str ) const
-   {
-      str << "\t Mesh entity dimensions: " << tnlMeshVertexTag::dimensions << endl;
-      str << "\t Coordinates = ( " << point << " )";
-      tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::print( str );
-   }
+      void print( ostream& str ) const
+      {
+         str << "\t Mesh entity dimensions: " << tnlMeshVertexTag::dimensions << endl;
+         str << "\t Coordinates = ( " << point << " )";
+         tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::print( str );
+      }
 
-   bool operator==( const tnlMeshEntity& entity ) const
-   {
-      return ( //tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
-               tnlMeshEntityId< typename ConfigTag::IdType,
-                                typename ConfigTag::GlobalIndexType >::operator==( entity ) &&
-               point == entity.point );
+      bool operator==( const tnlMeshEntity& entity ) const
+      {
+         return ( //tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
+                  tnlMeshEntityId< typename ConfigTag::IdType,
+                                   typename ConfigTag::GlobalIndexType >::operator==( entity ) &&
+                  point == entity.point );
 
-   }
+      }
 
    /****
     * Superentities

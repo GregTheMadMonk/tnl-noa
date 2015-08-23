@@ -22,7 +22,7 @@ SET( headers tnlGrid.h
              tnlMeshInitializer.h
              tnlMeshIntegrityChecker.h
              tnlMeshEntityInitializer.h
-             tnlMeshSuperentityInitializerLayer.h
+             tnlMeshSuperentityStorageInitializer.h
              tnlTraverser.h
              tnlTraverser_Grid1D.h
              tnlTraverser_Grid1D_impl.h 

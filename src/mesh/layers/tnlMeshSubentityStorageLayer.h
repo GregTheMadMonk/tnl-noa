@@ -68,6 +68,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    typedef typename SubentityTraits::SharedContainerType  SharedContainerType;
    typedef typename ContainerType::ElementType            GlobalIndexType;
    typedef int                                            LocalIndexType;
+   typedef typename SubentityTraits::IdArrayType          IdArrayType;
 
    tnlMeshSubentityStorageLayer()
    {
@@ -159,9 +160,12 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
       return this->sharedSubentitiesIndices;
    }
+   
+   using BaseType::subentityIdsArray;
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
 
    private:
-   ContainerType subentitiesIndices;
+   IdArrayType subentitiesIndices;
 
    SharedContainerType sharedSubentitiesIndices;
 
@@ -201,6 +205,7 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    typedef typename SubentityTraits::SharedContainerType       SharedContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
+   typedef typename SubentityTraits::IdArrayType               IdArrayType;
 
    tnlMeshSubentityStorageLayer()
    {
@@ -275,9 +280,11 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return this->sharedVerticesIndices;
    }
 
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+   
    private:
 
-   ContainerType verticesIndices;
+   IdArrayType verticesIndices;
 
    SharedContainerType sharedVerticesIndices;
 };

@@ -53,6 +53,7 @@ public:
    typedef tnlSharedArray< GlobalIndexType,
                            tnlHost,
                            LocalIndexType >                      SharedContainerType;
+   typedef tnlStaticArray< count, GlobalIndexType >              IdArrayType;
    typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
    typedef tnlStaticArray< count, Seed >                         SeedArrayType;
 	//typedef tnlStaticArray<TOrientation, TLocalIndex, COUNT> TOrientationArray;
