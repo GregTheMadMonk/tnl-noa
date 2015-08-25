@@ -168,10 +168,17 @@ class tnlMeshInitializerLayer< ConfigTag,
       void initEntities( InitializerType &initializer, const PointArrayType &points, const CellSeedArrayType &cellSeeds)
       {
          EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
+         cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << endl;
          entityArray.setSize( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < entityArray.getSize(); i++ )
+         {
+            cout << "  Initiating entity " << i << endl;
             EntityInitializerType::initEntity( entityArray[i], i, cellSeeds[i], initializer );
-
+         }
+         /***
+          * There are no superentities in this layer storing mesh cells.
+          */
+         
          BaseType::initEntities( initializer, points );
       }
 
@@ -217,9 +224,6 @@ class tnlMeshInitializerLayer< ConfigTag,
 
    private:
       typedef  typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;      
-
-      //CellInitializerContainerType cellInitializerContainer;
-      //SuperentityInitializer superentityInitializer;
 
       SeedIndexedSet seedsIndexedSet;
       SuperentityInitializerType superentityInitializer;
@@ -311,11 +315,14 @@ class tnlMeshInitializerLayer< ConfigTag,
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
          EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
+         cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << endl;
          entityArray.setSize( this->seedsIndexedSet.getSize() );
          SeedArrayType seedsArray;
+         seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          for( GlobalIndexType i = 0; i < this->seedsIndexedSet.getSize(); i++ )
          {
+            cout << "  Initiating entity " << i << endl;
             EntityInitializerType::initEntity( entityArray[ i ], i, seedsArray[ i ], initializer );
          }
          this->seedsIndexedSet.reset();

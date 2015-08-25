@@ -215,7 +215,7 @@ class tnlMeshReaderNetgen
           iss.str( line );
           int subdomainIndex;
           iss >> subdomainIndex;
-          cout << "Setting cell number " << i << " of " << numberOfCells << endl;
+          //cout << "Setting cell number " << i << " of " << numberOfCells << endl;
           typedef typename MeshBuilder::CellSeedType CellSeedType;
           for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
           {

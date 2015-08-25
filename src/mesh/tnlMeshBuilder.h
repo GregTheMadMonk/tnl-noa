@@ -83,25 +83,27 @@ class tnlMeshBuilder
       typedef typename MeshTraits::PointArrayType    PointArrayType;
       typedef typename MeshTraits::CellSeedArrayType CellSeedArrayType;
 
-   bool validate() const
-   {
-      if( !allPointsSet() )
+      bool validate() const
       {
-         cerr << "Mesh builder error: Not all points were set." << endl;
-         return false;
+         if( !allPointsSet() )
+         {
+            cerr << "Mesh builder error: Not all points were set." << endl;
+            return false;
+         }
+
+         for( GlobalIndexType i = 0; i < getCellsCount(); i++ )
+         {
+            auto cornerIds = this->cellSeeds[ i ].getCornerIds();
+            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
+               if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
+               {
+                  cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << endl;
+                  return false;
+               }
+         }
+         return true;
       }
 
-      for( GlobalIndexType i = 0; i < getCellsCount(); i++ )
-      {
-         auto cornerIds = this->cellSeeds[ i ].getCornerIds();
-         for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
-            if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
-            {
-               cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << endl;
-               return false;
-            }
-         }
-      }
 
       bool allPointsSet() const
       {
