@@ -26,39 +26,68 @@
 #include <mesh/tnlMeshEntityKey.h>
 #include <mesh/tnlMeshEntitySeed.h>
 
+template< typename MeshConfig > class tnlMeshConfigTraits;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntitySeed;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityReferenceOrientation;
+
 template< typename MeshConfig,
-          typename EntityTopology >
-class tnlMeshEntitySeed;
+          typename DimensionsTag,
+          typename SuperDimensionsTag = tnlDimensionsTag< tnlMeshConfigTraits< MeshConfig >::meshDimensions > >
+class tnlMeshEntityOrientationNeeded
+{
+	static_assert( 0 <= DimensionsTag::value && DimensionsTag::value < MeshConfig::CellTopology::dimensions, "invalid dimensions" );
+	static_assert( DimensionsTag::value < SuperDimensionsTag::value && SuperDimensionsTag::value <= MeshConfig::CellTopology::dimensions, "invalid superentity dimensions");
+
+	typedef typename tnlMeshConfigTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag >::Tag SuperentityTopology;
+
+	static const bool previousSuperDimensionsValue = tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
+	static const bool thisSuperDimensionsValue = tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag >::orientationEnabled;
+
+   public:
+      static const bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
+};
+
+template< typename MeshConfig, typename DimensionsTag >
+class tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
+{
+	static_assert( 0 <= DimensionsTag::value && DimensionsTag::value <= MeshConfig::CellTopology::dimensions, "invalid dimensions" );
+
+   public:
+      static const bool value = false;
+};
+
 
 template< typename ConfigTag,
           typename DimensionsTag >
 class tnlMeshEntitiesTraits
 {   
-   /*enum { storageEnabled = tnlMeshEntityStorage< ConfigTag,
-                                                 DimensionsTag::value>::enabled };*/
-   static const bool storageEnabled = ConfigTag::entityStorage( DimensionsTag::value );
-
-   typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
-   typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
-   typedef typename tnlMeshEntitiesTag< ConfigTag,
-                                        DimensionsTag >::Tag      EntityTag;
-   typedef tnlMeshEntitySeedKey< ConfigTag, EntityTag >               Key;
-
    public:
 
-   typedef EntityTag                                              Tag;
-   typedef tnlMeshEntity< ConfigTag, Tag >                        Type;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >              SeedType;
+      static const bool storageEnabled = ConfigTag::entityStorage( DimensionsTag::value );
+      static const bool orientationNeeded = tnlMeshEntityOrientationNeeded< ConfigTag, DimensionsTag >::value;
 
-   typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
+      typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
+      typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
+      typedef typename tnlMeshEntitiesTag< ConfigTag,
+                                           DimensionsTag >::Tag      EntityTag;
+      typedef tnlMeshEntitySeedKey< ConfigTag, EntityTag >               Key;
 
-   typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
-   typedef tnlSharedArray< Type, tnlHost, GlobalIndexType >       SharedContainerType;
-   typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
-   typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >        SeedIndexedSetType;
-   typedef tnlArray< SeedType, tnlHost, GlobalIndexType >         SeedArrayType;
 
-   typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
+      typedef EntityTag                                              Tag;
+      typedef tnlMeshEntity< ConfigTag, Tag >                        Type;
+      typedef tnlMeshEntitySeed< ConfigTag, EntityTag >              SeedType;
+      typedef tnlMeshEntityReferenceOrientation< ConfigTag, EntityTag >        ReferenceOrientationType;
+
+      typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
+
+      typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
+      typedef tnlSharedArray< Type, tnlHost, GlobalIndexType >       SharedContainerType;
+      typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
+      typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >        SeedIndexedSetType;
+      typedef tnlArray< SeedType, tnlHost, GlobalIndexType >         SeedArrayType;
+      typedef tnlArray< ReferenceOrientationType, tnlHost, GlobalIndexType > ReferenceOrientationArrayType;
+
+      typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
 };
 
 

@@ -25,23 +25,23 @@ class tnlMeshEntityOrientation
    template< typename, typename> friend class tnlMeshEntityReferenceOrientation;
 
    public:
-      typedef typename tnlMeshConfigTraits< MeshConfig >::IdPermutationArrayAccessor IdPermutationArrayAccessor;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
 
-      IdPermutationArrayAccessor getSubvertexPermutation() const
+      IdPermutationArrayAccessorType getSubvertexPermutation() const
       {
          return this->subvertexPermutation.subarray( 0, this->subvertexPermutation.getSize() );
       }
 
    private:
-      typedef typename ConfigTraits<TConfig>::TLocalIndex                                                            TLocalIndex;
-      typedef typename ConfigTraits<TConfig>::template SubentityTraits<TEntityTopology, Dim<0>>::TIdPermutationArray TIdPermutationArray;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType        LocalIndexType;
+      typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > >::IdPermutationArrayType IdPermutationArrayType;
 
-      void setPermutationValue(TLocalIndex index, TLocalIndex value)
+      void setPermutationValue( LocalIndexType index, LocalIndexType value )
       {
          this->subvertexPermutation[ index ] = value;
       }
 
-      IdPermutationArray this->subvertexPermutation;
+      IdPermutationArrayType subvertexPermutation;
 };
 
 

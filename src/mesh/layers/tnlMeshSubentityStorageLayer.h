@@ -69,6 +69,8 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    typedef typename ContainerType::ElementType            GlobalIndexType;
    typedef int                                            LocalIndexType;
    typedef typename SubentityTraits::IdArrayType          IdArrayType;
+   typedef typename SubentityTraits::OrientationArrayType  OrientationArrayType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::IdPermutationArrayAccessorType   IdPermutationArrayAccessorType;
 
    tnlMeshSubentityStorageLayer()
    {
@@ -163,12 +165,21 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+   
+   using BaseType::subentityOrientation;
+   IdPermutationArrayAccessorType subentityOrientation( DimensionsTag, LocalIndexType index) const
+   {
+      tnlAssert( 0 <= index && index < SubentityTraits::count, );
+       
+      return this->subentityOrientations[ index ].getSubvertexPermutation();
+   }
 
    private:
-   IdArrayType subentitiesIndices;
+      IdArrayType subentitiesIndices;
 
-   SharedContainerType sharedSubentitiesIndices;
+      SharedContainerType sharedSubentitiesIndices;
 
+      OrientationArrayType subentityOrientations;
 };
 
 
@@ -282,11 +293,17 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
 
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
    
-   private:
+   protected:
+      
+      /***
+       *  Necessary because of 'using TBase::...;' in the derived classes
+       */
+	   void subentityOrientation()       {}
+	   void subentityOrientationsArray() {}
 
-   IdArrayType verticesIndices;
+      IdArrayType verticesIndices;
 
-   SharedContainerType sharedVerticesIndices;
+      SharedContainerType sharedVerticesIndices;
 };
 
 template< typename ConfigTag,

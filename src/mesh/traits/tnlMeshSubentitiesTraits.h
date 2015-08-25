@@ -24,51 +24,53 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/tnlMeshEntitySeed.h>
+#include <mesh/tnlMeshEntityOrientation.h>
 
 template< typename ConfigTag,
           typename EntityTag,
           typename DimensionsTag >
 class tnlMeshSubentitiesTraits
 {
-   /*enum { storageEnabled = tnlMeshSubentityStorage< ConfigTag,
-                                                    EntityTag,
-                                                    DimensionsTag::value >::enabled };*/
-   static const bool storageEnabled = ConfigTag::subentityStorage( EntityTag(), DimensionsTag::value );
+   public:   
+      static const bool storageEnabled = ConfigTag::subentityStorage( EntityTag(), DimensionsTag::value );
+      static const bool orientationEnabled = ConfigTag::subentityOrientationStorage( EntityTag(), DimensionsTag::value );
 
-   typedef typename ConfigTag::GlobalIndexType                  GlobalIndexType;
-   typedef typename ConfigTag::LocalIndexType                   LocalIndexType;
-   typedef tnlSubentities< EntityTag, DimensionsTag::value > Tag;
+      typedef typename ConfigTag::GlobalIndexType                  GlobalIndexType;
+      typedef typename ConfigTag::LocalIndexType                   LocalIndexType;
+      typedef tnlSubentities< EntityTag, DimensionsTag::value > Tag;
 
-public:
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                 EntityType;
-   typedef typename Tag::Tag                                     SubentityTag;
-   typedef tnlMeshEntity< ConfigTag, SubentityTag >              SubentityType;
-   typedef tnlMeshEntitySeed< ConfigTag, SubentityTag >          Seed;
 
-   typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
+      typedef tnlMeshEntity< ConfigTag, EntityTag >                 EntityType;
+      typedef typename Tag::Tag                                     SubentityTag;
+      typedef tnlMeshEntity< ConfigTag, SubentityTag >              SubentityType;
+      typedef tnlMeshEntitySeed< ConfigTag, SubentityTag >          Seed;
+      typedef tnlMeshEntityOrientation< ConfigTag, EntityTag >      Orientation;
 
-   enum { count = Tag::count };
+      typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 
-   typedef tnlStaticArray< count, GlobalIndexType >              ContainerType;
-   typedef tnlSharedArray< GlobalIndexType,
-                           tnlHost,
-                           LocalIndexType >                      SharedContainerType;
-   typedef tnlStaticArray< count, GlobalIndexType >              IdArrayType;
-   typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
-   typedef tnlStaticArray< count, Seed >                         SeedArrayType;
-	//typedef tnlStaticArray<TOrientation, TLocalIndex, COUNT> TOrientationArray;
+      enum { count = Tag::count };
 
-   template< LocalIndexType subentityIndex,
-             LocalIndexType subentityVertexIndex >
-   struct Vertex
-   {
-      enum { index = tnlSubentityVertex< EntityTag,
-                                         SubentityTag,
-                                         subentityIndex,
-                                         subentityVertexIndex>::index };
-   };
-   
-   static_assert( EntityTag::dimensions > DimensionsTag::value, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
+      typedef tnlStaticArray< count, GlobalIndexType >              ContainerType;
+      typedef tnlSharedArray< GlobalIndexType,
+                              tnlHost,
+                              LocalIndexType >                      SharedContainerType;
+      typedef tnlStaticArray< count, GlobalIndexType >              IdArrayType;
+      typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
+      typedef tnlStaticArray< count, Seed >                         SeedArrayType;
+      typedef tnlStaticArray< count, Orientation >                  OrientationArrayType;
+      typedef tnlStaticArray< count, LocalIndexType >               IdPermutationArrayType;
+
+      template< LocalIndexType subentityIndex,
+                LocalIndexType subentityVertexIndex >
+      struct Vertex
+      {
+         enum { index = tnlSubentityVertex< EntityTag,
+                                            SubentityTag,
+                                            subentityIndex,
+                                            subentityVertexIndex>::index };
+      };
+
+      static_assert( EntityTag::dimensions > DimensionsTag::value, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 

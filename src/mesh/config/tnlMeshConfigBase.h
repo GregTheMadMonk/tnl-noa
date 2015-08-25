@@ -72,12 +72,13 @@ struct tnlMeshConfigBase
 	}
 
 	/****
-    * Storage of subentity orientations of mesh entities
+    * Storage of subentity orientations of mesh entities.
+    * It must be false for vertices and cells.
     */
 	template< typename MeshEntity >
 	static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions )
 	{
-		return false;
+		return ( SubentityDimensions > 0 );
 	}
 
 	/****

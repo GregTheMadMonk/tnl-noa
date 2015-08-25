@@ -46,9 +46,9 @@ class tnlMeshEntity
    typedef EntityTag                                            Tag;
    typedef tnlMeshEntitySeed< ConfigTag, EntityTag >            SeedType;
    enum { dimensions = Tag::dimensions };
-   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
-      
-      
+   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };      
+   typedef typename tnlMeshConfigTraits< ConfigTag>::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
+
    tnlMeshEntity( const SeedType& entitySeed )
    {
       typedef typename SeedType::LocalIndexType LocalIndexType;
@@ -207,9 +207,9 @@ class tnlMeshEntity
       typedef typename SuperentityTraits::ContainerType         ContainerType;
       typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
-      typedef int                                               LocalIndexType;
+      typedef int                                               LocalIndexType;      
       // TODO: make this as:
-      // typedef typename Type::IndexType   LocalIndexType
+      // typedef typename Type::IndexType   LocalIndexType      
       static const bool available = ConfigTag::template superentityStorage( EntityTag(), Dimensions );
    };
 
@@ -310,6 +310,14 @@ class tnlMeshEntity
       return this->getSubentitiesIndices< 0 >();
    }
    
+   template< int dim >
+   IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const
+   {
+      static const LocalIndexType subentitiesCount = tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, tnlDimensionsTag<dim>>::count;
+      tnlAssert( 0 <= index && index < subentitiesCount, );
+      
+      return SubentityStorageLayers::subentityOrientation( tnlDimensionsTag< dim >(), index );
+   }  
    
    // TODO: This is only for the mesh initializer, fix this
    typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >                     SuperentityAccessBase;
@@ -327,6 +335,12 @@ class tnlMeshEntity
    {
       return SuperentityAccessBase::superentityIdsArray( DimensionsTag());
    }
+   
+   template< typename DimensionsTag >
+	typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::OrientationArray& subentityOrientationsArray()
+	{
+		return SubentityStorageLayers::subentityOrientationsArray( DimensionsTag() );
+	}
       
 };
 
