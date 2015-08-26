@@ -28,13 +28,18 @@ class tnlMeshInitializer;
 template<typename ConfigTag,
          typename EntityTag,
          typename DimensionsTag,
-         typename SubentityStorageTag = typename tnlMeshSubentitiesTraits< ConfigTag,
-                                                                           EntityTag,
-                                                                           DimensionsTag >::SubentityStorageTag,
-         typename SuperentityStorageTag = typename tnlMeshSuperentitiesTraits< ConfigTag,
-                                                                               typename tnlMeshSubentitiesTraits< ConfigTag,
-                                                                                                                  EntityTag,
-                                                                                                                  DimensionsTag >::SubentityTag,
+         typename SubentityStorageTag =
+            typename tnlMeshSubentitiesTraits< ConfigTag,
+                                               EntityTag,
+                                               DimensionsTag >::SubentityStorageTag,
+         typename SubentityOrientationStorage = 
+            tnlStorageTraits< tnlMeshConfigTraits< ConfigTag >::
+               template SubentityTraits< EntityTag, DimensionsTag >::orientationEnabled >,
+         typename SuperentityStorageTag = 
+            typename tnlMeshSuperentitiesTraits< ConfigTag,
+                                                 typename tnlMeshSubentitiesTraits< ConfigTag,
+                                                                                    EntityTag,
+                                                                                    DimensionsTag >::SubentityTag,
                                                                                tnlDimensionsTag< EntityTag::dimensions > >::SuperentityStorageTag >
 class tnlMeshEntityInitializerLayer;
 
@@ -128,9 +133,11 @@ class tnlMeshEntityInitializer< MeshConfig, tnlMeshVertexTag >
 
 
 /****
- * Mesh entity initializer layer
+ *       Mesh entity initializer layer with specializations
+ * 
+ *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
+ *      TRUE                    FALSE                    TRUE 
  */
-
 template< typename ConfigTag,
           typename EntityTag,
           typename DimensionsTag >
@@ -138,6 +145,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< true > >
    : public tnlMeshEntityInitializerLayer< ConfigTag,
                                            EntityTag,
@@ -169,12 +177,10 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
       IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
-      //OrientationArray &subentityOrientationsArray = TInitializer::template subentityOrientationsArray<TDim>(entity);
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {         
          cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
          subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
-         //subentityOrientationsArray[ i ] = initializer.template getReferenceOrientation< DimensionsTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
          meshInitializer.
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );
@@ -183,6 +189,12 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    }
 };
 
+/****
+ *       Mesh entity initializer layer with specializations
+ * 
+ *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
+ *      TRUE                    TRUE                    TRUE 
+ */
 template< typename ConfigTag,
           typename EntityTag,
           typename DimensionsTag >
@@ -190,6 +202,119 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
+                                     tnlStorageTraits< true >,
+                                     tnlStorageTraits< true > >
+   : public tnlMeshEntityInitializerLayer< ConfigTag,
+                                           EntityTag,
+                                           typename DimensionsTag::Decrement >
+{
+   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+                                          EntityTag,
+                                          typename DimensionsTag::Decrement >                   BaseType;
+
+   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
+   typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
+   typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
+   typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
+
+   typedef tnlMeshInitializer< ConfigTag >                                                          InitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                         EntityInitializerType;
+   typedef tnlDimensionsTag< EntityTag::dimensions >                                                EntityDimensionsTag;
+   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                                SeedType;
+   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef typename SubentitiesTraits::OrientationArrayType                                    OrientationArrayType;
+
+   protected:
+   static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
+                                InitializerType& meshInitializer )
+   {
+      cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << endl;
+      auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
+
+      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
+      OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
+      for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
+      {         
+         cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
+         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
+         subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentitySeeds[ i ] ).createOrientation( subentitySeeds[ i ] );
+         meshInitializer.
+            template getSuperentityInitializer< DimensionsTag >().
+               addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );
+      }
+      BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
+   }
+};
+
+/****
+ *       Mesh entity initializer layer with specializations
+ * 
+ *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
+ *      TRUE                    TRUE                    FALSE
+ */
+template< typename ConfigTag,
+          typename EntityTag,
+          typename DimensionsTag >
+class tnlMeshEntityInitializerLayer< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTag,
+                                     tnlStorageTraits< true >,
+                                     tnlStorageTraits< true >,
+                                     tnlStorageTraits< false > >
+   : public tnlMeshEntityInitializerLayer< ConfigTag,
+                                           EntityTag,
+                                           typename DimensionsTag::Decrement >
+{
+   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+                                          EntityTag,
+                                          typename DimensionsTag::Decrement >                   BaseType;
+
+   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
+   typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
+   typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
+   typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
+
+   typedef tnlMeshInitializer< ConfigTag >                                                          InitializerType;
+   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                         EntityInitializerType;
+   typedef tnlDimensionsTag< EntityTag::dimensions >                                                EntityDimensionsTag;
+   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                                SeedType;
+   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
+   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef typename SubentitiesTraits::OrientationArrayType                                    OrientationArrayType;
+
+   protected:
+   static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
+                                InitializerType& meshInitializer )
+   {
+      cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << endl;
+      auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
+
+      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
+      OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
+      for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
+      {         
+         cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
+         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
+         subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentitySeeds[ i ] ).createOrientation( subentitySeeds[ i ] );
+      }
+      BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
+   }
+};
+
+
+template< typename ConfigTag,
+          typename EntityTag,
+          typename DimensionsTag >
+class tnlMeshEntityInitializerLayer< ConfigTag,
+                                     EntityTag,
+                                     DimensionsTag,
+                                     tnlStorageTraits< true >,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
    : public tnlMeshEntityInitializerLayer< ConfigTag,
                                            EntityTag,
@@ -236,6 +361,7 @@ template< typename ConfigTag,
 class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< true > >
    : public tnlMeshEntityInitializerLayer< ConfigTag,
@@ -290,6 +416,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< false >,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
    : public tnlMeshEntityInitializerLayer< ConfigTag,
                                            EntityTag,
@@ -302,6 +429,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< true >,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< true > >
 {
    typedef tnlDimensionsTag< 0 >                                  DimensionsTag;
@@ -335,6 +463,7 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< true >,
+                                     tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
 {
    typedef tnlMeshInitializer< ConfigTag >         InitializerType;

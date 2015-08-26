@@ -120,7 +120,14 @@ class tnlMeshInitializer
    {
       return BaseType::getSuperentityInitializer( DimensionsTag() );
    }
-   
+
+   typedef typename tnlMeshTraits< ConfigTag >::GlobalIndexType GlobalIndexType;
+   template< typename DimensionsTag >
+	const tnlMeshEntityReferenceOrientation< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >& getReferenceOrientation( GlobalIndexType index) const
+	{
+		return BaseType::getReferenceOrientation( DimensionsTag(), index);
+	}
+
    protected:
 
    bool verbose;
@@ -469,11 +476,16 @@ class tnlMeshInitializerLayer< ConfigTag,
       
       void createEntityReferenceOrientations()
       {
+         cout << " Creating entity reference orientations with " << DimensionsTag::value << " dimensions ... " << endl;
          SeedArrayType seedsArray;
+         seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          this->referenceOrientations.setSize( seedsArray.getSize() );
          for( GlobalIndexType i = 0; i < seedsArray.getSize(); i++ )
+         {
+            cout << "  Creating reference orientation for entity " << i << endl;
             this->referenceOrientations[ i ] = ReferenceOrientationType( seedsArray[ i ] );
+         }
          BaseType::createEntityReferenceOrientations();
 		}	
       
