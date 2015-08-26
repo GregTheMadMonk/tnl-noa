@@ -87,43 +87,57 @@ class tnlMeshInitializer
    }
    
    template<typename SubDimensionsTag, typename EntityType >
-   static typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< typename EntityType::Tag, SubDimensionsTag >::IdArrayType& subentityIdsArray( EntityType& entity )
+   static typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< typename EntityType::Tag, SubDimensionsTag >::IdArrayType&
+   subentityIdsArray( EntityType& entity )
    {
       return entity.template subentityIdsArray< SubDimensionsTag >();
    }
    
    template< typename SuperDimensionsTag, typename MeshEntity>
-   static typename tnlMeshConfigTraits< ConfigTag >::IdArrayAccessorType& superentityIdsArray( MeshEntity& entity )
+   static typename tnlMeshConfigTraits< ConfigTag >::IdArrayAccessorType&
+   superentityIdsArray( MeshEntity& entity )
    {
       return entity.template superentityIdsArray< SuperDimensionsTag >();
    }
    
+   template<typename SubDimensionsTag, typename MeshEntity >
+	static typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< typename MeshEntity::Tag, SubDimensionsTag >::OrientationArrayType&
+   subentityOrientationsArray( MeshEntity &entity )
+   {
+      return entity.template subentityOrientationsArray< SubDimensionsTag >();
+   }
+   
    template< typename DimensionsTag >
-   typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag>::ContainerType& meshEntitiesArray()
+   typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag>::ContainerType&
+   meshEntitiesArray()
    {
       return mesh->template entitiesArray< DimensionsTag >();
    }
    
    template< typename DimensionsTag, typename SuperDimensionsTag >
-	typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& meshSuperentityIdsArray()
+	typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType&
+   meshSuperentityIdsArray()
    {
       return mesh->template superentityIdsArray< DimensionsTag, SuperDimensionsTag >();
    }
    
-   static void setVertexPoint( typename MeshType::VertexType& vertex, const typename MeshType::PointType& point )
+   static void
+   setVertexPoint( typename MeshType::VertexType& vertex, const typename MeshType::PointType& point )
    {
       vertex.setPoint( point );
    }
    
    template< typename DimensionsTag >
-   tnlMeshSuperentityStorageInitializer< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >& getSuperentityInitializer()
+   tnlMeshSuperentityStorageInitializer< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >&
+   getSuperentityInitializer()
    {
       return BaseType::getSuperentityInitializer( DimensionsTag() );
    }
 
    typedef typename tnlMeshTraits< ConfigTag >::GlobalIndexType GlobalIndexType;
    template< typename DimensionsTag >
-	const tnlMeshEntityReferenceOrientation< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >& getReferenceOrientation( GlobalIndexType index) const
+	const tnlMeshEntityReferenceOrientation< ConfigTag, typename tnlMeshConfigTraits< ConfigTag >::template EntityTraits< DimensionsTag >::Tag >&
+   getReferenceOrientation( GlobalIndexType index) const
 	{
 		return BaseType::getReferenceOrientation( DimensionsTag(), index);
 	}

@@ -44,7 +44,7 @@ class tnlMeshSubentitiesTraits
       typedef typename Tag::Tag                                     SubentityTag;
       typedef tnlMeshEntity< ConfigTag, SubentityTag >              SubentityType;
       typedef tnlMeshEntitySeed< ConfigTag, SubentityTag >          Seed;
-      typedef tnlMeshEntityOrientation< ConfigTag, EntityTag >      Orientation;
+      typedef tnlMeshEntityOrientation< ConfigTag, SubentityTag >   Orientation;
 
       typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 

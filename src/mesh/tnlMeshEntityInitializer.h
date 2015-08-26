@@ -239,8 +239,9 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {         
          cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
-         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
-         subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentitySeeds[ i ] ).createOrientation( subentitySeeds[ i ] );
+         GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         subentityIdsArray[ i ] = subentityIndex;
+         subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
          meshInitializer.
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );

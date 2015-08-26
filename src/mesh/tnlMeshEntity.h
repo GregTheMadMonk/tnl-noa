@@ -337,10 +337,10 @@ class tnlMeshEntity
    }
    
    template< typename DimensionsTag >
-	typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::OrientationArray& subentityOrientationsArray()
-	{
-		return SubentityStorageLayers::subentityOrientationsArray( DimensionsTag() );
-	}
+   typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::OrientationArrayType& subentityOrientationsArray()
+   {
+      return SubentityStorageLayers::subentityOrientationsArray( DimensionsTag() );
+   }      
       
 };
 
