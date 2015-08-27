@@ -242,10 +242,12 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
          GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
          subentityIdsArray[ i ] = subentityIndex;
          subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
+         cout << "    Subentity orientation = " << subentityOrientationsArray[ i ].getSubvertexPermutation() << endl;
          meshInitializer.
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );
       }
+      
       BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
    }
 };

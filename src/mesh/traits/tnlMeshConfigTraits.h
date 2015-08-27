@@ -45,7 +45,7 @@ class tnlMeshConfigTraits
       // TODO: to asi presunout do implementace, stejne to bude vazane na TNL
       typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >             GlobalIdArrayType;
       typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >   IdArrayAccessorType;
-      typedef tnlSharedArray< LocalIndexType, tnlHost, LocalIndexType >         IdPermutationArrayAccessorType;
+      typedef tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >         IdPermutationArrayAccessorType;
       typedef tnlArray< Point, tnlHost, GlobalIndexType>                        PointArrayType;
       typedef tnlArray< CellSeed, tnlHost, GlobalIndexType >                    CellSeedArrayType;
 

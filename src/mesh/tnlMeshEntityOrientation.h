@@ -29,7 +29,10 @@ class tnlMeshEntityOrientation
 
       IdPermutationArrayAccessorType getSubvertexPermutation() const
       {
-         return this->subvertexPermutation.subarray( 0, this->subvertexPermutation.getSize() );
+         IdPermutationArrayAccessorType accessor;
+         accessor.bind( this->subvertexPermutation );
+         return accessor;
+         //return this->subvertexPermutation.subarray( 0, this->subvertexPermutation.getSize() );
       }
 
    private:

@@ -178,6 +178,9 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 
+   using BaseType::subentityOrientationsArray;
+	OrientationArrayType& subentityOrientationsArray( DimensionsTag ) { return this->subentityOrientations; }
+   
    private:
       IdArrayType subentitiesIndices;
 
@@ -308,6 +311,9 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+   
+   using BaseType::subentityOrientationsArray;
+   void subentityOrientationsArray() {}
    
    private:
       IdArrayType subentitiesIndices;
