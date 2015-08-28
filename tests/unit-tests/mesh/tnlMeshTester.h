@@ -34,6 +34,7 @@
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
 #include <mesh/topologies/tnlMeshHexahedronTag.h>
 #include <mesh/tnlMeshInitializer.h>
+#include <mesh/tnlMeshBuilder.h>
 
 class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTag >
 {
@@ -127,9 +128,27 @@ class tnlMeshTester : public CppUnit :: TestCase
                 point0   edge2        point1
         */
 
-       tnlMesh< TestTriangleMeshConfig > mesh, mesh2;
+       typedef tnlMesh< TestTriangleMeshConfig > TriangleTestMesh;
+       TriangleTestMesh mesh, mesh2;
        mesh.setName( "mesh" );
-       mesh.setNumberOfVertices( 4 );
+       tnlMeshBuilder< TriangleTestMesh > meshBuilder;
+       meshBuilder.setPointsCount( 4 );
+       meshBuilder.setPoint( 0, PointType( 0.0, 0.0 ) );
+       meshBuilder.setPoint( 1, PointType( 1.0, 0.0 ) );
+       meshBuilder.setPoint( 2, PointType( 0.0, 1.0 ) );
+       meshBuilder.setPoint( 3, PointType( 1.0, 1.0 ) );
+       
+       meshBuilder.setCellsCount( 2 );
+       meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+       meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+       meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+       meshBuilder.getCellSeed( 1 ).setCornerId( 0, 1 );
+       meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
+       meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
+       meshBuilder.build( mesh );
+
+       
+       /*mesh.setNumberOfVertices( 4 );
        mesh.setVertex( 0, PointType( 0.0, 0.0 ) );
        mesh.setVertex( 1, PointType( 1.0, 0.0 ) );
        mesh.setVertex( 2, PointType( 0.0, 1.0 ) );
@@ -141,10 +160,10 @@ class tnlMeshTester : public CppUnit :: TestCase
        mesh.getEntity< 2 >( 0 ).setVertexIndex( 2, 2 );
        mesh.getEntity< 2 >( 1 ).setVertexIndex( 0, 1 );
        mesh.getEntity< 2 >( 1 ).setVertexIndex( 1, 2 );
-       mesh.getEntity< 2 >( 1 ).setVertexIndex( 2, 3 );
+       mesh.getEntity< 2 >( 1 ).setVertexIndex( 2, 3 );*/
 
        tnlMeshInitializer< TestTriangleMeshConfig > meshInitializer;
-       //meshInitializer.initMesh( mesh );
+       //meshInitializer.initMesh( mesh );*/
 
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
@@ -157,8 +176,6 @@ class tnlMeshTester : public CppUnit :: TestCase
        //mesh2.setName( "mesh2" );
        //mesh.print( cout );
        //mesh2.print( cout );
-
-
     };
 
    void tetrahedronsTest()
