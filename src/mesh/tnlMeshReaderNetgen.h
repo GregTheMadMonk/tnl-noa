@@ -175,7 +175,7 @@ class tnlMeshReaderNetgen
          PointType p;
          for( int d = 0; d < dimensions; d++ )
             iss >> p[ d ];
-         cout << "Setting point number " << i << " of " << pointsCount << endl;
+         //cout << "Setting point number " << i << " of " << pointsCount << endl;
          meshBuilder.setPoint( i, p );
          if( verbose )
             cout << pointsCount << " vertices expected ... " << i+1 << "/" << pointsCount << "        \r" << flush;

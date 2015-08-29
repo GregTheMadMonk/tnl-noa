@@ -71,7 +71,6 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
       using BaseType::initSuperentities;
       void initSuperentities( MeshInitializer& meshInitializer )
       {
-         cerr << "####" << endl;
          std::sort( indexPairs.begin(),
                     indexPairs.end(),
                     []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
@@ -80,12 +79,12 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
-         cout << "There are " << superentityIdsArray.getSize() << " superentities..." << endl;
+         //cout << "There are " << superentityIdsArray.getSize() << " superentities..." << endl;
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
             
-            cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << endl;
+            //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << endl;
             if( indexPairs[ i ].entityIndex != lastEntityIndex )
             {
                meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
@@ -144,7 +143,7 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
    
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;}
+   void initSuperentities( MeshInitializerType& ) {}
 };
 
 template< typename ConfigTag,
@@ -158,7 +157,7 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
 
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   void initSuperentities( MeshInitializerType& ) { cerr << "***" << endl;}
+   void initSuperentities( MeshInitializerType& ) {}
 };
 
 

@@ -19,25 +19,26 @@
 #define	TNLMESHCONFIGVALIDATOR_H
 
 #include <core/tnlAssert.h>
+#include <mesh/topologies/tnlMeshEntityTopology.h>
+#include <mesh/tnlDimensionsTag.h>
 
-/*
 template< typename MeshConfig,
           typename MeshEntity,
-          int dimensions >
+          typename dimensions >
 class tnlMeshConfigValidatorSubtopologyLayer :
-   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, dimensions - 1 >
+public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions ) || 
+   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) || 
                     MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which subentities are stored must be stored" );
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions ) ||
-                    MeshConfig::entityStorage( dimensions ), "entities that are stored as subentities must be stored");
-   // TODO: fix this 
-   //static_assert( ! MeshConfig::subentityOrientationStorage(TTopology(), TDim()) || TConfig::subentityStorage(TTopology(), TDim()), "orientation can be stored only for subentities that are stored");
+   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) ||
+                    MeshConfig::entityStorage( dimensions::value ), "entities that are stored as subentities must be stored");
+   static_assert( ! MeshConfig::subentityOrientationStorage( MeshEntity(), dimensions::value ) || 
+                    MeshConfig::subentityStorage( MeshEntity(), dimensions::value ), "orientation can be stored only for subentities that are stored");
 };
 
 template< typename MeshConfig,
           typename MeshEntity >
-class tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, 0 >
+class tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, tnlDimensionsTag< 0 > >
 {
    static_assert( ! MeshConfig::subentityStorage( MeshEntity(), 0 ) ||
                     MeshConfig::entityStorage( 0 ), "entities that are stored as subentities must be stored" );
@@ -47,29 +48,35 @@ class tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, 0 >
 
 template< typename MeshConfig,
           typename MeshEntity,
-          int dimensions >
+          typename dimensions >
 class tnlMeshConfigValidatorSupertopologyLayer :
- public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, dimensions - 1 >
+public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) || MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which superentities are stored must be stored");
-   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) || MeshConfig::entityStorage( dimensions ), "entities that are stored as superentities must be stored");
+   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) ||
+                  MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which superentities are stored must be stored");
+   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) ||
+                  MeshConfig::entityStorage( dimensions::value ), "entities that are stored as superentities must be stored");
 };
 
 template< typename MeshConfig,
           typename MeshEntity >
-class tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, MeshEntity::dimensions >
+class tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, tnlDimensionsTag< MeshEntity::dimensions > >
 {};
-*/
+
 
 template< typename MeshConfig, int dimensions >
 class tnlMeshConfigValidatorLayer :
- public tnlMeshConfigValidatorLayer< MeshConfig, dimensions - 1 >//,
- //public ConfigValidatorSubtopologyLayer< MeshConfig, typename Subtopology<typename TConfig::TCellTopology, TDim::VALUE>::TTopology, typename TDim::Decrement>,
- //public ConfigValidatorSupertopologyLayer< MeshConfig, typename Subtopology<typename TConfig::TCellTopology, TDim::VALUE>::TTopology, Dim<TConfig::TCellTopology::DIMENSION>>
+ public tnlMeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
+ public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, 
+                                                typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag,
+                                                tnlDimensionsTag< dimensions - 1 > >,
+ public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, 
+                                                  typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag,
+                                                  tnlDimensionsTag< MeshConfig::CellTopology::dimensions > >
 {
-	//typedef typename Subtopology<typename TConfig::TCellTopology, TDim::VALUE>::TTopology TTopology;
+	typedef typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag Topology;
 
-//	static_assert( ! MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( TTopology(), Dim<0>()), "subvertices of all stored entities must be stored");
+	static_assert( ! MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( Topology(), 0 ), "subvertices of all stored entities must be stored");
 };
 
 template< typename MeshConfig >
@@ -79,8 +86,10 @@ class tnlMeshConfigValidatorLayer< MeshConfig, 0 >
 
 template< typename MeshConfig >
 class tnlMeshConfigValidatorLayerCell :
-   public tnlMeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >//,
-//   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, typename MeshConfig::CellType, MeshConfig::CellType::dimensions - 1 >
+   public tnlMeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >,
+   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, 
+                                                  typename MeshConfig::CellTopology,
+                                                  tnlDimensionsTag< MeshConfig::CellTopology::dimensions - 1 > >
 {
 	typedef typename MeshConfig::CellTopology    CellTopology;
  	static const int dimensions =  CellTopology::dimensions;
