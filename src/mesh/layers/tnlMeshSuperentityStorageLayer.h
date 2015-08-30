@@ -22,45 +22,45 @@
 #include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
-#include <mesh/traits/tnlMeshConfigTraits.h>
+#include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshSuperentitiesTraits.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag,
           typename SuperentityStorageTag =
-             typename tnlMeshSuperentitiesTraits< ConfigTag,
+             typename tnlMeshSuperentitiesTraits< MeshConfig,
                                                   EntityTag,
                                                   DimensionsTag >::SuperentityStorageTag >
 class tnlMeshSuperentityStorageLayer;
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshSuperentityStorageLayers
-   : public tnlMeshSuperentityStorageLayer< ConfigTag,
+   : public tnlMeshSuperentityStorageLayer< MeshConfig,
                                             EntityTag,
-                                            typename tnlMeshTraits< ConfigTag >::DimensionsTag >
+                                            typename tnlMeshTraits< MeshConfig >::DimensionsTag >
 {
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageLayer< ConfigTag,
+class tnlMeshSuperentityStorageLayer< MeshConfig,
                                       EntityTag,
                                       DimensionsTag,
                                       tnlStorageTraits< true > >
-   : public tnlMeshSuperentityStorageLayer< ConfigTag,
+   : public tnlMeshSuperentityStorageLayer< MeshConfig,
                                             EntityTag,
                                             typename DimensionsTag::Decrement >
 {
    typedef
-      tnlMeshSuperentityStorageLayer< ConfigTag,
+      tnlMeshSuperentityStorageLayer< MeshConfig,
                                       EntityTag,
                                       typename DimensionsTag::Decrement >  BaseType;
 
    typedef
-      tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, DimensionsTag >          SuperentityTag;
+      tnlMeshSuperentitiesTraits< MeshConfig, EntityTag, DimensionsTag >          SuperentityTag;
 
    protected:
 
@@ -184,20 +184,20 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    public:
               
       using BaseType::superentityIdsArray;               
-      typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
          return this->superentitiesIndices;
       }
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageLayer< ConfigTag,
+class tnlMeshSuperentityStorageLayer< MeshConfig,
                                       EntityTag,
                                       DimensionsTag,
                                       tnlStorageTraits< false > >
-   : public tnlMeshSuperentityStorageLayer< ConfigTag,
+   : public tnlMeshSuperentityStorageLayer< MeshConfig,
                                             EntityTag,
                                             typename DimensionsTag::Decrement >
 {
@@ -205,20 +205,20 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
 
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshSuperentityStorageLayer< ConfigTag,
+class tnlMeshSuperentityStorageLayer< MeshConfig,
                                       EntityTag,
                                       tnlDimensionsTag< EntityTag::dimensions >,
                                       tnlStorageTraits< false > >
 {
    typedef tnlDimensionsTag< EntityTag::dimensions >        DimensionsTag;
 
-   typedef tnlMeshSuperentitiesTraits< ConfigTag,
+   typedef tnlMeshSuperentitiesTraits< MeshConfig,
                                        EntityTag,
                                        DimensionsTag >      SuperentityTag;
 
-   typedef tnlMeshSuperentityStorageLayer< ConfigTag,
+   typedef tnlMeshSuperentityStorageLayer< MeshConfig,
                                            EntityTag,
                                            DimensionsTag,
                                            tnlStorageTraits< false > > ThisType;
@@ -263,26 +263,26 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    }
    
    template< typename SuperDimensionsTag >
-   typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+   typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
       tnlAssert( false, );
       //return this->superentitiesIndices;
    }
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshSuperentityStorageLayer< ConfigTag,
+class tnlMeshSuperentityStorageLayer< MeshConfig,
                                       EntityTag,
                                       tnlDimensionsTag< EntityTag::dimensions >,
                                       tnlStorageTraits< true > >
 {
    typedef tnlDimensionsTag< EntityTag::dimensions >        DimensionsTag;
 
-   typedef tnlMeshSuperentitiesTraits< ConfigTag,
+   typedef tnlMeshSuperentitiesTraits< MeshConfig,
                                        EntityTag,
                                        DimensionsTag >      SuperentityTag;
-   typedef tnlMeshSuperentityStorageLayer< ConfigTag,
+   typedef tnlMeshSuperentityStorageLayer< MeshConfig,
                                            EntityTag,
                                            DimensionsTag,
                                            tnlStorageTraits< true > > ThisType;
@@ -327,7 +327,7 @@ class tnlMeshSuperentityStorageLayer< ConfigTag,
    }
    
    template< typename SuperDimensionsTag >
-   typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+   typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
       tnlAssert( false, );
       //return this->superentitiesIndices;

@@ -26,24 +26,24 @@
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/traits/tnlMeshEntitiesTraits.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
 class tnlMeshSuperentitiesTraits
 {
-   typedef typename ConfigTag::GlobalIndexType                              GlobalIndexType;
-   typedef typename ConfigTag::LocalIndexType                               LocalIndexType;
+   typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
+   typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
    public:
 
-   static const bool storageEnabled = ConfigTag::template superentityStorage< EntityTag >( EntityTag(), DimensionsTag::value );
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                            EntityType;
+   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTag >( EntityTag(), DimensionsTag::value );
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                            EntityType;
    typedef typename
-      tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTag >::Tag                        SuperentityTag;
+      tnlMeshEntitiesTraits< MeshConfig,
+                             DimensionsTag::value >::Tag                        SuperentityTag;
    typedef typename
-      tnlMeshEntitiesTraits< ConfigTag,
-                             DimensionsTag >::Type                       SuperentityType;
+      tnlMeshEntitiesTraits< MeshConfig,
+                             DimensionsTag::value >::EntityType                       SuperentityType;
 
    typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
 

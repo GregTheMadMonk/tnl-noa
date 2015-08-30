@@ -158,7 +158,7 @@ class tnlMeshReaderNetgen
          return false;
       getline( inputFile, line );
       iss.str( line );
-      typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
+      typedef typename MeshType::MeshTraits::template EntityTraits< 0 >::GlobalIndexType VertexIndexType;
       VertexIndexType pointsCount;
       iss >> pointsCount;
       if( ! meshBuilder.setPointsCount( pointsCount ) )
@@ -192,7 +192,7 @@ class tnlMeshReaderNetgen
       /****
        * Read number of cells
        */
-       typedef typename MeshType::template EntitiesTraits< dimensions >::GlobalIndexType CellIndexType;
+       typedef typename MeshType::MeshTraits::template EntityTraits< dimensions >::GlobalIndexType CellIndexType;
        if( ! inputFile )
        {
           cerr << "I cannot read the mesh cells." << endl;

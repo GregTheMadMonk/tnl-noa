@@ -22,43 +22,43 @@
 #include <mesh/tnlDimensionsTag.h>
 #include <algorithm>
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class tnlMeshInitializer;
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag,
-          typename SuperentityStorageTag = typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, DimensionsTag >::SuperentityStorageTag >
+          typename SuperentityStorageTag = typename tnlMeshSuperentitiesTraits< MeshConfig, EntityTag, DimensionsTag >::SuperentityStorageTag >
 class tnlMeshSuperentityStorageInitializerLayer;
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshSuperentityStorageInitializer :
-   public tnlMeshSuperentityStorageInitializerLayer< ConfigTag, EntityTag, tnlDimensionsTag< tnlMeshConfigTraits< ConfigTag >::meshDimensions > >
+   public tnlMeshSuperentityStorageInitializerLayer< MeshConfig, EntityTag, tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {};
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           EntityTag,
                                           DimensionsTag,
                                           tnlStorageTraits< true > >
-   : public tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+   : public tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                 EntityTag,
                                                 typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+   typedef tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                       EntityTag,
                                                       typename DimensionsTag::Decrement >      BaseType;
 
    typedef tnlDimensionsTag< EntityTag::dimensions >                                    EntityDimensions;
 	
-   typedef typename tnlMeshConfigTraits< ConfigTag >::GlobalIdArrayType                 GlobalIdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType                 GlobalIdArrayType;
 
       
-   typedef typename tnlMeshConfigTraits< ConfigTag >::GlobalIndexType                   GlobalIndexType;
-   typedef tnlMeshInitializer< ConfigTag >                                              MeshInitializer;
+   typedef typename tnlMeshTraits< MeshConfig >::GlobalIndexType                   GlobalIndexType;
+   typedef tnlMeshInitializer< MeshConfig >                                              MeshInitializer;
 
    public:      
       using BaseType::addSuperentity;
@@ -110,21 +110,21 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
    
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           EntityTag,
                                           DimensionsTag,
                                           tnlStorageTraits< false > >
-   : public tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+   : public tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                 EntityTag,
                                                 typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+   typedef tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                 EntityTag,
                                                 typename DimensionsTag::Decrement > BaseType;
-   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
    
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
@@ -132,28 +132,28 @@ class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
    void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;} 
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           EntityTag,
                                           tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< true > >
 {
-   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
    
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
    void initSuperentities( MeshInitializerType& ) {}
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           EntityTag,
                                           tnlDimensionsTag< EntityTag::dimensions >,
                                           tnlStorageTraits< false > >
 {
-   typedef tnlMeshInitializer< ConfigTag >                                      MeshInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
 
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.

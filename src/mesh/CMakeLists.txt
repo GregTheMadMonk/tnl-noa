@@ -16,7 +16,7 @@ SET( headers tnlGrid.h
              tnlMesh.h
              tnlMeshEntity.h
              tnlMeshEntityId.h
-             tnlMeshEntityKey.h
+             tnlMeshEntitySeedKey.h
              tnlMeshReaderNetgen.h
              tnlMeshWriterNetgen.h
              tnlMeshInitializer.h

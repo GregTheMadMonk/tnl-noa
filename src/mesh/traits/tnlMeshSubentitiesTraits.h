@@ -23,28 +23,29 @@
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
-#include <mesh/tnlMeshEntitySeed.h>
-#include <mesh/tnlMeshEntityOrientation.h>
 
-template< typename ConfigTag,
+
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityOrientation;
+
+template< typename MeshConfig,
           typename EntityTag,
-          typename DimensionsTag >
+          int Dimensions >
 class tnlMeshSubentitiesTraits
 {
    public:   
-      static const bool storageEnabled = ConfigTag::subentityStorage( EntityTag(), DimensionsTag::value );
-      static const bool orientationEnabled = ConfigTag::subentityOrientationStorage( EntityTag(), DimensionsTag::value );
+      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTag(), Dimensions );
+      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTag(), Dimensions );
 
-      typedef typename ConfigTag::GlobalIndexType                  GlobalIndexType;
-      typedef typename ConfigTag::LocalIndexType                   LocalIndexType;
-      typedef tnlSubentities< EntityTag, DimensionsTag::value > Tag;
+      typedef typename MeshConfig::GlobalIndexType                  GlobalIndexType;
+      typedef typename MeshConfig::LocalIndexType                   LocalIndexType;
+      typedef tnlSubentities< EntityTag, Dimensions > Tag;
 
 
-      typedef tnlMeshEntity< ConfigTag, EntityTag >                 EntityType;
+      typedef tnlMeshEntity< MeshConfig, EntityTag >                 EntityType;
       typedef typename Tag::Tag                                     SubentityTag;
-      typedef tnlMeshEntity< ConfigTag, SubentityTag >              SubentityType;
-      typedef tnlMeshEntitySeed< ConfigTag, SubentityTag >          Seed;
-      typedef tnlMeshEntityOrientation< ConfigTag, SubentityTag >   Orientation;
+      typedef tnlMeshEntity< MeshConfig, SubentityTag >              SubentityType;
+      typedef tnlMeshEntitySeed< MeshConfig, SubentityTag >          Seed;
+      typedef tnlMeshEntityOrientation< MeshConfig, SubentityTag >   Orientation;
 
       typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 
@@ -70,7 +71,7 @@ class tnlMeshSubentitiesTraits
                                             subentityVertexIndex>::index };
       };
 
-      static_assert( EntityTag::dimensions > DimensionsTag::value, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
+      static_assert( EntityTag::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 

@@ -21,23 +21,23 @@
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshEntitiesTag
 {
    public:
 
-   typedef typename tnlSubentities< typename ConfigTag::CellTopology,
+   typedef typename tnlSubentities< typename MeshConfig::CellTopology,
                                     DimensionsTag::value >::Tag Tag;
 };
 
-template< typename ConfigTag >
-class tnlMeshEntitiesTag< ConfigTag,
-                          typename tnlMeshTraits< ConfigTag >::DimensionsTag >
+template< typename MeshConfig >
+class tnlMeshEntitiesTag< MeshConfig,
+                          tnlDimensionsTag< MeshConfig::CellTopology::dimensions > >
 {
    public:
 
-   typedef typename ConfigTag::CellTopology Tag;
+   typedef typename MeshConfig::CellTopology Tag;
 };
 
 

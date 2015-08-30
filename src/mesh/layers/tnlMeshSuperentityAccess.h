@@ -19,14 +19,14 @@
 #define	TNLSUPERENTITYACCESS_H
 
 #include <mesh/traits/tnlStorageTraits.h>
-#include <mesh/traits/tnlMeshConfigTraits.h>
+#include <mesh/traits/tnlMeshTraits.h>
 
 
 template< typename MeshConfig,
           typename MeshEntity,
           typename Dimensions,
           typename SuperentityStorage = 
-             tnlStorageTraits< tnlMeshConfigTraits< MeshConfig >::template SuperentityTraits< MeshEntity, Dimensions>::storageEnabled > >
+             tnlStorageTraits< tnlMeshTraits< MeshConfig >::template SuperentityTraits< MeshEntity, Dimensions>::storageEnabled > >
 class tnlMeshSuperentityAccessLayer;
 
 
@@ -35,7 +35,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityAccess :
    public tnlMeshSuperentityAccessLayer< MeshConfig, 
                                          MeshEntity,
-                                         tnlDimensionsTag< tnlMeshConfigTraits< MeshConfig >::meshDimensions > >
+                                         tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {
    public:
       bool operator == ( const tnlMeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
@@ -56,7 +56,7 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
 	typedef tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement > BaseType;
 
    public:
-	   typedef typename tnlMeshConfigTraits< MeshConfig >::IdArrayAccessorType    IdArrayAccessorType;
+	   typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType    IdArrayAccessorType;
 
 	   using BaseType::superentityIds;
 	   IdArrayAccessorType superentityIds( Dimensions ) const { return m_superentityIndices; }

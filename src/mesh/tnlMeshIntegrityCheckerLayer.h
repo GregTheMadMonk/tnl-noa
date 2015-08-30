@@ -25,7 +25,7 @@
 template< typename MeshType,
           typename DimensionsTag,
           typename EntityStorageTag = typename tnlMeshEntitiesTraits< typename MeshType::Config,
-                                                                      DimensionsTag >::EntityStorageTag >
+                                                                      DimensionsTag::value >::EntityStorageTag >
 class tnlMeshIntegrityCheckerLayer;
 
 template< typename MeshType,

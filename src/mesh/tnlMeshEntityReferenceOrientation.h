@@ -21,8 +21,8 @@
 template< typename MeshConfig, typename EntityTopology >
 class tnlMeshEntityReferenceOrientation
 {
-	typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType  LocalIndexType;
-	typedef typename tnlMeshConfigTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
+	typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType  LocalIndexType;
+	typedef typename tnlMeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
 
    public:
       typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >         SeedType;

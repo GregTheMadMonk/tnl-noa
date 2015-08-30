@@ -39,7 +39,7 @@ struct tnlMeshConfigBase
    typedef Id          IdType;
 
    static const int worldDimensions = WorldDimensions;
-   static const int cellDimensions = Cell::dimensions;
+   static const int meshDimensions = Cell::dimensions;
 
    static tnlString getType()
    {
@@ -100,7 +100,7 @@ struct tnlMeshConfigBase
  * To disable it, write your own specialization with given
  * dimensions and config tag.
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           int Dimensions >
 struct tnlMeshEntityStorage
 {
@@ -112,19 +112,19 @@ struct tnlMeshEntityStorage
  * provided that they are stored in the mesh.
  * Write your own specialization if you do not want so.
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           int Dimensions >
 struct tnlMeshSubentityStorage
 {
-   enum { enabled = tnlMeshEntityStorage< ConfigTag, Dimensions >::enabled };
+   enum { enabled = tnlMeshEntityStorage< MeshConfig, Dimensions >::enabled };
 };
 
 /***
  * By default, NO SUPERENTITIES of any mesh entity ARE STORED.
  * Write your own specialization if you need to stored them.
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           int Dimensions >
 struct tnlMeshSuperentityStorage

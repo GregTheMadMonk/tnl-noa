@@ -20,30 +20,30 @@
 
 #include <mesh/tnlDimensionsTag.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshEntitySeed;
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
-          typename DimensionsTag >
+          int Dimensions >
 class tnlMeshSubentitiesTraits;
 
 /****
  * Unique identification of a mesh entity by its vertices.
  * Uniqueness is preserved for entities of the same type only.
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshEntitySeedKey
 {
    typedef
-      tnlMeshEntitySeed< ConfigTag, EntityTag >                               EntitySeedType;
+      tnlMeshEntitySeed< MeshConfig, EntityTag >                               EntitySeedType;
 
    typedef typename
-      tnlMeshSubentitiesTraits< ConfigTag,
+      tnlMeshSubentitiesTraits< MeshConfig,
                                 EntityTag,
-                                tnlDimensionsTag< 0 > >::ContainerType ContainerType;
+                                0 >::ContainerType ContainerType;
 
    public:
 

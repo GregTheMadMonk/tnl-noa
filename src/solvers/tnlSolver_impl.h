@@ -22,21 +22,21 @@
 #include <solvers/tnlSolverStarter.h>
 #include <solvers/tnlSolverConfig.h>
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          template< typename ConfigTag > class ProblemConfig,
-          typename ConfigTag >
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+          template< typename MeshConfig > class ProblemConfig,
+          typename MeshConfig >
 bool
-tnlSolver< ProblemSetter, ProblemConfig, ConfigTag >::
+tnlSolver< ProblemSetter, ProblemConfig, MeshConfig >::
 run( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription configDescription;
-   ProblemConfig< ConfigTag >::configSetup( configDescription );
-   tnlSolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
+   ProblemConfig< MeshConfig >::configSetup( configDescription );
+   tnlSolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
-   tnlSolverInitiator< ProblemSetter, ConfigTag > solverInitiator;
+   tnlSolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
    return solverInitiator.run( parameters );
 };
 

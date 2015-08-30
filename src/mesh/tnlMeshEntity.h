@@ -29,25 +29,25 @@
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
 #include <mesh/tnlMeshEntitySeed.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshEntity
-   : public tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >,     
-     public tnlMeshSuperentityAccess< ConfigTag, EntityTag >,
-     public tnlMeshEntityId< typename ConfigTag::IdType,
-                             typename ConfigTag::GlobalIndexType >
+   : public tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >,     
+     public tnlMeshSuperentityAccess< MeshConfig, EntityTag >,
+     public tnlMeshEntityId< typename MeshConfig::IdType,
+                             typename MeshConfig::GlobalIndexType >
 {
    public:
 
    /****
     * Entity typedefs
     */
-   typedef ConfigTag                                            MeshConfigTag;
+   typedef MeshConfig                                            MeshMeshConfig;
    typedef EntityTag                                            Tag;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >            SeedType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >            SeedType;
    enum { dimensions = Tag::dimensions };
-   enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };      
-   typedef typename tnlMeshConfigTraits< ConfigTag>::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
+   enum { meshDimensions = tnlMeshTraits< MeshConfig >::meshDimensions };      
+   typedef typename tnlMeshTraits< MeshConfig>::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
 
    tnlMeshEntity( const SeedType& entitySeed )
    {
@@ -61,7 +61,7 @@ class tnlMeshEntity
    static tnlString getType()
    {
       return tnlString( "tnlMesh< " ) +
-                        //ConfigTag::getType() + ", " +
+                        //MeshConfig::getType() + ", " +
                         //EntityTag::getType() + ", " +
                         " >";
    }
@@ -78,16 +78,16 @@ class tnlMeshEntity
 
    bool save( tnlFile& file ) const
    {
-      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::save( file ) /*||
-          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::save( file )*/ )
+      if( ! tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >::save( file ) /*||
+          ! tnlMeshSuperentityStorageLayers< MeshConfig, EntityTag >::save( file )*/ )
          return false;
       return true;
    }
 
    bool load( tnlFile& file )
    {
-      if( ! tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::load( file ) /*||
-          ! tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >::load( file ) */ )
+      if( ! tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >::load( file ) /*||
+          ! tnlMeshSuperentityStorageLayers< MeshConfig, EntityTag >::load( file ) */ )
          return false;
       return true;
    }
@@ -95,16 +95,16 @@ class tnlMeshEntity
    void print( ostream& str ) const
    {
       str << "\t Mesh entity dimensions: " << EntityTag::dimensions << endl;
-      tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::print( str );
-      tnlMeshSuperentityAccess< ConfigTag, EntityTag >::print( str );
+      tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >::print( str );
+      tnlMeshSuperentityAccess< MeshConfig, EntityTag >::print( str );
    }
 
    bool operator==( const tnlMeshEntity& entity ) const
    {
-      return ( tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >::operator==( entity ) &&
-               tnlMeshSuperentityAccess< ConfigTag, EntityTag >::operator==( entity ) &&
-               tnlMeshEntityId< typename ConfigTag::IdType,
-                                typename ConfigTag::GlobalIndexType >::operator==( entity ) );
+      return ( tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >::operator==( entity ) &&
+               tnlMeshSuperentityAccess< MeshConfig, EntityTag >::operator==( entity ) &&
+               tnlMeshEntityId< typename MeshConfig::IdType,
+                                typename MeshConfig::GlobalIndexType >::operator==( entity ) );
    }
 
    /****
@@ -115,9 +115,9 @@ class tnlMeshEntity
    {
       static_assert( Dimensions < meshDimensions, "Asking for subentities with more or the same number of dimensions then the mesh itself." );
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSubentitiesTraits< ConfigTag,
+      typedef tnlMeshSubentitiesTraits< MeshConfig,
                                         EntityTag,
-                                        DimensionsTag >      SubentityTraits;
+                                        DimensionsTag::value >      SubentityTraits;
       typedef typename SubentityTraits::ContainerType           ContainerType;
       typedef typename SubentityTraits::SharedContainerType     SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
@@ -125,10 +125,10 @@ class tnlMeshEntity
 
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
-      /*enum { available = tnlMeshSubentityStorage< ConfigTag,
+      /*enum { available = tnlMeshSubentityStorage< MeshConfig,
                                                   EntityTag,
                                                   Dimensions >::enabled };*/
-      static const bool available = ConfigTag::template subentityStorage( EntityTag(), Dimensions );
+      static const bool available = MeshConfig::template subentityStorage( EntityTag(), Dimensions );
       enum { subentitiesCount = SubentityTraits::count };
    };
 
@@ -154,7 +154,7 @@ class tnlMeshEntity
                  cerr << "localIndex = " << localIndex
                       << " subentitiesCount = "
                       << SubentitiesTraits< Dimensions >::subentitiesCount );
-      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+      typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >  SubentityBaseType;
       SubentityBaseType::setSubentityIndex( tnlDimensionsTag< Dimensions >(),
                                             localIndex,
                                             globalIndex );
@@ -170,7 +170,7 @@ class tnlMeshEntity
                     cerr << "localIndex = " << localIndex
                          << " subentitiesCount = "
                          << SubentitiesTraits< Dimensions >::subentitiesCount );
-         typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+         typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >  SubentityBaseType;
          return SubentityBaseType::getSubentityIndex( tnlDimensionsTag< Dimensions >(),
                                                       localIndex );
       }
@@ -180,7 +180,7 @@ class tnlMeshEntity
          getSubentitiesIndices()
    {
       static_assert( SubentitiesTraits< Dimensions >::available, "You try to get subentities which are not configured for storage." );
-      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+      typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >  SubentityBaseType;
       return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -189,7 +189,7 @@ class tnlMeshEntity
          getSubentitiesIndices() const
    {
       static_assert( SubentitiesTraits< Dimensions >::available, "You try to set subentities which are not configured for storage." );
-      typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >  SubentityBaseType;
+      typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >  SubentityBaseType;
       return SubentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -201,7 +201,7 @@ class tnlMeshEntity
    {
       static_assert( Dimensions <= meshDimensions, "Asking for subentities with more dimensions then the mesh itself." );
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSuperentitiesTraits< ConfigTag,
+      typedef tnlMeshSuperentitiesTraits< MeshConfig,
                                           EntityTag,
                                           DimensionsTag >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
@@ -210,7 +210,7 @@ class tnlMeshEntity
       typedef int                                               LocalIndexType;      
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType      
-      static const bool available = ConfigTag::template superentityStorage( EntityTag(), Dimensions );
+      static const bool available = MeshConfig::template superentityStorage( EntityTag(), Dimensions );
    };
 
    /*template< int Dimensions >
@@ -219,7 +219,7 @@ class tnlMeshEntity
       static_assert( SuperentitiesTraits< Dimensions >::available, "You try to set number of superentities which are not configured for storage." );
       tnlAssert( size >= 0,
                  cerr << "size = " << size << endl; );
-      typedef tnlMeshSuperentityStorageLayers< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityStorageLayers< MeshConfig, EntityTag >  SuperentityBaseType;
       return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTag< Dimensions >(),
                                                             size );
    }*/
@@ -228,7 +228,7 @@ class tnlMeshEntity
    typename SuperentitiesTraits< Dimensions >::LocalIndexType getNumberOfSuperentities() const
    {
       static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get number of superentities which are not configured for storage." );
-      typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >  SuperentityBaseType;
       return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -240,7 +240,7 @@ class tnlMeshEntity
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >  SuperentityBaseType;
       SuperentityBaseType::setSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                 localIndex,
                                                 globalIndex );
@@ -254,7 +254,7 @@ class tnlMeshEntity
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >  SuperentityBaseType;
       return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                        localIndex );
    }
@@ -263,7 +263,7 @@ class tnlMeshEntity
       typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
    {
       static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get superentities which are not configured for storage." );
-      typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >  SuperentityBaseType;
       //return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -271,7 +271,7 @@ class tnlMeshEntity
       const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices() const
    {
       static_assert( SuperentitiesTraits< Dimensions >::available, "You try to get superentities which are not configured for storage." );
-      typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >  SuperentityBaseType;
       return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -313,19 +313,19 @@ class tnlMeshEntity
    template< int dim >
    IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const
    {
-      static const LocalIndexType subentitiesCount = tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, tnlDimensionsTag<dim>>::count;
+      static const LocalIndexType subentitiesCount = tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, tnlDimensionsTag<dim>>::count;
       tnlAssert( 0 <= index && index < subentitiesCount, );
       
       return SubentityStorageLayers::subentityOrientation( tnlDimensionsTag< dim >(), index );
    }  
    
    // TODO: This is only for the mesh initializer, fix this
-   typedef tnlMeshSuperentityAccess< ConfigTag, EntityTag >                     SuperentityAccessBase;
-   typedef typename tnlMeshConfigTraits< ConfigTag>::IdArrayAccessorType        IdArrayAccessorType;
-   typedef tnlMeshSubentityStorageLayers< ConfigTag, EntityTag >                SubentityStorageLayers;
+   typedef tnlMeshSuperentityAccess< MeshConfig, EntityTag >                     SuperentityAccessBase;
+   typedef typename tnlMeshTraits< MeshConfig>::IdArrayAccessorType        IdArrayAccessorType;
+   typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTag >                SubentityStorageLayers;
    
    template< typename DimensionsTag >
-   typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType& subentityIdsArray()
+   typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::IdArrayType& subentityIdsArray()
    {
       return SubentityStorageLayers::subentityIdsArray( DimensionsTag() );
    }
@@ -337,30 +337,30 @@ class tnlMeshEntity
    }
    
    template< typename DimensionsTag >
-   typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::OrientationArrayType& subentityOrientationsArray()
+   typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::OrientationArrayType& subentityOrientationsArray()
    {
       return SubentityStorageLayers::subentityOrientationsArray( DimensionsTag() );
    }      
       
 };
 
-template< typename ConfigTag >
-class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
-   : public tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >,
-     public tnlMeshEntityId< typename ConfigTag::IdType,
-                             typename ConfigTag::GlobalIndexType >
+template< typename MeshConfig >
+class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
+   : public tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >,
+     public tnlMeshEntityId< typename MeshConfig::IdType,
+                             typename MeshConfig::GlobalIndexType >
 {
    public:
 
       /****
        * The entity typedefs
        */
-      typedef ConfigTag         MeshConfigTag;
+      typedef MeshConfig         MeshMeshConfig;
       typedef tnlMeshVertexTag  Tag;
-      typedef tnlMeshEntitySeed< ConfigTag, tnlMeshVertexTag >            SeedType;
-      typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
+      typedef tnlMeshEntitySeed< MeshConfig, tnlMeshVertexTag >            SeedType;
+      typedef typename tnlMeshTraits< MeshConfig >::PointType PointType;
       enum { dimensions = Tag::dimensions };
-      enum { meshDimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
+      enum { meshDimensions = tnlMeshTraits< MeshConfig >::meshDimensions };
 
       /*tnlMeshEntity( const SeedType & entytiSeed )
       {
@@ -374,7 +374,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       static tnlString getType()
       {
          return tnlString( "tnlMesh< " ) +
-                           //ConfigTag::getType() + ", " +
+                           //MeshConfig::getType() + ", " +
                            //EntityTag::getType() + ", " +
                            " >";
       }
@@ -392,7 +392,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
       bool save( tnlFile& file ) const
       {
-         if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::save( file ) ||
+         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >::save( file ) ||
              ! point.save( file ) )
             return false;
          return true;
@@ -400,7 +400,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
       bool load( tnlFile& file )
       {
-         if( //! tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >::load( file ) ||
+         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >::load( file ) ||
              ! point.load( file ) )
             return false;
          return true;
@@ -410,14 +410,14 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       {
          str << "\t Mesh entity dimensions: " << tnlMeshVertexTag::dimensions << endl;
          str << "\t Coordinates = ( " << point << " )";
-         tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::print( str );
+         tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >::print( str );
       }
 
       bool operator==( const tnlMeshEntity& entity ) const
       {
-         return ( //tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >::operator==( entity ) &&
-                  tnlMeshEntityId< typename ConfigTag::IdType,
-                                   typename ConfigTag::GlobalIndexType >::operator==( entity ) &&
+         return ( //tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >::operator==( entity ) &&
+                  tnlMeshEntityId< typename MeshConfig::IdType,
+                                   typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
                   point == entity.point );
 
       }
@@ -429,7 +429,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    struct SuperentitiesTraits
    {
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSuperentitiesTraits< ConfigTag,
+      typedef tnlMeshSuperentitiesTraits< MeshConfig,
                                           tnlMeshVertexTag,
                                           DimensionsTag >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
@@ -438,10 +438,10 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       typedef int                                               LocalIndexType;
       // TODO: make this as:
       // typedef typename Type::IndexType   LocalIndexType
-      /*enum { available = tnlMeshSuperentityStorage< ConfigTag,
+      /*enum { available = tnlMeshSuperentityStorage< MeshConfig,
                                                     tnlMeshVertexTag,
                                                     Dimensions >::enabled };*/
-      static const bool available = ConfigTag::template superentityStorage< tnlMeshVertexTag >( Dimensions );
+      static const bool available = MeshConfig::template superentityStorage< tnlMeshVertexTag >( Dimensions );
    };
    
    /*template< int Dimensions >
@@ -449,7 +449,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    {
       tnlAssert( size >= 0,
                  cerr << "size = " << size << endl; );
-      typedef tnlMeshSuperentityStorageLayers< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTag< Dimensions >(),
                                                             size );
    }*/
@@ -457,21 +457,21 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    template< int Dimensions >
    typename SuperentitiesTraits< Dimensions >::LocalIndexType getNumberOfSuperentities() const
    {
-      typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       //return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
    {
-      typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       //return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndeces() const
    {
-      typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       //return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -482,7 +482,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       SuperentityBaseType::setSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                 localIndex,
                                                 globalIndex );
@@ -495,7 +495,7 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
       /*return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                        localIndex );*/
    }
@@ -514,8 +514,8 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
    
    // TODO: This is only for the mesh initializer, fix this
    public:
-   typedef typename tnlMeshConfigTraits< ConfigTag>::IdArrayAccessorType        IdArrayAccessorType;
-   typedef tnlMeshSuperentityAccess< ConfigTag, tnlMeshVertexTag > SuperentityAccessBase;
+   typedef typename tnlMeshTraits< MeshConfig>::IdArrayAccessorType        IdArrayAccessorType;
+   typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag > SuperentityAccessBase;
    
    template<typename DimensionsTag >
 	IdArrayAccessorType& superentityIdsArray()
@@ -525,9 +525,9 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-ostream& operator <<( ostream& str, const tnlMeshEntity< ConfigTag, EntityTag >& entity )
+ostream& operator <<( ostream& str, const tnlMeshEntity< MeshConfig, EntityTag >& entity )
 {
    entity.print( str );
    return str;
@@ -537,9 +537,9 @@ ostream& operator <<( ostream& str, const tnlMeshEntity< ConfigTag, EntityTag >&
  * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.
  * It is necessary for the loading and the saving of the mesh entities arrays.
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-struct tnlDynamicTypeTag< tnlMeshEntity< ConfigTag, EntityTag > >
+struct tnlDynamicTypeTag< tnlMeshEntity< MeshConfig, EntityTag > >
 {
    enum { value = true };
 };

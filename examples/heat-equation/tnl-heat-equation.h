@@ -29,10 +29,10 @@
 #include <functors/tnlConstantFunction.h>
 #include <problems/tnlHeatEquationProblem.h>
 
-//typedef tnlDefaultBuildConfigTag BuildConfig;
+//typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class heatEquationConfig
 {
    public:
@@ -54,7 +54,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MeshType,
-          typename ConfigTag,
+          typename MeshConfig,
           typename SolverStarter >
 class heatEquationSetter
 {

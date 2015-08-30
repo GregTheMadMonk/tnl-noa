@@ -24,9 +24,9 @@
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename ProblemConfig >
-bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescription& config )
+bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescription& config )
 {
    typedef tnlDummyProblem< double, tnlHost, int > DummyProblem;
 
@@ -37,11 +37,11 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    config.addEntry< tnlString >( "real-type",
                                  "Precision of the floating point arithmetics.",
                                  "double" );
-   if( tnlConfigTagReal< ConfigTag, float >::enabled )
+   if( tnlMeshConfigReal< MeshConfig, float >::enabled )
       config.addEntryEnum( "float" );
-   if( tnlConfigTagReal< ConfigTag, double >::enabled )
+   if( tnlMeshConfigReal< MeshConfig, double >::enabled )
       config.addEntryEnum( "double" );
-   if( tnlConfigTagReal< ConfigTag, long double >::enabled )
+   if( tnlMeshConfigReal< MeshConfig, long double >::enabled )
       config.addEntryEnum( "long-double" );
 
    /****
@@ -50,10 +50,10 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    config.addEntry< tnlString >( "device",
                                  "Device to use for the computations.",
                                  "host" );
-   if( tnlConfigTagDevice< ConfigTag, tnlHost >::enabled )
+   if( tnlMeshConfigDevice< MeshConfig, tnlHost >::enabled )
       config.addEntryEnum( "host" );
 #ifdef HAVE_CUDA
-   if( tnlConfigTagDevice< ConfigTag, tnlCuda >::enabled )
+   if( tnlMeshConfigDevice< MeshConfig, tnlCuda >::enabled )
       config.addEntryEnum( "cuda" );
 #endif
 
@@ -63,13 +63,13 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    config.addEntry< tnlString >( "index-type",
                                  "Indexing type for arrays, vectors, matrices etc.",
                                  "int" );
-   if( tnlConfigTagIndex< ConfigTag, short int >::enabled )
+   if( tnlMeshConfigIndex< MeshConfig, short int >::enabled )
       config.addEntryEnum( "short-int" );
 
-   if( tnlConfigTagIndex< ConfigTag, int >::enabled )
+   if( tnlMeshConfigIndex< MeshConfig, int >::enabled )
       config.addEntryEnum( "int" );
 
-   if( tnlConfigTagIndex< ConfigTag, long int >::enabled )
+   if( tnlMeshConfigIndex< MeshConfig, long int >::enabled )
       config.addEntryEnum( "long-int" );
 
    /****
@@ -86,64 +86,64 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    typedef tnlExplicitTimeStepper< DummyProblem, tnlEulerSolver > ExplicitTimeStepper;
    tnlPDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
-       tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled ||
-       tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled ||
+       tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled ||
+       tnlMeshConfigTimeDiscretisation< MeshConfig, tnlImplicitTimeDiscretisationTag >::enabled )
    {
       config.addRequiredEntry< tnlString >( "time-discretisation", "Discratisation in time.");
-      if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
+      if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "explicit" );
-      if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+      if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "semi-implicit" );
-      if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
+      if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlImplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "implicit" );
    }
    config.addRequiredEntry< tnlString >( "discrete-solver", "The solver of the discretised problem:" );
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled )
    {      
-      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
+      if( tnlMeshConfigExplicitSolver< MeshConfig, tnlExplicitEulerSolverTag >::enabled )
          config.addEntryEnum( "euler" );
-      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
+      if( tnlMeshConfigExplicitSolver< MeshConfig, tnlExplicitMersonSolverTag >::enabled )
          config.addEntryEnum( "merson" );
    }
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitCGSolverTag >::enabled )
          config.addEntryEnum( "cg" );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitBICGStabSolverTag >::enabled )
          config.addEntryEnum( "bicgstab" );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          config.addEntryEnum( "gmres" );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
    }
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
-       tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled ||
+       tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Iterative solvers parameters === " );
       tnlIterativeSolver< double, int >::configSetup( config );
    }
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
       tnlExplicitSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
-      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
+      if( tnlMeshConfigExplicitSolver< MeshConfig, tnlExplicitEulerSolverTag >::enabled )
          tnlEulerSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
 
-      if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
+      if( tnlMeshConfigExplicitSolver< MeshConfig, tnlExplicitMersonSolverTag >::enabled )
          tnlMersonSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
    }
-   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );      
       typedef tnlCSRMatrix< double, tnlHost, int > MatrixType;
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitCGSolverTag >::enabled )
          tnlCGSolver< MatrixType >::configSetup( config );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitBICGStabSolverTag >::enabled )
          tnlBICGStabSolver< MatrixType >::configSetup( config );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          tnlGMRESSolver< MatrixType >::configSetup( config );
-      if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          tnlSORSolver< MatrixType >::configSetup( config );
    }
 

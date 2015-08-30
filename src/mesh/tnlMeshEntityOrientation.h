@@ -18,6 +18,8 @@
 #ifndef TNLMESHENTITYORIENTATION_H
 #define	TNLMESHENTITYORIENTATION_H
 
+#include <mesh/traits/tnlMeshTraits.h>
+
 template< typename MeshConfig,
           typename EntityTopology>
 class tnlMeshEntityOrientation
@@ -25,7 +27,7 @@ class tnlMeshEntityOrientation
    template< typename, typename> friend class tnlMeshEntityReferenceOrientation;
 
    public:
-      typedef typename tnlMeshConfigTraits< MeshConfig >::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
+      typedef typename tnlMeshTraits< MeshConfig >::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
 
       IdPermutationArrayAccessorType getSubvertexPermutation() const
       {
@@ -36,8 +38,8 @@ class tnlMeshEntityOrientation
       }
 
    private:
-      typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType        LocalIndexType;
-      typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > >::IdPermutationArrayType IdPermutationArrayType;
+      typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType        LocalIndexType;
+      typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >::IdPermutationArrayType IdPermutationArrayType;
 
       void setPermutationValue( LocalIndexType index, LocalIndexType value )
       {

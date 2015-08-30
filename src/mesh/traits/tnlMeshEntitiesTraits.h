@@ -18,30 +18,33 @@
 #ifndef TNLMESHENTITIESTRAITS_H_
 #define TNLMESHENTITIESTRAITS_H_
 
+#include <core/vectors/tnlStaticVector.h>
 #include <core/arrays/tnlArray.h>
+#include <core/arrays/tnlSharedArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
 #include <core/tnlIndexedSet.h>
 #include <mesh/traits/tnlMeshEntitiesTag.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/tnlMeshEntityKey.h>
-#include <mesh/tnlMeshEntitySeed.h>
+#include <mesh/traits/tnlStorageTraits.h>
+#include <mesh/traits/tnlMeshTraits.h>
 
-template< typename MeshConfig > class tnlMeshConfigTraits;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntity;
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntitySeed;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntitySeedKey;
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
           typename DimensionsTag,
-          typename SuperDimensionsTag = tnlDimensionsTag< tnlMeshConfigTraits< MeshConfig >::meshDimensions > >
+          typename SuperDimensionsTag = tnlDimensionsTag< MeshConfig::meshDimensions > >
 class tnlMeshEntityOrientationNeeded
 {
 	static_assert( 0 <= DimensionsTag::value && DimensionsTag::value < MeshConfig::CellTopology::dimensions, "invalid dimensions" );
 	static_assert( DimensionsTag::value < SuperDimensionsTag::value && SuperDimensionsTag::value <= MeshConfig::CellTopology::dimensions, "invalid superentity dimensions");
 
-	typedef typename tnlMeshConfigTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag >::Tag SuperentityTopology;
+	typedef typename tnlMeshTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag::value >::Tag SuperentityTopology;
 
 	static const bool previousSuperDimensionsValue = tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
-	static const bool thisSuperDimensionsValue = tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag >::orientationEnabled;
+	static const bool thisSuperDimensionsValue = tnlMeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
 
    public:
       static const bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
@@ -57,37 +60,36 @@ class tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
 };
 
 
-template< typename ConfigTag,
-          typename DimensionsTag >
+template< typename MeshConfig,
+          int Dimensions >
 class tnlMeshEntitiesTraits
 {   
    public:
 
-      static const bool storageEnabled = ConfigTag::entityStorage( DimensionsTag::value );
-      static const bool orientationNeeded = tnlMeshEntityOrientationNeeded< ConfigTag, DimensionsTag >::value;
+      static const bool storageEnabled = MeshConfig::entityStorage( Dimensions );
+      static const bool orientationNeeded = tnlMeshEntityOrientationNeeded< MeshConfig, tnlDimensionsTag< Dimensions > >::value;
 
-      typedef typename ConfigTag::GlobalIndexType                    GlobalIndexType;
-      typedef typename ConfigTag::LocalIndexType                     LocalIndexType;
-      typedef typename tnlMeshEntitiesTag< ConfigTag,
-                                           DimensionsTag >::Tag      EntityTag;
-      typedef tnlMeshEntitySeedKey< ConfigTag, EntityTag >               Key;
-
-
+      typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
+      typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
+      typedef typename tnlMeshEntitiesTag< MeshConfig,
+                                           tnlDimensionsTag< Dimensions > >::Tag      EntityTag;
+      
       typedef EntityTag                                              Tag;
-      typedef tnlMeshEntity< ConfigTag, Tag >                        Type;
-      typedef tnlMeshEntitySeed< ConfigTag, EntityTag >              SeedType;
-      typedef tnlMeshEntityReferenceOrientation< ConfigTag, EntityTag >        ReferenceOrientationType;
+      typedef tnlMeshEntity< MeshConfig, Tag >                        EntityType;
+      typedef tnlMeshEntitySeed< MeshConfig, EntityTag >              SeedType;
+      typedef tnlMeshEntityReferenceOrientation< MeshConfig, EntityTag >        ReferenceOrientationType;
+      typedef tnlMeshEntitySeedKey< MeshConfig, EntityTag >               Key;
 
       typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
 
-      typedef tnlArray< Type, tnlHost, GlobalIndexType >             ContainerType;
-      typedef tnlSharedArray< Type, tnlHost, GlobalIndexType >       SharedContainerType;
-      typedef tnlIndexedSet< Type, GlobalIndexType, Key >            UniqueContainerType;
+      typedef tnlArray< EntityType, tnlHost, GlobalIndexType >                  StorageArrayType;
+      typedef tnlSharedArray< EntityType, tnlHost, GlobalIndexType >            AccessArrayType;
+      typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >            UniqueContainerType;
       typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >        SeedIndexedSetType;
       typedef tnlArray< SeedType, tnlHost, GlobalIndexType >         SeedArrayType;
       typedef tnlArray< ReferenceOrientationType, tnlHost, GlobalIndexType > ReferenceOrientationArrayType;
 
-      typedef tnlConstSharedArray< Type, tnlHost, GlobalIndexType >  SharedArrayType;
+      typedef tnlConstSharedArray< EntityType, tnlHost, GlobalIndexType >  SharedArrayType;
 };
 
 

@@ -18,22 +18,19 @@
 #ifndef TNLMESHENTITYSEED_H
 #define	TNLMESHENTITYSEED_H
 
-#include <mesh/traits/tnlMeshConfigTraits.h>
-
-template< typename MeshConfig >
-class tnlMeshConfigTraits;
+#include <mesh/traits/tnlMeshTraits.h>
 
 template< typename MeshConfig,
           typename EntityTopology >
 class tnlMeshEntitySeed
 {
-   typedef tnlMeshConfigTraits< MeshConfig >      MeshConfigTraits;
-   typedef typename tnlMeshConfigTraits< MeshConfig >::template SubentityTraits< EntityTopology, tnlDimensionsTag< 0 > > SubvertexTraits;
+   typedef tnlMeshTraits< MeshConfig >      MeshConfigTraits;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 > SubvertexTraits;
 
    public:
-      typedef typename tnlMeshConfigTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
-      typedef typename tnlMeshConfigTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
-      typedef typename tnlMeshConfigTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
+      typedef typename tnlMeshTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
+      typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
+      typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
       typedef typename SubvertexTraits::ContainerType                                                          IdArrayType;
 
       static tnlString getType() { return tnlString( "tnlMeshEntitySeed<>" ); }

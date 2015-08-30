@@ -20,7 +20,7 @@
 
 struct tnlMeshVertexTag
 {
-   enum { dimensions = 0 };
+   static const int dimensions = 0;
 };
 
 

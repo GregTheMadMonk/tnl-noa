@@ -22,61 +22,61 @@
 #include <mesh/tnlMeshSuperentityStorageInitializer.h>
 #include <mesh/tnlMeshSubentitySeedCreator.h>
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class tnlMeshInitializer;
 
-template<typename ConfigTag,
+template<typename MeshConfig,
          typename EntityTag,
          typename DimensionsTag,
          typename SubentityStorageTag =
-            typename tnlMeshSubentitiesTraits< ConfigTag,
+            typename tnlMeshSubentitiesTraits< MeshConfig,
                                                EntityTag,
-                                               DimensionsTag >::SubentityStorageTag,
+                                               DimensionsTag::value >::SubentityStorageTag,
          typename SubentityOrientationStorage = 
-            tnlStorageTraits< tnlMeshConfigTraits< ConfigTag >::
-               template SubentityTraits< EntityTag, DimensionsTag >::orientationEnabled >,
+            tnlStorageTraits< tnlMeshTraits< MeshConfig >::
+               template SubentityTraits< EntityTag, DimensionsTag::value >::orientationEnabled >,
          typename SuperentityStorageTag = 
-            typename tnlMeshSuperentitiesTraits< ConfigTag,
-                                                 typename tnlMeshSubentitiesTraits< ConfigTag,
+            typename tnlMeshSuperentitiesTraits< MeshConfig,
+                                                 typename tnlMeshSubentitiesTraits< MeshConfig,
                                                                                     EntityTag,
-                                                                                    DimensionsTag >::SubentityTag,
+                                                                                    DimensionsTag::value >::SubentityTag,
                                                                                tnlDimensionsTag< EntityTag::dimensions > >::SuperentityStorageTag >
 class tnlMeshEntityInitializerLayer;
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
 class tnlMeshEntityInitializer
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag, 
                                            tnlDimensionsTag< EntityTag::dimensions - 1 > >
 {
    typedef tnlDimensionsTag< EntityTag::dimensions >                                 DimensionsTag;
    private:
 
-      typedef tnlMeshEntityInitializerLayer< ConfigTag,
+      typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag, 
                                            tnlDimensionsTag< EntityTag::dimensions - 1 > > BaseType;
       
    typedef
-      tnlMeshEntityInitializerLayer< ConfigTag,
+      tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      tnlDimensionsTag< EntityTag::dimensions - 1 > >   SubentityBaseType;
    typedef
-      tnlMeshSuperentityStorageInitializerLayer< ConfigTag,
+      tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename
-                                          tnlMeshTraits< ConfigTag >::DimensionsTag > SuperentityBaseType;
+                                          tnlMeshTraits< MeshConfig >::DimensionsTag > SuperentityBaseType;
 
-   typedef typename tnlMeshEntitiesTraits< ConfigTag, DimensionsTag >::Type               EntityType;
-   typedef typename tnlMeshEntitiesTraits< ConfigTag,
-                                           DimensionsTag >::ContainerType::IndexType      GlobalIndexType;
+   typedef typename tnlMeshEntitiesTraits< MeshConfig, DimensionsTag::value >::EntityType               EntityType;   
+   typedef typename tnlMeshEntitiesTraits< MeshConfig,
+                                           DimensionsTag::value >::GlobalIndexType      GlobalIndexType;
 
-   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, tnlDimensionsTag< 0 > >        SubvertexTag;
+   typedef tnlMeshSubentitiesTraits< MeshConfig, EntityTag, 0 >                         SubvertexTag;
    typedef typename SubvertexTag::ContainerType::ElementType                                 VertexGlobalIndexType;
    typedef typename SubvertexTag::ContainerType::IndexType                                   VertexLocalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                   InitializerType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                            SeedType;
+   typedef tnlMeshInitializer< MeshConfig >                                                   InitializerType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                            SeedType;
 
    template< typename > class SubentitiesCreator;
 
@@ -95,7 +95,7 @@ class tnlMeshEntityInitializer
    }
    
    template< typename SuperentityDimensionTag >
-   typename tnlMeshSuperentitiesTraits< ConfigTag, EntityTag, SuperentityDimensionTag >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
+   typename tnlMeshSuperentitiesTraits< MeshConfig, EntityTag, SuperentityDimensionTag >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
    {
       return this->entity->template getSuperentitiesIndices< SuperentityDimensionTag::value >();
    }
@@ -138,36 +138,36 @@ class tnlMeshEntityInitializer< MeshConfig, tnlMeshVertexTag >
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
  *      TRUE                    FALSE                    TRUE 
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< true > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+   typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename DimensionsTag::Decrement >                   BaseType;
 
-   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
+   typedef tnlMeshSubentitiesTraits< MeshConfig, EntityTag, DimensionsTag::value >             SubentitiesTraits;
    typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
    typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
    typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                          InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                         EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                                          InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >                                         EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                                EntityDimensionsTag;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                                SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                                SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
 
    protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
@@ -195,36 +195,36 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
  *      TRUE                    TRUE                    TRUE 
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< true > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+   typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename DimensionsTag::Decrement >                   BaseType;
 
-   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
+   typedef tnlMeshSubentitiesTraits< MeshConfig, EntityTag, DimensionsTag::value >                     SubentitiesTraits;
    typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
    typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
    typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                          InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                         EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                                          InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >                                         EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                                EntityDimensionsTag;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                                SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                                SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
    typedef typename SubentitiesTraits::OrientationArrayType                                    OrientationArrayType;
 
    protected:
@@ -258,36 +258,36 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
  *      TRUE                    TRUE                    FALSE
  */
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< false > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+   typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename DimensionsTag::Decrement >                   BaseType;
 
-   typedef tnlMeshSubentitiesTraits< ConfigTag, EntityTag, DimensionsTag >                     SubentitiesTraits;
+   typedef tnlMeshSubentitiesTraits< MeshConfig, EntityTag, DimensionsTag::value >                     SubentitiesTraits;
    typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
    typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
    typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                          InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                         EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                                          InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >                                         EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                                EntityDimensionsTag;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                                SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                                SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                      SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
    typedef typename SubentitiesTraits::OrientationArrayType                                    OrientationArrayType;
 
    protected:
@@ -310,38 +310,38 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 };
 
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+   typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename DimensionsTag::Decrement >                   BaseType;
 
-   typedef typename tnlMeshSubentitiesTraits< ConfigTag,
+   typedef typename tnlMeshSubentitiesTraits< MeshConfig,
                                               EntityTag,
-                                              DimensionsTag >::SubentityContainerType          SubentityContainerType;
-   typedef typename tnlMeshSubentitiesTraits< ConfigTag,
+                                              DimensionsTag::value >::SubentityContainerType          SubentityContainerType;
+   typedef typename tnlMeshSubentitiesTraits< MeshConfig,
                                               EntityTag,
-                                              DimensionsTag >::SharedContainerType             SharedContainerType;
+                                              DimensionsTag::value >::SharedContainerType             SharedContainerType;
    typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                     InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                    EntityInitializerType;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                               EntityType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                           SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshInitializer< MeshConfig >                                                     InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >                                    EntityInitializerType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                               EntityType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                           SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
 
    protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
@@ -358,39 +358,39 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    }
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< true > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {
-   typedef tnlMeshEntityInitializerLayer< ConfigTag,
+   typedef tnlMeshEntityInitializerLayer< MeshConfig,
                                           EntityTag,
                                           typename DimensionsTag::Decrement >                BaseType;
 
-   typedef typename tnlMeshSubentitiesTraits< ConfigTag,
+   typedef typename tnlMeshSubentitiesTraits< MeshConfig,
                                               EntityTag,
-                                              DimensionsTag >::SubentityContainerType        SubentityContainerType;
-   typedef typename tnlMeshSubentitiesTraits< ConfigTag,
+                                              DimensionsTag::value >::SubentityContainerType        SubentityContainerType;
+   typedef typename tnlMeshSubentitiesTraits< MeshConfig,
                                               EntityTag,
-                                              DimensionsTag >::SharedContainerType           SharedContainerType;
+                                              DimensionsTag::value >::SharedContainerType           SharedContainerType;
    typedef typename SharedContainerType::DataType                                            GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                                                   InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >                                  EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                                                   InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >                                  EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >                                      EntityDimensionsTag;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                           EntityType;
-   typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                           SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                           EntityType;
+   typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                           SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
 
 
    protected:
@@ -412,23 +412,23 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
       }
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag,
           typename DimensionsTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      DimensionsTag,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
-   : public tnlMeshEntityInitializerLayer< ConfigTag,
+   : public tnlMeshEntityInitializerLayer< MeshConfig,
                                            EntityTag,
                                            typename DimensionsTag::Decrement >
 {};
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< true >,
@@ -436,21 +436,21 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
                                      tnlStorageTraits< true > >
 {
    typedef tnlDimensionsTag< 0 >                                  DimensionsTag;
-   typedef tnlMeshSubentitiesTraits< ConfigTag,
+   typedef tnlMeshSubentitiesTraits< MeshConfig,
                                      EntityTag,
-                                     DimensionsTag >                 SubentitiesTraits;
+                                     DimensionsTag::value >                 SubentitiesTraits;
 
    typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
    typedef typename SharedContainerType::ElementType                 GlobalIndexType;
 
-   typedef tnlMeshInitializer< ConfigTag >                           InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag >          EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                           InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag >          EntityInitializerType;
    typedef tnlDimensionsTag< EntityTag::dimensions >              EntityDimensionsTag;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
-      typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                           SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
+      typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                           SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
 
 
    protected:
@@ -460,29 +460,29 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
 
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< true >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false > >
 {
-   typedef tnlMeshInitializer< ConfigTag >         InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag,
+   typedef tnlMeshInitializer< MeshConfig >         InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig,
                                      EntityTag >   EntityInitializerType;
    typedef tnlDimensionsTag< 0 >                   DimensionsTag;
-   typedef tnlMeshSubentitiesTraits< ConfigTag,
+   typedef tnlMeshSubentitiesTraits< MeshConfig,
                                      EntityTag,
-                                     DimensionsTag >                 SubentitiesTraits;
+                                     DimensionsTag::value >                 SubentitiesTraits;
    typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
    typedef typename SharedContainerType::ElementType                 GlobalIndexType;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
-      typedef tnlMeshEntitySeed< ConfigTag, EntityTag >                                           SeedType;
-   typedef tnlMeshSubentitySeedsCreator< ConfigTag, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
-   typedef typename tnlMeshConfigTraits< ConfigTag >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
-   typedef typename tnlMeshTraits< ConfigTag >::LocalIndexType                                             LocalIndexType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
+      typedef tnlMeshEntitySeed< MeshConfig, EntityTag >                                           SeedType;
+   typedef tnlMeshSubentitySeedsCreator< MeshConfig, EntityTag, DimensionsTag >                 SubentitySeedsCreatorType;
+   typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag >::IdArrayType IdArrayType;
+   typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                             LocalIndexType;
 
 
    protected:
@@ -492,45 +492,45 @@ class tnlMeshEntityInitializerLayer< ConfigTag,
    
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< true > > // Forces termination of recursive inheritance (prevents compiler from generating huge error logs)
 {
-   typedef tnlMeshInitializer< ConfigTag >                  InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                  InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag > EntityInitializerType;
    typedef tnlDimensionsTag< 0 >                   DimensionsTag;
-   typedef tnlMeshSubentitiesTraits< ConfigTag,
+   typedef tnlMeshSubentitiesTraits< MeshConfig,
                                      EntityTag,
-                                     DimensionsTag >                 SubentitiesTraits;
+                                     DimensionsTag::value >                 SubentitiesTraits;
    typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
    typedef typename SharedContainerType::ElementType                 GlobalIndexType;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
 
    protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType&, InitializerType& ) {}
 };
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename EntityTag >
-class tnlMeshEntityInitializerLayer< ConfigTag,
+class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTag,
                                      tnlDimensionsTag< 0 >,
                                      tnlStorageTraits< false >,
                                      tnlStorageTraits< false > > // Forces termination of recursive inheritance (prevents compiler from generating huge error logs)
 {
-   typedef tnlMeshInitializer< ConfigTag >                  InitializerType;
-   typedef tnlMeshEntityInitializer< ConfigTag, EntityTag > EntityInitializerType;
+   typedef tnlMeshInitializer< MeshConfig >                  InitializerType;
+   typedef tnlMeshEntityInitializer< MeshConfig, EntityTag > EntityInitializerType;
    typedef tnlDimensionsTag< 0 >                   DimensionsTag;
-   typedef tnlMeshSubentitiesTraits< ConfigTag,
+   typedef tnlMeshSubentitiesTraits< MeshConfig,
                                      EntityTag,
-                                     DimensionsTag >                 SubentitiesTraits;
+                                     DimensionsTag::value >                 SubentitiesTraits;
    typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
    typedef typename SharedContainerType::ElementType                 GlobalIndexType;
-   typedef tnlMeshEntity< ConfigTag, EntityTag >                                                    EntityType;
+   typedef tnlMeshEntity< MeshConfig, EntityTag >                                                    EntityType;
 
    protected:
    void initSubentities( EntityType& entity, GlobalIndexType entityIndex, EntityInitializerType&,
