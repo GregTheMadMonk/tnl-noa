@@ -23,7 +23,7 @@
 #include <mesh/tnlMeshEntityId.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/tnlDimensionsTag.h>
-#include <mesh/topologies/tnlMeshVertexTag.h>
+#include <mesh/topologies/tnlMeshVertexTopology.h>
 #include <mesh/layers/tnlMeshSubentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
@@ -115,7 +115,7 @@ class tnlMeshEntity
    {
       static_assert( Dimensions < meshDimensions, "Asking for subentities with more or the same number of dimensions then the mesh itself." );
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSubentitiesTraits< MeshConfig,
+      typedef tnlMeshSubentityTraits< MeshConfig,
                                         EntityTag,
                                         DimensionsTag::value >      SubentityTraits;
       typedef typename SubentityTraits::ContainerType           ContainerType;
@@ -201,9 +201,9 @@ class tnlMeshEntity
    {
       static_assert( Dimensions <= meshDimensions, "Asking for subentities with more dimensions then the mesh itself." );
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSuperentitiesTraits< MeshConfig,
+      typedef tnlMeshSuperentityTraits< MeshConfig,
                                           EntityTag,
-                                          DimensionsTag >    SuperentityTraits;
+                                          Dimensions >    SuperentityTraits;
       typedef typename SuperentityTraits::ContainerType         ContainerType;
       typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
       typedef typename ContainerType::ElementType               GlobalIndexType;
@@ -345,8 +345,8 @@ class tnlMeshEntity
 };
 
 template< typename MeshConfig >
-class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
-   : public tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >,
+class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
+   : public tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >,
      public tnlMeshEntityId< typename MeshConfig::IdType,
                              typename MeshConfig::GlobalIndexType >
 {
@@ -356,8 +356,8 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
        * The entity typedefs
        */
       typedef MeshConfig         MeshMeshConfig;
-      typedef tnlMeshVertexTag  Tag;
-      typedef tnlMeshEntitySeed< MeshConfig, tnlMeshVertexTag >            SeedType;
+      typedef tnlMeshVertexTopology  Tag;
+      typedef tnlMeshEntitySeed< MeshConfig, tnlMeshVertexTopology >            SeedType;
       typedef typename tnlMeshTraits< MeshConfig >::PointType PointType;
       enum { dimensions = Tag::dimensions };
       enum { meshDimensions = tnlMeshTraits< MeshConfig >::meshDimensions };
@@ -387,12 +387,12 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
 
       /*~tnlMeshEntity()
       {
-         cerr << "   Destroying entity with " << tnlMeshVertexTag::dimensions << " dimensions..." << endl;
+         cerr << "   Destroying entity with " << tnlMeshVertexTopology::dimensions << " dimensions..." << endl;
       }*/
 
       bool save( tnlFile& file ) const
       {
-         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >::save( file ) ||
+         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTopology >::save( file ) ||
              ! point.save( file ) )
             return false;
          return true;
@@ -400,7 +400,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
 
       bool load( tnlFile& file )
       {
-         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >::load( file ) ||
+         if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTopology >::load( file ) ||
              ! point.load( file ) )
             return false;
          return true;
@@ -408,14 +408,14 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
 
       void print( ostream& str ) const
       {
-         str << "\t Mesh entity dimensions: " << tnlMeshVertexTag::dimensions << endl;
+         str << "\t Mesh entity dimensions: " << tnlMeshVertexTopology::dimensions << endl;
          str << "\t Coordinates = ( " << point << " )";
-         tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >::print( str );
+         tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >::print( str );
       }
 
       bool operator==( const tnlMeshEntity& entity ) const
       {
-         return ( //tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >::operator==( entity ) &&
+         return ( //tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >::operator==( entity ) &&
                   tnlMeshEntityId< typename MeshConfig::IdType,
                                    typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
                   point == entity.point );
@@ -429,19 +429,15 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
    struct SuperentitiesTraits
    {
       typedef tnlDimensionsTag< Dimensions >                 DimensionsTag;
-      typedef tnlMeshSuperentitiesTraits< MeshConfig,
-                                          tnlMeshVertexTag,
-                                          DimensionsTag >    SuperentityTraits;
-      typedef typename SuperentityTraits::ContainerType         ContainerType;
-      typedef typename SuperentityTraits::SharedContainerType   SharedContainerType;
-      typedef typename ContainerType::ElementType               GlobalIndexType;
+      typedef tnlMeshSuperentityTraits< MeshConfig,
+                                          tnlMeshVertexTopology,
+                                          Dimensions >    SuperentityTraits;
+      typedef typename SuperentityTraits::StorageArrayType      StorageArrayType;
+      typedef typename SuperentityTraits::AccessArrayType       AccessArrayType;
+      typedef typename SuperentityTraits::GlobalIndexType       GlobalIndexType;
       typedef int                                               LocalIndexType;
-      // TODO: make this as:
-      // typedef typename Type::IndexType   LocalIndexType
-      /*enum { available = tnlMeshSuperentityStorage< MeshConfig,
-                                                    tnlMeshVertexTag,
-                                                    Dimensions >::enabled };*/
-      static const bool available = MeshConfig::template superentityStorage< tnlMeshVertexTag >( Dimensions );
+      
+      static const bool available = MeshConfig::template superentityStorage< tnlMeshVertexTopology >( Dimensions );
    };
    
    /*template< int Dimensions >
@@ -449,7 +445,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
    {
       tnlAssert( size >= 0,
                  cerr << "size = " << size << endl; );
-      typedef tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       return SuperentityBaseType::setNumberOfSuperentities( tnlDimensionsTag< Dimensions >(),
                                                             size );
    }*/
@@ -457,21 +453,21 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
    template< int Dimensions >
    typename SuperentitiesTraits< Dimensions >::LocalIndexType getNumberOfSuperentities() const
    {
-      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       //return SuperentityBaseType::getNumberOfSuperentities( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndices()
    {
-      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       //return SuperentityBaseType::getSuperentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
    template< int Dimensions >
       const typename SuperentitiesTraits< Dimensions >::SharedContainerType& getSuperentitiesIndeces() const
    {
-      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       //return SuperentityBaseType::getSubentitiesIndices( tnlDimensionsTag< Dimensions >() );
    }
 
@@ -482,7 +478,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       SuperentityBaseType::setSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                 localIndex,
                                                 globalIndex );
@@ -495,7 +491,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
       tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
                  cerr << " localIndex = " << localIndex
                       << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
-      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag >  SuperentityBaseType;
+      typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
       /*return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                        localIndex );*/
    }
@@ -515,7 +511,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTag >
    // TODO: This is only for the mesh initializer, fix this
    public:
    typedef typename tnlMeshTraits< MeshConfig>::IdArrayAccessorType        IdArrayAccessorType;
-   typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTag > SuperentityAccessBase;
+   typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology > SuperentityAccessBase;
    
    template<typename DimensionsTag >
 	IdArrayAccessorType& superentityIdsArray()

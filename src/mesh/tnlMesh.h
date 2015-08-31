@@ -75,7 +75,7 @@ class tnlMesh : public tnlObject,
    struct EntitiesTraits
    {
       typedef tnlDimensionsTag< Dimensions >                       DimensionsTag;
-      typedef tnlMeshEntitiesTraits< MeshConfig, DimensionsTag >    MeshEntitiesTraits;
+      typedef tnlMeshEntityTraits< MeshConfig, DimensionsTag >    MeshEntitiesTraits;
       typedef typename MeshEntitiesTraits::EntityType                       Type;
       typedef typename MeshEntitiesTraits::ContainerType              ContainerType;
       typedef typename MeshEntitiesTraits::SharedContainerType        SharedContainerType;

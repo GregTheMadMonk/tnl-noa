@@ -24,12 +24,12 @@
 #include <core/arrays/tnlConstSharedArray.h>
 #include <mesh/tnlDimensionsTag.h>
 
-struct tnlMeshVertexTag;
+struct tnlMeshVertexTopology;
 template< typename MeshConfig, typename EntityTag > class tnlMeshEntity;
 template< typename MeshConfig, typename EntityTag > class tnlMeshEntitySeed;
-template< typename MeshConfig, int Dimensions > class tnlMeshEntitiesTraits;
-template< typename MeshConfig, typename MeshEntity, int SubDimensions > class tnlMeshSubentitiesTraits;
-template< typename MeshConfig, typename MeshEntity, typename SuperDimensions > class tnlMeshSuperentitiesTraits;
+template< typename MeshConfig, int Dimensions > class tnlMeshEntityTraits;
+template< typename MeshConfig, typename MeshEntity, int SubDimensions > class tnlMeshSubentityTraits;
+template< typename MeshConfig, typename MeshEntity, int SuperDimensions > class tnlMeshSuperentityTraits;
 
 template< typename MeshConfig,
           typename Device = tnlHost >
@@ -47,7 +47,7 @@ class tnlMeshTraits
       typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
       
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
-      typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTag >                        VertexType;
+      typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >                        VertexType;
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellEntity;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
@@ -59,13 +59,13 @@ class tnlMeshTraits
       typedef tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >       IdPermutationArrayAccessorType;
       
       template< int Dimensions > using EntityTraits = 
-         tnlMeshEntitiesTraits< MeshConfig, Dimensions >;
+         tnlMeshEntityTraits< MeshConfig, Dimensions >;
       
       template< typename MeshEntity, int SubDimensions > using SubentityTraits =
-         tnlMeshSubentitiesTraits< MeshConfig, MeshEntity, SubDimensions >;
+         tnlMeshSubentityTraits< MeshConfig, MeshEntity, SubDimensions >;
       
-      template< typename MeshEntity, typename SuperDimensions > using SuperentityTraits =
-         tnlMeshSuperentitiesTraits< MeshConfig, MeshEntity, SuperDimensions >;
+      template< typename MeshEntity, int SuperDimensions > using SuperentityTraits =
+         tnlMeshSuperentityTraits< MeshConfig, MeshEntity, SuperDimensions >;
 
 };
 

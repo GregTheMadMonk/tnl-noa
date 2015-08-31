@@ -18,15 +18,14 @@
 #ifndef TNLSUPERENTITYACCESS_H
 #define	TNLSUPERENTITYACCESS_H
 
-#include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
 
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename Dimensions,
-          typename SuperentityStorage = 
-             tnlStorageTraits< tnlMeshTraits< MeshConfig >::template SuperentityTraits< MeshEntity, Dimensions>::storageEnabled > >
+          typename DimensionsTag,
+          bool SuperentityStorage = 
+             tnlMeshTraits< MeshConfig >::template SuperentityTraits< MeshEntity, DimensionsTag::value >::storageEnabled >
 class tnlMeshSuperentityAccessLayer;
 
 
@@ -50,7 +49,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
                                      Dimensions,
-                                     tnlStorageTraits< true > > :
+                                     true > :
    public tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
 {
 	typedef tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement > BaseType;
@@ -76,7 +75,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
                                      Dimensions,
-                                     tnlStorageTraits< false > > :
+                                     false > :
    public tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
 {
 };
@@ -86,7 +85,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
                                      tnlDimensionsTag< MeshEntity::dimensions >,
-                                     tnlStorageTraits< false > >
+                                     false >
 {
    protected:
 	   /***
@@ -101,7 +100,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
                                      tnlDimensionsTag< MeshEntity::dimensions >,
-                                     tnlStorageTraits< true > >
+                                     true >
 {
    protected:
 	   /***

@@ -27,16 +27,16 @@
 #include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshVertexTag.h>
-#include <mesh/topologies/tnlMeshEdgeTag.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>
-#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
-#include <mesh/topologies/tnlMeshTetrahedronTag.h>
-#include <mesh/topologies/tnlMeshHexahedronTag.h>
+#include <mesh/topologies/tnlMeshVertexTopology.h>
+#include <mesh/topologies/tnlMeshEdgeTopology.h>
+#include <mesh/topologies/tnlMeshTriangleTopology.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
+#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
+#include <mesh/topologies/tnlMeshHexahedronTopology.h>
 #include <mesh/tnlMeshInitializer.h>
 #include <mesh/tnlMeshBuilder.h>
 
-class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTag >
+class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >
 {
    public:
 
@@ -46,7 +46,7 @@ class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTag >
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilateralTag >
+class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilateralTopology >
 {
    public:
 
@@ -56,7 +56,7 @@ class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilater
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTag >
+class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTopology >
 {
    public:
 
@@ -66,7 +66,7 @@ class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTa
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestHexahedronMeshConfig : public tnlMeshConfigBase< tnlMeshHexahedronTag >
+class TestHexahedronMeshConfig : public tnlMeshConfigBase< tnlMeshHexahedronTopology >
 {
    public:
 
@@ -103,9 +103,9 @@ class tnlMeshTester : public CppUnit :: TestCase
 
    void twoTrianglesTest()
    {
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
        typedef typename VertexMeshEntityType::PointType PointType;
        CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
 
@@ -162,9 +162,9 @@ class tnlMeshTester : public CppUnit :: TestCase
 
    void tetrahedronsTest()
    {
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
       typedef tnlMesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;      
       TestTetrahedronMesh mesh;
@@ -327,9 +327,9 @@ class tnlMeshTester : public CppUnit :: TestCase
 
    void regularMeshOfTrianglesTest()
    {
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTag > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 );
@@ -381,9 +381,9 @@ class tnlMeshTester : public CppUnit :: TestCase
    void regularMeshOfQuadrilateralsTest()
    {
 #ifdef UNDEF      
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshQuadrilateralTag > QuadrilateralMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshQuadrilateralTopology > QuadrilateralMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 );
@@ -433,9 +433,9 @@ class tnlMeshTester : public CppUnit :: TestCase
    void regularMeshOfHexahedronsTest()
    {
 #ifdef UNDEF      
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshHexahedronTag > HexahedronMeshEntityType;
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshHexahedronTopology > HexahedronMeshEntityType;
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 ), zSize( 5 );

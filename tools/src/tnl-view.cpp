@@ -28,7 +28,7 @@
 /*#include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshWriterNetgen.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>*/
+#include <mesh/topologies/tnlMeshTriangleTopology.h>*/
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -119,7 +119,7 @@ int main( int argc, char* argv[] )
       /*tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
-         typedef tnlMeshTriangleTag CellType;
+         typedef tnlMeshTriangleTopology CellType;
       };
       tnlMesh< MeshConfig > mesh;
       if( ! mesh.load( meshFile ) )

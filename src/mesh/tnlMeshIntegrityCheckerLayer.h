@@ -18,13 +18,13 @@
 #ifndef TNLMESHINTEGRITYCHECKERLAYER_H_
 #define TNLMESHINTEGRITYCHECKERLAYER_H_
 
-#include <mesh/traits/tnlMeshEntitiesTraits.h>
+#include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlStorageTraits.h>
 
 template< typename MeshType,
           typename DimensionsTag,
-          typename EntityStorageTag = typename tnlMeshEntitiesTraits< typename MeshType::Config,
+          typename EntityStorageTag = typename tnlMeshEntityTraits< typename MeshType::Config,
                                                                       DimensionsTag::value >::EntityStorageTag >
 class tnlMeshIntegrityCheckerLayer;
 

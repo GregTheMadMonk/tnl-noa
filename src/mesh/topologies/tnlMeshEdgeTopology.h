@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshVertexTag.h  -  description
+                          tnlMeshEdgeTopology.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,13 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHVERTEXTAG_H_
-#define TNLMESHVERTEXTAG_H_
+#ifndef TNLMESHEDGETOPOLOGY_H_
+#define TNLMESHEDGETOPOLOGY_H_
 
-struct tnlMeshVertexTag
+#include <mesh/topologies/tnlMeshEntityTopology.h>
+#include <mesh/topologies/tnlMeshVertexTopology.h>
+
+struct tnlMeshEdgeTopology
 {
-   static const int dimensions = 0;
+   static const int dimensions = 1;
 };
 
 
-#endif /* TNLMESHVERTEXTAG_H_ */
+template<>
+struct tnlMeshSubtopology< tnlMeshEdgeTopology, 0 >
+{
+   typedef tnlMeshVertexTopology Topology;
+
+   static const int count = 2;
+};
+
+#endif /* TNLMESHEDGETOPOLOGY_H_ */

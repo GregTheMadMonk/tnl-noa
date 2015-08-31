@@ -20,8 +20,7 @@
 
 #include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
-#include <mesh/traits/tnlMeshEntitiesTraits.h>
-#include <mesh/traits/tnlStorageTraits.h>
+#include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
 
 template< typename MeshConfig >
@@ -30,14 +29,13 @@ class tnlMesh;
 template< typename DimensionsTag,
           typename Device,
           typename MeshConfig,
-          typename EntityStorageTag = typename tnlMeshEntitiesTraits< MeshConfig,
+          typename EntityStorageTag = typename tnlMeshEntityTraits< MeshConfig,
                                                                       DimensionsTag::value >::EntityStorageTag >
 class tnlMeshStorageTag;
 
 template< typename MeshConfig,
           typename DimensionsTag,
-          typename EntityStorageTag = typename tnlMeshEntitiesTraits< MeshConfig,
-                                                                      DimensionsTag::value >::EntityStorageTag >
+          bool EntityStorage = tnlMeshEntityTraits< MeshConfig, DimensionsTag::value >::storageEnabled >
 class tnlMeshStorageLayer;
 
 
@@ -53,7 +51,7 @@ template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshStorageLayer< MeshConfig,
                            DimensionsTag,
-                           tnlStorageTraits< true > >
+                           true >
    : public tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >,
      public tnlMeshSuperentityStorageLayers< MeshConfig, 
                                              typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::Tag >
@@ -181,7 +179,7 @@ template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshStorageLayer< MeshConfig,
                            DimensionsTag,
-                           tnlStorageTraits< false > >
+                           false >
    : public tnlMeshStorageLayer< MeshConfig,
                                  typename DimensionsTag::Decrement >
 {
@@ -190,9 +188,9 @@ class tnlMeshStorageLayer< MeshConfig,
 template< typename MeshConfig >
 class tnlMeshStorageLayer< MeshConfig,
                            tnlDimensionsTag< 0 >,
-                           tnlStorageTraits< true > > :
+                           true > :
    public tnlMeshSuperentityStorageLayers< MeshConfig, 
-                                           tnlMeshVertexTag >
+                                           tnlMeshVertexTopology >
 
 {
    public:
@@ -200,7 +198,7 @@ class tnlMeshStorageLayer< MeshConfig,
    typedef tnlDimensionsTag< 0 >                        DimensionsTag;
    
    typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
-                                            tnlMeshVertexTag > SuperentityStorageBaseType;
+                                            tnlMeshVertexTopology > SuperentityStorageBaseType;
 
    typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
    typedef typename MeshTraits::template EntityTraits< DimensionsTag::value >   EntityTraits; 
@@ -341,7 +339,7 @@ class tnlMeshStorageLayer< MeshConfig,
 template< typename MeshConfig >
 class tnlMeshStorageLayer< MeshConfig,
                            tnlDimensionsTag< 0 >,
-                           tnlStorageTraits< false > >
+                           false >
 {
 };
 

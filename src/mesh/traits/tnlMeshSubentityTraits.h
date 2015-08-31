@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshSubentitiesTraits.h  -  description
+                          tnlMeshSubentityTraits.h  -  description
                              -------------------
     begin                : Feb 12, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHSUBENTITIESTRAITS_H_
-#define TNLMESHSUBENTITIESTRAITS_H_
+#ifndef TNLMESHSUBENTITYTRAITS_H_
+#define TNLMESHSUBENTITYTRAITS_H_
 
 #include <core/arrays/tnlStaticArray.h>
 #include <core/arrays/tnlSharedArray.h>
@@ -30,24 +30,25 @@ template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityOrie
 template< typename MeshConfig,
           typename EntityTag,
           int Dimensions >
-class tnlMeshSubentitiesTraits
+class tnlMeshSubentityTraits
 {
    public:   
       static const bool storageEnabled = MeshConfig::subentityStorage( EntityTag(), Dimensions );
       static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTag(), Dimensions );
+      
+      //typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 
       typedef typename MeshConfig::GlobalIndexType                  GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                   LocalIndexType;
-      typedef tnlSubentities< EntityTag, Dimensions > Tag;
+      typedef tnlMeshSubtopology< EntityTag, Dimensions > Tag;
 
 
       typedef tnlMeshEntity< MeshConfig, EntityTag >                 EntityType;
-      typedef typename Tag::Tag                                     SubentityTag;
+      typedef typename Tag::Topology                                     SubentityTag;
       typedef tnlMeshEntity< MeshConfig, SubentityTag >              SubentityType;
       typedef tnlMeshEntitySeed< MeshConfig, SubentityTag >          Seed;
       typedef tnlMeshEntityOrientation< MeshConfig, SubentityTag >   Orientation;
 
-      typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
 
       enum { count = Tag::count };
 
@@ -76,4 +77,4 @@ class tnlMeshSubentitiesTraits
 
 
 
-#endif /* TNLMESHSUBENTITIESTRAITS_H_ */
+#endif /* TNLMESHSUBENTITYTRAITS_H_ */

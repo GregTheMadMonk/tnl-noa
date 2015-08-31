@@ -27,7 +27,7 @@ class tnlMeshEntitySeed;
 template< typename MeshConfig,
           typename EntityTag,
           int Dimensions >
-class tnlMeshSubentitiesTraits;
+class tnlMeshSubentityTraits;
 
 /****
  * Unique identification of a mesh entity by its vertices.
@@ -41,7 +41,7 @@ class tnlMeshEntitySeedKey
       tnlMeshEntitySeed< MeshConfig, EntityTag >                               EntitySeedType;
 
    typedef typename
-      tnlMeshSubentitiesTraits< MeshConfig,
+      tnlMeshSubentityTraits< MeshConfig,
                                 EntityTag,
                                 0 >::ContainerType ContainerType;
 

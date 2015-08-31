@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshSimplex.h  -  description
+                          tnlMeshSimplexTopology.h  -  description
                              -------------------
     begin                : Aug 29, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -16,12 +16,12 @@
  ***************************************************************************/
 
 
-#ifndef TNLMESHSIMPLEX_H
-#define	TNLMESHSIMPLEX_H
+#ifndef TNLMESHSIMPLEXTOPOLOGY_H
+#define TNLMESHSIMPLEXTOPOLOGY_H
 
 
 template< int dimensions_ >
-class tnlMeshSimplex
+class tnlMeshSimplexTopology
 {
    public:
 	   static const int dimensions = dimensions_;
@@ -31,30 +31,30 @@ template< unsigned int n, unsigned int k >
 class tnlStaticNumCombinations;
 
 template<unsigned int n, unsigned int k, unsigned int combinationIndex, unsigned int valueIndex>
-class CombinationValue;
+class tnlCombinationValue;
 
 template< int dimensions,
           int subtopologyDim >
-class tnlSubentities< tnlMeshSimplex< dimensions >, subtopologyDim >
+class tnlMeshSubtopology< tnlMeshSimplexTopology< dimensions >, subtopologyDim >
 {
 	static_assert( 0 < subtopologyDim && subtopologyDim < dim, "invalid subtopology dimension" );
 
-	static const int topologyVertexCount = tnlSubentities< tnlMeshSimplex< dimensions >, 0 >::count;
-	static const int subtopologyVertexCount = tnlSubentities< tnlMeshSimplex< subtopologyDim >, 0>::count;
+	static const int topologyVertexCount = tnlMeshSubtopology< tnlMeshSimplexTopology< dimensions >, 0 >::count;
+	static const int subtopologyVertexCount = tnlMeshSubtopology< tnlMeshSimplexTopology< subtopologyDim >, 0>::count;
 
    public:
-	   typedef tnlMeshSimplex< subtopologyDim > Topology;
+	   typedef tnlMeshSimplexTopology< subtopologyDim > Topology;
 
 	   static const int count = tnlNumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
 };
 
 template< int dimensions >
-class tnlSubentities< tnlMeshSimplex< dimensions >, 0 >
+class tnlMeshSubtopology< tnlMeshSimplexTopology< dimensions >, 0 >
 {
 	static_assert(0 < dim, "invalid dimension");
 
    public:
-	   typedef tnlMeshVertex Topology;
+	   typedef tnlMeshVertexTopology Topology;
 
    	static const int count = dim + 1;
 };
@@ -64,10 +64,10 @@ template< int dimensions,
           typename Subtopology,
           int subtopologyIndex,
           int vertexIndex >
-struct tnlSubentityVertex< tnlMeshSimplex< dimensions >, Subtopology, subtopologyIndex, vertexIndex >
+struct tnlSubentityVertex< tnlMeshSimplexTopology< dimensions >, Subtopology, subtopologyIndex, vertexIndex >
 {
    private:
-	   static const int subtopologyCount = Subtopology< tnlMeshSimplex< dimensions >, Subtopology::dimensions >::count;
+	   static const int subtopologyCount = Subtopology< tnlMeshSimplexTopology< dimensions >, Subtopology::dimensions >::count;
 	   static const int topologyVertexCount = Subtopology< tnlMeshSimplex< dimensions >, 0 >::count;
 	   static const int subtopologyVertexCount = Subtopology< Subtopology, 0 >::count;
 
@@ -85,7 +85,7 @@ class tnlStaticNumCombinations
 	static_assert(0 < k && k < n, "invalid argument");
 
    public:
-	   static const unsigned int value = NumCombinations< n - 1, k - 1 >::value + NumCombinations< n - 1, k >::value;
+	   static const unsigned int value = tnlNumCombinations< n - 1, k - 1 >::value + tnlNumCombinations< n - 1, k >::value;
 };
 
 // Nummber of combinations (n choose k)
@@ -184,5 +184,5 @@ class tnlCombinationIncrement
 	   static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
 
-#endif	/* TNLMESHSIMPLEX_H */
+#endif	/* TNLMESHSIMPLEXTOPOLOGY_H */
 

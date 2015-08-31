@@ -68,13 +68,13 @@ template< typename MeshConfig, int dimensions >
 class tnlMeshConfigValidatorLayer :
  public tnlMeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
  public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, 
-                                                typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag,
+                                                typename tnlMeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
                                                 tnlDimensionsTag< dimensions - 1 > >,
  public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, 
-                                                  typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag,
+                                                  typename tnlMeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
                                                   tnlDimensionsTag< MeshConfig::CellTopology::dimensions > >
 {
-	typedef typename tnlSubentities< typename MeshConfig::CellTopology, dimensions >::Tag Topology;
+	typedef typename tnlMeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology Topology;
 
 	static_assert( ! MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( Topology(), 0 ), "subvertices of all stored entities must be stored");
 };

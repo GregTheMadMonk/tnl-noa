@@ -37,7 +37,7 @@ class tnlMeshSubentitySeedsCreator
    public:
       typedef typename SubentityTraits::SeedArrayType SubentitySeedArray;
       typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >  EntitySeed;
-      //typedef typename tnlMeshEntitiesTraits< MeshConfig, SubDimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
+      //typedef typename tnlMeshEntityTraits< MeshConfig, SubDimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
 
       //template< typename SeedIndexedSet >
       static SubentitySeedArray create( const EntitySeed &entitySeed  )

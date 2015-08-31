@@ -22,8 +22,8 @@
 #include <mesh/tnlMeshReaderNetgen.h>
 #include <mesh/tnlMeshWriterVTKLegacy.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>
-#include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/topologies/tnlMeshTriangleTopology.h>
+#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
 #include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshInitializer.h>
 #include <mesh/tnlMeshIntegrityChecker.h>
@@ -80,13 +80,13 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
    {
       if( meshReader.getVerticesInCell() == 3 )
       {
-         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTag > > MeshType;
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTopology > > MeshType;
          cout << "Mesh consisting of triangles was detected ... " << endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
       if( meshReader.getVerticesInCell() == 4 )
       {
-         typedef tnlMesh< tnlMeshConfigBase< tnlMeshQuadrilateralTag > > MeshType;
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshQuadrilateralTopology > > MeshType;
          cout << "Mesh consisting of quadrilaterals was detected ... " << endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }            
@@ -95,13 +95,13 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
    {
       if( meshReader.getVerticesInCell() == 4 )
       {
-         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTag > > MeshType;
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTopology > > MeshType;
          cout << "Mesh consisting of tetrahedrons was detected ... " << endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
       if( meshReader.getVerticesInCell() == 8 )
       {
-         typedef tnlMesh< tnlMeshConfigBase< tnlMeshHexahedronTag > > MeshType;
+         typedef tnlMesh< tnlMeshConfigBase< tnlMeshHexahedronTopology > > MeshType;
          cout << "Mesh consisting of hexahedrons was detected ... " << endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }

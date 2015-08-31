@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshSuperentitiesTraits.h  -  description
+                          tnlMeshSuperentityTraits.h  -  description
                              -------------------
     begin                : Feb 13, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHSUPERENTITIESTRAITS_H_
-#define TNLMESHSUPERENTITIESTRAITS_H_
+#ifndef TNLMESHSUPERENTITYTRAITS_H_
+#define TNLMESHSUPERENTITYTRAITS_H_
 
 #include <core/arrays/tnlArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
@@ -24,40 +24,38 @@
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
-#include <mesh/traits/tnlMeshEntitiesTraits.h>
+#include <mesh/traits/tnlMeshEntityTraits.h>
 
 template< typename MeshConfig,
           typename EntityTag,
-          typename DimensionsTag >
-class tnlMeshSuperentitiesTraits
+          int Dimensions >
+class tnlMeshSuperentityTraits
 {
+   public:
+   
    typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
    typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
-   public:
 
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTag >( EntityTag(), DimensionsTag::value );
+   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTag >( EntityTag(), Dimensions );
+   //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
    typedef tnlMeshEntity< MeshConfig, EntityTag >                            EntityType;
-   typedef typename
-      tnlMeshEntitiesTraits< MeshConfig,
-                             DimensionsTag::value >::Tag                        SuperentityTag;
-   typedef typename
-      tnlMeshEntitiesTraits< MeshConfig,
-                             DimensionsTag::value >::EntityType                       SuperentityType;
+   typedef tnlMeshEntityTraits< MeshConfig, Dimensions >                   EntityTraits;
+   typedef typename EntityTraits::Tag                                        SuperentityTag;
+   typedef typename EntityTraits::EntityType                                 SuperentityType;
 
-   typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
 
    /****
     * Type of container for storing of the superentities indecis.
     */
-   typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             ContainerType;
+   typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
 
    /****
     * Type for passing the superentities indecis by the getSuperentitiesIndices()
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       SharedContainerType;
+   typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       AccessArrayType;
 
    /****
     * This is used by the mesh initializer.
@@ -67,4 +65,4 @@ class tnlMeshSuperentitiesTraits
 };
 
 
-#endif /* TNLMESHSUPERENTITIESTRAITS_H_ */
+#endif /* TNLMESHSUPERENTITYTRAITS_H_ */

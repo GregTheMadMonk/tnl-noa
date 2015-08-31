@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshEntitiesTraits.h  -  description
+                          tnlMeshEntityTraits.h  -  description
                              -------------------
     begin                : Feb 13, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,17 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHENTITIESTRAITS_H_
-#define TNLMESHENTITIESTRAITS_H_
+#ifndef TNLMESHENTITYTRAITS_H_
+#define TNLMESHENTITYTRAITS_H_
 
 #include <core/vectors/tnlStaticVector.h>
 #include <core/arrays/tnlArray.h>
 #include <core/arrays/tnlSharedArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
 #include <core/tnlIndexedSet.h>
-#include <mesh/traits/tnlMeshEntitiesTag.h>
+#include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/traits/tnlStorageTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
 
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntity;
@@ -62,16 +61,17 @@ class tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
 
 template< typename MeshConfig,
           int Dimensions >
-class tnlMeshEntitiesTraits
+class tnlMeshEntityTraits
 {   
    public:
 
       static const bool storageEnabled = MeshConfig::entityStorage( Dimensions );
       static const bool orientationNeeded = tnlMeshEntityOrientationNeeded< MeshConfig, tnlDimensionsTag< Dimensions > >::value;
+      //typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
 
       typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
-      typedef typename tnlMeshEntitiesTag< MeshConfig,
+      typedef typename tnlMeshEntityTopology< MeshConfig,
                                            tnlDimensionsTag< Dimensions > >::Tag      EntityTag;
       
       typedef EntityTag                                              Tag;
@@ -80,7 +80,6 @@ class tnlMeshEntitiesTraits
       typedef tnlMeshEntityReferenceOrientation< MeshConfig, EntityTag >        ReferenceOrientationType;
       typedef tnlMeshEntitySeedKey< MeshConfig, EntityTag >               Key;
 
-      typedef tnlStorageTraits< storageEnabled >                     EntityStorageTag;
 
       typedef tnlArray< EntityType, tnlHost, GlobalIndexType >                  StorageArrayType;
       typedef tnlSharedArray< EntityType, tnlHost, GlobalIndexType >            AccessArrayType;
@@ -93,4 +92,4 @@ class tnlMeshEntitiesTraits
 };
 
 
-#endif /* TNLMESHENTITIESTRAITS_H_ */
+#endif /* TNLMESHENTITYTRAITS_H_ */

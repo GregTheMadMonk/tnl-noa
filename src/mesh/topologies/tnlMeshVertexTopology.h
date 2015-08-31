@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStorageTraits.h  -  description
+                          tnlMeshVertexTopology.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,16 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSTORAGETRAITS_H_
-#define TNLSTORAGETRAITS_H_
+#ifndef TNLMESHVERTEXTOPOLOGY_H_
+#define TNLMESHVERTEXTOPOLOGY_H_
 
-template< bool storageEnabled >
-class tnlStorageTraits
+struct tnlMeshVertexTopology
 {
-   public:
-
-   enum { enabled = storageEnabled };
+   static const int dimensions = 0;
 };
 
 
-#endif /* TNLSTORAGETRAITS_H_ */
+#endif /* TNLMESHVERTEXTOPOLOGY_H_ */

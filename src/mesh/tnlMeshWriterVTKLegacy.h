@@ -24,10 +24,10 @@
 #include <sstream>
 #include <iomanip>
 
-#include <mesh/topologies/tnlMeshTriangleTag.h>
-#include <mesh/topologies/tnlMeshQuadrilateralTag.h>
-#include <mesh/topologies/tnlMeshTetrahedronTag.h>
-#include <mesh/topologies/tnlMeshHexahedronTag.h>
+#include <mesh/topologies/tnlMeshTriangleTopology.h>
+#include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
+#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
+#include <mesh/topologies/tnlMeshHexahedronTopology.h>
 #include <mesh/tnlMeshEntity.h>
 
 
@@ -51,10 +51,10 @@ enum tnlVTKMeshEntities { tnlVTKVertex = 1,
 template< typename MeshEntity >
 struct tnlMeshEntityVTKType{};
 
-template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshTriangleTag > >     { enum { VTKType = tnlVTKTriangle }; };
-template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshQuadrilateralTag > >{ enum { VTKType = tnlVTKQuad }; };
-template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshTetrahedronTag > >  { enum { VTKType = tnlVTKTetra }; };
-template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshHexahedronTag > >   { enum { VTKType = tnlVTKHexahedron }; };
+template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshTriangleTopology > >     { enum { VTKType = tnlVTKTriangle }; };
+template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshQuadrilateralTopology > >{ enum { VTKType = tnlVTKQuad }; };
+template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshTetrahedronTopology > >  { enum { VTKType = tnlVTKTetra }; };
+template< typename MeshConfig > struct tnlMeshEntityVTKType< tnlMeshEntity< MeshConfig, tnlMeshHexahedronTopology > >   { enum { VTKType = tnlVTKHexahedron }; };
 
 class tnlMeshWriterVTKLegacy
 {
