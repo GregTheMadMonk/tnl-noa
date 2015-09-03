@@ -18,6 +18,9 @@
 #ifndef TNLEXPLICITTIMESTEPPER_IMPL_H_
 #define TNLEXPLICITTIMESTEPPER_IMPL_H_
 
+#include "tnlExplicitTimeStepper.h"
+
+
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 tnlExplicitTimeStepper< Problem, OdeSolver >::
@@ -53,6 +56,7 @@ bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 init( const MeshType& mesh )
 {
+   this->explicitUpdaterTimer.reset();
    return true;
 }
 
@@ -106,7 +110,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->odeSolver, );
    this->odeSolver->setTau( this -> timeStep );
@@ -116,38 +120,52 @@ solve( const RealType& time,
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->mesh = &mesh;
-   this->auxiliaryDofs = &auxiliaryDofVector;
+   this->meshDependentData = &meshDependentData;
    return this->odeSolver->solve( dofVector );
 }
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
-void tnlExplicitTimeStepper< Problem, OdeSolver >::getExplicitRHS( const RealType& time,
-                                                                   const RealType& tau,
-                                                                   DofVectorType& u,
-                                                                   DofVectorType& fu )
+void
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+getExplicitRHS( const RealType& time,
+                const RealType& tau,
+                DofVectorType& u,
+                DofVectorType& fu )
 {
    if( ! this->problem->preIterate( time,
                                     tau,
                                     *( this->mesh),
                                     u,
-                                    *( this->auxiliaryDofs ) ) )
+                                    *( this->meshDependentData ) ) )
    {
       cerr << endl << "Preiteration failed." << endl;
       return;
       //return false; // TODO: throw exception
    }
-   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu );
+   this->explicitUpdaterTimer.start();   
+   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
+   this->explicitUpdaterTimer.stop();
    if( ! this->problem->postIterate( time,
                                      tau,
                                      *( this->mesh ),
                                      u,
-                                     *( this->auxiliaryDofs ) ) )
+                                     *( this->meshDependentData ) ) )
    {
       cerr << endl << "Postiteration failed." << endl;
       return;
       //return false; // TODO: throw exception
    }
+}
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+bool
+tnlExplicitTimeStepper< Problem, OdeSolver >::
+writeEpilog( tnlLogger& logger )
+{
+   logger.writeParameter< double >( "Explicit update computation time:", this->explicitUpdaterTimer.getTime() );
+   return true;
 }
 
 #endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */

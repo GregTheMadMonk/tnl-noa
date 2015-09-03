@@ -23,28 +23,20 @@ class tnlDenseMatrixRow
 {
    public:
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlDenseMatrixRow();
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlDenseMatrixRow( Real* values,
                          const Index columns,
                          const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void bind( Real* values,
                  const Index columns,
                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );

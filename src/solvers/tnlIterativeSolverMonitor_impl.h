@@ -27,7 +27,7 @@ tnlIterativeSolverMonitor< Real, Index > :: tnlIterativeSolverMonitor()
 : iterations( 0 ),
   residue( 0 ),
   refreshing( 0 ),
-  outputPeriod( 1 ),
+  refreshRate( 1 ),
   verbose( 1 )
 {
 }
@@ -63,36 +63,42 @@ void tnlIterativeSolverMonitor< Real, Index > :: setVerbose( const Index& verbos
 }
 
 template< typename Real, typename Index>
+void tnlIterativeSolverMonitor< Real, Index > :: setRefreshRate( const Index& refreshRate )
+{
+   this -> refreshRate = refreshRate;
+}
+
+template< typename Real, typename Index>
 void tnlIterativeSolverMonitor< Real, Index > :: refresh()
 {
-   if( this -> verbose > 0 && this -> refreshing % this -> outputPeriod == 0 )
+   if( this->verbose > 0 && this->getIterations() % this->refreshRate == 0 )
    {
-      cout << " ITER:" << setw( 8 ) << this -> getIterations()
+      cout << " ITER:" << setw( 8 ) << this->getIterations()
            << " RES:" << setprecision( 5 ) << setw( 12 ) << this -> getResidue()
            << " CPU: " << setw( 8 ) << this -> getCPUTime()
            << " ELA: " << setw( 8 ) << this -> getRealTime()
            << "   \r" << flush;
    }
-   this -> refreshing ++;
+   this->refreshing ++;
 }
 
 template< typename Real, typename Index>
 void tnlIterativeSolverMonitor< Real, Index > :: resetTimers()
 {
-   cpuTimer. Reset();
-   rtTimer. Reset();
+   cpuTimer.reset();
+   rtTimer.reset();
 }
 
 template< typename Real, typename Index>
 double tnlIterativeSolverMonitor< Real, Index > :: getCPUTime()
 {
-   return cpuTimer. GetTime();
+   return cpuTimer.getTime();
 }
 
 template< typename Real, typename Index>
 double tnlIterativeSolverMonitor< Real, Index > :: getRealTime()
 {
-   return rtTimer. GetTime();
+   return rtTimer.getTime();
 }
 
 

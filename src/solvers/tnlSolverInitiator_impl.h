@@ -17,7 +17,7 @@
 
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlMeshTypeResolver.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
 #include <solvers/linear/krylov/tnlCGSolver.h>
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>

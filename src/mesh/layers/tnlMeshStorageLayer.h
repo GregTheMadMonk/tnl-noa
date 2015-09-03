@@ -266,6 +266,13 @@ class tnlMeshStorageLayer< ConfigTag,
       this->vertices.setElement( entityIndex, entity );
    }
 
+   VertexType& getEntity( DimensionsTraits,
+                          const GlobalIndexType entityIndex )
+   {
+      return this->vertices[ entityIndex ];
+   }
+
+   
    const VertexType& getEntity( DimensionsTraits,
                                 const GlobalIndexType entityIndex ) const
    {

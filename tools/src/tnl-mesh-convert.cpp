@@ -21,16 +21,13 @@
 #include "tnlConfig.h"
 #include <config/tnlParameterContainer.h>
 
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-mesh-convert.cfg.desc";
-
 void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
-   config.addEntry< tnlString >( "output-file", "Output binary file in TNL format.", "mesh.tnl" );
-   config.addEntry< int >( "verbose", "Set the verbosity of the program.", 1 );
-   
-   config.addDelimiter                            ( "The mesh description:" );
-   config.addEntry< tnlString >( "input-mesh-file", "Input file with the mesh." );
+   config.addRequiredEntry< tnlString >( "input-file", "Input file with the mesh." );
+   config.addEntry< tnlString >( "output-file", "Output mesh file in TNL or VTK format.", "mesh.tnl" );
+   //config.addEntry< tnlString >( "output-format", "Output mesh file format.", "vtk" );
+   config.addEntry< int >( "verbose", "Set the verbosity of the program.", 1 );     
    config.addEntry< tnlString >( "mesh-name", "The mesh name.", "tnl-mesh" ); 
 }
 

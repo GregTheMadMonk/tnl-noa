@@ -52,7 +52,7 @@ bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
                                                        Matrix& matrix,
-                                                       typename Matrix::RowLengthsVector& rowLengths,
+                                                       typename Matrix::CompressedRowsLengthsVector& rowLengths,
                                                        bool verbose )
 {
    IndexType rows, columns;
@@ -69,10 +69,10 @@ bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
    }
 
-   if( ! computeRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
+   if( ! computeCompressedRowsLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
-   if( ! matrix.setRowLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return false;
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
@@ -126,8 +126,8 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
-           << " -> " << timer.GetTime()
-           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " -> " << timer.getTime()
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
@@ -144,8 +144,6 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
    bool dimensionsLine( false );
    lineNumber = 0;
    tnlTimerRT timer;
-   IndexType currentRow, currentColumn;
-   RealType value;
    while( line.getLine( file ) )
    {
       lineNumber++;
@@ -260,7 +258,7 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 }
 
 template< typename Matrix >
-bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file,
+bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
                                                               tnlVector< int, tnlHost, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
@@ -314,8 +312,8 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Counting the matrix elements ... " << numberOfElements / 1000
-           << " thousands  -> " << timer.GetTime()
-           << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " thousands  -> " << timer.getTime()
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
@@ -357,8 +355,8 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
    long int fileSize = file.tellg();
    if( verbose )
       cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
-              << " -> " << timer.GetTime()
-              << " sec. i.e. " << fileSize / ( timer.GetTime() * ( 1 << 20 ))  << "MB/s." << endl;
+              << " -> " << timer.getTime()
+              << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
    return true;
 }
 
@@ -391,7 +389,7 @@ class tnlMatrixReaderDeviceDependentCode< tnlHost >
                             Matrix& matrix,
                             bool verbose )
    {
-      typename Matrix::RowLengthsVector rowLengths;
+      typename Matrix::CompressedRowsLengthsVector rowLengths;
       return tnlMatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
    }
 };
@@ -407,17 +405,17 @@ class tnlMatrixReaderDeviceDependentCode< tnlCuda >
                             bool verbose )
    {
       typedef typename Matrix::HostType HostMatrixType;
-      typedef typename HostMatrixType::RowLengthsVector RowLengthsVector;
+      typedef typename HostMatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVector;
 
       HostMatrixType hostMatrix;
-      RowLengthsVector rowLengthsVector;
+      CompressedRowsLengthsVector rowLengthsVector;
       if( ! tnlMatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
          return false;
 
-      typename Matrix::RowLengthsVector cudaRowLengthsVector;
-      cudaRowLengthsVector.setLike( rowLengthsVector );
-      cudaRowLengthsVector = rowLengthsVector;
-      if( ! matrix.copyFrom( hostMatrix, cudaRowLengthsVector ) )
+      typename Matrix::CompressedRowsLengthsVector cudaCompressedRowsLengthsVector;
+      cudaCompressedRowsLengthsVector.setLike( rowLengthsVector );
+      cudaCompressedRowsLengthsVector = rowLengthsVector;
+      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowsLengthsVector ) )
          return false;
       return true;
    }

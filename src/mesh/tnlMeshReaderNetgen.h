@@ -135,11 +135,15 @@ class tnlMeshReaderNetgen
        */
        typedef typename MeshType::template EntitiesTraits< dimensions >::GlobalIndexType CellIndexType;
        if( ! inputFile )
+       {
+          cerr << "I cannot read the mesh cells." << endl;
           return false;
+       }
        getline( inputFile, line );
+       iss.clear();
        iss.str( line );
-       CellIndexType numberOfCells;
-       iss >> numberOfCells;
+       CellIndexType numberOfCells=atoi( line.data() );
+       //iss >> numberOfCells; // TODO: I do not know why this does not work
        if( ! mesh.template setNumberOfEntities< dimensions >( numberOfCells ) )
        {
           cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << endl;
@@ -156,9 +160,8 @@ class tnlMeshReaderNetgen
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
-             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx );
+             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx - 1 );
           }
-          cout << endl;
           if( verbose )
              cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << flush;
        }

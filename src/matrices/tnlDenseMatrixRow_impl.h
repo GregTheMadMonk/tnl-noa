@@ -19,9 +19,7 @@
 #define TNLDENSEMATRIXROW_IMPL_H_
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlDenseMatrixRow< Real, Index >::
 tnlDenseMatrixRow()
 : values( 0 ),
@@ -31,9 +29,7 @@ tnlDenseMatrixRow()
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlDenseMatrixRow< Real, Index >::
 tnlDenseMatrixRow( Real* values,
                    const Index columns,
@@ -45,9 +41,7 @@ tnlDenseMatrixRow( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlDenseMatrixRow< Real, Index >::
 bind( Real* values,
@@ -60,9 +54,7 @@ bind( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlDenseMatrixRow< Real, Index >::
 setElement( const Index& elementIndex,

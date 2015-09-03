@@ -18,7 +18,7 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
@@ -38,9 +38,7 @@ class tnlExactLinearDiffusion< 1 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif      
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -60,9 +58,7 @@ class tnlExactLinearDiffusion< 2 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif      
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
@@ -82,9 +78,7 @@ class tnlExactLinearDiffusion< 3 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );

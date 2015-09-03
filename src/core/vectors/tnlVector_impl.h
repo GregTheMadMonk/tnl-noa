@@ -145,7 +145,7 @@ template< typename Real,
    template< typename Vector >
 tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
-   alphaXPlusBetaY( -1.0, vector, 1.0 );
+   this->addVector( vector, -1.0 );
    return *this;
 }
 
@@ -155,9 +155,28 @@ template< typename Real,
    template< typename Vector >
 tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
-   alphaXPlusBetaY( 1.0, vector, 1.0 );
+   this->addVector( vector );
    return *this;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator *= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index > :: operator /= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   return *this;
+}
+
 
 template< typename Real,
           typename Device,
@@ -301,35 +320,15 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlVector< Real, Device, Index > :: alphaXPlusBetaY( const Real& alpha,
-                                                          const Vector& x,
-                                                          const Real& beta )
+void
+tnlVector< Real, Device, Index >::
+addVectors( const Vector& v1,
+            const Real& multiplicator1,
+            const Vector& v2,
+            const Real& multiplicator2,
+            const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device > :: alphaXPlusBetaY( *this, x, alpha, beta );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector >
-void tnlVector< Real, Device, Index > :: alphaXPlusBetaZ( const Real& alpha,
-                                                          const Vector& x,
-                                                          const Real& beta,
-                                                          const Vector& z )
-{
-   tnlVectorOperations< Device > :: alphaXPlusBetaZ( *this, x, alpha, z, beta );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector >
-void tnlVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real& alpha,
-                                                    const Vector& x,
-                                                    const Real& beta,
-                                                    const Vector& z )
-{
-   tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
+   tnlVectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
 template< typename Real,
@@ -369,19 +368,44 @@ void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexT
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlHost, int >;
 extern template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
+#endif
 
 extern template class tnlVector< double, tnlHost, int >;
-extern template class tnlVector< float, tnlHost, long int >;
-extern template class tnlVector< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlVector< long double, tnlHost, int >;
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlVector< float, tnlHost, long int >;
+#endif
+extern template class tnlVector< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlVector< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlCuda, int >;
+#endif
 extern template class tnlVector< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlVector< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlCuda, long int >;
+#endif
 extern template class tnlVector< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlVector< long double, tnlCuda, long int >;
+#endif
+#endif
 #endif
 
 #endif

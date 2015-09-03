@@ -26,13 +26,13 @@ class tnlTimerRT
 
    tnlTimerRT();
 
-   void Reset();
+   void reset();
 
-   void Stop();
+   void stop();
 
-   void Continue();
+   void start();
 
-   double GetTime();
+   double getTime();
 
    protected:
 

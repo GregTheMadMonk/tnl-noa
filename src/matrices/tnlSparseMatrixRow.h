@@ -24,30 +24,22 @@ class tnlSparseMatrixRow
 {
    public:
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlSparseMatrixRow();
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlSparseMatrixRow( Index* columns,
                           Real* values,
                           const Index length,
                           const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void bind( Index* columns,
                  Real* values,
                  const Index length,
                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );

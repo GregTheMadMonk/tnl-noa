@@ -21,7 +21,7 @@
 #include <debug/tnlDebug.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <functions/tnlTestFunction.h>
+#include <functors/tnlTestFunction.h>
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
 
@@ -35,6 +35,7 @@ void setupConfig( tnlConfigDescription& config )
       config.addEntryEnum< tnlString >( "float" );
       config.addEntryEnum< tnlString >( "double" );
       config.addEntryEnum< tnlString >( "long-double" );
+   config.addEntry< double >( "initial-time", "Initial time for a serie of snapshots of the time-dependent function.", 0.0 );      
    config.addEntry< double >( "final-time", "Final time for a serie of snapshots of the time-dependent function.", 0.0 );
    config.addEntry< double >( "snapshot-period", "Period between snapshots in a serie of the time-dependent function.", 0.0 );
    config.addEntry< int >( "x-derivative", "Order of the partial derivative w.r.t x.", 0 );

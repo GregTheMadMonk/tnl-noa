@@ -117,10 +117,19 @@ void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
 template< typename Element,
           typename Device,
           typename Index >
-void tnlSharedArray< Element, Device, Index > :: bind( tnlArray< Element, Device, Index >& array )
+   template< typename Array >
+void tnlSharedArray< Element, Device, Index > :: bind( Array& array,
+                                                       IndexType index,
+                                                       IndexType size )
 {
-   this->size = array. getSize();
-   this->data = array. getData();
+   tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+                    "Attempt to bind arrays between different devices." );
+   this->data = &( array. getData()[ index ] );
+   if( ! size )
+      this->size = array. getSize();
+   else
+      this->size = size;
+   
 };
 
 template< typename Element,
@@ -163,9 +172,7 @@ void tnlSharedArray< Element, Device, Index > :: reset()
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlSharedArray< Element, Device, Index > :: getSize() const
 {
    return this -> size;
@@ -200,9 +207,7 @@ Element tnlSharedArray< Element, Device, Index > :: getElement( Index i ) const
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
@@ -216,9 +221,7 @@ Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
@@ -441,15 +444,34 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 
 // TODO: this does not work with CUDA 5.5 - fix it later
 
-/*extern template class tnlSharedArray< float, tnlHost, int >;
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlSharedArray< float, tnlHost, int >;
+#endif
 extern template class tnlSharedArray< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlHost, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlHost, long int >;
-extern template class tnlSharedArray< double, tnlHost, long int >;*/
+#endif
+extern template class tnlSharedArray< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedArray< long double, tnlHost, long int >;
+#endif
+#endif
+
 
 #ifdef HAVE_CUDA
-/*extern template class tnlSharedArray< float, tnlCuda, int >;
+/*
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlSharedArray< float, tnlCuda, int >;
+#endif
 extern template class tnlSharedArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlCuda, long int >;
+#endif
 extern template class tnlSharedArray< double, tnlCuda, long int >;*/
 #endif
 

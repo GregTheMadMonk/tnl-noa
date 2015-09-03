@@ -21,9 +21,6 @@
 
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   //__device__ __host__
-#endif
 tnlMultiArray< 2, Element, Device, Index > :: tnlMultiArray()
 {
 }
@@ -114,9 +111,7 @@ void tnlMultiArray< 2, Element, Device, Index >::reset()
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlMultiArray< 2, Element, Device, Index > :: getDimensions( Index& jSize, Index& iSize ) const
 {
    iSize = this -> dimensions[ 0 ];
@@ -124,18 +119,14 @@ void tnlMultiArray< 2, Element, Device, Index > :: getDimensions( Index& jSize, 
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const tnlStaticVector< 2, Index >& tnlMultiArray< 2, Element, Device, Index > :: getDimensions() const
 {
    return this -> dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMultiArray< 2, Element, Device, Index > :: getElementIndex( const Index j, const Index i ) const
 {
    tnlAssert( i >= 0 && i < this -> dimensions[ 0 ] && j >= 0 && j < this -> dimensions[ 1 ],
@@ -157,18 +148,14 @@ void tnlMultiArray< 2, Element, Device, Index > :: setElement( const Index j, co
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Element& tnlMultiArray< 2, Element, Device, Index > :: operator()( const Index j, const Index i )
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( j, i ) );
 }
 
 template< typename Element, typename Device, typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlMultiArray< 2, Element, Device, Index > :: operator()( const Index j, const Index i ) const
 {
    return tnlArray< Element, Device, Index > :: operator[]( getElementIndex( j, i ) );

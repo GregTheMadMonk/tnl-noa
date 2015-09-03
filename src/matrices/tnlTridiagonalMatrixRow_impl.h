@@ -19,9 +19,7 @@
 #define TNLTRIDIAGONALMATRIXROW_IMPL_H_
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlTridiagonalMatrixRow< Real, Index >::
 tnlTridiagonalMatrixRow()
 : values( 0 ),
@@ -32,9 +30,7 @@ tnlTridiagonalMatrixRow()
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 tnlTridiagonalMatrixRow< Real, Index >::
 tnlTridiagonalMatrixRow( Real* values,
                          const Index row,
@@ -48,9 +44,7 @@ tnlTridiagonalMatrixRow( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlTridiagonalMatrixRow< Real, Index >::
 bind( Real* values,
@@ -65,9 +59,7 @@ bind( Real* values,
 }
 
 template< typename Real, typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+__cuda_callable__
 void
 tnlTridiagonalMatrixRow< Real, Index >::
 setElement( const Index& elementIndex,

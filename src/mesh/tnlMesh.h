@@ -26,14 +26,11 @@ template< typename ConfigTag >
 class tnlMesh : public tnlObject,
                 public tnlMeshStorageLayers< ConfigTag >
 {
-   //template<typename, typename, typename> friend class InitializerLayer;
-   //friend class IOReader<ConfigTag>;
-
-   typedef tnlMeshStorageLayers<ConfigTag>        BaseType;
+   typedef tnlMeshStorageLayers< ConfigTag >                BaseType;
 
    public:
-   typedef ConfigTag                              Config;
-   typedef typename tnlMeshTraits< ConfigTag >::PointType PointType;
+   typedef ConfigTag                                        Config;
+   typedef typename tnlMeshTraits< ConfigTag >::PointType   PointType;
    enum { dimensions = tnlMeshTraits< ConfigTag >::meshDimensions };
 
    /*~tnlMesh()

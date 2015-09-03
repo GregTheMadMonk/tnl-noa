@@ -21,10 +21,10 @@ tnlTimerCPU defaultCPUTimer;
 
 tnlTimerCPU :: tnlTimerCPU()
 {
-   Reset();
+   reset();
 }
-//--------------------------------------------------------------------------
-void tnlTimerCPU :: Reset()
+
+void tnlTimerCPU::reset()
 {
 #ifdef HAVE_SYS_RESOURCE_H
    rusage init_usage;
@@ -36,8 +36,8 @@ void tnlTimerCPU :: Reset()
    total_time = 0.0;
    stop_state = false;
 }
-//--------------------------------------------------------------------------
-void tnlTimerCPU :: Stop()
+
+void tnlTimerCPU::stop()
 {
 #ifdef HAVE_SYS_RESOURCE_H
    if( ! stop_state )
@@ -49,8 +49,8 @@ void tnlTimerCPU :: Stop()
    }
 #endif
 }
-//--------------------------------------------------------------------------
-void tnlTimerCPU :: Continue()
+
+void tnlTimerCPU::start()
 {
 #ifdef HAVE_SYS_RESOURCE_H
    rusage init_usage;
@@ -59,12 +59,12 @@ void tnlTimerCPU :: Continue()
 #endif
   stop_state = false;
 }
-//--------------------------------------------------------------------------
-double tnlTimerCPU :: GetTime( int root, MPI_Comm comm )
+
+double tnlTimerCPU::getTime( int root, MPI_Comm comm )
 {
 #ifdef HAVE_SYS_RESOURCE_H
-   Stop();
-   Continue();
+   stop();
+   start();
    double mpi_total_time;
    MPIReduce( total_time, mpi_total_time, 1, MPI_SUM, root, comm );
    return mpi_total_time;

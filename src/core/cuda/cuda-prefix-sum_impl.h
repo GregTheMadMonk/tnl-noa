@@ -53,7 +53,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( prefixSumType == exclusivePrefixSum )
    {
       if( idx == 0 )
-         sharedData[ 0 ] = operation.identity();
+         sharedData[ 0 ] = operation.initialValue();
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
          sharedData[ tnlCuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
@@ -86,8 +86,8 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    while( chunkPointer < chunkSize &&
           chunkOffset + chunkPointer < lastElementInBlock )
    {
-      operation.performInPlace( sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer ) ],
-                                sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
+      operation.commonReductionOnDevice( sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer ) ],
+                                         sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
       auxData[ threadIdx. x ] =
          sharedData[ tnlCuda::getInterleaving( chunkOffset + chunkPointer  ) ];
       chunkPointer ++;
@@ -100,7 +100,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    const int warpIdx = threadIdx. x / tnlCuda::getWarpSize();
    for( int stride = 1; stride < tnlCuda::getWarpSize(); stride *= 2 )
       if( threadInWarpIdx >= stride && threadIdx. x < numberOfChunks )
-         operation.performInPlace( auxData[ threadIdx. x ], auxData[ threadIdx. x - stride ] );
+         operation.commonReductionOnDevice( auxData[ threadIdx. x ], auxData[ threadIdx. x - stride ] );
 
    if( threadInWarpIdx == tnlCuda::getWarpSize() - 1 )
       warpSums[ warpIdx ] = auxData[ threadIdx. x ];
@@ -112,14 +112,14 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( warpIdx == 0 )
       for( int stride = 1; stride < tnlCuda::getWarpSize(); stride *= 2 )
          if( threadInWarpIdx >= stride )
-            operation.performInPlace( warpSums[ threadInWarpIdx ], warpSums[ threadInWarpIdx - stride ] );
+            operation.commonReductionOnDevice( warpSums[ threadInWarpIdx ], warpSums[ threadInWarpIdx - stride ] );
    __syncthreads();
 
    /****
     * Shift the warp prefix-sums.
     */
    if( warpIdx > 0 )
-      operation.performInPlace( auxData[ threadIdx. x ], warpSums[ warpIdx - 1 ] );
+      operation.commonReductionOnDevice( auxData[ threadIdx. x ], warpSums[ warpIdx - 1 ] );
 
    /***
     *  Store the result back in global memory.
@@ -129,10 +129,10 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    while( idx < elementsInBlock && blockOffset + idx < size )
    {
       const Index chunkIdx = idx / chunkSize;
-      DataType chunkShift( operation.identity() );
+      DataType chunkShift( operation.initialValue() );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
-      operation.performInPlace( sharedData[ tnlCuda::getInterleaving( idx ) ], chunkShift );
+      operation.commonReductionOnDevice( sharedData[ tnlCuda::getInterleaving( idx ) ], chunkShift );
       output[ blockOffset + idx ] = sharedData[ tnlCuda::getInterleaving( idx ) ];
       idx += blockDim. x;
    }
@@ -141,10 +141,15 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
    if( threadIdx. x == 0 )
    {
       if( prefixSumType == exclusivePrefixSum )
-         auxArray[ blockIdx. x ] =
-            operation.commonReductionOnDevice( tnlCuda::getInterleaving( lastElementInBlock - 1 ),
-                                               tnlCuda::getInterleaving( lastElementInBlock ),
-                                               sharedData );
+      {
+         /*auxArray[ blockIdx. x ] = operation.commonReductionOnDevice( tnlCuda::getInterleaving( lastElementInBlock - 1 ),
+                                                                      tnlCuda::getInterleaving( lastElementInBlock ),
+                                                                      sharedData );*/
+         DataType aux = operation.initialValue();
+         operation.commonReductionOnDevice( aux, sharedData[ tnlCuda::getInterleaving( lastElementInBlock - 1 ) ] );
+         operation.commonReductionOnDevice( aux, sharedData[ tnlCuda::getInterleaving( lastElementInBlock ) ] );
+         auxArray[ blockIdx. x ] = aux;
+      }
       else
          auxArray[ blockIdx. x ] = sharedData[ tnlCuda::getInterleaving( lastElementInBlock - 1 ) ];
    }
@@ -163,13 +168,14 @@ __global__ void cudaSecondPhaseBlockPrefixSum( const Operation operation,
 {
    if( blockIdx. x > 0 )
    {
-      const DataType shift = operation.commonReductionOnDevice( gridShift, auxArray[ blockIdx. x - 1 ] );
+      DataType shift( gridShift );
+      operation.commonReductionOnDevice( shift, auxArray[ blockIdx. x - 1 ] );
 
       const Index readOffset = blockIdx. x * elementsInBlock;
       Index readIdx = threadIdx. x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
       {
-         operation.performInPlace( data[ readIdx + readOffset ], shift );
+         operation.commonReductionOnDevice( data[ readIdx + readOffset ], shift );
          readIdx += blockDim. x;
       }
    }
@@ -373,13 +379,16 @@ extern template bool cudaPrefixSum( const int size,
                                     const tnlParallelReductionSum< double, int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 extern template bool cudaPrefixSum( const int size,
                                     const int blockSize,
                                     const long double *deviceInput,
                                     long double* deviceOutput,
                                     const tnlParallelReductionSum< long double, int >& operation,
                                     const enumPrefixSumType prefixSumType );
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
 extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const int *deviceInput,
@@ -402,6 +411,7 @@ extern template bool cudaPrefixSum( const long int size,
                                     const tnlParallelReductionSum< double, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const long double *deviceInput,
@@ -409,7 +419,9 @@ extern template bool cudaPrefixSum( const long int size,
                                     const tnlParallelReductionSum< long double, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 #endif
+#endif
 
+#endif
 
 #endif
 

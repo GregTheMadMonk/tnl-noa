@@ -62,9 +62,9 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       suiteOfTests -> addTest( new TestCallerType( "vectorScalarMultiplicationTest", &tnlVectorOperationsTester::vectorScalarMultiplicationTest ) );
       suiteOfTests -> addTest( new TestCallerType( "getSclaraProductTest", &tnlVectorOperationsTester::getVectorScalarProductTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addVectorTest", &tnlVectorOperationsTester::addVectorTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaYTest", &tnlVectorOperationsTester::alphaXPlusBetaYTest ) );
+      /*suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaYTest", &tnlVectorOperationsTester::alphaXPlusBetaYTest ) );
       suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZTest", &tnlVectorOperationsTester::alphaXPlusBetaZTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZPlusYTest", &tnlVectorOperationsTester::alphaXPlusBetaZPlusYTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "alphaXPlusBetaZPlusYTest", &tnlVectorOperationsTester::alphaXPlusBetaZPlusYTest ) );*/
       suiteOfTests -> addTest( new TestCallerType( "prefixSumTest", &tnlVectorOperationsTester::prefixSumTest ) );
       suiteOfTests -> addTest( new TestCallerType( "exclusivePrefixSumTest", &tnlVectorOperationsTester::exclusivePrefixSumTest ) );
       return suiteOfTests;
@@ -325,7 +325,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );
    };
 
-   void alphaXPlusBetaYTest()
+   /*void alphaXPlusBetaYTest()
    {
       const int size( 10000 );
       tnlVector< Real, Device > x, y;
@@ -368,7 +368,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == -1.0 + 3.0 * i );
-   };
+   };*/
 
    void prefixSumTest()
    {

@@ -34,7 +34,8 @@ class tnlLogger
 
    void writeSeparator();
 
-   bool writeSystemInformation();
+   bool writeSystemInformation( const tnlParameterContainer& parameters );
+   
 
    void writeCurrentTime( const char* label );
 

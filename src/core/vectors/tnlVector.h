@@ -19,7 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 class tnlHost;
 
@@ -75,8 +75,9 @@ class tnlVector : public tnlArray< Real, Device, Index >
    template< typename Vector >
    tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
 
-   // TODO: implement
-   //tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+   tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   tnlVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    Real max() const;
 
@@ -114,31 +115,20 @@ class tnlVector : public tnlArray< Real, Device, Index >
    template< typename Vector >
    Real scalarProduct( const Vector& v );
 
-   //! Computes Y = alpha * X + Y.
+   //! Computes this = thisMultiplicator * this + multiplicator * v.
    template< typename Vector >
    void addVector( const Vector& v,
                    const Real& multiplicator = 1.0,
                    const Real& thisMultiplicator = 1.0 );
 
-   //! Computes Y = alpha * X + beta * Y.
-   template< typename Vector >
-   void alphaXPlusBetaY( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta );
 
-   //! Computes Y = alpha * X + beta * Z
+   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >
-   void alphaXPlusBetaZ( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta,
-                         const Vector& z );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   template< typename Vector >
-   void alphaXPlusBetaZPlusY( const Real& alpha,
-                              const Vector& x,
-                              const Real& beta,
-                              const Vector& z );
+   void addVectors( const Vector& v1,
+                    const Real& multiplicator1,
+                    const Vector& v2,
+                    const Real& multiplicator2,
+                    const Real& thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 

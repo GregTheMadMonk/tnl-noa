@@ -46,6 +46,15 @@ class tnlMeshInitializer
 
    public:
 
+   tnlMeshInitializer()
+   : verbose( false )
+   {}
+
+   void setVerbose( bool verbose )
+   {
+      this->verbose = verbose;
+   }
+
    bool initMesh( MeshType& mesh )
    {
       //cout << "======= Starting mesh initiation ========" << endl;
@@ -53,13 +62,17 @@ class tnlMeshInitializer
       if( ! this->checkCells() )
          return false;
       //cout << "========= Creating entities =============" << endl;
-      this->createEntitiesFromCells();
+      this->createEntitiesFromCells( this->verbose );
       this->createEntityInitializers();
       //cout << "====== Initiating entities ==============" << endl;
       this->initEntities( *this );
       //cout << "Mesh initiation done..." << endl;
       return true;
    }
+
+   protected:
+
+   bool verbose;
 };
 
 template< typename ConfigTag >
@@ -95,21 +108,32 @@ class tnlMeshInitializerLayer< ConfigTag,
    bool checkCells()
    {
       typedef typename tnlMeshEntity< ConfigTag, EntityTag >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
+      const GlobalIndexType numberOfVertices( this->getMesh().getNumberOfVertices() );
       for( GlobalIndexType cell = 0;
            cell < this->getMesh().getNumberOfCells();
            cell++ )
          for( LocalIndexType i = 0;
               i < this->getMesh().getCell( cell ).getNumberOfVertices();
               i++ )
+         {
             if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
             {
                cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << endl;
                return false;
             }
+            if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
+            {
+               cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
+                    << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
+                    << "is higher than the number of all vertices ( " << numberOfVertices
+                    << " )." << endl;
+               return false;
+            }
+         }
       return true;
    }
 
-   void createEntitiesFromCells()
+   void createEntitiesFromCells( bool verbose )
    {
       //cout << " Creating entities with " << DimensionsTraits::value << " dimensions..." << endl;
       cellInitializerContainer.setSize( this->getMesh().getNumberOfCells() );
@@ -117,12 +141,15 @@ class tnlMeshInitializerLayer< ConfigTag,
            cell < this->getMesh().getNumberOfCells();
            cell++ )
       {
-         //cout << "  Creating the cell number " << cell << endl;
+         if( verbose )
+            cout << "  Creating the cell number " << cell << "            \r " << flush;
          CellInitializerType& cellInitializer = cellInitializerContainer[ cell ];
 
          cellInitializer.init( this->getMesh().getCell( cell ), cell );
          BaseType::createEntitiesFromCells( cellInitializer );
       }
+      if( verbose )
+         cout << endl;
 
    }
 

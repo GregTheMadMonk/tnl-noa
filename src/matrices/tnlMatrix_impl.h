@@ -46,7 +46,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMatrix< Real, Device, Index >::getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void tnlMatrix< Real, Device, Index >::getCompressedRowsLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -67,9 +67,7 @@ bool tnlMatrix< Real, Device, Index >::setLike( const tnlMatrix< Real2, Device2,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMatrix< Real, Device, Index >::getRows() const
 {
    return this->rows;
@@ -78,9 +76,7 @@ Index tnlMatrix< Real, Device, Index >::getRows() const
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlMatrix< Real, Device, Index >::getColumns() const
 {
    return this->columns;
@@ -100,13 +96,13 @@ template< typename Real,
           typename Index >
    template< typename Matrix >
 bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                 const RowLengthsVector& rowLengths )
+                                                 const CompressedRowsLengthsVector& rowLengths )
 {
    /*tnlStaticAssert( DeviceType::DeviceType == tnlHostDevice, );
    tnlStaticAssert( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
 
    this->setLike( matrix );
-   if( ! this->setRowLengths( rowLengths ) )
+   if( ! this->setCompressedRowsLengths( rowLengths ) )
       return false;
    tnlVector< RealType, tnlHost, IndexType > values;
    tnlVector< IndexType, tnlHost, IndexType > columns;
@@ -131,8 +127,8 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
    this->setLike( m );
 
    tnlVector< IndexType, DeviceType, IndexType > rowLengths;
-   m.getRowLengths( rowLengths );
-   this->setRowLengths( rowLengths );
+   m.getCompressedRowsLengths( rowLengths );
+   this->setCompressedRowsLengths( rowLengths );
 
    tnlVector< RealType, DeviceType, IndexType > rowValues;
    tnlVector< IndexType, DeviceType, IndexType > rowColumns;
@@ -249,7 +245,7 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
 {
-#ifdef HAVE_CUDA
+#ifdef HAVE_CUDA    
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
    InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
@@ -266,6 +262,7 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                        kernel_inVector,
                                        kernel_outVector,
                                        gridIdx );
+      checkCudaDevice;
    }
    tnlCuda::freeFromDevice( kernel_this );
    tnlCuda::freeFromDevice( kernel_inVector );

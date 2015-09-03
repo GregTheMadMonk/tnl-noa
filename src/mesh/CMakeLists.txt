@@ -19,6 +19,7 @@ SET( headers tnlGrid.h
              tnlMeshReaderNetgen.h
              tnlMeshWriterNetgen.h
              tnlMeshInitializer.h
+             tnlMeshIntegrityChecker.h
              tnlMeshEntityInitializer.h
              tnlMeshSuperentityInitializerLayer.h
              tnlTraverser.h

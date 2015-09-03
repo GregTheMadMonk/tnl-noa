@@ -2,7 +2,7 @@
                           tnlHeatEquationProblem.h  -  description
                              -------------------
     begin                : Feb 23, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,11 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
+
 #ifndef TNLHEATEQUATIONPROBLEM_H_
 #define TNLHEATEQUATIONPROBLEM_H_
 
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
+#include <matrices/tnlEllpackMatrix.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -37,9 +45,11 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
+      using typename BaseType::MeshDependentDataType;
 
       static tnlString getTypeStatic();
 
@@ -53,17 +63,17 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       bool setInitialCondition( const tnlParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
-                                DofVectorType& auxDofs );
+                                MeshDependentDataType& meshDependentData );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
-                              MatrixType& matrix );
+                              Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshType& mesh,
                          DofVectorType& dofs,
-                         DofVectorType& auxDofs );
+                         MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshType& mesh ) const;
 
@@ -74,16 +84,17 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
-                           DofVectorType& _fu );
+			   DofVectorType& _fu,
+                           MeshDependentDataType& meshDependentData );
 
-      template< typename MatrixType >
+      template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
-                                 DofVectorType& dofs,
-                                 DofVectorType& auxDofs,
-                                 MatrixType& matrix,
-                                 DofVectorType& rightHandSide );
+                                 DofVectorType& dofs,                                 
+                                 Matrix& matrix,
+                                 DofVectorType& rightHandSide,
+				 MeshDependentDataType& meshDependentData );
 
 
       protected:

@@ -49,7 +49,7 @@ tnlTFQMRSolver< Matrix, Preconditioner >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
 template< typename Matrix,
@@ -59,7 +59,7 @@ tnlTFQMRSolver< Matrix, Preconditioner >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,
@@ -99,7 +99,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
    else*/
    {
-      r. alphaXPlusBetaY( -1.0, b, -1.0 );
+      r. addVector( b, -1.0, -1.0 );
       w = u = r;
       matrix -> vectorProduct( u, v );
       d. setValue( 0.0 );
@@ -127,7 +127,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       w.addVector( Au, -alpha );
       //cerr << "alpha = " << alpha << endl;
       //cerr << "theta * theta / alpha * eta = " << theta * theta / alpha * eta << endl;
-      d. alphaXPlusBetaY( 1.0, u, theta * theta / alpha * eta );
+      d. addVector( u, 1.0, theta * theta / alpha * eta );
       theta = w. lpNorm( 2.0 ) / tau;
       const RealType c = sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
@@ -143,7 +143,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          Au.addVector( v, beta );
          u.addVector( w, 1.0, beta );
          matrix -> vectorProduct( u, Au_new );
-         v.alphaXPlusBetaZ( 1.0, Au_new, beta, Au );
+         v.addVectors( Au_new, 1.0, Au, beta );
       }
       
       //this -> setResidue( residue );

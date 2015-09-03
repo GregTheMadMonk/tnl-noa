@@ -26,9 +26,7 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactLinearDiffusion< 1 >::
 getValue( const Function& function,
@@ -46,9 +44,7 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactLinearDiffusion< 2 >::
 getValue( const Function& function,
@@ -67,9 +63,7 @@ getType()
 }
 
 template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactLinearDiffusion< 3 >::
 getValue( const Function& function,

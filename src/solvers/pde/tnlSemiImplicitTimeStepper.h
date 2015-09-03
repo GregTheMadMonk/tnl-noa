@@ -18,6 +18,9 @@
 #ifndef TNLSEMIIMPLICITTIMESTEPPER_H_
 #define TNLSEMIIMPLICITTIMESTEPPER_H_
 
+#include <core/tnlTimerRT.h>
+#include <core/tnlLogger.h>
+
 template< typename Problem,
           typename LinearSystemSolver >
 class tnlSemiImplicitTimeStepper
@@ -30,6 +33,7 @@ class tnlSemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename ProblemType::MatrixType MatrixType;
 
@@ -59,7 +63,9 @@ class tnlSemiImplicitTimeStepper
                const RealType& stopTime,
                const MeshType& mesh,
                DofVectorType& dofVector,
-               DofVectorType& auxiliaryDofVector );
+               MeshDependentDataType& meshDependentData );
+   
+   bool writeEpilog( tnlLogger& logger );
 
    protected:
 
@@ -73,6 +79,8 @@ class tnlSemiImplicitTimeStepper
 
    RealType timeStep;
 
+   tnlTimerRT linearSystemAssemblerTimer, linearSystemSolverTimer;
+   
    bool verbose;
 };
 

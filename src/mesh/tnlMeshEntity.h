@@ -36,6 +36,10 @@ class tnlMeshEntity
                              typename ConfigTag::GlobalIndexType >
 {
    public:
+      
+      // TODO: This is only because of STD lib bug in tnlIndexedSet
+      tnlMeshEntity( const tnlMeshEntity& entyti ) {}
+      tnlMeshEntity() {}
 
    static tnlString getType()
    {
@@ -296,6 +300,11 @@ class tnlMeshEntity< ConfigTag, tnlMeshVertexTag >
 {
    public:
 
+      // TODO: This is only because of STD lib bug in tnlIndexedSet
+      tnlMeshEntity( const tnlMeshEntity& entyti ) {}
+      tnlMeshEntity() {}
+
+      
    static tnlString getType()
    {
       return tnlString( "tnlMesh< " ) +
@@ -453,7 +462,7 @@ ostream& operator <<( ostream& str, const tnlMeshEntity< ConfigTag, EntityTag >&
 
 /****
  * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.
- * It is necessary for the loading and the saving of the mesh enities arrays.
+ * It is necessary for the loading and the saving of the mesh entities arrays.
  */
 template< typename ConfigTag,
           typename EntityTag >

@@ -37,6 +37,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       typedef Mesh MeshType;
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****
        * This means that the time stepper will be set from the command line arguments.
@@ -50,23 +51,23 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
 
-      IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
+      bool setMeshDependentData( const MeshType& mesh,
+                                 MeshDependentDataType& meshDependentData );
 
-      void bindAuxiliaryDofs( const MeshType& mesh,
-                              DofVectorType& auxiliaryDofs );
+      void bindMeshDependentData( const MeshType& mesh,
+                                  MeshDependentDataType& meshDependentData );
 
       bool preIterate( const RealType& time,
                        const RealType& tau,
                        const MeshType& mesh,
                        DofVectorType& dofs,
-                       DofVectorType& auxDofs );
+                       MeshDependentDataType& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshType& mesh,
                         DofVectorType& dofs,
-                        DofVectorType& auxDofs );
-
+                        MeshDependentDataType& meshDependentData );
 
       tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
 

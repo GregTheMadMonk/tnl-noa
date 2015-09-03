@@ -35,69 +35,55 @@
 #include <mesh/topologies/tnlMeshHexahedronTag.h>
 #include <mesh/tnlMeshInitializer.h>
 
- typedef tnlMeshConfigBase< 2, double, int, int, void > Mesh2dConfigBaseType;
- struct TestTriangleMeshConfig : public Mesh2dConfigBaseType
- {
-     typedef tnlMeshTriangleTag CellTag;
- };
+typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleMeshConfig;
 
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshVertexTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshEdgeTag, Dimensions >
- {
-    enum { enabled = true };
- };
- 
- struct TestQuadrilateralMeshConfig : public Mesh2dConfigBaseType
- {
-     typedef tnlMeshQuadrilateralTag CellTag;
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- typedef tnlMeshConfigBase< 3, double, int, int, void > Mesh3dConfigBaseType;
- struct TestTetrahedronMeshConfig : public Mesh3dConfigBaseType
- {
-     typedef tnlMeshTetrahedronTag CellTag;
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshVertexTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
- {
-    enum { enabled = true };
- };
-
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
- {
-     enum { enabled = true };
- };
-
-struct TestHexahedronMeshConfig : public Mesh3dConfigBaseType
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshVertexTag, Dimensions >
 {
-   typedef tnlMeshHexahedronTag CellTag;
+   enum { enabled = true };
 };
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTriangleMeshConfig, tnlMeshEdgeTag, Dimensions >
+{
+   enum { enabled = true };
+};
+ 
+typedef tnlMeshConfigBase< tnlMeshQuadrilateralTag, 2, double, int, int, void > TestQuadrilateralMeshConfig;
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshVertexTag, Dimensions >
+{
+   enum { enabled = true };
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestQuadrilateralMeshConfig, tnlMeshEdgeTag, Dimensions >
+{
+   enum { enabled = true };
+};
+
+typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, double, int, int, void > TestTetrahedronMeshConfig;
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshVertexTag, Dimensions >
+{
+   enum { enabled = true };
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshEdgeTag, Dimensions >
+{
+   enum { enabled = true };
+};
+
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTetrahedronMeshConfig, tnlMeshTriangleTag, Dimensions >
+{
+    enum { enabled = true };
+};
+
+typedef tnlMeshConfigBase< tnlMeshHexahedronTag, 3, double, int, int, void > TestHexahedronMeshConfig;
 
 template< int Dimensions >
 struct tnlMeshSuperentityStorage< TestHexahedronMeshConfig, tnlMeshVertexTag, Dimensions >
@@ -134,11 +120,11 @@ class tnlMeshTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMeshTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfTrianglesTest", &TesterType::regularMeshOfTrianglesTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfQuadrilateralsTest", &TesterType::regularMeshOfQuadrilateralsTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "regularMeshOfHexahedronsTest", &TesterType::regularMeshOfHexahedronsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
+      suiteOfTests->addTest( new TestCallerType( "tetrahedronsTest", &TesterType::tetrahedronsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfTrianglesTest", &TesterType::regularMeshOfTrianglesTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfQuadrilateralsTest", &TesterType::regularMeshOfQuadrilateralsTest ) );
+      suiteOfTests->addTest( new TestCallerType( "regularMeshOfHexahedronsTest", &TesterType::regularMeshOfHexahedronsTest ) );
       return suiteOfTests;
    }
 

@@ -31,31 +31,21 @@
 #include <mesh/topologies/tnlMeshTriangleTag.h>
 #include <mesh/topologies/tnlMeshTetrahedronTag.h>
     
- typedef tnlMeshConfigBase< 2, double, int, int, void > MeshConfigBaseType;
- struct TestTriangleEntityTag : public MeshConfigBaseType
- {
-     typedef tnlMeshTriangleTag CellTag;
- };
- struct TestEdgeEntityTag : public MeshConfigBaseType
- {
-     typedef tnlMeshEdgeTag CellTag;
- };
- struct TestVertexEntityTag : public MeshConfigBaseType
- {
-     typedef tnlMeshVertexTag CellTag;
- };
+typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleEntityTag;
+typedef tnlMeshConfigBase< tnlMeshEdgeTag, 2, double, int, int, void > TestEdgeEntityTag;
+typedef tnlMeshConfigBase< tnlMeshVertexTag, 2, double, int, int, void > TestVertexEntityTag;
 
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshVertexTag, Dimensions >
- {
-    enum { enabled = true };
- };
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshVertexTag, Dimensions >
+{
+   enum { enabled = true };
+};
 
- template< int Dimensions >
- struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshEdgeTag, Dimensions >
- {
-    enum { enabled = true };
- };
+template< int Dimensions >
+struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshEdgeTag, Dimensions >
+{
+   enum { enabled = true };
+};
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlMeshEntityTester : public CppUnit :: TestCase
@@ -86,11 +76,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void vertexMeshEntityTest()
    {
-      typedef tnlMeshConfigBase< 2, RealType, IndexType, IndexType, void > MeshConfigBaseType;
-      struct TestEntityTag : public MeshConfigBaseType
-      {
-         typedef tnlMeshEdgeTag CellTag;
-      };
+      typedef tnlMeshConfigBase< tnlMeshEdgeTag, 2, RealType, IndexType, IndexType, void > TestEntityTag;
       typedef tnlMeshEntity< TestEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
@@ -227,23 +213,11 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void tetrahedronMeshEntityTest()
    {
-      typedef tnlMeshConfigBase< 3, RealType, IndexType, IndexType, void > MeshConfigBaseType;
-      struct TestTetrahedronEntityTag : public MeshConfigBaseType
-      {
-          typedef tnlMeshTetrahedronTag CellTag;
-      };
-      struct TestTriangleEntityTag : public MeshConfigBaseType
-      {
-          typedef tnlMeshTriangleTag CellTag;
-      };
-      struct TestEdgeEntityTag : public MeshConfigBaseType
-      {
-          typedef tnlMeshEdgeTag CellTag;
-      };
-      struct TestVertexEntityTag : public MeshConfigBaseType
-      {
-          typedef tnlMeshVertexTag CellTag;
-      };
+      typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTag;
+      typedef tnlMeshConfigBase< tnlMeshTriangleTag, 3, RealType, IndexType, IndexType, void > TestTriangleEntityTag;
+      typedef tnlMeshConfigBase< tnlMeshEdgeTag, 3, RealType, IndexType, IndexType, void > TestEdgeEntityTag;
+      typedef tnlMeshConfigBase< tnlMeshVertexTag, 3, RealType, IndexType, IndexType, void > TestVertexEntityTag;
+
       typedef tnlMeshEntity< TestTetrahedronEntityTag, tnlMeshTetrahedronTag > TetrahedronMeshEntityType;
       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
       typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;

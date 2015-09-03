@@ -18,14 +18,14 @@
 #ifndef TNLEXPLICITUPDATER_H_
 #define TNLEXPLICITUPDATER_H_
 
-#include <functions/tnlFunctionAdapter.h>
+#include <functors/tnlFunctorAdapter.h>
 
 template< typename Real,
           typename DofVector,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide >
-class tnlExplicitUpdaterTraversalUserData
+class tnlExplicitUpdaterTraverserUserData
 {
    public:
 
@@ -39,7 +39,7 @@ class tnlExplicitUpdaterTraversalUserData
 
       DofVector *u, *fu;
 
-      tnlExplicitUpdaterTraversalUserData( const Real& time,
+      tnlExplicitUpdaterTraverserUserData( const Real& time,
                                            const DifferentialOperator& differentialOperator,
                                            const BoundaryConditions& boundaryConditions,
                                            const RightHandSide& rightHandSide,
@@ -67,11 +67,11 @@ class tnlExplicitUpdater
       typedef typename DofVector::RealType RealType;
       typedef typename DofVector::DeviceType DeviceType;
       typedef typename DofVector::IndexType IndexType;
-      typedef tnlExplicitUpdaterTraversalUserData< RealType,
+      typedef tnlExplicitUpdaterTraverserUserData< RealType,
                                                    DofVector,
                                                    DifferentialOperator,
                                                    BoundaryConditions,
-                                                   RightHandSide > TraversalUserData;
+                                                   RightHandSide > TraverserUserData;
 
       template< int EntityDimensions >
       void update( const RealType& time,
@@ -82,7 +82,7 @@ class tnlExplicitUpdater
                    DofVector& u,
                    DofVector& fu ) const;
 
-      class TraversalBoundaryEntitiesProcessor
+      class TraverserBoundaryEntitiesProcessor
       {
          public:
 
@@ -91,7 +91,7 @@ class tnlExplicitUpdater
             __host__ __device__
 #endif
             static void processEntity( const MeshType& mesh,
-                                       TraversalUserData& userData,
+                                       TraverserUserData& userData,
                                        const IndexType index )
             {
                userData.boundaryConditions->setBoundaryConditions( *userData.time,
@@ -103,7 +103,7 @@ class tnlExplicitUpdater
 
       };
 
-      class TraversalInteriorEntitiesProcessor
+      class TraverserInteriorEntitiesProcessor
       {
          public:
 
@@ -112,14 +112,14 @@ class tnlExplicitUpdater
             __host__ __device__
 #endif
             static void processEntity( const MeshType& mesh,
-                                       TraversalUserData& userData,
+                                       TraverserUserData& userData,
                                        const IndexType index )
             {
                (* userData.fu )[ index ] = userData.differentialOperator->getValue( mesh,
                                                                                     index,
                                                                                     *userData.u,
                                                                                     *userData.time );
-               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( *userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
                                                                        *userData.rightHandSide,
                                                                        index,
@@ -151,11 +151,11 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlExplicitUpdaterTraversalUserData< RealType,
+      typedef tnlExplicitUpdaterTraverserUserData< RealType,
                                                    DofVector,
                                                    DifferentialOperator,
                                                    BoundaryConditions,
-                                                   RightHandSide > TraversalUserData;
+                                                   RightHandSide > TraverserUserData;
       
       template< int EntityDimensions >
       void update( const RealType& time,
@@ -166,7 +166,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                    DofVector& u,
                    DofVector& fu ) const;
 
-      class TraversalBoundaryEntitiesProcessor
+      class TraverserBoundaryEntitiesProcessor
       {
          public:
 
@@ -178,7 +178,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
             __host__ __device__
 #endif
             static void processCell( const MeshType& mesh,
-                                     TraversalUserData& userData,
+                                     TraverserUserData& userData,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {
@@ -190,9 +190,26 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                    *userData.fu );
             }
 
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            static void processFace( const MeshType& mesh,
+                                     TraverserUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
+            {
+               userData.boundaryConditions->setBoundaryConditions( *userData.time,
+                                                                   mesh,
+                                                                   index,
+                                                                   coordinates,
+                                                                   *userData.u,
+                                                                   *userData.fu );
+            }
+
+
       };
 
-      class TraversalInteriorEntitiesProcessor
+      class TraverserInteriorEntitiesProcessor
       {
          public:
 
@@ -202,7 +219,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
             __host__ __device__
 #endif
             static void processCell( const MeshType& mesh,
-                                     TraversalUserData& userData,
+                                     TraverserUserData& userData,
                                      const IndexType index,
                                      const CoordinatesType& coordinates )
             {
@@ -212,7 +229,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                    *userData.u,
                                                                                    *userData.time );
 
-               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
                                                                         *userData.rightHandSide,
                                                                         index,
@@ -220,6 +237,27 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                         *userData.time );
             }
 
+#ifdef HAVE_CUDA
+            __host__ __device__
+#endif
+            static void processFace( const MeshType& mesh,
+                                     TraverserUserData& userData,
+                                     const IndexType index,
+                                     const CoordinatesType& coordinates )
+            {
+               ( *userData.fu)[ index ] = userData.differentialOperator->getValue( mesh,
+                                                                                   index,
+                                                                                   coordinates,
+                                                                                   *userData.u,
+                                                                                   *userData.time );
+
+               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+               ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
+                                                                        *userData.rightHandSide,
+                                                                        index,
+                                                                        coordinates,
+                                                                        *userData.time );
+            }
       };
 
 };

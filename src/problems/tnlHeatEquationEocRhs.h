@@ -2,7 +2,7 @@
                           tnlHeatEquationEocRhs.h  -  description
                              -------------------
     begin                : Sep 8, 2014
-    copyright            : (C) 2014 by oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,10 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functions/tnlFunctionType.h>
+#include <functors/tnlFunctionType.h>
 
 template< typename ExactOperator,
           typename TestFunction >
@@ -39,9 +45,7 @@ class tnlHeatEquationEocRhs
 
       template< typename Vertex,
                 typename Real >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       Real getValue( const Vertex& vertex,
                      const Real& time ) const
       {

@@ -34,6 +34,7 @@ class tnlDummyProblem
       typedef Index IndexType;
       typedef tnlVector< Real, Device, Index > DofVectorType;
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef DofVectorType MeshDependentDataType;
 };
 
 

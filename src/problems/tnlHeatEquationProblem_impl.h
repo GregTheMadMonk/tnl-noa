@@ -2,7 +2,7 @@
                           tnlHeatEquationProblem_impl.h  -  description
                              -------------------
     begin                : Mar 10, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,6 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #ifndef TNLHEATEQUATIONPROBLEM_IMPL_H_
 #define TNLHEATEQUATIONPROBLEM_IMPL_H_
 
@@ -24,6 +30,7 @@
 #include <core/tnlLogger.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 
 template< typename Mesh,
@@ -108,7 +115,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
-                     DofVectorType& auxiliaryDofs )
+                     MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -124,24 +131,24 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename MatrixType >          
+   template< typename Matrix >          
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
-                   MatrixType& matrix )
+                   Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
-   RowLengthsVectorType rowLengths;
+   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
+   CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowLengthsVectorType > matrixSetter;
-   matrixSetter.template getRowLengths< Mesh::Dimensions >( mesh,
+   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
                                                             differentialOperator,
                                                             boundaryCondition,
                                                             rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setRowLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return false;
    return true;
    //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
@@ -157,7 +164,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
               DofVectorType& dofs,
-              DofVectorType& auxiliaryDofs )
+              MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
@@ -180,7 +187,8 @@ getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& u,
-                DofVectorType& fu )
+		DofVectorType& fu,
+                MeshDependentDataType& meshDependentData )
 {
    /****
     * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
@@ -212,18 +220,24 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename MatrixType >          
+    template< typename Matrix >          
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
-                      DofVectorType& u,
-                      DofVectorType& auxDofs,
-                      MatrixType& matrix,
-                      DofVectorType& b )
+                      DofVectorType& u,                      
+                      Matrix& matrix,
+                      DofVectorType& b,
+		      MeshDependentDataType& meshDependentData )
 {
-   tnlLinearSystemAssembler< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh,
+                             DofVectorType,
+                             DifferentialOperator,
+                             BoundaryCondition,
+                             RightHandSide,
+                             tnlBackwardTimeDiscretisation,
+                             Matrix > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( time,
                                                           tau,
                                                           mesh,
@@ -236,6 +250,26 @@ assemblyLinearSystem( const RealType& time,
    /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;
+   abort();*/
+   /*cout << "Matrix multiplication test ..." << endl;
+   tnlVector< RealType, DeviceType, IndexType > y;
+   y.setLike( u );
+   tnlTimerRT timer;
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      matrix.vectorProduct( u, y );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << "Scalar product test ..." << endl;
+   timer.reset();
+   RealType a;
+   timer.start();
+   for( int i = 0; i < 100; i++ )
+      a = y.scalarProduct( u );
+   timer.stop();
+   cout << "The time is " << timer.getTime();
+   cout << endl;
    abort();*/
 }
 

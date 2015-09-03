@@ -53,23 +53,19 @@ class tnlConstSharedArray : public tnlObject
               const Index _size );
 
    template< typename Array >
-   void bind( const Array& array );
+   void bind( const Array& array,
+              IndexType index = 0,
+              IndexType size = 0 );
 
    void swap( tnlConstSharedArray< Element, Device, Index >& array );
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getSize() const;
+   __cuda_callable__ Index getSize() const;
 
    Element getElement( Index i ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator[] ( Index i ) const;
+   __cuda_callable__ const Element& operator[] ( Index i ) const;
 
    tnlConstSharedArray< Element, Device, Index >& operator = ( const tnlConstSharedArray< Element, Device, Index >& array );
 
@@ -82,10 +78,7 @@ class tnlConstSharedArray : public tnlObject
    template< typename Array >
    bool operator != ( const Array& array ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element* getData() const;
+   __cuda_callable__ const Element* getData() const;
 
    /****
     * Returns true if non-zero size is set.
