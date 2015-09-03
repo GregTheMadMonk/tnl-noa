@@ -19,16 +19,16 @@
 #define TNL_INCOMPRESSIBLE_NAVIER_STOKES_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
 #include <solvers/tnlConfigTags.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include "tnlINSBoundaryConditions.h"
 #include "tnlINSRightHandSide.h"
 #include "tnlIncompressibleNavierStokes.h"
 #include "tnlIncompressibleNavierStokesProblem.h"
+#include "tnlNSFastBuildConfig.h"
 
 //typedef tnlDefaultConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef tnlNSFastBuildConfig BuildConfig;
 
 template< typename ConfigTag >
 class tnlIncompressibleNavierStokesConfig
@@ -37,6 +37,8 @@ class tnlIncompressibleNavierStokesConfig
       static void configSetup( tnlConfigDescription& config )
       {
          config.addDelimiter( "Incompressible Navier-Stokes solver settings:" );
+		 config.addEntry< double >( "viscosity", "Viscosity of the diffusion." );
+		 config.addEntry< double >( "inletVelocity", "Maximal X velocity on the inlet." );
 
          /*config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< tnlString >( "dirichlet" );

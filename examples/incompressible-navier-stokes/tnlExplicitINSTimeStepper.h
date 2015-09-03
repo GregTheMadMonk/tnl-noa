@@ -58,7 +58,7 @@ class tnlExplicitINSTimeStepper
    protected:
 
    Problem* problem;
-
+   //LinearSolver _matSolver;
    RealType timeStep;
 
 };
