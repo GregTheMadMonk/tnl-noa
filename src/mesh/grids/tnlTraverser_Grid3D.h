@@ -200,6 +200,6 @@ class tnlTraverser< tnlGrid< 3, Real, tnlCuda, Index >, 0 >
 };
 
 
-#include <mesh/tnlTraverser_Grid3D_impl.h>
+#include <mesh/grids/tnlTraverser_Grid3D_impl.h>
 
 #endif /* TNLTRAVERSER_GRID3D_H_ */

@@ -22,20 +22,20 @@
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshSubentityTraits.h>
 #include <mesh/traits/tnlMeshSuperentityTraits.h>
-#include <mesh/tnlMeshEntityInitializer.h>
+#include <mesh/initializer/tnlMeshEntityInitializer.h>
 #include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshSubentitySeedCreator.h>
-#include <mesh/tnlMeshSuperentityStorageInitializer.h>
+#include <mesh/initializer/tnlMeshSubentitySeedCreator.h>
+#include <mesh/initializer/tnlMeshSuperentityStorageInitializer.h>
 #include <mesh/tnlMeshEntityReferenceOrientation.h>
-#include <mesh/tnlMeshEntitySeed.h>
-#include <mesh/tnlMeshEntitySeedKey.h>
+#include <mesh/initializer/tnlMeshEntitySeed.h>
+#include <mesh/initializer/tnlMeshEntitySeedKey.h>
 
 template< typename MeshConfig,
           typename DimensionsTag,
-          typename EntityStorageTag = 
-             typename tnlMeshEntityTraits< MeshConfig, DimensionsTag::value >::EntityStorageTag,
-          typename EntityReferenceOrientationStorage = 
-             tnlStorageTraits< tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded > >
+          bool EntityStorage = 
+             tnlMeshEntityTraits< MeshConfig, DimensionsTag::value >::storageEnabled,
+          bool EntityReferenceOrientationStorage = 
+             tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded >
 class tnlMeshInitializerLayer;
 
 
@@ -157,8 +157,8 @@ class tnlMeshInitializer
 template< typename MeshConfig >
 class tnlMeshInitializerLayer< MeshConfig,
                                typename tnlMeshTraits< MeshConfig >::DimensionsTag,
-                               tnlStorageTraits< true >,
-                               tnlStorageTraits< false > >
+                               true,
+                               false >
    : public tnlMeshInitializerLayer< MeshConfig,
                                      typename tnlMeshTraits< MeshConfig >::DimensionsTag::Decrement >
 {
@@ -269,8 +269,8 @@ template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshInitializerLayer< MeshConfig,
                                DimensionsTag,
-                               tnlStorageTraits< true >,
-                               tnlStorageTraits< false > >
+                               true,
+                               false >
    : public tnlMeshInitializerLayer< MeshConfig,
                                      typename DimensionsTag::Decrement >
 {
@@ -383,8 +383,8 @@ template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshInitializerLayer< MeshConfig,
                                DimensionsTag,
-                               tnlStorageTraits< true >,
-                               tnlStorageTraits< true > >
+                               true,
+                               true >
    : public tnlMeshInitializerLayer< MeshConfig,
                                      typename DimensionsTag::Decrement >
 {
@@ -518,8 +518,8 @@ template< typename MeshConfig,
           typename DimensionsTag >
 class tnlMeshInitializerLayer< MeshConfig,
                                DimensionsTag,
-                               tnlStorageTraits< false >,
-                               tnlStorageTraits< false > >
+                               false,
+                               false >
    : public tnlMeshInitializerLayer< MeshConfig,
                                      typename DimensionsTag::Decrement >
 {};
@@ -532,8 +532,8 @@ class tnlMeshInitializerLayer< MeshConfig,
 template< typename MeshConfig >
 class tnlMeshInitializerLayer< MeshConfig,
                                tnlDimensionsTag< 0 >,
-                               tnlStorageTraits< true >,
-                               tnlStorageTraits< false > >
+                               true,
+                               false >
 {
    typedef tnlMesh< MeshConfig >                                        MeshType;
    typedef tnlDimensionsTag< 0 >                                    DimensionsTag;

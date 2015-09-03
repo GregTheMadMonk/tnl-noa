@@ -23,7 +23,7 @@
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/layers/tnlMeshStorageLayer.h>
 #include <mesh/config/tnlMeshConfigValidator.h>
-#include <mesh/tnlMeshInitializer.h>
+#include <mesh/initializer/tnlMeshInitializer.h>
 
 template< typename MeshConfig >
 class tnlMesh : public tnlObject,

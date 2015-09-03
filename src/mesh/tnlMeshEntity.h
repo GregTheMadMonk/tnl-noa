@@ -27,7 +27,7 @@
 #include <mesh/layers/tnlMeshSubentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
-#include <mesh/tnlMeshEntitySeed.h>
+#include <mesh/initializer/tnlMeshEntitySeed.h>
 
 template< typename MeshConfig,
           typename EntityTag >

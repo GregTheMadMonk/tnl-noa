@@ -25,7 +25,7 @@
 #include <mesh/topologies/tnlMeshTriangleTopology.h>
 #include <mesh/topologies/tnlMeshTetrahedronTopology.h>
 #include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshInitializer.h>
+#include <mesh/initializer/tnlMeshInitializer.h>
 #include <mesh/tnlMeshIntegrityChecker.h>
 #include <core/mfilename.h>
 

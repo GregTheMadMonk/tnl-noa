@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlTraverser_Grid2D.h  -  description
+                          tnlTraverser_Grid1D.h  -  description
                              -------------------
-    begin                : Jul 29, 2014
+    begin                : Jul 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,17 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef TNLTRAVERSER_GRID1D_H_
+#define TNLTRAVERSER_GRID1D_H_
 
-#ifndef TNLTRAVERSER_GRID2D_H_
-#define TNLTRAVERSER_GRID2D_H_
+#include <mesh/tnlTraverser.h>
+
+template< typename Real,
+          typename Index >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >
+{
+   public:
+      typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
+      typedef Real RealType;
+      typedef tnlHost DeviceType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processBoundaryEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processInteriorEntities( const GridType& grid,
+                                    UserData& userData ) const;
+
+};
 
 
 template< typename Real,
           typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 2 >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >
 {
    public:
-      typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
+      typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -42,57 +66,15 @@ class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 2 >
                                     UserData& userData ) const;
 };
 
+/****
+ * CUDA traversals
+ */
 template< typename Real,
           typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 1 >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
 {
    public:
-      typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
-      typedef Real RealType;
-      typedef tnlHost DeviceType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processBoundaryEntities( const GridType& grid,
-                                    UserData& userData ) const;
-
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processInteriorEntities( const GridType& grid,
-                                    UserData& userData ) const;
-};
-
-template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 0 >
-{
-   public:
-      typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
-      typedef Real RealType;
-      typedef tnlHost DeviceType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processBoundaryEntities( const GridType& grid,
-                                    UserData& userData ) const;
-
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processInteriorEntities( const GridType& grid,
-                                    UserData& userData ) const;
-};
-
-
-template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
-{
-   public:
-      typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+      typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
       typedef Real RealType;
       typedef tnlCuda DeviceType;
       typedef Index IndexType;
@@ -108,18 +90,20 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
+
 };
 
 template< typename Real,
           typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 0 >
 {
    public:
-      typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+      typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
       typedef Real RealType;
       typedef tnlCuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
+
 
       template< typename UserData,
                 typename EntitiesProcessor >
@@ -130,31 +114,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
+
 };
 
-template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 0 >
-{
-   public:
-      typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
-      typedef Real RealType;
-      typedef tnlCuda DeviceType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+#include <mesh/grids/tnlTraverser_Grid1D_impl.h>
 
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processBoundaryEntities( const GridType& grid,
-                                    UserData& userData ) const;
-
-      template< typename UserData,
-                typename EntitiesProcessor >
-      void processInteriorEntities( const GridType& grid,
-                                    UserData& userData ) const;
-};
-
-
-#include <mesh/tnlTraverser_Grid2D_impl.h>
-
-#endif /* TNLTRAVERSER_GRID2D_H_ */
+#endif /* TNLTRAVERSER_GRID1D_H_ */

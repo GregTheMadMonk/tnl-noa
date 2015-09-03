@@ -20,19 +20,18 @@
 
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/tnlDimensionsTag.h>
-#include <mesh/traits/tnlStorageTraits.h>
 
 template< typename MeshType,
           typename DimensionsTag,
-          typename EntityStorageTag = typename tnlMeshEntityTraits< typename MeshType::Config,
-                                                                      DimensionsTag::value >::EntityStorageTag >
+          bool EntityStorageTag = tnlMeshEntityTraits< typename MeshType::Config,
+                                                       DimensionsTag::value >::storageEnabled >
 class tnlMeshIntegrityCheckerLayer;
 
 template< typename MeshType,
           typename DimensionsTag >
 class tnlMeshIntegrityCheckerLayer< MeshType,
                                     DimensionsTag,
-                                    tnlStorageTraits< true > >
+                                    true >
    : public tnlMeshIntegrityCheckerLayer< MeshType,
                                           typename DimensionsTag::Decrement >
 {
@@ -62,7 +61,7 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 template< typename MeshType >
 class tnlMeshIntegrityCheckerLayer< MeshType,
                                     tnlDimensionsTag< 0 >,
-                                    tnlStorageTraits< true > >
+                                    true >
 {
    public:
       enum { dimensions = 0 };
@@ -88,7 +87,7 @@ template< typename MeshType,
           typename DimensionsTag >
 class tnlMeshIntegrityCheckerLayer< MeshType,
                                     DimensionsTag,
-                                    tnlStorageTraits< false > >
+                                    false >
    : public tnlMeshIntegrityCheckerLayer< MeshType,
                                           typename DimensionsTag::Decrement >
 {
@@ -98,7 +97,7 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 template< typename MeshType >
 class tnlMeshIntegrityCheckerLayer< MeshType,
                                     tnlDimensionsTag< 0 >,
-                                    tnlStorageTraits< false > >
+                                    false >
 {
 
 };

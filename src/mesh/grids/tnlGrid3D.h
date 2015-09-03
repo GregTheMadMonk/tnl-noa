@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGrid2D.h  -  description
+                          tnlGrid3D.h  -  description
                              -------------------
     begin                : Feb 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -15,25 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SRC_MESH_TNLGRID2D_H_
-#define SRC_MESH_TNLGRID2D_H_
+#ifndef SRC_MESH_TNLGRID3D_H_
+#define SRC_MESH_TNLGRID3D_H_
 
 template< typename Real,
           typename Device,
           typename Index >
-class tnlGrid< 2, Real, Device, Index > : public tnlObject
+class tnlGrid< 3, Real, Device, Index > : public tnlObject
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlStaticVector< 2, Real > VertexType;
-   typedef tnlStaticVector< 2, Index > CoordinatesType;
-   typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
-   typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
+   typedef tnlStaticVector< 3, Real > VertexType;
+   typedef tnlStaticVector< 3, Index > CoordinatesType;
+   typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
 
-   enum { Dimensions = 2};
+   enum { Dimensions = 3};
 
    tnlGrid();
 
@@ -45,9 +45,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    virtual tnlString getSerializationTypeVirtual() const;
 
-   void setDimensions( const Index xSize, const Index ySize );
+   void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
-   void setDimensions( const CoordinatesType& dimensions );
+   void setDimensions( const CoordinatesType& );
 
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
@@ -69,13 +69,19 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
 
-   template< int nx, int ny >
+   template< int nx, int ny, int nz >
    __cuda_callable__
    Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
 
    __cuda_callable__
-   CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const;
+   CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny, int& nz ) const;
 
+   template< int dx, int dy, int dz >
+   __cuda_callable__
+   Index getEdgeIndex( const CoordinatesType& edgeCoordinates ) const;
+
+   __cuda_callable__
+   CoordinatesType getEdgeCoordinates( const Index edgeIndex, int& dx, int& dy, int& dz ) const;
 
    __cuda_callable__
    Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
@@ -83,15 +89,15 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
 
-   template< int dx, int dy >
+   template< int dx, int dy, int dz >
    __cuda_callable__
    IndexType getCellNextToCell( const IndexType& cellIndex ) const;
 
-   template< int nx, int ny >
+   template< int nx, int ny, int nz >
    __cuda_callable__
    IndexType getFaceNextToCell( const IndexType& cellIndex ) const;
 
-   template< int nx, int ny >
+   template< int nx, int ny, int nz >
    __cuda_callable__
    IndexType getCellNextToFace( const IndexType& cellIndex ) const;
 
@@ -120,14 +126,37 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    const RealType& getHySquareInverse() const;
 
    __cuda_callable__
+   const RealType& getHz() const;
+
+   __cuda_callable__
+   const RealType& getHzSquare() const;
+
+   __cuda_callable__
+   const RealType& getHzInverse() const;
+
+   __cuda_callable__
+   const RealType& getHzSquareInverse() const;
+
+   __cuda_callable__
    const RealType& getHxHy() const;
+
+   __cuda_callable__
+   const RealType& getHxHz() const;
+
+   __cuda_callable__
+   const RealType& getHyHz() const;
 
    __cuda_callable__
    const RealType& getHxHyInverse() const;
 
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   const RealType& getHxHzInverse() const;
 
+   __cuda_callable__
+   const RealType& getHyHzInverse() const;
+
+   __cuda_callable__
+   RealType getSmallestSpaceStep() const;
 
    /****
     * The type Vertex can have different Real type.
@@ -148,14 +177,21 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    Vertex getCellCenter( const IndexType& cellIndex ) const;
 
-
 #ifdef HAVE_NOT_CXX11
-   template< int nx, int ny, typename Vertex >
+   template< int nx, int ny, int nz, typename Vertex >
 #else
-   template< int nx, int ny, typename Vertex = VertexType >
+   template< int nx, int ny, int nz, typename Vertex = VertexType >
 #endif
    __cuda_callable__
    Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
+
+#ifdef HAVE_NOT_CXX11
+   template< int dx, int dy, int dz, typename Vertex >
+#else
+   template< int dx, int dy, int dz, typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
@@ -170,13 +206,27 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
 #ifdef HAVE_NOT_CXX11
    template< int nx,
-             int ny >
+             int ny,
+             int nz >
 #else
    template< int nx = 1,
-             int ny = 1 >
+             int ny = 1,
+             int nz = 1 >
 #endif
    __cuda_callable__
    Index getNumberOfFaces() const;
+
+#ifdef HAVE_NOT_CXX11
+   template< int dx,
+             int dy,
+             int dz >
+#else
+   template< int dx = 1,
+             int dy = 1,
+             int dz = 1 >
+#endif
+   __cuda_callable__
+   Index getNumberOfEdges() const;
 
    __cuda_callable__
    Index getNumberOfVertices() const;
@@ -187,9 +237,13 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    bool isBoundaryCell( const IndexType& cellIndex ) const;
 
-   template< int nx, int ny >
+   template< int nx, int ny, int nz >
    __cuda_callable__
    bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
+
+   template< int dx, int dy, int dz >
+   __cuda_callable__
+   bool isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const;
 
    __cuda_callable__
    bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
@@ -232,22 +286,28 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    protected:
 
-   __cuda_callable__
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
 
    VertexType origin, proportions, cellProportions;
 
-   IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
+   IndexType numberOfCells,
+             numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
+             numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
+             numberOfVertices;
+   IndexType cellZNeighboursStep;
 
    RealType hx, hxSquare, hxInverse, hxSquareInverse,
             hy, hySquare, hyInverse, hySquareInverse,
-            hxhy, hxhyInverse;
+            hz, hzSquare, hzInverse, hzSquareInverse,
+            hxhy, hxhz, hyhz,
+            hxhyInverse, hxhzInverse, hyhzInverse;
+
 
 
 };
 
-#include <mesh/tnlGrid2D_impl.h>
+#include <mesh/grids/tnlGrid3D_impl.h>
 
-#endif /* SRC_MESH_TNLGRID2D_H_ */
+#endif /* SRC_MESH_TNLGRID3D_H_ */
