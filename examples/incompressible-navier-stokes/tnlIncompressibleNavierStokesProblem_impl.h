@@ -35,10 +35,11 @@ bool
 tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
+	visc = parameters.getParameter< RealType >( "viscosity" );
    /*if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
-      return false;
-   return true;*/
+	  return false;*/
+   return true;
 }
 
 template< typename Mesh,
@@ -76,9 +77,9 @@ tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, Di
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
-   const IndexType uDofs = mesh.getNumberOfFaces() / 2;
-   this->u[ 0 ].bind( dofVector.getData(), uDofs );
-   this->u[ 1 ].bind( &dofVector.getData()[ uDofs ], uDofs );
+   //const IndexType uDofs = mesh.getNumberOfFaces() / 2;
+   /*this->u[ 0 ].bind( dofVector.getData(), uDofs );
+   this->u[ 1 ].bind( &dofVector.getData()[ uDofs ], uDofs );*/
 }
 
 /*template< typename Mesh,
@@ -107,9 +108,46 @@ setInitialCondition( const tnlParameterContainer& parameters,
 {
    this->bindDofs( mesh, dofs );
    this->bindAuxiliaryDofs( mesh, dofs );
-   this->p.setValue( 0.0 );
-   this->u[ 0 ].setValue( 0.0 );
-   this->u[ 1 ].setValue( 0.0 );
+
+   vel.setSize(mesh.getNumberOfFaces());
+   vel0.setSize(mesh.getNumberOfFaces());
+   p.setSize(mesh.getNumberOfCells());
+   p_rhs.setSize(mesh.getNumberOfCells());
+
+   vel.setValue(0); vel0.setValue(0);
+   p.setValue(0); p_rhs.setValue(0);
+
+   RealType initVel = parameters.getParameter< RealType >( "inletVelocity" );
+   int nx = mesh.getDimensions().x(), ny=mesh.getDimensions().y();
+   typename MatrixType::RowLengthsVector rowLenghts;
+   IndexType N = mesh.getNumberOfCells();
+   IndexType Nf = mesh.getNumberOfFaces();
+   rowLenghts.setSize(N);
+   rowLenghts.setValue(5);
+   poissonMat.setDimensions( N, N ); diffuseMat.setDimensions( Nf, Nf );
+   poissonMat.setRowLengths(rowLenghts);
+   rowLenghts.setSize(Nf);
+   rowLenghts.setValue(5);
+   diffuseMat.setRowLengths(rowLenghts);
+   for ( int x=0 ; x<nx ; x++ ) for (int y=0 ; y<ny ; y++ )
+   {
+	   int i = mesh.getCellIndex(typename MeshType::CoordinatesType(x,y));
+	   if (y==ny-1 && x > 0 && x < nx)
+	   {
+		   float xi = (x-1.0)/(nx-1.0);
+		   vel[mesh.template getFaceNextToCell<-1,0>(i)] = (1-square((xi-0.5)*2))*initVel; //inital conditon for vel
+	   }
+	   if (x==0 || y==0 || x==nx-1 || y==ny-1)
+	   {
+		   poissonMat.setElement(i,i,1);
+	   }else{
+		   poissonMat.setElement(i,i,4);
+		   poissonMat.setElement(i,mesh.getCellIndex(typename MeshType::CoordinatesType(x-1,y)),-1);
+		   poissonMat.setElement(i,mesh.getCellIndex(typename MeshType::CoordinatesType(x+1,y)),-1);
+		   poissonMat.setElement(i,mesh.getCellIndex(typename MeshType::CoordinatesType(x,y-1)),-1);
+		   poissonMat.setElement(i,mesh.getCellIndex(typename MeshType::CoordinatesType(x,y+1)),-1);
+	   }
+   }
    
    /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
@@ -124,7 +162,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename MatrixType >          
+  // template< typename MatrixType >
 bool
 tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
@@ -165,7 +203,8 @@ makeSnapshot( const RealType& time,
    this->bindAuxiliaryDofs( mesh, auxiliaryDofs );
    //cout << "dofs = " << dofs << endl;
    tnlString fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
+   FileNameBaseNumberEnding( "u-", step, 5, ".vtk", fileName );
+   save("test.txt", mesh);
    //if( ! this->solution.save( fileName ) )
    //   return false;
    return true;
@@ -214,7 +253,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename MatrixType >          
+   // template< typename MatrixType >
 void
 tnlIncompressibleNavierStokesProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
@@ -240,5 +279,6 @@ assemblyLinearSystem( const RealType& time,
    cout << endl << u << endl;
    abort();*/
 }
+
 
 #endif /* TNLINCOMPRESSIBLENAVIERSTOKESPROBLEM_IMPL_H_ */

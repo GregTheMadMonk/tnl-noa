@@ -34,7 +34,8 @@ typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
       RealType err = fabs( matrix. rowVectorProduct( i, x ) - b[ i ] );
       res += err * err;
    }
-   return sqrt( res ) / bNorm;
+   if (bNorm!=0.0)  return sqrt( res ) / bNorm;
+   return sqrt(res);
 }
 
 #endif /* TNLLINEARRESIDUEGETTER_IMPL_H_ */

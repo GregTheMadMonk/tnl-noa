@@ -18,6 +18,7 @@
 #ifndef EXAMPLES_INCOMPRESSIBLE_NAVIER_STOKES_TNLEXPLICITINSTIMESTEPPER_IMPL_H_
 #define EXAMPLES_INCOMPRESSIBLE_NAVIER_STOKES_TNLEXPLICITINSTIMESTEPPER_IMPL_H_
 
+#include "tnlExplicitINSTimeStepper.h"
 template< typename Problem,
           typename LinearSystemSolver >
 tnlExplicitINSTimeStepper< Problem, LinearSystemSolver >::
@@ -32,7 +33,7 @@ template< typename Problem,
 void
 tnlExplicitINSTimeStepper< Problem, LinearSystemSolver >::
 configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+             const tnlString& prefix ) //Pridavani parametru prikazove radky
 {
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
 }
@@ -42,7 +43,7 @@ template< typename Problem,
 bool
 tnlExplicitINSTimeStepper< Problem, LinearSystemSolver >::
 setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+      const tnlString& prefix ) //Nacteni parametru prikazove radky
 {
    //this->verbose = parameters.getParameter< bool >( "verbose" );
    return true;
@@ -52,7 +53,7 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 tnlExplicitINSTimeStepper< Problem, LinearSystemSolver >::
-init( const MeshType& mesh )
+init( const MeshType& mesh ) //Inicializace time stepperu - vytvoreni matic podle site
 {
    /*cout << "Setting up the linear system...";
    if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
@@ -77,7 +78,7 @@ template< typename Problem,
           typename LinearSystemSolver >
 void
 tnlExplicitINSTimeStepper< Problem, LinearSystemSolver >::
-setProblem( ProblemType& problem )
+setProblem( ProblemType& problem ) //Nesahej
 {
    this -> problem = &problem;
 };
@@ -114,16 +115,30 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       DofVectorType& auxiliaryDofVector )   //Hlavni cast, kterou bude potreba menit
 {
    tnlAssert( this->problem != 0, );
-   /*RealType t = time;
-   this->linearSystemSolver->setMatrix( this->matrix );
+   RealType t = time;
+   //this->_matSolver.setMatrix(this->matrix);
    while( t < stopTime )
    {
-      RealType currentTau = Min( this->timeStep, stopTime - t );
 
-      if( ! this->problem->preIterate( t,
+      RealType currentTau = Min( this->timeStep, stopTime - t );
+	  currentTau = 0.005;
+
+	  this->problem->diffuse(currentTau,mesh);
+	  this->problem->project(mesh);
+	  this->problem->advect(currentTau, mesh);
+	  this->problem->project(mesh);
+
+	  /*/if( ! this->_matSolver->template solve< DofVectorType, tnlLinearResidueGetter< typename Problem::MatrixType, DofVectorType > >( _rightHandSide, auxiliaryDofVector ) )
+	  {
+		 cerr << endl << "The linear system solver did not converge." << endl;
+		 return false;
+	  }*/
+	  //this->problem->Project(auxiliaryDofVector);
+
+	  /*if( ! this->problem->preIterate( t,
                                        currentTau,
                                        mesh,
                                        dofVector,
@@ -143,7 +158,7 @@ solve( const RealType& time,
                                            this->rightHandSide );
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
-      if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
+	  if( ! this->matSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
          cerr << endl << "The linear system solver did not converge." << endl;
          return false;
@@ -158,9 +173,9 @@ solve( const RealType& time,
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;
-      }
+	  }*/
       t += currentTau;
-   }*/
+   }
    return true;
 }
 
