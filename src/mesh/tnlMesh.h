@@ -2,7 +2,7 @@
                           tnlMesh.h  -  description
                              -------------------
     begin                : Feb 16, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -25,7 +25,8 @@
 #include <mesh/config/tnlMeshConfigValidator.h>
 #include <mesh/initializer/tnlMeshInitializer.h>
 
-template< typename MeshConfig >
+template< typename MeshConfig > //,
+          //typename Device = tnlHost >
 class tnlMesh : public tnlObject,
                 public tnlMeshStorageLayers< MeshConfig >
 {
@@ -34,13 +35,10 @@ class tnlMesh : public tnlObject,
    typedef tnlMeshTraits< MeshConfig >                       MeshTraits;
    typedef typename tnlMeshTraits< MeshConfig >::PointType   PointType;
    static const int dimensions = MeshTraits::meshDimensions;
-   template< typename Dimensions > using EntityTraits = typename MeshTraits::template EntityTraits< Dimensions::value >;
+   template< int Dimensions > using EntityTraits = typename MeshTraits::template EntityTraits< Dimensions >;
 
-   static tnlString getType()
-   {
-      return tnlString( "tnlMesh< ") + MeshConfig::getType() + " >";
-   }
-
+   static tnlString getType();
+   
    virtual tnlString getTypeVirtual() const
    {
       return this->getType();
@@ -71,20 +69,8 @@ class tnlMesh : public tnlObject,
       return true;
    }
 
-   /*template< int Dimensions >
-   struct EntitiesTraits
-   {
-      typedef tnlDimensionsTag< Dimensions >                       DimensionsTag;
-      typedef tnlMeshEntityTraits< MeshConfig, DimensionsTag >    MeshEntitiesTraits;
-      typedef typename MeshEntitiesTraits::EntityType                       Type;
-      typedef typename MeshEntitiesTraits::ContainerType              ContainerType;
-      typedef typename MeshEntitiesTraits::SharedContainerType        SharedContainerType;
-      typedef typename ContainerType::IndexType                       GlobalIndexType;
-      typedef typename ContainerType::ElementType                     EntityType;
-      static const bool available = MeshConfig::entityStorage( Dimensions );
-   };
-   typedef EntitiesTraits< dimensions > CellTraits;*/
-
+   static const int getDimensions();
+   
    template< int Dimensions >
    bool entitiesAvalable() const
    {
@@ -182,5 +168,7 @@ class tnlMesh : public tnlObject,
       tnlMeshConfigValidator< MeshConfig > configValidator;
 };
 
+
+#include <mesh/tnlMesh_impl.h>
 
 #endif /* TNLMESH_H_ */

@@ -23,15 +23,15 @@
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
 
-template< typename MeshConfig >
-class tnlMesh;
+//template< typename MeshConfig >
+//class tnlMesh;
 
-template< typename DimensionsTag,
+/*template< typename DimensionsTag,
           typename Device,
           typename MeshConfig,
           typename EntityStorageTag = typename tnlMeshEntityTraits< MeshConfig,
                                                                       DimensionsTag::value >::EntityStorageTag >
-class tnlMeshStorageTag;
+class tnlMeshStorageTag;*/
 
 template< typename MeshConfig,
           typename DimensionsTag,

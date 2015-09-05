@@ -33,7 +33,7 @@
 #include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
 #include <mesh/topologies/tnlMeshTetrahedronTopology.h>
 #include <mesh/topologies/tnlMeshHexahedronTopology.h>
-#include <mesh/tnlMeshInitializer.h>
+#include <mesh/initializer/tnlMeshInitializer.h>
 #include <mesh/tnlMeshBuilder.h>
 
 class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >

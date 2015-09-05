@@ -45,11 +45,11 @@ class tnlMeshTraits
       typedef Device                                                               DeviceType;
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
-      
-      typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
-      typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >                        VertexType;
+            
       typedef typename MeshConfig::CellTopology                                    CellTopology;
-      typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellEntity;
+      typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellType;
+      typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >                   VertexType;
+      typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
       
       typedef tnlArray< PointType, tnlHost, GlobalIndexType >                      PointArrayType;

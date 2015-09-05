@@ -30,6 +30,9 @@
 #include <mesh/initializer/tnlMeshEntitySeed.h>
 #include <mesh/initializer/tnlMeshEntitySeedKey.h>
 
+template< typename MeshConfig >
+class tnlMesh;
+
 template< typename MeshConfig,
           typename DimensionsTag,
           bool EntityStorage = 

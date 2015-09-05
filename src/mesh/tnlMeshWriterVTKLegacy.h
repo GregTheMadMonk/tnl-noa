@@ -90,7 +90,7 @@ class tnlMeshWriterVTKLegacy
                           MeshType& mesh,
                           bool verbose )
    {
-      typedef typename MeshType::MeshTraits::CellEntity CellEntityType;
+      typedef typename MeshType::MeshTraits::CellType CellType;
       file << "# vtk DataFile Version 2.0" << endl;
       file << "TNL Mesh" << endl;
       file << "ASCII" << endl;
@@ -122,7 +122,7 @@ class tnlMeshWriterVTKLegacy
       file << "CELL_TYPES " <<  mesh.template getNumberOfCells() << endl;      
       for( int i = 0; i < mesh.template getNumberOfCells(); i++ )      
       {
-         file << tnlMeshEntityVTKType< CellEntityType >::VTKType << endl;
+         file << tnlMeshEntityVTKType< CellType >::VTKType << endl;
       }
       file << endl;
       return true;
