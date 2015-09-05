@@ -33,60 +33,39 @@ class tnlMesh : public tnlObject,
    public:
    typedef MeshConfig                                        Config;
    typedef tnlMeshTraits< MeshConfig >                       MeshTraits;
+   typedef typename tnlMeshTraits< MeshConfig >::CellType    CellType;
    typedef typename tnlMeshTraits< MeshConfig >::PointType   PointType;
    static const int dimensions = MeshTraits::meshDimensions;
    template< int Dimensions > using EntityTraits = typename MeshTraits::template EntityTraits< Dimensions >;
 
    static tnlString getType();
    
-   virtual tnlString getTypeVirtual() const
-   {
-      return this->getType();
-   }
-
-   using tnlObject::save;
-   using tnlObject::load;
-
-   bool save( tnlFile& file ) const
-   {
-      if( ! tnlObject::save( file ) ||
-          ! entitiesStorage.save( file ) )
-      {
-         cerr << "Mesh saving failed." << endl;
-         return false;
-      }
-      return true;
-   }
-
-   bool load( tnlFile& file )
-   {
-      if( ! tnlObject::load( file ) ||
-          ! entitiesStorage.load( file ) )
-      {
-         cerr << "Mesh loading failed." << endl;
-         return false;
-      }
-      return true;
-   }
-
-   static const int getDimensions();
+   virtual tnlString getTypeVirtual() const;
    
-   template< int Dimensions >
-   bool entitiesAvalable() const
-   {
-      return MeshTraits::template EntityTraits< Dimensions >::available;
-   }
+   static constexpr int getDimensions();
 
    template< int Dimensions >
-   typename MeshTraits::template EntityTraits< Dimensions >::GlobalIndexType getNumberOfEntities() const
-   {
-      return entitiesStorage.getNumberOfEntities( tnlDimensionsTag< Dimensions >() );
-   }
+   bool entitiesAvalable() const;
 
-   typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType getNumberOfCells() const
-   {
-      return entitiesStorage.getNumberOfEntities( tnlDimensionsTag< dimensions >() );
-   }
+   // TODO: jeden GlobalIndexType a LocalIndexType pro vsechny entity
+   
+   typename EntityTraits< dimensions >::GlobalIndexType getNumberOfCells() const;
+
+   template< int Dimensions >
+   typename EntityTraits< Dimensions >::GlobalIndexType getNumberOfEntities() const;
+
+   CellType& getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType entityIndex );
+
+   const CellType& getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType entityIndex ) const;
+
+   
+
+   bool save( tnlFile& file ) const;
+
+   bool load( tnlFile& file );   
+   
+
+
 
    template< int Dimensions >
       typename MeshTraits::template EntityTraits< Dimensions >::EntityType&
@@ -116,17 +95,6 @@ class tnlMesh : public tnlObject,
       return entitiesStorage.getEntities( tnlDimensionsTag< Dimensions >() );
    }
 
-   typename MeshTraits::template EntityTraits< dimensions >::EntityType&
-      getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType entityIndex )
-   {
-      return entitiesStorage.getEntity( tnlDimensionsTag< dimensions >(), entityIndex );
-   }
-
-   const typename MeshTraits::template EntityTraits< dimensions >::EntityType&
-      getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType entityIndex ) const
-   {
-      return entitiesStorage.getEntity( tnlDimensionsTag< dimensions >(), entityIndex );
-   }
 
    void print( ostream& str ) const
    {
@@ -160,6 +128,10 @@ class tnlMesh : public tnlObject,
       tnlMeshInitializer< MeshConfig> meshInitializer;
       return meshInitializer.createMesh( points, cellSeeds, *this );
    }
+   
+   
+   using tnlObject::save;
+   using tnlObject::load;
    
    protected:
             
