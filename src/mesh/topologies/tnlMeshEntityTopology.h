@@ -32,21 +32,21 @@ struct tnlSubentityVertex;
 
 
 template< typename MeshConfig,
-          typename DimensionsTag >
+          int Dimensions >
 class tnlMeshEntityTopology
 {
    public:
 
    typedef typename tnlMeshSubtopology< typename MeshConfig::CellTopology,
-                                    DimensionsTag::value >::Topology Tag;
+                                        Dimensions >::Topology Topology;
 };
 
 template< typename MeshConfig >
 class tnlMeshEntityTopology< MeshConfig,
-                          tnlDimensionsTag< MeshConfig::CellTopology::dimensions > >
+                             MeshConfig::CellTopology::dimensions >
 {
    public:
 
-   typedef typename MeshConfig::CellTopology Tag;
+   typedef typename MeshConfig::CellTopology Topology;
 };
 #endif /* TNLMESHENTITYTOPOLOGY_H_ */

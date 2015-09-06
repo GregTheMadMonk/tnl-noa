@@ -57,7 +57,7 @@ entitiesAvalable() const
 
 template< typename MeshConfig >   
    template< int Dimensions >
-typename tnlMesh< MeshConfig >::template EntityTraits< Dimensions >::GlobalIndexType 
+typename tnlMesh< MeshConfig >::GlobalIndexType 
 tnlMesh< MeshConfig >::
 getNumberOfEntities() const
 {
@@ -65,7 +65,7 @@ getNumberOfEntities() const
 }
 
 template< typename MeshConfig >   
-typename tnlMesh< MeshConfig >::template EntityTraits< tnlMesh< MeshConfig >::dimensions >::GlobalIndexType
+typename tnlMesh< MeshConfig >::GlobalIndexType
 tnlMesh< MeshConfig >::
 getNumberOfCells() const
 {
@@ -75,7 +75,7 @@ getNumberOfCells() const
 template< typename MeshConfig >   
 typename tnlMesh< MeshConfig >::CellType&
 tnlMesh< MeshConfig >::
-getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType cellIndex )
+getCell( const GlobalIndexType cellIndex )
 {
    return entitiesStorage.getEntity( tnlDimensionsTag< dimensions >(), cellIndex );
 }
@@ -83,13 +83,28 @@ getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalI
 template< typename MeshConfig >   
 const typename tnlMesh< MeshConfig >::CellType&
 tnlMesh< MeshConfig >::
-getCell( const typename MeshTraits::template EntityTraits< dimensions >::GlobalIndexType cellIndex ) const
+getCell( const GlobalIndexType cellIndex ) const
 {
    return entitiesStorage.getEntity( tnlDimensionsTag< dimensions >(), cellIndex );
 }
 
+template< typename MeshConfig >
+   template< int Dimensions >
+typename tnlMesh< MeshConfig >::template EntityType< Dimensions >&
+tnlMesh< MeshConfig >::
+getEntity( const GlobalIndexType entityIndex )
+{
+   return entitiesStorage.getEntity( tnlDimensionsTag< Dimensions >(), entityIndex );
+}
 
-   
+template< typename MeshConfig >
+   template< int Dimensions >
+const typename tnlMesh< MeshConfig >::template EntityType< Dimensions >&
+tnlMesh< MeshConfig >::
+getEntity( const GlobalIndexType entityIndex ) const
+{
+   return entitiesStorage.getEntity( tnlDimensionsTag< Dimensions >(), entityIndex );
+}
    
 template< typename MeshConfig >
 bool
@@ -118,6 +133,52 @@ load( tnlFile& file )
    }
    return true;
 }
+
+template< typename MeshConfig >
+void
+tnlMesh< MeshConfig >::
+print( ostream& str ) const
+{
+   entitiesStorage.print( str );
+}
+
+template< typename MeshConfig >
+bool
+tnlMesh< MeshConfig >::
+operator==( const tnlMesh& mesh ) const
+{
+   return entitiesStorage.operator==( mesh.entitiesStorage );
+}
+
+template< typename MeshConfig >
+   template< typename DimensionsTag >
+typename tnlMesh< MeshConfig >::template EntityTraits< DimensionsTag::value >::StorageArrayType&
+tnlMesh< MeshConfig >::
+entitiesArray()
+{
+   return entitiesStorage.entitiesArray( DimensionsTag() ); 
+}
+
+template< typename MeshConfig >
+   template< typename DimensionsTag, typename SuperDimensionsTag >
+typename tnlMesh< MeshConfig >::MeshTraits::GlobalIdArrayType& 
+tnlMesh< MeshConfig >::
+superentityIdsArray()
+{
+   return entitiesStorage.template superentityIdsArray< SuperDimensionsTag >( DimensionsTag() ); 
+}
+
+template< typename MeshConfig >
+bool 
+tnlMesh< MeshConfig >::
+init( const typename tnlMesh< MeshConfig >::MeshTraits::PointArrayType& points,
+      const typename tnlMesh< MeshConfig >::MeshTraits::CellSeedArrayType& cellSeeds )
+{
+   tnlMeshInitializer< MeshConfig> meshInitializer;
+   return meshInitializer.createMesh( points, cellSeeds, *this );
+}
+
+
 
 
 #endif	/* TNLMESH_IMPL_H */

@@ -94,44 +94,4 @@ struct tnlMeshConfigBase
    static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
-#ifdef UNDEF
-/****
- * Explicit storage of all mesh entities by default.
- * To disable it, write your own specialization with given
- * dimensions and config tag.
- */
-template< typename MeshConfig,
-          int Dimensions >
-struct tnlMeshEntityStorage
-{
-   enum { enabled = true };
-};
-
-/****
- * By default, ALL SUBENTITIES of a mesh entity ARE STORED
- * provided that they are stored in the mesh.
- * Write your own specialization if you do not want so.
- */
-template< typename MeshConfig,
-          typename EntityTag,
-          int Dimensions >
-struct tnlMeshSubentityStorage
-{
-   enum { enabled = tnlMeshEntityStorage< MeshConfig, Dimensions >::enabled };
-};
-
-/***
- * By default, NO SUPERENTITIES of any mesh entity ARE STORED.
- * Write your own specialization if you need to stored them.
- */
-template< typename MeshConfig,
-          typename EntityTag,
-          int Dimensions >
-struct tnlMeshSuperentityStorage
-{
-   enum { enabled = false };
-};
-
-#endif
-
 #endif /* TNLMESHCONFIGBASE_H_ */

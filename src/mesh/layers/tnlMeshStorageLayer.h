@@ -54,14 +54,14 @@ class tnlMeshStorageLayer< MeshConfig,
                            true >
    : public tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >,
      public tnlMeshSuperentityStorageLayers< MeshConfig, 
-                                             typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::Tag >
+                                             typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology >
 {
    public:
 
    typedef tnlMeshStorageLayer< MeshConfig,
                                 typename DimensionsTag::Decrement >   BaseType;
    typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
-                                            typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::Tag > SuperentityStorageBaseType;
+                                            typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
    
    typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
    typedef typename MeshTraits::template EntityTraits< DimensionsTag::value >   EntityTraits; 

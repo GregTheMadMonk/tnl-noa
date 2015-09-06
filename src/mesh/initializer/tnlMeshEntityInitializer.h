@@ -26,13 +26,13 @@ template< typename MeshConfig >
 class tnlMeshInitializer;
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag,
-          bool SubentityStorage = tnlMeshSubentityTraits< MeshConfig, EntityTag, DimensionsTag::value >::storageEnabled,
-          bool SubentityOrientationStorage = tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::orientationEnabled,
+          bool SubentityStorage = tnlMeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >::storageEnabled,
+          bool SubentityOrientationStorage = tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::orientationEnabled,
           bool SuperentityStorage = tnlMeshSuperentityTraits< MeshConfig,
-                                                              typename tnlMeshSubentityTraits< MeshConfig, EntityTag, DimensionsTag::value >::SubentityTag,
-                                                              EntityTag::dimensions >::storageEnabled >
+                                                              typename tnlMeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >::SubentityTag,
+                                                              EntityTopology::dimensions >::storageEnabled >
 class tnlMeshEntityInitializerLayer;
 
 template< typename MeshConfig,

@@ -40,8 +40,8 @@ class tnlMeshSuperentityTraits
    static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTag >( EntityTag(), Dimensions );
    //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
    typedef tnlMeshEntity< MeshConfig, EntityTag >                            EntityType;
-   typedef tnlMeshEntityTraits< MeshConfig, Dimensions >                   EntityTraits;
-   typedef typename EntityTraits::Tag                                        SuperentityTag;
+   typedef tnlMeshEntityTraits< MeshConfig, Dimensions >                     EntityTraits;
+   typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
    typedef typename EntityTraits::EntityType                                 SuperentityType;
 
 
