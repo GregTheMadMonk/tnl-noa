@@ -23,16 +23,6 @@
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
 
-//template< typename MeshConfig >
-//class tnlMesh;
-
-/*template< typename DimensionsTag,
-          typename Device,
-          typename MeshConfig,
-          typename EntityStorageTag = typename tnlMeshEntityTraits< MeshConfig,
-                                                                      DimensionsTag::value >::EntityStorageTag >
-class tnlMeshStorageTag;*/
-
 template< typename MeshConfig,
           typename DimensionsTag,
           bool EntityStorage = tnlMeshEntityTraits< MeshConfig, DimensionsTag::value >::storageEnabled >
@@ -41,8 +31,7 @@ class tnlMeshStorageLayer;
 
 template< typename MeshConfig >
 class tnlMeshStorageLayers
-   : public tnlMeshStorageLayer< MeshConfig,
-                                 typename tnlMeshTraits< MeshConfig >::DimensionsTag >
+   : public tnlMeshStorageLayer< MeshConfig, typename tnlMeshTraits< MeshConfig >::DimensionsTag >
 {
 };
 
@@ -58,97 +47,96 @@ class tnlMeshStorageLayer< MeshConfig,
 {
    public:
 
-   typedef tnlMeshStorageLayer< MeshConfig,
-                                typename DimensionsTag::Decrement >   BaseType;
-   typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
-                                            typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
-   
-   typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
-   typedef typename MeshTraits::template EntityTraits< DimensionsTag::value >   EntityTraits; 
-   
-   typedef typename EntityTraits::StorageArrayType                              StorageArrayType;
-   typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
-   typedef typename EntityTraits::GlobalIndexType                               GlobalIndexType;
-   typedef typename EntityTraits::EntityType                                    EntityType;
+      static const int Dimensions = DimensionsTag::value;
+      typedef tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >   BaseType;
+      typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
+                                               typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
+      typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
+      typedef typename MeshTraits::template EntityTraits< Dimensions >             EntityTraits; 
+
+      typedef typename EntityTraits::StorageArrayType                              StorageArrayType;
+      typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
+      typedef typename EntityTraits::GlobalIndexType                               GlobalIndexType;
+      typedef typename EntityTraits::EntityType                                    EntityType;
 
 
-   using BaseType::getNumberOfEntities;
-   using BaseType::getEntity;
-   using BaseType::getEntities;
+      using BaseType::getNumberOfEntities;
+      using BaseType::getEntity;
+      using BaseType::getEntities;
 
-   tnlMeshStorageLayer()
-   {
-      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::entities" );
-      this->entitiesAccess.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::entitiesAccess" );
-   }
-
-   GlobalIndexType getNumberOfEntities( DimensionsTag ) const
-   {
-      return this->entities.getSize();
-   }
-
-   EntityType& getEntity( DimensionsTag,
-                          const GlobalIndexType entityIndex )
-   {
-      return this->entities[ entityIndex ];
-   }
-
-   const EntityType& getEntity( DimensionsTag,
-                                const GlobalIndexType entityIndex ) const
-   {
-      return this->entities[ entityIndex ];
-   }
-
-   AccessArrayType& getEntities( DimensionsTag )
-   {
-      return this->sharedEntities;
-   }
-
-   const AccessArrayType& getEntities( DimensionsTag ) const
-   {
-      return this->sharedEntities;
-   }
-
-   bool save( tnlFile& file ) const
-   {
-      if( ! BaseType::save( file ) ||
-          ! this->entities.save( file ) )
+      tnlMeshStorageLayer()
       {
-         cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
-         return false;
+         this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::entities" );
+         this->entitiesAccess.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::entitiesAccess" );
       }
-      return true;
-   }
 
-   bool load( tnlFile& file )
-   {
-      //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << endl;
-      if( ! BaseType::load( file ) ||
-          ! this->entities.load( file ) )
+      GlobalIndexType getNumberOfEntities( DimensionsTag ) const
       {
-         cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
-         return false;
+         return this->entities.getSize();
       }
-      this->entitiesAccess.bind( this->entities );
-      return true;
-   }
 
-   void print( ostream& str ) const
-   {
-      BaseType::print( str );
-      str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
-      for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
+      EntityType& getEntity( DimensionsTag,
+                             const GlobalIndexType entityIndex )
       {
-         str << i << " ";
-         entities[ i ].print( str );
-         str << endl;
+         return this->entities[ entityIndex ];
       }
-   }
 
-   bool operator==( const tnlMeshStorageLayer& meshLayer ) const
-   {
-      return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
-   }
+      const EntityType& getEntity( DimensionsTag,
+                                   const GlobalIndexType entityIndex ) const
+      {
+         return this->entities[ entityIndex ];
+      }
+
+      AccessArrayType& getEntities( DimensionsTag )
+      {
+         return this->sharedEntities;
+      }
+
+      const AccessArrayType& getEntities( DimensionsTag ) const
+      {
+         return this->sharedEntities;
+      }
+
+      bool save( tnlFile& file ) const
+      {
+         if( ! BaseType::save( file ) ||
+             ! this->entities.save( file ) )
+         {
+            cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+            return false;
+         }
+         return true;
+      }
+
+      bool load( tnlFile& file )
+      {
+         //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << endl;
+         if( ! BaseType::load( file ) ||
+             ! this->entities.load( file ) )
+         {
+            cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+            return false;
+         }
+         this->entitiesAccess.bind( this->entities );
+         return true;
+      }
+
+      void print( ostream& str ) const
+      {
+         BaseType::print( str );
+         str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
+         for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
+         {
+            str << i << " ";
+            entities[ i ].print( str );
+            str << endl;
+         }
+      }
+
+      bool operator==( const tnlMeshStorageLayer& meshLayer ) const
+      {
+         return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
+      }
 
 
    protected:
@@ -177,18 +165,13 @@ class tnlMeshStorageLayer< MeshConfig,
 
 template< typename MeshConfig,
           typename DimensionsTag >
-class tnlMeshStorageLayer< MeshConfig,
-                           DimensionsTag,
-                           false >
-   : public tnlMeshStorageLayer< MeshConfig,
-                                 typename DimensionsTag::Decrement >
+class tnlMeshStorageLayer< MeshConfig, DimensionsTag, false >
+   : public tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement  >
 {
 };
 
 template< typename MeshConfig >
-class tnlMeshStorageLayer< MeshConfig,
-                           tnlDimensionsTag< 0 >,
-                           true > :
+class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    public tnlMeshSuperentityStorageLayers< MeshConfig, 
                                            tnlMeshVertexTopology >
 
@@ -201,7 +184,7 @@ class tnlMeshStorageLayer< MeshConfig,
                                             tnlMeshVertexTopology > SuperentityStorageBaseType;
 
    typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
-   typedef typename MeshTraits::template EntityTraits< DimensionsTag::value >   EntityTraits; 
+   typedef typename MeshTraits::template EntityTraits< 0 >                      EntityTraits; 
    
    typedef typename EntityTraits::StorageArrayType                              StorageArrayType;
    typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
@@ -337,9 +320,7 @@ class tnlMeshStorageLayer< MeshConfig,
  * Forces termination of recursive inheritance (prevents compiler from generating huge error logs)
  */
 template< typename MeshConfig >
-class tnlMeshStorageLayer< MeshConfig,
-                           tnlDimensionsTag< 0 >,
-                           false >
+class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, false >
 {
 };
 

@@ -24,41 +24,32 @@
 #include <mesh/traits/tnlMeshSuperentityTraits.h>
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag,
           bool SuperentityStorage =
-             tnlMeshSuperentityTraits< MeshConfig,
-                                       EntityTag,
-                                       DimensionsTag::value >::storageEnabled >
+             tnlMeshSuperentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >::storageEnabled >
 class tnlMeshSuperentityStorageLayer;
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSuperentityStorageLayers
    : public tnlMeshSuperentityStorageLayer< MeshConfig,
-                                            EntityTag,
-                                            typename tnlMeshTraits< MeshConfig >::DimensionsTag >
+                                            EntityTopology,
+                                            tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {
 };
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTag,
-                                      DimensionsTag,
-                                      true >
-   : public tnlMeshSuperentityStorageLayer< MeshConfig,
-                                            EntityTag,
-                                            typename DimensionsTag::Decrement >
+class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag, true >
+   : public tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >
 {
    typedef
-      tnlMeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTag,
-                                      typename DimensionsTag::Decrement >  BaseType;
+      tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >  BaseType;
 
    typedef
-      tnlMeshSuperentityTraits< MeshConfig, EntityTag, DimensionsTag::value >          SuperentityTraits;
+      tnlMeshSuperentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >            SuperentityTraits;
 
    protected:
 
@@ -189,41 +180,32 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
 };
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
-class tnlMeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTag,
-                                      DimensionsTag,
-                                      false >
-   : public tnlMeshSuperentityStorageLayer< MeshConfig,
-                                            EntityTag,
-                                            typename DimensionsTag::Decrement >
+class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag, false >
+   : public tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >
 {
    public:
 
 };
 
 template< typename MeshConfig,
-          typename EntityTag >
-class tnlMeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTag,
-                                      tnlDimensionsTag< EntityTag::dimensions >,
-                                      false >
+          typename EntityTopology >
+class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, tnlDimensionsTag< EntityTopology::dimensions >, false >
 {
-   typedef tnlDimensionsTag< EntityTag::dimensions >        DimensionsTag;
+   static const int Dimensions = EntityTopology::dimensions;
+   typedef tnlDimensionsTag< EntityTopology::dimensions >        DimensionsTag;
 
-   typedef tnlMeshSuperentityTraits< MeshConfig,
-                                       EntityTag,
-                                       DimensionsTag::value >      SuperentityTag;
+   typedef tnlMeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >      SuperentityTraits;
 
    typedef tnlMeshSuperentityStorageLayer< MeshConfig,
-                                           EntityTag,
+                                           EntityTopology,
                                            DimensionsTag,
                                            false > ThisType;
 
    protected:
 
-   typedef typename SuperentityTag::ContainerType              ContainerType;
+   typedef typename SuperentityTraits::ContainerType              ContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
 
@@ -269,19 +251,20 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
 };
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTag,
-                                      tnlDimensionsTag< EntityTag::dimensions >,
+                                      EntityTopology,
+                                      tnlDimensionsTag< EntityTopology::dimensions >,
                                       true >
 {
-   typedef tnlDimensionsTag< EntityTag::dimensions >        DimensionsTag;
+   static const int Dimensions = EntityTopology::dimensions;
+   typedef tnlDimensionsTag< Dimensions >                          DimensionsTag;
 
    typedef tnlMeshSuperentityTraits< MeshConfig,
-                                       EntityTag,
-                                       DimensionsTag::value >      SuperentityTraits;
+                                     EntityTopology,
+                                     Dimensions >               SuperentityTraits;
    typedef tnlMeshSuperentityStorageLayer< MeshConfig,
-                                           EntityTag,
+                                           EntityTopology,
                                            DimensionsTag,
                                            true > ThisType;
 

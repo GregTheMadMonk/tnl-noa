@@ -25,33 +25,33 @@ template< typename MeshConfig >
 class tnlMeshInitializer;
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag,
-          bool SuperentityStorage = tnlMeshSuperentityTraits< MeshConfig, EntityTag, DimensionsTag::value >::storageEnabled >
+          bool SuperentityStorage = tnlMeshSuperentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >::storageEnabled >
 class tnlMeshSuperentityStorageInitializerLayer;
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSuperentityStorageInitializer :
-   public tnlMeshSuperentityStorageInitializerLayer< MeshConfig, EntityTag, tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
+   public tnlMeshSuperentityStorageInitializerLayer< MeshConfig, EntityTopology, tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {};
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
 class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTag,
+                                          EntityTopology,
                                           DimensionsTag,
                                           true >
    : public tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTag,
+                                                EntityTopology,
                                                 typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                      EntityTag,
+                                                      EntityTopology,
                                                       typename DimensionsTag::Decrement >      BaseType;
 
-   typedef tnlDimensionsTag< EntityTag::dimensions >                                    EntityDimensions;
+   typedef tnlDimensionsTag< EntityTopology::dimensions >                                    EntityDimensions;
 	
    typedef typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType                 GlobalIdArrayType;
 
@@ -110,18 +110,18 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 };
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
 class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTag,
+                                          EntityTopology,
                                           DimensionsTag,
                                           false >
    : public tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTag,
+                                                EntityTopology,
                                                 typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTag,
+                                                EntityTopology,
                                                 typename DimensionsTag::Decrement > BaseType;
    typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
    
@@ -132,10 +132,10 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 };
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTag,
-                                          tnlDimensionsTag< EntityTag::dimensions >,
+                                          EntityTopology,
+                                          tnlDimensionsTag< EntityTopology::dimensions >,
                                           true >
 {
    typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
@@ -146,10 +146,10 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 };
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTag,
-                                          tnlDimensionsTag< EntityTag::dimensions >,
+                                          EntityTopology,
+                                          tnlDimensionsTag< EntityTopology::dimensions >,
                                           false >
 {
    typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;

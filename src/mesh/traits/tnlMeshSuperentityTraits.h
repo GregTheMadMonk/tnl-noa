@@ -27,7 +27,7 @@
 #include <mesh/traits/tnlMeshEntityTraits.h>
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           int Dimensions >
 class tnlMeshSuperentityTraits
 {
@@ -37,9 +37,9 @@ class tnlMeshSuperentityTraits
    typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
 
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTag >( EntityTag(), Dimensions );
+   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
    //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
-   typedef tnlMeshEntity< MeshConfig, EntityTag >                            EntityType;
+   typedef tnlMeshEntity< MeshConfig, EntityTopology >                            EntityType;
    typedef tnlMeshEntityTraits< MeshConfig, Dimensions >                     EntityTraits;
    typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
    typedef typename EntityTraits::EntityType                                 SuperentityType;

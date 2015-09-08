@@ -25,8 +25,8 @@
 #include <mesh/tnlDimensionsTag.h>
 
 struct tnlMeshVertexTopology;
-template< typename MeshConfig, typename EntityTag > class tnlMeshEntity;
-template< typename MeshConfig, typename EntityTag > class tnlMeshEntitySeed;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntity;
+template< typename MeshConfig, typename EntityTopology > class tnlMeshEntitySeed;
 template< typename MeshConfig, int Dimensions > class tnlMeshEntityTraits;
 template< typename MeshConfig, typename MeshEntity, int SubDimensions > class tnlMeshSubentityTraits;
 template< typename MeshConfig, typename MeshEntity, int SuperDimensions > class tnlMeshSuperentityTraits;
@@ -61,11 +61,11 @@ class tnlMeshTraits
       template< int Dimensions > using EntityTraits = 
          tnlMeshEntityTraits< MeshConfig, Dimensions >;
       
-      template< typename MeshEntity, int SubDimensions > using SubentityTraits =
-         tnlMeshSubentityTraits< MeshConfig, MeshEntity, SubDimensions >;
+      template< typename EntityTopology, int SubDimensions > using SubentityTraits =
+         tnlMeshSubentityTraits< MeshConfig, EntityTopology, SubDimensions >;
       
-      template< typename MeshEntity, int SuperDimensions > using SuperentityTraits =
-         tnlMeshSuperentityTraits< MeshConfig, MeshEntity, SuperDimensions >;
+      template< typename EntityTopology, int SuperDimensions > using SuperentityTraits =
+         tnlMeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
 
 };
 

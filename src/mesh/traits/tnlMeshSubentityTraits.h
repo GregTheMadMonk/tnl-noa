@@ -28,29 +28,24 @@
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityOrientation;
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           int Dimensions >
 class tnlMeshSubentityTraits
 {
    public:   
-      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTag(), Dimensions );
-      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTag(), Dimensions );
-      
-      //typedef tnlStorageTraits< storageEnabled >                    SubentityStorageTag;
+      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
+      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );      
 
-      typedef typename MeshConfig::GlobalIndexType                  GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                   LocalIndexType;
-      typedef tnlMeshSubtopology< EntityTag, Dimensions > Tag;
-
-
-      typedef tnlMeshEntity< MeshConfig, EntityTag >                 EntityType;
-      typedef typename Tag::Topology                                     SubentityTag;
-      typedef tnlMeshEntity< MeshConfig, SubentityTag >              SubentityType;
-      typedef tnlMeshEntitySeed< MeshConfig, SubentityTag >          Seed;
-      typedef tnlMeshEntityOrientation< MeshConfig, SubentityTag >   Orientation;
+      typedef typename MeshConfig::GlobalIndexType                                GlobalIndexType;
+      typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;      
+      typedef tnlMeshSubtopology< EntityTopology, Dimensions >                    Subtopology;
+      typedef typename Subtopology::Topology                                      SubentityTopology;
+      typedef tnlMeshEntity< MeshConfig, SubentityTopology >                      SubentityType;
+      typedef tnlMeshEntitySeed< MeshConfig, SubentityTopology >                  Seed;
+      typedef tnlMeshEntityOrientation< MeshConfig, SubentityTopology >           Orientation;
 
 
-      enum { count = Tag::count };
+      static const int count = Subtopology::count;
 
       typedef tnlStaticArray< count, GlobalIndexType >              ContainerType;
       typedef tnlSharedArray< GlobalIndexType,
@@ -66,13 +61,13 @@ class tnlMeshSubentityTraits
                 LocalIndexType subentityVertexIndex >
       struct Vertex
       {
-         enum { index = tnlSubentityVertex< EntityTag,
-                                            SubentityTag,
+         enum { index = tnlSubentityVertex< EntityTopology,
+                                            SubentityTopology,
                                             subentityIndex,
                                             subentityVertexIndex>::index };
       };
 
-      static_assert( EntityTag::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
+      static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 

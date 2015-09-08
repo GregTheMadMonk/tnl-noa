@@ -25,11 +25,11 @@ template< typename MeshConfig,
           typename SubDimensionsTag >
 class tnlMeshSubentitySeedsCreator
 {
-	typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
+	typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                                      LocalIndexType;
 	typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionsTag::value > SubentityTraits;
-	typedef typename SubentityTraits::SubentityTag                                                              Subtopology;
-	typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType                                   IdArrayAccessorType;
-	typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< Subtopology, 0 >     SubentityVertexTraits;
+	typedef typename SubentityTraits::SubentityTopology                                                               SubentityTopology;
+	typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType                                                 IdArrayAccessorType;
+	typedef typename tnlMeshTraits< MeshConfig >::template SubentityTraits< SubentityTopology, 0 >                    SubentityVertexTraits;
 
 	static const LocalIndexType SUBENTITIES_COUNT = SubentityTraits::count;
 	static const LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityVertexTraits::count;
@@ -50,7 +50,7 @@ class tnlMeshSubentitySeedsCreator
       }
 
    private:
-      typedef tnlMeshEntitySeed< MeshConfig, Subtopology > SubentitySeed;
+      typedef tnlMeshEntitySeed< MeshConfig, SubentityTopology > SubentitySeed;
 
       template< LocalIndexType subentityIndex >
       class CreateSubentitySeeds

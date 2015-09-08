@@ -24,67 +24,61 @@
 #include <mesh/tnlMeshEntityOrientation.h>
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag,
           bool SubentityStorage = 
-            tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::storageEnabled,
+            tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::storageEnabled,
           bool SubentityOrientationStorage =
-            tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTag, DimensionsTag::value >::orientationEnabled >
+            tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::orientationEnabled >
 class tnlMeshSubentityStorageLayer;
 
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSubentityStorageLayers
    : public tnlMeshSubentityStorageLayer< MeshConfig,
-                                          EntityTag,
-                                          tnlDimensionsTag< EntityTag::dimensions - 1 > >
+                                          EntityTopology,
+                                          tnlDimensionsTag< EntityTopology::dimensions - 1 > >
 {
 };
 
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
 class tnlMeshSubentityStorageLayer< MeshConfig,
-                                    EntityTag,
+                                    EntityTopology,
                                     DimensionsTag,
                                     true,
                                     true >
    : public tnlMeshSubentityStorageLayer< MeshConfig,
-                                          EntityTag,
+                                          EntityTopology,
                                           typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSubentityStorageLayer< MeshConfig,
-                                         EntityTag,
+                                         EntityTopology,
                                          typename DimensionsTag::Decrement > BaseType;
-
-   typedef tnlMeshSubentityTraits< MeshConfig,
-                                     EntityTag,
-                                     DimensionsTag::value > SubentityTraits;
 
    protected:
 
-   typedef typename SubentityTraits::ContainerType        ContainerType;
-   typedef typename SubentityTraits::SharedContainerType  SharedContainerType;
-   typedef typename ContainerType::ElementType            GlobalIndexType;
-   typedef int                                            LocalIndexType;
-   typedef typename SubentityTraits::IdArrayType          IdArrayType;
-   typedef typename SubentityTraits::OrientationArrayType  OrientationArrayType;
-   typedef typename tnlMeshTraits< MeshConfig >::IdPermutationArrayAccessorType   IdPermutationArrayAccessorType;
+   static const int Dimensions = DimensionsTag::value;
+   typedef tnlMeshTraits< MeshConfig >                                                   MeshTraits;
+   typedef typename MeshTraits::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraits;
+   typedef typename MeshTraits::GlobalIndexType                                          GlobalIndexType;
+   typedef typename MeshTraits::LocalIndexType                                           LocalIndexType;
+   typedef typename SubentityTraits::IdArrayType                                         IdArrayType;
+   typedef typename SubentityTraits::OrientationArrayType                                OrientationArrayType;
+   typedef typename MeshTraits::IdPermutationArrayAccessorType                           IdPermutationArrayAccessorType;
 
    tnlMeshSubentityStorageLayer()
    {
       this->subentitiesIndices.setValue( -1 );
-      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
-      this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
-      //this->subentitiesIndices.setName( "subentitiesIndices" );
    }
 
-   /*~tnlMeshSubentityStorageLayer()
+   ~tnlMeshSubentityStorageLayer()
    {
-      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
-   }*/
+      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+   }
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
@@ -112,7 +106,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
          cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
-      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
       return true;
    }
 
@@ -134,7 +127,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
     */
    using BaseType::getSubentityIndex;
    using BaseType::setSubentityIndex;
-   using BaseType::getSubentitiesIndices;
 
    /****
     * Define setter/getter for the current level of the subentities
@@ -152,18 +144,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return this->subentitiesIndices[ localIndex ];
    }
 
-   SharedContainerType& getSubentitiesIndices( DimensionsTag )
-   {
-      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
-      return this->sharedSubentitiesIndices;
-   }
-
-   const SharedContainerType& getSubentitiesIndices( DimensionsTag ) const
-   {
-      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
-      return this->sharedSubentitiesIndices;
-   }
-   
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
    
@@ -181,52 +161,46 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    private:
       IdArrayType subentitiesIndices;
 
-      SharedContainerType sharedSubentitiesIndices;
-
       OrientationArrayType subentityOrientations;
 };
 
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
 class tnlMeshSubentityStorageLayer< MeshConfig,
-                                    EntityTag,
+                                    EntityTopology,
                                     DimensionsTag,
                                     true,
                                     false >
    : public tnlMeshSubentityStorageLayer< MeshConfig,
-                                          EntityTag,
+                                          EntityTopology,
                                           typename DimensionsTag::Decrement >
 {
    typedef tnlMeshSubentityStorageLayer< MeshConfig,
-                                         EntityTag,
+                                         EntityTopology,
                                          typename DimensionsTag::Decrement > BaseType;
 
-   typedef tnlMeshSubentityTraits< MeshConfig,
-                                     EntityTag,
-                                     DimensionsTag::value > SubentityTraits;
-
    protected:
-
-   typedef typename SubentityTraits::ContainerType        ContainerType;
-   typedef typename SubentityTraits::SharedContainerType  SharedContainerType;
-   typedef typename ContainerType::ElementType            GlobalIndexType;
-   typedef int                                            LocalIndexType;
-   typedef typename SubentityTraits::IdArrayType          IdArrayType;
+   
+   static const int Dimensions = DimensionsTag::value;
+   typedef tnlMeshTraits< MeshConfig >                                                   MeshTraits;
+   typedef typename MeshTraits::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraits;
+   typedef typename MeshTraits::GlobalIndexType                                          GlobalIndexType;
+   typedef typename MeshTraits::LocalIndexType                                           LocalIndexType;
+   typedef typename SubentityTraits::IdArrayType                                         IdArrayType;
+   typedef typename SubentityTraits::OrientationArrayType                                OrientationArrayType;
+   typedef typename MeshTraits::IdPermutationArrayAccessorType                           IdPermutationArrayAccessorType;
 
    tnlMeshSubentityStorageLayer()
    {
       this->subentitiesIndices.setValue( -1 );
-      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
-      this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
-      //this->subentitiesIndices.setName( "subentitiesIndices" );
    }
 
-   /*~tnlMeshSubentityStorageLayer()
+   ~tnlMeshSubentityStorageLayer()
    {
-      cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
-   }*/
+      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+   }
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
    {
@@ -254,7 +228,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
          cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
-      this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
       return true;
    }
 
@@ -276,7 +249,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
     */
    using BaseType::getSubentityIndex;
    using BaseType::setSubentityIndex;
-   using BaseType::getSubentitiesIndices;
 
    /****
     * Define setter/getter for the current level of the subentities
@@ -294,18 +266,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return this->subentitiesIndices[ localIndex ];
    }
 
-   SharedContainerType& getSubentitiesIndices( DimensionsTag )
-   {
-      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
-      return this->sharedSubentitiesIndices;
-   }
-
-   const SharedContainerType& getSubentitiesIndices( DimensionsTag ) const
-   {
-      tnlAssert( this->subentitiesIndices.getData() == this->sharedSubentitiesIndices.getData(), );
-      return this->sharedSubentitiesIndices;
-   }
-   
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
    
@@ -314,58 +274,50 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    
    private:
       IdArrayType subentitiesIndices;
-
-      SharedContainerType sharedSubentitiesIndices;
-
 };
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           typename DimensionsTag >
 class tnlMeshSubentityStorageLayer< MeshConfig,
-                                    EntityTag,
+                                    EntityTopology,
                                     DimensionsTag,
                                     false,
                                     false >
    : public tnlMeshSubentityStorageLayer< MeshConfig,
-                                          EntityTag,
+                                          EntityTopology,
                                           typename DimensionsTag::Decrement >
 {
 };
 
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSubentityStorageLayer< MeshConfig,
-                                    EntityTag,
+                                    EntityTopology,
                                     tnlDimensionsTag< 0 >,
                                     true,
                                     false >
 {
    typedef tnlDimensionsTag< 0 >                           DimensionsTag;
 
-   typedef tnlMeshSubentityTraits< MeshConfig,
-                                     EntityTag,
-                                     DimensionsTag::value > SubentityTraits;
-
    protected:
-
-   typedef typename SubentityTraits::ContainerType             ContainerType;
-   typedef typename SubentityTraits::SharedContainerType       SharedContainerType;
-   typedef typename ContainerType::ElementType                 GlobalIndexType;
-   typedef int                                                 LocalIndexType;
-   typedef typename SubentityTraits::IdArrayType               IdArrayType;
+   static const int Dimensions = 0;
+   typedef tnlMeshTraits< MeshConfig >                                                   MeshTraits;
+   typedef typename MeshTraits::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraits;
+   typedef typename MeshTraits::GlobalIndexType                                          GlobalIndexType;
+   typedef typename MeshTraits::LocalIndexType                                           LocalIndexType;
+   typedef typename SubentityTraits::IdArrayType                                         IdArrayType;
 
    tnlMeshSubentityStorageLayer()
    {
       this->verticesIndices.setValue( -1 );
-      this->sharedVerticesIndices.bind( this->verticesIndices );
    }
 
-   /*~tnlMeshSubentityStorageLayer()
+   ~tnlMeshSubentityStorageLayer()
    {
-      cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
-   }*/
+      //cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+   }
 
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -391,7 +343,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
          cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
          return false;
       }
-      this->sharedVerticesIndices.bind( this->verticesIndices );
       return true;
    }
 
@@ -417,18 +368,6 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       this->verticesIndices[ localIndex ] = globalIndex;
    }
 
-   SharedContainerType& getSubentitiesIndices( DimensionsTag )
-   {
-      tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
-      return this->sharedVerticesIndices;
-   }
-
-   const SharedContainerType& getSubentitiesIndices( DimensionsTag ) const
-   {
-      tnlAssert( this->verticesIndices.getData() == this->sharedVerticesIndices.getData(), );
-      return this->sharedVerticesIndices;
-   }
-
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
    
    protected:
@@ -440,14 +379,12 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 	   void subentityOrientationsArray() {}
 
       IdArrayType verticesIndices;
-
-      SharedContainerType sharedVerticesIndices;
 };
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshSubentityStorageLayer< MeshConfig,
-                                    EntityTag,
+                                    EntityTopology,
                                     tnlDimensionsTag< 0 >,
                                     false,
                                     false >

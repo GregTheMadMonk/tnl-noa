@@ -21,11 +21,11 @@
 #include <mesh/tnlDimensionsTag.h>
 
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshEntitySeed;
 
 template< typename MeshConfig,
-          typename EntityTag,
+          typename EntityTopology,
           int Dimensions >
 class tnlMeshSubentityTraits;
 
@@ -34,15 +34,15 @@ class tnlMeshSubentityTraits;
  * Uniqueness is preserved for entities of the same type only.
  */
 template< typename MeshConfig,
-          typename EntityTag >
+          typename EntityTopology >
 class tnlMeshEntitySeedKey
 {
    typedef
-      tnlMeshEntitySeed< MeshConfig, EntityTag >                               EntitySeedType;
+      tnlMeshEntitySeed< MeshConfig, EntityTopology >                               EntitySeedType;
 
    typedef typename
       tnlMeshSubentityTraits< MeshConfig,
-                                EntityTag,
+                                EntityTopology,
                                 0 >::ContainerType ContainerType;
 
    public:
