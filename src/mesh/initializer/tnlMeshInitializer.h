@@ -93,21 +93,21 @@ class tnlMeshInitializer
    static typename tnlMeshTraits< MeshConfig >::template SubentityTraits< typename EntityType::EntityTopology, SubDimensionsTag::value >::IdArrayType&
    subentityIdsArray( EntityType& entity )
    {
-      return entity.template subentityIdsArray< SubDimensionsTag >();
+      return entity.template subentityIdsArray< SubDimensionsTag::value >();
    }
    
    template< typename SuperDimensionsTag, typename MeshEntity>
    static typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType&
    superentityIdsArray( MeshEntity& entity )
    {
-      return entity.template superentityIdsArray< SuperDimensionsTag >();
+      return entity.template superentityIdsArray< SuperDimensionsTag::value >();
    }
    
    template<typename SubDimensionsTag, typename MeshEntity >
 	static typename tnlMeshTraits< MeshConfig >::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionsTag::value >::OrientationArrayType&
    subentityOrientationsArray( MeshEntity &entity )
    {
-      return entity.template subentityOrientationsArray< SubDimensionsTag >();
+      return entity.template subentityOrientationsArray< SubDimensionsTag::value >();
    }
    
    template< typename DimensionsTag >

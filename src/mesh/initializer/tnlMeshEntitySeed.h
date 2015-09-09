@@ -31,7 +31,7 @@ class tnlMeshEntitySeed
       typedef typename tnlMeshTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
       typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
       typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
-      typedef typename SubvertexTraits::ContainerType                                                          IdArrayType;
+      typedef typename SubvertexTraits::IdArrayType                                                      IdArrayType;
 
       static tnlString getType() { return tnlString( "tnlMeshEntitySeed<>" ); }
       

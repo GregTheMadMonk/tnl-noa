@@ -153,7 +153,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
    typedef tnlMeshTraits< MeshConfig >                                                          MeshTraits;
    typedef typename MeshTraits:: template SubentityTraits< EntityTopology, Dimensions >         SubentityTraits;
    typedef typename SubentityTraits::SubentityContainerType                                     SubentityContainerType;
-   typedef typename SubentityTraits::SharedContainerType                                        SharedContainerType;
+   typedef typename SubentityTraits::AccessArrayType                                        SharedContainerType;
    typedef typename SharedContainerType::ElementType                                            GlobalIndexType;
 
    typedef tnlMeshInitializer< MeshConfig >                                                     InitializerType;
@@ -210,7 +210,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
    typedef tnlMeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >                     SubentitiesTraits;
    typedef typename SubentitiesTraits::SubentityContainerType                                  SubentityContainerType;
-   typedef typename SubentitiesTraits::SharedContainerType                                     SharedContainerType;
+   typedef typename SubentitiesTraits::AccessArrayType                                     SharedContainerType;
    typedef typename SharedContainerType::ElementType                                           GlobalIndexType;
 
    typedef tnlMeshInitializer< MeshConfig >                                                          InitializerType;
@@ -436,7 +436,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTopology,
                                      DimensionsTag::value >                 SubentitiesTraits;
 
-   typedef typename SubentitiesTraits::SharedContainerType           SharedContainerType;
+   typedef typename SubentitiesTraits::AccessArrayType           SharedContainerType;
    typedef typename SharedContainerType::ElementType                 GlobalIndexType;
 
    typedef tnlMeshInitializer< MeshConfig >                           InitializerType;

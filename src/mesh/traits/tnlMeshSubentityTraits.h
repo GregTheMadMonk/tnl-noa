@@ -47,10 +47,10 @@ class tnlMeshSubentityTraits
 
       static const int count = Subtopology::count;
 
-      typedef tnlStaticArray< count, GlobalIndexType >              ContainerType;
+      typedef tnlStaticArray< count, GlobalIndexType >              StorageArrayType;
       typedef tnlSharedArray< GlobalIndexType,
                               tnlHost,
-                              LocalIndexType >                      SharedContainerType;
+                              LocalIndexType >                      AccessArrayType;
       typedef tnlStaticArray< count, GlobalIndexType >              IdArrayType;
       typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
       typedef tnlStaticArray< count, Seed >                         SeedArrayType;

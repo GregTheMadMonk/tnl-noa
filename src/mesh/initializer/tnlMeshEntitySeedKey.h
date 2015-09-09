@@ -43,13 +43,13 @@ class tnlMeshEntitySeedKey
    typedef typename
       tnlMeshSubentityTraits< MeshConfig,
                                 EntityTopology,
-                                0 >::ContainerType ContainerType;
+                                0 >::StorageArrayType  StorageArrayType;
 
    public:
 
    explicit tnlMeshEntitySeedKey( const EntitySeedType& entitySeed )
    {
-      for( typename ContainerType::IndexType i = 0; 
+      for( typename StorageArrayType::IndexType i = 0; 
            i < entitySeed.getCornersCount();
            i++ )
          this->sortedCorners[ i ] = entitySeed.getCornerIds()[ i ];
@@ -58,8 +58,8 @@ class tnlMeshEntitySeedKey
 
    bool operator<( const tnlMeshEntitySeedKey& other ) const
    {
-      for( typename ContainerType::IndexType i = 0;
-           i < ContainerType::size;
+      for( typename StorageArrayType::IndexType i = 0;
+           i < StorageArrayType::size;
            i++)
       {
          if( sortedCorners[ i ] < other.sortedCorners[ i ] )
@@ -73,7 +73,7 @@ class tnlMeshEntitySeedKey
 
    private:
 
-   ContainerType sortedCorners;
+   StorageArrayType sortedCorners;
 };
 
 
