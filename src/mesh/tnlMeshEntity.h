@@ -186,7 +186,6 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
       
       constexpr int getEntityDimensions() const;
 
-
       template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
 
       template< int Superdimensions >

@@ -38,9 +38,7 @@ class tnlMeshTraits
    public:
       
       static const int meshDimensions = MeshConfig::CellTopology::dimensions;
-      static const int worldDimensions = MeshConfig::worldDimensions;
-      
-      typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
+      static const int worldDimensions = MeshConfig::worldDimensions;     
 
       typedef Device                                                               DeviceType;
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
@@ -66,6 +64,8 @@ class tnlMeshTraits
       
       template< typename EntityTopology, int SuperDimensions > using SuperentityTraits =
          tnlMeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
+      
+      typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
 
 };
 
