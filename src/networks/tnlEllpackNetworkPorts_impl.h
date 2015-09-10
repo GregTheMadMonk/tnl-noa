@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackGraph_impl.h  -  description
+                          tnlEllpackNetworkPorts_impl.h  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -15,56 +15,56 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLELLPACKGRAPHLINKSACCESSOR_IMPL_H
-#define	TNLELLPACKGRAPHLINKSACCESSOR_IMPL_H
+#ifndef TNLELLPACKNETWORKPORTS_IMPL_H
+#define TNLELLPACKNETWORKPORTS_IMPL_H
 
 template< typename Device,
           typename Index >
-tnlEllpackGraphLinksAccessor< Device, Index >::
-tnlEllpackGraphLinksAccessor( IndexType* graphLinks, 
-                                    const IndexType node,
-                                    const IndexType maxLinksPerNode )
+tnlEllpackNetworkPorts< Device, Index >::
+tnlEllpackNetworkPorts( IndexType* networkPorts, 
+                        const IndexType input,
+                        const IndexType portsMaxCount )
 {
-   this->links = &graphLinks[ node * maxLinksPerNode ];
-   this->maxLinksPerNode = maxLinksPerNode;
+   this->ports = &networkPorts[ input * portsMaxCount ];
+   this->portsMaxCount = portsMaxCount;
 }
 
 
 template< typename Device,
           typename Index >
 void 
-tnlEllpackGraphLinksAccessor< Device, Index >::
-setLink( const IndexType linkIndex,
-         const IndexType targetNode )
+tnlEllpackNetworkPorts< Device, Index >::
+setOutput( const IndexType portIndex,
+           const IndexType output )
 {
-   links[ linkIndex ] = targetNode;
+   this->ports[ portIndex ] = ouput;
 }
 
 template< typename Device,
           typename Index >
 Index
-tnlEllpackGraphLinksAccessor< Device, Index >::
-getLinkTarget( const IndexType linkIndex ) const
+tnlEllpackNetworkPorts< Device, Index >::
+getOutput( const IndexType portIndex ) const
 {
-   return links[ linkIndex ];
+   return this->ports[ portIndex ];
 }
 
 template< typename Device,
           typename Index >
 Index&
-tnlEllpackGraphLinksAccessor< Device, Index >::
-operator[]( const IndexType linkIndex )
+tnlEllpackNetworkPorts< Device, Index >::
+operator[]( const IndexType portIndex )
 {
-   return links[ linkIndex ];
+   return this->ports[ portIndex ];
 }
 
 template< typename Device,
           typename Index >
 const Index&
-tnlEllpackGraphLinksAccessor< Device, Index >::
-operator[]( const IndexType linkIndex ) const
+tnlEllpackNetworkPorts< Device, Index >::
+operator[]( const IndexType portIndex ) const
 {
-   return links[ linkIndex ];
+   return this->ports[ portIndex ];
 }
 
 

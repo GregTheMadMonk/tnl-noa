@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlEllpackGraphTester.h  -  description
+                          tnlEllpackNetworkTest.cpp  -  description
                              -------------------
     begin                : Sep 10, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,10 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLELLPACKGRAPHTESTER_H
-#define	TNLELLPACKGRAPHTESTER_H
+#include <tnlConfig.h>
+#include <core/tnlHost.h>
+#include <cstdlib>
 
+#include "networks/tnlEllpackNetwork.h"
+#include "networks/tnlSparseNetworkTester.h"
+#include "../tnlUnitTestStarter.h"
 
-
-#endif	/* TNLELLPACKGRAPHTESTER_H */
-
+int main( int argc, char* argv[] )
+{
+#ifdef HAVE_CPPUNIT
+   if( ! tnlUnitTestStarter :: run< tnlSparseNetworkTester< tnlEllpackNetwork< float, tnlHost, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseNetworkTester< tnlEllpackNetwork< double, tnlHost, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseNetworkTester< tnlEllpackNetwork< float, tnlHost, long int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseNetworkTester< tnlEllpackNetwork< double, tnlHost, long int > > >()
+       )
+     return EXIT_FAILURE;
+   return EXIT_SUCCESS;
+#else
+   return EXIT_FAILURE;
+#endif
+}

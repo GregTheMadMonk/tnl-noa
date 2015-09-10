@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackGraph.h  -  description
+                          tnlEllpackNetwork.h  -  description
                              -------------------
     begin                : Sep 9, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -15,44 +15,50 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLELLPACKGRAPH_H
-#define	TNLELLPACKGRAPH_H
+#ifndef TNLELLPACKNETWORK_H
+#define	TNLELLPACKNETWORK_H
 
-#include <graphs/sparse/tnlEllpackGraphLinksAccessor.h>
-
-template< typename Device = tnlHost,
-          typename Index = int >
-class tnlEllpackGraphConstLinksAccessor;
+#include <networks/tnlEllpackNetworkPorts.h>
 
 template< typename Device = tnlHost,
           typename Index = int >
-class tnlEllpackGraph
+class tnlEllpackNetworkConstPorts;
+
+template< typename Device = tnlHost,
+          typename Index = int >
+class tnlEllpackNetwork
 {
    public:
       
-      typedef Device                                                            DeviceType;
-      typedef Index                                                             IndexType;
-      typedef tnlEllpackGraphLinksAccessor< DeviceType, IndexType >       LinksAccessorType;
-      typedef tnlEllpackGraphConstLinksAccessor< DeviceType, IndexType >  ConstLinksAccessorType;
-      typedef tnlVector< IndexType, DeviceType, IndexType >                     LinksPerNodesVectorType;
+      typedef Device                                                DeviceType;
+      typedef Index                                                 IndexType;
+      typedef tnlEllpackNetworkPorts< DeviceType, IndexType >       PortsType;
+      typedef tnlEllpackNetworkConstPorts< DeviceType, IndexType >  ConstPortsType;
+      typedef tnlVector< IndexType, DeviceType, IndexType >         PortsAllocationVectorType;
             
-      tnlEllpackGraph();
+      tnlEllpackNetwork();
       
-      void setNumberOfNodes( const IndexType nodes );
+      void setDimensions( const IndexType inputs,
+                          const IndexType outputs );
       
-      void setNumberOfLinksPerNode( const LinksPerNodesVectorType& linksPerNode );
+      const IndexType getInputsCount() const;
       
-      LinksAccessorType getNodeLinksAccessor( const IndexType& nodeIndex );
+      const IndexType getOutputsCount() const;
       
-      ConstLinksAccessorType getNodeLinksAccessor( const IndexType& nodeIndex ) const;
+      void allocatePorts( const PortsAllocationVectorType& portsCount );
+      
+      PortsType getPorts( const IndexType& inputIndex );
+      
+      ConstPortsType getPorts( const IndexType& inputIndex ) const;
       
    protected:
       
       tnlVector< IndexType, DeviceType, IndexType > links;
       
-      IndexType maxLinksPerNode, numberOfNodes;
+      IndexType inputs, outputs, portsMaxCount;
 };
 
+#include <networks/tnlEllpackNetworks_impl.h>
 
-#endif	/* TNLELLPACKGRAPH_H */
+#endif	/* TNLELLPACKNETWORK_H */
 

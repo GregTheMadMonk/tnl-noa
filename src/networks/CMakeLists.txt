@@ -3,18 +3,18 @@ SET( headers tnlEllpackGraph.h
              tnlEllpackGraphLinksAccessor.h
              tnlEllpackGraphLinksAccessor_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/graphs )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/networks )
 set( common_SOURCES
       )       
 
 IF( BUILD_CUDA )
-   set( tnl_graphs_CUDA__SOURCES
+   set( tnl_networks_CUDA__SOURCES
         ${common_SOURCES}      
         PARENT_SCOPE )
 ENDIF()    
 
-set( tnl_graphs_SOURCES     
+set( tnl_networks_SOURCES     
      ${common_SOURCES}
      PARENT_SCOPE )
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/graphs )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/networks )
