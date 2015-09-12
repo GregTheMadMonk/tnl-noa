@@ -18,9 +18,12 @@
 #ifndef TNLELLPACKNETWORKPORTS_IMPL_H
 #define TNLELLPACKNETWORKPORTS_IMPL_H
 
-template< typename Device,
-          typename Index >
-tnlEllpackNetworkPorts< Device, Index >::
+#include "tnlEllpackNetworkPorts.h"
+
+
+template< typename Index,
+          typename Device >
+tnlEllpackNetworkPorts< Index, Device >::
 tnlEllpackNetworkPorts( IndexType* networkPorts, 
                         const IndexType input,
                         const IndexType portsMaxCount )
@@ -29,39 +32,47 @@ tnlEllpackNetworkPorts( IndexType* networkPorts,
    this->portsMaxCount = portsMaxCount;
 }
 
+template< typename Index,
+          typename Device >
+Index
+tnlEllpackNetworkPorts< Index, Device >::
+getPortsCount() const
+{
+   return this->portsMaxCount;
+}
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 void 
-tnlEllpackNetworkPorts< Device, Index >::
+tnlEllpackNetworkPorts< Index, Device >::
 setOutput( const IndexType portIndex,
            const IndexType output )
 {
-   this->ports[ portIndex ] = ouput;
+   this->ports[ portIndex ] = output;
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 Index
-tnlEllpackNetworkPorts< Device, Index >::
+tnlEllpackNetworkPorts< Index, Device >::
 getOutput( const IndexType portIndex ) const
 {
    return this->ports[ portIndex ];
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 Index&
-tnlEllpackNetworkPorts< Device, Index >::
+tnlEllpackNetworkPorts< Index, Device >::
 operator[]( const IndexType portIndex )
 {
    return this->ports[ portIndex ];
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 const Index&
-tnlEllpackNetworkPorts< Device, Index >::
+tnlEllpackNetworkPorts< Index, Device >::
 operator[]( const IndexType portIndex ) const
 {
    return this->ports[ portIndex ];

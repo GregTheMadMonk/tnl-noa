@@ -25,6 +25,7 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
+#include <networks/tnlEllpackNetwork.h>
 
 template< typename MeshConfig,
           typename EntityTopology,
@@ -49,7 +50,10 @@ class tnlMeshSuperentityTraits
     * Type of container for storing of the superentities indecis.
     */
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
-
+   
+   typedef tnlEllpackNetwork< GlobalIndexType, tnlHost >                        StorageNetworkType;
+   typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::PortsType > SuperentityAccessorType;
+   
    /****
     * Type for passing the superentities indecis by the getSuperentitiesIndices()
     * method. We introduce it because of the compatibility with the subentities

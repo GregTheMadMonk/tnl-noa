@@ -1,7 +1,7 @@
-SET( headers tnlEllpackGraph.h
-             tnlEllpackGraph_impl.h
-             tnlEllpackGraphLinksAccessor.h
-             tnlEllpackGraphLinksAccessor_impl.h )
+SET( headers tnlEllpackNetwork.h
+             tnlEllpackNetwork_impl.h
+             tnlEllpackNetworkPorts.h
+             tnlEllpackNetworkPorts_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/networks )
 set( common_SOURCES

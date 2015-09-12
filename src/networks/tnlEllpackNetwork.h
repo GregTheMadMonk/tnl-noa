@@ -18,25 +18,33 @@
 #ifndef TNLELLPACKNETWORK_H
 #define	TNLELLPACKNETWORK_H
 
-#include <networks/tnlEllpackNetworkPorts.h>
+#include <core/vectors/tnlVector.h>
 
-template< typename Device = tnlHost,
-          typename Index = int >
+template< typename Index = int,
+          typename Device = tnlHost >
+class tnlEllpackNetworkPorts;
+
+template< typename Index = int,
+          typename Device = tnlHost >
 class tnlEllpackNetworkConstPorts;
 
-template< typename Device = tnlHost,
-          typename Index = int >
+template< typename Index = int,
+          typename Device = tnlHost >
 class tnlEllpackNetwork
 {
    public:
       
       typedef Device                                                DeviceType;
       typedef Index                                                 IndexType;
-      typedef tnlEllpackNetworkPorts< DeviceType, IndexType >       PortsType;
-      typedef tnlEllpackNetworkConstPorts< DeviceType, IndexType >  ConstPortsType;
+      typedef tnlEllpackNetworkPorts< IndexType, DeviceType >       PortsType;
+      typedef tnlEllpackNetworkConstPorts< IndexType, DeviceType >  ConstPortsType;
       typedef tnlVector< IndexType, DeviceType, IndexType >         PortsAllocationVectorType;
             
       tnlEllpackNetwork();
+      
+      static tnlString getType();
+
+      tnlString getTypeVirtual() const;
       
       void setDimensions( const IndexType inputs,
                           const IndexType outputs );
@@ -53,12 +61,12 @@ class tnlEllpackNetwork
       
    protected:
       
-      tnlVector< IndexType, DeviceType, IndexType > links;
+      tnlVector< IndexType, DeviceType, IndexType > ports;
       
       IndexType inputs, outputs, portsMaxCount;
 };
 
-#include <networks/tnlEllpackNetworks_impl.h>
+#include <networks/tnlEllpackNetwork_impl.h>
 
 #endif	/* TNLELLPACKNETWORK_H */
 

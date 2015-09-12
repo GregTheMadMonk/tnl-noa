@@ -18,15 +18,19 @@
 #ifndef TNLELLPACKNETWORKPORTS_H
 #define	TNLELLPACKNETWORKPORTS_H
 
-template< typename Device,
-          typename Index >
+#include <networks/tnlEllpackNetwork.h>
+
+template< typename Index,
+          typename Device >
 class tnlEllpackNetworkPorts
 {
    public:
       
       typedef Device                                     DeviceType;
       typedef Index                                      IndexType;
-      typedef tnlEllpackNetwork< DeviceType, IndexType > NetworkType;
+      typedef tnlEllpackNetwork< IndexType, DeviceType > NetworkType;
+      
+      IndexType getPortsCount() const;
       
       void setOutput( const IndexType portIndex,
                       const IndexType output );
@@ -45,7 +49,7 @@ class tnlEllpackNetworkPorts
       
       IndexType* ports;
       
-      IndexType step;
+      IndexType step, portsMaxCount;
       
       friend tnlEllpackNetwork< IndexType, DeviceType >;
 };

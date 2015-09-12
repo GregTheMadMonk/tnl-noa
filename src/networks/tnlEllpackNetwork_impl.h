@@ -19,20 +19,39 @@
 #define	TNLELLPACKNETWORK_IMPL_H
 
 #include <networks/tnlEllpackNetwork.h>
+#include <networks/tnlEllpackNetworkPorts.h>
 
 
-template< typename Device,
-          typename Index >
-tnlEllpackNetwork< Device, Index >::
+template< typename Index,
+          typename Device >
+tnlEllpackNetwork< Index, Device >::
 tnlEllpackNetwork()
 :  inputs( 0 ), outputs( 0 ), portsMaxCount( 0 )
 {
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
+tnlString tnlEllpackNetwork< Index, Device > :: getType()
+{
+   return tnlString( "tnlEllpackNetwork< ") +
+          Device :: getDeviceType() +
+          tnlString( ", " ) +
+          tnlString( ::getType< Index >() ) +                    
+          tnlString( " >" );
+}
+
+template< typename Index,
+          typename Device >
+tnlString tnlEllpackNetwork< Index, Device >::getTypeVirtual() const
+{
+   return this->getType();
+}
+
+template< typename Index,
+          typename Device >
 void 
-tnlEllpackNetwork< Device, Index >::
+tnlEllpackNetwork< Index, Device >::
 setDimensions( const IndexType inputs,
                const IndexType outputs )
 {
@@ -40,28 +59,28 @@ setDimensions( const IndexType inputs,
    this->outputs = outputs;
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 const Index
-tnlEllpackNetwork< Device, Index >::
+tnlEllpackNetwork< Index, Device >::
 getInputsCount() const
 {
    return this->inputs;
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 const Index
-tnlEllpackNetwork< Device, Index >::
+tnlEllpackNetwork< Index, Device >::
 getOutputsCount() const
 {
    return this->outputs;
 }
 
-template< typename Device,
-          typename Index >
+template< typename Index,
+          typename Device >
 void
-tnlEllpackNetwork< Device, Index >::
+tnlEllpackNetwork< Index, Device >::
 allocatePorts( const PortsAllocationVectorType& portsCount )
 {
    tnlAssert( portsCount.getSize() == this->inputs,
@@ -72,28 +91,26 @@ allocatePorts( const PortsAllocationVectorType& portsCount )
    tnlAssert( this->portsMaxCount >= 0 && this->portsMaxCount <= this->outputs, 
               cerr << "this->portsMaxCount = " << this->portsMaxCount
                    << " this->outputs = " << this->outputs );
+   this->ports.setSize( this->inputs * this->portsMaxCount );
 }
 
-template< typename Device,
-          typename Index >
-typename tnlEllpackNetwork< Device, Index >::LinksAccessorType 
-tnlEllpackNetwork< Device, Index >::
+template< typename Index,
+          typename Device >
+typename tnlEllpackNetwork< Index, Device >::PortsType 
+tnlEllpackNetwork< Index, Device >::
 getPorts( const IndexType& inputIndex )
 {
-   return PortsType( this->links.getData(), inputIndex, this->portsMaxCount );
+   return PortsType( this->ports.getData(), inputIndex, this->portsMaxCount );
 }
 
-template< typename Device,
-          typename Index >
-typename tnlEllpackNetwork< Device, Index >::ConstLinksAccessorType
-tnlEllpackNetwork< Device, Index >::
+template< typename Index,
+          typename Device >
+typename tnlEllpackNetwork< Index, Device >::ConstPortsType
+tnlEllpackNetwork< Index, Device >::
 getPorts( const IndexType& inputIndex ) const
 {
-   return ConstPortsType( this->links.getData(), inputIndex, this->portsMaxCount );
+   return ConstPortsType( this->ports.getData(), inputIndex, this->portsMaxCount );
 }
-
-
-
 
 #endif	/* TNLELLPACKGRAPH_IMPL_H */
 

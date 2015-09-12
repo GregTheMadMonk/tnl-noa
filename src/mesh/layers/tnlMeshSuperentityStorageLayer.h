@@ -2,7 +2,7 @@
                           tnlMeshSuperentityStorageLayer.h  -  description
                              -------------------
     begin                : Feb 13, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -48,8 +48,9 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
    typedef
       tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >  BaseType;
 
-   typedef
-      tnlMeshSuperentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >            SuperentityTraits;
+   static const int Dimensions = DimensionsTag::value;
+   typedef tnlMeshTraits< MeshConfig >                                                   MeshTraits;
+   typedef typename MeshTraits::template SuperentityTraits< EntityTopology, Dimensions > SuperentityTraits;
 
    protected:
 
@@ -58,6 +59,8 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
    typedef typename SuperentityTraits::GlobalIndexType        GlobalIndexType;
    typedef typename SuperentityTraits::LocalIndexType         LocalIndexType;
 
+   typedef typename SuperentityTraits::StorageNetworkType   StorageNetworkType;
+   
    /****
      * Make visible setters and getters of the lower superentities
      */
@@ -169,6 +172,8 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
 
     AccessArrayType sharedSuperentitiesIndices;
     
+    StorageNetworkType storageNetwork;
+    
    // TODO: this is only for the mesh initializer - fix it
    public:
               
@@ -176,6 +181,12 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
       typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
          return this->superentitiesIndices;
+      }
+      
+      using BaseType::getStorageNetwork;
+      StorageNetworkType& getStorageNetwork( DimensionsTag )
+      {
+         return this->storageNetwork;
       }
 };
 
@@ -209,6 +220,8 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, tnlDimensionsT
    typedef typename ContainerType::ElementType                 GlobalIndexType;
    typedef int                                                 LocalIndexType;
 
+   typedef typename SuperentityTraits::StorageNetworkType   StorageNetworkType;
+   
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
@@ -242,12 +255,18 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, tnlDimensionsT
       return true;
    }
    
-   template< typename SuperDimensionsTag >
    typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
       tnlAssert( false, );
       //return this->superentitiesIndices;
    }
+
+   StorageNetworkType& getStorageNetwork( DimensionsTag )
+   {
+      tnlAssert( false, );
+     //return this->storageNetwork;
+   }
+
 };
 
 template< typename MeshConfig,
@@ -274,6 +293,8 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
    typedef typename SuperentityTraits::GlobalIndexType               GlobalIndexType;
    typedef typename SuperentityTraits::LocalIndexType                LocalIndexType;
 
+   typedef typename SuperentityTraits::StorageNetworkType   StorageNetworkType;
+   
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
@@ -307,13 +328,19 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
       return true;
    }
    
-   template< typename SuperDimensionsTag >
    typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
       tnlAssert( false, );
       //return this->superentitiesIndices;
    }
 
+   StorageNetworkType& getStorageNetwork( DimensionsTag )
+   {
+      tnlAssert( false, );
+      //return this->storageNetwork;
+   }
+
+   
 };
 
 #endif /* TNLMESHSUPERENTITYSTORAGELAYER_H_ */
