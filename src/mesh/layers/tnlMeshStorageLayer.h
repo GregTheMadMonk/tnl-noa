@@ -123,7 +123,7 @@ class tnlMeshStorageLayer< MeshConfig,
 
       void print( ostream& str ) const
       {
-         BaseType::print( str );
+         BaseType::print( str );         
          str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
          {
@@ -131,6 +131,7 @@ class tnlMeshStorageLayer< MeshConfig,
             entities[ i ].print( str );
             str << endl;
          }
+         SuperentityStorageBaseType::print( str );
       }
 
       bool operator==( const tnlMeshStorageLayer& meshLayer ) const
@@ -280,12 +281,13 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    }
 
    void print( ostream& str ) const
-   {
+   {      
       str << "The mesh vertices are: " << endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
       {
          str << i << vertices[ i ] << endl;
       }
+      SuperentityStorageBaseType::print( str );
    }
 
    bool operator==( const tnlMeshStorageLayer& meshLayer ) const

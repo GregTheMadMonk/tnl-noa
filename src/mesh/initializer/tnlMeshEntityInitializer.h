@@ -22,6 +22,8 @@
 #include <mesh/initializer/tnlMeshSuperentityStorageInitializer.h>
 #include <mesh/initializer/tnlMeshSubentitySeedCreator.h>
 
+#include "tnlMeshEntitySeed.h"
+
 template< typename MeshConfig >
 class tnlMeshInitializer;
 
@@ -452,7 +454,13 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
    protected:
       
       static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
-                                   InitializerType& meshInitializer ) {};
+                                   InitializerType& meshInitializer )
+      {
+         //cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << endl;
+		   const IdArrayType &subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >(entity);
+		   for( LocalIndexType i = 0; i < subentityIdsArray.getSize(); i++ )
+			   meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex);
+	}
 
 };
 

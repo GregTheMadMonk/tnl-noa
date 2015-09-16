@@ -18,6 +18,7 @@
 #ifndef TNLMESH_H_
 #define TNLMESH_H_
 
+#include <ostream>
 #include <core/tnlObject.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/traits/tnlMeshTraits.h>
@@ -27,8 +28,8 @@
 
 template< typename MeshConfig > //,
           //typename Device = tnlHost >
-class tnlMesh : public tnlObject,
-                public tnlMeshStorageLayers< MeshConfig >
+class tnlMesh : public tnlObject/*,
+                public tnlMeshStorageLayers< MeshConfig >*/
 {
    public:
       
@@ -98,6 +99,8 @@ class tnlMesh : public tnlObject,
       tnlMeshConfigValidator< MeshConfig > configValidator;
 };
 
+template< typename MeshConfig >
+std::ostream& operator <<( std::ostream& str, const tnlMesh< MeshConfig >& mesh );
 
 #include <mesh/tnlMesh_impl.h>
 

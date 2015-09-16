@@ -30,6 +30,8 @@ class tnlEllpackNetworkPorts
       typedef Index                                      IndexType;
       typedef tnlEllpackNetwork< IndexType, DeviceType > NetworkType;
       
+      tnlEllpackNetworkPorts();
+      
       IndexType getPortsCount() const;
       
       void setOutput( const IndexType portIndex,

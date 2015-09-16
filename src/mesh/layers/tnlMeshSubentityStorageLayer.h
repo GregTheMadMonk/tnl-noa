@@ -368,7 +368,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       this->verticesIndices[ localIndex ] = globalIndex;
    }
 
-   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->verticesIndices; }
    
    protected:
       

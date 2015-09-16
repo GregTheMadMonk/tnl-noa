@@ -179,7 +179,12 @@ init( const typename tnlMesh< MeshConfig >::MeshTraits::PointArrayType& points,
 }
 
 
-
+template< typename MeshConfig >
+std::ostream& operator <<( std::ostream& str, const tnlMesh< MeshConfig >& mesh )
+{
+   mesh.print( str );
+   return str;
+}
 
 #endif	/* TNLMESH_IMPL_H */
 

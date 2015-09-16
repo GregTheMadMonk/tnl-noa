@@ -24,6 +24,13 @@
 template< typename Index,
           typename Device >
 tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackNetworkPorts()
+{
+}
+
+template< typename Index,
+          typename Device >
+tnlEllpackNetworkPorts< Index, Device >::
 tnlEllpackNetworkPorts( IndexType* networkPorts, 
                         const IndexType input,
                         const IndexType portsMaxCount )

@@ -46,6 +46,7 @@ bool convertMesh( const tnlParameterContainer& parameters )
       return false;
    if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
       return false;*/
+   cout << mesh << endl;
    cout << "Writing the mesh to a file " << outputFileName << "." << endl;
    if( outputFileExt == "tnl" )
    {         

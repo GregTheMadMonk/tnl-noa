@@ -37,6 +37,7 @@ class tnlMeshSuperentityAccess :
                                          tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {
    public:
+      
       bool operator == ( const tnlMeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
       
       void print( ostream& str ) const{};
@@ -57,10 +58,9 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
    public:
       
       typedef tnlMeshTraits< MeshConfig >                                   MeshTraits;
-      typedef typename MeshTraits::template SuperentityTraits< MeshEntity, Dimensions > SuperentityTraits;
+      typedef typename MeshTraits::template SuperentityTraits< MeshEntity, Dimensions::value > SuperentityTraits;
       typedef typename SuperentityTraits::SuperentityAccessorType               SuperentityAccessorType;
-	   typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType    IdArrayAccessorType;
-      
+	   typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType    IdArrayAccessorType;            
 
 	   using BaseType::superentityIds;
 	   IdArrayAccessorType superentityIds( Dimensions ) const { return m_superentityIndices; }

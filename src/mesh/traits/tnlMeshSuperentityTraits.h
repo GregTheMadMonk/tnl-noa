@@ -26,6 +26,7 @@
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <networks/tnlEllpackNetwork.h>
+#include <mesh/layers/tnlMeshSuperentityAccessor.h>
 
 template< typename MeshConfig,
           typename EntityTopology,

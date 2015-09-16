@@ -53,10 +53,11 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 
    typedef tnlDimensionsTag< EntityTopology::dimensions >                                    EntityDimensions;
 	
-   typedef typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType                 GlobalIdArrayType;
+   typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
+   typedef typename MeshTraits::GlobalIdArrayType                               GlobalIdArrayType;
 
       
-   typedef typename tnlMeshTraits< MeshConfig >::GlobalIndexType                   GlobalIndexType;
+   typedef typename MeshTraits::GlobalIndexType                                 GlobalIndexType;
    typedef tnlMeshInitializer< MeshConfig >                                              MeshInitializer;
 
    public:      
@@ -64,7 +65,8 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 	   
       void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
       {
-           indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
+         //cout << "Adding superentity with " << DimensionsTag::value << " dimensions of enity with " << EntityDimensions::value << " ... " << endl;
+         indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
       }
 
       using BaseType::initSuperentities;
@@ -78,7 +80,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
-         //cout << "There are " << superentityIdsArray.getSize() << " superentities..." << endl;
+         cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionsTag::value << " dimensions of enities with " << EntityDimensions::value << " ... " << endl;
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
@@ -94,6 +96,11 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 
          meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
          indexPairs.clear();
+         
+         /****
+          * Network initializer
+          */
+         
 
          BaseType::initSuperentities( meshInitializer );
       }
