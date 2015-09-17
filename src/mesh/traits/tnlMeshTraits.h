@@ -65,6 +65,7 @@ class tnlMeshTraits
       template< typename EntityTopology, int SuperDimensions > using SuperentityTraits =
          tnlMeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
       
+      
       typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
 
 };

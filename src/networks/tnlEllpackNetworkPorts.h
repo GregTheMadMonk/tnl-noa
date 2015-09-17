@@ -18,6 +18,7 @@
 #ifndef TNLELLPACKNETWORKPORTS_H
 #define	TNLELLPACKNETWORKPORTS_H
 
+#include <ostream>
 #include <networks/tnlEllpackNetwork.h>
 
 template< typename Index,
@@ -43,6 +44,8 @@ class tnlEllpackNetworkPorts
       
       const IndexType& operator[]( const IndexType portIndex ) const;
       
+      void print( std::ostream& str ) const;      
+      
    protected:
       
       tnlEllpackNetworkPorts( IndexType* ports, 
@@ -55,6 +58,10 @@ class tnlEllpackNetworkPorts
       
       friend tnlEllpackNetwork< IndexType, DeviceType >;
 };
+
+template< typename Index,
+          typename Device >
+std::ostream& operator << ( std::ostream& str, const tnlEllpackNetworkPorts< Index, Device>& ports );
 
 #include <networks/tnlEllpackNetworkPorts_impl.h>
 

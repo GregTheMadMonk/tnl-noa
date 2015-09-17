@@ -88,6 +88,13 @@ class tnlMesh : public tnlObject/*,
       template< typename DimensionsTag, typename SuperDimensionsTag >
            typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray();
       
+      template< typename EntityTopology, typename SuperdimensionsTag >
+      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
+      getSuperentityStorageNetwork()
+      {
+         return entitiesStorage.template getSuperentityStorageNetwork< SuperdimensionsTag >( tnlDimensionsTag< EntityTopology::dimensions >() );
+      }
+      
       bool init( const typename MeshTraits::PointArrayType& points,
                  const typename MeshTraits::CellSeedArrayType& cellSeeds );
    

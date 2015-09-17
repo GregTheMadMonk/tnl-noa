@@ -61,6 +61,11 @@ class tnlMeshInitializer
       typedef typename MeshTraits::PointArrayType                    PointArrayType;
       typedef typename MeshTraits::CellSeedArrayType                 CellSeedArrayType;
       typedef typename MeshTraits::GlobalIndexType                   GlobalIndexType;
+      
+      template< typename DimensionsTag, typename SuperdimensionsTag > using SuperentityStorageNetwork =
+      typename MeshTraits::template SuperentityTraits< 
+         typename MeshTraits::template EntityTraits< DimensionsTag::value >::EntityTopology,
+         SuperdimensionsTag::value >::StorageNetworkType;
 
 
       tnlMeshInitializer()
@@ -124,6 +129,13 @@ class tnlMeshInitializer
       meshSuperentityIdsArray()
       {
          return mesh->template superentityIdsArray< DimensionsTag, SuperDimensionsTag >();
+      }
+      
+      template< typename EntityTopology, typename SuperdimensionsTag >
+      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
+      meshSuperentityStorageNetwork()
+      {
+         return mesh->template getSuperentityStorageNetwork< EntityTopology, SuperdimensionsTag >();
       }
 
       static void

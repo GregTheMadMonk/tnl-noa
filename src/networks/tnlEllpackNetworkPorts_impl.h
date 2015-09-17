@@ -85,6 +85,30 @@ operator[]( const IndexType portIndex ) const
    return this->ports[ portIndex ];
 }
 
+template< typename Index,
+          typename Device >
+void
+tnlEllpackNetworkPorts< Index, Device >::
+print( std::ostream& str ) const
+{
+   if( this->getPortsCount() == 0 )
+   {
+      str << "[]";
+      return;
+   }
+   str << "[ " << this->getOutput( 0 );
+   for( Index i = 1; i < this->getPortsCount(); i++ )
+      str << ", " << this->getOutput( i );
+   str << " ]";
+}
+
+template< typename Index,
+          typename Device >
+std::ostream& operator << ( std::ostream& str, const tnlEllpackNetworkPorts< Index, Device>& ports )
+{
+   ports.print( str );
+   return str;
+}
 
 #endif	/* TNLELLPACKGRAPHLINKSACCESSOR_IMPL_H */
 

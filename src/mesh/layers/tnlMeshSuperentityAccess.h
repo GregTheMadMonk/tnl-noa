@@ -37,10 +37,16 @@ class tnlMeshSuperentityAccess :
                                          tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > >
 {
    public:
+      typedef tnlMeshSuperentityAccessLayer< MeshConfig, 
+                                             MeshEntity,
+                                             tnlDimensionsTag< tnlMeshTraits< MeshConfig >::meshDimensions > > BaseType;
       
       bool operator == ( const tnlMeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
       
-      void print( ostream& str ) const{};
+      void print( ostream& str ) const
+      {
+         BaseType::print( str );
+      };
 
 };
 
@@ -58,9 +64,11 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
    public:
       
       typedef tnlMeshTraits< MeshConfig >                                   MeshTraits;
-      typedef typename MeshTraits::template SuperentityTraits< MeshEntity, Dimensions::value > SuperentityTraits;
+      typedef typename MeshTraits::template SuperentityTraits< MeshEntity, Dimensions::value > SuperentityTraits;      
+	   typedef typename MeshTraits::IdArrayAccessorType                          IdArrayAccessorType;            
+      typedef typename SuperentityTraits::StorageNetworkType                    StorageNetworkType;
       typedef typename SuperentityTraits::SuperentityAccessorType               SuperentityAccessorType;
-	   typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType    IdArrayAccessorType;            
+      //typedef typename StorageNetworkType::PortsType                            SuperentityAccessorType;
 
 	   using BaseType::superentityIds;
 	   IdArrayAccessorType superentityIds( Dimensions ) const { return m_superentityIndices; }
@@ -71,14 +79,22 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
       using BaseType::getSuperentityIndices;
       const SuperentityAccessorType& getSuperentityIndices( Dimensions ) const
       {
+         cerr << "###" << endl;
          return this->superentityIndices;
       }
       
       SuperentityAccessorType& getSuperentityIndices( Dimensions )
       {
+         cerr << "######" << endl;
          return this->superentityIndices;
       }
-
+      
+      void print( ostream& str ) const
+      {
+         str << "Superentities with " << Dimensions::value << " dimensions are: " << 
+            this->superentityIndices << endl;
+         BaseType::print( str );
+      }
       
       //bool operator == ( const tnlMeshSuperentityAccessLayer< MeshConfig, MeshEntity, Dimensions, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
 
@@ -86,6 +102,7 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
 	   IdArrayAccessorType m_superentityIndices;
       
       SuperentityAccessorType superentityIndices;
+                  
 };
 
 template< typename MeshConfig,
@@ -114,6 +131,8 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
 	   void superentityIdsArray() {}
       
       void getSuperentityIndices() {};
+      
+      void print( ostream& str ) const {};
 };
 
 template< typename MeshConfig,
@@ -131,6 +150,8 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
 	   void superentityIdsArray() {}
       
       void getSuperentityIndices() {};
+      
+      void print( ostream& str ) const {};
 };
 
 

@@ -58,6 +58,7 @@ class tnlMeshStorageLayer< MeshConfig,
       typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
       typedef typename EntityTraits::GlobalIndexType                               GlobalIndexType;
       typedef typename EntityTraits::EntityType                                    EntityType;
+      typedef typename EntityTraits::EntityTopology                                EntityTopology;
 
 
       using BaseType::getNumberOfEntities;
@@ -162,6 +163,14 @@ class tnlMeshStorageLayer< MeshConfig,
       {
          return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
       }
+      
+      using BaseType::getSuperentityStorageNetwork;
+      template< typename SuperdimensionsTag >
+      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& 
+      getSuperentityStorageNetwork( tnlDimensionsTag< EntityTopology::dimensions > )
+      {
+         return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
+      }
 };
 
 template< typename MeshConfig,
@@ -192,7 +201,8 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    typedef typename EntityTraits::GlobalIndexType                               GlobalIndexType;
    typedef typename EntityTraits::EntityType                                    VertexType;
    typedef typename VertexType::PointType                                       PointType;
-
+   typedef tnlMeshVertexTopology                                                EntityTopology;
+   
    tnlMeshStorageLayer()
    {
       this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTag::value ) + " >::vertices" );
@@ -314,6 +324,12 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
       typename MeshTraits::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
          return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
+      }
+
+      template< typename SuperdimensionsTag >
+      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& getSuperentityStorageNetwork( tnlDimensionsTag< EntityTopology::dimensions > )
+      {
+         return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
       }
 
 };

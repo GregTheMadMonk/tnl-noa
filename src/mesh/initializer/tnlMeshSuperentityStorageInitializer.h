@@ -51,14 +51,17 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                       EntityTopology,
                                                       typename DimensionsTag::Decrement >      BaseType;
 
+   static const int Dimensions = DimensionsTag::value;
    typedef tnlDimensionsTag< EntityTopology::dimensions >                                    EntityDimensions;
 	
-   typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
-   typedef typename MeshTraits::GlobalIdArrayType                               GlobalIdArrayType;
-
+   typedef tnlMeshTraits< MeshConfig >                                                      MeshTraits;
+   typedef typename MeshTraits::GlobalIdArrayType                                           GlobalIdArrayType;
       
-   typedef typename MeshTraits::GlobalIndexType                                 GlobalIndexType;
-   typedef tnlMeshInitializer< MeshConfig >                                              MeshInitializer;
+   typedef typename MeshTraits::GlobalIndexType                                             GlobalIndexType;
+   typedef typename MeshTraits::LocalIndexType                                              LocalIndexType;
+   typedef tnlMeshInitializer< MeshConfig >                                                 MeshInitializer;
+   typedef typename MeshTraits::template SuperentityTraits< EntityTopology, Dimensions >    SuperentityTraits;
+   typedef typename SuperentityTraits::StorageNetworkType                                   SuperentityStorageNetwork;
 
    public:      
       using BaseType::addSuperentity;
@@ -76,7 +79,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                     indexPairs.end(),
                     []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
 
-         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
+         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();         
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
@@ -100,8 +103,36 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
          /****
           * Network initializer
           */
-         
-
+         SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionsTag >();
+         //GlobalIndexType lastEntityIndex( 0 );
+         superentityStorageNetwork.setDimensions(
+            meshInitializer.template meshEntitiesArray< EntityDimensions >().getSize(),
+            meshInitializer.template meshEntitiesArray< DimensionsTag >().getSize() );
+         lastEntityIndex = 0;
+         typename SuperentityStorageNetwork::PortsAllocationVectorType storageNetworkAllocationVector;
+         storageNetworkAllocationVector.setSize( meshInitializer.template meshEntitiesArray< EntityDimensions >().getSize() );
+         storageNetworkAllocationVector.setValue( 0 );
+         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
+         {
+            if( indexPairs[ i ].entityIndex == lastEntityIndex )
+               storageNetworkAllocationVector[ lastEntityIndex ]++;
+            else
+               lastEntityIndex++;                           
+         }
+         superentityStorageNetwork.allocatePorts( storageNetworkAllocationVector );
+         lastEntityIndex = 0;
+         LocalIndexType superentitiesCount( 0 );
+         typename SuperentityStorageNetwork::PortsType superentitiesIndecis = 
+            superentityStorageNetwork.getPorts( lastEntityIndex );
+         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
+         {
+            if( indexPairs[ i ].entityIndex != lastEntityIndex )
+            {
+               superentitiesIndecis = superentityStorageNetwork.getPorts( ++lastEntityIndex );
+               superentitiesCount = 0;
+            }
+            superentitiesIndecis[ superentitiesCount++ ] =  indexPairs[ i ].superentityIndex;
+         }
          BaseType::initSuperentities( meshInitializer );
       }
 

@@ -54,12 +54,23 @@ class tnlMeshSuperentityAccessor
          return this->ports[ localIndex ];
       }
       
+      void print( ostream& str ) const
+      {
+         str << ports;
+      }
+      
    protected:
       
       NetworkPorts ports;
       
 };
 
+template< typename NetworkPorts >
+ostream& operator << ( ostream& str, const tnlMeshSuperentityAccessor< NetworkPorts >& superentityAccessor )
+{
+   superentityAccessor.print( str );
+   return str;
+}
 
 #endif	/* TNLMESHSUPERENTITYACCESSOR_H */
 
