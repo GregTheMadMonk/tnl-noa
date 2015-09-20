@@ -105,11 +105,11 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
           */
          SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionsTag >();
          //GlobalIndexType lastEntityIndex( 0 );
-         superentityStorageNetwork.setDimensions(
+         superentityStorageNetwork.setRanges(
             meshInitializer.template meshEntitiesArray< EntityDimensions >().getSize(),
             meshInitializer.template meshEntitiesArray< DimensionsTag >().getSize() );
          lastEntityIndex = 0;
-         typename SuperentityStorageNetwork::PortsAllocationVectorType storageNetworkAllocationVector;
+         typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
          storageNetworkAllocationVector.setSize( meshInitializer.template meshEntitiesArray< EntityDimensions >().getSize() );
          storageNetworkAllocationVector.setValue( 0 );
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
@@ -119,16 +119,16 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
             else
                lastEntityIndex++;                           
          }
-         superentityStorageNetwork.allocatePorts( storageNetworkAllocationVector );
+         superentityStorageNetwork.allocate( storageNetworkAllocationVector );
          lastEntityIndex = 0;
          LocalIndexType superentitiesCount( 0 );
-         typename SuperentityStorageNetwork::PortsType superentitiesIndecis = 
-            superentityStorageNetwork.getPorts( lastEntityIndex );
+         typename SuperentityStorageNetwork::ValuesAccessorType superentitiesIndecis = 
+            superentityStorageNetwork.getValues( lastEntityIndex );
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             if( indexPairs[ i ].entityIndex != lastEntityIndex )
             {
-               superentitiesIndecis = superentityStorageNetwork.getPorts( ++lastEntityIndex );
+               superentitiesIndecis = superentityStorageNetwork.getValues( ++lastEntityIndex );
                superentitiesCount = 0;
             }
             superentitiesIndecis[ superentitiesCount++ ] =  indexPairs[ i ].superentityIndex;

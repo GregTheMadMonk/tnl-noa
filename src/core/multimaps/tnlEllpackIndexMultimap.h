@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackNetwork.h  -  description
+                          tnlEllpackIndexMultimap.h  -  description
                              -------------------
     begin                : Sep 9, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -15,58 +15,58 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLELLPACKNETWORK_H
-#define	TNLELLPACKNETWORK_H
+#ifndef TNLELLPACKINDEXMULTIMAP_H
+#define	TNLELLPACKINDEXMULTIMAP_H
 
 #include <core/vectors/tnlVector.h>
 
 template< typename Index = int,
           typename Device = tnlHost >
-class tnlEllpackNetworkPorts;
+class tnlEllpackIndexMultimapValues;
 
 template< typename Index = int,
           typename Device = tnlHost >
-class tnlEllpackNetworkConstPorts;
+class tnlEllpackIndexMultimapConstValues;
 
 template< typename Index = int,
           typename Device = tnlHost >
-class tnlEllpackNetwork
+class tnlEllpackIndexMultimap
 {
    public:
       
-      typedef Device                                                DeviceType;
-      typedef Index                                                 IndexType;
-      typedef tnlEllpackNetworkPorts< IndexType, DeviceType >       PortsType;
-      typedef tnlEllpackNetworkConstPorts< IndexType, DeviceType >  ConstPortsType;
-      typedef tnlVector< IndexType, DeviceType, IndexType >         PortsAllocationVectorType;
+      typedef Device                                                       DeviceType;
+      typedef Index                                                        IndexType;
+      typedef tnlEllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
+      typedef tnlEllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
+      typedef tnlVector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
             
-      tnlEllpackNetwork();
+      tnlEllpackIndexMultimap();
       
       static tnlString getType();
 
       tnlString getTypeVirtual() const;
       
-      void setDimensions( const IndexType inputs,
-                          const IndexType outputs );
+      void setRanges( const IndexType keysRange,
+                      const IndexType valuesRange );
       
-      const IndexType getInputsCount() const;
+      const IndexType getKeysRange() const;
       
-      const IndexType getOutputsCount() const;
+      const IndexType getValuesRange() const;
       
-      void allocatePorts( const PortsAllocationVectorType& portsCount );
+      void allocate( const ValuesAllocationVectorType& portsCount );
       
-      PortsType getPorts( const IndexType& inputIndex );
+      ValuesAccessorType getValues( const IndexType& inputIndex );
       
-      ConstPortsType getPorts( const IndexType& inputIndex ) const;
+      ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
       
    protected:
       
-      tnlVector< IndexType, DeviceType, IndexType > ports;
+      tnlVector< IndexType, DeviceType, IndexType > values;
       
-      IndexType inputs, outputs, portsMaxCount;
+      IndexType keysRange, valuesRange, valuesMaxCount;
 };
 
-#include <networks/tnlEllpackNetwork_impl.h>
+#include <core/multimaps/tnlEllpackIndexMultimap_impl.h>
 
-#endif	/* TNLELLPACKNETWORK_H */
+#endif	/* TNLELLPACKINDEXMULTIMAP_H */
 

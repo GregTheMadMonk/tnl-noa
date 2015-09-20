@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlNetworkTester.h  -  description
+                          tnlIndexMultimapTester.h  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSPARSENETWORKTESTER_H_
-#define TNLSPARSENETWORKTESTER_H_
+#ifndef TNLINDEXMULTIMAPTESTER_H_
+#define TNLINDEXMULTIMAPTESTER_H_
 
-template< typename Network,
+template< typename Multimap,
           typename TestSetup >
-class tnlNetworkTesterNetworkSetter
+class tnlIndexMultimapTesterSetter
 {
    public:
 
-   static bool setup( Network& graph )
+   static bool setup( Multimap& multimap )
    {
       return true;
    }
@@ -40,118 +40,118 @@ class tnlNetworkTesterNetworkSetter
 #include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFastTestCudaKernel( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFastTestCudaKernel( IndexMultimapType* graph,
                                                                      bool* testResult );
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFast_DiagonalNetworkTestCudaKernel( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFast_DiagonalIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                     bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel1( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                                   bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel2( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                                   bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel1( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                                             bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel2( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                                             bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setRowFast_DiagonalNetworkTestCudaKernel( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setRowFast_DiagonalIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                 bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel1( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                               bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel2( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                               bool* testResult );
 
-template< typename NetworkType >
-__global__ void tnlNetworkTester__setRowFast_LowerTriangularNetworkTestCudaKernel( NetworkType* graph,
+template< typename IndexMultimapType >
+__global__ void tnlIndexMultimapTester__setRowFast_LowerTriangularIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                        bool* testResult );
 
 #endif
 
-class tnlNetworkTestDefaultSetup
+class tnlIndexMultimapTestDefaultSetup
 {};
 
-template< typename Network,
-          typename NetworkSetup = tnlNetworkTestDefaultSetup >
-class tnlNetworkTester : public CppUnit :: TestCase
+template< typename IndexMultimap,
+          typename IndexMultimapSetup = tnlIndexMultimapTestDefaultSetup >
+class tnlIndexMultimapTester : public CppUnit :: TestCase
 {
    public:
-      typedef Network                                                    NetworkType;
-      typedef typename Network::DeviceType                               DeviceType;
-      typedef typename Network::IndexType                                IndexType;
-      typedef tnlNetworkTester< NetworkType, NetworkSetup >              TesterType;
-      typedef tnlNetworkTesterNetworkSetter< NetworkType, NetworkSetup > NetworkSetter;
+      typedef IndexMultimap                                                    IndexMultimapType;
+      typedef typename IndexMultimap::DeviceType                               DeviceType;
+      typedef typename IndexMultimap::IndexType                                IndexType;
+      typedef tnlIndexMultimapTester< IndexMultimapType, IndexMultimapSetup >              TesterType;
+      typedef tnlIndexMultimapTesterSetter< IndexMultimapType, IndexMultimapSetup > IndexMultimapSetter;
       typedef typename CppUnit::TestCaller< TesterType >                 TestCallerType;
       
-      typedef typename NetworkType::PortsAllocationVectorType  PortsAllocationVectorType;
-      typedef typename NetworkType::PortsType                  PortsType; 
+      typedef typename IndexMultimapType::ValuesAllocationVectorType  ValuesAllocationVectorType;
+      typedef typename IndexMultimapType::ValuesAccessorType                  ValuesAccessorType; 
 
-      tnlNetworkTester(){};
+      tnlIndexMultimapTester(){};
 
       virtual
-      ~tnlNetworkTester(){};
+      ~tnlIndexMultimapTester(){};
 
       static CppUnit :: Test* suite()
       {
-         tnlString testSuiteName( "tnlNetworkTester< " );
-         testSuiteName += NetworkType::getType() + " >";
+         tnlString testSuiteName( "tnlIndexMultimapTester< " );
+         testSuiteName += IndexMultimapType::getType() + " >";
 
          CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
          CppUnit :: TestResult result;
 
-         suiteOfTests->addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRangesTest", &TesterType::setRangesTest ) );
          //suiteOfTests->addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
          suiteOfTests->addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
          /*suiteOfTests->addTest( new TestCallerType( "setElementFastTest", &TesterType::setElementFastTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElement_DiagonalNetworkTest", &TesterType::setElement_DiagonalNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElementFast_DiagonalNetworkTest", &TesterType::setElementFast_DiagonalNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElement_DenseNetworkTest", &TesterType::setElement_DenseNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElementFast_DenseNetworkTest", &TesterType::setElementFast_DenseNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElement_LowerTriangularNetworkTest", &TesterType::setElement_LowerTriangularNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setElementFast_LowerTriangularNetworkTest", &TesterType::setElementFast_LowerTriangularNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalNetworkTest", &TesterType::setRow_DiagonalNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRowFast_DiagonalNetworkTest", &TesterType::setRowFast_DiagonalNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRow_DenseNetworkTest", &TesterType::setRow_DenseNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRowFast_DenseNetworkTest", &TesterType::setRowFast_DenseNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRow_LowerTriangularNetworkTest", &TesterType::setRow_LowerTriangularNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "setRowFast_LowerTriangularNetworkTest", &TesterType::setRowFast_LowerTriangularNetworkTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElement_DiagonalIndexMultimapTest", &TesterType::setElement_DiagonalIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElementFast_DiagonalIndexMultimapTest", &TesterType::setElementFast_DiagonalIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElement_DenseIndexMultimapTest", &TesterType::setElement_DenseIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElementFast_DenseIndexMultimapTest", &TesterType::setElementFast_DenseIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElement_LowerTriangularIndexMultimapTest", &TesterType::setElement_LowerTriangularIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setElementFast_LowerTriangularIndexMultimapTest", &TesterType::setElementFast_LowerTriangularIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRow_DiagonalIndexMultimapTest", &TesterType::setRow_DiagonalIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRowFast_DiagonalIndexMultimapTest", &TesterType::setRowFast_DiagonalIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRow_DenseIndexMultimapTest", &TesterType::setRow_DenseIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRowFast_DenseIndexMultimapTest", &TesterType::setRowFast_DenseIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRow_LowerTriangularIndexMultimapTest", &TesterType::setRow_LowerTriangularIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "setRowFast_LowerTriangularIndexMultimapTest", &TesterType::setRowFast_LowerTriangularIndexMultimapTest ) );
          suiteOfTests->addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
-         suiteOfTests->addTest( new TestCallerType( "vectorProduct_DiagonalNetworkTest", &TesterType::vectorProduct_DiagonalNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "vectorProduct_DenseNetworkTest", &TesterType::vectorProduct_DenseNetworkTest ) );
-         suiteOfTests->addTest( new TestCallerType( "vectorProduct_LowerTriangularNetworkTest", &TesterType::vectorProduct_LowerTriangularNetworkTest ) );
+         suiteOfTests->addTest( new TestCallerType( "vectorProduct_DiagonalIndexMultimapTest", &TesterType::vectorProduct_DiagonalIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "vectorProduct_DenseIndexMultimapTest", &TesterType::vectorProduct_DenseIndexMultimapTest ) );
+         suiteOfTests->addTest( new TestCallerType( "vectorProduct_LowerTriangularIndexMultimapTest", &TesterType::vectorProduct_LowerTriangularIndexMultimapTest ) );
          /*suiteOfTests -> addTest( new TestCallerType( "graphTranspositionTest", &TesterType::graphTranspositionTest ) );
-         suiteOfTests -> addTest( new TestCallerType( "addNetworkTest", &TesterType::addNetworkTest ) );*/
+         suiteOfTests -> addTest( new TestCallerType( "addIndexMultimapTest", &TesterType::addIndexMultimapTest ) );*/
 
          return suiteOfTests;
       }
 
-      void setDimensionsTest()
+      void setRangesTest()
       {
-         NetworkType n;
-         NetworkSetter::setup( n );
-         n.setDimensions( 10, 10 );
-         CPPUNIT_ASSERT( n.getInputsCount() == 10 );
-         CPPUNIT_ASSERT( n.getOutputsCount() == 10 );
+         IndexMultimapType n;
+         IndexMultimapSetter::setup( n );
+         n.setRanges( 10, 10 );
+         CPPUNIT_ASSERT( n.getKeysRange() == 10 );
+         CPPUNIT_ASSERT( n.getValuesRange() == 10 );
       }
 
       /*void setLikeTest()
       {
-         NetworkType m1, m2;
-         NetworkSetter::setup( m1 );
-         NetworkSetter::setup( m2 );
+         IndexMultimapType m1, m2;
+         IndexMultimapSetter::setup( m1 );
+         IndexMultimapSetter::setup( m2 );
          m1.setDimensions( 10, 10 );
          IndexVector rowLengths;
          rowLengths.setSize( m1.getRows() );
@@ -166,16 +166,16 @@ class tnlNetworkTester : public CppUnit :: TestCase
        */
       void setElementTest()
       {
-         NetworkType n;
-         NetworkSetter::setup( n );
-         n.setDimensions( 10, 10 );
+         IndexMultimapType n;
+         IndexMultimapSetter::setup( n );
+         n.setRanges( 10, 10 );
          
-         PortsAllocationVectorType portsAllocationVector;
-         portsAllocationVector.setSize( n.getInputsCount() );
+         ValuesAllocationVectorType portsAllocationVector;
+         portsAllocationVector.setSize( n.getKeysRange() );
          portsAllocationVector.setValue( 7 );
-         n.allocatePorts( portsAllocationVector );
+         n.allocate( portsAllocationVector );
 
-         PortsType p = n.getPorts( 0 );
+         ValuesAccessorType p = n.getValues( 0 );
          for( int i = 0; i < 7; i++ )
          {
             p.setOutput( i, i );
@@ -191,8 +191,8 @@ class tnlNetworkTester : public CppUnit :: TestCase
 
    void setElementFastTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -209,12 +209,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::getDevice() == tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFastTestCudaKernel< NetworkType >
+         tnlIndexMultimapTester__setElementFastTestCudaKernel< IndexMultimapType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
                                                             ( kernel_graph,
                                                               kernel_testResult );
@@ -229,10 +229,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( m.getElement( 0, i ) == i );
    }
 
-   void setElement_DiagonalNetworkTest()
+   void setElement_DiagonalIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -254,10 +254,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   void setElementFast_DiagonalNetworkTest()
+   void setElementFast_DiagonalIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -272,12 +272,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFast_DiagonalNetworkTestCudaKernel< NetworkType >
+         tnlIndexMultimapTester__setElementFast_DiagonalIndexMultimapTestCudaKernel< IndexMultimapType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
                                                                            ( kernel_graph,
                                                                              kernel_testResult );
@@ -300,10 +300,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   void setElement_DenseNetworkTest()
+   void setElement_DenseIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -335,10 +335,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
             CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
    }
 
-   void setElementFast_DenseNetworkTest()
+   void setElementFast_DenseIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -356,12 +356,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel1< NetworkType >
+         tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel1< IndexMultimapType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_graph,
                                                                            kernel_testResult );
@@ -391,12 +391,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel2< NetworkType >
+         tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel2< IndexMultimapType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_graph,
                                                                            kernel_testResult );
@@ -413,10 +413,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
    }
 
 
-   void setElement_LowerTriangularNetworkTest()
+   void setElement_LowerTriangularIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -450,10 +450,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
-   void setElementFast_LowerTriangularNetworkTest()
+   void setElementFast_LowerTriangularIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -470,12 +470,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel1< NetworkType >
+         tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel1< IndexMultimapType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_graph,
                                                                                      kernel_testResult );
@@ -505,12 +505,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel2< NetworkType >
+         tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel2< IndexMultimapType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_graph,
                                                                                      kernel_testResult );
@@ -532,8 +532,8 @@ class tnlNetworkTester : public CppUnit :: TestCase
 
    void addElementTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -560,10 +560,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
    /****
     * Set row tests
     */
-   void setRow_DiagonalNetworkTest()
+   void setRow_DiagonalIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -591,10 +591,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   void setRowFast_DiagonalNetworkTest()
+   void setRowFast_DiagonalIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -616,13 +616,13 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlNetworkTester__setRowFast_DiagonalNetworkTestCudaKernel< NetworkType >
+         tnlIndexMultimapTester__setRowFast_DiagonalIndexMultimapTestCudaKernel< IndexMultimapType >
                                                                        <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                        ( kernel_graph,
                                                                          kernel_testResult );
@@ -645,10 +645,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   void setRow_DenseNetworkTest()
+   void setRow_DenseIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -692,10 +692,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
             CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
    }
 
-   void setRowFast_DenseNetworkTest()
+   void setRowFast_DenseIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -723,13 +723,13 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel1< NetworkType >
+         tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel1< IndexMultimapType >
                                                                         <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                         ( kernel_graph,
                                                                           kernel_testResult );
@@ -763,13 +763,13 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel2< NetworkType >
+         tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel2< IndexMultimapType >
                                                                      <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                      ( kernel_graph,
                                                                        kernel_testResult );
@@ -785,10 +785,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
             CPPUNIT_ASSERT( m.getElement( i, j ) == i+j );
    }
 
-   void setRow_LowerTriangularNetworkTest()
+   void setRow_LowerTriangularIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -835,10 +835,10 @@ class tnlNetworkTester : public CppUnit :: TestCase
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
-   void setRowFast_LowerTriangularNetworkTest()
+   void setRowFast_LowerTriangularIndexMultimapTest()
    {
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -864,13 +864,13 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlNetworkTester__setRowFast_LowerTriangularNetworkTestCudaKernel< NetworkType >
+         tnlIndexMultimapTester__setRowFast_LowerTriangularIndexMultimapTestCudaKernel< IndexMultimapType >
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_graph,
                                                                                 kernel_testResult );
@@ -904,13 +904,13 @@ class tnlNetworkTester : public CppUnit :: TestCase
       if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         NetworkType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = tnlCuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlNetworkTester__setRowFast_LowerTriangularNetworkTestCudaKernel< NetworkType >
+         tnlIndexMultimapTester__setRowFast_LowerTriangularIndexMultimapTestCudaKernel< IndexMultimapType >
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_graph,
                                                                                 kernel_testResult );
@@ -930,14 +930,14 @@ class tnlNetworkTester : public CppUnit :: TestCase
    }
 
 
-   void vectorProduct_DiagonalNetworkTest()
+   void vectorProduct_DiagonalIndexMultimapTest()
    {
       const int size = 10;
       VectorType v, w;
       v.setSize( size );
       w.setSize( size );
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( size, size );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -954,14 +954,14 @@ class tnlNetworkTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( w.getElement( i ) == i*i );
    }
 
-   void vectorProduct_DenseNetworkTest()
+   void vectorProduct_DenseIndexMultimapTest()
    {
       const int size = 10;
       VectorType v, w;
       v.setSize( size );
       w.setSize( size );
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( size, size );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -979,14 +979,14 @@ class tnlNetworkTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( w.getElement( i ) == i*size );
    }
 
-   void vectorProduct_LowerTriangularNetworkTest()
+   void vectorProduct_LowerTriangularIndexMultimapTest()
    {
       const int size = 10;
       VectorType v, w;
       v.setSize( size );
       w.setSize( size );
-      NetworkType m;
-      NetworkSetter::setup( m );
+      IndexMultimapType m;
+      IndexMultimapSetter::setup( m );
       m.setDimensions( size, size );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
@@ -1005,7 +1005,7 @@ class tnlNetworkTester : public CppUnit :: TestCase
    }
 
 
-   void addNetworkTest()
+   void addIndexMultimapTest()
    {
    }
 
@@ -1017,8 +1017,8 @@ class tnlNetworkTester : public CppUnit :: TestCase
 };
 
 #ifdef HAVE_CUDA
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFastTestCudaKernel( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFastTestCudaKernel( IndexMultimapType* graph,
                                                                         bool* testResult )
    {
       if( threadIdx.x == 0 )
@@ -1031,19 +1031,19 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFast_DiagonalNetworkTestCudaKernel( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFast_DiagonalIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                        bool* testResult )
    {
       if( threadIdx.x < graph->getRows() )
          graph->setElementFast( threadIdx.x, threadIdx.x, threadIdx.x );
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel1( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                                      bool* testResult )
    {
-      const typename NetworkType::IndexType i = threadIdx.x;
+      const typename IndexMultimapType::IndexType i = threadIdx.x;
       if( i < graph->getRows() )
       {
          graph->setElementFast( i, i, i );
@@ -1052,11 +1052,11 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFast_DenseNetworkTestCudaKernel2( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                                      bool* testResult )
    {
-      const typename NetworkType::IndexType i = threadIdx.x;
+      const typename IndexMultimapType::IndexType i = threadIdx.x;
       if( i < graph->getRows() )
       {
          for( int j = graph->getColumns() -1; j >= 0; j-- )
@@ -1064,11 +1064,11 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel1( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                                                bool* testResult )
    {
-      const typename NetworkType::IndexType i = threadIdx.x;
+      const typename IndexMultimapType::IndexType i = threadIdx.x;
       if( i < graph->getRows() )
       {
          for( int j = 0; j <= i; j++ )
@@ -1076,11 +1076,11 @@ class tnlNetworkTester : public CppUnit :: TestCase
       }
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setElementFast_LowerTriangularNetworkTestCudaKernel2( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                                                bool* testResult )
    {
-      const typename NetworkType::IndexType i = threadIdx.x;
+      const typename IndexMultimapType::IndexType i = threadIdx.x;
       if( i < graph->getRows() )
       {
          for( int j = i; j >= 0; j-- )
@@ -1091,12 +1091,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
    /****
     * Set row tests kernels
     */
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setRowFast_DiagonalNetworkTestCudaKernel( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setRowFast_DiagonalIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                    bool* testResult )
    {
-      typedef typename NetworkType::RealType RealType;
-      typedef typename NetworkType::IndexType IndexType;
+      typedef typename IndexMultimapType::RealType RealType;
+      typedef typename IndexMultimapType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
       if( row >= graph->getRows() )
@@ -1112,12 +1112,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       graph->setRowFast( row, &columnIndexes[ row ], values, 1 );
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel1( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel1( IndexMultimapType* graph,
                                                                                  bool* testResult )
    {
-      typedef typename NetworkType::RealType RealType;
-      typedef typename NetworkType::IndexType IndexType;
+      typedef typename IndexMultimapType::RealType RealType;
+      typedef typename IndexMultimapType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
       if( row >= graph->getRows() )
@@ -1139,12 +1139,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       graph->setRowFast( row, columnIndexes, values, 10 );
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setRowFast_DenseNetworkTestCudaKernel2( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setRowFast_DenseIndexMultimapTestCudaKernel2( IndexMultimapType* graph,
                                                                                  bool* testResult )
    {
-      typedef typename NetworkType::RealType RealType;
-      typedef typename NetworkType::IndexType IndexType;
+      typedef typename IndexMultimapType::RealType RealType;
+      typedef typename IndexMultimapType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
       if( row >= graph->getRows() )
@@ -1163,12 +1163,12 @@ class tnlNetworkTester : public CppUnit :: TestCase
       graph->setRowFast( row, columnIndexes, values, 10 );
    }
 
-   template< typename NetworkType >
-   __global__ void tnlNetworkTester__setRowFast_LowerTriangularNetworkTestCudaKernel( NetworkType* graph,
+   template< typename IndexMultimapType >
+   __global__ void tnlIndexMultimapTester__setRowFast_LowerTriangularIndexMultimapTestCudaKernel( IndexMultimapType* graph,
                                                                                           bool* testResult )
    {
-      typedef typename NetworkType::RealType RealType;
-      typedef typename NetworkType::IndexType IndexType;
+      typedef typename IndexMultimapType::RealType RealType;
+      typedef typename IndexMultimapType::IndexType IndexType;
 
       const IndexType row = threadIdx.x;
       if( row >= graph->getRows() )
@@ -1192,4 +1192,4 @@ class tnlNetworkTester : public CppUnit :: TestCase
 
 #endif
 
-#endif /* TNLSPARSEMATRIXTESTER_H_ */
+#endif /* TNLINDEXMULTIMAPTESTER_H_ */

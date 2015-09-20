@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
+ADD_SUBDIRECTORY( multimaps )
 
 set( headers tnlFileTester.h
              tnlStringTester.h

@@ -1,5 +1,4 @@
 ADD_SUBDIRECTORY( core )
-ADD_SUBDIRECTORY( networks )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( operators )
@@ -16,7 +15,7 @@ ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlStaticVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticVectorTest${mpiExt}${debugExt} )
 
-ADD_TEST( networks/tnlEllpackNetworkTest{mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackNetworTest${mpiExt}${debugExt} )
+ADD_TEST( core/multimaps/tnlEllpackIndexMultimapTest{mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackIndexMultimapTest${mpiExt}${debugExt} )
 
 ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest${mpiExt}${debugExt} )

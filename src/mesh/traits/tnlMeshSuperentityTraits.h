@@ -25,7 +25,7 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
-#include <networks/tnlEllpackNetwork.h>
+#include <core/multimaps/tnlEllpackIndexMultimap.h>
 #include <mesh/layers/tnlMeshSuperentityAccessor.h>
 
 template< typename MeshConfig,
@@ -52,8 +52,8 @@ class tnlMeshSuperentityTraits
     */
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
    
-   typedef tnlEllpackNetwork< GlobalIndexType, tnlHost >                        StorageNetworkType;
-   typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::PortsType > SuperentityAccessorType;
+   typedef tnlEllpackIndexMultimap< GlobalIndexType, tnlHost >                        StorageNetworkType;
+   typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
    
    /****
     * Type for passing the superentities indecis by the getSuperentitiesIndices()

@@ -18,15 +18,15 @@
 #ifndef TNLMESHSUPERENTITYACCESSOR_H
 #define	TNLMESHSUPERENTITYACCESSOR_H
 
-template< typename NetworkPorts >
+template< typename IndexMultimapValues >
 class tnlMeshSuperentityAccessor
 {
    public:
       
-      typedef typename NetworkPorts::IndexType   GlobalIndexType;
-      typedef typename NetworkPorts::IndexType   LocalIndexType;
+      typedef typename IndexMultimapValues::IndexType   GlobalIndexType;
+      typedef typename IndexMultimapValues::IndexType   LocalIndexType;
       
-      // TODO: Add LocalIndexType to EllpackNetwork
+      // TODO: Add LocalIndexType to EllpackIndexMultimap
            
       LocalIndexType getSupernetitiesCount() const
       {
@@ -61,12 +61,12 @@ class tnlMeshSuperentityAccessor
       
    protected:
       
-      NetworkPorts ports;
+      IndexMultimapValues ports;
       
 };
 
-template< typename NetworkPorts >
-ostream& operator << ( ostream& str, const tnlMeshSuperentityAccessor< NetworkPorts >& superentityAccessor )
+template< typename IndexMultimapValues >
+ostream& operator << ( ostream& str, const tnlMeshSuperentityAccessor< IndexMultimapValues >& superentityAccessor )
 {
    superentityAccessor.print( str );
    return str;

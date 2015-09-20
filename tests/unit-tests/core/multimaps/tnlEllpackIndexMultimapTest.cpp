@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackNetworkTest.cpp  -  description
+                          tnlEllpackIndexMultimapTest.cpp  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -19,15 +19,15 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
-#include <networks/tnlEllpackNetwork.h>
-#include "tnlNetworkTester.h"
-#include "../tnlUnitTestStarter.h"
+#include <core/multimaps/tnlEllpackIndexMultimap.h>
+#include "tnlIndexMultimapTester.h"
+#include "../../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlNetworkTester< tnlEllpackNetwork< int, tnlHost > > >() ||
-       ! tnlUnitTestStarter :: run< tnlNetworkTester< tnlEllpackNetwork< long int, tnlHost > > >() 
+   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, tnlHost > > >() ||
+       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, tnlHost > > >() 
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

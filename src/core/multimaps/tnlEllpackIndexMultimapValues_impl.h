@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackNetworkPorts_impl.h  -  description
+                          tnlEllpackIndexMultimapValues_impl.h  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -15,23 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLELLPACKNETWORKPORTS_IMPL_H
-#define TNLELLPACKNETWORKPORTS_IMPL_H
+#ifndef TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
+#define TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
 
-#include "tnlEllpackNetworkPorts.h"
+#include "tnlEllpackIndexMultimapValues.h"
 
 
 template< typename Index,
           typename Device >
-tnlEllpackNetworkPorts< Index, Device >::
-tnlEllpackNetworkPorts()
+tnlEllpackIndexMultimapValues< Index, Device >::
+tnlEllpackIndexMultimapValues()
 {
 }
 
 template< typename Index,
           typename Device >
-tnlEllpackNetworkPorts< Index, Device >::
-tnlEllpackNetworkPorts( IndexType* networkPorts, 
+tnlEllpackIndexMultimapValues< Index, Device >::
+tnlEllpackIndexMultimapValues( IndexType* networkPorts, 
                         const IndexType input,
                         const IndexType portsMaxCount )
 {
@@ -42,7 +42,7 @@ tnlEllpackNetworkPorts( IndexType* networkPorts,
 template< typename Index,
           typename Device >
 Index
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 getPortsCount() const
 {
    return this->portsMaxCount;
@@ -51,7 +51,7 @@ getPortsCount() const
 template< typename Index,
           typename Device >
 void 
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 setOutput( const IndexType portIndex,
            const IndexType output )
 {
@@ -61,7 +61,7 @@ setOutput( const IndexType portIndex,
 template< typename Index,
           typename Device >
 Index
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 getOutput( const IndexType portIndex ) const
 {
    return this->ports[ portIndex ];
@@ -70,7 +70,7 @@ getOutput( const IndexType portIndex ) const
 template< typename Index,
           typename Device >
 Index&
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 operator[]( const IndexType portIndex )
 {
    return this->ports[ portIndex ];
@@ -79,7 +79,7 @@ operator[]( const IndexType portIndex )
 template< typename Index,
           typename Device >
 const Index&
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 operator[]( const IndexType portIndex ) const
 {
    return this->ports[ portIndex ];
@@ -88,7 +88,7 @@ operator[]( const IndexType portIndex ) const
 template< typename Index,
           typename Device >
 void
-tnlEllpackNetworkPorts< Index, Device >::
+tnlEllpackIndexMultimapValues< Index, Device >::
 print( std::ostream& str ) const
 {
    if( this->getPortsCount() == 0 )
@@ -104,7 +104,7 @@ print( std::ostream& str ) const
 
 template< typename Index,
           typename Device >
-std::ostream& operator << ( std::ostream& str, const tnlEllpackNetworkPorts< Index, Device>& ports )
+std::ostream& operator << ( std::ostream& str, const tnlEllpackIndexMultimapValues< Index, Device>& ports )
 {
    ports.print( str );
    return str;
