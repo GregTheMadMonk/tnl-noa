@@ -41,7 +41,7 @@ class tnlHeatEquationEocRhs
          if( ! testFunction.setup( parameters, prefix ) )
             return false;
          return true;
-      };
+      }
 
       template< typename Vertex,
                 typename Real >
@@ -51,7 +51,7 @@ class tnlHeatEquationEocRhs
       {
          return testFunction.getTimeDerivative( vertex, time )
                 - exactOperator.getValue( testFunction, vertex, time );
-      };
+      }
 
    protected:
       ExactOperator exactOperator;

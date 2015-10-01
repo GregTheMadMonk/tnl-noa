@@ -63,16 +63,19 @@ T tnlAbs( const T& n )
    return n;
 };
 
+__cuda_callable__
 inline int tnlAbs( const int& n )
 {
    return abs( n );
 };
 
+__cuda_callable__
 inline float tnlAbs( const float& f )
 {
    return fabs( f );
 };
 
+__cuda_callable__
 inline double tnlAbs( const double& d )
 {
    return fabs( d );

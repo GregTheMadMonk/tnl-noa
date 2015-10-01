@@ -73,6 +73,7 @@ class tnlTestFunction
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
+   __cuda_callable__
    Real getValue( const Vertex& vertex,
                   const Real& time = 0 ) const
    {
@@ -97,6 +98,7 @@ class tnlTestFunction
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
+   __cuda_callable__
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const
    {
