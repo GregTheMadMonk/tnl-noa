@@ -9,7 +9,8 @@ SET( headers tnlMatrix.h
              tnlCSRMatrix.h 
              tnlMatrixReader.h
              tnlMatrixWriter.h
-             tnlMatrixSetter.h )
+             tnlMatrixSetter.h
+             tnlBiEllpackMatrix.h )
 	
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/matrices )
 set( common_SOURCES  )

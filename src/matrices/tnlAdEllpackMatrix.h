@@ -150,6 +150,17 @@ public:
 
     void performRowLengthsTest( const RowLengthsVector& rowLengths );
 
+    IndexType getTotalLoad() const;
+
+#ifdef HAVE_CUDA
+    template< typename InVector,
+              typename OutVector >
+    __device__
+    void spmvCuda( const InVector& inVector,
+                   OutVector& outVector,
+                   const int gridIdx ) const;
+#endif
+
 
     // these arrays must be public
     tnlVector< Index, Device, Index > offset;
@@ -167,7 +178,7 @@ public:
 
 protected:
 
-
+    IndexType totalLoad;
 
     IndexType warpSize;
 

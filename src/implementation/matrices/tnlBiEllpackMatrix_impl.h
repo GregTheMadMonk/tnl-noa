@@ -8,14 +8,14 @@
 #include <cstdio>
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
 Index tnlBiEllpackMatrix< Real, Device, Index, StripSize >::power( const IndexType number,
-																   const IndexType exponent ) const
+								   const IndexType exponent ) const
 {
 	if( exponent >= 0 )
 	{
@@ -28,18 +28,18 @@ Index tnlBiEllpackMatrix< Real, Device, Index, StripSize >::power( const IndexTy
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 tnlBiEllpackMatrix< Real, Device, Index, StripSize >::tnlBiEllpackMatrix()
 : warpSize( 32 ),
   logWarpSize( 5 )
 {}
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 tnlString tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getType()
 {
 	return tnlString( "BiEllpackMatrix< ") +
@@ -50,24 +50,24 @@ tnlString tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getType()
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 tnlString tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getTypeVirtual() const
 {
 	return this->getType();
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setDimensions( const IndexType rows,
-															   	   	   	  const IndexType columns )
+						   	   	   	  const IndexType columns )
 {
 	tnlAssert( rows >= 0 && columns >= 0,
 			   cerr << "rows = " << rows
-			   	    << "columns = " <<columns <<endl );
+ 		   	        << "columns = " << columns <<endl );
 
 	if( this->getRows() % this->warpSize != 0 )
 		this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
@@ -76,7 +76,7 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setDimensions( const 
 	IndexType strips = this->virtualRows / this->warpSize;
 
 	if( ! tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns ) ||
-        ! this->rowPermArray.setSize( this->rows ) ||
+            ! this->rowPermArray.setSize( this->rows ) ||
 	    ! this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 ) )
 	    return false;
 
@@ -86,10 +86,10 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setDimensions( const 
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
-bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setRowLengths(const RowLengthsVector& rowLengths)
+	  typename Device,
+	  typename Index,
+	  int StripSize >
+bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setRowLengths( const RowLengthsVector& rowLengths )
 {
 	if( this->getRows() % this->warpSize != 0 )
 		this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
@@ -97,7 +97,7 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setRowLengths(const R
 		this->setVirtualRows( this->getRows() );
 	IndexType strips = this->virtualRows / this->warpSize;
 	if( ! this->rowPermArray.setSize( this->rows ) ||
-		! this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 ) )
+       	    ! this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 ) )
 		return false;
 	for( IndexType i = 0; i < this->groupPointers.getSize(); i++ )
 		this->groupPointers.setElement( i, 0 );
@@ -116,9 +116,9 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::setRowLengths(const R
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -126,16 +126,16 @@ Index tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getStripLength( cons
 {
 	tnlAssert( strip >= 0,
 				cerr << "strip = " << strip
-					 << " this->getName() = " << this->getName() << endl );
+				     << " this->getName() = " << this->getName() << endl );
 
 	return this->groupPointers.getElement( ( strip + 1 ) * ( this->logWarpSize + 1 ) )
 	                            - this->groupPointers.getElement( strip * ( this->logWarpSize + 1 ) );
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index,
-		  int StripSize >
+	  typename Device,
+	  typename Index,
+	  int StripSize >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -166,8 +166,8 @@ Index tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getRowLength( const 
 {
 	tnlAssert( row >= 0 && row < this->getRows(),
 				cerr << "row = " << row
-					 << " this->getRows() = " << this->getRows()
-					 << " this->getName() = " << this->getName() << endl );
+			             << " this->getRows() = " << this->getRows()
+				     << " this->getName() = " << this->getName() << endl );
 
 	const IndexType strip = row / this->warpSize;
 	const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
@@ -322,7 +322,7 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::addElementFast( const
 	IndexType bisection = 1;
 	for( IndexType i = 0; i < this->logWarpSize + 1; i++ )
 	{
-		if( rowStripPermutation < bisection )
+		if( rowStripPerm < bisection )
 		{
 			numberOfGroups -= i;
 			break;
@@ -345,7 +345,7 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::addElementFast( const
 			}
 			if( this->columnIndexes[ elementPtr ] == column )
 			{
-				this->values[ elementPtr ] += value * thisElementMultiplicator );
+				this->values[ elementPtr ] += value * thisElementMultiplicator ;
 				return true;
 			}
 			elementPtr += step;
@@ -480,7 +480,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getElementFast( const IndexType row,
+Real tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getElementFast( const IndexType row,
 																	   	   const IndexType column ) const
 {
 	const IndexType strip = row / this->warpSize;
@@ -494,7 +494,7 @@ bool tnlBiEllpackMatrix< Real, Device, Index, StripSize >::getElementFast( const
 	IndexType bisection = 1;
 	for( IndexType i = 0; i < this->logWarpSize + 1; i++ )
 	{
-		if( rowStripPermutation < bisection )
+		if( rowStripPerm < bisection )
 		{
 			numberOfGroups -= i;
 			break;
@@ -1055,6 +1055,67 @@ public:
 
 #ifdef HAVE_CUDA
 template< typename Real,
+	  typename Device,
+	  typename Index,
+	  int StripSize >
+template< typename InVector,
+	  typename OutVector >
+__device__
+void tnlBiEllpackMatrix< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
+					  	  	  	     OutVector& outVector,
+								     int globalIdx ) const
+{
+    const IndexType strip = globalIdx >> this->logWarpSize;
+    const IndexType warpStart = strip << this->logWarpSize;
+    const IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
+
+    if( warpStart >= this->getRows() )
+	return;
+
+    const IndexType cudaBlockSize = 256;
+    IndexType bisection = this->warpSize;
+    IndexType groupBegin = strip * ( this->logWarpSize + 1 );
+
+    Real* temp = getSharedMemory< Real >();
+    __shared__ Real results[ cudaBlockSize ];
+    results[ threadIdx.x ] = 0.0;
+    IndexType elementPtr = ( this->groupPointers[ groupBegin ] << this->logWarpSize ) + inWarpIdx;
+
+    for( IndexType group = 0; group < this->logWarpSize + 1; group++ )
+    {
+	temp[ threadIdx.x ] = 0.0;
+	IndexType groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+	        elementPtr += this->warpSize;
+	    }
+	    IndexType bisection2 = this->warpSize;
+	    for( IndexType i = 0; i < group; i++ )
+	    {
+	        bisection2 >>= 1;
+	        if( inWarpIdx < bisection2 )
+		    temp[ threadIdx.x ] += temp[ threadIdx.x + bisection2 ];
+	    }
+	    if( inWarpIdx < bisection )
+	        results[ threadIdx.x ] += temp[ threadIdx.x ];
+	}
+	bisection >>= 1;
+    }
+    __syncthreads();
+    if( warpStart + inWarpIdx >= this->getRows() )
+	return;
+    outVector[ warpStart + inWarpIdx ] = results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( cudaBlockSize - 1 ) ];
+}
+#endif
+
+/*#ifdef HAVE_CUDA
+template< typename Real,
 		  typename Device,
 		  typename Index,
 		  int StripSize >
@@ -1062,9 +1123,10 @@ template< typename InVector,
 		  typename OutVector >
 __device__
 void tnlBiEllpackMatrix< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
-														  	  	  	 OutVector& outVector,
-														  	  	  	 int globalIdx ) const
+						                     OutVector& outVector,
+								     int globalIdx ) const
 {
+	// Loop unrolling test
 	const IndexType strip = globalIdx >> this->logWarpSize;
 	const IndexType warpStart = strip << this->logWarpSize;
 	const IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
@@ -1073,46 +1135,153 @@ void tnlBiEllpackMatrix< Real, Device, Index, StripSize >::spmvCuda( const InVec
 		return;
 
 	const IndexType cudaBlockSize = 256;
-	const IndexType row = warpStart + inWarpIdx;
-	IndexType bisection = this->warpSize;
-	IndexType groupBegin = strip * ( this->logWarpSize + 1 );
 
-	Real* temp = getSharedMemory< Real >();
+	volatile Real* temp = getSharedMemory< Real >();
 	__shared__ Real results[ cudaBlockSize ];
 	results[ threadIdx.x ] = 0.0;
-	IndexType elementPtr = ( this->groupPointers[ groupBegin ] << this->logWarpSize ) + inWarpIdx;
+	IndexType elementPtr = ( this->groupPointers[ strip * ( this->logWarpSize + 1 ) ] << this->logWarpSize ) + inWarpIdx;
 
-	for( IndexType group = 0; group < this->logWarpSize + 1; group++ )
-	{
-		temp[ threadIdx.x ] = 0.0;
-		IndexType groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+	//Loop Unroll #1
+	IndexType group = 0;
+	IndexType groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
 		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
 
-		for( IndexType i = 0; i < groupLength; i++ )
-		{
-			if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-				temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-			elementPtr += this->warpSize;
-		}
-		IndexType bisection2 = this->warpSize;
-		for( IndexType i = 0; i < group; i++ )
-		{
-			bisection2 >>= 1;
-			if( inWarpIdx < bisection2 )
-				temp[ threadIdx.x ] += temp[ threadIdx.x + bisection2 ];
-		}
-		if( inWarpIdx < bisection )
-		{
-			results[ threadIdx.x ] += temp[ threadIdx.x ];
-		}
-		bisection >>= 1;
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    results[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
 	}
-	__syncthreads();
-	if( row >= this->getRows() )
+
+	group++;
+	temp[ threadIdx.x ] = 0.0;
+	groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+	                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
+	    //Loop Unroll #2
+	    if( inWarpIdx < 16 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 16 ];
+	    if( inWarpIdx < 16 )
+	        results[ threadIdx.x ] += temp[ threadIdx.x ];
+        }
+
+
+	//group == 2;
+	group++;
+	temp[ threadIdx.x ] = 0.0;
+	groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
+	    //Loop Unroll #3
+	    if( inWarpIdx < 16 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 16 ];
+	    if( inWarpIdx < 8 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 8 ];
+	    if( inWarpIdx < 8 )
+	        results[ threadIdx.x ] += temp[ threadIdx.x ];
+        }
+
+	//group == 3;
+	group++;
+	temp[ threadIdx.x ] = 0.0;
+	groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
+	    //Loop Unroll #4
+	    if( inWarpIdx < 16 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 16 ];
+	    if( inWarpIdx < 8 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 8 ];
+	    if( inWarpIdx < 4 )
+	        temp[ threadIdx.x ] += temp[ threadIdx.x + 4 ];
+	    if( inWarpIdx < 4 )
+		results[ threadIdx.x ] += temp[ threadIdx.x ];
+        }
+
+	//group == 4;
+	group++;
+	temp[ threadIdx.x ] = 0.0;
+	groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
+	    //Loop Unroll #5
+	    if( inWarpIdx < 16 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 16 ];
+	    if( inWarpIdx < 8 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 8 ];
+	    if( inWarpIdx < 4 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 4 ];
+	    if( inWarpIdx < 2 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 2 ];
+	    if( inWarpIdx < 2 )
+		results[ threadIdx.x ] += temp[ threadIdx.x ];
+	}
+
+	//group == 5
+	group++;
+	temp[ threadIdx.x ] = 0.0;
+	groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+		                      - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+	if( groupLength > 0 )
+	{
+	    for( IndexType i = 0; i < groupLength; i++ )
+	    {
+		if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+		    temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+		elementPtr += this->warpSize;
+	    }
+	    //Loop Unroll #6
+	    if( inWarpIdx < 16 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 16 ];
+	    if( inWarpIdx < 8 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 8 ];
+	    if( inWarpIdx < 4 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 4 ];
+	    if( inWarpIdx < 2 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 2 ];
+	    if( inWarpIdx < 1 )
+		temp[ threadIdx.x ] += temp[ threadIdx.x + 1 ];
+	    if( inWarpIdx < 1 )
+		results[ threadIdx.x ] += temp[ threadIdx.x ];
+	}
+
+	if( warpStart + inWarpIdx >= this->getRows() )
 		return;
-	outVector[ row ] = results[ this->rowPermArray[ row ] & ( cudaBlockSize - 1 ) ];
+	outVector[ warpStart + inWarpIdx ] = results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( cudaBlockSize - 1 ) ];
 }
-#endif
+#endif*/
 
 #ifdef HAVE_CUDA
 template< typename Real,

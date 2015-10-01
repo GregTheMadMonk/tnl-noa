@@ -127,6 +127,11 @@ class tnlArray : public virtual tnlObject
 
    ~tnlArray();
 
+#ifdef HAVE_CUDA
+   __device__
+   void add( const IndexType pos, const ElementType& val ) const;
+#endif
+
    protected:
 
    //!Number of allocated elements
