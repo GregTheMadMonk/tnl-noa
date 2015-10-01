@@ -30,38 +30,38 @@ class tnlMeshSuperentityAccessor
            
       LocalIndexType getSupernetitiesCount() const
       {
-         return this->ports.getPortsCount();
+         return this->indexes.getPortsCount();
       };
       
       void setSuperentityIndex( const LocalIndexType localIndex,
                                 const GlobalIndexType globalIndex )
       {
-         ports.setOutput( localIndex, globalIndex );
+         indexes.setOutput( localIndex, globalIndex );
       }
       
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const
       {
-         return ports.getOutput( localIndex );
+         return indexes.getOutput( localIndex );
       }
       
       GlobalIndexType& operator[]( const LocalIndexType localIndex )
       {
-         return this->ports[ localIndex ];
+         return this->indexes[ localIndex ];
       }
       
       const GlobalIndexType& operator[]( const LocalIndexType localIndex ) const
       {
-         return this->ports[ localIndex ];
+         return this->indexes[ localIndex ];
       }
       
       void print( ostream& str ) const
       {
-         str << ports;
+         str << indexes;
       }
       
    protected:
       
-      IndexMultimapValues ports;
+      IndexMultimapValues indexes;
       
 };
 
