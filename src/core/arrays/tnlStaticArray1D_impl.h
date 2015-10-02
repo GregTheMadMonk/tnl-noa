@@ -111,6 +111,7 @@ const Element& tnlStaticArray< 1, Element >::x() const
 }
 
 template< typename Element >
+__cuda_callable__
 tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const tnlStaticArray< 1, Element >& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -119,6 +120,7 @@ tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const t
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const Array& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -127,6 +129,7 @@ tnlStaticArray< 1, Element >& tnlStaticArray< 1, Element >::operator = ( const A
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 1, Element >::operator == ( const Array& array ) const
 {
    return( ( int ) size == ( int ) Array::size && data[ 0 ] == array[ 0 ] );
@@ -134,6 +137,7 @@ bool tnlStaticArray< 1, Element >::operator == ( const Array& array ) const
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 1, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );

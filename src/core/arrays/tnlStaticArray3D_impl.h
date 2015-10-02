@@ -153,6 +153,7 @@ const Element& tnlStaticArray< 3, Element >::z() const
    return data[ 2 ];
 }
 template< typename Element >
+__cuda_callable__
 tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const tnlStaticArray< 3, Element >& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -163,6 +164,7 @@ tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const t
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const Array& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -173,6 +175,7 @@ tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const A
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 3, Element >::operator == ( const Array& array ) const
 {
    return( ( int ) size == ( int ) Array::size &&
@@ -183,6 +186,7 @@ bool tnlStaticArray< 3, Element >::operator == ( const Array& array ) const
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 3, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
