@@ -33,53 +33,35 @@ class tnlStaticArray
    typedef int     IndexType;
    enum { size = Size };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element v[ Size ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const tnlStaticArray< Size, Element >& v );
 
    static tnlString getType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    int getSize() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element* getData();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& operator[]( int i ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& operator[]( int i );
 
    tnlStaticArray< Size, Element >& operator = ( const tnlStaticArray< Size, Element >& array );
@@ -114,64 +96,42 @@ class tnlStaticArray< 1, Element >
    typedef int     IndexType;
    enum { size = 1 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element v[ size ] );
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    int getSize() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element* getData();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& operator[]( int i ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& operator[]( int i );
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& x();
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& x() const;
 
    tnlStaticArray< 1, Element >& operator = ( const tnlStaticArray< 1, Element >& array );
@@ -205,82 +165,54 @@ class tnlStaticArray< 2, Element >
    typedef int     IndexType;
    enum { size = 2 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v );
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v1, const Element& v2 );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    int getSize() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element* getData();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& operator[]( int i ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& operator[]( int i );
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& x();
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& x() const;
 
    //! Returns the second coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& y();
 
    //! Returns the second coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& y() const;
 
    tnlStaticArray< 2, Element >& operator = ( const tnlStaticArray< 2, Element >& array );
@@ -314,94 +246,62 @@ class tnlStaticArray< 3, Element >
    typedef int     IndexType;
    enum { size = 3 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v );
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    int getSize() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element* getData();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& operator[]( int i ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& operator[]( int i );
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& x();
 
    //! Returns the first coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& x() const;
 
    //! Returns the second coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& y();
 
    //! Returns the second coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& y() const;
 
    //! Returns the third coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Element& z();
 
    //! Returns the third coordinate
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    const Element& z() const;
 
    tnlStaticArray< 3, Element >& operator = ( const tnlStaticArray< 3, Element >& array );

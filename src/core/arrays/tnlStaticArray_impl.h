@@ -21,17 +21,13 @@
 #include <core/param-types.h>
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< Size, Element >::tnlStaticArray()
 {
 };
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< Size, Element >::tnlStaticArray( const Element v[ Size ] )
 {
    for( int i = 0; i < Size; i++ )
@@ -39,9 +35,7 @@ tnlStaticArray< Size, Element >::tnlStaticArray( const Element v[ Size ] )
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< Size, Element >::tnlStaticArray( const Element& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -49,9 +43,7 @@ tnlStaticArray< Size, Element >::tnlStaticArray( const Element& v )
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< Size, Element >::tnlStaticArray( const tnlStaticArray< Size, Element >& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -69,36 +61,28 @@ tnlString tnlStaticArray< Size, Element >::getType()
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 int tnlStaticArray< Size, Element >::getSize() const
 {
    return size;
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 Element* tnlStaticArray< Size, Element >::getData()
 {
    return data;
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 const Element* tnlStaticArray< Size, Element >::getData() const
 {
    return data;
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 const Element& tnlStaticArray< Size, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
@@ -107,9 +91,7 @@ const Element& tnlStaticArray< Size, Element >::operator[]( int i ) const
 }
 
 template< int Size, typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Element& tnlStaticArray< Size, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,

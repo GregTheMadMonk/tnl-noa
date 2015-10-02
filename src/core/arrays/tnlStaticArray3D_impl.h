@@ -21,17 +21,13 @@
 #include <core/param-types.h>
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< 3, Element >::tnlStaticArray()
 {
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< 3, Element >::tnlStaticArray( const Element v[ size ] )
 {
    data[ 0 ] = v[ 0 ];
@@ -40,9 +36,7 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element v[ size ] )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v )
 {
    data[ 0 ] = v;
@@ -51,9 +45,7 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 )
 {
    data[ 0 ] = v1;
@@ -62,9 +54,7 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v1, const Element& 
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticArray< 3, Element >::tnlStaticArray( const tnlStaticArray< size, Element >& v )
 {
    data[ 0 ] = v[ 0 ];
@@ -83,36 +73,28 @@ tnlString tnlStaticArray< 3, Element >::getType()
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 int tnlStaticArray< 3, Element >::getSize() const
 {
    return size;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 Element* tnlStaticArray< 3, Element >::getData()
 {
    return data;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+__cuda_callable__
 const Element* tnlStaticArray< 3, Element >::getData() const
 {
    return data;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
@@ -121,9 +103,7 @@ const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Element& tnlStaticArray< 3, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
@@ -132,54 +112,42 @@ Element& tnlStaticArray< 3, Element >::operator[]( int i )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Element& tnlStaticArray< 3, Element >::x()
 {
    return data[ 0 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 const Element& tnlStaticArray< 3, Element >::x() const
 {
    return data[ 0 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Element& tnlStaticArray< 3, Element >::y()
 {
    return data[ 1 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 const Element& tnlStaticArray< 3, Element >::y() const
 {
    return data[ 1 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Element& tnlStaticArray< 3, Element >::z()
 {
    return data[ 2 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 const Element& tnlStaticArray< 3, Element >::z() const
 {
    return data[ 2 ];
