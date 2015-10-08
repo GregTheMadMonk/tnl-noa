@@ -104,13 +104,13 @@ inline int roundToMultiple( int number, int multiple )
 __cuda_callable__
 inline bool isPow2( int x )
 {
-   return ( x & ( x - 1 ) == 0 );
+   return ( ( x & ( x - 1 ) ) == 0 );
 }
 
 __cuda_callable__
 inline bool isPow2( long int x )
 {
-   return ( x & ( x - 1 ) == 0 );
+   return ( ( x & ( x - 1 ) ) == 0 );
 }
 
 
