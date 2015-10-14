@@ -1,8 +1,15 @@
 #include <stdio.h> 
 
 int main() {
-    int num_devices;
-    cudaGetDeviceCount( &num_devices );
+    int num_devices = 0;
+    cudaError_t error_id = cudaGetDeviceCount( &num_devices );
+
+    if( error_id != cudaSuccess ) {
+        fprintf(stderr, "cudaGetDeviceCount returned error %d (%s)\n",
+                (int) error_id, cudaGetErrorString(error_id));
+        exit(EXIT_FAILURE);
+    }
+
     for( int i = 0; i < num_devices; i++ ) {
         cudaDeviceProp prop;
         cudaGetDeviceProperties( &prop, i );
