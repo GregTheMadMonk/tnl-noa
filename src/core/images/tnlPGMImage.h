@@ -21,6 +21,7 @@
 #include <core/tnlString.h>
 #include <core/images/tnlImage.h>
 #include <core/images/tnlRegionOfInterest.h>
+#include <fstream>
 
 template< typename Index = int >
 class tnlPGMImage : public tnlImage< Index >
@@ -70,7 +71,7 @@ class tnlPGMImage : public tnlImage< Index >
          
          IndexType maxColors;
          
-         FILE* file;
+         fstream file;
          
          bool fileOpen;
 };

@@ -163,7 +163,10 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
          tnlString outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".pgm";
-         image.openForWrite( outputFileName, grid, true );
+	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
+         	image.openForWrite( outputFileName, grid, true );
+	 if ( imageFormat == "pgm-ascii" )
+         	image.openForWrite( outputFileName, grid, false );
          image.write( grid, vector );
          image.close();
          continue;

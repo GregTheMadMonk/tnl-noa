@@ -104,7 +104,7 @@ getImage( const int imageIdx,
             Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
                                                                   roi.getBottom() - 1 - i ) );
             Uint16 col = imageData[ position ];
-            vector.setElement( cellIndex, ( Real ) col / ( Real ) this->getMaxColorValue() );
+            vector.setElement( cellIndex, ( Real ) col / ( Real ) 65535 );
             cout << vector.getElement( cellIndex ) << " ";
          }
          position++;
