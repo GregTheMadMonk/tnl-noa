@@ -40,6 +40,7 @@ inline tnlDicomPatientInfo::~tnlDicomPatientInfo()
 
 inline bool tnlDicomPatientInfo::retrieveInfo()
 {
+#ifdef HAVE_DCMTK_H
    OFString str;
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientName, str );
    this->name.setString( str.data() );
@@ -55,7 +56,11 @@ inline bool tnlDicomPatientInfo::retrieveInfo()
    this->patientOrientation.setString( str.data() ); 
 
    isObjectRetrieved = true;
-   return 0;
+   return true;
+#else
+   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   return false;
+#endif   
 }
 
 inline const tnlString& tnlDicomPatientInfo::getName()

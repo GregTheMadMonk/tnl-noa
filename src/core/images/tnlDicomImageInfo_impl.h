@@ -18,8 +18,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlDicomImageInfo.h"
-#include "tnlDicomHeader.h"
+#include <core/images/tnlDicomImageInfo.h>
+#include <core/images/tnlDicomHeader.h>
 
 inline tnlDicomImageInfo::tnlDicomImageInfo( tnlDicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
@@ -34,7 +34,7 @@ inline tnlDicomImageInfo::~tnlDicomImageInfo()
 
 inline bool tnlDicomImageInfo::retrieveInfo()
 {
-
+#ifdef HAVE_DCMTK_H
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_ImagePositionPatient,imagePositionToPatient.x,0);
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_ImagePositionPatient,imagePositionToPatient.y,1);
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_ImagePositionPatient,imagePositionToPatient.z,2);
@@ -57,7 +57,11 @@ inline bool tnlDicomImageInfo::retrieveInfo()
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_PixelSpacing,pixelSpacing.y,1);
 
    isObjectRetrieved = true;
-   return 0;
+   return true;
+#else
+   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   return false;
+#endif   
 }
 
 inline ImagePositionToPatient tnlDicomImageInfo::getImagePositionToPatient()

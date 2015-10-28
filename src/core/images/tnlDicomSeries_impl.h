@@ -23,7 +23,7 @@
 #include <dirent.h>
 
 
-int findLastIndexOf(tnlString &str, char * const c)
+int findLastIndexOf(tnlString &str, const char* c)
 {
     for (int i = str.getLength(); i > -1; i--)
     {
@@ -46,8 +46,10 @@ int filter(const struct dirent *dire)
 inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
 {
     fileList = new tnlList<tnlString *>();
+#ifdef HAVE_DCMTK_H
     dicomImage = 0;
     pixelData = 0;
+#endif    
     imagesInfo.imagesCount = 0;
     imagesInfo.maxColorValue = 0;
     imagesInfo.minColorValue = 128000;
@@ -71,11 +73,13 @@ inline tnlDicomSeries::~tnlDicomSeries()
         header = 0;
     }
 
+#ifdef HAVE_DCMTK_H    
     if(dicomImage)
         delete dicomImage;
 
     if(pixelData)
         delete pixelData;
+#endif    
 }
 
 template< typename Real,
@@ -89,6 +93,7 @@ getImage( const int imageIdx,
           const tnlRegionOfInterest< int > roi,
           Vector& vector )
 {
+#ifdef HAVE_DCMTK_H
    const Uint16* imageData = this->getData( imageIdx );
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
@@ -105,13 +110,17 @@ getImage( const int imageIdx,
                                                                   roi.getBottom() - 1 - i ) );
             Uint16 col = imageData[ position ];
             vector.setElement( cellIndex, ( Real ) col / ( Real ) 65535 );
-            cout << vector.getElement( cellIndex ) << " ";
+            //cout << vector.getElement( cellIndex ) << " ";
          }
          position++;
       }
-      cout << endl;
+      //cout << endl;
    }
    return true;
+#else
+   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   return false;     
+#endif
 }
 
 inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
@@ -128,7 +137,7 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
       return false;
    }
 
-   int fileNamePosition = findLastIndexOf(filePathString,"/");
+   int fileNamePosition = findLastIndexOf( filePathString, "/" );
 
    /***
     * Parse file path
@@ -178,6 +187,7 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
 
 inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 {
+#ifdef HAVE_DCMTK_H
    //load header
    tnlDicomHeader *header = new tnlDicomHeader();
    dicomSeriesHeaders.setSize( fileList->getSize() );
@@ -307,6 +317,10 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     delete dicomImage;
     dicomImage = NULL;
     return true;
+#else
+    cerr << "DICOM format is not supported in this build of TNL." << endl;
+    return false;
+#endif    
 }
 
 
@@ -338,10 +352,12 @@ inline int tnlDicomSeries::getImagesCount()
     return imagesInfo.imagesCount;
 }
 
+#ifdef HAVE_DCMTK_H
 inline const Uint16 *tnlDicomSeries::getData( int imageNumber )
 {
     return &pixelData[ imageNumber * imagesInfo.frameUintsCount ];
 }
+#endif
 
 inline int tnlDicomSeries::getColorCount()
 {
@@ -370,9 +386,11 @@ inline int tnlDicomSeries::getMaxColorValue()
 
 inline void tnlDicomSeries::freeData()
 {
+#ifdef HAVE_DCMTK_H
     if (pixelData)
         delete pixelData;
     pixelData = NULL;
+#endif    
 }
 
 inline tnlDicomHeader &tnlDicomSeries::getHeader(int image)

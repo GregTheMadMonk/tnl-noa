@@ -34,6 +34,7 @@ inline tnlDicomSeriesInfo::~tnlDicomSeriesInfo()
 
 inline bool tnlDicomSeriesInfo::retrieveInfo()
 {
+#ifdef HAVE_DCMTK_H
    OFString str;    
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_Modality, str );
    this->modality.setString( str.data() );
@@ -90,7 +91,11 @@ inline bool tnlDicomSeriesInfo::retrieveInfo()
     //std::cout << faDateTime << " " << faRefTime << " "<< AFD << " " << AT << std::endl;
 
     isObjectRetrieved = true;
-    return 0;
+    return true;
+#else
+    cerr << "DICOM format is not supported in this build of TNL." << endl;
+    return false;
+#endif    
 }
 
 inline const tnlString& tnlDicomSeriesInfo::getModality()

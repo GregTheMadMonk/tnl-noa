@@ -25,7 +25,9 @@
 
 inline tnlDicomHeader::tnlDicomHeader()
 {
+#ifdef HAVE_DCMTK_H
     fileFormat = new DcmFileFormat();
+#endif    
     isLoaded = false;
     imageInfoObj = new tnlDicomImageInfo(*this);
     patientInfoObj = new tnlDicomPatientInfo(*this);
@@ -37,25 +39,31 @@ inline tnlDicomHeader::~tnlDicomHeader()
     delete imageInfoObj;
     delete patientInfoObj;
     delete seriesInfoObj;
+#ifdef HAVE_DCMTK_H    
     delete fileFormat;
+#endif    
 }
 
 inline bool tnlDicomHeader::loadFromFile( const tnlString& fileName )
 {
+#ifdef HAVE_DCMTK_H
     OFCondition status = fileFormat->loadFile( fileName.getString() );
     if(status.good())
     {
         isLoaded = true;
         return true;
     }
+#endif    
     isLoaded = false;
     return false;
 }
 
+#ifdef HAVE_DCMTK_H
 inline DcmFileFormat &tnlDicomHeader::getFileFormat()
 {
     return *fileFormat;
 }
+#endif
 
 inline tnlDicomImageInfo &tnlDicomHeader::getImageInfo()
 {
